@@ -39,18 +39,92 @@ class B62ScopeTests(unittest.TestCase):
         self.assertEqual(module.impact_scope(paths), module.B14_ATTEMPT_ONLY)
         self.assertEqual(module.impact_scope(paths + [file("apps/padiem-chat/app/chat_routes.py")]), module.CHAT_ONLY)
 
-    def test_exact_isolated_parser_sources_use_focused_ci(self):
-        isolated = [
-            file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py"),
-            file("packages/padiem-ai-core/tests/test_isolated_parser_client.py"),
+    def test_independent_core_sources_use_focused_ci(self):
+        focused = [
+            file("packages/padiem-ai-core/padiem_ai_core/pdf_authoring.py"),
+            file("packages/padiem-ai-core/tests/test_pdf_authoring_2827.py"),
         ]
-        self.assertEqual(module.impact_scope(isolated), module.CORE_PARSER_ONLY)
+        self.assertEqual(module.impact_scope(focused), module.CORE_FOCUSED_ONLY)
         for risky in (
             "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
             "apps/padiem-chat/app/chat_routes.py",
             ".github/workflows/b62-padiem-chat-ci.yml",
         ):
-            self.assertEqual(module.impact_scope(isolated + [file(risky)]), module.FULL)
+            self.assertEqual(module.impact_scope(focused + [file(risky)]), module.FULL)
+        # #5817: Chat composes the isolated parser authority, so the parser wire
+        # is product code for B62 and keeps the complete regression path.
+        parser = [
+            file("packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py"),
+            file("packages/padiem-ai-core/tests/test_isolated_parser_client.py"),
+        ]
+        self.assertEqual(module.impact_scope(parser), module.FULL)
+
+    def test_core_module_inside_the_b62_runtime_closure_keeps_the_full_path(self):
+        # #5341: a shared Core module that the B62 runtime imports is a product
+        # change, so the full B62 regression stays the load-bearing check.
+        for shared in (
+            "packages/padiem-ai-core/padiem_ai_core/b14_execution.py",
+            "packages/padiem-ai-core/padiem_ai_core/contracts.py",
+            "packages/padiem-ai-core/padiem_ai_core/document_normalization.py",
+            "packages/padiem-ai-core/padiem_ai_core/execution_runtime.py",
+            "packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py",
+        ):
+            with self.subTest(shared=shared):
+                self.assertEqual(module.impact_scope([file(shared)]), module.FULL)
+
+    def test_core_module_outside_the_b62_runtime_closure_uses_the_focused_path(self):
+        # #5341: an independent Core utility cannot change the B62 runtime.
+        for independent in (
+            "packages/padiem-ai-core/padiem_ai_core/pdf_authoring.py",
+            "packages/padiem-ai-core/padiem_ai_core/workspace_storage.py",
+        ):
+            with self.subTest(independent=independent):
+                self.assertEqual(
+                    module.impact_scope([file(independent)]), module.CORE_FOCUSED_ONLY
+                )
+
+    def test_core_test_only_changes_use_the_focused_path(self):
+        # A Core test change cannot change any product runtime byte.
+        self.assertEqual(
+            module.impact_scope(
+                [file("packages/padiem-ai-core/tests/test_workspace_storage.py")]
+            ),
+            module.CORE_FOCUSED_ONLY,
+        )
+
+    def test_core_mixed_with_a_product_file_keeps_the_full_path(self):
+        self.assertEqual(
+            module.impact_scope([
+                file("packages/padiem-ai-core/padiem_ai_core/workspace_storage.py"),
+                file("apps/padiem-chat/app/chat_routes.py"),
+            ]),
+            module.FULL,
+        )
+        self.assertEqual(
+            module.impact_scope([
+                file("packages/padiem-ai-core/padiem_ai_core/workspace_storage.py"),
+                file("packages/padiem-ai-core/padiem_ai_core/contracts.py"),
+            ]),
+            module.FULL,
+        )
+
+    def test_unknown_core_paths_never_reach_the_focused_path(self):
+        for unknown in (
+            "packages/padiem-ai-core/padiem_ai_core/__init__.py",
+            "packages/padiem-ai-core/tests/conftest.py",
+            "packages/padiem-ai-core/tests/nested/test_helper.py",
+            "packages/padiem-ai-core/pyproject.toml",
+            "packages/padiem-ai-core-extra/padiem_ai_core/a.py",
+        ):
+            with self.subTest(unknown=unknown):
+                self.assertEqual(module.impact_scope([file(unknown)]), module.FULL)
+        for invalid in (
+            file("packages/padiem-ai-core/padiem_ai_core/workspace_storage.py", "removed"),
+            file("packages/padiem-ai-core/padiem_ai_core/workspace_storage.py", "renamed"),
+            file("packages/padiem-ai-core/padiem_ai_core/../padiem_ai_core/contracts.py"),
+        ):
+            with self.subTest(invalid=invalid):
+                self.assertEqual(module.impact_scope([invalid]), module.FULL)
 
 
     def test_static_js_and_css_skip_core_and_worker_probes(self):

@@ -11,6 +11,7 @@ a B62 in-memory map is permitted. The broker response is *not* an install ACK.
 """
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 import re
 from typing import Any
@@ -21,6 +22,14 @@ from .request_telemetry import emit_stage_event
 OWNER_PENDING_BROKER_PRIVATE_RPC_EXPORTED = False
 OWNER_PENDING_BROKER_PRODUCTION_ENABLED = False
 OWNER_PENDING_BROKER_HTTP_MOUNTED = False
+
+#: Bound for the canonical Broker Durable Object private RPCs on the owner
+#: approval path. A stalled Durable Object must fail closed with one of this
+#: route's existing bounded codes; an unbounded await made the whole owner
+#: request hang with NO completion log and NO stage event at all, so the PC
+#: only ever saw a client-side credential timeout. The bound stays well
+#: inside the Broker's 60s gateway lease.
+BROKER_PRIVATE_RPC_TIMEOUT_SECONDS = 20.0
 
 _REF = re.compile(r"^link\.[0-9a-f]{32}$")
 _DEVICE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+\-]{0,255}$")
@@ -89,12 +98,15 @@ class CanonicalBrokerOwnerPendingPcPort:
             ):
                 raise OwnerPcPrivateRpcDenied("pending_pc_identity_scope_invalid")
             phase = "broker_reserve"
-            raw_response = await self._broker.reserve_pending_pc_owner_intent({
-                "request_ref": request_ref,
-                "owner_subject_ref": self._owner.subject.subject_id,
-                "account_ref": scope["account_ref"],
-                "workspace_ref": scope["workspace_ref"],
-            })
+            raw_response = await asyncio.wait_for(
+                self._broker.reserve_pending_pc_owner_intent({
+                    "request_ref": request_ref,
+                    "owner_subject_ref": self._owner.subject.subject_id,
+                    "account_ref": scope["account_ref"],
+                    "workspace_ref": scope["workspace_ref"],
+                }),
+                timeout=BROKER_PRIVATE_RPC_TIMEOUT_SECONDS,
+            )
         except Exception:
             emit_stage_event(stage="pc_owner." + phase, outcome="error",
                              duration_ms=0, code=phase + "_unavailable")
@@ -155,12 +167,15 @@ class CanonicalBrokerOwnerPendingPcPort:
         ):
             raise OwnerPcPrivateRpcDenied("pending_pc_delivery_invalid")
         try:
-            raw_response = await self._broker.deliver_pending_pc_link({
-                "request_ref": request_ref,
-                "device_id": device_id,
-                "challenge_id": challenge_id,
-                "pairing_code": pairing_code,
-            })
+            raw_response = await asyncio.wait_for(
+                self._broker.deliver_pending_pc_link({
+                    "request_ref": request_ref,
+                    "device_id": device_id,
+                    "challenge_id": challenge_id,
+                    "pairing_code": pairing_code,
+                }),
+                timeout=BROKER_PRIVATE_RPC_TIMEOUT_SECONDS,
+            )
         except Exception:
             # One-time Broker slot may have been consumed; do not retry.
             emit_stage_event(stage="pc_owner.broker_delivery", outcome="error",

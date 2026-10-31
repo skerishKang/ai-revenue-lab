@@ -29,7 +29,7 @@
 
 ## 확정된 제품·개발 경계
 
-1. **현재 김범신 CGI 최종 PDF는 기존 Sol 6.1에서 출발한, 인증된 동일 양식/렌더러만 사용한다.** 1–3개 품목 단일 A4가 현재 독립 검증된 Sol 네이티브 범위다. 4개 이상은 [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839)에서 그 **동일한 Sol 구현**을 확장·재인증한다. GLM 5.3의 비교본, 임의 HTML/브라우저 인쇄 양식 또는 모델 생성 PDF는 CGI 최종본의 대체 경로가 아니다.
+1. **현재 고객A CGI 최종 PDF는 기존 Sol 6.1에서 출발한, 인증된 동일 양식/렌더러만 사용한다.** 1–3개 품목 단일 A4가 현재 독립 검증된 Sol 네이티브 범위다. 4개 이상은 [#3839](https://github.com/skerishKang/ai-revenue-lab/issues/3839)에서 그 **동일한 Sol 구현**을 확장·재인증한다. GLM 5.3의 비교본, 임의 HTML/브라우저 인쇄 양식 또는 모델 생성 PDF는 CGI 최종본의 대체 경로가 아니다.
 2. [#3542](https://github.com/skerishKang/ai-revenue-lab/issues/3542): **신규로 승인된 고객 양식의 최초 분석·초기 양식 엔지니어링을 당분간 Sol 6.1로 수행**한다. 범용 자동분석기 구축 자체는 보류한다. 최초 분석으로 나온 `ANALYZED` 후보는 PDF 재현·인증([#3595](https://github.com/skerishKang/ai-revenue-lab/issues/3595)) 없이 반복 실행할 수 없다. 현재 CGI 원본을 다시 분석할 필요는 없다.
 3. 견적 생성마다 Sol/B14에 PDF를 다시 그리라고 호출하지 않는다. 완전한 구조화 입력은 모델 호출 없이 진행하고, 자유문장 입력의 **새 사실 추출**만 사용자가 명시적으로 선택한 B14 모델이 맡는다. **QuoteCore만 금액·세금을 계산**하며 승인된 코드가 결정적으로 PDF를 만든다. 사용자 모델 임의 교체/자동 fallback 없음.
 4. [#3586](https://github.com/skerishKang/ai-revenue-lab/issues/3586)의 **재사용 양식 등록**은 XLSX 현재 허용, XLS/HWP 거부, HWPX 추후 검토. 반면 [#3884](https://github.com/skerishKang/ai-revenue-lab/issues/3884)의 **고객 원본 비공개 보관** 및 일반 PDF/DOCX/이미지 **견적 사실 추출**은 별도 형식 정책이다. 보관에 성공했다고 양식 인증이 되는 것은 아니다.

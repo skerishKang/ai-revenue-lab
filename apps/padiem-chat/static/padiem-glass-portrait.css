@@ -391,9 +391,14 @@ html[data-theme="padiem-glass"] .glass-variant-option:focus-visible {
   /* The standalone views (Automation, Connectors, Calendar, Library) put their
    * header and tagline straight on the page, not on a card, so that text was
    * read against the picture too. They take the same sheet the Chat
-   * conversation already takes on a narrow window. */
+   * conversation already takes on a narrow window.
+   * #5028: one opaque sheet for the whole page family. Meeting and Library
+   * already went opaque (#5676/#5677) because the translucent sheet composited
+   * with the body gradient into a different frame; a 90% sheet on Automation
+   * and Connectors kept that split alive after the portrait went dark (#5686).
+   * The value is the shared meeting/library page colour. */
   html[data-theme="padiem-glass"] .standalone-view {
-    background: rgba(242, 245, 247, .90);
+    background: #f2f5f7;
     border-radius: 24px;
   }
 }

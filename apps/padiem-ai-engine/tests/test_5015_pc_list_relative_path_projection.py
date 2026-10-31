@@ -50,29 +50,39 @@ async def _no_sleep(_seconds: float) -> None:
     return None
 
 
-def _install_wire(monkeypatch, output: str) -> None:
+def _install_wire(monkeypatch, output: str, *, kind: str = "command") -> None:
+    termination = "exited" if kind == "read" else "no_exit_code"
+    exit_code = 0 if kind == "read" else None
+    encoded = output.encode("utf-8")
+
     async def fake_call(**kwargs):
         mode = kwargs["mode"]
         if mode == "dispatch":
+            assert kwargs["payload"]["op"] == (
+                "read" if kind == "read" else "list"
+            )
             return {
                 "dispatch": {
-                    "run_id": RUN_ID, "kind": "command", "dispatch_id": DISPATCH_ID,
+                    "run_id": RUN_ID, "kind": kind, "dispatch_id": DISPATCH_ID,
                 }
             }
         if mode == "command_status":
             return {
                 "dispatch": {
-                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID, "state": "done",
+                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                    "kind": kind, "state": "done",
                 }
             }
         if mode == "result":
             return {
                 "dispatch": {
-                    "dispatch_id": DISPATCH_ID,
+                    "dispatch_id": DISPATCH_ID, "run_id": RUN_ID, "kind": kind,
                     "output": output,
                     "result_sha256": "a" * 64,
-                    "termination": "no_exit_code",
-                    "exit_code": None,
+                    "content_sha256": "a" * 64,
+                    "content_bytes": len(encoded),
+                    "termination": termination,
+                    "exit_code": exit_code,
                 }
             }
         raise AssertionError("unexpected mode " + str(mode))
@@ -156,7 +166,7 @@ def test_projected_path_is_the_value_the_read_step_submits(monkeypatch) -> None:
     target = listed["entries"][0]["relative_path"]
 
     assert target != "."
-    _install_wire(monkeypatch, "meshcentral trial content")
+    _install_wire(monkeypatch, "meshcentral trial content", kind="read")
     read = asyncio.run(
         _handler("read", PC_READ_FILE_TOOL_ID)({"path": target})
     )
@@ -199,12 +209,43 @@ def test_helper_never_stitches_a_separator_into_a_nested_name() -> None:
 
 
 @pytest.mark.parametrize("list_path", ["./notes", "notes/../other", "notes//sub",
-                                       "notes/", "/etc", "C:/x"])
+                                       "notes/", "/etc", "E:x", "C://x"])
 def test_normalizer_refuses_the_shapes_the_chat_endpoint_refuses(list_path: str) -> None:
     # A trailing or doubled separator is an empty segment, which the Chat
     # endpoint refuses as well: the projection stays exactly as strict as its
     # consumer instead of inventing a path that would be rejected later.
     assert driver._pc_list_folder_prefix(list_path) is None
+
+
+@pytest.mark.parametrize("list_path,expected", [
+    ("C:", "C:/"),
+    ("C:/", "C:/"),
+    ("c:/", "C:/"),
+    ("C:\\", "C:/"),
+    ("C:/Users", "C:/Users/"),
+    ("C:\\Users\\견적", "C:/Users/견적/"),
+])
+def test_a_granted_drive_is_a_root_shape_not_a_refused_one(
+    list_path: str, expected: str
+) -> None:
+    """Since #5573 a whole drive is a granted root, so `C:` and `C:\\Users` are
+    shapes this layer must accept; the grant check and the Chat endpoint still
+    refuse a drive the account does not hold.
+    """
+    assert driver._pc_list_folder_prefix(list_path, ("C:", "D:")) == expected
+
+
+def test_a_grant_check_is_what_refuses_an_unheld_drive() -> None:
+    # Without the grant list this layer refuses every drive shape, exactly as it
+    # did before #5573: accepting a volume is the endpoint's call, never this
+    # projection's guess.
+    assert driver._pc_list_folder_prefix("C:/x") is None
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "C:"}]}
+    ) is None
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "E:"}]}
+    ) == "E:/x"
 
 
 def test_a_refused_folder_shape_gets_no_invented_path() -> None:
@@ -236,6 +277,11 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
     )
 
     async def select_step(*, context, compiled_profile, observations):
+        if not observations:
+            return {
+                "action": "tool", "tool_id": PC_LIST_FILES_TOOL_ID,
+                "arguments": {"path": ".", "intent": "read"},
+            }
         assert len(observations) == 1
         rows = json.loads(observations[0]["output"]["output"])["entries"]
         row = next(r for r in rows if r.get("PSIsContainer") is False)
@@ -244,18 +290,120 @@ def test_real_wire_listing_feeds_the_step_driver_read_selection(monkeypatch) -> 
             "arguments": {"path": row["relative_path"]},
         }
 
+    # #5573/#5574: the Chat lane's list+read ceiling is not a grant; the same
+    # driver instance first takes the model's read-intent listing step, then
+    # the read step over its observation.
+    driver = StructuredPCQueryStepDriver(
+        select_step=select_step,
+        allowed_tool_ids=frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID}),
+    )
+    first = asyncio.run(driver.next_step(
+        AgentStepContext.with_results(
+            run_id=RUN_ID,
+            step_index=1,
+            input_text="폴더 목록을 보고 TXT를 읽어줘",
+            results=(),
+        ),
+        object(),
+    ))
+    assert first.invocation.tool_id == PC_LIST_FILES_TOOL_ID
+
     context = AgentStepContext.with_results(
         run_id=RUN_ID,
         step_index=2,
         input_text="폴더 목록을 보고 TXT를 읽어줘",
         results=(observed,),
     )
-
-    step = asyncio.run(StructuredPCQueryStepDriver(select_step=select_step).next_step(
-        context,
-        object(),
-    ))
+    step = asyncio.run(driver.next_step(context, object()))
 
     assert step.invocation.arguments == {
         "path": "meshcentral-padiem-trial.txt"
     }
+
+
+@pytest.mark.parametrize("path,roots,expected", [
+    ("C:/APP/data/sub", ["c:\\app\\data\\"], "sub"),
+    ("C:/app/data/", ["C:/app/data"], "."),
+    ("C:/app/data/sub/file.txt", ["C:/app", "C:/app/data/"], "sub/file.txt"),
+    ("C:/app/database/x", ["C:/app/data"], "C:/app/database/x"),
+    ("C:/other/x", ["C:/app/data"], "C:/other/x"),
+    ("C:/app/data/../outside", ["C:/app/data"], "../outside"),
+    ("relative/sub", ["C:/app/data"], "relative/sub"),
+    ("C:/app/data/sub", None, "C:/app/data/sub"),
+    ("C:/app/data/sub", [None, 4, ""], "C:/app/data/sub"),
+    ("//server/share/root/sub", ["\\\\server\\share\\root"], "sub"),
+])
+def test_verified_root_normalization_preserves_relative_path_guard(path, roots, expected):
+    normalized = driver._pc_path_against_verified_roots(path, {"roots": roots})
+    assert normalized == expected
+    if expected.startswith("../"):
+        # A path that climbs out of the grant never passes the shape guard.
+        assert driver._pc_list_folder_prefix(normalized) is None
+    if normalized.startswith("C:") and normalized != "C:":
+        # Since #5573 a whole drive is a granted root, so a drive-shaped string is
+        # no longer refused by shape. What refuses it is the grant check: none of
+        # these roots is a bare drive, so nothing here can canonicalise.
+        assert driver._pc_path_against_granted_drive(
+            normalized, {"roots": [{"label": row} for row in (roots or []) if row]}
+        ) is None
+
+
+def test_a_granted_drive_is_a_root_in_every_spelling(monkeypatch) -> None:
+    """``C:``, ``C:\\`` and ``C:\\Users`` all address the drive that was granted.
+
+    The operational failure was upstream of any dispatch: the Engine called
+    ``claw.pc.list_files`` correctly and its own argument guard refused the path as
+    "not relative", so the PC was never asked. The listing rows then have to carry
+    the drive with them, because an account may hold several volumes.
+    """
+    seen = {}
+
+    async def fake_call(**kwargs):
+        mode = kwargs["mode"]
+        if mode == "context":
+            return {"ok": True, "roots": [{"label": "C:"}, {"label": "D:"}],
+                    "tools": [], "device": {"status": "configured"}}
+        if mode == "dispatch":
+            seen["path"] = kwargs["payload"]["path"]
+            seen["op"] = kwargs["payload"]["op"]
+            return {"dispatch": {"run_id": RUN_ID, "kind": "command",
+                                 "dispatch_id": DISPATCH_ID}}
+        if mode == "command_status":
+            return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                                 "kind": "command", "state": "done"}}
+        if mode == "result":
+            body = WIRE_ROWS.encode("utf-8")
+            return {"dispatch": {"dispatch_id": DISPATCH_ID, "run_id": RUN_ID,
+                                 "kind": "command", "output": WIRE_ROWS,
+                                 "result_sha256": "a" * 64,
+                                 "content_sha256": "a" * 64, "content_bytes": len(body),
+                                 "termination": "no_exit_code", "exit_code": None}}
+        raise AssertionError("unexpected mode " + str(mode))
+
+    monkeypatch.setattr(driver, "_signed_files_call", fake_call)
+    monkeypatch.setattr(asyncio, "sleep", _no_sleep)
+    handler = _handler("list", PC_LIST_FILES_TOOL_ID)
+
+    for sent, expected in (
+        ("C:", "C:"), ("C:\\", "C:"), ("C:/", "C:"),
+        ("C:\\Users", "C:/Users"), ("C:/Users/견적", "C:/Users/견적"),
+    ):
+        result = asyncio.run(handler({"path": sent}))
+        assert seen["path"] == expected, (sent, seen)
+        assert result["execution_confirmed"] is True
+
+    # A volume this account does not hold is not canonicalised, so the endpoint -
+    # the authority on grants - is the one that refuses it.
+    assert driver._pc_path_against_granted_drive(
+        "E:\\x", {"roots": [{"label": "C:"}, {"label": "D:"}]}
+    ) is None
+
+    listed = json.loads(result["output"]) if "output" in result else None
+    assert listed is not None
+    # Rows listed from a drive keep the drive, so a follow-up read cannot have to
+    # guess which of the account's volumes was meant. The last call in the loop
+    # above listed C:/Users/견적, and the third row has no Name to bind.
+    assert [row.get("relative_path") for row in listed["entries"][:2]] == [
+        "C:/Users/견적/meshcentral-padiem-trial.txt", "C:/Users/견적/notes",
+    ]
+    assert "relative_path" not in listed["entries"][2]

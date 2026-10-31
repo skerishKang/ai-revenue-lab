@@ -16,6 +16,7 @@ from __future__ import annotations
 from hashlib import sha256
 from pathlib import Path
 from types import SimpleNamespace
+import io
 import os
 import sys
 import tempfile
@@ -318,6 +319,68 @@ class MeshCentralCliPortTests(unittest.TestCase):
                 node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=45,
                 max_bytes=768,
             )
+        self.assertEqual(os.listdir(self.temp.name), [])
+
+    # -- the deadline this port validates (2026-10-30 regression) -------------
+
+    def test_a_missing_deadline_is_refused_before_the_client_runs(self):
+        self.staged = b"never-staged"
+        with self.assertRaises(MeshCentralReadRefused) as caught:
+            self.port.read_bytes(
+                node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=None,
+            )
+        self.assertIn("timeout_seconds", str(caught.exception))
+        self.assertEqual(self.argv_seen, [], "the official client must not run")
+        self.assertEqual(os.listdir(self.temp.name), [])
+
+    def test_a_named_deadline_passes_the_same_guard(self):
+        self.staged = b"deadline-staged"
+        raw = self.port.read_bytes(
+            node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=45,
+        )
+        self.assertEqual(raw, b"deadline-staged")
+
+    def test_the_monitored_download_keeps_the_childs_only_refusal_reason(self):
+        class _Child:
+            def __init__(self):
+                self.stdin = io.StringIO()
+                self.stderr = io.StringIO(
+                    "Connecting...\nWaiting for Agent...\n"
+                    "Unable to download file: not connected\n"
+                )
+                self.returncode = 9
+                self.polls = 0
+
+            def poll(self):
+                self.polls += 1
+                return None if self.polls < 2 else self.returncode
+
+            def terminate(self):
+                pass
+
+            def wait(self, timeout=None):
+                return self.returncode
+
+            def kill(self):
+                pass
+
+        port = MeshCentralCliFileReadPort(
+            command_runner=lambda argv, **kw: SimpleNamespace(returncode=0),
+            meshctrl_js=r"C:\meshcentral-test\node_modules\meshcentral\meshctrl.js",
+            login_user="padiemadmin",
+            password_provider=lambda: "s3cret-at-call-time",
+            url="wss://127.0.0.1:4443",
+            work_dir=self.temp.name,
+            popen_factory=lambda argv, **kw: _Child(),
+        )
+        with self.assertRaises(MeshCentralReadRefused) as caught:
+            port.read_bytes(
+                node_ref=NODE_REF, file_path=FILE_PATH, timeout_seconds=30,
+            )
+        message = str(caught.exception)
+        self.assertIn("refused the private read", message)
+        self.assertIn("not connected", message)
+        self.assertNotIn("s3cret-at-call-time", message)
         self.assertEqual(os.listdir(self.temp.name), [])
 
 

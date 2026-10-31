@@ -11,7 +11,7 @@ from datetime import datetime, timedelta, timezone
 
 import httpx
 
-from app.b14_client import B14Client
+from app.b14_client import B14Client, PADIEM_IDENTITY_INSTRUCTION
 from app.config import Settings
 from padiem_ai_core.dispatch_preinstruction import PREINSTRUCTION_VERSION
 
@@ -186,3 +186,24 @@ def test_streaming_dispatch_carries_the_same_trusted_sample_as_completed():
     system = systems(binding.calls[0])[0]
     assert TRUSTED_KST_TEXT in system
     assert system.index(TRUSTED_KST_TEXT) < system.index("PROJECT CONTEXT")
+
+
+def test_b66_quote_dispatch_carries_no_chat_product_identity():
+    binding = RecordingBinding()
+    payload = dispatch_quote(quote_client(binding, wall_clock=lambda: DISPATCH_SAMPLE), binding)
+    system = systems(payload)[0]
+    assert PADIEM_IDENTITY_INSTRUCTION not in system
+    assert "당신은" not in system
+
+
+def test_b66_dialogue_dispatch_keeps_only_the_b66_identity():
+    binding = RecordingBinding("안녕하세요, 견적을 도와드리겠습니다.")
+    asyncio.run(B14Client(settings(), service_transport=binding).complete_registered_b66_chat_model(
+        [{"role": "user", "content": "안녕"}], model=WIRE_MODEL
+    ))
+    assert len(binding.calls) == 1, "the in-memory binding must be the only responder"
+    system = systems(binding.calls[0])[0]
+    assert "PADIEM B66 AI" in system
+    assert "기반 모델명" in system
+    assert PADIEM_IDENTITY_INSTRUCTION not in system
+    assert "파디엠챗" not in system

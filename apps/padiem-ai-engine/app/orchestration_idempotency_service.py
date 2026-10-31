@@ -22,6 +22,7 @@ from app.orchestration_identity_service import IdentityBoundOrchestrationEngineS
 from app.orchestration_service import (
     _parse_orchestration_options,
     _validated_pc_tool_arguments,
+    _validated_pc_declared_plan,
 )
 from app.service import build_execution_request
 
@@ -125,8 +126,22 @@ def _initial_execution_fingerprint(payload: Any) -> str | None:
         return None
     try:
         target = _validated_pc_tool_arguments(payload)
+        declared_plan = _validated_pc_declared_plan(payload)
     except Exception:
         return None
+    from app.pc_tools_turn import parse_pc_tools
+    try:
+        pc_tools = parse_pc_tools(payload)
+    except Exception:
+        return None
+    if pc_tools is not None:
+        logical = request_fingerprint({"logical_execution": logical, "pc_tools": pc_tools})
+    if declared_plan is not None:
+        # A different requested scope must never replay another run's result.
+        # Omission keeps the exact legacy fingerprint.
+        logical = request_fingerprint(
+            {"logical_execution": logical, "pc_declared_plan": declared_plan}
+        )
     if target is None:
         return logical
     target_digest = pc_tool_target_fingerprint(target)

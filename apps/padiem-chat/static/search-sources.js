@@ -252,6 +252,12 @@
       host.textContent = url.hostname;
 
       copy.append(title, host);
+      if (typeof item.retrieved_at === "string" && item.retrieved_at.trim()) {
+        const retrieved = document.createElement("small");
+        retrieved.className = "answer-source-retrieved-at";
+        retrieved.textContent = item.retrieved_at.trim();
+        copy.append(retrieved);
+      }
       anchor.append(number, copy);
       row.appendChild(anchor);
       list.appendChild(row);
@@ -273,6 +279,14 @@
       renderSources(article, evidence, research);
     }, attempt === 0 ? 0 : 25);
   }
+
+  // #4469: the bounded renderer is the single display authority for public
+  // search evidence. An automatic search on the P01 lane returns its evidence
+  // in the same contract, so the same renderer shows it.
+  window.PadiemSearchSources = Object.freeze({
+    render: renderSources,
+    isActive: () => activeTool === "web_search",
+  });
 
   window.fetch = async (inputValue, init) => {
     const isChat = chatRequest(inputValue) || streamingChatRequest(inputValue);
@@ -307,6 +321,11 @@
     }
 
     try {
+      // #5559: the web search really runs for this request, so the status
+      // card can say so. The label is released as soon as the request ends.
+      if (toolRequest && article) {
+        window.PadiemChatLifecycle?.setTaskHint?.(article, "searching");
+      }
       const response = await nativeFetch(nextInput, nextInit);
       if (toolRequest) {
         if (!response.ok) {
@@ -326,6 +345,16 @@
             && Array.isArray(data.evidence);
           if (groundedSearch) scheduleSources(article, data.evidence);
           if (deepResearch) scheduleSources(article, data.evidence, data.research || null);
+          // #5559: the tool and the sources really ran, so the turn records
+          // them. A request without a search tool never claims one.
+          if (article) {
+            if (groundedSearch) window.PadiemChatLifecycle?.recordTaskEvent?.(article, "web_search");
+            if (deepResearch) window.PadiemChatLifecycle?.recordTaskEvent?.(article, "deep_research");
+            if ((groundedSearch || deepResearch) && Array.isArray(data.evidence) && data.evidence.length) {
+              article.dataset.taskEvidence = "true";
+              window.PadiemChatLifecycle?.recordTaskEvent?.(article, "evidence");
+            }
+          }
           if (adaptedFromStream) {
             const publicSse = completedJsonAsPublicSse(data);
             if (publicSse) return publicSse;
@@ -339,6 +368,7 @@
     } finally {
       if (toolRequest) {
         toolInFlight = null;
+        if (article) window.PadiemChatLifecycle?.setTaskHint?.(article, null);
         syncControls();
       }
     }

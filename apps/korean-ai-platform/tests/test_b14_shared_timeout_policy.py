@@ -20,7 +20,7 @@ from app.pilot.b14_timeout_policy import (
 )
 from app.pilot.errors import UpstreamTimeout
 
-FIXED = (600.0, 600.0, 20.0, 10.0)
+FIXED = (600.0, 600.0, 120.0, 60.0)
 
 
 def values(timeout):

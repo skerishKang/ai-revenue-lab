@@ -28,8 +28,10 @@ from starlette.testclient import TestClient
 from app.app_factory import create_app
 from app.auth import SESSION_COOKIE, create_session_token
 from app.config import Settings
+from app.control_plane_identity import IdentityBridgeError
 from app.control_plane_identity import PADIEM_CHAT_PRODUCT_ID
 from app.control_plane_identity_shadow import IdentityShadowRecord
+from app.workspace_storage import WorkspaceStorageError
 from kagent.claw_memory import (
     ClawAlert,
     ClawAlertKind,
@@ -130,29 +132,46 @@ class _InMemoryInboxStore:
         self.tasks: dict[str, ClawFollowupTask] = {}
         self.alerts: dict[str, ClawAlert] = {}
         self.status_writes = 0
+        self.list_scopes: list[tuple[str, str]] = []
+        self.read_scopes: list[tuple[str, str]] = []
 
-    async def list_tasks(self, workspace_id, *, limit=256):
-        rows = [t for t in self.tasks.values() if t.workspace_id == workspace_id]
+    async def list_tasks(self, workspace_id, *, member_id, limit=256):
+        # Mirrors the durable store after #2952 follow-up: the owner predicate is
+        # part of the read itself, so a caller cannot express a tenant-wide scan.
+        self.list_scopes.append(("tasks", member_id))
+        rows = [
+            t
+            for t in self.tasks.values()
+            if t.workspace_id == workspace_id and t.member_id == member_id
+        ]
         rows.sort(key=lambda t: t.created_at, reverse=True)
         return tuple(rows[: max(1, min(int(limit), 256))])
 
-    async def list_alerts(self, workspace_id, *, member_id=None, limit=256):
+    async def list_alerts(self, workspace_id, *, member_id, limit=256):
+        self.list_scopes.append(("alerts", member_id))
         rows = [a for a in self.alerts.values() if a.workspace_id == workspace_id]
-        if member_id is not None:
-            rows = [a for a in rows if a.is_visible_to(member_id)]
+        rows = [a for a in rows if a.is_visible_to(member_id)]
         rows.sort(key=lambda a: a.created_at, reverse=True)
         return tuple(rows[: max(1, min(int(limit), 256))])
 
-    async def _get_task_locked(self, task_id, *, workspace_id):
+    async def _get_task_locked(self, task_id, *, workspace_id, member_id):
+        self.read_scopes.append(("task", member_id))
         task = self.tasks.get(task_id)
-        return task if task is not None and task.workspace_id == workspace_id else None
+        if task is None or task.workspace_id != workspace_id:
+            return None
+        return task if task.member_id == member_id else None
 
-    async def _get_alert_locked(self, alert_id, *, workspace_id):
+    async def _get_alert_locked(self, alert_id, *, workspace_id, member_id):
+        self.read_scopes.append(("alert", member_id))
         alert = self.alerts.get(alert_id)
-        return alert if alert is not None and alert.workspace_id == workspace_id else None
+        if alert is None or alert.workspace_id != workspace_id:
+            return None
+        return alert if alert.is_visible_to(member_id) else None
 
-    async def set_task_status(self, task_id, status, *, workspace_id, at=None):
-        task = await self._get_task_locked(task_id, workspace_id=workspace_id)
+    async def set_task_status(self, task_id, status, *, workspace_id, member_id, at=None):
+        task = await self._get_task_locked(
+            task_id, workspace_id=workspace_id, member_id=member_id
+        )
         if task is None:
             raise ClawMemoryError("task not found in workspace")
         self.status_writes += 1
@@ -160,8 +179,10 @@ class _InMemoryInboxStore:
         self.tasks[task_id] = updated
         return updated
 
-    async def set_alert_status(self, alert_id, status, *, workspace_id, at=None):
-        alert = await self._get_alert_locked(alert_id, workspace_id=workspace_id)
+    async def set_alert_status(self, alert_id, status, *, workspace_id, member_id, at=None):
+        alert = await self._get_alert_locked(
+            alert_id, workspace_id=workspace_id, member_id=member_id
+        )
         if alert is None:
             raise ClawMemoryError("alert not found in workspace")
         self.status_writes += 1
@@ -338,6 +359,8 @@ def test_tasks_from_another_member_are_not_listed() -> None:
     assert response.status_code == 200
     ids = [item["task_id"] for item in response.json()["items"]]
     assert ids == ["mine"]
+    # The read itself carries the owner: a tenant-wide scan is never issued.
+    assert store.list_scopes == [("tasks", SIGNED_IN_USER_ID)]
 
 
 def test_another_members_task_cannot_be_patched() -> None:
@@ -348,6 +371,8 @@ def test_another_members_task_cannot_be_patched() -> None:
     response = client.patch(f"{LIST_TASKS}/theirs", json={"status": "done"})
     assert response.status_code == 404
     assert store.status_writes == 0
+    # The store was asked for that member's row only, never for the tenant's.
+    assert store.read_scopes == [("task", SIGNED_IN_USER_ID)]
 
 
 def test_alerts_are_member_scoped_by_visibility() -> None:
@@ -414,6 +439,57 @@ def test_store_read_failure_never_returns_a_success_shape() -> None:
     assert response.json()["ok"] is False
     assert response.json()["error"]["code"] == "inbox_read_failed"
     assert "items" not in response.json()
+
+
+@pytest.mark.parametrize("kind", ["tasks", "alerts"])
+def test_d1_read_failure_reports_query_failed(kind: str) -> None:
+    store = MagicMock()
+    setattr(store, f"list_{kind}", AsyncMock(side_effect=WorkspaceStorageError("d1 read failed")))
+    client = _client(store)
+    response = client.get(f"/api/claw/inbox/{kind}")
+    assert response.status_code == 503
+    assert response.json()["ok"] is False
+    assert response.json()["error"]["code"] == "inbox_query_failed"
+    assert "items" not in response.json()
+
+
+@pytest.mark.parametrize("kind", ["tasks", "alerts"])
+def test_client_side_value_error_is_rejected_as_identifier_rejected(kind: str) -> None:
+    store = MagicMock()
+    setattr(store, f"list_{kind}", AsyncMock(side_effect=ValueError("bad id")))
+    client = _client(store)
+    response = client.get(f"/api/claw/inbox/{kind}")
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "identifier_rejected"
+
+
+def test_unresolvable_workspace_is_reported_as_workspace_unresolved() -> None:
+    store = MagicMock()
+    store.list_tasks = AsyncMock(side_effect=AssertionError("store must not be touched"))
+    store.list_alerts = AsyncMock(side_effect=AssertionError("store must not be touched"))
+    settings = _google_settings()
+    app = create_app(settings=settings, history_store=MagicMock(), claw_task_alert_store=store)
+    app.state.identity_shadow_store = _make_identity_shadow_store()
+    failing_authority = MagicMock()
+    failing_authority.resolve_auth_session = AsyncMock(
+        side_effect=IdentityBridgeError(
+            503, "control_plane_session_unavailable", "Canonical auth session is unavailable."
+        )
+    )
+    app.state.control_plane_identity_authority = failing_authority
+    client = TestClient(app, base_url="https://chat.example.test")
+    client.cookies.set(
+        SESSION_COOKIE,
+        create_session_token(settings, SIGNED_IN_USER_ID),
+        domain="chat.example.test",
+        path="/",
+    )
+    response = client.get(LIST_TASKS)
+    assert response.status_code == 503
+    assert response.json()["ok"] is False
+    assert response.json()["error"]["code"] == "workspace_unresolved"
+    store.list_tasks.assert_not_awaited()
+    store.list_alerts.assert_not_awaited()
 
 
 # ── 7. payload validation ──────────────────────────────────────────────────

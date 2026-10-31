@@ -115,7 +115,7 @@ class MemoryProjectFileStore:
                 return f
         return None
 
-    async def create_file(self, user_id, project_id, name, media_type, text, *, source_media_type=None):
+    async def create_file(self, user_id, project_id, name, media_type, text, *, source_media_type=None, country="kr"):
         rec = ProjectFileRecord(
             id="file_" + len(self.files).to_bytes(32, "big").hex(),
             project_id=project_id,
@@ -235,6 +235,45 @@ async def test_text_project_file_create_unchanged():
         assert data["name"] == "메모.txt"
     finally:
         await client.aclose()
+
+
+@pytest.mark.asyncio
+async def test_project_file_detail_returns_text_only_to_owning_project_member():
+    store = MemoryProjectFileStore()
+    history = MemoryProjectStore()
+    owner = await history.add_user("owner-file-read")
+    other = await history.add_user("other-file-read")
+    project = await history.create_project(owner.id, "회의록", "")
+    app = create_app(settings(), history_store=history, project_file_store=store)
+    client = await client_with_session(app, owner)
+    other_client = await client_with_session(app, other)
+    try:
+        created = await client.post(f"/api/projects/{project.id}/files", json={
+            "name": "회의.txt", "media_type": "text/plain", "text": "비공개 회의 본문",
+        })
+        assert created.status_code == 201
+        file_id = "file_" + "a" * 32
+        store.files[(owner.id, project.id)] = [ProjectFileRecord(
+            id=file_id, project_id=project.id, name="회의.txt", media_type="text/plain",
+            content_text="비공개 회의 본문", content_chars=len("비공개 회의 본문"),
+        )]
+
+        listing = await client.get(f"/api/projects/{project.id}/files")
+        assert listing.status_code == 200
+        assert "content" not in listing.json()["files"][0]
+        assert "비공개 회의 본문" not in listing.text
+
+        detail = await client.get(f"/api/projects/{project.id}/files/{file_id}")
+        assert detail.status_code == 200
+        assert detail.json()["file"]["content"] == "비공개 회의 본문"
+        assert detail.json()["file"]["name"] == "회의.txt"
+
+        foreign = await other_client.get(f"/api/projects/{project.id}/files/{file_id}")
+        assert foreign.status_code == 404
+        assert "비공개 회의 본문" not in foreign.text
+    finally:
+        await client.aclose()
+        await other_client.aclose()
 
 
 def _make_empty_pdf_base64() -> str:

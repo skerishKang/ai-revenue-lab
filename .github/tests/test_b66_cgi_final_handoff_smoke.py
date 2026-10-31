@@ -683,6 +683,214 @@ class ClawOneShotPreNetworkTests(unittest.TestCase):
         self.assertNotIn('page.on("request", observe_request)', owner)
         self.assertNotIn("assistant-message:last-of-type .typing", owner)
 
+    def test_claw_general_model_is_bound_before_the_single_dispatch(self):
+        # The general Claw composer is model-free and its explicit-ID panel is
+        # tier-gated and collapsed. Bind the request-builder field directly,
+        # then require it to still hold the exact ID at submit time.
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        attached = owner.index('model_input.wait_for(state="attached", timeout=15000)')
+        bound = owner.index(
+            'if model_input.input_value() != CLAW_OWNER_SELECTED_MODEL_ID:', attached
+        )
+        click = owner.index('page.locator("#sendButton").click()', bound)
+        self.assertLess(attached, bound)
+        self.assertLess(bound, click)
+        self.assertIn("node.dispatchEvent(new Event('input', { bubbles: true }))", owner)
+        self.assertNotIn("details.claw-model-advanced", owner)
+        self.assertNotIn("#clawVerifiedModelSelect", owner)
+
+    def test_claw_runs_live_then_evidence_with_bounded_dispatch_each(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        self.assertEqual(module.CLAW_LANES, ("live", "evidence"))
+        self.assertEqual(module.MAX_CLAW_MODEL_DISPATCHES, 2)
+        self.assertEqual(module.CLAW_INTER_LANE_PAUSE_SECONDS, 65)
+        self.assertIn("for index, lane in enumerate(CLAW_LANES):", owner)
+        self.assertIn("time.sleep(CLAW_INTER_LANE_PAUSE_SECONDS)", owner)
+        self.assertIn('lane_state["lane"] = lane', owner)
+        self.assertIn("guard.reset_lane()", owner)
+        self.assertIn('if lane == "evidence":', owner)
+        self.assertIn("route.fulfill(", owner)
+        self.assertIn("parsed.path == CLAW_CAPABILITIES_PATH", owner)
+        self.assertIn("continue_headers={", owner)
+        # The evidence header must never be installed context-wide: the live
+        # route refuses live+evidence together and the canary must not turn
+        # that deliberate 422 into a false failure.
+        self.assertNotIn("extra_http_headers={CLAW_EVIDENCE_REQUEST_HEADER", owner)
+        # Playwright cannot read a still-streamed SSE body via response.text();
+        # the live lane must read the page-side clone of the exact bytes.
+        self.assertNotIn("_parse_claw_live_sse(response.text())", owner)
+        self.assertIn("context.add_init_script(CLAW_SSE_CAPTURE_JS)", owner)
+        self.assertLess(
+            owner.index("context.add_init_script(CLAW_SSE_CAPTURE_JS)"),
+            owner.index("page.goto(CLAW_TARGET_URL"),
+        )
+        self.assertIn('stage = "live_stream_read"', owner)
+        self.assertIn("() => window.__clawSse.text", owner)
+        self.assertIn("claw_live_stream_incomplete", owner)
+        self.assertIn("CLAW_LIVE_CAPTURE_FRAMES=", owner)
+        # The stream must be read before the UI lifecycle wait: an unfinished
+        # stream and a frontend projection defect then fail differently.
+        self.assertLess(
+            owner.index('stage = "live_stream_read"'),
+            owner.index('stage = "assistant_terminal_lifecycle_'),
+        )
+        self.assertIn("claw_live_history_invalid", owner)
+        self.assertTrue(module.CLAW_SSE_CAPTURE_JS.startswith("(() => {"))
+        self.assertIn("response.clone()", module.CLAW_SSE_CAPTURE_JS)
+
+    def test_live_sse_parser_requires_verified_terminal_and_answer(self):
+        def frame(name, payload):
+            return "event: " + name + "\ndata: " + json.dumps(payload) + "\n\n"
+
+        first = {
+            "event_id": "evt_1",
+            "run_id": "run_live",
+            "trace_id": "trace_live",
+            "app_id": "app_live",
+            "kind": "run_started",
+            "sequence": 1,
+            "delivery": "live",
+        }
+        terminal = {**first, "event_id": "evt_2", "kind": "run_completed", "sequence": 2}
+        conversation_id = "chat_" + "c" * 32
+        good = (
+            frame("p01_event", first)
+            + frame("p01_event", terminal)
+            + frame("delta", {"delta": "정상 작동 중입니다."})
+            + frame("done", {"done": True, "conversation_id": conversation_id})
+        )
+        parsed = module._parse_claw_live_sse(good)
+        self.assertEqual(parsed["events"], 2)
+        self.assertEqual(parsed["terminal_kind"], "run_completed")
+        self.assertEqual(parsed["conversation_id"], conversation_id)
+        for body, code in (
+            (frame("p01_event", first) + frame("error", {"error": {"code": "x"}}),
+             "claw_live_error_event"),
+            (frame("p01_event", {**first, "sequence": 2})
+             + frame("p01_event", {**terminal, "sequence": 1})
+             + frame("delta", {"delta": "x"})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_sequence"),
+            (frame("p01_event", first)
+             + frame("p01_event", {**terminal, "kind": "run_failed"})
+             + frame("delta", {"delta": "x"})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_terminal"),
+            (frame("p01_event", first) + frame("p01_event", terminal)
+             + frame("delta", {"delta": "  "})
+             + frame("done", {"done": True, "conversation_id": conversation_id}),
+             "claw_live_answer_missing"),
+            (frame("p01_event", first) + frame("p01_event", terminal)
+             + frame("delta", {"delta": "x"}) + frame("done", {"done": True}),
+             "claw_live_conversation_id"),
+        ):
+            with self.subTest(code=code):
+                with self.assertRaisesRegex(module.SmokeFailure, code):
+                    module._parse_claw_live_sse(body)
+        with self.assertRaisesRegex(module.SmokeFailure, "claw_live_body_guard"):
+            module._parse_claw_live_sse(
+                "event: delta\ndata: " + "x" * (module.CLAW_LIVE_MAX_BODY_BYTES + 1)
+            )
+
+    def test_live_error_frame_prints_only_the_bounded_class(self):
+        first = {
+            "event_id": "evt_1",
+            "run_id": "run_" + "9" * 24,
+            "trace_id": "trace_live",
+            "app_id": "app_live",
+            "kind": "run_started",
+            "sequence": 1,
+            "timestamp_iso": "2026-10-23T00:00:00Z",
+            "delivery": "live",
+        }
+        body = (
+            'event: p01_event\ndata: '
+            + json.dumps(first)
+            + "\n\nevent: error\ndata: "
+            + '{"error": {"code": "engine_execution_failed", '
+            + '"detail": "engine_provider_rate_limited", '
+            + '"message": "provider raw text"}}\n\n'
+        )
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            with self.assertRaisesRegex(module.SmokeFailure, "claw_live_error_event"):
+                module._parse_claw_live_sse(body)
+        output = buffer.getvalue()
+        self.assertIn("CLAW_LIVE_ERROR_CODE=engine_execution_failed", output)
+        self.assertIn("CLAW_LIVE_ERROR_DETAIL=engine_provider_rate_limited", output)
+        self.assertIn("CLAW_LIVE_FRAMES=p01_event,error", output)
+        self.assertIn("CLAW_LIVE_RUN_ID=run_" + "9" * 24, output)
+        self.assertIn("CLAW_LIVE_TRACE_ID=trace_live", output)
+        self.assertNotIn("provider raw text", output)
+
+    def test_live_error_identity_is_dropped_when_unbounded(self):
+        body = (
+            'event: p01_event\ndata: {"run_id": "raw id with spaces", '
+            '"trace_id": "trace id with spaces"}\n\n'
+            'event: error\ndata: {"error": {"code": "engine_execution_failed"}}\n\n'
+        )
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            with self.assertRaisesRegex(module.SmokeFailure, "claw_live_error_event"):
+                module._parse_claw_live_sse(body)
+        output = buffer.getvalue()
+        self.assertIn("CLAW_LIVE_RUN_ID=NONE", output)
+        self.assertIn("CLAW_LIVE_TRACE_ID=NONE", output)
+
+    def test_claw_http_failure_diagnostics_stay_bounded(self):
+        text = SCRIPT.read_text(encoding="utf-8")
+        owner = text[text.index("def run_claw_owner_one_shot("):text.index("\ndef self_test(")]
+        self.assertIn('"CLAW_ERROR_CONTENT_TYPE="', owner)
+        self.assertIn('"CLAW_ERROR_CF_RAY="', owner)
+        self.assertIn('"CLAW_ERROR_BODY_JSON="', owner)
+        self.assertIn('"CLAW_ERROR_BODY_HTML="', owner)
+        self.assertIn('"CLAW_LIVE_REQUEST_HEADER="', owner)
+        self.assertIn('"CLAW_LIVE_EVENTS_AVAILABLE="', owner)
+        # Only structure/status metadata may be printed, never the body.
+        self.assertNotIn("print(error_body", owner)
+        self.assertNotIn("print(error_body)", owner)
+
+    def test_evidence_lane_injects_one_bounded_header_and_resets_per_lane(self):
+        class Route:
+            def __init__(self):
+                self.actions = []
+                self.headers = None
+
+            def continue_(self, headers=None):
+                self.actions.append("network")
+                self.headers = headers
+
+            def abort(self, reason):
+                self.actions.append("abort:" + reason)
+
+        class Request:
+            method = "POST"
+            url = module.CLAW_TARGET_URL.rstrip("/") + module.CLAW_GENERAL_PATH
+            post_data_json = {"model_id": module.CLAW_OWNER_SELECTED_MODEL_ID}
+            headers = {"content-type": "application/json"}
+
+        guard = module._ClawOutboundGuard()
+        route = Route()
+        guard.route_request(
+            route,
+            Request(),
+            continue_headers={module.CLAW_EVIDENCE_REQUEST_HEADER: module.CLAW_EVIDENCE_MARKER},
+        )
+        self.assertEqual(route.actions, ["network"])
+        self.assertEqual(
+            route.headers[module.CLAW_EVIDENCE_REQUEST_HEADER],
+            module.CLAW_EVIDENCE_MARKER,
+        )
+        self.assertEqual(guard.claw_posts, 1)
+        guard.reset_lane()
+        self.assertEqual(guard.claw_posts, 0)
+        second = Route()
+        guard.route_request(second, Request())
+        self.assertIsNone(second.headers)
+        self.assertEqual(guard.claw_posts, 1)
+
     @unittest.skipUnless(shutil.which("node"), "Node required to evaluate terminal predicate")
     def test_terminal_lifecycle_js_negative_controls(self):
         # Execute the same JavaScript predicate the actual browser waits on.
@@ -772,12 +980,19 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         good = {
             "x-padiem-claw-run-id": "run_" + "b" * 24,
             "x-padiem-orchestration-run-id": "orch_test_001",
-            "x-padiem-selected-route-id": "plus.agnes-3.0-flash.v1",
+            # B14's real selected-route format, which contains `/` (#5484).
+            "x-padiem-selected-route-id": "platform:opencode-go/muse-spark-1.3-contributor",
             "x-padiem-provider-attempts": "1",
             "x-padiem-fallback-used": "false",
         }
         self.assertEqual(module._bounded_evidence_headers(good), good)
         self.assertEqual(module._bounded_evidence_headers({"x-padiem-claw-run-id": "junk"}), {})
+        self.assertEqual(
+            module._bounded_evidence_headers(
+                {"x-padiem-selected-route-id": "not a route id!"}
+            ),
+            {},
+        )
         self.assertEqual(module._bounded_evidence_headers(None), {})
 
     def test_bounded_error_class_never_carries_message_or_free_text(self):
@@ -808,13 +1023,18 @@ class CanaryEvidenceSeamTests(unittest.TestCase):
         self.assertEqual(module._canonical_admission_result(None), "UNPROVEN")
 
     def test_owner_selected_model_is_bound_to_the_exact_claw_post(self):
-        self.assertEqual(module.CLAW_OWNER_SELECTED_MODEL_ID, "agnes-ai/agnes-3.0-flash")
+        # 2026-10-23 owner instruction: Agnes is excluded from testing; the
+        # executable administrator/paid-tier Muse route is the pinned model.
+        self.assertEqual(
+            module.CLAW_OWNER_SELECTED_MODEL_ID,
+            "opencode-go/muse-spark-1.3-contributor",
+        )
         source = SCRIPT.read_text(encoding="utf-8")
         self.assertIn('page.locator("#clawModelIdInput")', source)
-        self.assertIn("model_input.fill(CLAW_OWNER_SELECTED_MODEL_ID)", source)
+        self.assertIn("node.value = value;", source)
         self.assertIn("response.request.post_data_json", source)
         self.assertIn('submitted.get("model_id") != CLAW_OWNER_SELECTED_MODEL_ID', source)
-        self.assertIn("EXPLICIT_MODEL_ID_IN_CLAW_POST=PASS", source)
+        self.assertIn('"EXPLICIT_MODEL_ID_IN_CLAW_POST_" + lane.upper() + "=PASS"', source)
 
     def test_one_shot_bounds_are_unchanged(self):
         self.assertEqual(module.MAX_CLAW_GENERAL_POSTS, 1)

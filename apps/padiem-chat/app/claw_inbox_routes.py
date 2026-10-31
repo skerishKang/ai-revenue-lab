@@ -75,13 +75,23 @@ async def claw_inbox_list(request: Request) -> JSONResponse:
     if store is None:
         return _error(503, "inbox_unavailable", "Inbox is unavailable.")
     workspace_id = await _resolve_memory_workspace(request, uid)
+    if workspace_id is None:
+        return _error(
+            503, "workspace_unresolved", "Inbox workspace could not be resolved."
+        )
     try:
         if kind == "tasks":
-            records = await _call(store.list_tasks(workspace_id, limit=_STORE_SCAN_LIMIT))
+            records = await _call(
+                store.list_tasks(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT)
+            )
             items = [item.safe_dict() for item in records if getattr(item, "member_id", None) == uid][:limit]
         else:
             records = await _call(store.list_alerts(workspace_id, member_id=uid, limit=_STORE_SCAN_LIMIT))
             items = [item.safe_dict() for item in records][:limit]
+    except ValueError:
+        return _error(400, "identifier_rejected", "Inbox identifier was rejected.")
+    except WorkspaceStorageError:
+        return _error(503, "inbox_query_failed", "Inbox could not be loaded.")
     except Exception:
         return _error(503, "inbox_read_failed", "Inbox could not be loaded.")
     return JSONResponse(
@@ -127,16 +137,28 @@ async def claw_inbox_status(request: Request) -> JSONResponse:
     try:
         if kind == "tasks":
             status = ClawTaskStatus(status_value)
-            current = await _call(store._get_task_locked(item_id, workspace_id=workspace_id))
-            if current is None or getattr(current, "member_id", None) != uid:
+            current = await _call(
+                store._get_task_locked(item_id, workspace_id=workspace_id, member_id=uid)
+            )
+            if current is None:
                 return _error(404, "inbox_item_not_found", "Inbox item not found.")
-            updated = await _call(store.set_task_status(item_id, status, workspace_id=workspace_id))
+            updated = await _call(
+                store.set_task_status(
+                    item_id, status, workspace_id=workspace_id, member_id=uid
+                )
+            )
         else:
             status = ClawAlertStatus(status_value)
-            current = await _call(store._get_alert_locked(item_id, workspace_id=workspace_id))
-            if current is None or not current.is_visible_to(uid):
+            current = await _call(
+                store._get_alert_locked(item_id, workspace_id=workspace_id, member_id=uid)
+            )
+            if current is None:
                 return _error(404, "inbox_item_not_found", "Inbox item not found.")
-            updated = await _call(store.set_alert_status(item_id, status, workspace_id=workspace_id))
+            updated = await _call(
+                store.set_alert_status(
+                    item_id, status, workspace_id=workspace_id, member_id=uid
+                )
+            )
     except (ValueError, ClawMemoryError):
         return _error(400, "invalid_status", "Invalid inbox status.")
     except WorkspaceStorageError:

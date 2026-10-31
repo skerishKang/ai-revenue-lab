@@ -58,6 +58,24 @@ def expected_claw_desktop_bindings() -> dict[str, dict[str, str]]:
     }
 
 
+# #5441: the Owner-registered transactional-mail credential. Same account
+# store, one exact identity, never a value. The Chat Worker reads it through
+# the reuse-first lookup path of #5516, so the reset mail and the operator
+# signup-notification channel share ONE credential.
+RESEND_ALERT_SECRET_NAME = "B66_ALERT_RESEND_API_KEY"
+
+
+def expected_resend_alert_bindings() -> dict[str, dict[str, str]]:
+    return {
+        RESEND_ALERT_SECRET_NAME: {
+            "type": "secrets_store_secret",
+            "name": RESEND_ALERT_SECRET_NAME,
+            "store_id": WEB_SECRET_STORE_ID,
+            "secret_name": RESEND_ALERT_SECRET_NAME,
+        }
+    }
+
+
 # #5224: the deployment-owned caller-proof identity for the B14
 # platform-credential execution lane. Same account store, one exact identity,
 # never a value. B62 signs its B14 dispatch with it; B14 verifies it before it

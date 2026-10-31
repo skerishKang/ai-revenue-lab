@@ -24,7 +24,10 @@ def test_drive_off_not_revocation_and_explicit_manage_delete():
     assert 'id="connectorDriveRemove"' in HTML
     assert 'claw-drive-account-management.js' in HTML
     assert 'if(signedIn())void disconnectDrive();' not in CHIPS
-    assert 'Google Drive 일시 중지는 아직 준비 중' in CHIPS
+    assert 'Google 권한은 잠시 멈출 수 없어요' in CHIPS
+    assert 'Google permissions cannot be paused' in CHIPS
+    assert 'https://myaccount.google.com/connections' in CHIPS
+    assert 'rel="noopener noreferrer"' in CHIPS
     assert '"/api/connectors/google/drive/disconnect"' in MANAGER
     assert 'if(!confirmed)' in MANAGER
     assert 'padiem:refresh-connector-status' in MANAGER

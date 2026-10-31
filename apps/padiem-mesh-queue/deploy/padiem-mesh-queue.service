@@ -1,0 +1,35 @@
+# #5881 follow-on — the 컴2 PC queue service.
+#
+# Same shape as the executor's unit so an operator who knows one knows both:
+# EnvironmentFile for material, Restart=always, and nothing about this lane is
+# reachable from the public network - the Worker arrives through the Cloudflare
+# tunnel and the executor arrives over loopback.
+[Unit]
+Description=Padiem #5881 PC dispatch queue (poll/renew/cancel/busy + the store door)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=padiem-mesh
+Group=padiem-mesh
+EnvironmentFile=/opt/padiem/mesh-queue/queue.env
+# 127.0.0.1 only: the executor is on this host and the Chat Worker reaches the
+# service through the tunnel, which terminates here. No public bind address.
+ExecStart=/opt/padiem/mesh-queue/venv/bin/python service.py
+WorkingDirectory=/opt/padiem/mesh-queue
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+Restart=always
+RestartSec=10
+# The watchdog in service.py exits when the loop stops answering; this is the
+# outer bound for a process that stops of its own accord.
+TimeoutStartSec=30
+MemoryMax=512M
+
+[Install]
+WantedBy=multi-user.target

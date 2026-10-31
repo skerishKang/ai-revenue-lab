@@ -26,7 +26,7 @@ MODEL="kira/qwen3.8-flash-free"
 UPSTREAM="qwen3.8-flash-free"
 ORIGIN="https://kiraai.vn/api/v1"
 BINDING="PADIEM_B14_CREDENTIAL_09"
-SECRET_NAME="PADIEM_KIRAAI_API_KEY"
+SECRET_NAME="PADIEM_B14_CREDENTIAL_09"
 
 @pytest.fixture
 def live(monkeypatch):
@@ -73,7 +73,7 @@ def test_public_catalog_exact_manual_only_and_secret_free():
     assert "Authorization" not in r.text
 
 def test_manual_route_cannot_select_another_provider(live):
-    route=resolve_manual_route(MODEL,allow_external_fallback=False)
+    route=resolve_manual_route(MODEL)
     assert route.selected_model==MODEL
     assert route.selected_upstream_model==UPSTREAM
     assert route.platform_provider_id=="kira"

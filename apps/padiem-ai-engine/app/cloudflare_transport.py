@@ -6,6 +6,8 @@ ordinary httpx transport and therefore stays platform-neutral.
 
 from __future__ import annotations
 
+import sys
+from functools import partial
 from typing import Any, Callable
 from urllib.parse import urlsplit
 
@@ -17,11 +19,16 @@ from padiem_ai_core.b14_execution import (
     MAX_B14_RESPONSE_BYTES,
     MAX_CONFIGURED_B14_RESPONSE_BYTES,
 )
-from padiem_ai_core.b14_streaming import B14_AUTO_STREAM_PREVIEW_PATH
+from padiem_ai_core.b14_upstream import (
+    BINDING_ORIGIN as B14_INTERNAL_ORIGIN,
+    UPSTREAM_MODE_ENV,
+    UPSTREAM_URL_ENV,
+    B14HttpsTransport,
+    B14Upstream,
+    resolve_b14_upstream,
+)
 
 from app.b14_service_proof import service_proof_headers
-
-B14_INTERNAL_ORIGIN = "https://b14.internal"
 # #4379: the model request body has no PADIEM aggregate ceiling. The request is
 # read in full and the total is never refused; the platform's own request limit
 # and the provider's context window are the real bounds.
@@ -29,7 +36,6 @@ _ALLOWED_B14_PATHS = frozenset(
     {
         B14_CHAT_COMPLETIONS_PATH,
         B14_STREAM_PREVIEW_PATH,
-        B14_AUTO_STREAM_PREVIEW_PATH,
     }
 )
 
@@ -148,9 +154,50 @@ def _correlation_header() -> dict[str, str]:
     return {"X-Request-Id": value} if value is not None else {}
 
 
-def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
-    B14ExecutionConfig, B14ExecutionConfig
-]:
+def _workers_runtime_active() -> bool:
+    return "pyodide.ffi" in sys.modules or "js" in sys.modules
+
+
+def _default_https_client() -> httpx.AsyncClient:
+    """The plain-host client. Redirects are never followed for an internal call."""
+    return httpx.AsyncClient(timeout=None, follow_redirects=False)
+
+
+def _worker_https_client(origin: str) -> httpx.AsyncClient:
+    """A fetch-backed client for the B14 upstream while this Worker runs.
+
+    `CloudflareB14UpstreamTransport` pins the scheme, port, exact host and method,
+    and carries a POST body of any size — the public-web bound belongs to the
+    third-party lanes, not to this one.
+    """
+    from app.cloudflare_external_transport import CloudflareB14UpstreamTransport
+
+    return httpx.AsyncClient(
+        transport=CloudflareB14UpstreamTransport(origin=origin),
+        timeout=None,
+        follow_redirects=False,
+    )
+
+
+def b14_upstream_from_bindings(env: Any) -> B14Upstream:
+    """Read the #5784 switch from this deployment's own bindings.
+
+    On Workers the two names are plain vars; on a host they are environment
+    variables supplied by the unit. Only values this deployment owns are read,
+    so a binding that does not exist cannot be filled in from a stray process
+    environment.
+    """
+    values: dict[str, str] = {}
+    for name in (UPSTREAM_MODE_ENV, UPSTREAM_URL_ENV):
+        value = getattr(env, name, None) if env is not None else None
+        if value is not None:
+            values[name] = str(value)
+    return resolve_b14_upstream(values)
+
+
+def build_b14_execution_configs(
+    *, timeout_seconds: float, upstream: B14Upstream | None = None
+) -> tuple[B14ExecutionConfig, B14ExecutionConfig]:
     """Return the Engine's completed-response and stream-frame B14 budgets.
 
     The two clients bound different things and must not share one number:
@@ -162,18 +209,64 @@ def build_b14_execution_configs(*, timeout_seconds: float) -> tuple[
 
     Sharing the smaller frame bound with the completed client made the Engine
     refuse healthy model answers that Chat/Claw accept (#4379).
+
+    ``upstream`` is the #5784 switch. Absent, it resolves to the Service Binding
+    origin the Engine has always used, and both configs are identical to before.
     """
+    origin = (upstream or resolve_b14_upstream()).origin
     completed = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=origin,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
     )
     streaming = B14ExecutionConfig(
-        base_url=B14_INTERNAL_ORIGIN,
+        base_url=origin,
         timeout_seconds=timeout_seconds,
         max_response_bytes=MAX_B14_RESPONSE_BYTES,
     )
     return completed, streaming
+
+
+def build_b14_transport(
+    *,
+    binding: Any,
+    request_factory: Callable[..., Any],
+    proof_secret: str | None,
+    upstream: B14Upstream | None = None,
+    https_client_factory: Callable[[], httpx.AsyncClient] | None = None,
+) -> httpx.AsyncBaseTransport:
+    """Pick the one transport the switch names, and never guess a substitute.
+
+    ``binding`` mode returns the existing Service Binding transport untouched.
+    ``https`` mode needs a client, because a Worker has no socket to open; the
+    caller supplies one built on the fetch transport it already uses. If that
+    factory is missing the Engine refuses to start its B14 lane rather than
+    quietly falling back to a binding the deployment just turned off.
+    """
+    resolved = upstream or resolve_b14_upstream()
+    if resolved.uses_service_binding:
+        return CloudflareB14ServiceBindingTransport(
+            binding=binding,
+            request_factory=request_factory,
+            proof_secret=proof_secret,
+        )
+    if https_client_factory is None:
+        # On a Worker there is no socket to open, so the upstream rides the same
+        # JavaScript fetch the external lanes already use. That transport carries a
+        # whole model request instead of truncating it: #4379 removed any
+        # Engine-side ceiling on a model request body, and a Service Binding path
+        # that sent it full cannot be replaced by one that cuts it off.
+        if _workers_runtime_active():
+            https_client_factory = partial(_worker_https_client, resolved.origin)
+        else:
+            https_client_factory = _default_https_client
+    return B14HttpsTransport(
+        origin=resolved.origin,
+        allowed_paths=_ALLOWED_B14_PATHS,
+        headers_for_body=lambda body: service_proof_headers(proof_secret, body),
+        correlation_headers=_correlation_header,
+        client=https_client_factory(),
+    )
 
 
 class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
@@ -220,6 +313,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         return bytes(await request.aread())
 
     async def handle_async_request(self, request: httpx.Request) -> httpx.Response:
+        from app.byok_passthrough import b14_body, safe_cause
         if request.method != "POST":
             raise httpx.RequestError(
                 "Business 14 Service Binding accepts POST only.", request=request
@@ -227,13 +321,14 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         try:
             self._validate_target(request.url)
             raw_body = await self._read_request_body(request)
+            raw_body = b14_body(raw_body)
             body_text = raw_body.decode("utf-8")
         except httpx.RequestError:
             raise
         except Exception as exc:
             raise httpx.RequestError(
                 "Business 14 request could not be encoded.", request=request
-            ) from exc
+            ) from safe_cause(exc)
 
         service_request = self._request_factory(
             str(request.url),
@@ -260,7 +355,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         except Exception as exc:
             raise httpx.ConnectError(
                 "Business 14 Service Binding is unavailable.", request=request
-            ) from exc
+            ) from safe_cause(exc)
 
         try:
             status_code = int(service_response.status)
@@ -270,7 +365,7 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
             raise httpx.ProtocolError(
                 "Business 14 Service Binding returned malformed response metadata.",
                 request=request,
-            ) from exc
+            ) from safe_cause(exc)
 
         headers: dict[str, str] = {}
         if content_type is not None:

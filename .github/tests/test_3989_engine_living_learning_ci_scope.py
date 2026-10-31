@@ -54,6 +54,11 @@ class TestEngineLLPathOwnership:
             "apps/padiem-ai-engine/**",
             "packages/padiem-ai-core/**",
             SELF_PATH,
+            # #5341: the shared Core import-scope proof decides whether a Core
+            # change reaches the Engine runtime at all.
+            ".github/scripts/ci_core_import_scope.py",
+            ".github/scripts/b62_ci_impact_scope_3989.py",
+            ".github/tests/test_5341_core_import_scope.py",
             ".github/workflows/padiem-ai-engine-ci.yml",
         )
 

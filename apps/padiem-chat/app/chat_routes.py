@@ -1,17 +1,25 @@
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import asyncio
 import base64
 import json
+from collections.abc import Mapping
 from typing import Any
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, StreamingResponse
 
 from .attachments import ImageAttachment
+from .binary_attachment_frame import decode_binary_attachment_frame
 from .auth_routes import auth_ready, current_user_id
 from .drive_general_grounding import DriveGroundingError, drive_general_grounding
-from .auto_grounding import AutoGroundingService, auto_grounding_may_continue
+from .auto_grounding import (
+    AutoGroundingService,
+    auto_grounding_may_continue,
+    auto_grounding_skip_fields,
+)
 from .native_calendar_intent import parse_native_calendar_intent, try_native_calendar_chat
 from .native_calendar_adapter import NativeCalendarAdapterError
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
@@ -26,7 +34,7 @@ from .documents import (
     build_project_files_context,
     combine_reference_context,
 )
-from .grounding import GroundedChatService, GroundingError
+from .grounding import GroundedChatService, GroundingError, grounding_fallback_fields
 from .history import (
     HISTORY_PREVIEW_SUFFIX,
     MAX_HISTORY_MESSAGE_CHARS,
@@ -41,6 +49,7 @@ from .model_policy import model_supports, request_tier_context, resolve_request_
 from .central_model_route_runtime import chat_request_tier_context
 from .final_dispatch_guard_wiring import apply_guard_to_client, create_guard_from_request
 from .member_grade_access import selected_admin_denial, selected_grade_denial
+from .tier_identity_client import is_padiem_identity_question
 from .project_files import ProjectFileStore
 from .public_chat import public_chat_result
 from .request_contract import (
@@ -48,7 +57,8 @@ from .request_contract import (
     BrowserRequestError,
     CustomModelSelection,
     _apply_b62_model_policy,
-    _validate_payload,
+    _validate_payload_async,
+    declared_util_scope,
 )
 from .tool_presentations import get_tool_presentation
 from .usage_gate import UsageGate
@@ -105,6 +115,48 @@ def _public_sse(event: str, payload: dict[str, Any]) -> bytes:
     return f"event: {event}\ndata: {data}\n\n".encode("utf-8")
 
 
+# #5573 no-deadline 설계 §7: a proxy between the browser and this Worker drops a
+# response that has written nothing for a while, and the reader sees a dead turn.
+# An SSE comment line is ignored by the EventSource grammar and by this app's own
+# parser, so it keeps the connection open without becoming UI content. It is not a
+# deadline: the shielded read below is never cancelled by a keepalive, so a turn
+# that needs an hour still gets an hour.
+SSE_KEEPALIVE = b": keepalive\n\n"
+SSE_KEEPALIVE_SECONDS = 15.0
+_KEEPALIVE_SENTINEL = object()
+
+
+async def _stream_with_keepalive(stream, *, interval: float = SSE_KEEPALIVE_SECONDS):
+    """Yield upstream events, and the sentinel whenever one gap reaches ``interval``."""
+
+    iterator = stream.__aiter__()
+    pending: asyncio.Future | None = None
+    try:
+        while True:
+            if pending is None:
+                pending = asyncio.ensure_future(iterator.__anext__())
+            try:
+                item = await asyncio.wait_for(asyncio.shield(pending), timeout=interval)
+            except asyncio.TimeoutError:
+                yield _KEEPALIVE_SENTINEL
+                continue
+            except StopAsyncIteration:
+                return
+            except asyncio.CancelledError:
+                pending.cancel()
+                raise
+            pending = None
+            yield item
+    finally:
+        # #5479: a client that left closes this generator at its yield point
+        # (GeneratorExit, which is not a CancelledError); without this, the
+        # shielded upstream read keeps running with nobody to receive it. The
+        # paths that already settled the read leave it done, where this is a
+        # no-op.
+        if pending is not None and not pending.done():
+            pending.cancel()
+
+
 def _stream_json_error(exc: ChatRuntimeError) -> JSONResponse:
     return JSONResponse(
         {"error": {"code": exc.code, "message": exc.user_message}},
@@ -120,12 +172,52 @@ def _empty_stream_json_error() -> JSONResponse:
 
 
 async def _close_stream(stream: Any) -> None:
+    """Close a client stream chain on every route exit path.
+
+    #4317: this close also runs while the response task is being cancelled
+    (client disconnect mid-stream). A plain ``await closer()`` there inherits
+    the pending cancellation, so the multi-layer generator chain ends up only
+    partially unwound and the rest is left to asyncgen finalization — which on
+    the Workers runtime surfaces as ``RuntimeError: async generator ignored
+    GeneratorExit`` in the request logs even for a 200 answer. Shielding keeps
+    the whole unwinding deterministic: the close finishes, the cancellation
+    still propagates.
+    """
     closer = getattr(stream, "aclose", None)
     if callable(closer):
         try:
-            await closer()
+            await asyncio.shield(closer())
+        except asyncio.CancelledError:
+            raise
         except Exception:
             pass
+
+
+async def _chat_pc_tools_for_turn(
+    request: Request, *, uid: str | None, model_id: str,
+    user_text: str | None = None,
+) -> tuple[Any, ...]:
+    """The PC tool declaration for this turn, or an empty tuple.
+
+    Tools require BOTH a verified PC target for this account and a resolved
+    route whose catalog row declares native tools; otherwise the request keeps
+    its existing shape and this turn has no PC path at all. The write tool is
+    added only when the owner's own words asked for a change.
+    """
+    from .chat_pc_drive import pc_tools_for_turn, pc_tool_entry_available
+
+    if not await pc_tool_entry_available(request, uid=uid, model_id=model_id):
+        return ()
+    return pc_tools_for_turn(user_text)
+
+
+def _last_user_text(messages: Any) -> str:
+    """The current turn's own words, which decide whether write is declared."""
+    for message in reversed(messages or ()):
+        if isinstance(message, Mapping) and message.get("role") == "user":
+            content = message.get("content")
+            return content if isinstance(content, str) else ""
+    return ""
 
 
 def _model_history_incomplete() -> JSONResponse:
@@ -239,12 +331,10 @@ async def api_chat_stream(request: Request):
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
-        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
+        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -253,7 +343,7 @@ async def api_chat_stream(request: Request):
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     if tool_request is not None or attachments:
         return JSONResponse(
@@ -267,7 +357,11 @@ async def api_chat_stream(request: Request):
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    if "tier" in raw:
+    # Owner decision 2026-10-24 (#5474): Free is available with or without a
+    # login on the Chat lane, and the usage gate below bounds anonymous spend.
+    # Paid tiers, Custom, Claw and projects still require a session.
+    anonymous_free = uid is None and raw.get("tier") == "free"
+    if "tier" in raw and not anonymous_free:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
@@ -276,13 +370,6 @@ async def api_chat_stream(request: Request):
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
                 return tier_denial
-    # Free is available to every signed-in member; it is not an anonymous
-    # platform-key proxy. Never read tier/upgrade claims from browser state.
-    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
-        return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
-            status_code=401,
-        )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -396,26 +483,39 @@ async def api_chat_stream(request: Request):
         )
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-    try:
-        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
-    except DriveGroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
-    if drive_context:
-        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    identity_question = is_padiem_identity_question(latest_user_text)
 
-    # #5015: the same server-verified PC work context the Claw composer
-    # receives, so a NEW Chat conversation recognizes the account's connected
-    # PC and the one read-only PC tool without a browser-supplied claim. The
-    # context is an observation, never an execution grant.
-    pc_work_text: str | None = None
-    if uid is not None:
+    async def _drive_preflight() -> tuple[str | None, tuple[dict[str, str], ...]]:
+        if identity_question:
+            return (None, ())
+        return await drive_general_grounding(request, latest_user_text)
+
+    async def _pc_preflight() -> str | None:
+        if uid is None:
+            return None
         from .pc_work_context import build_pc_work_context_text
 
-        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
-        if pc_work_text:
-            reference_context = (
-                reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+        try:
+            result = await build_pc_work_context_text(request, owner_id=uid)
+        except Exception:
+            return None
+        return result if isinstance(result, str) else None
+
+    drive_result, pc_work_result = await asyncio.gather(_drive_preflight(), _pc_preflight(), return_exceptions=True)
+
+    if isinstance(drive_result, DriveGroundingError):
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+
+    if isinstance(drive_result, BaseException):
+        drive_result = (None, ())
+
+    drive_context, drive_sources = drive_result if isinstance(drive_result, tuple) else (None, ())
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    if isinstance(pc_work_result, str):
+        reference_context = (
+            reference_context + "\n\n" if reference_context else ""
+        ) + pc_work_result
 
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
@@ -426,50 +526,18 @@ async def api_chat_stream(request: Request):
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
-    # #5015 Chat PC drive lane: signed-in, tool/attachment-free turns asking
-    # for verified PC drives run the shared Mesh tool contract under the b62
-    # Chat product. Anything else (including anonymous users) falls through
-    # to the existing path unchanged.
-    if browser_project_id is None:
-        from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
-        try:
-            lane_outcome = await execute_chat_pc_drive_lane(
-                request, user_text=latest_user_text, skill=skill,
-                model_id=selected_model, conversation_id=conversation_id,
-                tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-                device_id=raw.get("device_id"),
-            )
-        except ChatPCDriveError as exc:
-            return JSONResponse(
-                {"error": {"code": exc.code, "message": exc.user_message}},
-                status_code=exc.status_code,
-            )
-        if lane_outcome is not None:
-            lane_answer, lane_conversation_id = lane_outcome
-            async def lane_body_iterator():
-                yield _public_sse("delta", {"delta": lane_answer})
-                lane_done: dict[str, Any] = {"done": True}
-                if lane_conversation_id:
-                    lane_done["conversation_id"] = lane_conversation_id
-                yield _public_sse("done", lane_done)
-            return StreamingResponse(
-                lane_body_iterator(),
-                status_code=200,
-                media_type="text/event-stream",
-                headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
-            )
-
-
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -512,24 +580,31 @@ async def api_chat_stream(request: Request):
             )
 
     auto_grounding: AutoGroundingService = request.app.state.auto_grounding
+    grounding_notice = {}
+    auto_plan = None
     try:
-        auto_plan = None if drive_context else await auto_grounding.prepare(
+        auto_plan = None if (drive_context or identity_question) else await auto_grounding.prepare(
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            util_scope=util_scope,
+            **({"explicit_search": True} if raw.get("web_search") else {}),
         )
     except GroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.user_message}}, status_code=exc.status_code)
+        grounding_notice = grounding_fallback_fields(exc)
+    if getattr(auto_plan, "error", None) is not None:
+        grounding_notice = grounding_fallback_fields(auto_plan.error)
     if auto_plan is not None and auto_plan.prepared is not None:
         reference_context = auto_plan.prepared.context
         # The auto-grounding plan replaces the context it was handed; the
         # verified PC state must still reach this model call (#5015).
-        if pc_work_text:
+        if pc_work_result:
             reference_context = (
                 reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+            ) + pc_work_result
 
     client: B14Client = request.app.state.b14_client
+    lane_outcome: tuple[str, str | None] | None = None
     async with chat_request_tier_context(request, raw.get("tier", "free")):
         policy = resolve_request_model_policy(messages)
         guard = await create_guard_from_request(
@@ -539,13 +614,23 @@ async def api_chat_stream(request: Request):
             request.app.state.b14_catalog_source,
         )
         client = apply_guard_to_client(client, guard)
+        # #5573 (3-B-2): only a verified PC account on a tools-declaring route
+        # receives the PC tools; every other turn keeps the request bytes it
+        # had before this slice. A project turn runs on its own reference
+        # context and is never offered a PC tool, so it can neither be deferred
+        # nor handed to the PC lane.
+        pc_tools = () if browser_project_id is not None else await _chat_pc_tools_for_turn(
+            request, uid=uid, model_id=policy.model_id, user_text=_last_user_text(messages),
+        )
         stream = client.stream_text_auto(
             messages,
             skill=skill,
             additional_system_context=reference_context,
+            **({"tools": pc_tools, "tool_choice": "auto"} if pc_tools else {}),
         )
 
         first_visible = None
+        tool_call = None
         try:
             while True:
                 try:
@@ -553,6 +638,10 @@ async def api_chat_stream(request: Request):
                 except StopAsyncIteration:
                     await _close_stream(stream)
                     return _empty_stream_json_error()
+                candidate = getattr(event, "tool_call", None)
+                if candidate is not None:
+                    tool_call = candidate
+                    break
                 if event.delta_content:
                     first_visible = event
                     break
@@ -572,6 +661,87 @@ async def api_chat_stream(request: Request):
                 status_code=502,
             )
 
+        if tool_call is not None:
+            # The model asked for a PC tool instead of an answer. Stop reading
+            # the stream and let the PC lane re-verify the owner, grant and
+            # target before it executes anything.
+            await _close_stream(stream)
+            from .chat_pc_drive import (
+                ChatPCDriveError,
+                chat_pc_plan_for_tool,
+                execute_chat_pc_drive_lane,
+            )
+
+            selected_tool = getattr(tool_call, "name", None)
+            declared_plan = (
+                chat_pc_plan_for_tool(selected_tool)
+                if isinstance(selected_tool, str) else None
+            )
+            if declared_plan is None:
+                return JSONResponse(
+                    {"error": {"code": "chat_pc_tool_unsupported", "message": "요청한 PC 도구를 실행할 수 없습니다."}},
+                    status_code=502,
+                )
+            execution_user_text = next(
+                (item["content"] for item in reversed(policy.messages)
+                 if item.get("role") == "user"),
+                None,
+            )
+            try:
+                # The browser's own run handle is reused as the staged run id,
+                # so a dropped connection recovers this turn's verified result
+                # through the existing owner-scoped GET (#5567) instead of
+                # resubmitting the PC turn.
+                lane_outcome = await execute_chat_pc_drive_lane(
+                    request,
+                    user_text=latest_user_text,
+                    execution_user_text=execution_user_text,
+                    skill=skill,
+                    model_id=selected_model,
+                    conversation_id=conversation_id,
+                    device_id=raw.get("device_id"),
+                    run_id=raw.get("pc_run_id"),
+                    conversation_messages=messages,
+                    selected_tool=selected_tool,
+                    declared_plan=declared_plan,
+                )
+            except ChatPCDriveError as exc:
+                return JSONResponse(
+                    {"error": exc.public_error()},
+                    status_code=exc.status_code,
+                )
+            if lane_outcome is None:
+                return JSONResponse(
+                    {"error": {"code": "chat_pc_lane_unavailable", "message": "PC 작업을 시작하지 못했습니다. 다시 시도해 주세요."}},
+                    status_code=502,
+                )
+
+    if lane_outcome is not None:
+        lane_answer, lane_conversation_id = lane_outcome
+        from .chat_pc_drive import pc_scope_notice_for_run
+
+        lane_scope_notice = await pc_scope_notice_for_run(
+            request, run_id=raw.get("pc_run_id"),
+        )
+
+        async def tool_lane_body_iterator():
+            yield _public_sse("delta", {"delta": lane_answer})
+            tool_done: dict[str, Any] = {"done": True}
+            if lane_conversation_id:
+                tool_done["conversation_id"] = lane_conversation_id
+            if lane_scope_notice:
+                # #5573: the scope pinned before dispatch is its own field, so
+                # the live answer states "목록만 조회합니다" without the
+                # notice being folded into the answer text.
+                tool_done["scope_notice"] = lane_scope_notice
+            yield _public_sse("done", tool_done)
+        return StreamingResponse(
+            tool_lane_body_iterator(),
+            status_code=200,
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache, no-store", "X-Accel-Buffering": "no"},
+        )
+
     assert first_visible is not None and first_visible.delta_content
     first_delta = first_visible.delta_content
     latest_user = next((item["content"] for item in reversed(messages) if item["role"] == "user"), None)
@@ -580,12 +750,17 @@ async def api_chat_stream(request: Request):
         answer_parts = [first_delta]
         try:
             yield _public_sse("delta", {"delta": first_delta})
-            async for event in stream:
+            async for item in _stream_with_keepalive(stream):
+                if item is _KEEPALIVE_SENTINEL:
+                    yield SSE_KEEPALIVE
+                    continue
+                event = item
                 if event.delta_content:
                     answer_parts.append(event.delta_content)
                     yield _public_sse("delta", {"delta": event.delta_content})
                 if event.done:
                     done_payload: dict[str, Any] = {"done": True}
+                    done_payload.update(grounding_notice)
                     if auto_plan is not None and auto_plan.prepared is not None:
                         done_payload["answer_status"] = "answered_with_evidence"
                         done_payload["evidence"] = _public_evidence(auto_plan.prepared.evidence)
@@ -663,23 +838,10 @@ async def api_chat_stream(request: Request):
     )
 
 
-def _decode_completed_binary_attachment(body: bytes) -> dict[str, Any]:
-    """One bounded binary original plus JSON request metadata; no browser Base64."""
-    if len(body) < 6:
-        raise ValueError("invalid binary attachment frame")
-    header_size = int.from_bytes(body[:4], "big")
-    if not 0 < header_size <= 65536 or len(body) <= 4 + header_size:
-        raise ValueError("invalid binary attachment frame")
-    raw = json.loads(body[4:4 + header_size].decode("utf-8"))
-    if not isinstance(raw, dict) or not isinstance(raw.get("attachments"), list) or len(raw["attachments"]) != 1:
-        raise ValueError("invalid binary attachment metadata")
-    item = raw["attachments"][0]
-    if not isinstance(item, dict) or set(item) != {"type", "name", "media_type"}:
-        raise ValueError("invalid binary attachment metadata")
-    if item["type"] not in ("image", "document"):
-        raise ValueError("invalid binary attachment type")
-    item["raw_bytes"] = body[4 + header_size:]
-    return raw
+# #2505: the frame decoder moved to ``app/binary_attachment_frame.py`` so the
+# Claw lane reads the same bytes. The module-level alias keeps every existing
+# Chat import (and its test) working unchanged.
+_decode_completed_binary_attachment = decode_binary_attachment_frame
 
 
 async def api_chat(request: Request) -> JSONResponse:
@@ -700,12 +862,10 @@ async def api_chat(request: Request) -> JSONResponse:
 
     try:
         raw = (_decode_completed_binary_attachment(body) if request.url.path == "/api/chat" and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() == "application/octet-stream" else json.loads(body.decode("utf-8")))
-        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = _validate_payload(raw)
+        messages, skill, tool_request, attachments, conversation_id, browser_project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
         if custom is None:
-            # No-tier browser clients are Free; validate legacy slash syntax
-            # separately so an unknown alias still fails before B14 dispatch.
-            if "tier" not in raw:
-                _apply_b62_model_policy(messages)
+            # No-tier browser clients resolve the Free product tier; an
+            # explicit browser tier rides the request context.
             selected_model, messages = _apply_b62_model_policy(
                 messages,
                 tier_id=raw.get("tier", "free"),
@@ -714,7 +874,7 @@ async def api_chat(request: Request) -> JSONResponse:
             selected_model = custom.model
     except (UnicodeDecodeError, json.JSONDecodeError, BrowserRequestError, ValueError) as exc:
         message = str(exc) if isinstance(exc, BrowserRequestError) else "요청 형식이 올바르지 않습니다."
-        return JSONResponse({"error": {"code": "invalid_request", "message": message}}, status_code=422)
+        return JSONResponse({"error": {"code": exc.code if isinstance(exc, BrowserRequestError) else "invalid_request", "message": message}}, status_code=422)
 
     settings: Settings = request.app.state.settings
     if selected_model == FREE_B14_MODEL_ID and any(isinstance(item, ImageAttachment) for item in attachments):
@@ -744,7 +904,11 @@ async def api_chat(request: Request) -> JSONResponse:
             {"error": {"code": "unauthorized", "message": "PADIEM Custom을 사용하려면 로그인이 필요합니다."}},
             status_code=401,
         )
-    if "tier" in raw:
+    # Owner decision 2026-10-24 (#5474): Free is available with or without a
+    # login on the Chat lane, and the usage gate below bounds anonymous spend.
+    # Paid tiers, Custom, Claw and projects still require a session.
+    anonymous_free = uid is None and raw.get("tier") == "free"
+    if "tier" in raw and not anonymous_free:
         if raw.get("tier") == "admin":
             admin_denial = await selected_admin_denial(request, uid)
             if admin_denial is not None:
@@ -753,13 +917,6 @@ async def api_chat(request: Request) -> JSONResponse:
             tier_denial = await selected_grade_denial(request, uid, raw["tier"])
             if tier_denial is not None:
                 return tier_denial
-    # Free is available to every signed-in member; it is not an anonymous
-    # platform-key proxy. Never read tier/upgrade claims from browser state.
-    if raw.get("tier") == "free" and uid is None and request.app.state.settings.runtime_mode != "mock":
-        return JSONResponse(
-            {"error": {"code": "unauthorized", "message": "무료 AI를 사용하려면 로그인이 필요합니다."}},
-            status_code=401,
-        )
     store: HistoryStore | None = getattr(request.app.state, "history_store", None)
     project_file_store: ProjectFileStore | None = request.app.state.project_file_store
     if browser_project_id is not None and uid is None:
@@ -861,25 +1018,39 @@ async def api_chat(request: Request) -> JSONResponse:
         return JSONResponse(public_chat_result(result))
 
     latest_user_text = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
-    try:
-        drive_context, drive_sources = await drive_general_grounding(request, latest_user_text)
-    except DriveGroundingError as exc:
-        return JSONResponse({"error": {"code": exc.code, "message": exc.message}}, status_code=exc.status_code)
-    if drive_context:
-        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    identity_question = is_padiem_identity_question(latest_user_text)
 
-    # #5015: the same server-verified PC work context the Claw composer
-    # receives, so a NEW Chat conversation recognizes the account's connected
-    # PC and the one read-only PC tool without a browser-supplied claim. The
-    # context is an observation, never an execution grant.
-    if uid is not None:
+    async def _drive_preflight() -> tuple[str | None, tuple[dict[str, str], ...]]:
+        if identity_question:
+            return (None, ())
+        return await drive_general_grounding(request, latest_user_text)
+
+    async def _pc_preflight() -> str | None:
+        if uid is None:
+            return None
         from .pc_work_context import build_pc_work_context_text
 
-        pc_work_text = await build_pc_work_context_text(request, owner_id=uid)
-        if pc_work_text:
-            reference_context = (
-                reference_context + "\n\n" if reference_context else ""
-            ) + pc_work_text
+        try:
+            result = await build_pc_work_context_text(request, owner_id=uid)
+        except Exception:
+            return None
+        return result if isinstance(result, str) else None
+
+    drive_result, pc_work_result = await asyncio.gather(_drive_preflight(), _pc_preflight(), return_exceptions=True)
+
+    if isinstance(drive_result, DriveGroundingError):
+        return JSONResponse({"error": {"code": drive_result.code, "message": drive_result.message}}, status_code=drive_result.status_code)
+
+    if isinstance(drive_result, BaseException):
+        drive_result = (None, ())
+
+    drive_context, drive_sources = drive_result if isinstance(drive_result, tuple) else (None, ())
+    if drive_context:
+        reference_context = (reference_context + "\n\n" if reference_context else "") + drive_context
+    if isinstance(pc_work_result, str):
+        reference_context = (
+            reference_context + "\n\n" if reference_context else ""
+        ) + pc_work_result
 
     if request.app.state.usage_gate_enforced:
         usage_gate: UsageGate = request.app.state.usage_gate
@@ -890,29 +1061,18 @@ async def api_chat(request: Request) -> JSONResponse:
         if not usage_decision.allowed:
             return _usage_denied_response(usage_decision)
 
-    # #5015 Chat PC drive lane (non-streaming twin of the stream hook above):
-    # tool/attachment/project turns and anonymous users fall through unchanged.
-    if browser_project_id is None and tool_request is None and not attachments:
-        from .chat_pc_drive import run_chat_pc_drive_lane
-        lane_response = await run_chat_pc_drive_lane(
-            request, user_text=latest_user_text, skill=skill,
-            model_id=selected_model, conversation_id=conversation_id,
-            tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            device_id=raw.get("device_id"),
-        )
-        if lane_response is not None:
-            return lane_response
-
     timezone_name = raw.get("timezone") if isinstance(raw.get("timezone"), str) else None
     calendar_store = getattr(request.app.state, "calendar_store", None)
+    util_scope = declared_util_scope(raw)
     needs_native_calendar = False
-    try:
-        needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
-    except Exception:
-        needs_native_calendar = False
+    if util_scope is None:
+        try:
+            needs_native_calendar = parse_native_calendar_intent(latest_user_text, timezone_name=timezone_name)["op"] != "none"
+        except Exception:
+            needs_native_calendar = False
     if needs_native_calendar and calendar_store is None:
         return JSONResponse({"error": {"code": "calendar_store_unavailable", "message": "Calendar storage is unavailable"}}, status_code=503)
-    if calendar_store is not None:
+    if calendar_store is not None and util_scope is None:
         try:
             client_turn_id = raw.get("calendar_turn_id")
             if not isinstance(client_turn_id, str):
@@ -948,7 +1108,12 @@ async def api_chat(request: Request) -> JSONResponse:
         async with chat_request_tier_context(request, raw.get("tier", "free")):
             if tool_request is None:
                 auto_grounding: AutoGroundingService = request.app.state.auto_grounding
-                auto_decision = None if image_attachments or drive_context else auto_grounding.decide(messages, skill=skill)
+                auto_decision = None if image_attachments or drive_context or identity_question else auto_grounding.decide(
+                    messages,
+                    skill=skill,
+                    util_scope=util_scope,
+                    **({"explicit_search": True} if raw.get("web_search") else {}),
+                )
 
                 async def _plain_completion() -> dict[str, Any]:
                     client: B14Client = request.app.state.b14_client
@@ -980,12 +1145,16 @@ async def api_chat(request: Request) -> JSONResponse:
                     except GroundingError as exc:
                         if not auto_grounding_may_continue(auto_decision, exc):
                             raise
-                        # The automatic search found no usable evidence and the
-                        # request does not need it. The turn continues as a
-                        # normal answer, with no evidence or source attached.
+                        # Owner 2026-10-24: failed retrieval is disclosed;
+                        # the same selected model answers without web sources.
                         result = await _plain_completion()
+                        result.update(grounding_fallback_fields(exc))
                 else:
                     result = await _plain_completion()
+                    # #6090: an automatic search skipped because the request is a
+                    # document says so in Korean; a plain long answer says nothing.
+                    if auto_decision is not None:
+                        result.update(auto_grounding_skip_fields(auto_decision))
             else:
                 grounded = request.app.state.grounded_chat
                 result = await grounded.complete(

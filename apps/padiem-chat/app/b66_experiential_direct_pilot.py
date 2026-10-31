@@ -22,7 +22,7 @@ from .b66_registered_model_boundary import (
 EXPERIENTIAL_B66_MODEL_ID = "experiential/qwen3.8-flash-next-uncensored"
 _EXPERIENTIAL_UPSTREAM_MODEL = "qwen3.8-flash-next-uncensored"
 _EXPERIENTIAL_URL = "https://api.experientiallabs.ai/v1/chat/completions"
-_MAX_RESPONSE_BYTES = 1024 * 1024
+_MAX_RESPONSE_BYTES = 10 * 1024 * 1024
 
 
 class B66ExperientialPilotExecutor:

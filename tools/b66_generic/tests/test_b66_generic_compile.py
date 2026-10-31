@@ -12,7 +12,9 @@ set and different totals wording. Nothing in the generic modules knows any of
 that; the slots are derived from the source's own labels.
 
 PyMuPDF is required for PDF rasterization/analysis (the CGI benchmark uses it);
-the test skips when it is unavailable rather than failing the lane.
+the test skips when it is unavailable rather than failing a local run. CI runs
+it with a hash-pinned PyMuPDF and treats any skipped case in this file as a
+failure, so the pipeline cannot disappear behind a silent skip.
 """
 
 from __future__ import annotations
@@ -101,6 +103,14 @@ def test_generic_pipeline_mutation_isolation(tmp_path):
     stdout = run(str(TOOLS / "validate_mutations.py"), "--template-dir", str(template),
                  "--cases", str(cases), "--outdir", str(out), "--dpi", "150")
     assert "FAIL=0" in stdout
+
+    report = json.loads(stdout.rsplit("\n\nCASES=", 1)[0])
+    status = {row["case"]: row["status"] for row in report}
+    assert set(status) == set(payloads), "a case must not vanish from the run"
+    # These cases prove pixel isolation *outside* the changed slots. A renderer
+    # refusal or a missing font would show up as REJECTED, which the FAIL count
+    # deliberately ignores, so each case must actually render and come back PASS.
+    assert status == {name: "PASS" for name in payloads}
 
 
 def test_generic_modules_have_no_template_literal(tmp_path):

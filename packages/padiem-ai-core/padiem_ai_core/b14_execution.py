@@ -10,17 +10,30 @@ from urllib.parse import urlsplit, urlunsplit
 import httpx
 
 from .contracts import UsageMetadata
+from .tool_channel import (
+    TOOL_COMPLETED_STATUS,
+    ToolCall,
+    ToolChannelError,
+    ToolDefinition,
+    normalize_execution_event,
+    normalize_tool_choice,
+    normalize_tool_definitions,
+    normalize_turn_signature,
+    parse_tool_calls,
+)
 
 B14_CHAT_COMPLETIONS_PATH = "/api/pilot/v1/chat/completions"
 
 # The old global 4096 max_tokens limit was a B14 pilot compatibility setting,
 # not any provider's capability. It must not constrain all AI products (#4379).
 # Keep this exported symbol for old callers; None means no global product cap.
-# A feature may opt into its own explicit budget via b14_output_limits.
+# A feature may opt into its own explicit budget.
 PRODUCT_EXPLICIT_OUTPUT_TOKEN_CEILING: int | None = None
 
-MAX_B14_RESPONSE_BYTES = 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (response bytes)
-MAX_CONFIGURED_B14_RESPONSE_BYTES = 8 * 1_048_576  # RUNTIME_HARD_SAFETY_CEILING (configured cap)
+# Owner rules 2026-10-26: completed JSON is materialized in Worker memory.
+# Define its 32MiB ceiling before the 10MiB default (never default > ceiling).
+MAX_CONFIGURED_B14_RESPONSE_BYTES = 32 * 1_048_576
+MAX_B14_RESPONSE_BYTES = 10 * 1_048_576
 # Provider-native inference messages have no legacy pilot count/character ceiling.
 # API gateway/provider capabilities and HTTP transport memory guards remain separate.
 # Retain legacy symbols for import compatibility; None is no product-native cap.
@@ -28,9 +41,11 @@ MAX_B14_MESSAGES: int | None = None
 MAX_B14_MESSAGE_CHARS: int | None = None
 MAX_B14_MODEL_CHARS = 200
 
-_TASK_TYPES = frozenset({"general", "korean", "coding", "document", "batch"})
-_OPTIMIZE_FOR = frozenset({"balanced", "cost", "latency", "korean"})
-_MESSAGE_ROLES = frozenset({"system", "user", "assistant"})
+_MESSAGE_ROLES = frozenset({"system", "user", "assistant", "tool"})
+
+# #5536: an absent assistant content key and an explicit null are different
+# states, so the absent key is marked instead of defaulted.
+_MISSING_CONTENT = object()
 # B14's own enumerated rate-limit classes (apps/korean-ai-platform app/pilot/errors.py).
 # The 429 body is provider-controlled text, so only these exact values may reach the
 # diagnostic channel; anything else degrades to None instead of carrying a payload string.
@@ -106,16 +121,107 @@ def _normalize_messages(
     for index, message in enumerate(items):
         if not isinstance(message, Mapping):
             raise ValueError(f"messages[{index}] must be a mapping")
-        if set(message) != {"role", "content"}:
-            raise ValueError(f"messages[{index}] must contain only role and content")
         role = message.get("role")
         if role not in _MESSAGE_ROLES:
             raise ValueError(f"messages[{index}].role is invalid")
+        fields = set(message)
+
+        if role in ("system", "user"):
+            # A plain conversation turn carries no tool fields at all.
+            if fields != {"role", "content"}:
+                raise ValueError(
+                    f"messages[{index}] must contain only role and content"
+                )
+            content = message.get("content")
+            if not isinstance(content, str) or not content.strip():
+                raise ValueError(f"messages[{index}].content must be a non-empty string")
+            out.append(MappingProxyType({"role": role, "content": content.strip()}))
+            continue
+
+        if role == "assistant":
+            # #5536: an assistant turn may carry the tool calls the model
+            # requested. Content stays optional there, because a tool call is a
+            # complete answer of its own.
+            extra = fields - {"role", "content", "tool_calls", "signature"}
+            if extra:
+                raise ValueError(
+                    f"messages[{index}] has unexpected fields: {', '.join(sorted(extra))}"
+                )
+            content = message.get("content")
+            if content is not None and (
+                not isinstance(content, str) or not content.strip()
+            ):
+                raise ValueError(f"messages[{index}].content must be a non-empty string")
+            signature = message.get("signature")
+            if signature is not None:
+                # #4727: the token belongs to the answer text of this turn, so a
+                # turn with no answer text cannot carry one.
+                if content is None:
+                    raise ValueError(
+                        f"messages[{index}] signature needs the answer text it belongs to"
+                    )
+                try:
+                    signature = normalize_turn_signature(signature)
+                except ToolChannelError as exc:
+                    raise ValueError(f"messages[{index}]: {exc}") from exc
+            normalized: dict[str, Any] = {"role": "assistant"}
+            if content is not None:
+                normalized["content"] = content.strip()
+            if signature is not None:
+                normalized["signature"] = signature
+            if "tool_calls" in message:
+                calls = parse_tool_calls(message.get("tool_calls"))
+                if not calls:
+                    raise ValueError(
+                        f"messages[{index}].tool_calls must not be empty"
+                    )
+                normalized["tool_calls"] = [
+                    call.to_provider_payload() for call in calls
+                ]
+            elif content is None:
+                raise ValueError(
+                    f"messages[{index}] must carry content or tool calls"
+                )
+            out.append(MappingProxyType(normalized))
+            continue
+
+        # role == "tool": the result of one earlier tool call.
+        extra = fields - {"role", "content", "tool_call_id", "name", "execution"}
+        if extra:
+            raise ValueError(
+                f"messages[{index}] has unexpected fields: {', '.join(sorted(extra))}"
+            )
+        call_id = message.get("tool_call_id")
+        if not isinstance(call_id, str) or not call_id.strip():
+            raise ValueError(
+                f"messages[{index}].tool_call_id must be a non-empty string"
+            )
+        # #4727: the executor's own outcome travels with its result, so a
+        # refusal, a failure and a cancellation are not replayed as a completion.
+        execution = message.get("execution")
+        if execution is not None:
+            try:
+                execution = dict(normalize_execution_event(execution))
+            except ToolChannelError as exc:
+                raise ValueError(f"messages[{index}]: {exc}") from exc
         content = message.get("content")
-        if not isinstance(content, str) or not content.strip():
+        if not isinstance(content, str):
+            raise ValueError(f"messages[{index}].content must be a string")
+        if not content.strip() and (
+            execution is None or execution["status"] == TOOL_COMPLETED_STATUS
+        ):
             raise ValueError(f"messages[{index}].content must be a non-empty string")
-        normalized_content = content.strip()
-        out.append(MappingProxyType({"role": role, "content": normalized_content}))
+        tool_message: dict[str, Any] = {
+            "role": "tool",
+            "tool_call_id": call_id.strip(),
+            "content": content.strip(),
+        }
+        name = message.get("name")
+        if isinstance(name, str) and name.strip():
+            tool_message["name"] = name.strip()
+        if execution is not None:
+            tool_message["execution"] = execution
+        out.append(MappingProxyType(tool_message))
     return tuple(out)
 
 
@@ -217,11 +323,7 @@ class B14ExecutionConfig:
 
 @dataclass(frozen=True, slots=True)
 class B14RoutingOptions:
-    task_type: str | None = None
     required_capabilities: tuple[str, ...] | None = None
-    optimize_for: str | None = None
-    allow_external_fallback: bool | None = None
-    provider_order: tuple[str, ...] | None = None
     # There is no upstream call budget here. The number of candidates one
     # dispatch may try is the number of candidates the declared product grade
     # allows, and B14 owns that list: it advances to the next candidate only
@@ -239,37 +341,11 @@ class B14RoutingOptions:
     def __post_init__(self) -> None:
         if self.product_tier is not None and self.product_tier not in ("free", "plus", "pro", "max"):
             raise ValueError("product_tier must be free, plus, pro or max")
-        if self.task_type is not None:
-            if not isinstance(self.task_type, str):
-                raise ValueError("task_type must be a string or None")
-            task_type = self.task_type.strip().lower()
-            if task_type not in _TASK_TYPES:
-                raise ValueError("unsupported task_type")
-            object.__setattr__(self, "task_type", task_type)
 
         object.__setattr__(
             self,
             "required_capabilities",
             _normalize_string_tuple("required_capabilities", self.required_capabilities),
-        )
-
-        if self.optimize_for is not None:
-            if not isinstance(self.optimize_for, str):
-                raise ValueError("optimize_for must be a string or None")
-            optimize_for = self.optimize_for.strip().lower()
-            if optimize_for not in _OPTIMIZE_FOR:
-                raise ValueError("unsupported optimize_for")
-            object.__setattr__(self, "optimize_for", optimize_for)
-
-        if self.allow_external_fallback is not None and not isinstance(
-            self.allow_external_fallback, bool
-        ):
-            raise ValueError("allow_external_fallback must be a boolean or None")
-
-        object.__setattr__(
-            self,
-            "provider_order",
-            _normalize_string_tuple("provider_order", self.provider_order),
         )
 
         if self.max_retries is not None and (
@@ -281,16 +357,8 @@ class B14RoutingOptions:
 
     def to_dict(self) -> dict[str, Any]:
         out: dict[str, Any] = {}
-        if self.task_type is not None:
-            out["task_type"] = self.task_type
         if self.required_capabilities is not None:
             out["required_capabilities"] = list(self.required_capabilities)
-        if self.optimize_for is not None:
-            out["optimize_for"] = self.optimize_for
-        if self.allow_external_fallback is not None:
-            out["allow_external_fallback"] = self.allow_external_fallback
-        if self.provider_order is not None:
-            out["provider_order"] = list(self.provider_order)
         if self.max_retries is not None:
             out["max_retries"] = self.max_retries
         if self.product_tier is not None:
@@ -381,6 +449,11 @@ class B14ChatRequest:
     # An empty mapping contributes nothing, so an unspecified request keeps its
     # exact pre-#3977 layout.
     model_parameters: Mapping[str, Any] = field(default_factory=dict)
+    # #5536: the model-native tool channel. An empty declaration contributes
+    # nothing to the payload, so a caller that does not use the channel keeps
+    # the exact pre-#5536 request layout.
+    tools: tuple[ToolDefinition, ...] = ()
+    tool_choice: Mapping[str, Any] | str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "messages", _normalize_messages(self.messages))
@@ -417,6 +490,20 @@ class B14ChatRequest:
             self, "model_parameters", _normalize_model_parameters(self.model_parameters)
         )
 
+        # #5536: the tool declaration and the tool choice are normalized here,
+        # before anything is written to the wire. A declared tool must be a
+        # usable function schema, and a named tool choice must name a tool
+        # that was actually declared.
+        tools = normalize_tool_definitions(self.tools)
+        object.__setattr__(self, "tools", tools)
+        if self.tool_choice is not None and not tools:
+            raise ValueError("tool_choice requires a declared tool")
+        object.__setattr__(
+            self,
+            "tool_choice",
+            normalize_tool_choice(self.tool_choice, declared=tools),
+        )
+
     def to_payload(self) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": self.model,
@@ -429,6 +516,13 @@ class B14ChatRequest:
         # Documented native fields go at the TOP LEVEL of the request body.
         for name in sorted(self.model_parameters):
             payload[name] = self.model_parameters[name]
+        # #5536: the tool channel travels as the documented top-level
+        # ``tools``/``tool_choice`` pair. It is present only when the caller
+        # declared a tool, so an unchanged request keeps its exact layout.
+        if self.tools:
+            payload["tools"] = [tool.to_provider_schema() for tool in self.tools]
+            if self.tool_choice is not None:
+                payload["tool_choice"] = self.tool_choice
         routing = self.routing.to_dict()
         if routing:
             payload["business14"] = routing
@@ -472,12 +566,17 @@ class B14ExecutionResult:
     answer: str
     route: B14RouteMetadata = field(default_factory=B14RouteMetadata)
     usage: UsageMetadata = field(default_factory=UsageMetadata)
+    # #5536: the tool calls the model requested. When this is non-empty the
+    # model answered with a call rather than with prose, so ``answer`` may be
+    # empty. The empty tuple is the unchanged pre-#5536 result.
+    tool_calls: tuple[ToolCall, ...] = ()
 
     def to_public_dict(self) -> dict[str, Any]:
         return {
             "answer": self.answer,
             "route": self.route.to_public_dict(),
             "usage": self.usage.to_public_dict(),
+            "tool_calls": [call.to_public_dict() for call in self.tool_calls],
         }
 
 
@@ -652,7 +751,7 @@ class B14ExecutionClient:
             )
 
         try:
-            answer = data["choices"][0]["message"]["content"]
+            message = data["choices"][0]["message"]
         except (KeyError, IndexError, TypeError) as exc:
             raise B14ExecutionError(
                 "malformed_upstream",
@@ -660,24 +759,58 @@ class B14ExecutionClient:
                 upstream_status_code=status_code,
                 diagnostic_class="upstream_missing_content",
             ) from exc
-        if not isinstance(answer, str):
+        if not isinstance(message, Mapping):
+            raise B14ExecutionError(
+                "malformed_upstream",
+                "Business 14 response did not contain assistant content.",
+                upstream_status_code=status_code,
+                diagnostic_class="upstream_missing_content",
+            )
+
+        # #5536: a tool call is a complete answer of its own, so the assistant
+        # content may be absent or empty when the model answered with a call.
+        try:
+            tool_calls = parse_tool_calls(message.get("tool_calls"))
+        except ToolChannelError as exc:
+            raise B14ExecutionError(
+                "malformed_upstream",
+                "Business 14 returned an invalid tool call.",
+                upstream_status_code=status_code,
+                diagnostic_class="upstream_invalid_tool_call",
+            ) from exc
+
+        content = message.get("content", _MISSING_CONTENT)
+        if content is _MISSING_CONTENT:
+            if not tool_calls:
+                raise B14ExecutionError(
+                    "malformed_upstream",
+                    "Business 14 response did not contain assistant content.",
+                    upstream_status_code=status_code,
+                    diagnostic_class="upstream_missing_content",
+                )
+            normalized_answer = ""
+        elif content is None and tool_calls:
+            normalized_answer = ""
+        elif not isinstance(content, str):
             raise B14ExecutionError(
                 "malformed_upstream",
                 "Business 14 assistant content was not text.",
                 upstream_status_code=status_code,
                 diagnostic_class="upstream_non_text_content",
             )
-        normalized_answer = answer.strip()
-        if not normalized_answer:
-            raise B14ExecutionError(
-                "empty_upstream_answer",
-                "Business 14 returned an empty assistant answer.",
-                upstream_status_code=status_code,
-                diagnostic_class="upstream_empty_answer",
-            )
+        else:
+            normalized_answer = content.strip()
+            if not normalized_answer and not tool_calls:
+                raise B14ExecutionError(
+                    "empty_upstream_answer",
+                    "Business 14 returned an empty assistant answer.",
+                    upstream_status_code=status_code,
+                    diagnostic_class="upstream_empty_answer",
+                )
 
         return B14ExecutionResult(
             answer=normalized_answer,
             route=_parse_route_metadata(data),
             usage=_parse_usage(data),
+            tool_calls=tool_calls,
         )

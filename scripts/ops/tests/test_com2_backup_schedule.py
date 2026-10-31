@@ -7,6 +7,7 @@ import os
 import shutil
 import sys
 import time
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parents[1] / "com2_backup_schedule.py"
@@ -568,11 +569,18 @@ def test_install_task_rejects_an_invalid_time(tmp_path):
 
 def test_status_reports_staleness_only_with_an_explicit_bound(tmp_path, capsys):
     _root, state = _prepare(tmp_path)
+    # Anchored, not written down: this test is about one record being stale under a
+    # 24h bound and acceptable under a 240h bound, so the last success has to sit
+    # between those two ages. A fixed date leaves that band as the clock runs —
+    # 2026-10-17 was 298h old by 2026-10-29 and the 240h case could no longer pass.
+    last_success = (datetime.now(timezone.utc) - timedelta(hours=100)).strftime(
+        "%Y-%m-%dT%H:%M:%SZ"
+    )
     (state / schedule_ops.STATUS_NAME).write_text(
         json.dumps(
             {
                 "ok": False,
-                "last_success_utc": "2026-10-17T00:00:00Z",
+                "last_success_utc": last_success,
                 "last_success_backup_id": "old",
             }
         ),

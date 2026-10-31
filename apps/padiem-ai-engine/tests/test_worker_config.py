@@ -67,7 +67,16 @@ def test_worker_source_has_no_browser_cors_or_public_b14_fallback() -> None:
     assert "workers.dev" not in source
     assert "workers.dev" not in transport
     assert 'B14_SERVICE_BINDING_NAME = "B14_SERVICE"' in source
-    assert 'B14_INTERNAL_ORIGIN = "https://b14.internal"' in transport
+    # #5784: the binding origin moved to the shared upstream switch. The Engine
+    # still may not resolve to anything but that literal in binding mode, and no
+    # public B14 host may appear in this transport at all.
+    core_upstream = (
+        APP_ROOT.parent.parent / "packages" / "padiem-ai-core" / "padiem_ai_core" / "b14_upstream.py"
+    ).read_text(encoding="utf-8")
+    assert 'BINDING_ORIGIN = "https://b14.internal"' in core_upstream
+    assert "BINDING_ORIGIN as B14_INTERNAL_ORIGIN" in transport
+    assert "padiem.net" not in transport
+    assert "workers.dev" not in core_upstream
 
 
 def test_engine_production_uses_worker_native_tool_runtime_validation() -> None:

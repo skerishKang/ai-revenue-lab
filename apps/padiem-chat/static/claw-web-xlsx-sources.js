@@ -271,7 +271,7 @@
     editedLink.setAttribute("download", "");
     const editPreviewResult = root.createElement("p");
     editPreviewResult.setAttribute("aria-live", "polite");
-    editPreviewResult.textContent = "별도 P01 쓰기 승인과 PDF 변환은 아직 지원되지 않습니다.";
+    editPreviewResult.textContent = "수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 승인 뒤에 열립니다.";
     const writeApprove = root.createElement("button");
     writeApprove.type = "button";
     writeApprove.textContent = "수정된 XLSX 저장 승인";
@@ -800,7 +800,7 @@
       approvalStatus.textContent = P01_MESSAGES[status.status];
       if (status.status === "confirmed" && status.workcopy_created) {
         showWorkcopy(selectionRef, status.workcopy_document_id);
-        approvalStatus.textContent = "승인된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정·PDF 변환은 별도 승인과 지원 기능이 필요합니다.";
+        approvalStatus.textContent = "승인된 원본의 XLSX 작업 사본을 내려받을 수 있습니다. 수정은 별도 승인이 필요하고, 수정한 XLSX를 PDF로 변환하는 기능은 별도 P01 쓰기 승인 뒤에 열립니다.";
         const handle = status.work_conversation;
         if (handle && CHAT_ID.test(handle.conversation_id)) {
           workConversationHandle = {

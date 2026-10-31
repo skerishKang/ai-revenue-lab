@@ -18,24 +18,42 @@
   const SVG_NS = "http://www.w3.org/2000/svg";
   const SNAPSHOT_EVENT = "padiem:claw-device-directory";
 
+  function vocabStatus(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.status === "function" ? (v.status(key) || fallback) : fallback;
+  }
+  function vocabName(key, fallback) {
+    const v = window.PadiemConnectorVocabulary;
+    return v && typeof v.name === "function" ? (v.name(key) || fallback) : fallback;
+  }
   const COPY = Object.freeze({
     ko: {
       connect: "컴퓨터 연결",
       connected: "PC 연결됨",
-      check: "PC 연결 확인",
+      connecting: "연결 확인 중",
+      disconnected: "컴퓨터 미연결",
+      check: "상태 확인 불가",
+      preparing: "준비 중",
       connectHint: "컴퓨터가 연결되어 있지 않습니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       connectedHint: "컴퓨터가 연결되어 있습니다. 클릭하면 연결된 컴퓨터 정보를 확인합니다.",
+      connectingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
       checkHint: "컴퓨터 연결 상태를 확인하지 못했습니다. 클릭하면 연결 상태를 다시 확인합니다.",
-      checkingHint: "컴퓨터 연결 상태를 확인하는 중입니다. 클릭하면 컴퓨터 연결 안내를 엽니다.",
+      executableHint: "PC 실행 대상은 확인되었지만 온라인 상태는 확인되지 않았습니다. 클릭하면 연결 상태를 다시 확인합니다.",
+      preparingHint: "컴퓨터 연결 기능은 아직 준비 중입니다. 클릭하면 연결 안내를 엽니다.",
     },
     en: {
       connect: "PC connect",
       connected: "PC connected",
-      check: "PC check",
+      connecting: "Checking…",
+      disconnected: "PC not connected",
+      check: "Status unavailable",
+      preparing: "Coming soon",
       connectHint: "No computer is connected. Click to open the computer connection guide.",
       connectedHint: "A computer is connected. Click to review the connected computer.",
+      connectingHint: "Checking the computer connection status. Click to open the computer connection guide.",
       checkHint: "The computer connection status could not be confirmed. Click to check it again.",
-      checkingHint: "Checking the computer connection status. Click to open the computer connection guide.",
+      executableHint: "The PC is an execution target, but its online state is not confirmed. Click to check it again.",
+      preparingHint: "The computer connection feature is not available yet. Click to open the guide.",
     },
   });
 
@@ -77,6 +95,40 @@
     return svg;
   }
 
+  /* #5553: one small mark per state, drawn inside the screen of the monitor so
+     the four states differ by wording, colour AND icon — never by colour alone.
+     connected=check, connecting=clock (state being read), disconnected=slash
+     across the screen, unavailable=alert, preparing=dotted screen. */
+  function stateMark(state) {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "2.2");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("focusable", "false");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("class", "composer-pc-status-mark");
+    const mark = document.createElementNS(SVG_NS, "path");
+    if (state === "connected") {
+      mark.setAttribute("d", "M7.5 10.5l3 3 6-6");
+    } else if (state === "connecting" || state === "preparing") {
+      const circle = document.createElementNS(SVG_NS, "circle");
+      circle.setAttribute("cx", "12");
+      circle.setAttribute("cy", "10.5");
+      circle.setAttribute("r", "3.6");
+      svg.append(circle);
+      mark.setAttribute("d", "M12 8.7v1.8l1.4 1.1");
+    } else if (state === "disconnected") {
+      mark.setAttribute("d", "M7 14.5L17 6.5");
+    } else {
+      mark.setAttribute("d", "M12 6.8v4.6M12 14.1v.01");
+    }
+    svg.append(mark);
+    return svg;
+  }
+
   function install() {
     const form = document.getElementById("composerForm");
     const input = document.getElementById("messageInput");
@@ -87,7 +139,7 @@
     const button = element("button", "composer-pc-status");
     button.type = "button";
     button.id = "composerPcStatus";
-    button.dataset.state = "unknown";
+    button.dataset.state = "connecting";
     const face = element("span", "composer-pc-status-face");
     const dot = element("span", "composer-pc-status-dot");
     dot.setAttribute("aria-hidden", "true");
@@ -101,7 +153,11 @@
     form.append(button);
     form.dataset.pcStatus = "ready";
 
-    let state = "unknown";
+    let state = "connecting";
+    // A server-confirmed execution target whose online state is unobserved.
+    // It never makes the control connected; it only names the reason the
+    // state is unconfirmed instead of a generic read failure.
+    let executableReady = false;
 
     // The composer grows with its content (attachment tray, model row, text).
     // The control sits on the textarea's own top-right corner, so its offset
@@ -127,15 +183,19 @@
     function hintFor(next) {
       const t = locale();
       if (next === "connected") return t.connectedHint;
-      if (next === "check") return t.checkHint;
-      if (next === "unknown") return t.checkingHint;
+      if (next === "connecting") return t.connectingHint;
+      if (next === "unavailable") return executableReady ? t.executableHint : t.checkHint;
+      if (next === "preparing") return t.preparingHint;
       return t.connectHint;
     }
 
     function labelFor(next) {
       const t = locale();
-      if (next === "connected") return t.connected;
-      if (next === "check") return t.check;
+      if (next === "connected") return vocabStatus("connected", t.connected);
+      if (next === "connecting") return vocabStatus("checking", t.connecting);
+      if (next === "disconnected") return vocabStatus("disconnected", t.disconnected);
+      if (next === "unavailable") return vocabStatus("failed", t.check);
+      if (next === "preparing") return t.preparing;
       return t.connect;
     }
 
@@ -143,6 +203,11 @@
       state = next;
       button.dataset.state = next;
       label.textContent = labelFor(next);
+      // #5553: the mark inside the monitor swaps with the state, so the glyph
+      // itself — not only the dot colour — names the state.
+      const previousMark = icon.querySelector(".composer-pc-status-mark");
+      if (previousMark) previousMark.remove();
+      icon.append(stateMark(next));
       const hint = hintFor(next);
       button.setAttribute("aria-label", hint);
       // The shared product tooltip replaces the native popup, so the owner
@@ -158,42 +223,24 @@
     // The truth is the server projection that the device directory module
     // already published. A device counts as connected only when the server
     // marked it CONNECTED and usable, and never while it is revoked or
-    // expired.
+    // expired. The classification itself lives in the ONE shared state
+    // module, so this control and the Connectors computer card can never
+    // disagree.
     function classify(snapshot) {
-      if (!snapshot || snapshot.readCompleted !== true) return "unknown";
-      const status = typeof snapshot.statusCode === "string" ? snapshot.statusCode : "";
-      // The directory itself could not be read or is not configured.
-      if (status === "unavailable" || status === "unconfigured" ||
-          status === "readFailed" || status === "failed") return "check";
-      if (status === "login") return "disconnected";
-      if (snapshot.available !== true) return "check";
-      const devices = Array.isArray(snapshot.devices) ? snapshot.devices : [];
-      if (!devices.length) return "disconnected";
-      const usable = (device) => Boolean(
-        device && device.online === true &&
-        device.revoked !== true && device.expired !== true,
-      );
-      const savedTargetId = typeof snapshot.savedTargetId === "string"
-        ? snapshot.savedTargetId
-        : "";
-      if (savedTargetId) {
-        // Claw already chose an execution target: that target's own state is
-        // the state the reader asked about. No other PC is substituted for it.
-        const target = devices.find((device) => device.deviceId === savedTargetId);
-        if (!target) return "check";
-        if (usable(target)) return "connected";
-        if (target.revoked === true || target.expired === true) return "check";
-        return "disconnected";
+      const shared = window.PadiemComputerConnectionState;
+      if (shared && typeof shared.classify === "function") {
+        return shared.classify(snapshot);
       }
-      if (devices.some(usable)) return "connected";
-      const needsAttention = devices.every((device) => (
-        device.revoked === true || device.expired === true ||
-        device.state === "ACTION_REQUIRED"
-      ));
-      return needsAttention ? "check" : "disconnected";
+      return "connecting";
+    }
+
+    function syncExecutable() {
+      const shared = window.PadiemComputerConnection;
+      executableReady = Boolean(shared && shared.executableReady === true);
     }
 
     function apply(snapshot) {
+      syncExecutable();
       paint(classify(snapshot));
       watchPanel();
       syncPanelState();
@@ -249,6 +296,11 @@
     }
 
     function openExistingPanel() {
+      const shell = document.querySelector(".app-shell");
+      if (shell && shell.dataset.clawComposerCollapsed === "true") {
+        const composerToggle = document.getElementById("clawMobileComposerToggle");
+        if (composerToggle) composerToggle.click();
+      }
       const toggle = document.getElementById("clawDeviceManagerToggle");
       if (toggle) {
         toggle.click();
@@ -267,13 +319,52 @@
       }
     }
 
-    button.addEventListener("click", openExistingPanel);
+    // #5573 step 1 (2026-10-29 redesign): this control no longer opens the
+    // device directory panel. A connected account gets the small PC-list
+    // popover; otherwise the ONE connect flow takes over (modal, download,
+    // self-closing wait). The panel path stays as the fallback for a page
+    // where the connect-flow module did not load.
+    button.addEventListener("click", () => {
+      const flow = window.PadiemPcConnectFlow;
+      if (!flow || typeof flow.open !== "function") {
+        openExistingPanel();
+        return;
+      }
+      if (state === "connected" && typeof flow.togglePopover === "function") {
+        flow.togglePopover(button);
+        return;
+      }
+      void flow.open();
+    });
+
+    // The starter card's own wiring moved to pc-connect-flow.js, which owns the
+    // one connect flow the card now opens.
 
     // The shared snapshot is the only input. This module never reads the
     // directory endpoint itself, so it can never become a second reader or a
     // second polling system.
     window.addEventListener(SNAPSHOT_EVENT, (event) => {
       apply(event && event.detail ? event.detail : window.PadiemClawDeviceDirectory);
+    });
+    // The shared state module republishes the classified state, so this control
+    // and the Connectors computer card always show the same state.
+    window.addEventListener("padiem:computer-connection", (event) => {
+      const detail = event && event.detail ? event.detail : null;
+      if (!detail || typeof detail.state !== "string") return;
+      executableReady = detail.executableReady === true;
+      paint(detail.state);
+      watchPanel();
+      syncPanelState();
+    });
+    // #5573 step 1: the pairing list (/api/pc/pairings) is the PC-list truth
+    // the 2026-10-29 redesign asks for. When the connect-flow module has
+    // actually read it (read === "ok"), that state wins here; any other read
+    // keeps the directory-driven state above, so a static or unconfigured
+    // deployment never flips this control on its own.
+    window.addEventListener("padiem:pc-pairing-state", (event) => {
+      const detail = event && event.detail ? event.detail : null;
+      if (!detail || detail.read !== "ok" || typeof detail.state !== "string") return;
+      paint(detail.state);
     });
     new MutationObserver(() => paint(state)).observe(document.documentElement, {
       attributes: true,
@@ -285,7 +376,7 @@
     }
     window.addEventListener("resize", syncLayout);
 
-    paint("unknown");
+    paint("connecting");
     watchPanel();
     syncPanelState();
     syncLayout();

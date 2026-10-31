@@ -21,8 +21,9 @@
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
+/* #5560: the admin hub entry moved into Settings, so the sidebar bottom keeps
+ * only the settings button, the account profile and the Padiem Home link. */
 .sidebar-bottom .home-link,
-.sidebar-bottom .admin-hub-link,
 .sidebar-bottom .settings-button {
   width: 100%;
   min-height: 44px;
@@ -37,15 +38,10 @@
   font-weight: 650;
   text-align: left;
 }
-.sidebar-bottom .home-link,
-.sidebar-bottom .admin-hub-link {
+.sidebar-bottom .home-link {
   text-decoration: none;
 }
-.sidebar-bottom .admin-hub-link[hidden] {
-  display: none;
-}
 .sidebar-bottom .home-link:hover,
-.sidebar-bottom .admin-hub-link:hover,
 .sidebar-bottom .settings-button:hover {
   background: rgba(255,255,255,.82);
 }

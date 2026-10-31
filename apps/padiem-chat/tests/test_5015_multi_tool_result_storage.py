@@ -33,7 +33,7 @@ import pytest
 
 from app import oracle_mesh_read_return_routes as routes
 from app.claw_routes import claw_pending_result
-from app.history import D1HistoryStore, HistoryError, HistoryForbidden
+from app.history import D1HistoryStore, HistoryError, HistoryForbidden, PRODUCT_SCOPE_CHAT
 from app.claw_local_task_result_projection import result_message_id
 
 MIGRATIONS = Path(__file__).resolve().parents[1] / "migrations"
@@ -131,8 +131,8 @@ def _database() -> sqlite3.Connection:
         )
     connection.execute(
         "INSERT INTO conversations (id,user_id,title,created_at,updated_at,product_scope) "
-        "VALUES (?,?,'title','2026-01-01','2026-01-01','chat')",
-        (CONVERSATION, OWNER),
+        "VALUES (?,?,'title','2026-01-01','2026-01-01',?)",
+        (CONVERSATION, OWNER, PRODUCT_SCOPE_CHAT),
     )
     connection.commit()
     return connection
@@ -720,6 +720,96 @@ def test_a_late_command_result_never_reopens_a_completed_run():
         connection.close()
 
 
+def _read_dispatch_arguments(call_ref: str, *, suffix: str) -> dict:
+    """One trusted file read row on the same kind=read lane the route stages."""
+
+    arguments = _dispatch_arguments(call_ref, suffix=suffix, command="")
+    arguments.update({
+        "kind": "read", "command_text": None,
+        "root_ref": routes._PC_FILES_READ_ROOT_REF,
+        "path_relative": "notes.txt",
+        "file_path": r"C:\Users\limone\AppData\Local\PADIEM\MeshCentralTrial\notes.txt",
+    })
+    return arguments
+
+
+def _stage_read(store, suffix: str, *, call_ref: str) -> str:
+    asyncio.run(store.create_oracle_mesh_dispatch(
+        **_read_dispatch_arguments(call_ref, suffix=suffix),
+    ))
+    return "oracle_mesh_cmd_" + suffix
+
+
+def test_a_kind_read_failure_keeps_the_run_failed_and_never_completed():
+    """List success is not the work's completion; a failed read stays failed."""
+
+    connection = _database()
+    try:
+        _stage_run(connection)
+        store = _store(connection)
+        _stage_command(store, "list")
+        read_call = RUN + ":read_file:" + "a" * 24
+        read_id = _stage_read(store, "read", call_ref=read_call)
+
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list",
+            summary="no_exit_code", content="listing body", status="completed",
+        ))
+        _finish_command(connection, "list")
+        # A list result alone never seals the overall run.
+        assert _run_row(connection)["status"] == "running"
+        with pytest.raises(HistoryError, match="without a terminal result"):
+            asyncio.run(store.seal_run_terminal(
+                user_id=OWNER, run_id=RUN, message_id=RUN + "_final",
+                summary="no_exit_code", content="premature answer",
+                status="completed",
+            ))
+
+        marker = "PADIEM_PC_FILE_ERROR:too_large"
+        digest = hashlib.sha256(marker.encode("utf-8")).hexdigest()
+        dispatch_id = connection.execute(
+            "SELECT dispatch_id FROM oracle_mesh_dispatch WHERE command_id=?",
+            (read_id,),
+        ).fetchone()[0]
+        asyncio.run(store.record_oracle_mesh_first_result(
+            dispatch_id=dispatch_id,
+            content_sha256=digest, content_bytes=len(marker.encode("utf-8")),
+            termination="exited", exit_code=1,
+        ))
+        asyncio.run(store.store_oracle_mesh_command_result(
+            user_id=OWNER, dispatch_id=dispatch_id,
+            conversation_id=CONVERSATION,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+            raw=marker, expected_sha256=digest,
+            expected_bytes=len(marker.encode("utf-8")),
+        ))
+        stored = asyncio.run(store.read_oracle_mesh_original(
+            user_id=OWNER, dispatch_id=dispatch_id,
+            conversation_id=CONVERSATION,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+        ))
+        assert stored is not None and stored[0] == marker.encode("utf-8")
+
+        assert asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id(read_id, "oracle_mesh_rev_read"),
+            command_scope=read_id,
+            summary="exited/1", content=marker, status="failed",
+        )) is True
+        _finish_command(connection, "read", outcome="failed")
+        assert _run_row(connection)["status"] == "failed"
+        with pytest.raises(HistoryError, match="failed command"):
+            asyncio.run(store.seal_run_terminal(
+                user_id=OWNER, run_id=RUN, message_id=RUN + "_final",
+                summary="exited/1", content="a false success",
+                status="completed",
+            ))
+    finally:
+        connection.close()
+
+
 # ---------------------------------------------------------------------------
 # The canonical Chat PC run id
 # ---------------------------------------------------------------------------
@@ -758,6 +848,166 @@ def test_pending_result_resolves_a_canonical_chat_pc_run(monkeypatch):
         assert result["run_id"] == RUN
         assert result["conversation_id"] == CONVERSATION
         assert result["status"] == "running"
+        # #5573: a run with no pinned scope keeps the exact previous shape.
+        assert "scope_notice" not in result
+    finally:
+        connection.close()
+
+
+def _files_list_claim() -> dict:
+    return {"version": 1, "requested": "files_list", "admitted": "files_list",
+            "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
+
+
+def test_live_pc_lane_scope_notice_comes_from_the_pinned_claim(monkeypatch):
+    """#5573: the reader the live completion path uses returns the pinned scope.
+
+    The route composes its response from
+    :func:`chat_pc_drive.pc_scope_notice_for_run`, so the notice shown live is
+    the one pinned from the claim before dispatch — never a value the model or
+    the browser could supply. The answer text stays free of it.
+    """
+    from app import chat_pc_drive
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    monkeypatch.setattr(chat_pc_drive, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_pc_drive, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        asyncio.run(store.pin_pc_run_scope(
+            user_id=OWNER, run_id=RUN, claim=_files_list_claim(),
+        ))
+        answer = "승인된 폴더의 파일 목록을 확인했습니다."
+
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
+            cookies={},
+        )
+        notice = asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(request, run_id=RUN),
+        )
+        assert notice == PC_SCOPE_NOTICE_LABELS["files_list"]
+        assert notice == "목록만 조회합니다. 파일 내용은 읽지 않습니다."
+        # The notice is display metadata for its own field. The lane answer is
+        # the PC result alone and never carries the notice inside it.
+        assert notice not in answer
+    finally:
+        connection.close()
+
+
+def test_live_pc_lane_scope_notice_lookup_is_display_only(monkeypatch):
+    """No pinned scope, or an unreadable store, means simply "no notice".
+
+    A display lookup must never turn a completed PC answer into a failure.
+    """
+    from app import chat_pc_drive
+
+    monkeypatch.setattr(chat_pc_drive, "auth_ready", lambda request: True)
+    monkeypatch.setattr(chat_pc_drive, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        request = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=store)),
+            cookies={},
+        )
+        assert asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(request, run_id=RUN),
+        ) is None
+
+        class _Broken:
+            async def get_pc_run_scope_notice(self, **kwargs):
+                raise RuntimeError("PRIVATE_D1_FAILURE")
+
+        broken = SimpleNamespace(
+            app=SimpleNamespace(state=SimpleNamespace(history_store=_Broken())),
+            cookies={},
+        )
+        assert asyncio.run(
+            chat_pc_drive.pc_scope_notice_for_run(broken, run_id=RUN),
+        ) is None
+    finally:
+        connection.close()
+
+
+
+def test_pending_result_get_carries_the_pinned_scope_notice(monkeypatch):
+    """#5573: the recovery GET states the same pinned scope as the live POST."""
+    import app.claw_routes as claw_routes
+    from app.history import PC_SCOPE_NOTICE_LABELS
+
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        asyncio.run(store.pin_pc_run_scope(
+            user_id=OWNER, run_id=RUN, claim=_files_list_claim(),
+        ))
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        assert response.status_code == 200
+        result = json.loads(response.body)["result"]
+        assert result["status"] == "running"
+        assert result["scope_notice"] == PC_SCOPE_NOTICE_LABELS["files_list"]
+        # The scope message is a notice, never an answer.
+        assert "answer" not in result
+        assert len(_messages(connection)) == 1
+    finally:
+        connection.close()
+
+
+def test_pending_result_recovers_final_answer_without_mistaking_scope_notice(monkeypatch):
+    """#5567 GET recovery excludes the persisted <run_id>_scope message."""
+    import app.claw_routes as claw_routes
+    from app import chat_pc_drive
+
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection, status="running")
+        store = _store(connection)
+        claim = {"version": 1, "requested": "files_list", "admitted": "files_list",
+                 "source": "declared", "ops": ["list"], "app_id": "padiem-chat"}
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=claim))
+        notice = next(row for row in _messages(connection) if row["id"] == RUN + "_scope")
+        assert notice["content"].startswith("목록만 조회합니다.")
+        # A scope announcement alone is neither a terminal nor an answer.
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        assert response.status_code == 200
+        pending = json.loads(response.body)["result"]
+        assert pending["status"] == "running" and "answer" not in pending
+
+        _stage_command(store, "list")
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list", summary="no_exit_code",
+            content=LIST_TEXT, status="completed",
+        ))
+        _finish_command(connection, "list")
+        final_answer = "승인된 폴더의 파일 목록을 확인했습니다."
+        assert asyncio.run(chat_pc_drive._append_lane_answer(
+            _lane_request(), store, uid=OWNER, run_id=RUN, content=final_answer,
+        )) is True
+        # Recreate the store to exercise persisted recovery after the POST
+        # response was lost, rather than an in-memory answer cache.
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, _store(connection))))
+        assert response.status_code == 200
+        result = json.loads(response.body)["result"]
+        assert result["run_id"] == RUN and result["conversation_id"] == CONVERSATION
+        assert result["status"] == "completed"
+        assert result["answer_source"] == "pc_command_result"
+        assert result["answer"] == LIST_TEXT + "\n" + final_answer
+        assert notice["content"] not in result["answer"]
+        assert "목록만 조회합니다." not in result["answer"]
+        assert "<!--pc_scope:" not in result["answer"]
+        assert len(_messages(connection)) == 3
+        assert connection.execute("SELECT COUNT(*) FROM oracle_mesh_dispatch").fetchone()[0] == 1
     finally:
         connection.close()
 
@@ -800,5 +1050,121 @@ def test_pending_result_still_refuses_a_malformed_run_id(monkeypatch):
                 _pending_request(run_id, store)
             ))
             assert response.status_code == 404, run_id
+    finally:
+        connection.close()
+
+def test_engine_stream_user_turn_is_not_a_pc_run_and_text_answer_is_not_duplicated():
+    connection = _database()
+    try:
+        store = _store(connection)
+        cid = asyncio.run(store.begin_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+            user_text="ordinary question", conversation_id=CONVERSATION,
+        ))
+        assert cid == CONVERSATION
+        assert asyncio.run(store.get_claw_run(OWNER, RUN)) is None
+        assert [m["role"] for m in _messages(connection)] == ["user"]
+        assert asyncio.run(store.finish_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, answer="ordinary answer")) == CONVERSATION
+        assert [m["role"] for m in _messages(connection)] == ["user", "assistant"]
+        assert [m["content"] for m in _messages(connection)] == ["ordinary question", "ordinary answer"]
+        assert asyncio.run(store.get_claw_run(OWNER, RUN)) is None
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+    finally:
+        connection.close()
+
+
+def test_engine_stream_tool_promotion_reuses_the_exact_owner_turn_without_reappending_user():
+    connection = _database()
+    try:
+        store = _store(connection)
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+        asyncio.run(store.begin_chat_stream_turn(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+            user_text="list only", conversation_id=CONVERSATION,
+        ))
+        assert asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OTHER_OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query")) is None
+        row = asyncio.run(store.promote_chat_stream_pc_run(
+            user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE, action="pc_files_query"))
+        assert row["conversation_id"] == CONVERSATION and row["run_id"] == RUN
+        assert row["workspace_id"] == WORKSPACE and row["action"] == "pc_files_query"
+        assert [m["content"] for m in _messages(connection)] == ["list only"]
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(store.begin_chat_stream_turn(
+                user_id=OWNER, run_id=RUN, workspace_id=WORKSPACE,
+                user_text="different turn", conversation_id=CONVERSATION,
+            ))
+    finally:
+        connection.close()
+
+
+def test_streamed_pc_completion_reuses_the_verified_result_and_terminal_guards():
+    connection = _database()
+    try:
+        store = _store(connection)
+        asyncio.run(store.begin_chat_stream_turn(user_id=OWNER, run_id=RUN,
+            workspace_id=WORKSPACE, user_text="list request", conversation_id=CONVERSATION))
+        asyncio.run(store.promote_chat_stream_pc_run(user_id=OWNER, run_id=RUN,
+            workspace_id=WORKSPACE, action="pc_files_query"))
+        asyncio.run(store.pin_pc_run_scope(user_id=OWNER, run_id=RUN, claim=_files_list_claim()))
+        _stage_command(store, "list")
+        asyncio.run(store.append_local_task_result(user_id=OWNER, run_id=RUN,
+            message_id=_command_message_id("oracle_mesh_cmd_list", "oracle_mesh_rev_list"),
+            command_scope="oracle_mesh_cmd_list", summary="no_exit_code",
+            content="verified listing", status="completed"))
+        # An answer cannot seal a dispatch which has not reached done.
+        asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="too early"))
+        assert _run_row(connection)["status"] == "running"
+        assert "too early" not in [r["content"] for r in _messages(connection)]
+        _finish_command(connection, "list")
+        asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="final listing"))
+        assert _run_row(connection)["status"] == "completed"
+        messages = _messages(connection)
+        assert [r["role"] for r in messages].count("user") == 1
+        assert [r["content"] for r in messages].count("final listing") == 1
+        assert any(r["id"] == RUN + "_scope" for r in messages)
+        assert any(r["id"] == RUN + "_final" for r in messages)
+        with pytest.raises(HistoryForbidden):
+            asyncio.run(store.finish_chat_stream_turn(user_id=OWNER, run_id=RUN, answer="replay"))
+    finally:
+        connection.close()
+
+
+def test_failed_run_cannot_be_reopened_by_a_later_pc_step(monkeypatch):
+    from app import claw_routes
+    _setup_route(monkeypatch)
+    monkeypatch.setattr(claw_routes, "auth_ready", lambda request: True)
+    monkeypatch.setattr(claw_routes, "current_user_id", lambda request: OWNER)
+    connection = _database()
+    try:
+        _stage_run(connection)
+        store = _store(connection)
+        nonce = "nonce-failed-read-d1"
+        dispatch_id = _stage_and_claim(
+            store, READ_CALL, suffix="read",
+            command="Get-Content -LiteralPath missing.txt", nonce=nonce,
+        )
+        status, body, _ = _call(
+            routes.oracle_mesh_read_result,
+            _Request(_result_body(dispatch_id, nonce, "", termination="no_reply"),
+                     _state(store)),
+        )
+        assert status == 200 and body["status"] == "failed"
+        asyncio.run(store.update_claw_run_status(OWNER, RUN, "running"))
+        assert _run_row(connection)["status"] == "failed"
+        _stage_command(store, "late")
+        asyncio.run(store.append_local_task_result(
+            user_id=OWNER, run_id=RUN, command_scope="oracle_mesh_cmd_late",
+            message_id=_command_message_id("oracle_mesh_cmd_late", "oracle_mesh_rev_late"),
+            summary="no_exit_code", content="late result", status="completed",
+        ))
+        assert _run_row(connection) == {"status": "failed", "result_summary": "pc_read_failed"}
+        response = asyncio.run(claw_pending_result(_pending_request(RUN, store)))
+        result = json.loads(response.body)["result"]
+        assert response.status_code == 200
+        assert result["status"] == "failed" and result["reason"] == "pc_read_failed"
     finally:
         connection.close()

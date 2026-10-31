@@ -36,8 +36,14 @@ def main():
                     assert not page.locator("#directView").is_visible(), "Modal must not switch to line-item editor"
                     assert page.locator("#b66SkillStartFromFile").is_visible()
                     assert page.locator("#b66SkillStartFromBlank").is_visible()
-                    page.locator("#b66SkillStartFromFile").click()
-                    assert page.locator("#skillWizardPanel").is_visible()
+                    # #3186: the file path has no extraction behind it yet, so it is
+                    # disabled with an explanation instead of opening the wizard.
+                    assert page.locator("#b66SkillStartFromFile").is_disabled()
+                    assert "사용할 수 없음" in page.locator("#b66SkillStartFromFile").inner_text()
+                    assert "곧" not in page.locator("#b66SkillStartFromFile").inner_text()
+                    page.locator("#b66SkillStartFromFile").click(force=True)
+                    assert page.locator("#b66SkillStartDialog").evaluate("(el) => el.open")
+                    assert not page.locator("#skillWizardPanel").is_visible()
                     assert page.get_by_text("1. 견적서 선택",exact=True).count()
                     page.locator("#skillWizardCancel").click()
                     page.wait_for_function("!document.querySelector('#b66SkillStartDialog').open")

@@ -227,6 +227,12 @@ async def plan_b66_search(
         # answer and never a silent model/tool substitution.
         return B66SearchOutcome("failed", "web_transport_error")
 
+    # Chat may continue without evidence; B66 keeps its existing disclosure
+    # states and never treats that continuation as a successful search.
+    error = getattr(plan, "error", None)
+    if error is not None:
+        reason = error.source_code or error.code
+        return B66SearchOutcome("empty" if reason == "no_evidence" else "failed", reason)
     if plan.prepared is None:
         return B66SearchOutcome("unavailable", plan.decision.reason)
 

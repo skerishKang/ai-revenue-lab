@@ -1,0 +1,292 @@
+{
+  "speech_1440": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 56.4,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1377.4,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "다시 생성",
+        "TXT 다운로드",
+        "저장"
+      ]
+    },
+    "overflowX": 0
+  },
+  "sns_1440": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 56.4,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1148.3,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "다시 생성",
+        "저장",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "meeting_1440": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 56.4,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 344.6,
+        "y": 1031.1,
+        "w": 541.6,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "저장",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "pdfmd_1440": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 344.6,
+        "y": 177.8,
+        "w": 56.4,
+        "h": 42.5
+      },
+      "titleFs": "34px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "59.6px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "overflowX": 0
+  },
+  "speech_390": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 43.1,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1636,
+        "w": 332,
+        "h": 53.2
+      },
+      "buttons": [
+        "복사",
+        "다시 생성",
+        "TXT 다운로드",
+        "저장"
+      ]
+    },
+    "overflowX": 0
+  },
+  "sns_390": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 43.1,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1297.3,
+        "w": 332,
+        "h": 53.2
+      },
+      "buttons": [
+        "복사",
+        "다시 생성",
+        "저장",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "meeting_390": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 43.1,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": {
+        "x": 29,
+        "y": 1041.3,
+        "w": 332,
+        "h": 44
+      },
+      "buttons": [
+        "복사",
+        "저장",
+        "TXT 다운로드"
+      ]
+    },
+    "overflowX": 0
+  },
+  "pdfmd_390": {
+    "opened": {
+      "state": "util",
+      "title": "유틸"
+    },
+    "header": {
+      "title": "유틸",
+      "titleRect": {
+        "x": 10,
+        "y": 96.2,
+        "w": 43.1,
+        "h": 32.5
+      },
+      "titleFs": "26px",
+      "titleFw": "770",
+      "kickerFs": "12px",
+      "taglineFs": "14px",
+      "viewPadTop": "12px"
+    },
+    "formActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "resultActions": {
+      "rect": null,
+      "buttons": null
+    },
+    "overflowX": 0
+  }
+}

@@ -1,0 +1,14 @@
+# PDF engine for the generic certification pipeline (tools/b66_generic).
+#
+# Hash-pinned on purpose: every gate in certify.py/validate_mutations.py is a
+# measurement by this engine, so a different wheel digest must fail the install
+# instead of quietly changing text spans, drawing order or raster output.
+#
+# Install (Linux runner):
+#   python -m pip install --require-hashes --only-binary=:all: \
+#       -r tools/b66_generic/requirements-certification.txt
+#
+# pytest is installed separately; keeping it out of this file lets the one PDF
+# engine stay the hash-pinned dependency.
+pymupdf==1.26.3 \
+    --hash=sha256:454f38c8cf07eb333eb4646dca10517b6e90f57ce2daa2265a78064109d85555

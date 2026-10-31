@@ -40,6 +40,22 @@
   display: none !important;
 }
 
+/* #5028: the connectors and automation sidebar entries light up on their own
+   pages the same way the calendar/library/claw entries already do. */
+#connectorsNavButton[aria-current="page"],
+#automationNavButton[aria-current="page"] {
+  border-color: var(--accent-strong, #2f6f99);
+  background: rgba(121, 188, 231, 0.22);
+}
+
+html[data-theme="padiem-glass"] #connectorsNavButton[aria-current="page"],
+html[data-theme="padiem-glass"] #automationNavButton[aria-current="page"] {
+  color: rgba(255, 255, 255, 0.96);
+  border-color: rgba(121, 188, 231, 0.38);
+  background: rgba(121, 188, 231, 0.3);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
 .standalone-view-header {
   display: flex;
   align-items: flex-start;
@@ -47,7 +63,7 @@
   gap: 12px;
 }
 .standalone-view-kicker {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.13em;
@@ -56,7 +72,7 @@
 .standalone-view-title {
   margin: 0;
   font-size: clamp(24px, 3vw, 32px);
-  line-height: 1.2;
+  line-height: 1.25;
   letter-spacing: -0.02em;
 }
 .standalone-view-tagline {
@@ -87,7 +103,10 @@
  * different brand lines. */
 html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="claw"], [data-state="connectors"], [data-state="automation"],
-  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"],
+  /* #5799: the util header joins the same brand eyebrow — the header is one
+   * shared surface for every tool, so the dot lands with the page state. */
+  [data-state="util"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker) {
   display: inline-flex;
   align-items: center;
@@ -101,7 +120,8 @@ html[data-theme="padiem-glass"] body .app-shell:is(
 }
 html[data-theme="padiem-glass"] body .app-shell:is(
   [data-state="claw"], [data-state="connectors"], [data-state="automation"],
-  [data-state="meeting"], [data-state="calendar"], [data-state="library"]
+  [data-state="meeting"], [data-state="calendar"], [data-state="library"],
+  [data-state="util"]
 ) :is(.standalone-view-kicker, .calendar-view-kicker, .library-kicker, .claw-workspace-kicker)::before {
   content: "";
   display: inline-block;
@@ -331,22 +351,43 @@ html[data-theme="padiem-glass"] body .app-shell:is(
  * finished Chat/Claw expression: titles, kickers, cards, primary actions and
  * state text. No index.html, locale, JS, DB or server-contract changes; each
  * view keeps its own features and permissions. The Glass kicker authority
- * (above) keeps winning under padiem-glass; these rules unify base themes. */
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"]) .standalone-view-title,
+ * (above) keeps winning under padiem-glass; these rules unify base themes.
+ *
+ * #5028 re-open (2026-10-23): the kicker gap and the title line-box are part of
+ * one header row, so both live here. The title takes the 1.25 line-height the
+ * Chat/Claw title renders at, and the kicker one 4px gap, so the eyebrow and the
+ * Korean title land on the same offsets in every view. A per-view title override
+ * re-splits that row, so none is kept. */
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="util"]) .standalone-view-title,
 .app-shell[data-state="calendar"] .calendar-view-title,
 .app-shell[data-state="library"] .library-view h2 {
   font-size: clamp(26px, 4vw, 34px);
   font-weight: 770;
   letter-spacing: -.045em;
+  line-height: 1.25;
   color: var(--text);
 }
-.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"])
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
 :is(.standalone-view-kicker,.calendar-view-kicker,.library-kicker) {
+  margin-bottom: 4px;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: .13em;
   color: var(--accent);
   opacity: 1;
+}
+/* Under padiem-glass the eyebrow above is an inline-flex brand mark. Left in a
+ * block heading container it sits on a line box sized by the container's own
+ * font metrics, which pushes it 7px below the frame's padding edge — measured
+ * in the library and automation headings while the calendar heading happened to
+ * run as flex and did not drift. Every heading container now stacks from one
+ * origin, so the eyebrow, title and help text share the same row in every view.
+ * The calendar error case keeps its own wrap rule below it. */
+.app-shell:is([data-state="meeting"],[data-state="automation"],[data-state="connectors"],[data-state="calendar"],[data-state="library"],[data-state="util"])
+:is(.standalone-view-header > div, .library-heading, .calendar-view-header > div, .meeting-header > div, .util-header > div) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 .library-item {
   border-color: var(--line, #e3e3e9);
@@ -510,4 +551,11 @@ html[data-theme="padiem-glass"] body .app-shell:is(
   .app-shell[data-state="automation"] #clawAutomation .claw-inbox-secondary {
     min-height: 44px;
   }
+}
+
+/* #5028: the stored-setting explanation is a technical footnote, not the
+ * page's default content. It stays in the DOM for the contract test but is
+ * not shown, so the rule list reads as the surface. */
+.app-shell[data-state="automation"] #clawAutomation #clawAutomationSchedulerNote {
+  display: none;
 }

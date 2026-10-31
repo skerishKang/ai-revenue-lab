@@ -74,8 +74,8 @@ def test_result_is_a_compact_card_not_raw_inline_document() -> None:
 def test_document_affordances_stay_honestly_disabled() -> None:
     # No fabricated download/open success: the result actions render disabled.
     assert 'class="claw-result-action" disabled aria-disabled="true"' in INDEX
-    # The five coming-soon controls remain present and disabled.
-    assert INDEX.count('claw-disabled-control" disabled aria-disabled="true"') == 5
+    # The five never-wired coming-soon controls are gone, not merely disabled.
+    assert 'claw-disabled-control' not in INDEX
 
 
 def test_chat_claw_active_navigation_state() -> None:

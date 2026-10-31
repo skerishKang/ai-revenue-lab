@@ -23,12 +23,15 @@ Gate matrix covered here:
 
 from __future__ import annotations
 
+import json
 import os
 import socket
+import subprocess
 import sys
 import threading
 import time
 from datetime import timedelta
+from pathlib import Path
 
 import pytest
 
@@ -814,3 +817,137 @@ def test_timeout_and_cancellation_terminate_bounded(tmp_path, make_e2e, no_netwo
     assert "receipt" in box
     assert box["receipt"].termination.value == "cancelled"
     assert list(runtime.active_request_ids()) == []
+
+
+def test_chat_failure_notice_surfaces_the_bounded_orchestration_error_code(tmp_path) -> None:
+    """#5568: the Chat failure display adds exactly one bounded code line.
+
+    The actual ``buildRetryBox`` / ``renderError`` / ``renderStreamError`` source
+    runs in a network-free DOM shim. The notice shows the server-owned code the
+    orchestration response carries; Claw keeps its existing presentation, and an
+    unexpected string is never echoed into the visible failure.
+    """
+    app_path = Path(__file__).resolve().parents[2] / "apps" / "padiem-chat" / "static" / "app.js"
+    script = r"""
+const fs = require("fs");
+const vm = require("vm");
+const app = fs.readFileSync(process.argv[1], "utf8");
+
+function assert(condition, label) { if (!condition) throw Error(label); }
+function element(tag) {
+  return {
+    tagName: String(tag).toUpperCase(), children: [], textContent: "", className: "",
+    handlers: {}, dataset: {},
+    append(...nodes) { this.children.push(...nodes); },
+    appendChild(node) { this.children.push(node); return node; },
+    replaceChildren(...nodes) { this.children = [...nodes]; },
+    addEventListener(kind, fn) { this.handlers[kind] = fn; },
+    remove() {},
+    querySelector() { return null; },
+    scrollIntoView() {},
+  };
+}
+function article() {
+  const content = element("div");
+  content.className = "assistant-content";
+  const label = element("span");
+  const root = element("article");
+  root.querySelector = (selector) => {
+    if (selector === ".assistant-content") return content;
+    if (selector === "[data-runtime-label]") return label;
+    return null;
+  };
+  return { root, content, label };
+}
+
+const start = app.indexOf("  const CLAW_BOUNDED_REFUSAL_COPY");
+const end = app.indexOf("\n  function renderCancelled(", start);
+assert(start >= 0 && end > start, "source locator");
+const copy = {
+  "answer-load-failed": "답변을 불러오지 못했습니다.",
+  "try-again": "다시 시도",
+  "retry": "다시 시도",
+  "connection-error": "연결 오류",
+  "timeout": "시간 초과",
+  "claw-general-check-runs": "실행 이력을 확인해 주세요.",
+  "claw-general-open-runs": "실행 이력 열기",
+};
+const context = {
+  Object,
+  window: { PadiemClawRecoveryTruth: { copy: (state) => "recovery:" + state } },
+  document: { documentElement: { lang: "ko" }, createElement: element },
+  uiT: (key) => copy[key] || key,
+  authState: { authenticated: true },
+  conversationState: { setConversationId() {}, setProduct() {} },
+  conversationProduct: "chat",
+  activeProject: null,
+  renderProjectState() {},
+  requestAnswer: async () => false,
+  selectedAttachment: null,
+  clearAttachment() {},
+  MESSAGE_LIFECYCLE: { FAILED: "failed", TIMED_OUT: "timed_out", CANCELLED: "cancelled" },
+  PadiemChatLifecycle: { set(target, lifecycle) { target.dataset.lifecycle = lifecycle; } },
+};
+const api = vm.runInNewContext(
+  "(function(){" + app.slice(start, end) + "\nreturn { renderError, renderStreamError };\n})()",
+  context,
+);
+const contextArg = { conversationId: null, project: null };
+function codeLine(entry) {
+  const box = entry.content.children[0];
+  return box && box.children.find((child) => child.className === "error-code") || null;
+}
+
+const chat = article();
+api.renderError(chat.root, "AI 서비스 인증 확인에 실패했습니다.", [], "auto", null,
+  contextArg, false, "failed", null, "upstream_auth_error");
+const chatCode = codeLine(chat);
+
+const timedOut = article();
+api.renderError(timedOut.root, "AI 응답 시간이 초과되었습니다.", [], "auto", null,
+  contextArg, false, "timed_out", null, "upstream_timeout");
+
+const stream = article();
+api.renderStreamError(stream.root, "AI 모델 제공자 측에서 일시적 오류가 발생했습니다.", [], "auto",
+  contextArg, false, "failed", null, "upstream_server_error");
+
+const claw = article();
+api.renderError(claw.root, "message", [], "auto", null, contextArg, true, "failed", null,
+  "upstream_auth_error");
+
+const unsafe = article();
+api.renderError(unsafe.root, "message", [], "auto", null, contextArg, false, "failed", null,
+  "sk-live-123 provider.internal");
+
+const missing = article();
+api.renderError(missing.root, "message", [], "auto", null, contextArg, false, "failed", null, null);
+
+console.log(JSON.stringify({
+  chat: { code: chatCode && chatCode.textContent, runtime: chat.label.textContent,
+          lifecycle: chat.root.dataset.lifecycle },
+  timeout: (codeLine(timedOut) || {}).textContent || null,
+  stream: (codeLine(stream) || {}).textContent || null,
+  claw: codeLine(claw) && codeLine(claw).textContent || null,
+  unsafe: codeLine(unsafe) && codeLine(unsafe).textContent || null,
+  missing: codeLine(missing) && codeLine(missing).textContent || null,
+}));
+"""
+    completed = subprocess.run(
+        ["node", "-e", script, str(app_path)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        check=True,
+    )
+    result = json.loads(completed.stdout.strip())
+
+    assert result["chat"] == {
+        "code": "연결 오류 (upstream_auth_error)",
+        "runtime": "연결 오류",
+        "lifecycle": "failed",
+    }
+    assert result["timeout"] == "시간 초과 (upstream_timeout)"
+    assert result["stream"] == "연결 오류 (upstream_server_error)"
+    assert result["claw"] is None
+    assert result["unsafe"] is None
+    assert result["missing"] is None

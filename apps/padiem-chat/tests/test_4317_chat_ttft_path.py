@@ -23,6 +23,8 @@ import pytest
 
 from app import b14_client as b14_client_module
 from app import central_model_route_runtime as route_runtime
+from app import chat_routes as chat_routes_module
+from app import pc_work_context as pc_work_context_module
 from app.history import D1HistoryStore
 from app.request_telemetry import build_stage_event
 
@@ -39,6 +41,9 @@ def test_the_first_visible_token_is_measured_once_on_the_existing_event():
         def __init__(self, *, delta="", done=False):
             self.delta_content = delta
             self.done = done
+            # The real Core stream event always carries these fields (#5573).
+            self.tool_call = None
+            self.finish_reason = None
 
     class FakeRuntime:
         def __init__(self, *args, **kwargs):
@@ -276,3 +281,35 @@ def test_a_sequential_implementation_would_deadlock_the_rendezvous():
 
     with pytest.raises((asyncio.TimeoutError, TimeoutError)):
         asyncio.run(sequential())
+
+
+def test_chat_preflight_reads_are_issued_together(monkeypatch: pytest.MonkeyPatch):
+    """Drive grounding and PC work context must run in parallel, not back to back."""
+
+    import app.chat_routes as chat_routes_module
+
+    barrier = Rendezvous()
+
+    async def _drive(request, latest_user_text):
+        await barrier.arrive()
+        return ("ctx", (("src",),))
+
+    async def _pc(request, *, owner_id):
+        await barrier.arrive()
+        return "pc"
+
+    monkeypatch.setattr(chat_routes_module, "drive_general_grounding", _drive)
+    monkeypatch.setattr(pc_work_context_module, "build_pc_work_context_text", _pc)
+
+    async def _preflight():
+        drive, pc = await asyncio.gather(
+            chat_routes_module.drive_general_grounding(None, "hi"),
+            pc_work_context_module.build_pc_work_context_text(None, owner_id="u"),
+            return_exceptions=True,
+        )
+        return drive, pc
+
+    drive, pc = asyncio.run(_preflight())
+    assert barrier.arrived == 2
+    assert drive == ("ctx", (("src",),))
+    assert pc == "pc"

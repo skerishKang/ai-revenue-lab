@@ -34,7 +34,7 @@ from app.auth import SESSION_COOKIE, create_session_token
 from app.claw_local_access_composition import build_claw_local_access_source
 from app.claw_local_task_result_composition import build_local_task_result_source
 from app.config import Settings
-from app.history import D1HistoryStore
+from app.history import D1HistoryStore, PRODUCT_SCOPE_CHAT
 
 from kagent.local_agent import (
     LocalAgentDeviceProfile,
@@ -641,7 +641,7 @@ class WebDesktopE2E:
         return resolved
 
     def create_conversation_with_run(self, *, owner: str, run_id: str, workspace_id: str = WORKSPACE) -> str:
-        conversation_id = run(self.history.append_exchange(owner, None, "이 컴퓨터의 승인된 작업 폴더에서 sample.txt 상태를 확인", "바운디드 로컬 작업으로 실행하겠습니다."))
+        conversation_id = run(self.history.append_exchange(owner, None, "이 컴퓨터의 승인된 작업 폴더에서 sample.txt 상태를 확인", "바운디드 로컬 작업으로 실행하겠습니다.", product_scope=PRODUCT_SCOPE_CHAT))
         run(
             self.history.record_claw_run(
                 user_id=owner,

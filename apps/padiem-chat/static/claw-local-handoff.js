@@ -305,8 +305,11 @@
   // #5172 — the same canonical device identity grammar the server uses. The
   // bare form and the composed Mesh node form ("node/<domain>/<node-id>",
   // with the default domain empty) are both a real PC identity, and the
-  // browser must project exactly the value the server proved.
-  const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.:@+-]{1,128}$|^node\/[A-Za-z0-9._-]{0,64}\/[A-Za-z0-9_.:@+-]{1,128}$/;
+  // browser must project exactly the value the server proved. The "$" is in
+  // the class because MeshCentral's own node alphabet uses "$" and "@" where
+  // base64 uses "/" and "+": a real id can carry it, and a browser that
+  // refused it would drop a device the server had already verified.
+  const DEVICE_ID_PATTERN = /^[A-Za-z0-9_.$:@+-]{1,128}$|^node\/[A-Za-z0-9._-]{0,64}\/[A-Za-z0-9_.$:@+-]{1,128}$/;
 
   function deriveDeviceDirectory(raw, selectedDeviceId) {
     const empty = (reason) => Object.freeze({

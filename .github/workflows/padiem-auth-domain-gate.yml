@@ -1,0 +1,89 @@
+name: PADIEM auth custom-domain gate
+run-name: padiem-auth-domain/${{ inputs.mode }}/${{ inputs.target_sha }}
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/padiem-auth-domain-gate.yml'
+      - '.github/scripts/padiem_auth_domain.py'
+      - '.github/tests/test_padiem_auth_domain.py'
+  workflow_dispatch:
+    inputs:
+      mode:
+        type: choice
+        required: true
+        options: [readonly, activate]
+      target_sha:
+        type: string
+        required: true
+      confirmation:
+        type: string
+        required: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: padiem-auth-domain-gate
+  cancel-in-progress: false
+jobs:
+  contract:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .github/tests/test_padiem_auth_domain.py
+  domain:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 10
+    env:
+      MODE: ${{ inputs.mode }}
+      TARGET_SHA: ${{ inputs.target_sha }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - name: Validate input
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == 'refs/heads/main' ]]
+          [[ "$TARGET_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$TARGET_SHA" == "$GITHUB_SHA" ]]
+          [[ "$MODE" == 'readonly' || "$MODE" == 'activate' ]]
+          [[ "$CONFIRMATION" == "PADIEM_AUTH_DOMAIN_${MODE}_${TARGET_SHA}" ]]
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.target_sha }}
+          persist-credentials: false
+      - name: Require successful readonly for exact SHA
+        if: inputs.mode == 'activate'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          repo, sha = os.environ['GITHUB_REPOSITORY'], os.environ['TARGET_SHA']
+          page = 1
+          while True:
+              q = urllib.parse.urlencode({'event': 'workflow_dispatch', 'per_page': 100, 'page': page})
+              url = f'https://api.github.com/repos/{repo}/actions/workflows/padiem-auth-domain-gate.yml/runs?{q}'
+              req = urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+              with urllib.request.urlopen(req, timeout=15) as response:
+                  runs = json.load(response).get('workflow_runs', [])
+              if any(r.get('head_sha') == sha and r.get('conclusion') == 'success' and r.get('display_title') == f'padiem-auth-domain/readonly/{sha}' for r in runs):
+                  print('exact-SHA readonly: PASS')
+                  break
+              if not runs:
+                  raise SystemExit('successful readonly missing')
+              page += 1
+          PY
+      - name: Verify exact main before domain operation
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$TARGET_SHA" ]]
+          [[ "$(git ls-remote https://github.com/${GITHUB_REPOSITORY}.git refs/heads/main | cut -f1)" == "$TARGET_SHA" ]]
+      - name: Inspect or attach exact domain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python .github/scripts/padiem_auth_domain.py

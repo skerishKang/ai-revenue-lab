@@ -1,8 +1,19 @@
 /* #4139: compact, opt-in Claw device selector. Not an execution surface. */
 .claw-device-manager {
+  position: relative;
   margin: 10px 0 12px;
   color: var(--text, #243f53);
   max-width: 820px;
+}
+/* The directory panel is mounted in the content column right above the fixed
+ * composer area, so it can never grow over the content it would hide. It
+ * keeps the shared lane's width and centering, and it reserves the fixed
+ * composer area below itself so its own rows stay clickable. */
+.claw-device-manager-panel {
+  width: min(840px, calc(100% - 40px));
+  margin: 0 auto calc(
+    var(--padiem-composer-clearance, 230px) + var(--padiem-visual-keyboard-inset, 0px)
+  );
 }
 .claw-device-manager[hidden], .claw-device-manager-panel[hidden],
 .claw-device-manager-list[hidden] { display: none !important; }
@@ -42,20 +53,54 @@
   white-space: nowrap;
 }
 .claw-device-manager-panel {
-  margin-top: 12px;
+  position: absolute;
+  /* #5634: the panel ends above the fixed composer box instead of inside it,
+   * so the rounded frame never touches the input area. */
+  bottom: 22px;
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  margin-bottom: 0 !important;
+  z-index: 13;
   padding: 16px;
+  /* #5634: the room for the one-line header, the state line and the rows;
+   * anything longer scrolls inside the panel instead of growing it. */
+  max-height: min(330px, 46vh);
+  overflow-y: auto;
+  pointer-events: none;
   border-radius: 14px;
   border: 1px solid var(--line, rgba(66,106,135,.26));
   background: var(--surface, rgba(255,255,255,.86));
   box-shadow: 0 7px 30px rgba(20,51,73,.06);
 }
+.claw-device-manager-panel button,
+.claw-device-manager-panel a,
+.claw-device-manager-panel input,
+.claw-device-manager-panel select,
+.claw-device-manager-panel textarea,
+.claw-device-manager-panel label {
+  pointer-events: auto;
+}
 .claw-device-manager-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 8px;
 }
-.claw-device-manager-head h2 { margin: 0; font-size: 1.05rem; font-weight: 700; }
+.claw-device-manager-head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The refresh action sits next to the title and close keeps the right edge.
+ * The DOM order (title, close, refresh) keeps the keyboard path intact: a
+ * forward Tab from close still reaches the refresh action. */
+.claw-device-manager-head .claw-device-manager-refresh { order: 1; }
+.claw-device-manager-head .claw-device-manager-close { order: 3; margin-left: auto; }
+.claw-device-manager-refresh { flex: 0 0 auto; padding: 8px 10px; border-radius: 8px; }
 .claw-device-manager-help,
 .claw-device-manager-status {
   margin: 10px 0;
@@ -76,10 +121,6 @@
   padding: 8px 12px;
   cursor: pointer;
 }
-.claw-device-manager-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-/* The not-connected guidance and its one action into the existing Claw
- * computer connect screen. It sits after the device list so the panel's
- * existing control order is unchanged. */
 .claw-device-manager-connect {
   margin-top: 12px;
   padding: 12px;
@@ -127,6 +168,15 @@
 .claw-device-manager-detail { min-width: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 9px; }
 .claw-device-manager-detail strong { font-size: .9rem; overflow-wrap: anywhere; }
 .claw-device-manager-detail small { font-size: .76rem; color: var(--text-dim, #607a89); }
+/* The full server-owned device ID is a detail value, not a headline: it stays
+ * on one truncated line and reveals the whole ID on hover or focus. */
+.claw-device-manager-id {
+  max-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
 .claw-device-manager-state {
   font-size: .73rem;
   line-height: 1.45;
@@ -140,12 +190,16 @@
 .claw-device-manager-select[aria-pressed="true"] { border-color: #19756b; font-weight: 650; }
 .claw-device-manager :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 3px; }
 :root[data-theme="dark"] .claw-device-manager,
-:root[data-theme="night"] .claw-device-manager {
+:root[data-theme="dark"] .claw-device-manager-panel,
+:root[data-theme="night"] .claw-device-manager,
+:root[data-theme="night"] .claw-device-manager-panel {
   --text: #e7eef6;
   --text-dim: #b8c5d4;
   --line: rgba(218,231,247,.2);
   --surface: #202b3c;
 }
+.claw-device-manager :focus-visible,
+.claw-device-manager-panel :focus-visible { outline: 3px solid var(--focus, #2a7db4); outline-offset: 3px; }
 @media (max-width: 580px) {
   .claw-device-manager-panel { padding: 13px; }
   .claw-device-manager-item { align-items: stretch; flex-direction: column; }

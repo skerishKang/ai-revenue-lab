@@ -36,7 +36,6 @@ from app.orchestration_service import (
 from app.orchestration_wire import (
     _AGENT_ID_RE,
     _MAX_AGENT_STEP_RETRIES,
-    _MAX_CANCEL_REASON_LEN,
     _MAX_ORCHESTRATION_RETRIES,
     _parse_max_retries_per_step,
     _parse_plan_step,
@@ -76,7 +75,7 @@ def test_allowed_field_sets_exact_membership():
     })
     assert _ORCHESTRATE_ALLOWED == _EXEC_FIELDS | {
         "agent_plan", "recovery_policy", "max_retries", "subject_id",
-        "require_evidence", "require_verification", "tool_arguments",
+        "require_evidence", "require_verification", "tool_arguments", "declared_plan", "pc_tools",
     }
     assert _RESUME_ALLOWED == _EXEC_FIELDS | {
         "continuation_ref", "decision", "tool_arguments",
@@ -92,7 +91,6 @@ def test_reexport_identity_between_service_and_wire():
     for name in (
         "ORCHESTRATE_PATH", "ORCHESTRATE_RESUME_PATH", "ORCHESTRATE_CANCEL_PATH",
         "_SAFE_ID_RE", "_IDENTIFIER_RE", "_AGENT_ID_RE",
-        "_MAX_ORCHESTRATION_RETRIES", "_MAX_AGENT_STEP_RETRIES", "_MAX_CANCEL_REASON_LEN",
         "_EXEC_FIELDS", "_ORCHESTRATION_OPTIONS", "_ORCHESTRATION_RESUME_OPTIONS",
         "_ORCHESTRATE_ALLOWED", "_RESUME_ALLOWED", "_CANCEL_ALLOWED",
         "_AGENT_PLAN_ALLOWED", "_PLAN_STEP_ALLOWED", "_RECOVERY_ALLOWED",
@@ -104,6 +102,12 @@ def test_reexport_identity_between_service_and_wire():
         "_parse_approval_decision_submission", "_parse_continuation_ref",
     ):
         assert getattr(service, name) is getattr(wire, name), name
+    for removed in (
+        "_MAX_ORCHESTRATION_RETRIES",
+        "_MAX_AGENT_STEP_RETRIES",
+        "_MAX_CANCEL_REASON_LEN",
+    ):
+        assert not hasattr(service, removed), removed
 
 
 # ---------------------------------------------------------------------------
@@ -295,13 +299,18 @@ def test_parse_retryable_driver_codes_empty():
 @pytest.mark.parametrize(("value", "expected"), [
     (None, "user_cancelled"),
     ("accidental_run", "accidental_run"),
-    ("x" * _MAX_CANCEL_REASON_LEN, "x" * _MAX_CANCEL_REASON_LEN),
+    ("x" * 10_000, "x" * 10_000),
 ])
 def test_parse_cancel_reason_valid(value, expected):
     assert _parse_cancel_reason(value) == expected
 
 
-@pytest.mark.parametrize("value", ["", "   ", "x" * 257, 5, True, ["reason"]])
+def test_parse_cancel_reason_accepts_a_reason_over_the_old_length_ceiling():
+    reason = "x" * 257
+    assert _parse_cancel_reason(reason) == reason
+
+
+@pytest.mark.parametrize("value", ["", "   ", 5, True, ["reason"]])
 def test_parse_cancel_reason_rejected(value):
     code, message, _ = _message_and_status(_parse_cancel_reason, value)
     assert code == "invalid_cancel_reason"

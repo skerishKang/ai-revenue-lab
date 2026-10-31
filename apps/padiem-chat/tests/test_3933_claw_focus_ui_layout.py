@@ -127,6 +127,10 @@ def test_responsive_layout_and_keyboard_focus_preserve_mobile_sheet_behavior():
     assert 'min-height: 44px' in CSS
     assert ':focus-visible' in CSS
     assert 'width: calc(100vw - 24px)' in CSS
-    assert 'max-height: calc(100dvh - 92px)' in CSS
-    assert "--claw-composer-clearance" in CSS
+    # The workbench canvas is bounded by the flexbox inside the content
+    # column, and the column reserves the fixed composer area, so the old
+    # arbitrary viewport cap is gone.
+    assert 'max-height: calc(100dvh - 92px)' not in CSS
+    # One measured clearance authority for every surface above the composer.
+    assert "--padiem-composer-clearance" in CSS
     assert 'display: none' not in CSS.split('#composerForm > .claw-model-choice', 1)[1].split('{', 1)[1].split('}', 1)[0]

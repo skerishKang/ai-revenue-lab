@@ -21,7 +21,11 @@ from starlette.responses import JSONResponse
 from .auth_routes import auth_ready, current_user_id
 from .same_origin_guard import expected_browser_origin
 from .claw_memory_routes import _resolve_memory_workspace
-from .claw_local_access_source import CanonicalClawLocalAccessTruthSource
+from .claw_local_access_source import (
+    CanonicalClawLocalAccessTruthSource,
+    mesh_presence_facts,
+    mesh_presence_online,
+)
 from .pc_work_context import (
     PC_SCOPE_OWNER_UNAVAILABLE,
     PcConnectorScope,
@@ -67,7 +71,7 @@ class BrokerDeviceDirectorySource:
 
     configured = True
 
-    def __init__(self, binding: Any) -> None:
+    def __init__(self, binding: Any, presence_store: Any = None) -> None:
         port = getattr(binding, "device_directory", None)
         if not callable(port):
             raise TypeError("canonical broker directory RPC unavailable")
@@ -76,6 +80,9 @@ class BrokerDeviceDirectorySource:
         # #5080: same trusted service binding, additive presentation metadata
         # only. Absent on an older Broker and then simply omitted.
         self._android_profiles = getattr(binding, "android_saf_profiles", None)
+        # #5553: the server-recorded Mesh presence receipt joins the same
+        # canonical decision. Absent store keeps today's exact state.
+        self._presence_store = presence_store
 
     async def list_devices(
         self, *, owner_id: str, workspace_id: str, now: datetime
@@ -124,8 +131,20 @@ class BrokerDeviceDirectorySource:
             # Uses exactly the G4 source's authoritative server-backed ONLINE
             # algorithm. Offline/expired/revoked cannot be promoted by a stale
             # session or heartbeat. Unknown evidence fails closed.
+            row_facts = facts
+            if self._presence_store is not None:
+                try:
+                    presence_row = self._presence_store.load(device_id)
+                    if inspect.isawaitable(presence_row):
+                        presence_row = await presence_row
+                except Exception:
+                    presence_row = None
+                block = mesh_presence_facts(presence_row, binding)
+                if block is not None:
+                    row_facts = dict(facts)
+                    row_facts["mesh_presence"] = block
             try:
-                state = CanonicalClawLocalAccessTruthSource._canonical_state(facts, now=now)
+                state = CanonicalClawLocalAccessTruthSource._canonical_state(row_facts, now=now)
             except Exception:
                 return None
             if state is None:
@@ -198,13 +217,15 @@ class BrokerDeviceDirectorySource:
         return {"ok": True, "usagePaused": paused}
 
 
-def build_broker_device_directory_source(env: Any) -> BrokerDeviceDirectorySource | None:
+def build_broker_device_directory_source(
+    env: Any, presence_store: Any = None,
+) -> BrokerDeviceDirectorySource | None:
     """Trusted Worker composition only; missing/invalid binding is unconfigured."""
     binding = binding_value(env, LOCAL_AGENT_BROKER_AUTHORITY_SERVICE_BINDING_NAME)
     if binding is None:
         return None
     try:
-        return BrokerDeviceDirectorySource(binding)
+        return BrokerDeviceDirectorySource(binding, presence_store=presence_store)
     except Exception:
         return None
 
@@ -310,29 +331,100 @@ async def _read_device_directory(
     ):
         return _response({"ok": True, "available": False, "reason": "device_directory_read_failed"})
     paused = next(iter(pause_values), None)
-    # A Mesh grant proves execution authority, not a Broker heartbeat. Reuse
-    # its stable target id as a separate selectable row without claiming it
-    # is online, and never mint an alias for a raw node reference.
+    # A Mesh grant proves execution authority; a fresh source=mesh receipt
+    # separately proves liveness. Neither a grant alone nor a browser flag
+    # can claim ONLINE. Never mint an alias for a raw node reference.
     execution = await resolve_pc_mesh_target(
         request, owner_id=uid, workspace_id=workspace_id, connector=connector,
     )
-    mesh_id = execution.device_id if execution.ready else None
-    if (
-        is_pc_device_id(mesh_id)
-        and paused is not True
-    ):
+    mesh_ids = {execution.device_id} if execution.ready else set()
+    mesh_source = getattr(request.app.state, "oracle_mesh_return_source", None)
+    enumerate_devices = getattr(mesh_source, "command_device_ids", None)
+    if connector.ready and callable(enumerate_devices):
+        for device_id in enumerate_devices(account_ref=connector.account_ref)[:_DEVICE_LIMIT]:
+            target = await resolve_pc_mesh_target(
+                request, owner_id=uid, workspace_id=workspace_id, connector=connector,
+                device_id=device_id,
+            )
+            if target.ready:
+                mesh_ids.add(target.device_id)
+    for mesh_id in sorted(mesh_ids):
+        if not is_pc_device_id(mesh_id) or paused is True:
+            continue
         mesh_row = next((row for row in safe if row["deviceId"] == mesh_id), None)
+        # Requirement 6: Broker registration is not a Mesh prerequisite.
+        # Receipt lookup happens only AFTER the owner-scoped execution target
+        # was verified. Never enumerate raw presence rows across owners.
+        receipt = None
+        store = getattr(request.app.state, "mesh_device_presence_store", None)
+        if callable(getattr(store, "load", None)):
+            try:
+                receipt = store.load(mesh_id)
+                if inspect.isawaitable(receipt):
+                    receipt = await receipt
+            except Exception:
+                pass
+        online = mesh_presence_online(receipt, device_id=mesh_id, now=datetime.now(timezone.utc))
         if mesh_row is None and len(safe) < _DEVICE_LIMIT:
             safe.append({
                 "deviceId": mesh_id, "deviceName": None, "platform": None,
-                "state": "ACTION_REQUIRED", "usable": False,
+                "state": "CONNECTED" if online else "ACTION_REQUIRED", "usable": online,
                 "revoked": False, "expired": False,
                 "executable": True, "selectable": True,
             })
         elif mesh_row is not None:
             mesh_row["executable"] = True
-            # Explicit offline/revoked/expired Broker truth is not overridden.
+            if online and not mesh_row["revoked"] and not mesh_row["expired"]:
+                mesh_row.update(state="CONNECTED", usable=True)
             mesh_row["selectable"] = mesh_row["usable"] is True
+    # #5573: a PC this account linked is this account's own device, so the
+    # directory names it and the browser can select it. The link is the
+    # ownership proof - it was made by a code only this account could issue -
+    # and liveness still comes from the server's own receipt: a linked PC
+    # nothing has observed is listed as not usable, never as online. Without
+    # these rows a second PC had no selectable device at all, and choosing it
+    # answered 403 as if it belonged to somebody else.
+    pairing = getattr(request.app.state, "pc_device_pairing_store", None)
+    links_reader = getattr(pairing, "links_for_owner", None)
+    if callable(links_reader):
+        try:
+            linked = await links_reader(user_id=uid)
+        except Exception:
+            linked = None
+        if isinstance(linked, list):
+            known = {row["deviceId"] for row in safe}
+            for link in linked:
+                if len(safe) >= _DEVICE_LIMIT:
+                    break
+                if not isinstance(link, Mapping):
+                    continue
+                node_ref = link.get("mesh_node_id")
+                if not is_pc_device_id(node_ref) or node_ref in known:
+                    continue
+                known.add(node_ref)
+                label = link.get("label")
+                receipt = None
+                presence_store = getattr(
+                    request.app.state, "mesh_device_presence_store", None,
+                )
+                if callable(getattr(presence_store, "load", None)):
+                    try:
+                        receipt = presence_store.load(node_ref)
+                        if inspect.isawaitable(receipt):
+                            receipt = await receipt
+                    except Exception:
+                        receipt = None
+                online = mesh_presence_online(
+                    receipt, device_id=node_ref, now=datetime.now(timezone.utc),
+                )
+                safe.append({
+                    "deviceId": node_ref,
+                    "deviceName": label if isinstance(label, str) and label else None,
+                    "platform": None,
+                    "state": "CONNECTED" if online else "ACTION_REQUIRED",
+                    "usable": online, "revoked": False, "expired": False,
+                    "executable": True, "selectable": True,
+                })
     if broker_reason and not safe:
         return _response({
             "ok": True, "available": False, "reason": broker_reason,

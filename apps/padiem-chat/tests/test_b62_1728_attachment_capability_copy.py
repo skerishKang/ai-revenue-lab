@@ -16,8 +16,8 @@ def test_attachment_capabilities_are_single_browser_truth_source():
     for label in ["JPEG", "PNG", "WebP", "TXT", "Markdown", "CSV", "JSON", "PDF", "DOCX", "PPTX", "XLSX"]:
         assert f'label: "{label}"' in CAPABILITIES_JS
     assert "imageBytes" not in CAPABILITIES_JS
-    assert "textBytes: 96 * 1024" in CAPABILITIES_JS
-    assert "textChars: 40000" in CAPABILITIES_JS
+    assert "textBytes" not in CAPABILITIES_JS
+    assert "textChars" not in CAPABILITIES_JS
     assert "binaryBytes" not in CAPABILITIES_JS
     assert "1 GiB" not in CAPABILITIES_JS
     assert "idleNote:" in CAPABILITIES_JS
@@ -37,6 +37,10 @@ def test_composer_does_not_hard_code_format_truth_in_html():
     assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
     assert 'id="documentFormatsToggle"' in INDEX_HTML
     assert 'id="documentFormatsPanel"' in INDEX_HTML
+    # The empty "formats will be announced later" promise is gone; the shipped
+    # capability projection remains the only format truth.
+    assert "지원 형식은 추후 안내합니다." not in INDEX_HTML
+    assert '"document-formats-soon"' not in LOCALE_JS
     assert 'id="attachmentButton" data-padiem-tooltip="파일 첨부" aria-label="파일 첨부"' in INDEX_HTML
     assert 'id="attachmentButton" title=' not in INDEX_HTML
     assert '<script src="./shared-tooltip.js"></script>' in INDEX_HTML
@@ -57,17 +61,16 @@ def test_locale_derives_attachment_copy_without_clobbering_runtime_state():
     assert "PDF·Office 문서는 아직 지원하지 않습니다" not in LOCALE_JS
 
 
-def test_app_uses_capabilities_for_limits_formats_idle_copy_and_errors():
+def test_app_uses_capabilities_for_formats_idle_copy_and_errors():
     assert "const attachmentCapabilities = window.PadiemAttachmentCapabilities;" in APP_JS
     assert "attachmentCapabilities.limits.imageBytes" not in APP_JS
-    assert "const MAX_DOCUMENT_BYTES = attachmentCapabilities.limits.textBytes;" in APP_JS
-    assert "const MAX_DOCUMENT_CHARS = attachmentCapabilities.limits.textChars;" in APP_JS
+    assert "attachmentCapabilities.limits" not in APP_JS
     assert "attachmentCapabilities.images.flatMap" in APP_JS
     assert "attachmentCapabilities.textDocuments.flatMap" in APP_JS
     assert "return activeProject ?" in APP_JS and "attachmentCopy().idleNote" in APP_JS
     assert "throw new Error(attachmentCopy().unsupportedFormat)" in APP_JS
-    assert "throw new Error(attachmentCopy().textTooLarge)" in APP_JS
-    assert "throw new Error(attachmentCopy().textTooLong)" in APP_JS
+    assert "textTooLarge" not in APP_JS
+    assert "textTooLong" not in APP_JS
     assert "imageTooLarge" not in APP_JS
     assert 'window.addEventListener("padiem:localechange"' in APP_JS
     assert "setNote(idleNote());" in APP_JS

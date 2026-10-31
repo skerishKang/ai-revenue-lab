@@ -1,0 +1,3 @@
+# Local build and test residue for the Designer app. Never source.
+*.egg-info/
+.pytest_cache/

@@ -316,7 +316,8 @@ html[data-theme="padiem-glass"] .mode-option-state {
   font-weight: 600;
 }
 
-.mode-custom-key-input {
+.mode-custom-key-input,
+.mode-custom-select {
   width: 100%;
   min-height: 42px;
   padding: 0 12px;
@@ -327,16 +328,30 @@ html[data-theme="padiem-glass"] .mode-option-state {
   font: inherit;
 }
 
+.mode-custom-select {
+  padding: 0 8px;
+}
+
 .mode-custom-key-input:focus-visible,
+.mode-custom-select:focus-visible,
 .mode-custom-action:focus-visible,
 .mode-custom-retry:focus-visible {
   outline: 2px solid var(--accent, #79bce7);
   outline-offset: 1px;
 }
 
-.mode-custom-key-input:disabled {
+.mode-custom-key-input:disabled,
+.mode-custom-select:disabled {
   cursor: not-allowed;
   opacity: .6;
+}
+
+.mode-custom-key-input[hidden],
+.mode-custom-select[hidden],
+.mode-custom-key-label[hidden],
+.mode-custom-hint[hidden],
+.mode-custom-action[hidden] {
+  display: none !important;
 }
 
 .mode-custom-actions {
@@ -402,12 +417,15 @@ html[data-theme="padiem-home"] .mode-custom-credential {
 }
 
 html[data-theme="dark"] .mode-custom-key-input,
+html[data-theme="dark"] .mode-custom-select,
 html[data-theme="dark"] .mode-custom-action,
 html[data-theme="dark"] .mode-custom-retry,
 html[data-theme="cinematic"] .mode-custom-key-input,
+html[data-theme="cinematic"] .mode-custom-select,
 html[data-theme="cinematic"] .mode-custom-action,
 html[data-theme="cinematic"] .mode-custom-retry,
 html[data-theme="padiem-home"] .mode-custom-key-input,
+html[data-theme="padiem-home"] .mode-custom-select,
 html[data-theme="padiem-home"] .mode-custom-action,
 html[data-theme="padiem-home"] .mode-custom-retry {
   background: rgba(255, 255, 255, .08);
@@ -420,6 +438,7 @@ html[data-theme="padiem-glass"] .mode-custom-credential {
 }
 
 html[data-theme="padiem-glass"] .mode-custom-key-input,
+html[data-theme="padiem-glass"] .mode-custom-select,
 html[data-theme="padiem-glass"] .mode-custom-action,
 html[data-theme="padiem-glass"] .mode-custom-retry {
   border-color: rgba(42, 55, 66, .16);
@@ -448,7 +467,8 @@ html[data-theme="padiem-glass"] .mode-custom-save {
     max-height: min(62dvh, 520px);
   }
 
-  .mode-custom-key-input {
+  .mode-custom-key-input,
+  .mode-custom-select {
     min-height: 44px;
   }
 

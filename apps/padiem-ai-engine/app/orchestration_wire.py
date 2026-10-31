@@ -36,9 +36,9 @@ _AGENT_ID_RE = re.compile(
     r"^agent:[a-z0-9][a-z0-9._-]{0,63}:[a-z0-9][a-z0-9._-]{0,63}@[1-9][0-9]*$"
 )
 
+# Connector-stability policy: an upper bound is permitted for network waits.
 _MAX_ORCHESTRATION_RETRIES = 10
 _MAX_AGENT_STEP_RETRIES = 4
-_MAX_CANCEL_REASON_LEN = 256
 
 _EXEC_FIELDS = frozenset({
     "app_id", "agent", "messages", "session_id", "additional_system_context",
@@ -51,7 +51,7 @@ _ORCHESTRATION_OPTIONS = frozenset({
 _ORCHESTRATION_RESUME_OPTIONS = frozenset({
     "agent_plan", "recovery_policy", "max_retries", "subject_id",
 })
-_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS | {"tool_arguments"}
+_ORCHESTRATE_ALLOWED = _EXEC_FIELDS | _ORCHESTRATION_OPTIONS | {"tool_arguments", "declared_plan", "pc_tools"}
 _RESUME_ALLOWED = (
     _EXEC_FIELDS | {"continuation_ref", "decision", "tool_arguments"}
 ) | _ORCHESTRATION_RESUME_OPTIONS
@@ -204,8 +204,6 @@ def _parse_cancel_reason(value: Any) -> str:
     if not isinstance(reason, str):
         raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a string.")
     if not reason.strip():
-        raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
-    if not (1 <= len(reason) <= _MAX_CANCEL_REASON_LEN):
         raise ServiceContractError("invalid_cancel_reason", "cancel reason must be a bounded non-empty string.")
     return reason
 

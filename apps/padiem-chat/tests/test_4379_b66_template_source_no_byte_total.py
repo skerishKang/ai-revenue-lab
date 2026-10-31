@@ -60,7 +60,7 @@ def test_the_real_custody_controls_are_untouched() -> None:
         ("if not _structure_matches(media_type, body):", 1),
         ("raise B66TemplateSourceOrphanError(object_key)", 1),
         ("if len(text) > MAX_ORIGINAL_FILENAME_CHARS:", 1),
-        ("if not infos or len(infos) > MAX_OOXML_ENTRIES:", 1),
+        ("if not infos:", 1),
     ):
         assert source.count(marker) == count, marker
     for marker in (
@@ -68,6 +68,10 @@ def test_the_real_custody_controls_are_untouched() -> None:
         "if payload is None or not payload:",
     ):
         assert routes.count(marker) == 1, marker
+    # #5734 stage 2: the member-count ceiling on the central-directory walk is
+    # gone. A package with many parts is a big document; the path, encryption and
+    # required-part judgements above are the ones that describe a threat.
+    assert "MAX_OOXML_ENTRIES" not in source
 
 
 def test_the_reader_helper_still_bounds_a_route_that_declares_a_total() -> None:

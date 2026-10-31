@@ -29,9 +29,16 @@ What this module deliberately does NOT do
 from __future__ import annotations
 
 from .document_parser_boundary import (
+    AsyncBinaryDocumentParserPort,
     BinaryDocumentParserPort,
+    clear_worker_isolated_parser_async_composition,
     clear_worker_isolated_parser_composition,
+    install_worker_isolated_parser_async_composition,
     install_worker_isolated_parser_composition,
+)
+from .isolated_parser_async_client import (
+    AsyncIsolatedParserTransport,
+    IsolatedParserAsyncClient,
 )
 from .isolated_parser_client import IsolatedParserClient, IsolatedParserTransport
 
@@ -53,13 +60,38 @@ def compose_worker_isolated_parser_authority(
     return client
 
 
+def compose_worker_isolated_parser_authority_async(
+    *,
+    transport: AsyncIsolatedParserTransport,
+) -> AsyncBinaryDocumentParserPort:
+    """Build the async isolated-parser client and install it as Worker authority.
+
+    This is the composition seam the Chat Worker uses for the Cloudflare
+    Service Binding transport. The installed slot is separate from the
+    synchronous slot so a sync composition can never satisfy an async request
+    path by accident.
+    """
+
+    client = IsolatedParserAsyncClient(transport=transport)
+    install_worker_isolated_parser_async_composition(client)
+    return client
+
+
 def reset_worker_isolated_parser_composition() -> None:
     """Clear any installed Worker composition and restore the fail-closed default."""
 
     clear_worker_isolated_parser_composition()
 
 
+def reset_worker_isolated_parser_async_composition() -> None:
+    """Clear any installed async Worker composition and restore fail-closed."""
+
+    clear_worker_isolated_parser_async_composition()
+
+
 __all__ = [
     "compose_worker_isolated_parser_authority",
+    "compose_worker_isolated_parser_authority_async",
+    "reset_worker_isolated_parser_async_composition",
     "reset_worker_isolated_parser_composition",
 ]

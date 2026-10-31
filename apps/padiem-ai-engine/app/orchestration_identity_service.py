@@ -35,6 +35,7 @@ from app.orchestration_service import (
     _parse_continuation_ref,
     _parse_recovery_policy,
     _pc_tool_arguments_gate,
+    _validated_pc_declared_plan,
     _canonical_pc_plan,
 )
 from app.service import ServiceContractError, ServiceResponse, _service_error, build_execution_request
@@ -68,9 +69,15 @@ def _wire_allowed_fields(payload: Any) -> frozenset[str]:
     from a caller-declared flag, so every non-PC payload is rejected exactly as
     before.
     """
-    if _pc_tool_arguments_gate(payload) is None:
-        return _ORCHESTRATE_ALLOWED_FIELDS
-    return _ORCHESTRATE_ALLOWED_FIELDS | {"tool_arguments"}
+    allowed = _ORCHESTRATE_ALLOWED_FIELDS
+    from app.pc_tools_turn import parse_pc_tools
+    if parse_pc_tools(payload) is not None:
+        allowed |= {"pc_tools"}
+    if _pc_tool_arguments_gate(payload) is not None:
+        allowed |= {"tool_arguments"}
+    if _validated_pc_declared_plan(payload) is not None:
+        allowed |= {"declared_plan"}
+    return allowed
 
 
 def _reject_unknown_fields(payload: Mapping[str, Any], *, allowed: frozenset[str]) -> None:
@@ -231,11 +238,12 @@ class IdentityBoundOrchestrationEngineService(OrchestrationEngineService):
             )
             attached = self._attach_pc_query_step_driver(
                 app_id=app_id, orch_req=orch_req, exec_req=exec_req,
+                declared_plan=payload.get("declared_plan"),
             )
             if isinstance(attached, ServiceResponse):
                 return attached
             orch_req = attached
-            runtime = self._runtime_factory(app_id)
+            runtime = self._runtime_for_payload(app_id, payload)
             runner = OrchestrationRunner(runtime=runtime, idempotency=self._idempotency_adapter)
             result = await runner.run(orch_req)
         except IdempotencyConflictError:

@@ -12,6 +12,9 @@ SCRIPTS = (
     "voice-stt-input.js", "voice-composer.js",
     "voice-live-turn-controller.js", "voice-tts-output.js",
     "voice-ui-menu.js", "voice-answer-ui.js", "voice-call-ui.js",
+    # #5559: the single answer playback control lives in the answer action row
+    # rendered by outputs.js, not in the voice module.
+    "outputs.js",
 )
 
 
@@ -59,12 +62,27 @@ def test_voice_four_modes():
           <div class="app-shell" data-state="chat">
             <form id="composerForm">
               <div class="composer-actions">
-                <button id="sendButton" type="submit" disabled>Send</button>
+                <button id="sendButton" type="submit">
+                  <svg class="send-arrow-icon" aria-hidden="true"></svg>
+                  <svg class="send-waveform-icon" aria-hidden="true" hidden></svg>
+                </button>
               </div>
               <textarea id="messageInput"></textarea>
             </form>
             <main id="messageList"></main>
           </div>
+          <!-- outputs.js mounts the answer action row only when its saved-output
+               dialog exists; the dialog itself is not under test here. -->
+          <dialog id="savedOutputDialog">
+            <button id="savedOutputClose" type="button">x</button>
+            <input id="savedOutputTitleInput">
+            <div id="savedOutputContent"></div>
+            <div id="savedOutputStatus"></div>
+            <button id="savedOutputCopy" type="button">c</button>
+            <button id="savedOutputDownload" type="button">d</button>
+            <button id="savedOutputRename" type="button">r</button>
+            <button id="savedOutputDelete" type="button">x</button>
+          </dialog>
         </body></html>""")
         page.evaluate("""() => {
           window.__voices = [{name:'Korean',lang:'ko-KR'}];
@@ -84,16 +102,20 @@ def test_voice_four_modes():
           const input = document.getElementById('messageInput');
           const form = document.getElementById('composerForm');
           window.__test = {sent:[]};
-          input.addEventListener('input',()=>{
-            document.getElementById('sendButton').disabled = !input.value.trim();
-          });
+          // #5561: the primary slot is not disabled by an empty composer. It
+          // becomes the voice picker, so the empty state stays clickable.
+          // outputs.js renders the answer action row only for a completed
+          // turn; this harness has no lifecycle module.
+          window.PadiemChatLifecycle = {isCompleted: () => true};
           form.addEventListener('submit',e=>{
             e.preventDefault();
             window.__test.sent.push(input.value);
             input.disabled=true;
-            document.getElementById('sendButton').disabled=true;
-            setTimeout(()=>{input.disabled=false;input.value='';
-              document.getElementById('sendButton').disabled=true;},0);
+            setTimeout(()=>{
+              input.disabled=false;
+              input.value='';
+              input.dispatchEvent(new Event('input',{bubbles:true}));
+            },0);
           });
           window.PadiemVoiceComposer.registerRecognizerFactory((cb)=>{
             window.__test.callbacks=cb;
@@ -145,6 +167,8 @@ def test_voice_four_modes():
         clear_input()
 
         # --- M2: "문자로 답변" arms exactly one auto-send per turn ---
+        # Owner 2026-10-31 (A안): the picker is its own icon; the send button
+        # is only ever the send button.
         page.evaluate("""() => document.getElementById('voiceWaveformButton').click()""")
         page.wait_for_timeout(50)
         checks["m2_menu_opened"] = page.evaluate("""() =>
@@ -244,7 +268,9 @@ def test_voice_four_modes():
           const article = document.createElement('article');
           article.className = 'assistant-message';
           article.innerHTML = '<div class="assistant-meta">Padiem Chat</div>' +
-            '<div class="assistant-content">\\uc544\\ub514\\uc744 \\ub54c\\uc774\\ub958\\uc774\\ub294\\ubc88\\uc6d0.</div>';
+            '<div class="assistant-body"><div class="assistant-content">' +
+            '<p>\\uc544\\ub514\\uc744 \\ub54c\\uc774\\ub958\\uc774\\ub294\\ubc88\\uc6d0.</p>' +
+            '</div></div>';
           main.appendChild(article);
         }""")
         page.wait_for_timeout(120)
@@ -252,15 +278,16 @@ def test_voice_four_modes():
           window.__ttsSpoken.length === 1 &&
           window.__ttsSpoken[0] === '\\uc544\\ub514\\uc744 \\ub54c\\uc774\\ub958\\uc774\\ub294\\ubc88\\uc6d0.'""")
         checks["m3_listen_button"] = page.evaluate("""() =>
-          !!document.querySelector('.voice-answer-listen')""")
+          !!document.querySelector('.answer-action.answer-listen')""")
         # Voice copy: the answer listen button used corrupted Korean escape
         # sequences and rendered as "의식의발 통한". The label now comes from
         # the locale catalogue (the fallback copy when no catalogue is loaded).
         checks["m3_listen_label"] = page.evaluate("""() => {
-          const b = document.querySelector('.voice-answer-listen');
+          const b = document.querySelector('.answer-action.answer-listen');
           if (!b) return false;
-          const label = (b.textContent || '').trim();
-          return label === '음성 듣기' && b.getAttribute('aria-label') === '음성 듣기';
+          const label = (b.getAttribute('aria-label') || '').trim();
+          return label === '음성 듣기'
+            && b.getAttribute('data-padiem-tooltip') === '음성 듣기';
         }""")
         checks["voice_menu_labels"] = page.evaluate("""() => {
           const items = Array.from(document.querySelectorAll('.voice-mode-menu-item'));
@@ -270,13 +297,22 @@ def test_voice_four_modes():
             && labels[1] === '문자 + 음성 함께'
             && labels[2] === '음성 통화';
         }""")
+        # Owner 2026-10-31 (A안): the waveform owns its own labelled control and
+        # the send slot keeps the arrow. Both facts are asserted, so a future
+        # re-merge of the two cannot pass this check by dropping one of them.
         checks["voice_wave_label"] = page.evaluate("""() => {
-          const w = document.getElementById('voiceWaveformButton');
-          if (!w) return false;
-          const sr = w.querySelector('.sr-only');
-          return w.getAttribute('title') === '음성 모드'
-            && w.getAttribute('aria-label') === '음성 모드'
-            && !!sr && (sr.textContent || '').trim() === '음성 모드';
+          const wave = document.getElementById('voiceWaveformButton');
+          const slot = document.getElementById('sendButton');
+          const arrow = slot ? slot.querySelector('.send-arrow-icon') : null;
+          const innerWave = slot ? slot.querySelector('.send-waveform-icon') : null;
+          const available = wave && ['ready', 'active'].indexOf(wave.getAttribute('data-voice-state')) >= 0;
+          return !!wave
+            && available
+            && wave.getAttribute('title') === '음성 모드'
+            && wave.getAttribute('aria-label') === '음성 모드'
+            && slot.dataset.primaryAction === 'send'
+            && !!arrow && !arrow.hasAttribute('hidden')
+            && !!innerWave && innerWave.hasAttribute('hidden');
         }""")
 
         # --- M4: "음성 통화" shows call panel, end returns to chat ---

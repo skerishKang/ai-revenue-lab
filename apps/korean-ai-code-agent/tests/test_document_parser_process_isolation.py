@@ -652,9 +652,25 @@ class BoundedChildResultTests(unittest.TestCase):
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertIsNone(result.text)
 
-    def test_child_text_over_the_core_character_bound_fails_closed(self) -> None:
-        over = json.dumps({"ok": True, "text": "x" * 50_000}).encode("utf-8")
-        result = self._boundary(_ProcessDouble(stdout=over))
+    def test_a_long_report_within_the_pipe_allocation_is_a_result(self) -> None:
+        """#5734 stage 2: the parent's allocation decides, not a character count.
+
+        A 100,000-character answer used to be refused by the report's own copy of
+        Core's character ceiling even though the parent had room for it. The pipe
+        bound is the one that still speaks, and this report fits inside it.
+        """
+        text = "x" * 100_000
+        body = json.dumps({"ok": True, "text": text}).encode("utf-8")
+        self.assertLess(len(body), contract.MAX_CHILD_OUTPUT_BYTES)
+        self.assertGreater(len(text), contract.MAX_DOCUMENT_CHARS)
+        result = self._boundary(_ProcessDouble(stdout=body))
+        self.assertEqual(result.outcome, isolation.ParserOutcome.COMPLETED)
+        self.assertEqual(result.text, text)
+
+    def test_a_report_past_the_pipe_allocation_still_fails_closed(self) -> None:
+        text = "x" * (contract.MAX_CHILD_OUTPUT_BYTES + 1)
+        body = json.dumps({"ok": True, "text": text}).encode("utf-8")
+        result = self._boundary(_ProcessDouble(stdout=body))
         self.assertEqual(result.outcome, isolation.ParserOutcome.FAILED)
         self.assertIsNone(result.text)
 

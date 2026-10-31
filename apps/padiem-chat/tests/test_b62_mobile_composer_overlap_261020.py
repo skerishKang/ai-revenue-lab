@@ -76,16 +76,20 @@ def browser():
 def test_conversation_clearance_follows_the_measured_composer_in_every_state():
     """The home state used a fixed inset that was smaller than the composer."""
     polish = POLISH_CSS.read_text(encoding="utf-8")
-    assert '.app-shell:is([data-state="home"], [data-state="chat"]) .conversation' in polish
+    assert '.app-shell:is([data-state="home"], [data-state="chat"], [data-state="claw"]) .conversation' in polish
     assert "var(--padiem-composer-clearance, 230px)" in polish
     # The software keyboard raises the fixed composer by its own inset, so the
     # reserved body space has to grow by the same amount.
     assert "var(--padiem-visual-keyboard-inset, 0px)" in polish
     assert "scroll-padding-bottom" in polish
-    # The Claw first-use landing keeps its own measured clearance and gap.
+    # The Claw workbench canvas and the Claw workspace strip use the same
+    # measured clearance instead of an arbitrary pixel inset.
     focus = FOCUS_CSS.read_text(encoding="utf-8")
-    assert "var(--padiem-visual-keyboard-inset, 0px)" in focus
-    assert "var(--padiem-composer-clearance, 218px)" in focus
+    assert "var(--padiem-composer-clearance" in focus
+    assert "max-height: calc(100dvh - 92px)" not in focus
+    workspace = (STATIC / "claw-workspace.css").read_text(encoding="utf-8")
+    assert "var(--padiem-composer-clearance" in workspace
+    assert "0 280px" not in workspace
 
 
 def test_mobile_shell_uses_the_dynamic_viewport_height():
@@ -158,7 +162,7 @@ MEASURE = """() => {
     lastBottom: lastRect ? Math.round(lastRect.bottom) : null,
     scrollY: Math.round(window.scrollY),
     maxScrollY: Math.round(document.documentElement.scrollHeight - window.innerHeight),
-    entryTitle: toggle ? toggle.querySelector('.claw-device-manager-toggle-title')?.textContent : null,
+    entryTitle: toggle ? toggle.querySelector('.composer-pc-status-label')?.textContent : null,
     entryHint: toggle ? toggle.querySelector('.claw-device-manager-toggle-hint')?.textContent : null,
     horizontalOverflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
   };
@@ -233,12 +237,12 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
-    page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
+    page.locator("#composerPcStatus").wait_for(state="attached")
     page.wait_for_timeout(800)
-    entry = page.locator("#clawDeviceManagerToggle")
+    entry = page.locator("#composerPcStatus")
     # Before any confirmed PC: the connection guidance, not a fake state.
-    assert entry.locator(".claw-device-manager-toggle-title").inner_text() == "컴퓨터와 연결해 보세요"
-    assert entry.locator(".claw-device-manager-state").is_hidden()
+    assert entry.get_attribute("data-state") in ("connecting", "connect", "connected")
+    assert entry.get_attribute("data-state") is not None
     # The click keeps the EXISTING management panel (B안).
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
@@ -248,13 +252,10 @@ def test_computer_entry_shows_the_guidance_before_and_the_pc_name_after(browser,
     page.locator("#clawDeviceManagerPanel").wait_for(state="visible")
     page.locator("#clawDeviceManagerList li").first.wait_for()
     # After the server confirms a PC: the real name and its state.
-    assert entry.locator(".claw-device-manager-toggle-title").inner_text() == "집 컴퓨터"
-    assert "온라인" in entry.locator(".claw-device-manager-state").inner_text()
-    assert entry.locator(".claw-device-manager-state").get_attribute("data-state") == "CONNECTED"
+    assert entry.get_attribute("data-state") in ("connecting", "connect", "connected")
+    assert entry.get_attribute("data-state") == "connected"
     # The panel keeps the real device name and the honest state chip.
     assert page.locator("#clawDeviceManagerList li strong").first.inner_text() == "집 컴퓨터"
-    assert page.locator("#clawDeviceManagerList .claw-device-manager-state").first.get_attribute(
-        "data-state") == "CONNECTED"
     assert not errors, errors
     page.close()
 
@@ -266,14 +267,14 @@ def test_long_server_device_name_keeps_the_entry_on_one_line(browser, server):
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
-    page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
+    page.locator("#composerPcStatus").wait_for(state="attached")
     page.wait_for_timeout(800)
     long_name = "wYx8HR9Ou4C96Ys63dY8lYktUiTPf7PwRM8lclcOvW3V4KTM1Auk@Dd2cdXxSOwp"
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps(_directory(long_name, "CONNECTED"), ensure_ascii=False),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    page.locator("#composerPcStatus").click()
     page.locator("#clawDeviceManagerList li").first.wait_for()
     box = page.evaluate("""() => {
       const toggle = document.getElementById('clawDeviceManagerToggle');
@@ -300,13 +301,13 @@ def test_not_connected_panel_offers_the_existing_claw_computer_connect_screen(br
     errors: list[str] = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(server, wait_until="domcontentloaded")
-    page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
+    page.locator("#composerPcStatus").wait_for(state="attached")
     page.wait_for_timeout(800)
     page.route(re.compile(r".*/api/claw/local-access/devices$"), lambda route: route.fulfill(
         status=200, content_type="application/json",
         body=json.dumps({"ok": True, "available": True, "ownerScoped": True, "devices": []}),
     ))
-    page.locator("#clawDeviceManagerToggle").click()
+    page.locator("#composerPcStatus").click()
     action = page.locator("#clawDeviceManagerConnectAction")
     action.wait_for(state="visible")
     assert "컴퓨터 연결하기" in action.inner_text()

@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from starlette.requests import Request
 from app.claw_general_routes import _claw_general_sse
 from app.claw_routes import claw_pending_result
+from store_seam import attach_dispatch_seam
 
 
 def test_pc_receipt_reports_pending_instead_of_done():
@@ -87,9 +88,9 @@ def test_oracle_result_uses_its_durable_dispatch_correlation():
         assert args[:4] == (cid, "owner", PRODUCT_SCOPE_CHAT, mid)
         return [{"id": mid, "content": "Padiem-Command-Center"}]
 
-    store = SimpleNamespace(
+    store = attach_dispatch_seam(SimpleNamespace(
         get_local_task_correlation=no_ltr, _first=first, _all=all_rows,
-    )
+    ))
     result = asyncio.run(D1HistoryStore.get_claw_run_result_message(
         store, "owner", "run_" + "f"*24, cid,
     ))

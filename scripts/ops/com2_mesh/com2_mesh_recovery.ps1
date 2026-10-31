@@ -7,19 +7,21 @@
   that belongs to that class, and verifies the result with a real HTTP 200.
 
   Failure classes
-    healthy                 - the MeshCentral HTTP probe answered 200.
+    healthy                 - the COM2-side remote probe answered HTTP 200.
     com2_ssh_unreachable    - the COM2 host did not answer on the SSH port.
-    tunnel_listener_down    - the COM1 loopback forward port is not accepting.
-    tunnel_broken           - COM2 answers 200 on its own loopback, but the
-                              COM1 forward does not deliver it.
-    com2_mesh_down          - COM2 itself does not serve MeshCentral.
+    com2_mesh_down          - COM2 is reachable but does not serve MeshCentral.
     remote_probe_failed     - COM2 is reachable but the remote probe failed.
+                              The cause is recorded (ssh_timeout, ssh_auth_failed,
+                              ssh_connect_failed, probe_no_verdict, ...), and the
+                              COM2 service state is marked unverified. HTTP 000
+                              alone never plans a COM2 unit restart.
+
+  The legacy COM1 tunnel classes (tunnel_listener_down, tunnel_broken) and the
+  restart_tunnel action were removed with #5643: the agent reaches COM2 through
+  its own ingress (mesh.padiem.net), not through a COM1 forward. The local HTTP
+  probe now targets the direct COM2 path and is recorded as evidence only.
 
   Recovery actions (one per class, never combined)
-    restart_tunnel          - stop the detached forward transport (only when it
-                              is the ssh process that owns the configured
-                              loopback port), restart the forward task, wait
-                              for the listener, then verify HTTP 200.
     start_keeper            - start the COM2 WSL keeper process only.
     restart_mesh_service    - restart the COM2 WSL MeshCentral unit only.
     record_only             - record the state and wait for the next check.
@@ -29,6 +31,10 @@
     - The WSL distribution is never stopped, and the Windows MeshCentral
       process is never killed.
     - A single-instance lock keeps two recovery processes apart.
+    - Retries are bounded per fault episode: a persisted backoff schedule,
+      a cooldown and an attempt cap. A healthy path or a different failure
+      class starts a new episode; an exhausted episode is retried only after
+      the observed retry window.
     - Every action is verified with a real HTTP 200 before it counts as a
       recovery.
 
@@ -83,22 +89,29 @@ function Get-Config {
     $cfg = $raw | ConvertFrom-Json
 
     foreach ($name in @('com2_host', 'com2_ssh_port', 'com2_ssh_user', 'com2_ssh_key',
-            'com2_probe_script', 'tunnel_local_host', 'tunnel_local_port', 'tunnel_task',
-            'health_log', 'recovery_log', 'lock_file', 'state_file', 'status_file')) {
+            'com2_probe_script', 'health_log', 'recovery_log', 'lock_file', 'state_file',
+            'status_file')) {
         if (-not $cfg.PSObject.Properties[$name]) { throw "config key missing: $name" }
     }
 
     Set-ConfigDefault -Cfg $cfg -Name 'mesh_scheme' -Value 'https'
+    Set-ConfigDefault -Cfg $cfg -Name 'com2_mesh_port' -Value 4443
     if (-not $cfg.PSObject.Properties['mesh_url']) {
         $cfg | Add-Member -NotePropertyName 'mesh_url' -NotePropertyValue (
-            "{0}://{1}:{2}/" -f $cfg.mesh_scheme, $cfg.tunnel_local_host, $cfg.tunnel_local_port)
+            "{0}://{1}:{2}/" -f $cfg.mesh_scheme, $cfg.com2_host, $cfg.com2_mesh_port)
     }
     Set-ConfigDefault -Cfg $cfg -Name 'recovery_lock_seconds' -Value 600
+    Set-ConfigDefault -Cfg $cfg -Name 'recovery_max_attempts' -Value 3
+    Set-ConfigDefault -Cfg $cfg -Name 'recovery_backoff_schedule_seconds' -Value @(300, 900, 1800)
+    Set-ConfigDefault -Cfg $cfg -Name 'recovery_cooldown_seconds' -Value 300
+    Set-ConfigDefault -Cfg $cfg -Name 'recovery_retry_window_seconds' -Value 3600
+    # A failed verification is pending, not failed, until this window closes.
+    # It must exceed the five-minute watchdog cycle or a slow recovery can never
+    # be observed before the deadline.
+    Set-ConfigDefault -Cfg $cfg -Name 'max_pending_seconds' -Value 900
     Set-ConfigDefault -Cfg $cfg -Name 'ssh_timeout_seconds' -Value 15
-    Set-ConfigDefault -Cfg $cfg -Name 'tunnel_restart_wait_seconds' -Value 20
     Set-ConfigDefault -Cfg $cfg -Name 'verify_timeout_seconds' -Value 30
     Set-ConfigDefault -Cfg $cfg -Name 'tcp_timeout_ms' -Value 3000
-    Set-ConfigDefault -Cfg $cfg -Name 'tunnel_process_name' -Value 'ssh.exe'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_wsl_distro' -Value 'Ubuntu'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_mesh_unit' -Value 'padiem-meshcentral.service'
     Set-ConfigDefault -Cfg $cfg -Name 'com2_keeper_pattern' -Value '[p]adiem-wsl-keepalive'
@@ -132,11 +145,12 @@ function Write-HealthLine {
         "mode=$($Record.mode)",
         "class=$($Record.class)",
         "com2_ssh=$($Record.com2_ssh)",
-        "tunnel_tcp=$($Record.tunnel_tcp)",
         "mesh_http=$($Record.mesh_http)",
         "remote_http=$($Record.remote_http)",
         "remote_keeper=$($Record.remote_keeper)",
         "remote_unit=$($Record.remote_unit)",
+        "remote_cause=$($Record.remote_cause)",
+        "com2_state_source=$($Record.com2_state_source)",
         "first_fault=$($Record.first_fault)",
         "attempt=$($Record.attempt)",
         "planned_action=$($Record.planned_action)",
@@ -146,6 +160,19 @@ function Write-HealthLine {
         "recovery_at=$($Record.recovery_at)",
         "elapsed_sec=$($Record.elapsed_sec)",
         "fault_age_sec=$($Record.fault_age_sec)",
+        "retry_decision=$($Record.retry_decision)",
+        "retry_attempt=$($Record.retry_attempt)",
+        "retry_max=$($Record.retry_max)",
+        "next_attempt_at=$($Record.next_attempt_at)",
+        "class_started_at=$($Record.class_started_at)",
+        "class_age_sec=$($Record.class_age_sec)",
+        "recovery_state=$($Record.recovery_state)",
+        "pending_since=$($Record.pending_since)",
+        "pending_action=$($Record.pending_action)",
+        "pending_deadline=$($Record.pending_deadline)",
+        "pending_invalidation=$($Record.pending_invalidation)",
+        "http200_observed_at=$($Record.http200_observed_at)",
+        "remote_http_reason=$($Record.remote_http_reason)",
         "code=$($Record.code)",
         "error=$($Record.error)",
         "detail=$($Record.detail)"
@@ -261,11 +288,27 @@ function Get-SshPaths {
     return $ssh
 }
 
+# The SSH/probe failure cause is the evidence that decides whether an action
+# belongs to this class. A missing verdict is never the same as a dead unit.
+function Get-SshProbeCause {
+    param([string]$Text, [int]$ExitCode, [bool]$TimedOut)
+    if ($TimedOut) { return 'ssh_timeout' }
+    if ($Text -match 'Permission denied|no supported authentication methods|Load key .*: (Permission denied|invalid format)') {
+        return 'ssh_auth_failed'
+    }
+    if ($Text -match 'Connection timed out|Operation timed out|timed out') { return 'ssh_connect_timeout' }
+    if ($Text -match 'Connection refused') { return 'ssh_connection_refused' }
+    if ($Text -match 'No route to host|Network is unreachable') { return 'ssh_network_unreachable' }
+    if ($ExitCode -eq 255) { return 'ssh_transport_error' }
+    if ($ExitCode -ne 0) { return 'probe_script_failed' }
+    return 'probe_no_verdict'
+}
+
 function Invoke-RemoteProbe {
     param($Cfg)
     $ssh = Get-SshPaths
     if (-not (Test-Path $ssh)) {
-        return @{ ok = $false; output = ''; error = 'ssh client not found' }
+        return @{ ok = $false; output = ''; error = 'ssh client not found'; error_kind = 'ssh_client_missing' }
     }
     $sshArgs = @(
         '-F', 'none',
@@ -280,7 +323,7 @@ function Invoke-RemoteProbe {
     )
     $res = Invoke-BoundedProcess -FilePath $ssh -Arguments $sshArgs -TimeoutSeconds ([int]$Cfg.ssh_timeout_seconds)
     if ($res.timedOut) {
-        return @{ ok = $false; output = ''; error = 'remote probe timeout' }
+        return @{ ok = $false; output = ''; error = 'remote probe timeout'; error_kind = 'ssh_timeout' }
     }
     $text = ($res.stdout + "`n" + $res.stderr).Trim()
     $http = '000'
@@ -290,21 +333,22 @@ function Invoke-RemoteProbe {
     if ($text -match 'KEEPER=(OK|MISSING|UNKNOWN)') { $keeper = $Matches[1] }
     if ($text -match 'UNIT=(active|inactive|failed|unknown)') { $unit = $Matches[1] }
     if ($http -eq '000' -and $keeper -eq 'unknown' -and $unit -eq 'unknown') {
-        return @{ ok = $false; output = $text; error = 'remote probe produced no verdict' }
+        $kind = Get-SshProbeCause -Text $text -ExitCode ([int]$res.exit) -TimedOut $false
+        $why = if ($text) { $text } else { 'remote probe produced no output' }
+        return @{ ok = $false; output = $text; error = $why; error_kind = $kind }
     }
-    return @{ ok = $true; output = $text; error = ''; http = $http; keeper = $keeper; unit = $unit }
+    return @{ ok = $true; output = $text; error = ''; error_kind = ''; http = $http; keeper = $keeper; unit = $unit }
 }
 
 function Get-LiveProbes {
     param($Cfg)
     $com2Ssh = Test-TcpPort -TargetHost $Cfg.com2_host -Port ([int]$Cfg.com2_ssh_port) -TimeoutMs ([int]$Cfg.tcp_timeout_ms)
-    $tunnel = Test-TcpPort -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port) -TimeoutMs ([int]$Cfg.tcp_timeout_ms)
     $mesh = Get-MeshHttpCode -Url $Cfg.mesh_url -TimeoutSeconds 8
-    $remote = @{ ok = $false; http = '000'; keeper = 'unknown'; unit = 'unknown'; error = 'not probed' }
+    $remote = @{ ok = $false; http = '000'; keeper = 'unknown'; unit = 'unknown';
+        error = 'not probed'; error_kind = 'not_probed' }
     if ($com2Ssh) { $remote = Invoke-RemoteProbe -Cfg $Cfg }
     return @{
         com2_ssh = $com2Ssh
-        tunnel_tcp = $tunnel
         mesh_http = $mesh.code
         mesh_exit = $mesh.exit
         remote_ok = $remote.ok
@@ -312,6 +356,7 @@ function Get-LiveProbes {
         remote_keeper = $remote.keeper
         remote_unit = $remote.unit
         remote_error = $remote.error
+        remote_cause = $remote.error_kind
     }
 }
 
@@ -319,28 +364,42 @@ function Get-SimulatedProbes {
     param([string]$Path)
     if (-not $Path -or -not (Test-Path -LiteralPath $Path)) { throw "fixture not found: $Path" }
     $fx = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
+    $remoteOk = ($fx.PSObject.Properties['remote_ok']) -and [bool]$fx.remote_ok
+    $cause = if ($fx.PSObject.Properties['remote_cause']) { [string]$fx.remote_cause } else { '' }
+    if (-not $remoteOk -and -not $cause) { $cause = 'fixture_remote_probe_failed' }
     return @{
         com2_ssh = [bool]$fx.com2_ssh
-        tunnel_tcp = [bool]$fx.tunnel_tcp
         mesh_http = if ($fx.PSObject.Properties['mesh_http']) { [string]$fx.mesh_http } else { '000' }
         mesh_exit = 0
-        remote_ok = ($fx.PSObject.Properties['remote_ok']) -and [bool]$fx.remote_ok
+        remote_ok = $remoteOk
         remote_http = if ($fx.PSObject.Properties['remote_http']) { [string]$fx.remote_http } else { '000' }
         remote_keeper = if ($fx.PSObject.Properties['remote_keeper']) { [string]$fx.remote_keeper } else { 'unknown' }
         remote_unit = if ($fx.PSObject.Properties['remote_unit']) { [string]$fx.remote_unit } else { 'unknown' }
-        remote_error = ''
+        remote_error = if ($fx.PSObject.Properties['remote_error']) { [string]$fx.remote_error } else { '' }
+        remote_cause = $cause
     }
+}
+
+# "direct" means the value came from a probe that answered. A missing remote
+# verdict is "unverified"; it is never rendered as a healthy or dead COM2.
+function Get-Com2StateSource {
+    param($Probes)
+    if ($Probes.remote_ok -eq $true -and [string]$Probes.remote_http -match '^\d{3}$') {
+        return 'direct'
+    }
+    return 'unverified'
 }
 
 # --- classification -------------------------------------------------------
 
+# The remote probe is the authority after the tunnel retirement: it is COM2's
+# own loopback answer, read over SSH. The local mesh_http probe records the
+# direct-path view and is evidence only; it does not decide the class.
 function Get-FailureClass {
     param($Probes)
-    if ($Probes.mesh_http -eq '200') { return 'healthy' }
     if (-not $Probes.com2_ssh) { return 'com2_ssh_unreachable' }
-    if (-not $Probes.tunnel_tcp) { return 'tunnel_listener_down' }
     if (-not $Probes.remote_ok) { return 'remote_probe_failed' }
-    if ($Probes.remote_http -eq '200') { return 'tunnel_broken' }
+    if ($Probes.remote_http -eq '200') { return 'healthy' }
     return 'com2_mesh_down'
 }
 
@@ -348,11 +407,14 @@ function Get-PlannedAction {
     param([string]$FailureClass, $Probes)
     switch ($FailureClass) {
         'healthy' { return 'none' }
-        'tunnel_listener_down' { return 'restart_tunnel' }
-        'tunnel_broken' { return 'restart_tunnel' }
         'com2_mesh_down' {
+            # Only a directly observed keeper/unit state may plan an action.
+            # An unknown unit state or HTTP 000 by itself is never enough.
+            if ($Probes.remote_ok -ne $true) { return 'record_only' }
             if ($Probes.remote_keeper -eq 'MISSING') { return 'start_keeper' }
-            if ($Probes.remote_unit -ne 'active') { return 'restart_mesh_service' }
+            if ($Probes.remote_unit -eq 'inactive' -or $Probes.remote_unit -eq 'failed') {
+                return 'restart_mesh_service'
+            }
             return 'record_only'
         }
         default { return 'record_only' }
@@ -362,92 +424,30 @@ function Get-PlannedAction {
 function Get-RecordOnlyDetail {
     param([string]$FailureClass, $Probes)
     switch ($FailureClass) {
-        'healthy' { return 'no action: MeshCentral HTTP 200' }
+        'healthy' { return 'no action: the COM2 remote probe answered HTTP 200' }
         'com2_ssh_unreachable' { return 'record only: COM2 SSH TCP probe failed' }
         'remote_probe_failed' {
             $why = if ($Probes.remote_error) { $Probes.remote_error } else { 'unknown' }
-            return ("record only: COM2 reachable but the remote probe failed ({0})" -f $why)
+            $cause = if ($Probes.remote_cause) { $Probes.remote_cause } else { 'unknown' }
+            return ("record only: COM2 reachable but the remote probe failed " +
+                "(cause={0}; {1}); COM2 service state was not directly observed" -f $cause, $why)
         }
         'com2_mesh_down' {
-            return 'no action: the COM2 keeper and the MeshCentral unit both look healthy'
+            if ([string]$Probes.remote_unit -eq 'unknown') {
+                return ('record only: COM2 MeshCentral unit state was not directly observed; ' +
+                    'HTTP 000 alone never restarts the unit')
+            }
+            if ([string]$Probes.remote_keeper -eq 'unknown') {
+                return 'record only: COM2 keeper state was not directly observed; no keeper action'
+            }
+            return ('no action: remote HTTP probe returned no usable code ({0}); keeper={1} unit={2}' -f
+                $Probes.remote_http, $Probes.remote_keeper, $Probes.remote_unit)
         }
         default { return 'record only: no automatic action belongs to this failure class' }
     }
 }
 
 # --- actions --------------------------------------------------------------
-
-function Get-ListenerProcessId {
-    param([string]$TargetHost, [int]$Port)
-    $getNet = Get-Command Get-NetTCPConnection -ErrorAction SilentlyContinue
-    if ($getNet) {
-        $conn = Get-NetTCPConnection -LocalAddress $TargetHost -LocalPort $Port -State Listen -ErrorAction SilentlyContinue |
-            Select-Object -First 1
-        if ($conn) { return [int]$conn.OwningProcess }
-    }
-    $lines = & netstat.exe -ano -p tcp 2>$null
-    foreach ($line in $lines) {
-        if ($line -match ("^\s*TCP\s+" + [regex]::Escape($TargetHost) + ":" + $Port + "\s+\S+\s+LISTENING\s+(\d+)\s*$")) {
-            return [int]$Matches[1]
-        }
-    }
-    return 0
-}
-
-function Stop-StaleTunnelProcess {
-    param($Cfg)
-    $listenerPid = Get-ListenerProcessId -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port)
-    if (-not $listenerPid) { return @{ ok = $true; detail = 'no listener to stop' } }
-    $proc = Get-CimInstance Win32_Process -Filter ("ProcessId={0}" -f $listenerPid) -ErrorAction SilentlyContinue
-    if (-not $proc) { return @{ ok = $false; detail = ('listener pid {0} is not inspectable' -f $listenerPid) } }
-    if ([string]$proc.Name -ne [string]$Cfg.tunnel_process_name) {
-        return @{ ok = $false; detail = ('port is held by {0} (pid {1}), not by the configured forward transport' -f $proc.Name, $listenerPid) }
-    }
-    $cmd = [string]$proc.CommandLine
-    if ($cmd -notmatch '-L' -or $cmd -notmatch ([regex]::Escape([string]$Cfg.tunnel_local_port))) {
-        return @{ ok = $false; detail = ('listener pid {0} does not match the configured forward' -f $listenerPid) }
-    }
-    try {
-        Stop-Process -Id $listenerPid -Force -ErrorAction Stop
-    } catch {
-        return @{ ok = $false; detail = ('could not stop stale forward pid {0}: {1}' -f $listenerPid, $_.Exception.Message) }
-    }
-    $deadline = (Get-Date).AddSeconds(5)
-    while ((Get-Date) -lt $deadline) {
-        if (-not (Get-ListenerProcessId -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port))) {
-            return @{ ok = $true; detail = ('stopped stale forward pid {0}' -f $listenerPid) }
-        }
-        Start-Sleep -Milliseconds 500
-    }
-    return @{ ok = $false; detail = ('stopped forward pid {0} but the port is still held' -f $listenerPid) }
-}
-
-function Restart-Tunnel {
-    param($Cfg, [switch]$Execute)
-    if (-not $Execute) { return @{ ok = $true; detail = 'planned: restart the COM1 SSH forward task only' } }
-    $details = @()
-    try { Stop-ScheduledTask -TaskName $Cfg.tunnel_task -ErrorAction SilentlyContinue } catch { }
-    $stale = Stop-StaleTunnelProcess -Cfg $Cfg
-    if (-not $stale.ok) { return @{ ok = $false; detail = $stale.detail } }
-    $details += $stale.detail
-    Start-Sleep -Seconds 2
-    try {
-        Start-ScheduledTask -TaskName $Cfg.tunnel_task -ErrorAction Stop
-        $details += ('started task {0}' -f $Cfg.tunnel_task)
-    } catch {
-        return @{ ok = $false; detail = ('restart of task {0} failed: {1}' -f $Cfg.tunnel_task, $_.Exception.Message) }
-    }
-    $deadline = (Get-Date).AddSeconds([int]$Cfg.tunnel_restart_wait_seconds)
-    while ((Get-Date) -lt $deadline) {
-        if (Test-TcpPort -TargetHost $Cfg.tunnel_local_host -Port ([int]$Cfg.tunnel_local_port) -TimeoutMs 1000) {
-            $details += 'forward listener is up'
-            return @{ ok = $true; detail = ($details -join '; ') }
-        }
-        Start-Sleep -Seconds 2
-    }
-    $details += 'forward listener did not come up in time'
-    return @{ ok = $false; detail = ($details -join '; ') }
-}
 
 function Invoke-RemoteCommand {
     param($Cfg, [string]$Command, [switch]$Execute)
@@ -491,7 +491,6 @@ function Restart-Com2MeshService {
 function Invoke-RecoveryAction {
     param([string]$Action, $Probes, $Cfg, [switch]$Execute)
     switch ($Action) {
-        'restart_tunnel' { return Restart-Tunnel -Cfg $Cfg -Execute:$Execute }
         'start_keeper' { return Start-Com2Keeper -Cfg $Cfg -Execute:$Execute }
         'restart_mesh_service' { return Restart-Com2MeshService -Cfg $Cfg -Execute:$Execute }
         default { return @{ ok = $true; detail = (Get-RecordOnlyDetail -FailureClass (Get-FailureClass -Probes $Probes) -Probes $Probes) } }
@@ -508,6 +507,70 @@ function Wait-MeshHttp200 {
         if ((Get-Date) -ge $deadline) { return $code }
         Start-Sleep -Seconds 5
     }
+}
+
+# --- retry policy ---------------------------------------------------------
+
+function ConvertFrom-RecoveryTime {
+    param([string]$Value)
+    if (-not $Value) { return $null }
+    try {
+        return [datetime]::ParseExact($Value, 'yyyy-MM-dd HH:mm:ss',
+            [System.Globalization.CultureInfo]::InvariantCulture)
+    } catch {
+        return $null
+    }
+}
+
+function Get-RecoveryBackoffSeconds {
+    param($Cfg, [int]$AttemptCount)
+    $values = New-Object System.Collections.Generic.List[int]
+    foreach ($v in @($Cfg.recovery_backoff_schedule_seconds)) {
+        $n = 0
+        if ([int]::TryParse([string]$v, [ref]$n) -and $n -ge 0) { [void]$values.Add($n) }
+    }
+    if ($values.Count -eq 0) { [void]$values.Add(300) }
+    $index = [Math]::Min([Math]::Max($AttemptCount - 1, 0), $values.Count - 1)
+    return [int]$values[$index]
+}
+
+# One decision per observation, derived only from the persisted state and the
+# current fault. A different action key or a healthy path starts a new episode;
+# an exhausted episode is reopened only after the retry window has elapsed.
+function Get-RetryDecision {
+    param($State, [string]$ActionKey, [datetime]$Now, $Cfg)
+    $max = [int]$Cfg.recovery_max_attempts
+    $cooldown = [int]$Cfg.recovery_cooldown_seconds
+    $window = [int]$Cfg.recovery_retry_window_seconds
+    $priorKey = [string]$State.action_key
+    $sameEpisode = ($priorKey -eq $ActionKey)
+    $attempts = if ($sameEpisode) { [int]$State.attempt_count } else { 0 }
+    $lastAttempt = ConvertFrom-RecoveryTime -Value ([string]$State.last_attempt_at)
+    $nextAttempt = ConvertFrom-RecoveryTime -Value ([string]$State.next_attempt_at)
+
+    if ($sameEpisode -and $max -gt 0 -and $attempts -ge $max) {
+        $windowElapsed = ($window -gt 0 -and $null -ne $lastAttempt -and
+            ($Now - $lastAttempt).TotalSeconds -ge $window)
+        if (-not $windowElapsed) {
+            return @{ decision = 'exhausted'; attempts = $attempts; max = $max;
+                wait_seconds = 0; next_attempt_at = [string]$State.next_attempt_at }
+        }
+        $attempts = 0
+    }
+    if ($sameEpisode -and $null -ne $nextAttempt -and $Now -lt $nextAttempt) {
+        return @{ decision = 'backoff'; attempts = $attempts; max = $max;
+            wait_seconds = [int][Math]::Ceiling(($nextAttempt - $Now).TotalSeconds);
+            next_attempt_at = $nextAttempt.ToString('yyyy-MM-dd HH:mm:ss') }
+    }
+    if ($sameEpisode -and $null -ne $lastAttempt -and $cooldown -gt 0 -and
+        ($Now - $lastAttempt).TotalSeconds -lt $cooldown) {
+        $until = $lastAttempt.AddSeconds($cooldown)
+        return @{ decision = 'backoff'; attempts = $attempts; max = $max;
+            wait_seconds = [int][Math]::Ceiling(($until - $Now).TotalSeconds);
+            next_attempt_at = $until.ToString('yyyy-MM-dd HH:mm:ss') }
+    }
+    return @{ decision = 'execute'; attempts = $attempts; max = $max;
+        wait_seconds = 0; next_attempt_at = '' }
 }
 
 # --- lock and state -------------------------------------------------------
@@ -550,12 +613,22 @@ function Remove-RecoveryLock {
 
 function Get-RecoveryState {
     param($Cfg)
-    $state = [ordered]@{ first_fault = ''; last_class = ''; last_ts = ''; last_code = '' }
+    $state = [ordered]@{
+        first_fault = ''; last_class = ''; last_ts = ''; last_code = ''
+        action_key = ''; attempt_count = 0; last_attempt_at = ''
+        next_attempt_at = ''; last_success_at = ''
+        class_started_at = ''; pending_since = ''; pending_action = ''; pending_deadline = ''
+    }
     if (-not (Test-Path -LiteralPath $Cfg.state_file)) { return $state }
     try {
         $obj = Get-Content -LiteralPath $Cfg.state_file -Raw | ConvertFrom-Json
-        foreach ($k in @('first_fault', 'last_class', 'last_ts', 'last_code')) {
+        foreach ($k in @('first_fault', 'last_class', 'last_ts', 'last_code',
+                'action_key', 'last_attempt_at', 'next_attempt_at', 'last_success_at',
+                'class_started_at', 'pending_since', 'pending_action', 'pending_deadline')) {
             if ($obj.PSObject.Properties[$k]) { $state[$k] = [string]$obj.$k }
+        }
+        if ($obj.PSObject.Properties['attempt_count']) {
+            $state.attempt_count = [int]$obj.attempt_count
         }
     } catch { }
     return $state
@@ -580,6 +653,16 @@ function ConvertTo-FaultAgeSeconds {
     }
 }
 
+function Get-RemoteHttpReason {
+    # A non-200 remote HTTP probe is an HTTP observation only. It is not proof
+    # that the COM2 unit stopped or that the server is broken.
+    param($Probes)
+    if (-not $Probes.remote_ok) { return 'remote_probe_failed' }
+    $code = [string]$Probes.remote_http
+    if ($code -match '^\d{3}$' -and $code -ne '000') { return 'remote_http_code' }
+    return 'remote_http_no_response'
+}
+
 # --- main -----------------------------------------------------------------
 
 if ($FunctionsOnly) { return }
@@ -602,42 +685,87 @@ try {
     $plannedAction = Get-PlannedAction -FailureClass $failureClass -Probes $probes
     $state = Get-RecoveryState -Cfg $cfg
     $firstFault = [string]$state.first_fault
+    $classStartedAt = [string]$state.class_started_at
+    $pendingSince = [string]$state.pending_since
+    $pendingAction = [string]$state.pending_action
+    $pendingDeadline = [string]$state.pending_deadline
+    $maxPending = [int]$cfg.max_pending_seconds
+    $stateSource = Get-Com2StateSource -Probes $probes
+    $actionKey = ('{0}|{1}' -f $failureClass, $plannedAction)
+    $nowStamp = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
 
     $attempt = ''
     $action = 'none'
     $executed = $false
     $recoveryOk = 'n/a'
+    $recoveryState = 'none'
     $recoveryAt = ''
     $elapsed = ''
     $faultAge = ''
+    $classAge = ''
     $code = ''
     $detail = ''
     $failureReason = ''
+    $retry = $null
+    $retryDecision = 'not_applicable'
+    $retryAttempts = 0
+    $retryMax = [int]$cfg.recovery_max_attempts
+    $nextAttemptAt = ''
+    $newActionKey = [string]$state.action_key
+    $newAttemptCount = [int]$state.attempt_count
+    $newLastAttemptAt = [string]$state.last_attempt_at
+    $newNextAttemptAt = [string]$state.next_attempt_at
+    $newLastSuccessAt = [string]$state.last_success_at
+    $pendingInvalidation = ''
+    $actionStartedAt = ''
+    $actionFinishedAt = ''
+    $http200ObservedAt = ''
+    $http200ObservedSec = ''
 
     $execute = ($Mode -eq 'Live') -and (-not $DryRun) -and
-        ($plannedAction -eq 'restart_tunnel' -or $plannedAction -eq 'start_keeper' -or
-         $plannedAction -eq 'restart_mesh_service')
+        ($plannedAction -eq 'start_keeper' -or $plannedAction -eq 'restart_mesh_service')
 
     if ($failureClass -eq 'healthy') {
         $action = 'none'
-        if ($firstFault) {
-            # The previous check was a fault and the path came back without an
-            # action in this run.
-            $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+        if ($firstFault -or $pendingSince) {
+            # HTTP 200 was observed at this check. It is evidence of recovery
+            # now, never proof that the path came back earlier.
+            $recoveryAt = $nowStamp
             $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+            $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
             $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
             $recoveryOk = 'yes'
-            $code = 'SELF_RECOVERED_HTTP_200'
-            $detail = 'the MeshCentral path answered 200 without this check taking an action'
+            $recoveryState = 'recovered'
+            if ($pendingSince) {
+                $http200ObservedAt = $nowStamp
+                $http200ObservedSec = ConvertTo-FaultAgeSeconds -FirstFault $pendingSince -Now (Get-Date)
+                $code = 'RECOVERED_HTTP200_OBSERVED_AFTER_PENDING'
+                $detail = ('HTTP 200 observed at this check after a pending action; the observation ' +
+                    'time is an upper bound on the recovery instant, not the recovery instant itself')
+            } else {
+                $code = 'SELF_RECOVERED_HTTP_200'
+                $detail = 'the MeshCentral path answered 200 without this check taking an action'
+            }
             $firstFault = ''
+            $classStartedAt = ''
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
         } else {
             $recoveryOk = 'n/a'
             $code = 'HTTP_200'
             $detail = 'no action: MeshCentral HTTP 200'
         }
+        # A healthy path ends the retry episode, whichever action preceded it.
+        $newActionKey = ''
+        $newAttemptCount = 0
+        $newLastAttemptAt = ''
+        $newNextAttemptAt = ''
+        $newLastSuccessAt = $nowStamp
     } elseif ($plannedAction -eq 'record_only') {
         $action = 'record_only'
         $recoveryOk = 'no'
+        $recoveryState = 'none'
         $detail = Get-RecordOnlyDetail -FailureClass $failureClass -Probes $probes
         $failureReason = $detail
         switch ($failureClass) {
@@ -645,53 +773,199 @@ try {
             'remote_probe_failed' { $code = 'REMOTE_PROBE_FAILED' }
             default { $code = 'NO_ACTION_AVAILABLE' }
         }
-        if (-not $firstFault) { $firstFault = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss') }
+        if (-not $firstFault) { $firstFault = $nowStamp }
+        $classChanged = ($state.last_class -ne $failureClass) -or (-not $classStartedAt)
+        if ($classChanged) { $classStartedAt = $nowStamp }
+        # A pending verdict never outlives the class that justified it. This
+        # branch permits no action, so carrying the verdict forward would later
+        # suppress an unrelated action or expire into a false failure.
+        if ($pendingSince) {
+            $pendingInvalidation = $(if ($classChanged) { 'class_changed' } else { 'class_not_actionable' })
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
+        }
         $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
+        # Track the current episode so a different class does not inherit the
+        # previous action's attempt budget.
+        if ($newActionKey -ne $actionKey) {
+            $newActionKey = $actionKey
+            $newAttemptCount = 0
+            $newLastAttemptAt = ''
+            $newNextAttemptAt = ''
+        }
     } else {
-        if (-not $firstFault) { $firstFault = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss') }
+        if (-not $firstFault) { $firstFault = $nowStamp }
+        $classChanged = ($state.last_class -ne $failureClass) -or (-not $classStartedAt)
+        if ($classChanged) {
+            if ($pendingSince) {
+                $pendingInvalidation = 'class_changed'
+                $pendingSince = ''
+                $pendingAction = ''
+                $pendingDeadline = ''
+            }
+            $classStartedAt = $nowStamp
+        }
         $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
 
-        if (-not (Test-LockAvailable -Cfg $cfg)) {
-            $action = 'skipped_locked'
+        # A different action within the same class also closes the verdict: it
+        # described an action that is no longer the one this class needs.
+        if ($pendingSince -and $pendingAction -ne $plannedAction) {
+            $pendingInvalidation = 'action_changed'
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
+        }
+
+        # Pending is not success: the action ran and no HTTP 200 was observed
+        # inside the verification window. A live window suppresses a second
+        # action; after the deadline it becomes a failed attempt.
+        $pendingActive = $false
+        $pendingExpired = $false
+        $pendingEnd = $null
+        if ($pendingSince) {
+            $pendingEnd = ConvertFrom-RecoveryTime -Value $pendingDeadline
+            if ($null -eq $pendingEnd) {
+                $pendingExpired = $true
+            } elseif ((Get-Date) -lt $pendingEnd) {
+                $pendingActive = $true
+            } else {
+                $pendingExpired = $true
+            }
+        }
+
+        if ($pendingActive) {
+            $plannedAction = 'none'
+            $recoveryOk = 'pending'
+            $recoveryState = 'pending'
+            $retryDecision = 'pending'
+            $retryAttempts = [int]$state.attempt_count
+            $nextAttemptAt = [string]$state.next_attempt_at
+            $code = 'RECOVERY_PENDING_AWAITING_VERIFY'
+            $detail = ('previous action {0} is still inside its verification window (deadline {1}); ' +
+                'no new action taken') -f $pendingAction, $pendingDeadline
+        } elseif ($pendingExpired) {
+            $plannedAction = 'none'
             $recoveryOk = 'no'
-            $code = 'RECOVERY_LOCKED'
-            $detail = 'another recovery process holds the lock'
-            $failureReason = $detail
+            $recoveryState = 'failed'
+            $pendingInvalidation = 'pending_expired'
+            $verdictAt = if ($null -ne $pendingEnd) { $pendingEnd } else { Get-Date }
+            $verdictStamp = $verdictAt.ToString('yyyy-MM-dd HH:mm:ss')
+            $newActionKey = $actionKey
+            $newAttemptCount = [int]$state.attempt_count + 1
+            $newLastAttemptAt = $verdictStamp
+            $delay = Get-RecoveryBackoffSeconds -Cfg $cfg -AttemptCount $newAttemptCount
+            $newNextAttemptAt = $verdictAt.AddSeconds($delay).ToString('yyyy-MM-dd HH:mm:ss')
+            $retryAttempts = $newAttemptCount
+            $nextAttemptAt = $newNextAttemptAt
+            $retryDecision = if ($retryMax -gt 0 -and $newAttemptCount -ge $retryMax) { 'exhausted' } else { 'pending_expired' }
+            $code = 'RECOVERY_FAILED_PENDING_EXPIRED'
+            $failureReason = ('action {0} stayed pending past {1} without an observed HTTP 200; ' +
+                'attempt {2}/{3}') -f $pendingAction, $pendingDeadline, $newAttemptCount, $retryMax
+            $detail = if ($retryDecision -eq 'exhausted') {
+                'pending window closed; retry budget exhausted for this episode'
+            } else {
+                'pending window closed; the next check may act again after the backoff'
+            }
+            $pendingSince = ''
+            $pendingAction = ''
+            $pendingDeadline = ''
         } else {
-            New-RecoveryLock -Cfg $cfg
-            try {
-                $attempt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                $executed = $execute
-                $result = Invoke-RecoveryAction -Action $plannedAction -Probes $probes -Cfg $cfg -Execute:$execute
-                $action = $plannedAction
-                $detail = [string]$result.detail
+            $retry = Get-RetryDecision -State $state -ActionKey $actionKey -Now (Get-Date) -Cfg $cfg
+            $retryDecision = [string]$retry.decision
+            $retryAttempts = [int]$retry.attempts
+            $nextAttemptAt = [string]$retry.next_attempt_at
 
-                if ($execute) {
-                    $finalCode = Wait-MeshHttp200 -Cfg $cfg -TimeoutSeconds ([int]$cfg.verify_timeout_seconds)
-                    $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
-                    $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
-                    if ($finalCode -eq '200') {
-                        $recoveryOk = 'yes'
-                        $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                        $code = 'RECOVERED_HTTP_200'
-                        $firstFault = ''
+            if ($retry.decision -eq 'backoff') {
+                $action = 'skipped_backoff'
+                $recoveryOk = 'no'
+                $recoveryState = 'deferred'
+                $code = 'RECOVERY_BACKOFF'
+                $detail = ('retry deferred by policy: attempt {0}/{1}, next attempt at {2}' -f
+                    $retryAttempts, $retryMax, $nextAttemptAt)
+                $failureReason = $detail
+            } elseif ($retry.decision -eq 'exhausted') {
+                $action = 'skipped_exhausted'
+                $recoveryOk = 'no'
+                $recoveryState = 'deferred'
+                $code = 'RECOVERY_RETRY_EXHAUSTED'
+                $detail = ('retry budget exhausted for this episode: attempt {0}/{1}; ' +
+                    'a healthy path, a different failure class or the retry window reopens it' -f
+                    $retryAttempts, $retryMax)
+                $failureReason = $detail
+            } elseif (-not (Test-LockAvailable -Cfg $cfg)) {
+                $action = 'skipped_locked'
+                $recoveryOk = 'no'
+                $recoveryState = 'locked'
+                $code = 'RECOVERY_LOCKED'
+                $detail = 'another recovery process holds the lock'
+                $failureReason = $detail
+            } else {
+                New-RecoveryLock -Cfg $cfg
+                try {
+                    $attempt = $nowStamp
+                    $executed = $execute
+                    $actionStartedAt = $attempt
+                    $result = Invoke-RecoveryAction -Action $plannedAction -Probes $probes -Cfg $cfg -Execute:$execute
+                    $action = $plannedAction
+                    $detail = [string]$result.detail
+
+                    if ($execute) {
+                        $actionFinishedAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                        $finalCode = Wait-MeshHttp200 -Cfg $cfg -TimeoutSeconds ([int]$cfg.verify_timeout_seconds)
+                        $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                        $faultAge = ConvertTo-FaultAgeSeconds -FirstFault $firstFault -Now (Get-Date)
+                        $classAge = ConvertTo-FaultAgeSeconds -FirstFault $classStartedAt -Now (Get-Date)
+                        if ($finalCode -eq '200') {
+                            $recoveryOk = 'yes'
+                            $recoveryState = 'recovered'
+                            $recoveryAt = (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            $http200ObservedAt = $recoveryAt
+                            $http200ObservedSec = ConvertTo-FaultAgeSeconds -FirstFault $actionFinishedAt -Now (Get-Date)
+                            $code = 'RECOVERED_HTTP_200'
+                            $firstFault = ''
+                            $classStartedAt = ''
+                            $pendingSince = ''
+                            $pendingAction = ''
+                            $pendingDeadline = ''
+                            $newActionKey = ''
+                            $newAttemptCount = 0
+                            $newLastAttemptAt = ''
+                            $newNextAttemptAt = ''
+                            $newLastSuccessAt = $recoveryAt
+                        } else {
+                            # The action ran; the verification window was too
+                            # short to observe a 200. Keep waiting, bounded.
+                            $pendingSince = $actionFinishedAt
+                            $pendingAction = $plannedAction
+                            $pendingDeadline = ([datetime]::ParseExact($actionFinishedAt,
+                                'yyyy-MM-dd HH:mm:ss', $null)).AddSeconds($maxPending).ToString('yyyy-MM-dd HH:mm:ss')
+                            $recoveryOk = 'pending'
+                            $recoveryState = 'pending'
+                            $retryDecision = 'pending'
+                            $retryAttempts = [int]$state.attempt_count
+                            $nextAttemptAt = ''
+                            $newActionKey = $actionKey
+                            $newNextAttemptAt = ''
+                            $failureReason = ''
+                            $code = ('RECOVERY_PENDING_HTTP_{0}' -f $finalCode)
+                            $detail = ('{0} | no HTTP 200 observed inside {1}s; pending until {2}' -f
+                                $detail, [int]$cfg.verify_timeout_seconds, $pendingDeadline)
+                        }
                     } else {
-                        $recoveryOk = 'no'
-                        $code = ('RECOVERY_FAILED_HTTP_{0}' -f $finalCode)
-                        $failureReason = ('recovery action did not restore HTTP 200 (last {0})' -f $finalCode)
-                        $next = (Get-Date).AddMinutes(5).ToString('yyyy-MM-dd HH:mm:ss')
-                        $detail = ('{0} | next check {1}' -f $detail, $next)
+                        $recoveryOk = 'planned'
+                        $recoveryState = 'planned'
+                        $code = ('PLANNED_{0}' -f $plannedAction.ToUpperInvariant())
+                        if ([string]$result.detail -notmatch '^planned:') {
+                            $detail = ('planned action was not executed: {0}' -f $result.detail)
+                        }
+                        $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
                     }
-                } else {
-                    $recoveryOk = 'planned'
-                    $code = ('PLANNED_{0}' -f $plannedAction.ToUpperInvariant())
-                    if ([string]$result.detail -notmatch '^planned:') {
-                        $detail = ('planned action was not executed: {0}' -f $result.detail)
-                    }
-                    $elapsed = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                } finally {
+                    Remove-RecoveryLock -Cfg $cfg
                 }
-            } finally {
-                Remove-RecoveryLock -Cfg $cfg
             }
         }
     }
@@ -705,12 +979,13 @@ try {
         executed = [bool]$executed
         class = $failureClass
         com2_ssh = $(if ($probes.com2_ssh) { 'OK' } else { 'FAIL' })
-        tunnel_tcp = $(if ($probes.tunnel_tcp) { 'OK' } else { 'FAIL' })
         mesh_http = $probes.mesh_http
         remote_ok = [bool]$probes.remote_ok
         remote_http = $probes.remote_http
         remote_keeper = $probes.remote_keeper
         remote_unit = $probes.remote_unit
+        remote_cause = [string]$probes.remote_cause
+        com2_state_source = $stateSource
         first_fault = $firstFault
         attempt = $attempt
         planned_action = $plannedAction
@@ -719,6 +994,26 @@ try {
         recovery_at = $recoveryAt
         elapsed_sec = $elapsed
         fault_age_sec = $faultAge
+        retry_decision = $retryDecision
+        retry_attempt = [int]$retryAttempts
+        retry_max = [int]$retryMax
+        next_attempt_at = $nextAttemptAt
+        recovery_state = $recoveryState
+        class_started_at = $classStartedAt
+        class_age_sec = $classAge
+        engine_elapsed_sec = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+        action_started_at = $actionStartedAt
+        action_finished_at = $actionFinishedAt
+        verify_window_sec = [int]$cfg.verify_timeout_seconds
+        http200_observed_at = $http200ObservedAt
+        http200_first_observed_sec = $http200ObservedSec
+        http200_observed_basis = $(if ($http200ObservedAt) { 'observed_at_this_check' } else { '' })
+        pending_since = $pendingSince
+        pending_action = $pendingAction
+        pending_deadline = $pendingDeadline
+        pending_invalidation = $pendingInvalidation
+        max_pending_seconds = $maxPending
+        remote_http_reason = Get-RemoteHttpReason -Probes $probes
         code = $code
         error = $failureReason
         detail = $detail
@@ -729,6 +1024,15 @@ try {
         last_class = $failureClass
         last_ts = $record.ts
         last_code = $code
+        action_key = $newActionKey
+        attempt_count = [int]$newAttemptCount
+        last_attempt_at = $newLastAttemptAt
+        next_attempt_at = $newNextAttemptAt
+        last_success_at = $newLastSuccessAt
+        class_started_at = $classStartedAt
+        pending_since = $pendingSince
+        pending_action = $pendingAction
+        pending_deadline = $pendingDeadline
     }
     Save-RecoveryState -Cfg $cfg -State $newState
 
@@ -754,12 +1058,13 @@ try {
                 executed = $false
                 class = 'engine_error'
                 com2_ssh = 'UNKNOWN'
-                tunnel_tcp = 'UNKNOWN'
                 mesh_http = '000'
                 remote_ok = $false
                 remote_http = '000'
                 remote_keeper = 'unknown'
                 remote_unit = 'unknown'
+                remote_cause = 'engine_error'
+                com2_state_source = 'unverified'
                 first_fault = ''
                 attempt = ''
                 planned_action = 'none'
@@ -768,6 +1073,26 @@ try {
                 recovery_at = ''
                 elapsed_sec = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
                 fault_age_sec = ''
+                retry_decision = 'not_applicable'
+                retry_attempt = 0
+                retry_max = 0
+                next_attempt_at = ''
+                recovery_state = 'failed'
+                class_started_at = ''
+                class_age_sec = ''
+                engine_elapsed_sec = [Math]::Round(((Get-Date) - $started).TotalSeconds, 1)
+                action_started_at = ''
+                action_finished_at = ''
+                verify_window_sec = 0
+                http200_observed_at = ''
+                http200_first_observed_sec = ''
+                http200_observed_basis = ''
+                pending_since = ''
+                pending_action = ''
+                pending_deadline = ''
+                pending_invalidation = ''
+                max_pending_seconds = 0
+                remote_http_reason = 'engine_error'
                 code = 'ENGINE_ERROR'
                 error = $msg
                 detail = $msg

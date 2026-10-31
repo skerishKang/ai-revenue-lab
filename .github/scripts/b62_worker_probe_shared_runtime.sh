@@ -74,24 +74,125 @@ if [[ -z "$EXPECTED_PYTHON" || "$READY_BODY" != *"ok ${EXPECTED_PYTHON} "* ]]; t
   exit 1
 fi
 echo "B62_WORKER_PYTHON_RUNTIME=$READY_BODY"
-# #5479: the deployed runtime must still be able to run the Worker's own
-# password hashing. The Pyodide 3.14 snapshot ships no _hashlib and CPython
-# 3.14 removed the pure-Python PBKDF2 fallback, so that runtime has no
-# hashlib.pbkdf2_hmac and every password login would answer HTTP 500.
-if [[ "$READY_BODY" != *"kdf=ok"* ]]; then
-  echo "B62_WORKER_PASSWORD_KDF=FAIL ready=$READY_BODY" >&2
+# #5023: the deployed runtime must be able to resolve a real IANA zone, because
+# the Calendar contracts validate the explicit timezone against the real
+# database. A runtime without the tz database answers every Calendar read with
+# HTTP 400 invalid_timezone.
+if [[ "$READY_BODY" != *"tz=ok"* ]]; then
+  echo "B62_WORKER_TIMEZONE_DATABASE=FAIL ready=$READY_BODY" >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1
 fi
-echo 'B62_WORKER_PASSWORD_KDF=PASS'
+echo 'B62_WORKER_TIMEZONE_DATABASE=PASS'
+# #5479/#5664: the deployed runtime must serve password authentication. The
+# Pyodide 3.14 snapshot ships no _hashlib and CPython 3.14 removed the
+# pure-Python PBKDF2 fallback, so it has no hashlib.pbkdf2_hmac at all; #5732
+# made the KDF runtime-independent and the auth routes call only the async
+# dispatch. The asserted invariant is therefore what the routes actually use:
+#   kdfasync=ok  the dispatch serves this runtime (C path on 3.13, the
+#                bundled cryptography package on 3.14)
+#   stored=ok    a 220,000-iteration credential written by the previous 3.13
+#                runtime verifies here. This is the check #5736 was missing:
+#                Workers WebCrypto PBKDF2 refuses any iteration count above
+#                100,000, so a 3.14 deploy passed the low-iteration bridge and
+#                still answered every register/login/reset with HTTP 500.
+#   digest=ok    SHA-2/HMAC match the published OpenSSL vectors
+# kdf= (the sync C path) stays a printed availability report, not a gate: on
+# 3.14 it is absent by design and no login path uses it.
+if [[ "$READY_BODY" != *"kdfasync=ok"* || "$READY_BODY" != *"stored=ok"* || "$READY_BODY" != *"digest=ok"* ]]; then
+  echo "B62_WORKER_PASSWORD_AUTH=FAIL ready=$READY_BODY" >&2
+  cat "$LOGDIR/workerd.log" >&2
+  exit 1
+fi
+echo 'B62_WORKER_PASSWORD_AUTH=PASS kdfasync=ok stored=ok digest=ok'
+B62_WORKER_PASSWORD_KDF_C_PATH="$(printf '%s' "$READY_BODY" | sed -n 's/.*kdf=\([a-z0-9:-]*\) kdfasync=.*/\1/p')"
+echo "B62_WORKER_PASSWORD_KDF_C_PATH=${B62_WORKER_PASSWORD_KDF_C_PATH}"
+# #5479: the REAL production KDF contract — the stored credential format is
+# PBKDF2-HMAC-SHA512 at 220,000 iterations through the same async dispatch the
+# auth routes call. The expected provider is the C path on 3.13 and the bundled
+# cryptography package on 3.14; `webcrypto-iteration-cap` is the 3.14 blocker
+# being reproduced, and verify-failed / wrong-accepted / missing always fail.
+KDF220K_BODY=""
+for _ in $(seq 1 5); do
+  if KDF220K_BODY="$(curl -fsS "http://127.0.0.1:8795/probe?case=kdf220k" 2>/dev/null)"; then break; fi
+  sleep 1
+done
+echo "B62_WORKER_KDF220K=$KDF220K_BODY"
+# H1 (#5743): the local Workerd on 3.14 accepts PBKDF2 220k that the
+# Production edge rejects, so a local success is NEVER evidence of
+# production-edge compatibility. A 3.14 result is therefore labelled
+# `UNVERIFIED_PY314` and never `PASS_PY313_LOCAL`.
+#
+# It is not fatal here. The manifest's runtime is already a deploy decision,
+# and stopping the lane on it would make every 3.14 manifest a permanent red
+# build without adding one bit of edge evidence — an environment restriction
+# no platform requires. The lane still enforces the half it can actually see
+# (the stored cost served by the provider the declared bundle selects), and
+# the edge verdict stays with the governed production deploy and its live auth
+# E2E. A cap/error outcome below still fails, as before.
+PY314_LOCAL=0
+if [[ "$KDF220K_BODY" == *'"runtime_minor": 14'* || "$KDF220K_BODY" == *'"runtime_minor":14'* ]]; then
+  PY314_LOCAL=1
+  echo 'B62_WORKER_KDF220K_EDGE_COMPAT=UNVERIFIED_PY314'
+fi
+case "$KDF220K_BODY" in
+  *'"state": "ok"'*|*'"state":"ok"'*)
+    if [ "${PY314_LOCAL}" = "1" ]; then
+      echo 'B62_WORKER_KDF220K_STATE=PASS_PY314_LOCAL_KDF_ONLY'
+    else
+      echo 'B62_WORKER_KDF220K_STATE=PASS_PY313_LOCAL'
+    fi ;;
+  *) echo "B62_WORKER_KDF220K_STATE=FAIL body=$KDF220K_BODY" >&2; exit 1 ;;
+esac
+# #5479: the stored cost must be served by the provider this runtime is
+# SUPPOSED to use — the C path where `_hashlib` exists, the bundled
+# cryptography package on 3.14. WebCrypto is not an acceptable answer at
+# 220,000 iterations even though the local Workerd accepts it: the Production
+# edge refuses it (#5736). This is the check #5733 lacked.
+if [[ "$B62_WORKER_PASSWORD_KDF_C_PATH" == 'ok' ]]; then
+  EXPECTED_KDF_PROVIDER='hashlib'
+else
+  EXPECTED_KDF_PROVIDER='cryptography'
+fi
+case "$KDF220K_BODY" in
+  *"\"provider\": \"${EXPECTED_KDF_PROVIDER}\""*|*"\"provider\":\"${EXPECTED_KDF_PROVIDER}\""*)
+    echo "B62_WORKER_KDF220K_PROVIDER=${EXPECTED_KDF_PROVIDER} PASS" ;;
+  *) echo "B62_WORKER_KDF220K_PROVIDER=FAIL expected=${EXPECTED_KDF_PROVIDER} body=$KDF220K_BODY" >&2; exit 1 ;;
+esac
+# #5479: the 220,000-iteration alternatives with their real CPU cost — the
+# pure-Python fallback (stdlib sha512 primitive) and the bundled cryptography
+# package. Correctness (pinned external vectors) must hold on every runtime.
+KDFBENCH_BODY=""
+for _ in $(seq 1 5); do
+  if KDFBENCH_BODY="$(curl -fsS --max-time 60 "http://127.0.0.1:8795/probe?case=kdfbench" 2>/dev/null)"; then break; fi
+  sleep 1
+done
+echo "B62_WORKER_KDF_BENCH=$KDFBENCH_BODY"
+case "$KDFBENCH_BODY" in
+  *'"vector": "true"'*|*'"vector":"true"'*) echo 'B62_WORKER_KDF_BENCH_VECTOR=PASS' ;;
+  *) echo 'B62_WORKER_KDF_BENCH_VECTOR=FAIL' >&2; exit 1 ;;
+esac
+case "$KDFBENCH_BODY" in
+  *'"identity": "true"'*|*'"identity":"true"'*) echo 'B62_WORKER_KDF_BENCH_IDENTITY=PASS' ;;
+  *) echo 'B62_WORKER_KDF_BENCH_IDENTITY=FAIL' >&2; exit 1 ;;
+esac
+
+
+# Same nonproduction Workerd: shared ES256 vectors and a synthetic
+# WebCrypto sign/verify roundtrip; no production keys or resources are used.
+SHARED_AUTH_BODY="$(curl -fsS --max-time 15 'http://127.0.0.1:8795/probe?case=shared_auth_es256')"
+case "$SHARED_AUTH_BODY" in
+  *'"state": "ok"'*|*'"state":"ok"'*) echo 'B62_WORKER_SHARED_AUTH_ES256=PASS' ;;
+  *) echo 'B62_WORKER_SHARED_AUTH_ES256=FAIL' >&2; exit 1 ;;
+esac
 
 failed=0
 count=0
 # P01 synthetic monkeypatch belongs last, after transport/R2 assertions.
-for case in timeout web_transport r2_read p01_binding; do
+for case in timeout web_transport r2_read queue_store p01_binding; do
   count=$((count + 1))
   result="$LOGDIR/$case-result.json"
-  case "$case" in timeout) index=0;; web_transport) index=1;; p01_binding) index=2;; r2_read) index=3;; esac
+  case "$case" in timeout) index=0;; web_transport) index=1;; p01_binding) index=2;; r2_read) index=3;; queue_store) index=4;; esac
   echo "B62_WORKER_CASE_${case}_START_MS=$(date +%s%3N)"
   code=""
   if code="$(curl -sS --max-time 15 -o "$result" -w '%{http_code}' "http://127.0.0.1:8795/probe?case=$case")"; then
@@ -129,7 +230,7 @@ else
   echo 'PADIEM_CONNECTOR_ASGI_WSS_WORKER_PROBE=FAIL' >&2
 fi
 echo "B62_WORKER_PROBE_COUNT=$count"
-if [[ "$failed" -ne 0 || "$count" -ne 4 ]]; then
+if [[ "$failed" -ne 0 || "$count" -ne 5 ]]; then
   echo 'B62_WORKER_PROBES=FAIL' >&2
   cat "$LOGDIR/workerd.log" >&2
   exit 1

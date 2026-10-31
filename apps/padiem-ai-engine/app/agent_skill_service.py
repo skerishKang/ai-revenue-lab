@@ -614,25 +614,3 @@ class AgentSkillEngineService:
         if path == AGENT_SKILL_RUN_RECOVERY_PATH:
             return await self.recovery_payload(payload)
         return await self.run_payload(payload)
-
-
-# Compatibility re-exports retained for the E4A import surface.
-__all__ = [
-    "AGENT_SKILL_RUN_PATH",
-    "AGENT_SKILL_RESUME_PATH",
-    "AGENT_SKILL_CANCEL_PATH",
-    "AGENT_SKILL_RUN_STATUS_PATH",
-    "AGENT_SKILL_RUN_CANCEL_PATH",
-    "AGENT_SKILL_RUN_RECOVERY_PATH",
-    "AUTHORITY_SHAPED_KEYS",
-    "TRUSTED_AGENT_SKILL_ALLOWED",
-    "TRUSTED_AGENT_SKILL_REQUIRED",
-    "TrustedAgentSkillWireRequest",
-    "TrustedAgentRunControlTarget",
-    "TrustedAgentRunRecoveryRequest",
-    "build_trusted_agent_run_control",
-    "build_trusted_agent_run_recovery",
-    "build_trusted_agent_skill_request",
-    "AgentRunCancelledError",
-    "AgentSkillEngineService",
-]

@@ -42,5 +42,22 @@ class MobileWatch(unittest.TestCase):
         self.assertFalse(mod.eligible(pr(state="closed"), [], REPO, NOW))
         self.assertFalse(mod.eligible(pr(sha="bad"), [], REPO, NOW))
         self.assertFalse(mod.eligible(pr(), [], "other/repo", NOW))
+    def test_marker_reconciles_from_terminal_verdict(self):
+        for state in ("success","failure"):
+            with self.subTest(state=state):
+                self.assertEqual(mod.reconcile([status(mod.MARKER,"pending",30), status(mod.FINAL,state,10)]), state)
+    def test_marker_waits_without_a_verdict(self):
+        self.assertIsNone(mod.reconcile([status(mod.MARKER,"pending")]))
+        self.assertIsNone(mod.reconcile([status(mod.MARKER,"pending",30), status(mod.FINAL,"pending",10)]))
+    def test_verdict_before_marker_is_not_evidence_for_this_dispatch(self):
+        self.assertIsNone(mod.reconcile([status(mod.MARKER,"pending",10), status(mod.FINAL,"success",30)]))
+    def test_terminal_marker_is_left_alone(self):
+        for state in ("success","failure"):
+            with self.subTest(state=state):
+                self.assertIsNone(mod.reconcile([status(mod.MARKER,state), status(mod.FINAL,"success",10)]))
+        self.assertIsNone(mod.reconcile([]))
+    def test_final_context_name_matches_the_gate(self):
+        self.assertEqual(mod.FINAL, "B62 mobile QA final")
+        self.assertEqual(mod.MARKER, "COM2 mobile hosted fallback dispatch")
 if __name__ == "__main__":
     unittest.main()

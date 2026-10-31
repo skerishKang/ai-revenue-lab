@@ -26,8 +26,8 @@ READ_SECONDS = 600.0  # model first response / per-chunk inactivity ceiling
 # headers, not just a native TCP handshake. It must not silently impose a
 # second 30/55s wall on otherwise healthy 600s model inference.
 CONNECT_SECONDS = READ_SECONDS  # Fetch first-response watchdog (not 30s)
-WRITE_SECONDS = 20.0
-POOL_SECONDS = 10.0
+WRITE_SECONDS = 120.0
+POOL_SECONDS = 60.0
 GATEWAY_WALL_SECONDS = READ_SECONDS  # retry chain may use the provider's full idle window
 ENGINE_MAX_WALL_SECONDS = 60.0  # legacy Engine setting; not a B14 inference limit
 

@@ -137,6 +137,192 @@ def _valid_sse_chunks(content: str = "실제처럼 보이는 테스트") -> list
     ]
 
 
+# #5573 slice 3-A: exercise the real HTTP gateway and Google wire with no live POST.
+GOOGLE_TOOL_MODEL = "google/gemini-3.1-flash-lite"
+PC_TOOL = {"type": "function", "function": {
+    "name": "pc_files", "description": "Inspect the requested PC scope.",
+    "parameters": {"type": "object", "properties": {"plan": {"type": "string"}}, "required": ["plan"]},
+}}
+
+
+def _google_live(monkeypatch):
+    from app.pilot import stream_gateway
+    monkeypatch.setenv("PADIEM_B14_CREDENTIAL_05", "unit-google-key-not-a-secret")
+    monkeypatch.setattr(rcfg, "provider_mode", "live")
+    monkeypatch.setattr(stream_gateway, "_request_id", lambda: "b14stream_fixed")
+
+
+def _native_frame(parts=None, *, finish=None, usage=None):
+    candidate = {"index": 0, "content": {"role": "model", "parts": parts or []}}
+    if finish is not None:
+        candidate["finishReason"] = finish
+    payload = {"responseId": "native_response", "modelVersion": "gemini-3.1-flash-lite", "candidates": [candidate]}
+    if usage is not None:
+        payload["usageMetadata"] = usage
+    return ("data: " + json.dumps(payload, ensure_ascii=False) + "\n\n").encode()
+
+
+@pytest.mark.parametrize("url", [STREAM_URL, CHAT_URL])
+@pytest.mark.parametrize("extra", [{}, {"tools": None}, {"tools": []}], ids=["omitted", "null", "empty"])
+def test_tools_absent_preserves_google_stream_bytes(monkeypatch, extra, url):
+    _google_live(monkeypatch)
+    sent = []
+    def handler(request):
+        sent.append(request)
+        return httpx.Response(200, stream=_ChunkStream(_valid_sse_chunks("안녕")))
+    response = _client(httpx.MockTransport(handler)).post(
+        url, json=_payload(model=GOOGLE_TOOL_MODEL, **extra),
+    )
+    assert response.status_code == 200, response.text
+    assert len(sent) == 1
+    assert str(sent[0].url) == "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+    assert sent[0].content == b'{"model":"gemini-3.1-flash-lite","messages":[{"role":"user","content":"' + "안녕하세요".encode() + b'"}],"stream":true}'
+    # Exact legacy wire snapshot; request ID is fixed, no event names or new keys.
+    assert response.content == LEGACY_GOOGLE_STREAM_BYTES
+
+
+@pytest.mark.parametrize("url", [STREAM_URL, CHAT_URL])
+@pytest.mark.parametrize("choice,config", [
+    (None, None),
+    ("auto", {"mode": "AUTO"}),
+    ("required", {"mode": "ANY"}),
+    ({"type": "function", "function": {"name": "pc_files"}}, {"mode": "ANY", "allowedFunctionNames": ["pc_files"]}),
+])
+def test_google_tools_emit_tool_call_event(monkeypatch, choice, config, url):
+    _google_live(monkeypatch)
+    sent = []
+    stream = _ChunkStream([
+        _native_frame([{"text": "숨긴 추론", "thought": True}]),
+        _native_frame([{"functionCall": {"id": "call_native", "name": "pc_files", "args": {"plan": "files_list"}}}]),
+        _native_frame(finish="STOP", usage={"promptTokenCount": 3, "candidatesTokenCount": 4, "totalTokenCount": 7}),
+    ])
+    def handler(request):
+        sent.append(request)
+        return httpx.Response(200, stream=stream)
+    response = _client(httpx.MockTransport(handler)).post(
+        url, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL], tool_choice=choice),
+    )
+    assert response.status_code == 200, response.text
+    assert len(sent) == 1 and stream.closed
+    assert str(sent[0].url) == "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:streamGenerateContent?alt=sse"
+    assert sent[0].headers["x-goog-api-key"] == "unit-google-key-not-a-secret"
+    assert "authorization" not in sent[0].headers
+    body = json.loads(sent[0].content)
+    assert body["contents"] == [{"role": "user", "parts": [{"text": "안녕하세요"}]}]
+    assert body["tools"] == [{"functionDeclarations": [{"name": "pc_files", "description": PC_TOOL["function"]["description"], "parametersJsonSchema": PC_TOOL["function"]["parameters"]}]}]
+    assert body.get("toolConfig") == ({"functionCallingConfig": config} if config else None)
+    assert "generationConfig" not in body
+    assert response.text.startswith('event: tool_call\ndata: {"id":"call_native","name":"pc_files","arguments":"{\\"plan\\":\\"files_list\\"}","index":0}\n\n')
+    assert response.text.endswith('event: done\ndata: {"finish_reason":"tool_calls"}\n\n')
+    assert "숨긴 추론" not in response.text
+    assert "unit-google-key" not in response.text
+
+
+def test_tools_non_google_still_refused_before_dispatch(monkeypatch):
+    _google_live(monkeypatch)
+    calls = []
+    response = _client(httpx.MockTransport(lambda req: calls.append(req))).post(
+        STREAM_URL, json=_payload(model="tokenharbor/deepseek-v4.1-flash:free", tools=[PC_TOOL]),
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "stream_not_supported"
+    assert calls == []
+
+
+def test_tools_undeclared_google_capability_refused_before_dispatch(monkeypatch):
+    _google_live(monkeypatch)
+    calls = []
+    response = _client(httpx.MockTransport(lambda req: calls.append(req))).post(
+        STREAM_URL, json=_payload(model="google/gemma-4-31b-it", tools=[PC_TOOL]),
+    )
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "tools_not_supported"
+    assert calls == []
+
+
+def test_google_tool_call_commits_stream_and_failure_never_falls_back(monkeypatch):
+    _google_live(monkeypatch)
+    calls = []
+    stream = _ChunkStream([
+        _native_frame([{"functionCall": {"name": "pc_files", "args": {"plan": "files_list"}}}]),
+    ], error_after=httpx.ReadTimeout("synthetic timeout"))
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, stream=stream)
+    response = _client(httpx.MockTransport(handler)).post(
+        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL]),
+    )
+    assert response.status_code == 200
+    assert response.text.startswith("event: tool_call\n")
+    assert "event: error" in response.text
+    assert '"after_stream_start":true' in response.text
+    assert "event: done" not in response.text and "[DONE]" not in response.text
+    assert len(calls) == 1 and stream.closed
+
+
+@pytest.mark.parametrize("parts", [
+    [{"functionCall": {"name": "not_declared", "args": {}}}],
+    [{"functionCall": {"name": "pc_files", "args": "partial"}}],
+    [{"functionCall": {"id": "unsafe id", "name": "pc_files", "args": {}}}],
+    [{"functionCall": {"name": "pc_files", "partialArgs": []}}],
+])
+def test_google_invalid_tool_response_is_an_upstream_error(monkeypatch, parts):
+    _google_live(monkeypatch)
+    stream = _ChunkStream([_native_frame(parts, finish="STOP")])
+    response = _client(httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))).post(
+        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL], business14={"product_tier": "plus"}),
+    )
+    assert response.status_code == 502
+    assert response.json()["error"]["code"] == "malformed_upstream_response"
+    assert stream.closed
+
+
+def test_google_tool_stream_preserves_text_and_explicit_parameters(monkeypatch):
+    _google_live(monkeypatch)
+    sent = []
+    wire = _native_frame([{"text": "안녕"}]) + _native_frame(finish="STOP")
+    stream = _ChunkStream([wire[:7], wire[7:80], wire[80:81], wire[81:]])
+    def handler(request):
+        sent.append(json.loads(request.content))
+        return httpx.Response(200, stream=stream)
+    response = _client(httpx.MockTransport(handler)).post(STREAM_URL, json=_payload(
+        model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL], tool_choice="none",
+        messages=[{"role": "system", "content": "System instruction"},
+                  {"role": "user", "content": "Question"}, {"role": "assistant", "content": "Prior answer"},
+                  {"role": "user", "content": "Next question"}],
+        temperature=0.3, max_tokens=100, reasoning_effort="low",
+    ))
+    assert response.status_code == 200, response.text
+    assert sent[0]["systemInstruction"] == {"parts": [{"text": "System instruction"}]}
+    assert [item["role"] for item in sent[0]["contents"]] == ["user", "model", "user"]
+    assert sent[0]["generationConfig"] == {"temperature": 0.3, "maxOutputTokens": 100, "thinkingConfig": {"thinkingLevel": "LOW"}}
+    assert sent[0]["toolConfig"] == {"functionCallingConfig": {"mode": "NONE"}}
+    frames = _json_data_frames(response.text)
+    assert frames[0]["choices"][0]["delta"] == {"content": "안녕"}
+    assert frames[-1] == {"finish_reason": "stop"}
+    assert "event: tool_call" not in response.text
+    assert stream.closed
+
+
+def test_google_missing_finish_is_not_successful_done(monkeypatch):
+    _google_live(monkeypatch)
+    stream = _ChunkStream([_native_frame([{"functionCall": {"name": "pc_files", "args": {}}}])])
+    response = _client(httpx.MockTransport(lambda req: httpx.Response(200, stream=stream))).post(
+        STREAM_URL, json=_payload(model=GOOGLE_TOOL_MODEL, tools=[PC_TOOL]),
+    )
+    assert response.status_code == 200
+    assert "event: tool_call" in response.text and "event: error" in response.text
+    assert "event: done" not in response.text
+    assert stream.closed
+
+
+LEGACY_GOOGLE_STREAM_BYTES = (
+    'data: {"id":"upstream_stream_1","object":"chat.completion.chunk","model":"test-fixture/kilo-stream-gateway","choices":[{"index":0,"delta":{"content":"안녕"},"finish_reason":null}],"business14":{"request_id":"b14stream_fixed","route_mode":"manual","selected_provider":"Google AI Studio","selected_model":"google/gemini-3.1-flash-lite","selected_upstream_model":"gemini-3.1-flash-lite","selected_route_id":"platform:google/gemini-3.1-flash-lite","fallback_allowed":true,"fallback_used":false,"attempt_count":1,"provider_mode":"live","route_evidence_status":"live_streaming_preview"}}\n\n'
+    'data: {"id":"upstream_stream_1","object":"chat.completion.chunk","model":"test-fixture/kilo-stream-gateway","choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"business14":{"request_id":"b14stream_fixed","route_mode":"manual","selected_provider":"Google AI Studio","selected_model":"google/gemini-3.1-flash-lite","selected_upstream_model":"gemini-3.1-flash-lite","selected_route_id":"platform:google/gemini-3.1-flash-lite","fallback_allowed":true,"fallback_used":false,"attempt_count":1,"provider_mode":"live","route_evidence_status":"live_streaming_preview"},"usage":{"prompt_tokens":3,"completion_tokens":4,"total_tokens":7}}\n\n'
+    'data: [DONE]\n\n'
+).encode("utf-8")
+
+
 def test_mock_preview_is_sse_manual_route_with_done_and_metadata():
     client = _client()
     response = client.post(STREAM_URL, json=_payload())
@@ -191,16 +377,14 @@ def test_a_caller_cannot_narrow_the_tier_fallback_with_an_attempt_count(monkeypa
         )
 
     monkeypatch.setattr(stream_gateway.rcore, "resolve_route", resolve_with_tier_pair)
-    response = _client().post(STREAM_URL, json=_payload(
-        business14={"allow_external_fallback": False, "max_attempts": 1},
-    ))
+    response = _client().post(STREAM_URL, json=_payload())
     assert response.status_code == 200, response.text
     frames = _json_data_frames(response.text)
     assert frames and "data: [DONE]" in response.text
     assert frames[0]["business14"]["attempt_count"] == 1
     assert frames[0]["business14"]["fallback_used"] is False
-    # The tier fallback is still advertised: the caller's attempt count did not
-    # remove it from the candidate list.
+    # The tier fallback is still advertised: no caller option can narrow the
+    # owner roster (B4/B5 removed the retired knobs outright).
     assert frames[0]["business14"]["fallback_allowed"] is True
 
 
@@ -208,8 +392,9 @@ def test_canonical_stream_true_does_not_promote_auto_route():
     client = _client()
     response = client.post(CHAT_URL, json=_payload(model="b14/auto"))
 
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7: the retired id is refused at validation, before any stream handling.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"
 
 
 def test_preview_requires_stream_true():
@@ -226,7 +411,6 @@ def test_preview_requires_stream_true():
     "payload_update",
     [
         {"model": "b14/auto"},
-        {"business14": {"allow_external_fallback": True}},
     ],
 )
 def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_update):
@@ -242,9 +426,40 @@ def test_auto_or_external_fallback_streaming_is_rejected_before_network(payload_
     client = _client(httpx.MockTransport(handler))
     response = client.post(STREAM_URL, json=_payload(**payload_update))
 
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B7: the retired auto id is refused at validation, before the stream
+    # surface and before any network call.
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "invalid_body"
     assert calls == 0
+
+
+@pytest.mark.asyncio
+async def test_external_fallback_value_on_stream_preview_is_dropped_in_grace():
+    """B5 grace: a caller still sending the retired knob gets the value logged
+    and dropped; the stream proceeds as one manual attempt with no fallback."""
+    calls = 0
+
+    async def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal calls
+        calls += 1
+        return httpx.Response(
+            200,
+            headers={"content-type": "text/event-stream"},
+            content=b"".join(_valid_sse_chunks()),
+        )
+
+    rcfg.provider_mode = "live"
+    rcfg.api_key = LIVE_DUMMY_KEY
+    client = _client(httpx.MockTransport(handler))
+    response = client.post(
+        STREAM_URL, json=_payload(business14={"allow_external_fallback": True})
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    # The dropped value cannot enable any fallback walk: the manual stream ran
+    # exactly once against the single declared route.
+    assert calls == 1
 
 
 
@@ -301,7 +516,7 @@ def test_owner_tier_fallback_is_tried_before_first_visible_token(monkeypatch):
     rcfg.provider_mode = "live"
     response = _client().post(
         STREAM_URL,
-        json=_payload(business14={"allow_external_fallback": False}),
+        json=_payload(),
     )
 
     assert response.status_code == 200, response.text
@@ -366,7 +581,7 @@ def test_owner_tier_fallback_is_not_tried_after_first_visible_token(monkeypatch)
     rcfg.provider_mode = "live"
     response = _client().post(
         STREAM_URL,
-        json=_payload(business14={"allow_external_fallback": False}),
+        json=_payload(),
     )
 
     assert response.status_code == 200, response.text
@@ -597,8 +812,10 @@ def test_canonical_stream_true_does_not_enable_fallback_or_extra_calls():
     response = _client().post(CHAT_URL, json=_payload(
         business14={"allow_external_fallback": True},
     ))
-    assert response.status_code == 400
-    assert response.json()["error"]["code"] == "stream_not_supported"
+    # B5 grace: the retired knob is logged and dropped, so the canonical stream
+    # opt-in still serves the manual route with no fallback semantics.
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
 
 
 def test_canonical_stream_true_does_not_enable_byok_without_secret():

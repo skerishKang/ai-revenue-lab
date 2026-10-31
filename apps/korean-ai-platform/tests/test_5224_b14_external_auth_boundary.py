@@ -1,9 +1,10 @@
-"""#5224: the platform-credential execution lanes require a proven caller.
+"""#5224: every B14 lane that dispatches a Provider request requires a caller.
 
 B14 is publicly routable. The catalog lane spends the platform's own Provider
 credentials, so an anonymous or wrongly-signed external request must be
 refused before any credential is resolved and before any Provider request is
-built. These tests are the load-bearing regression for that boundary.
+built. The request-carried credential lane (#5824 PR-3a) is refused by the same
+gate: whose key a request spends does not establish who may make B14 dispatch.
 
 No network, no paid model call, no real credential, no Production mutation.
 """
@@ -28,6 +29,21 @@ from app.pilot.service_proof import (
 
 MODEL_ID = "kira/qwen3.8-flash-free"
 SECRET = "b14-test-service-proof-secret-0123456789abcdef"
+STREAM_PREVIEW_PATH = "/api/pilot/v1/chat/completions/stream-preview"
+# A synthetic caller-owned key. It is not an account credential anywhere; the
+# point of the assertions that read it is that it never comes back.
+CALLER_KEY = "synthetic-caller-owned-key-0123456789abcdef"
+
+
+def _credential_payload(model_id: str = "openai/gpt-4.1-mini") -> dict:
+    """The body shape the Engine bridge (#5905) writes for a user key."""
+    payload = _chat_payload(model_id)
+    payload["user_credential_ref"] = json.dumps(
+        {"provider": "openai", "endpoint": "https://api.openai.com/v1",
+         "model": "gpt-4.1-mini", "key": CALLER_KEY},
+        separators=(",", ":"),
+    )
+    return payload
 
 
 def test_shared_contract_vector_is_stable():
@@ -91,10 +107,7 @@ def _chat_payload(model_id: str = MODEL_ID) -> dict:
         "max_tokens": 32,
         "stream": False,
         "business14": {
-            "allow_paid": True,
-            "max_attempts": 1,
             "max_retries": 0,
-            "allow_external_fallback": False,
         },
     }
 
@@ -236,6 +249,56 @@ def test_byok_lane_is_not_blocked_by_the_platform_caller_proof(monkeypatch):
     assert result.status_code != 401
     assert result.json().get("error", {}).get("code") != "b14_service_proof_required"
     assert outbound == []
+
+
+@pytest.mark.no_b14_service_proof
+def test_the_request_carried_credential_lane_is_refused_without_a_proof(monkeypatch):
+    """#5824 PR-3a: a caller-owned key does not answer who may dispatch.
+
+    The credential lane spends the caller's own key, so the platform-credential
+    argument for this gate does not reach it. The caller-identity argument does:
+    an anonymous request must not be able to turn the Worker into a relay for a
+    Provider key, and the refusal carries no trace of the key it never used.
+    """
+    _live_runtime(monkeypatch)
+    dispatched: list[str] = []
+
+    async def _record(**_kwargs):
+        dispatched.append("user_credential")
+        return {"id": "x", "object": "chat.completion", "choices": [], "_live": True}
+
+    monkeypatch.setattr(platform, "call_user_credential_chat_completions", _record)
+
+    with TestClient(create_app()) as client:
+        result = _post(client, "/api/pilot/v1/chat/completions", _credential_payload())
+
+    assert result.status_code == 401
+    assert result.json()["error"]["code"] == "b14_service_proof_required"
+    assert dispatched == []
+    assert CALLER_KEY not in result.text
+
+
+@pytest.mark.no_b14_service_proof
+def test_the_credential_stream_lane_is_refused_before_its_first_frame(monkeypatch):
+    """The streaming credential lane sits under the same caller gate."""
+    _live_runtime(monkeypatch)
+    dispatched: list[str] = []
+
+    async def _record(**_kwargs):
+        dispatched.append("stream")
+        yield None
+
+    monkeypatch.setattr(platform, "stream_user_credential_chat_completions", _record)
+    payload = _credential_payload()
+    payload["stream"] = True
+
+    with TestClient(create_app()) as client:
+        result = _post(client, STREAM_PREVIEW_PATH, payload)
+
+    assert result.status_code == 401
+    assert result.json()["error"]["code"] == "b14_service_proof_required"
+    assert dispatched == []
+    assert CALLER_KEY not in result.text
 
 
 @pytest.mark.no_b14_service_proof

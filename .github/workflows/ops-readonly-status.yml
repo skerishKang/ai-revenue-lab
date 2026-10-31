@@ -1,0 +1,190 @@
+name: Ops Read-only Status (Served Version + Public Health)
+
+# #5895: one operator-facing readout of what is actually serving right now.
+#
+# Every Cloudflare call below is a GET on a Worker deployments record and every
+# public call is a GET on a /health URL. Nothing here deploys, rolls back,
+# writes a Secret, applies a migration, restarts a service or changes a route.
+#
+# The live readout runs only on an explicit workflow_dispatch pinned to the
+# exact current main SHA and carrying the GET_OPS_READONLY_STATUS marker. A
+# pull_request run executes the static contract job only and never reaches
+# Cloudflare, so this file cannot become an accidental production path.
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/ops-readonly-status.yml"
+      - ".github/tests/test_5895_ops_readonly_status.py"
+      - ".github/scripts/cloudflare_served_version.py"
+      - ".github/scripts/cloudflare_served_version_cli.py"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: "Exact current main SHA (no stale-run readout)"
+        required: true
+      confirmation:
+        description: "GET-only readout marker: GET_OPS_READONLY_STATUS"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ops-readonly-status-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'readout' }}
+  cancel-in-progress: false
+
+env:
+  CHAT_WORKER: padiem-chat
+  ENGINE_WORKER: padiem-ai-engine
+  B14_WORKER: ai-revenue-korean-ai-platform
+  CHAT_HEALTH_URL: https://chat.padiem.net/health
+  FILES_HEALTH_URL: https://files.padiem.net/health
+  READONLY_MARKER: GET_OPS_READONLY_STATUS
+
+jobs:
+  source-contract:
+    name: Static contract (parse only, no network)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact event source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install contract test dependencies
+        run: python -m pip install --quiet pyyaml pytest
+      - name: Assert the readout carries no write command
+        run: python -m pytest .github/tests/test_5895_ops_readonly_status.py -q
+      - name: Publish the static no-mutation marker
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'PRODUCTION_MUTATION=0'
+          echo 'CLOUDFLARE_WRITE_COUNT=0'
+          echo 'LIVE_PROVIDER_POST_COUNT=0'
+
+  ops-status:
+    name: Served version and public health (GET only)
+    needs: source-contract
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.event.inputs.confirmation == 'GET_OPS_READONLY_STATUS'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      TARGET_SHA: ${{ github.event.inputs.target_sha }}
+    steps:
+      - name: Checkout exact requested main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.target_sha }}
+          persist-credentials: false
+      - name: Assert exact main and credential presence (never print a value)
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${CLOUDFLARE_API_TOKEN:-}"
+          test -n "${CLOUDFLARE_ACCOUNT_ID:-}"
+          test "$(git rev-parse HEAD)" = "${TARGET_SHA}"
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "${TARGET_SHA}"
+          echo 'EXACT_MAIN=PASS'
+          echo 'READONLY_MARKER_MATCH=PASS'
+          echo 'SECRET_VALUES_PRINTED=0'
+      - name: GET the Chat, Engine and B14 deployment records
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A workers=(
+            [chat]="${CHAT_WORKER}"
+            [engine]="${ENGINE_WORKER}"
+            [b14]="${B14_WORKER}"
+          )
+          for lane in chat engine b14; do
+            worker="${workers[${lane}]}"
+            payload="${RUNNER_TEMP}/${lane}-deployments.json"
+            curl -fsS --retry 0 --connect-timeout 10 --max-time 25 \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/workers/scripts/${worker}/deployments" \
+              -o "${payload}"
+            echo "OPS_DEPLOYMENTS_RECORD_${lane^^}=${worker}"
+          done
+      - name: Resolve exactly one 100-percent served version per lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - chat engine b14 <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+
+          sys.path.insert(0, str(Path(".github/scripts").resolve()))
+          from cloudflare_served_version import (  # noqa: E402
+              ServedVersionResolutionError, resolve_served_version_id,
+          )
+
+          WORKER_ENV = {"chat": "CHAT_WORKER", "engine": "ENGINE_WORKER", "b14": "B14_WORKER"}
+          MARKER = {"chat": "OPS_SERVED_CHAT", "engine": "OPS_SERVED_ENGINE", "b14": "OPS_SERVED_B14"}
+          temp = Path(os.environ["RUNNER_TEMP"])
+          summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          rows = []
+          for lane in sys.argv[1:]:
+              worker = os.environ[WORKER_ENV[lane]]
+              payload = json.loads((temp / f"{lane}-deployments.json").read_text(encoding="utf-8"))
+              try:
+                  served = resolve_served_version_id(payload)
+              except ServedVersionResolutionError as exc:
+                  print(f"{MARKER[lane]}=BLOCKED")
+                  print(f"{MARKER[lane]}_REASON={exc.reason}")
+                  raise SystemExit(1)
+              deployed_at = payload["result"]["deployments"][0].get("created_on") or "UNRESOLVED"
+              print(f"{MARKER[lane]}_VERSION={served}")
+              print(f"{MARKER[lane]}_DEPLOYED_AT={deployed_at}")
+              rows.append((lane, worker, served, deployed_at))
+          with summary.open("a", encoding="utf-8") as fh:
+              fh.write("## Served versions\n\n")
+              fh.write("| Lane | Worker | Served version id | Deployed at |\n")
+              fh.write("|---|---|---|---|\n")
+              for lane, worker, served, deployed_at in rows:
+                  fh.write(f"| {lane} | `{worker}` | `{served}` | {deployed_at} |\n")
+          print("CANONICAL_RESOLVER=PASS")
+          print("OPS_CLOUDFLARE_CALLS=GET_ONLY")
+          print("B14_DEPLOY=0")
+          print("D1_MUTATION=0")
+          print("PRODUCTION_MUTATION=0")
+          PY
+      - name: GET the public health endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe_http_code() {
+            local url="$1"
+            local code
+            if code="$(curl -sS --retry 0 -o /dev/null -w '%{http_code}' \
+              --connect-timeout 10 --max-time 25 "${url}")"; then
+              printf '%s\n' "${code}"
+            else
+              printf '%s\n' "UNREACHABLE"
+            fi
+          }
+          chat_code="$(probe_http_code "${CHAT_HEALTH_URL}")"
+          files_code="$(probe_http_code "${FILES_HEALTH_URL}")"
+          echo "OPS_HEALTH_CHAT_CODE=${chat_code}"
+          echo "OPS_HEALTH_FILES_CODE=${files_code}"
+          {
+            printf '\n## Public health\n\n'
+            printf '| Host | URL | HTTP code |\n|---|---|---|\n'
+            printf '| chat | %s | %s |\n' "${CHAT_HEALTH_URL}" "${chat_code}"
+            printf '| files | %s | %s |\n' "${FILES_HEALTH_URL}" "${files_code}"
+          } >> "${GITHUB_STEP_SUMMARY}"
+          echo 'PRODUCTION_MUTATION=0'

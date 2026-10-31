@@ -49,21 +49,27 @@ class CalendarStore(Protocol):
         """Store a native daily work log entry."""
         ...
 
+    # #2952: every native-calendar READ is owner-scoped, not workspace-scoped.
+    # A workspace is the canonical tenant id, and a tenant can hold more than one
+    # product user, so "same workspace" is not "same person". `owner_id` is
+    # keyword-only and required: a read that does not name its owner cannot be
+    # written, so a future caller cannot silently reintroduce the leak.
     async def get_work_log(
-        self, workspace_id: str, log_id: str
+        self, workspace_id: str, log_id: str, *, owner_id: str
     ) -> CalendarWorkLog | None:
-        """Fetch a work log strictly scoped to workspace. Returns None if absent or foreign."""
+        """Fetch one work log owned by ``owner_id`` in this workspace."""
         ...
 
     async def list_work_logs(
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarWorkLog, ...]:
-        """List work logs strictly scoped to workspace, optionally filtered by date range."""
+        """List this owner's work logs, optionally filtered by date range."""
         ...
 
     async def add_appointment(
@@ -73,20 +79,21 @@ class CalendarStore(Protocol):
         ...
 
     async def get_appointment(
-        self, workspace_id: str, appointment_id: str
+        self, workspace_id: str, appointment_id: str, *, owner_id: str
     ) -> CalendarAppointment | None:
-        """Fetch an appointment strictly scoped to workspace. Returns None if absent or foreign."""
+        """Fetch one appointment owned by ``owner_id`` in this workspace."""
         ...
 
     async def list_appointments(
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarAppointment, ...]:
-        """List appointments strictly scoped to workspace, optionally filtered by date range."""
+        """List this owner's appointments, optionally filtered by date range."""
         ...
 
 
@@ -101,6 +108,8 @@ class InMemoryCalendarStore:
 
     Guarantees:
     - Strict workspace isolation: workspace A cannot read or mutate workspace B.
+    - #2952 owner isolation inside one workspace: a read only returns rows whose
+      owner is the caller, so a tenant-mate's records stay invisible.
     - Non-disclosing lookups: foreign ids resolve to None.
     - Parameter bounds.
     - Deterministic ordering.
@@ -119,28 +128,34 @@ class InMemoryCalendarStore:
         return log
 
     async def get_work_log(
-        self, workspace_id: str, log_id: str
+        self, workspace_id: str, log_id: str, *, owner_id: str
     ) -> CalendarWorkLog | None:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("log_id", log_id)
+        _safe_identifier("owner_id", owner_id)
         ws_logs = self._work_logs.get(workspace_id)
         if ws_logs is None:
             return None
-        return ws_logs.get(log_id)
+        found = ws_logs.get(log_id)
+        return found if found is not None and found.owner_id == owner_id else None
 
     async def list_work_logs(
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarWorkLog, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
         bounded_limit = max(1, min(limit, MAX_CALENDAR_LIST_LIMIT))
         ws_logs = self._work_logs.get(workspace_id, {})
         results: list[CalendarWorkLog] = []
         for item in ws_logs.values():
+            if item.owner_id != owner_id:
+                continue
             if start_date is not None and item.date < start_date:
                 continue
             if end_date is not None and item.date > end_date:
@@ -160,28 +175,34 @@ class InMemoryCalendarStore:
         return appointment
 
     async def get_appointment(
-        self, workspace_id: str, appointment_id: str
+        self, workspace_id: str, appointment_id: str, *, owner_id: str
     ) -> CalendarAppointment | None:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("appointment_id", appointment_id)
+        _safe_identifier("owner_id", owner_id)
         ws_apts = self._appointments.get(workspace_id)
         if ws_apts is None:
             return None
-        return ws_apts.get(appointment_id)
+        found = ws_apts.get(appointment_id)
+        return found if found is not None and found.owner_id == owner_id else None
 
     async def list_appointments(
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarAppointment, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
         bounded_limit = max(1, min(limit, MAX_CALENDAR_LIST_LIMIT))
         ws_apts = self._appointments.get(workspace_id, {})
         results: list[CalendarAppointment] = []
         for item in ws_apts.values():
+            if item.owner_id != owner_id:
+                continue
             if start_date is not None and item.date < start_date:
                 continue
             if end_date is not None and item.date > end_date:
@@ -199,28 +220,34 @@ class InMemoryCalendarStore:
 
 
     async def update_work_log(self, log: CalendarWorkLog) -> CalendarWorkLog:
-        existing = await self.get_work_log(log.workspace_id, log.log_id)
-        if existing is None or existing.owner_id != log.owner_id:
+        existing = await self.get_work_log(
+            log.workspace_id, log.log_id, owner_id=log.owner_id
+        )
+        if existing is None:
             raise WorkspaceStorageError("work log not found")
         self._work_logs[log.workspace_id][log.log_id] = log
         return log
 
     async def delete_work_log(self, workspace_id: str, owner_id: str, log_id: str) -> None:
-        existing = await self.get_work_log(workspace_id, log_id)
-        if existing is None or existing.owner_id != owner_id:
+        existing = await self.get_work_log(workspace_id, log_id, owner_id=owner_id)
+        if existing is None:
             raise WorkspaceStorageError("work log not found")
         del self._work_logs[workspace_id][log_id]
 
     async def update_appointment(self, apt: CalendarAppointment) -> CalendarAppointment:
-        existing = await self.get_appointment(apt.workspace_id, apt.appointment_id)
-        if existing is None or existing.owner_id != apt.owner_id:
+        existing = await self.get_appointment(
+            apt.workspace_id, apt.appointment_id, owner_id=apt.owner_id
+        )
+        if existing is None:
             raise WorkspaceStorageError("appointment not found")
         self._appointments[apt.workspace_id][apt.appointment_id] = apt
         return apt
 
     async def delete_appointment(self, workspace_id: str, owner_id: str, appointment_id: str) -> None:
-        existing = await self.get_appointment(workspace_id, appointment_id)
-        if existing is None or existing.owner_id != owner_id:
+        existing = await self.get_appointment(
+            workspace_id, appointment_id, owner_id=owner_id
+        )
+        if existing is None:
             raise WorkspaceStorageError("appointment not found")
         del self._appointments[workspace_id][appointment_id]
 
@@ -270,7 +297,19 @@ class D1CalendarStore:
             raw = await stmt.all()
         except Exception as exc:
             raise WorkspaceStorageError(f"D1 read failed: {exc}") from exc
-        rows = raw if isinstance(raw, list) else list(raw)
+        if isinstance(raw, (list, tuple)):
+            rows = raw
+        elif isinstance(raw, dict):
+            rows = raw.get("results")
+        else:
+            rows = getattr(raw, "results", None)
+            if rows is None:
+                try:
+                    rows = list(raw)
+                except (TypeError, ValueError) as exc:
+                    raise WorkspaceStorageError(f"D1 read failed: {exc}") from exc
+        if rows is None:
+            raise WorkspaceStorageError("D1 read failed: missing results")
         results: list[dict[str, Any]] = []
         for r in rows:
             d = _row_to_dict(r)
@@ -334,15 +373,19 @@ class D1CalendarStore:
         return log
 
     async def get_work_log(
-        self, workspace_id: str, log_id: str
+        self, workspace_id: str, log_id: str, *, owner_id: str
     ) -> CalendarWorkLog | None:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("log_id", log_id)
+        _safe_identifier("owner_id", owner_id)
+        # #2952: the owner predicate is part of the read, not a post-filter, so a
+        # tenant-mate's row is never even loaded into this request.
         row = await self._first(
             "SELECT id, workspace_id, owner_id, date, title, content, created_at, updated_at "
             "FROM padiem_calendar_work_log "
-            "WHERE workspace_id = ? AND id = ?",
+            "WHERE workspace_id = ? AND owner_id = ? AND id = ?",
             workspace_id,
+            owner_id,
             log_id,
         )
         if row is None:
@@ -353,14 +396,16 @@ class D1CalendarStore:
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarWorkLog, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
         bounded_limit = max(1, min(limit, MAX_CALENDAR_LIST_LIMIT))
-        clauses = ["workspace_id = ?"]
-        params: list[Any] = [workspace_id]
+        clauses = ["workspace_id = ?", "owner_id = ?"]
+        params: list[Any] = [workspace_id, owner_id]
         if start_date is not None:
             clauses.append("date >= ?")
             params.append(start_date.isoformat())
@@ -405,16 +450,18 @@ class D1CalendarStore:
         return appointment
 
     async def get_appointment(
-        self, workspace_id: str, appointment_id: str
+        self, workspace_id: str, appointment_id: str, *, owner_id: str
     ) -> CalendarAppointment | None:
         _safe_identifier("workspace_id", workspace_id)
         _safe_identifier("appointment_id", appointment_id)
+        _safe_identifier("owner_id", owner_id)
         row = await self._first(
             "SELECT id, workspace_id, owner_id, appointment_type, title, description, "
             "date, start_at, end_at, timezone, reminder_minutes, created_at, updated_at "
             "FROM padiem_calendar_appointment "
-            "WHERE workspace_id = ? AND id = ?",
+            "WHERE workspace_id = ? AND owner_id = ? AND id = ?",
             workspace_id,
+            owner_id,
             appointment_id,
         )
         if row is None:
@@ -425,14 +472,16 @@ class D1CalendarStore:
         self,
         workspace_id: str,
         *,
+        owner_id: str,
         start_date: date | None = None,
         end_date: date | None = None,
         limit: int = 100,
     ) -> tuple[CalendarAppointment, ...]:
         _safe_identifier("workspace_id", workspace_id)
+        _safe_identifier("owner_id", owner_id)
         bounded_limit = max(1, min(limit, MAX_CALENDAR_LIST_LIMIT))
-        clauses = ["workspace_id = ?"]
-        params: list[Any] = [workspace_id]
+        clauses = ["workspace_id = ?", "owner_id = ?"]
+        params: list[Any] = [workspace_id, owner_id]
         if start_date is not None:
             clauses.append("date >= ?")
             params.append(start_date.isoformat())

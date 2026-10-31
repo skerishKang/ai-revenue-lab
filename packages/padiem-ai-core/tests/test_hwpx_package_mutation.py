@@ -19,7 +19,6 @@ import padiem_ai_core.document_normalization as document_normalization
 import padiem_ai_core.hwpx_package_mutation as hwpx_package_mutation
 from padiem_ai_core.document_normalization import (
     MAX_OOXML_ENTRIES,
-    MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
     DocumentNormalizationError,
     extract_hwpx_text,
     parse_hwpx_sections,
@@ -326,22 +325,33 @@ class TestMutationGateRefusal:
         )
         assert _refusal(payload, (HwpxParagraphMutation(0, 0, "Z"),)) == "ooxml_unsafe_path"
 
-    def test_oversized_entry_is_refused_by_the_gate(self) -> None:
+    def test_an_oversized_stored_member_mutates_like_any_other_member(self) -> None:
         payload = _archive(
             [
                 ("mimetype", _MIMETYPE),
-                ("big.bin", b"\x00" * (MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES + 1)),
+                ("big.bin", b"\x00" * (4 * 1024 * 1024)),
                 ("Contents/section1.xml", _section_xml(_para("A"))),
             ]
         )
-        assert _refusal(payload, (HwpxParagraphMutation(0, 0, "Z"),)) == "ooxml_entry_size"
+        # #5573: a member bigger than the old 1MiB bound is capacity, not
+        # integrity, and a stored member costs nothing to inflate. #5876 keeps one
+        # absolute limit in the way — a single member may not claim more than the
+        # process can hold — and 4MiB is well inside it. The paragraph is rewritten
+        # and every other member survives byte for byte.
+        revised = mutate_hwpx_package_preserving_members(
+            payload, (HwpxParagraphMutation(0, 0, "Z"),))
+        assert revised != payload
+        assert len(revised) > len(payload) - (1024 * 1024)
 
-    def test_excessive_entry_count_is_refused_by_the_gate(self) -> None:
+    def test_a_many_member_package_mutates_without_a_count_refusal(self) -> None:
         members = [("mimetype", _MIMETYPE), ("Contents/section1.xml", _section_xml(_para("A")))]
         members += [(f"filler/{index}.bin", b"x") for index in range(MAX_OOXML_ENTRIES)]
-        assert _refusal(_archive(members), (HwpxParagraphMutation(0, 0, "Z"),)) == (
-            "ooxml_entry_count"
-        )
+        # The old 256-member ceiling is gone on both sides of the gate: an
+        # ordinary document with many parts is accepted and edited.
+        payload = _archive(members)
+        revised = mutate_hwpx_package_preserving_members(
+            payload, (HwpxParagraphMutation(0, 0, "Z"),))
+        assert revised != payload
 
     def test_dtd_carrying_part_is_refused_by_the_gate(self) -> None:
         body = b'<!DOCTYPE hs:sec [<!ENTITY x "y">]><hs:sec><hp:p>text</hp:p></hs:sec>'

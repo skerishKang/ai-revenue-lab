@@ -33,6 +33,17 @@
     sessionState: "unavailable",
     displayName: "",
     memberGrade: "free",
+    // #5479: true while the status endpoint has not answered yet. A request
+    // that produced no answer at all sets it to false, which is a different
+    // situation and gets its own session state.
+    statusReachable: true,
+  });
+  // #5479: the status request produced no answer. This is not "not read yet"
+  // and not the server's own "unavailable".
+  const UNREACHABLE_AUTH = Object.freeze({
+    ...EMPTY_AUTH,
+    sessionState: "unreachable",
+    statusReachable: false,
   });
 
   const TIER_ORDER = Object.freeze(["free", "plus", "pro", "max"]);
@@ -57,11 +68,11 @@
       unavailable: "사용 불가",
       upgrade: "업그레이드",
       adminNote: "관리자 전용 모델로 호출합니다.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem 관리자",
     }),
     en: Object.freeze({
       label: "AI tier",
@@ -72,11 +83,11 @@
       unavailable: "Unavailable",
       upgrade: "Upgrade",
       adminNote: "Calls the admin-only model.",
-      free: ["Padiem Free", ""],
-      plus: ["Padiem Plus", ""],
-      pro: ["Padiem Pro", ""],
-      max: ["Padiem Max", ""],
-      admin: ["Padiem 관리자", ""],
+      free: "Padiem Free",
+      plus: "Padiem Plus",
+      pro: "Padiem Pro",
+      max: "Padiem Max",
+      admin: "Padiem Admin",
     }),
   });
 
@@ -151,6 +162,22 @@
       keyLength: "API 키는 공백 없이 16자 이상 512자 이하여야 합니다.",
       saveFailed: "API 키를 저장하지 못했습니다.",
       deleteFailed: "API 키를 삭제하지 못했습니다.",
+      providerLabel: "공급사",
+      modelNotSet: "모델을 선택하세요",
+      modelPlaceholder: "공급사 모델 ID를 입력하세요",
+      modelRequired: "모델 ID를 먼저 선택하거나 입력해 주세요.",
+      loadModels: "모델 목록 불러오기",
+      loadingModels: "모델 목록 확인 중…",
+      modelsLoaded: "공급사 모델 목록을 불러왔습니다.",
+      modelsFailed: "모델 목록을 불러오지 못했습니다.",
+      endpointLabel: "API 엔드포인트 (선택)",
+      endpointPlaceholder: "https://<your-endpoint>/v1",
+      endpointHint: "비워 두면 공급사 기본 주소를 사용합니다. 공개 HTTPS 주소만 저장됩니다.",
+      test: "연결 테스트",
+      testing: "확인 중…",
+      testOk: "공급사 연결을 확인했습니다.",
+      testFailed: "공급사 연결을 확인하지 못했습니다.",
+      keyRequired: "API 키를 저장한 뒤 Padiem Custom을 선택할 수 있습니다.",
     }),
     en: Object.freeze({
       heading: "My API key",
@@ -186,10 +213,30 @@
       keyLength: "An API key must be 16 to 512 characters with no spaces.",
       saveFailed: "Could not save the API key.",
       deleteFailed: "Could not delete the API key.",
+      providerLabel: "Provider",
+      modelNotSet: "Choose a model",
+      modelPlaceholder: "Enter the provider model ID",
+      modelRequired: "Choose or enter a model ID first.",
+      loadModels: "Load model list",
+      loadingModels: "Checking model list…",
+      modelsLoaded: "Loaded the provider model list.",
+      modelsFailed: "Could not load the provider model list.",
+      endpointLabel: "API endpoint (optional)",
+      endpointPlaceholder: "https://<your-endpoint>/v1",
+      endpointHint: "Leave empty to use the provider's default address. Only public HTTPS addresses are stored.",
+      test: "Test connection",
+      testing: "Checking…",
+      testOk: "Provider connection verified.",
+      testFailed: "Could not verify the provider connection.",
+      keyRequired: "Save an API key before selecting Padiem Custom.",
     }),
   });
 
+  let autoKeyInput = null, autoEndpointInput = null, autoCard = null;
+  let autoDetectButton = null, autoRegisterButton = null, customAdvanced = null;
+  let autoDetection = null, autoSequence = 0;
   let customSelection = null;
+  let customViaEngine = false;
   let customProviders = [];
   let customCredentials = [];
   let customLoadState = "idle";
@@ -200,6 +247,13 @@
   let customFocusPending = false;
   let customMessageText = "";
   let customMessageState = "info";
+  let customProviderId = null;
+  let customProviderSignature = "";
+  let customModelValue = "";
+  let customModelOptions = [];
+  let customModelState = "idle";
+  let customModelSeq = 0;
+  let customTestState = "idle";
   let customOption = null;
   let customOptionTitle = null;
   let customOptionModel = null;
@@ -216,6 +270,17 @@
   let customDeleteButton = null;
   let customMessageEl = null;
   let customRetryButton = null;
+  let customProviderLabelEl = null;
+  let customProviderSelect = null;
+  let customModelLabelEl = null;
+  let customModelSelect = null;
+  let customModelInput = null;
+  let customModelDatalist = null;
+  let customModelListButton = null;
+  let customEndpointLabelEl = null;
+  let customEndpointInput = null;
+  let customEndpointHintEl = null;
+  let customTestButton = null;
 
   const ACCOUNT_COPY = Object.freeze({
     ko: Object.freeze({
@@ -228,6 +293,8 @@
       loginTitle: "Google 계정으로 로그인합니다",
       logoutTitle: "현재 계정에서 로그아웃합니다",
       expiredTitle: "세션이 만료되었습니다. 다시 로그인합니다",
+      unavailableTitle: "로그인 기능이 설정되지 않았습니다",
+      unreachableTitle: "로그인 상태를 확인하지 못했습니다. 다시 시도해 주세요",
     }),
     en: Object.freeze({
       guest: "Guest",
@@ -239,6 +306,8 @@
       loginTitle: "Sign in with your Google account",
       logoutTitle: "Sign out of the current account",
       expiredTitle: "Your session expired. Sign in again",
+      unavailableTitle: "Login is not configured",
+      unreachableTitle: "Could not verify your sign-in status. Please try again",
     }),
   });
 
@@ -246,6 +315,11 @@
   let auth = EMPTY_AUTH;
   let authRefreshQueued = false;
   let authRefreshTail = Promise.resolve();
+  // #5554: the tier restore of the CURRENT auth generation. The outgoing
+  // request waits for this one, not for every refresh that was queued after it
+  // (a window focus queues one), so a background refresh can no longer hold a
+  // user's message in the composer.
+  let tierRestoreTail = null;
   let modePanel = null;
   let accountAvatar = null;
 
@@ -294,6 +368,7 @@
       sessionState,
       displayName,
       memberGrade: authenticated && TIER_ORDER.includes(data.member_grade) ? data.member_grade : "free",
+      statusReachable: true,
     });
   }
 
@@ -362,24 +437,57 @@
     return accountAvatar;
   }
 
+  function sessionStateForPresentation() {
+    // #5479: three different situations, three different session states.
+    // "pending" is "not read yet", "unavailable" is the server's own word for a
+    // session store that is not ready, and "unreachable" is a status request
+    // that produced no answer at all.
+    if (auth.loaded) return auth.sessionState;
+    return auth.statusReachable === false ? "unreachable" : "pending";
+  }
+
+  function sessionPresentation(state) {
+    // The same rule app.js applies, so the two projections cannot drift apart.
+    const shared = typeof window.PadiemSessionPresentation === "function"
+      ? window.PadiemSessionPresentation(state)
+      : {
+        accountHidden: state === "pending" || state === "unavailable",
+        loginHidden: state === "pending" || state === "unavailable" || state === "signed_in",
+        loginDisabled: state === "pending" || state === "unavailable",
+        accountNameHidden: state !== "guest" && state !== "expired" && state !== "signed_in",
+      };
+    return shared;
+  }
+
   function syncAccountPresentation() {
     if (!loginButton || !accountContainer) return;
     const copy = currentAccountCopy();
-    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const state = sessionStateForPresentation();
     const available = auth.loaded && auth.ready && state !== "unavailable";
+    const shared = sessionPresentation(state);
     accountContainer.dataset.accountState = state;
-    accountContainer.hidden = !available;
-    loginButton.hidden = !available;
+    accountContainer.hidden = shared.accountHidden;
+    // #5560: the sign-out entry moved into Settings > Account. The sidebar
+    // keeps the sign-in affordance for a guest or an expired session, and the
+    // signed-in profile (name and avatar) is the one-step Settings entry.
+    // The button element and its text stay: the auth projection and the
+    // outputs feature read them as the session signal.
+    // #5479: an unknown session state keeps the sign-in entry point reachable.
+    loginButton.hidden = shared.loginHidden;
     loginButton.removeAttribute("aria-busy");
-    loginButton.disabled = !available;
-    loginButton.setAttribute("aria-disabled", available ? "false" : "true");
+    loginButton.disabled = shared.loginDisabled;
+    loginButton.setAttribute("aria-disabled", shared.loginDisabled ? "true" : "false");
 
     if (!available) {
       if (accountName) {
-        accountName.hidden = true;
+        accountName.hidden = shared.accountNameHidden;
         setText(accountName, "");
       }
       if (accountAvatar) accountAvatar.hidden = true;
+      setText(loginButton, copy.login);
+      loginButton.title = state === "unreachable"
+        ? copy.unreachableTitle
+        : state === "unavailable" ? copy.unavailableTitle : copy.loginTitle;
       return;
     }
 
@@ -411,9 +519,10 @@
 
   function accountPresentationMatchesTrustedState() {
     if (!loginButton || !accountContainer) return true;
-    const state = auth.loaded ? auth.sessionState : "unavailable";
+    const state = sessionStateForPresentation();
     const available = auth.loaded && auth.ready && state !== "unavailable";
-    if (accountContainer.hidden !== !available || loginButton.hidden !== !available) return false;
+    const shared = sessionPresentation(state);
+    if (accountContainer.hidden !== shared.accountHidden || loginButton.hidden !== shared.loginHidden) return false;
     if (!available) {
       if (!accountName) return true;
       return accountName.hidden && accountName.textContent.trim() === "";
@@ -476,6 +585,17 @@
     return true;
   }
 
+  // #5222: the tier this account may actually use right now, highest first.
+  // The server-verified member grade is the ceiling, not a floor: the user may
+  // still pick any lower tier. The administrator lane is the default only
+  // once the server has verified it, so an unverified probe never presents it
+  // as executable.
+  function highestAvailableTier() {
+    if (adminAvailable && adminVerified) return "admin";
+    const tiers = availableTiers();
+    return tiers.length ? tiers[tiers.length - 1] : "free";
+  }
+
   // #5222: an explicit user choice replaces the account's stored preference.
   // Restoring the account's own preference never writes one back.
   async function persistAccountSelection(tier) {
@@ -518,7 +638,10 @@
     const restorable = payload && typeof payload.restorable_tier === "string"
       ? payload.restorable_tier
       : "";
-    let next = "free";
+    // #5222: with no usable stored preference the account keeps the tier it
+    // really has, instead of falling back to the Free tier. An administrator
+    // therefore lands on the administrator lane, and a Max member on Max.
+    let next = highestAvailableTier();
     if (restorable === "admin") {
       // The administrator lane is executable only after the server verified
       // this account; an unverified probe never presents it as usable.
@@ -529,7 +652,7 @@
     commitTier(next, { keepCustom: true });
   }
 
-  async function refreshAccountSelection(epoch) {
+  async function fetchAccountSelection(epoch) {
     const ticket = epoch === undefined ? authEpoch : epoch;
     // A read that started before an explicit user choice must never undo it.
     const writeTicket = selectionWriteSeq;
@@ -544,11 +667,7 @@
       const data = await response.json().catch(() => null);
       if (ticket !== authEpoch || writeTicket !== selectionWriteSeq) return null;
       if (!data || data.ok !== true) return null;
-      accountSelection = data.selection && typeof data.selection === "object"
-        ? data.selection
-        : null;
-      applyAccountSelection(data);
-      return data;
+      return {data, ticket, writeTicket};
     } catch (_) {
       // A transient read failure never destroys the stored preference: it stays
       // on the server for this account and returns with the next read.
@@ -556,10 +675,29 @@
     }
   }
 
+  function commitAccountSelection(read) {
+    // #5554: the read and the apply are separate so the account selection can be
+    // FETCHED while the administrator probe is still in flight. The apply still
+    // happens only after the administrator lane is known, and a read that lost
+    // its generation or its write ticket is still discarded.
+    if (!read) return null;
+    if (read.ticket !== authEpoch || read.writeTicket !== selectionWriteSeq) return null;
+    accountSelection = read.data.selection && typeof read.data.selection === "object"
+      ? read.data.selection
+      : null;
+    applyAccountSelection(read.data);
+    return read.data;
+  }
+
+  async function refreshAccountSelection(epoch) {
+    return commitAccountSelection(await fetchAccountSelection(epoch));
+  }
+
   function tierSelectionReady() {
     // The restore for the current auth generation has settled. A request that
     // waits for this never leaves with a tier that was not verified yet.
-    return authRefreshTail.then(() => undefined, () => undefined);
+    const pending = tierRestoreTail || authRefreshTail;
+    return pending.then(() => undefined, () => undefined);
   }
 
   function customCopy() {
@@ -567,13 +705,23 @@
   }
 
   function customProvider() {
-    return customProviders.length ? customProviders[0] : null;
+    if (!customProviders.length) return null;
+    return customProviders.find((row) => row.provider === customProviderId) || customProviders[0];
   }
 
   function customCredential() {
     const provider = customProvider();
     if (!provider) return null;
     return customCredentials.find((row) => row.provider === provider.provider) || null;
+  }
+
+  function customModelId() {
+    const provider = customProvider();
+    if (!provider) return "";
+    if (provider.manual_model) {
+      return customModelInput ? String(customModelInput.value || "").trim() : customModelValue;
+    }
+    return customModelSelect ? String(customModelSelect.value || "").trim() : customModelValue;
   }
 
   function customUsageState() {
@@ -605,14 +753,84 @@
   }
 
   function clearCustomState() {
+    autoSequence += 1;
+    autoDetection = null;
+    if (autoKeyInput) autoKeyInput.value = "";
+    if (autoEndpointInput) { autoEndpointInput.value = ""; autoEndpointInput.hidden = true; }
+    if (autoCard) { autoCard.textContent = ""; autoCard.hidden = true; }
+    if (autoRegisterButton) autoRegisterButton.disabled = true;
     customProviders = [];
     customCredentials = [];
     customLoadState = "idle";
     customLoadError = "";
     customMutation = null;
     customSelection = null;
+    customProviderId = null;
+    customProviderSignature = "";
+    customModelValue = "";
+    customModelOptions = [];
+    customModelState = "idle";
+    customModelSeq += 1;
+    customTestState = "idle";
     customRequestSeq += 1;
     syncModeCopy();
+  }
+
+  function syncProviderOptions() {
+    if (!customProviderSelect) return;
+    const signature = customProviders.map((row) => row.provider).join("|");
+    if (signature !== customProviderSignature) {
+      customProviderSignature = signature;
+      customProviderSelect.textContent = "";
+      customProviders.forEach((row) => {
+        const option = document.createElement("option");
+        option.value = row.provider;
+        option.textContent = row.display_name;
+        customProviderSelect.appendChild(option);
+      });
+    }
+    const provider = customProvider();
+    if (provider) customProviderSelect.value = provider.provider;
+  }
+
+  function syncModelOptions(provider) {
+    const registry = Boolean(provider && !provider.manual_model);
+    if (customModelLabelEl) {
+      customModelLabelEl.htmlFor = registry ? "modeCustomModelSelect" : "modeCustomModelInput";
+    }
+    if (customModelSelect) {
+      customModelSelect.hidden = !registry;
+      const listed = registry && Array.isArray(provider.models) ? provider.models : [];
+      const signature = listed.join("|");
+      if (customModelSelect.dataset.signature !== signature) {
+        customModelSelect.dataset.signature = signature;
+        customModelSelect.textContent = "";
+        listed.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model;
+          option.textContent = model;
+          customModelSelect.appendChild(option);
+        });
+      }
+      if (registry) {
+        if (!listed.length) customModelValue = "";
+        else if (!listed.includes(customModelValue)) customModelValue = listed[0];
+        customModelSelect.value = customModelValue;
+      }
+    }
+    if (customModelInput) customModelInput.hidden = registry;
+    if (customModelDatalist) {
+      const signature = customModelOptions.join("|");
+      if (customModelDatalist.dataset.signature !== signature) {
+        customModelDatalist.dataset.signature = signature;
+        customModelDatalist.textContent = "";
+        customModelOptions.forEach((model) => {
+          const option = document.createElement("option");
+          option.value = model;
+          customModelDatalist.appendChild(option);
+        });
+      }
+    }
   }
 
   function syncCustomSection() {
@@ -622,12 +840,24 @@
     if (customDescriptionEl) customDescriptionEl.textContent = copy.description;
     if (customKeyLabelEl) customKeyLabelEl.textContent = copy.keyLabel;
     if (customKeyHintEl) customKeyHintEl.textContent = copy.keyHint;
+    if (customProviderLabelEl) customProviderLabelEl.textContent = copy.providerLabel;
+    if (customModelLabelEl) customModelLabelEl.textContent = copy.modelLabel;
+    if (customEndpointLabelEl) customEndpointLabelEl.textContent = copy.endpointLabel;
+    if (customEndpointHintEl) customEndpointHintEl.textContent = copy.endpointHint;
     if (customRetryButton) customRetryButton.textContent = copy.retry;
     const state = customUsageState();
     const selectable = state === "ready" || state === "key";
     const credential = customCredential();
     const provider = customProvider();
     const busy = customMutation !== null;
+    if (autoKeyInput) autoKeyInput.disabled = busy || !auth.authenticated;
+    if (autoEndpointInput) autoEndpointInput.disabled = busy || !auth.authenticated;
+    if (autoDetectButton) autoDetectButton.disabled = busy || !auth.authenticated;
+    if (autoRegisterButton) autoRegisterButton.disabled = busy || !autoDetection || !autoDetection.verified;
+
+    syncProviderOptions();
+    syncModelOptions(provider);
+    const model = customModelId();
 
     customOption.disabled = !selectable;
     customOption.setAttribute("aria-disabled", selectable ? "false" : "true");
@@ -635,7 +865,9 @@
     customOption.dataset.modeStatus = state === "ready" ? "available" : state === "key" ? "key" : "unavailable";
     if (customOptionTitle) customOptionTitle.textContent = provider ? provider.display_name : copy.option;
     if (customOptionModel) {
-      customOptionModel.textContent = provider ? copy.modelLabel + " " + provider.model : "";
+      customOptionModel.textContent = provider
+        ? copy.modelLabel + " " + (model || copy.modelNotSet)
+        : "";
       customOptionModel.hidden = !provider;
     }
     if (customOptionState) {
@@ -663,19 +895,60 @@
       customStatusEl.textContent = state === "loading" ? copy.stateLoading
         : state === "expired" ? copy.authExpired
         : state === "unavailable" ? (customLoadError || copy.unavailable)
-        : credential ? copy.credential + String(credential.key_last4 || "")
-        : copy.noCredential;
+        : credential
+          ? copy.credential + String(credential.key_last4 || "")
+            + (credential.endpoint_is_default === false && credential.endpoint
+              ? " · " + credential.endpoint : "")
+          : copy.noCredential;
       customStatusEl.dataset.state = state;
     }
+
+    const controlsDisabled = busy || !auth.authenticated
+      || state === "loading" || state === "unavailable" || state === "expired";
+    if (customProviderSelect) {
+      customProviderSelect.disabled = controlsDisabled || !customProviders.length;
+    }
+    if (customModelSelect) {
+      customModelSelect.disabled = controlsDisabled || !provider || !provider.models.length;
+    }
+    if (customModelInput) {
+      customModelInput.disabled = controlsDisabled || !provider;
+      customModelInput.placeholder = copy.modelPlaceholder;
+    }
+    if (customModelListButton) {
+      customModelListButton.hidden = !provider || !provider.supports_model_listing;
+      customModelListButton.disabled = controlsDisabled || !credential
+        || customModelState === "loading";
+      customModelListButton.textContent = customModelState === "loading"
+        ? copy.loadingModels : copy.loadModels;
+    }
+    if (customEndpointLabelEl) {
+      customEndpointLabelEl.hidden = !provider || !provider.supports_custom_endpoint;
+    }
+    if (customEndpointInput) {
+      customEndpointInput.hidden = !provider || !provider.supports_custom_endpoint;
+      customEndpointInput.disabled = controlsDisabled || !provider;
+      customEndpointInput.placeholder = provider && provider.default_endpoint
+        ? provider.default_endpoint : copy.endpointPlaceholder;
+    }
+    if (customEndpointHintEl) {
+      customEndpointHintEl.hidden = !provider || !provider.supports_custom_endpoint;
+    }
+    if (customTestButton) {
+      customTestButton.hidden = !provider || !provider.supports_connection_test || !credential;
+      customTestButton.disabled = controlsDisabled || !credential
+        || customTestState === "testing";
+      customTestButton.textContent = customTestState === "testing"
+        ? copy.testing : copy.test;
+    }
     if (customInput) {
-      customInput.disabled = busy || !auth.authenticated
-        || state === "loading" || state === "unavailable" || state === "expired";
+      customInput.disabled = controlsDisabled;
       customInput.placeholder = copy.keyPlaceholder;
     }
     if (customSaveButton) {
       customSaveButton.textContent = busy && customMutation === "save"
         ? copy.saveBusy : credential ? copy.replace : copy.save;
-      customSaveButton.disabled = busy || (customInput ? customInput.disabled : true);
+      customSaveButton.disabled = controlsDisabled || !provider;
     }
     if (customDeleteButton) {
       customDeleteButton.textContent = busy && customMutation === "delete" ? copy.deleteBusy : copy.remove;
@@ -690,13 +963,20 @@
     if (customRetryButton) {
       customRetryButton.hidden = !(auth.authenticated && state === "unavailable");
     }
-    if (customFocusPending && customInput && !customInput.disabled
-        && modePanel && !modePanel.hidden) {
+    if (customFocusPending && !controlsDisabled && modePanel && !modePanel.hidden) {
       customFocusPending = false;
+      const target = customAdvanced && !customAdvanced.open ? autoKeyInput
+        : customModelInput && !customModelInput.hidden && !model ? customModelInput : customInput;
       window.setTimeout(() => {
-        try { customInput.focus(); } catch (_) { /* focus is an enhancement */ }
+        try { target.focus(); } catch (_) { /* focus is an enhancement */ }
       }, 0);
     }
+  }
+
+  function focusCustomModel() {
+    const target = customModelInput && !customModelInput.hidden
+      ? customModelInput : customModelSelect;
+    try { if (target) target.focus(); } catch (_) { /* focus is an enhancement */ }
   }
 
   function selectCustom() {
@@ -704,7 +984,14 @@
     if (!provider || !auth.authenticated) return false;
     const state = customUsageState();
     if (state !== "ready" && state !== "key") return false;
-    customSelection = { provider: provider.provider, model: provider.model };
+    const model = customModelId();
+    if (!model) {
+      // A typed-but-unknown model id is never accepted as a success.
+      setCustomMessage(customCopy().modelRequired, "error");
+      focusCustomModel();
+      return false;
+    }
+    customSelection = { provider: provider.provider, model };
     customMessageText = "";
     customMessageState = "info";
     syncModeCopy();
@@ -718,6 +1005,118 @@
     return true;
   }
 
+  function selectCustomProvider(providerId) {
+    if (!customProviders.some((row) => row.provider === providerId)) return;
+    customProviderId = providerId;
+    const provider = customProvider();
+    customModelValue = provider && !provider.manual_model && provider.models.length
+      ? provider.models[0] : "";
+    customModelOptions = provider && Array.isArray(provider.models)
+      ? provider.models.slice() : [];
+    customModelState = "idle";
+    customModelSeq += 1;
+    customTestState = "idle";
+    customMessageText = "";
+    customMessageState = "info";
+    if (customModelInput) customModelInput.value = customModelValue;
+    const credential = customCredential();
+    if (customEndpointInput) {
+      customEndpointInput.value = credential
+        && credential.endpoint_is_default === false && credential.endpoint
+        ? credential.endpoint : "";
+    }
+    syncModeCopy();
+  }
+
+  function onCustomModelChanged() {
+    customModelValue = customModelId();
+    customMessageText = "";
+    customMessageState = "info";
+    syncCustomSection();
+  }
+
+  async function loadCustomModels() {
+    const provider = customProvider();
+    if (!provider || !provider.supports_model_listing || customModelState === "loading") return;
+    const copy = customCopy();
+    if (!customCredential()) {
+      setCustomMessage(copy.keyRequired, "info");
+      return;
+    }
+    const ticket = ++customModelSeq;
+    customModelState = "loading";
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(
+        "/api/chat/custom/models?provider=" + encodeURIComponent(provider.provider),
+        {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin",
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (ticket !== customModelSeq) return;
+      if (!response.ok || !data || data.ok !== true) {
+        customModelState = "error";
+        setCustomMessage(errorMessage(data) || copy.modelsFailed, "error");
+        return;
+      }
+      customModelOptions = (Array.isArray(data.models) ? data.models : [])
+        .filter((row) => typeof row === "string" && row.length > 0 && row.length <= 200)
+        .slice(0, 500);
+      customModelState = "ready";
+      setCustomMessage(copy.modelsLoaded, "ok");
+    } catch (_) {
+      if (ticket !== customModelSeq) return;
+      customModelState = "error";
+      setCustomMessage(copy.modelsFailed, "error");
+    }
+    syncCustomSection();
+  }
+
+  async function testCustomConnection() {
+    const provider = customProvider();
+    if (!provider || !provider.supports_connection_test || customTestState === "testing") return;
+    const copy = customCopy();
+    if (!customCredential()) {
+      setCustomMessage(copy.keyRequired, "info");
+      return;
+    }
+    customTestState = "testing";
+    setCustomMessage("", "info");
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(
+        "/api/chat/custom/credential/test?provider=" + encodeURIComponent(provider.provider),
+        {
+          headers: { "Accept": "application/json" },
+          cache: "no-store",
+          credentials: "same-origin",
+        },
+      );
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || data.ok !== true) {
+        if (response.status === 401) {
+          customTestState = "idle";
+          clearCustomState();
+          setCustomMessage(copy.authExpired, "error");
+          void refreshAuth();
+          return;
+        }
+        customTestState = "idle";
+        setCustomMessage(errorMessage(data) || copy.testFailed, "error");
+        return;
+      }
+      customTestState = "idle";
+      setCustomMessage(copy.testOk, "ok");
+    } catch (_) {
+      customTestState = "idle";
+      setCustomMessage(copy.testFailed, "error");
+    }
+    syncCustomSection();
+  }
+
   function openCustomCredentials() {
     openModePanel();
     if (!auth.authenticated) return false;
@@ -729,6 +1128,7 @@
   async function refreshCustomStatus() {
     const ticket = ++customRequestSeq;
     if (!auth.authenticated) {
+      customViaEngine = false;
       customProviders = [];
       customCredentials = [];
       customLoadState = "idle";
@@ -774,17 +1174,28 @@
         syncModeCopy();
         return;
       }
+      customViaEngine = data.byok_engine_enabled === true;
       const providers = Array.isArray(data.providers) ? data.providers : [];
       const credentials = Array.isArray(data.credentials) ? data.credentials : [];
       customProviders = providers
-        .filter((row) => row && typeof row.provider === "string" && row.provider
-          && typeof row.model === "string" && row.model)
-        .slice(0, 4)
-        .map((row) => Object.freeze({
-          provider: row.provider,
-          model: row.model,
-          display_name: text(row.display_name, 120) || customCopy().option,
-        }));
+        .filter((row) => row && typeof row.provider === "string" && row.provider)
+        .slice(0, 8)
+        .map((row) => {
+          const listed = Array.isArray(row.models)
+            ? row.models.filter((model) => typeof model === "string"
+              && model.length > 0 && model.length <= 200)
+            : (typeof row.model === "string" && row.model ? [row.model] : []);
+          return Object.freeze({
+            provider: row.provider,
+            display_name: text(row.display_name, 120) || customCopy().option,
+            models: Object.freeze(listed.slice(0, 500)),
+            manual_model: row.manual_model === true,
+            supports_model_listing: row.supports_model_listing === true,
+            supports_connection_test: row.supports_connection_test === true,
+            supports_custom_endpoint: row.supports_custom_endpoint === true,
+            default_endpoint: typeof row.default_endpoint === "string" ? row.default_endpoint : "",
+          });
+        });
       const known = new Set(customProviders.map((row) => row.provider));
       customCredentials = credentials
         .filter((row) => row && known.has(row.provider)
@@ -792,17 +1203,43 @@
         .map((row) => Object.freeze({
           provider: row.provider,
           key_last4: row.key_last4.replace(/[^A-Za-z0-9]/g, "").slice(-4),
+          endpoint: typeof row.endpoint === "string" ? row.endpoint : "",
+          endpoint_is_default: row.endpoint_is_default !== false,
         }));
       customLoadState = customProviders.length ? "ready" : "unavailable";
       if (!customProviders.length) customLoadError = customCopy().unavailable;
+      if (!customProviders.some((row) => row.provider === customProviderId)) {
+        customProviderId = customProviders.length ? customProviders[0].provider : null;
+        customModelValue = "";
+        customModelOptions = [];
+        customModelState = "idle";
+        customModelSeq += 1;
+        customTestState = "idle";
+        if (customModelInput) customModelInput.value = "";
+        if (customEndpointInput) customEndpointInput.value = "";
+      }
+      const provider = customProvider();
+      if (provider) {
+        if (!provider.manual_model && !provider.models.includes(customModelValue)) {
+          customModelValue = provider.models[0] || "";
+        }
+        if (customModelInput) customModelInput.value = customModelValue;
+      }
       if (customSelection) {
         const selectedProvider = customProviders.find(
-          (row) => row.provider === customSelection.provider
-            && row.model === customSelection.model,
+          (row) => row.provider === customSelection.provider,
         );
-        customSelection = selectedProvider
-          ? { provider: selectedProvider.provider, model: selectedProvider.model }
+        const stillValid = selectedProvider && customSelection.model
+          && (selectedProvider.manual_model
+            || selectedProvider.models.includes(customSelection.model));
+        customSelection = stillValid
+          ? { provider: selectedProvider.provider, model: customSelection.model }
           : null;
+      }
+      const credential = customCredential();
+      if (customEndpointInput && credential
+          && credential.endpoint_is_default === false && credential.endpoint) {
+        customEndpointInput.value = credential.endpoint;
       }
       syncModeCopy();
     } catch (_) {
@@ -813,6 +1250,72 @@
       customLoadError = customCopy().checkFailed;
       customSelection = null;
       syncModeCopy();
+    }
+  }
+
+  async function autoByok(register = false) {
+    if (customMutation || !auth.authenticated || !autoKeyInput) return;
+    const key = autoKeyInput.value.trim();
+    if (key.length < 16 || key.length > 512 || /[^\x21-\x7e]/.test(key)) {
+      setCustomMessage(customCopy().keyLength, "error");
+      return;
+    }
+    if (register && (!autoDetection || !autoDetection.verified)) return;
+    const payload = { key };
+    const endpoint = autoEndpointInput.value.trim();
+    if (endpoint) payload.base_url = endpoint;
+    if (register) {
+      payload.provider = autoDetection.provider;
+      payload.model = autoDetection.models[0];
+    }
+    const ticket = ++autoSequence;
+    customMutation = register ? "auto-register" : "detect";
+    setCustomMessage(register ? "등록 중…" : "공급자 확인 중…", "info");
+    syncCustomSection();
+    try {
+      const response = await nativeFetch(register ? "/api/byok/register" : "/api/byok/detect", {
+        method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        credentials: "same-origin", cache: "no-store", body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => null);
+      if (ticket !== autoSequence) return;
+      if (!response.ok || !data) {
+        autoDetection = null;
+        autoCard.hidden = true;
+        setCustomMessage(data && data.reason || errorMessage(data) || "등록을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+        return;
+      }
+      if (register && data.ok === true && data.selection) {
+        autoKeyInput.value = "";
+        autoDetection = null;
+        customMutation = null;
+        await refreshCustomStatus();
+        if (ticket !== autoSequence) return;
+        customProviderId = data.selection.provider;
+        customModelValue = data.selection.model;
+        customModelOptions = Array.isArray(data.models) ? data.models : [];
+        if (customModelInput) customModelInput.value = customModelValue;
+        customSelection = { provider: customProviderId, model: customModelValue };
+        syncModeCopy();
+        setCustomMessage("등록했습니다. 이 모델로 바로 대화할 수 있습니다.", "ok");
+        return;
+      }
+      autoDetection = data.verified === true && Array.isArray(data.models) && data.models.length ? data : null;
+      autoCard.hidden = false;
+      // Only the server's public projection is rendered. Never the key or a
+      // vendor error body, and never HTML from an upstream response.
+      autoCard.textContent = [data.provider || "공급자 선택 필요", data.endpoint || "",
+        Array.isArray(data.models) ? data.models[0] || "" : "", data.verified ? "검증 ✓" : "미검증"].filter(Boolean).join(" · ");
+      autoEndpointInput.hidden = data.provider !== null;
+      setCustomMessage(data.reason || "고급 입력을 이용해 주세요.", data.verified ? "ok" : "error");
+    } catch (_) {
+      if (ticket === autoSequence) {
+        autoDetection = null;
+        autoCard.hidden = true;
+        setCustomMessage("연결을 확인하지 못했습니다. 고급 입력을 이용해 주세요.", "error");
+      }
+    } finally {
+      if (ticket === autoSequence) { customMutation = null; syncCustomSection(); }
     }
   }
 
@@ -827,6 +1330,10 @@
       customInput.focus();
       return;
     }
+    const endpoint = customEndpointInput
+      ? String(customEndpointInput.value || "").trim() : "";
+    const payload = { provider: provider.provider, api_key: key };
+    if (endpoint) payload.endpoint = endpoint;
     customMutation = "save";
     customMessageText = "";
     customMessageState = "info";
@@ -837,7 +1344,7 @@
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         cache: "no-store",
         credentials: "same-origin",
-        body: JSON.stringify({ provider: provider.provider, api_key: key }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true) {
@@ -856,6 +1363,12 @@
       customInput.value = "";
       customMutation = null;
       await refreshCustomStatus();
+      const stored = customCredential();
+      if (customEndpointInput) {
+        customEndpointInput.value = stored
+          && stored.endpoint_is_default === false && stored.endpoint
+          ? stored.endpoint : "";
+      }
       setCustomMessage(hadCredential ? copy.replaced : copy.saved, "ok");
     } catch (_) {
       setCustomMessage(copy.saveFailed, "error");
@@ -898,6 +1411,8 @@
         return;
       }
       if (customInput) customInput.value = "";
+      if (customEndpointInput) customEndpointInput.value = "";
+      customTestState = "idle";
       customMutation = null;
       await refreshCustomStatus();
       setCustomMessage(data.deleted === true ? copy.deleted : copy.deleteNoop, "ok");
@@ -953,6 +1468,68 @@
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
 
+    // Every provider and model rendered here comes from the server capability
+    // payload. The browser never invents a provider/model that the server will
+    // not accept, and a manually typed model is passed through for the provider
+    // to accept or reject rather than being treated as a success.
+    customProviderLabelEl = document.createElement("label");
+    customProviderLabelEl.className = "mode-custom-key-label";
+    customProviderLabelEl.htmlFor = "modeCustomProvider";
+    customProviderLabelEl.textContent = copy.providerLabel;
+    customProviderSelect = document.createElement("select");
+    customProviderSelect.id = "modeCustomProvider";
+    customProviderSelect.className = "mode-custom-select";
+    customProviderSelect.addEventListener("change", () => {
+      selectCustomProvider(customProviderSelect.value);
+    });
+
+    customModelLabelEl = document.createElement("label");
+    customModelLabelEl.className = "mode-custom-key-label";
+    customModelLabelEl.htmlFor = "modeCustomModelSelect";
+    customModelLabelEl.textContent = copy.modelLabel;
+    customModelSelect = document.createElement("select");
+    customModelSelect.id = "modeCustomModelSelect";
+    customModelSelect.className = "mode-custom-select";
+    customModelSelect.addEventListener("change", onCustomModelChanged);
+    customModelInput = document.createElement("input");
+    customModelInput.type = "text";
+    customModelInput.id = "modeCustomModelInput";
+    customModelInput.className = "mode-custom-key-input";
+    customModelInput.autocomplete = "off";
+    customModelInput.maxLength = 200;
+    customModelInput.placeholder = copy.modelPlaceholder;
+    customModelInput.setAttribute("list", "modeCustomModelOptions");
+    customModelInput.setAttribute("autocapitalize", "off");
+    customModelInput.setAttribute("spellcheck", "false");
+    customModelInput.hidden = true;
+    customModelInput.addEventListener("input", onCustomModelChanged);
+    customModelDatalist = document.createElement("datalist");
+    customModelDatalist.id = "modeCustomModelOptions";
+    customModelListButton = document.createElement("button");
+    customModelListButton.type = "button";
+    customModelListButton.className = "mode-custom-action mode-custom-model-load";
+    customModelListButton.textContent = copy.loadModels;
+    customModelListButton.hidden = true;
+    customModelListButton.addEventListener("click", () => void loadCustomModels());
+
+    customEndpointLabelEl = document.createElement("label");
+    customEndpointLabelEl.className = "mode-custom-key-label";
+    customEndpointLabelEl.htmlFor = "modeCustomEndpoint";
+    customEndpointLabelEl.textContent = copy.endpointLabel;
+    customEndpointInput = document.createElement("input");
+    customEndpointInput.type = "url";
+    customEndpointInput.id = "modeCustomEndpoint";
+    customEndpointInput.className = "mode-custom-key-input";
+    customEndpointInput.autocomplete = "off";
+    customEndpointInput.maxLength = 2048;
+    customEndpointInput.setAttribute("autocapitalize", "off");
+    customEndpointInput.setAttribute("spellcheck", "false");
+    customEndpointInput.setAttribute("aria-describedby", "modeCustomEndpointHint");
+    customEndpointHintEl = document.createElement("small");
+    customEndpointHintEl.className = "mode-custom-hint";
+    customEndpointHintEl.id = "modeCustomEndpointHint";
+    customEndpointHintEl.textContent = copy.endpointHint;
+
     const label = document.createElement("label");
     label.className = "mode-custom-key-label";
     label.htmlFor = "modeCustomApiKey";
@@ -985,7 +1562,13 @@
     customDeleteButton.type = "button";
     customDeleteButton.className = "mode-custom-action mode-custom-delete";
     customDeleteButton.addEventListener("click", () => void deleteCustomKey());
-    actions.append(customSaveButton, customDeleteButton);
+    customTestButton = document.createElement("button");
+    customTestButton.type = "button";
+    customTestButton.className = "mode-custom-action mode-custom-test";
+    customTestButton.textContent = copy.test;
+    customTestButton.hidden = true;
+    customTestButton.addEventListener("click", () => void testCustomConnection());
+    actions.append(customSaveButton, customDeleteButton, customTestButton);
 
     const hint = document.createElement("small");
     hint.className = "mode-custom-hint";
@@ -1004,7 +1587,80 @@
     customRetryButton.textContent = copy.retry;
     customRetryButton.addEventListener("click", () => void refreshCustomStatus());
 
-    form.append(status, label, customInput, actions, hint, customMessageEl, customRetryButton);
+    const autoLabel = document.createElement("label");
+    autoLabel.htmlFor = "modeAutoByokKey";
+    autoLabel.className = "mode-custom-key-label";
+    autoLabel.textContent = "키 붙여넣기";
+    autoKeyInput = document.createElement("input");
+    autoKeyInput.id = "modeAutoByokKey";
+    autoKeyInput.type = "password";
+    autoKeyInput.className = "mode-custom-key-input";
+    autoKeyInput.autocomplete = "new-password";
+    autoKeyInput.maxLength = 512;
+    autoKeyInput.placeholder = "API 키만 붙여넣으세요";
+    autoKeyInput.setAttribute("spellcheck", "false");
+    const invalidate = () => {
+      autoSequence += 1; autoDetection = null;
+      autoCard.textContent = ""; autoCard.hidden = true;
+      autoRegisterButton.disabled = true;
+    };
+    autoKeyInput.addEventListener("input", invalidate);
+    autoKeyInput.addEventListener("paste", () => {
+      window.setTimeout(() => void autoByok(), 0);
+    });
+    autoKeyInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") { event.preventDefault(); void autoByok(); }
+    });
+    autoEndpointInput = document.createElement("input");
+    autoEndpointInput.type = "url";
+    autoEndpointInput.id = "modeAutoByokEndpoint";
+    autoEndpointInput.className = "mode-custom-key-input";
+    autoEndpointInput.placeholder = "공개 HTTPS API 기본 주소 (/v1 등 경로 포함)";
+    autoEndpointInput.setAttribute("aria-label", "API 주소");
+    autoEndpointInput.hidden = true;
+    autoEndpointInput.addEventListener("input", invalidate);
+    autoCard = document.createElement("p");
+    autoCard.id = "modeAutoByokResult";
+    autoCard.style.overflowWrap = "anywhere";
+    autoCard.setAttribute("role", "status");
+    autoCard.hidden = true;
+    const autoActions = document.createElement("div");
+    autoActions.className = "mode-custom-actions";
+    autoDetectButton = document.createElement("button");
+    autoDetectButton.type = "button"; autoDetectButton.textContent = "자동 확인";
+    autoDetectButton.className = "mode-custom-action";
+    autoDetectButton.id = "modeAutoByokDetect";
+    autoDetectButton.addEventListener("click", () => void autoByok());
+    autoRegisterButton = document.createElement("button");
+    autoRegisterButton.type = "button"; autoRegisterButton.textContent = "등록";
+    autoRegisterButton.className = "mode-custom-action";
+    autoRegisterButton.id = "modeAutoByokRegister";
+    autoRegisterButton.disabled = true;
+    autoRegisterButton.addEventListener("click", () => void autoByok(true));
+    autoActions.append(autoDetectButton, autoRegisterButton);
+    customAdvanced = document.createElement("details");
+    customAdvanced.id = "modeCustomAdvanced";
+    const advancedTitle = document.createElement("summary");
+    advancedTitle.textContent = "고급 · 공급자/모델/주소 직접 입력";
+    customAdvanced.append(advancedTitle);
+    customAdvanced.append(
+      customProviderLabelEl,
+      customProviderSelect,
+      customModelLabelEl,
+      customModelSelect,
+      customModelInput,
+      customModelDatalist,
+      customModelListButton,
+      customEndpointLabelEl,
+      customEndpointInput,
+      customEndpointHintEl,
+      label,
+      customInput,
+      actions,
+      hint,
+    );
+    form.append(status, autoLabel, autoKeyInput, autoEndpointInput, autoActions,
+      autoCard, customAdvanced, customMessageEl, customRetryButton);
 
     customGuestNote = document.createElement("p");
     customGuestNote.className = "mode-custom-guest-note";
@@ -1030,7 +1686,7 @@
     button.setAttribute("aria-pressed", tier === selectedTier && available ? "true" : "false");
 
     const title = document.createElement("strong");
-    title.textContent = copy[tier][0];
+    title.textContent = copy[tier];
     const state = document.createElement("span");
     state.className = "mode-option-state mode-option-state--" + status;
     const icon = document.createElement("span");
@@ -1071,7 +1727,7 @@
     syncAdminOption();
     const copy = currentModeCopy();
     const custom = customSelection ? customCopy() : null;
-    const activeLabel = custom ? custom.option : copy[selectedTier][0];
+    const activeLabel = custom ? custom.option : copy[selectedTier];
     const label = modePill.querySelector("span:last-child");
     if (label) label.textContent = activeLabel;
     modePill.setAttribute("aria-label", `${copy.label}: ${activeLabel}`);
@@ -1095,7 +1751,7 @@
       button.setAttribute("aria-pressed", tier === selectedTier && available && !custom ? "true" : "false");
       const optionTitle = button.querySelector("strong");
       const stateEl = button.querySelector(".mode-option-state");
-      if (optionTitle) optionTitle.textContent = copy[tier][0];
+      if (optionTitle) optionTitle.textContent = copy[tier];
       if (stateEl) {
         stateEl.className = "mode-option-state mode-option-state--" + status;
         stateEl.textContent = "";
@@ -1221,8 +1877,9 @@
     if (!adminAvailable && selectedTier === "admin") {
       // The administrator lane is not executable right now. The account's
       // stored preference stays on the server and returns with the next
-      // verified administrator probe.
-      commitTier("free");
+      // verified administrator probe. What the browser shows meanwhile is the
+      // account's own highest tier that IS executable right now.
+      commitTier(highestAvailableTier());
     }
     syncAdminOption();
     if (!adminAvailable && !adminVerified) {
@@ -1336,27 +1993,54 @@
     return deployment;
   }
 
+  async function readAuthStatusOnce() {
+    const response = await nativeFetch("/api/auth/status", {
+      headers: { "Accept": "application/json" },
+      cache: "no-store",
+    });
+    const data = await response.json().catch(() => null);
+    return { ok: response.ok, data };
+  }
+
+  async function readAuthStatusWithRetry() {
+    // #6114: a Python Worker restart can eat one status read (1101/1102). A
+    // request that produced NO answer never counts as signed-out: ask once
+    // more before the projection reports unreachable. A definitive guest
+    // answer (a 200 that says ready and not authenticated) is not re-asked.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        const answer = await readAuthStatusOnce();
+        if (answer.ok) return answer;
+      } catch (_) { /* no answer yet; one more ask */ }
+    }
+    return { ok: false, data: null };
+  }
+
   async function readAuthFresh() {
     let nextAuth = EMPTY_AUTH;
     try {
-      const response = await nativeFetch("/api/auth/status", {
-        headers: { "Accept": "application/json" },
-        cache: "no-store",
-      });
-      const data = await response.json().catch(() => null);
-      nextAuth = response.ok ? projectAuth(data) : EMPTY_AUTH;
+      const answer = await readAuthStatusWithRetry();
+      nextAuth = answer.ok ? projectAuth(answer.data) : UNREACHABLE_AUTH;
     } catch (_) {
-      nextAuth = EMPTY_AUTH;
+      nextAuth = UNREACHABLE_AUTH;
     }
     auth = nextAuth;
     authEpoch += 1;
     const epoch = authEpoch;
     if (!auth.authenticated) clearCustomState();
+    // #5554: the administrator probe and this account's stored model selection
+    // are two INDEPENDENT reads of the same signed-in session. They used to run
+    // one after the other, so every outgoing request waited for two sequential
+    // round trips (measured 5.5s of pure stall before the request even left the
+    // browser). They now run CONCURRENTLY; the selection is still APPLIED only
+    // after the administrator presence is known, because the administrator lane
+    // may only be restored for a verified administrator.
+    const selectionRead = auth.authenticated ? fetchAccountSelection(epoch) : null;
     await refreshAdminPresence(epoch);
-    if (auth.authenticated) {
+    if (selectionRead) {
       // #5222: restore this account's own last selection, after the server
       // re-verified the member grade and the administrator lane.
-      await refreshAccountSelection(epoch);
+      commitAccountSelection(await selectionRead);
     } else {
       // A signed-out browser keeps no account selection.
       accountSelection = null;
@@ -1365,7 +2049,9 @@
       ? adminAvailable
       : availableTiers().includes(selectedTier);
     if (!selectionValid) {
-      selectedTier = "free";
+      // The account keeps the tier it really has; it never falls back to the
+      // Free tier while a higher tier is the one it is entitled to.
+      selectedTier = highestAvailableTier();
       window.dispatchEvent(new CustomEvent("padiem:tierchange", { detail: { tier: selectedTier } }));
     }
     syncModeCopy();
@@ -1374,9 +2060,16 @@
     return auth;
   }
 
-  function refreshAuth() {
+  function refreshAuth(options) {
+    const background = !!(options && options.background);
     const run = authRefreshTail.then(readAuthFresh, readAuthFresh);
     authRefreshTail = run.catch(() => EMPTY_AUTH);
+    // #5554: an outgoing request waits for the restore of the generation it
+    // depends on. A BACKGROUND refresh (window focus, a UI text mismatch) only
+    // refreshes the state; it must never become the prerequisite of a request
+    // that is already leaving, because it re-reads the account selection and
+    // held the user's message in the composer for seconds.
+    if (!background) tierRestoreTail = run;
     return run;
   }
 
@@ -1385,7 +2078,7 @@
     authRefreshQueued = true;
     window.setTimeout(() => {
       authRefreshQueued = false;
-      refreshAuth();
+      refreshAuth({background: true});
     }, 0);
   }
 
@@ -1469,6 +2162,7 @@
     ready: tierSelectionReady,
   });
   window.PadiemCustomSelection = Object.freeze({
+    viaEngine: () => auth.authenticated && customViaEngine,
     get: () => (customSelection
       ? Object.freeze({ provider: customSelection.provider, model: customSelection.model })
       : null),

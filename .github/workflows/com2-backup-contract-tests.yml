@@ -24,6 +24,8 @@ on:
       - "scripts/ops/tests/test_d1_restore_verify.py"
       - "scripts/ops/com2_periodic_sync.py"
       - "scripts/ops/tests/test_com2_periodic_sync.py"
+      - "scripts/ops/com2_remote_diagnose.py"
+      - "scripts/ops/tests/test_com2_remote_diagnose.py"
       - "scripts/ops/refresh_d1.py"
       - "scripts/ops/tests/test_refresh_d1.py"
       - "scripts/ops/r2_sync.py"
@@ -83,6 +85,9 @@ jobs:
 
       - name: Run periodic sync runner tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_periodic_sync.py
+
+      - name: Run read-only COM2 diagnostic tests
+        run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_com2_remote_diagnose.py
 
       - name: Run COM2 D1 refresh tests
         run: uv run --no-project --python 3.12 --with "pytest>=8,<10" python -m pytest -q scripts/ops/tests/test_refresh_d1.py

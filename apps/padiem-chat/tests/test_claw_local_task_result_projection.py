@@ -1475,7 +1475,7 @@ def test_the_worker_root_composes_the_source_from_the_real_binding(harness, tmp_
     assert "build_local_task_result_source_with_diagnostic(" in text
     assert "self.env, history_store," in text
     assert "office_completion=getattr(" in text
-    assert "_worker_app.state.local_task_result_source = _local_task_result_source" in text
+    assert "worker_app.state.local_task_result_source = _local_task_result_source" in text
 
 
 def test_two_commands_for_one_run_are_refused_rather_than_resolved():

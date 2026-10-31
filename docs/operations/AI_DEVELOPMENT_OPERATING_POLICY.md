@@ -13,6 +13,48 @@
 - Model/provider decision authority: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Dated B14 owner decision/evidence ledger: `B14_OWNER_MODEL_DECISION_LEDGER_2026-10-08.md` (historical issue and implementation status; not a second approval gate)
 
+## 1쪽 요약 — #5895 (2026-10-27)
+
+본문과 충돌하면 이 요약이 우선한다. 충돌 절 정리 완료(#5964).
+
+본문(§0~§18)의 운영 규칙을 한 쪽으로 정리했다. 판단이 막힐 때 먼저 읽고, 근거는 각 절을 본다. 이 요약은 새 규칙을 만들지 않고 본문을 대체하지도 않는다.
+
+**목표**
+- 현재 단계는 MVP/베타 완성이다. 범위: 채팅·클로(일반 채팅, PC 레인, 첨부 문서, 자동화)에 더해, 축사·SNS(Util)·견적서(B66)·PDF·MD 변환을 베타 핵심으로 올린다(Owner 결정 2026-10-28). 방향: 각 메뉴에서 내 PC 파일 가져오기(참고 글·엑셀 양식·변환할 문서)와 결과를 내 PC에 저장.
+- 범위를 넓힐 때는 보류 목록(#5882)의 'Util·B66 범위 재개(2026-10-28)' 항목으로 관리한다.
+
+**역할**
+- Owner가 결정한다: 모델, 공급자, 비용, 제품 범위.
+- CTO가 결정한다: 머지, 배포, 롤백, D1 적용 같은 운영. 설정된 보호장치와 이미 기록된 승인을 반복해서 묻지 않는다.
+
+**배포**
+- 공식 게이트 1회만 쓴다. 게이트 밖 수동 배포나 별도 Preview 경로를 만들지 않는다.
+- 게이트는 배포하는 앱 경로를 기준으로 main 최신인지 본다. 무관한 레인의 머지가 배포를 세우지 않는다.
+- 배포 후 점검은 일반 채팅 1회, PC 레인 코드가 바뀐 배포에만 PC 목록 1회를 더한다.
+- 점검 실패는 게이트를 빨강으로 남긴다. 자동 롤백은 하지 않고 사람이 읽게 둔다. 롤백은 일반 채팅이 아예 동작하지 않을 때 쓰는 별도 판단이다.
+
+**유지하는 규칙**
+- 비밀 값, 고객 데이터, 공급자 응답 원문을 로그·PR·보고에 남기지 않는다.
+- 요청자 권한은 서버에서 검사한다. 브라우저가 보낸 등급·역할·SHA 선택은 그 자체로 권한이 아니다.
+- 운영 바인딩을 몰래 제거하지 않는다. 바인딩 정본은 `wrangler.toml`이고, 변경 PR은 CTO 검토 대상이다.
+- 파괴적 SQL은 차단한다.
+- 배포와 롤백은 게이트에서 1회 기록한다.
+- PC 연결 기본 범위 = 로컬 드라이브 전체(Owner 결정 2026-10-28).
+- PC 작업은 사용자 확인 없이 실행하고, 쓰기·삭제 전 백업과 변경 기록을 남긴다(Owner 결정 2026-10-28).
+- 연결은 "이 PC 연결" 설치 한 번으로 자동된다(Owner 결정 2026-10-28).
+
+**없앤 규칙 — 이제 기준으로 쓰지 않는다 (#5895)**
+- 라이브 현재 바인딩이 정답이라는 권위: `wrangler.toml` 선언과 diff로 본다.
+- 마이그레이션마다 만들던 별도 게이트 워크플로: 범용 D1 마이그레이션 게이트로 본다.
+- Core 파일 SHA 고정 canary: 동작 테스트로 본다.
+- 금지 단어 소스 검사: 주석 문구를 이유로 CI를 세우지 않는다.
+- 공급자 응답 엄격 파싱과 폴백 금지: #5885의 규칙으로 본다.
+- 정확 main 문자열 동일성 확인: 대상 앱 경로 기준 최신 확인으로 본다(#5957).
+
+**새 고정 제한**
+- 바이트·초·개수의 새 고정 제한은 추가하지 않는다. 정말 필요하면 Owner에게 묻고, 결정받은 뒤 그 자리에 적는다.
+
+
 ## 0. Public technical development context — consult local business-governance stage
 
 **Public engineering context:** the repository is maintained with limited development capacity. Actual business stage, customer-facing defaults and deployment priorities must be read from the non-public local Governance directory referenced below. Production URLs and actual operator/customer data require evidence, regardless of engineering stage. Technical access controls and configured platform protections remain facts to verify; an unresolved conflict with the business policy is referred to the Owner for a decision.
@@ -43,7 +85,62 @@ Move to **pilot/customer acceptance** when the Owner names actual external test 
 
 ### 0D. New ChatGPT/agent conversation continuity
 
-Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents and fresh `main` once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
+Root `AGENTS.md` is the repo-wide instruction for any agent that **reads this repository**; it does **not automatically load into every fresh ChatGPT conversation**. The ChatGPT **Project Instructions** should include a short durable owner-stage rule and point to `AGENTS.md` + this section. On each repository-aware CTO session, verify these documents once, then act; do not reconstruct old gates or request another owner approval without a concrete unmet boundary. Active issue/PR comments report task state, not portfolio-wide behavioral authority.
+
+fresh `main` 문자열 동일성 확인: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
+
+### 0E. Push and CI economy
+
+**Batch small commits before pushing.** A single PR push can fan out into many Actions workflows; prefer one coherent push after local focused checks instead of pushing every tiny edit and cancelling the same 10+ checks repeatedly. For urgent fixes, push when ready; never postpone a safety repair solely to save CI minutes.
+
+*(Moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration; this section is the canonical text and `AGENTS.md` links here.)*
+
+#### 0E-1. Duplicate-work prevention and push scope (Owner session 2026-10-23)
+
+- **Claim before fixing shared breakage.** Before repairing a failing `main` check, or starting a bounded fix another lane could also pick up, post a one-line claim comment (`수정 착수`) on the originating PR or the tracking issue. If a claim already exists, do not start; coordinate in that thread.
+- **Fresh-fetch before PR creation and before every push.** If the intended change has already landed on `origin/main`, stop and report instead of applying it. 2026-10-23 cases: #5610 duplicated #5609; #5619 overlapped #5623 and had to be reduced.
+- **Force-push scope.** No force push to `main`, to protected branches, or to a branch owned by or inherited from another worker. Publishing a rebase of one's own PR branch uses `--force-with-lease=<branch>:<known remote head>` only.
+- **Skipped is not pass.** A `success` run whose suite was skipped by the changeset classifier is not green evidence for that suite; cite the latest run in which the suite actually executed. Latent `main` failures surfaced this way on 2026-10-23 (#5605, #5618 merged while `B62 full regression` was skipped).
+- Since #5680 (2026-10-24) every push to main runs B62 full regression and the web-desktop E2E unconditionally; PR lanes keep the changeset classifier.
+
+### 0F. 장애 분석 원칙 (Owner 결정 2026-10-24)
+
+1. 모델은 고정이다. 유료·관리자 레인 = opencode-go muse-spark-1.3-contributor. 장애가 나도 모델·route 변경을 제안하지 않는다. Free(Google)는 RPM으로 실패할 수 있으며 Free 경로로 **기능 테스트**를 하지 않는다. 다만 배포 직후 자격 확인용 1회 호출은 예외다(코드만 기록).
+2. TinyFish 검색의 크레딧·인증은 원인 후보에서 제외한다.
+3. upstream_auth_error / 401 / 403을 보면 가설을 세우기 전에 **같은 시간대에 공급자를 터미널에서 직접 호출**한다(B14를 거치지 않고, 같은 모델·같은 키). 직접 호출 200 → B14 또는 우리 설정 문제. 직접 호출도 401/403 → 키·공급자 문제로 분류해 Owner에게 보고하고 추적을 멈춘다. 이 단계 없이 "키 문제"라고 보고하지 않는다.
+4. HTTP 코드만으로 결론 내지 않는다. 오류를 **만든 서비스의 로그 코드**(B14: upstream_auth_failed / b14_service_proof_required / missing_provider_key 등)를 확보한 뒤 판정한다. 로그는 Workers Logs 또는 wrangler tail로 같은 시각에 잡는다.
+5. 세 가지는 분석하지 않고 즉시 Owner 결정을 받는다: ① 모델 ② 코드에 넣어 둔 자체 제한(시한·크기·횟수) ③ Cloudflare 제한. 그 외만 CTO·로컬이 분석한다.
+6. 툴 사용 턴에는 실행 시한을 두지 않는다. 진행 중·경과 시간을 보여주고, 실패에만 오류를 보인다. 503을 던지고 뒤늦게 결과를 보여주는 설계는 결함이다.
+7. 검색이 실패하면 턴을 죽이지 않고 안내와 함께 답변으로 진행한다.
+8. 작업 규칙: 한 로컬 한 작업·순서대로, 작업마다 전용 worktree, 같은 PC의 Tabbit은 한 번에 한 로컬, 배포는 CTO 지시로만·한 번에 하나, PR 전 fresh-fetch, 보고에 헤더 값·키·토큰 금지(코드 이름만).
+9. 간헐 실패(되다 안 되다)는 키 값 문제가 아니다 — 키가 틀리면 항상 실패한다. 따라서 "B14 키" 가설은 간헐 장애에서 제외한다. 간헐 실패의 후보는 두 가지뿐이다: (a) 공급자의 간헐 거부 (b) B14 내부의 요청 단위 간헐 실패(시크릿 조회·증명 검증). 3번의 직접 호출 비교로 (a)/(b)를 가른 뒤에만 보고한다.
+10. 시크릿 개체 전환(원본 → 중립 사본)은 값 존재 확인 → 배포 직후 health has_key 확인, 실패 시 즉시 롤백 순서로만 수행한다. 개체 ID가 목록에 있다는 것과 값이 들어 있는 것은 다른 사실이다 — 값이 없는 사본으로 `secret_name`을 바꾸면 배포는 성공해도 `has_key`가 false다. 따라서 ① 전환 전에 사본 개체의 값 기록 여부를 메타데이터(list)로 확인하고, ② 게이트 배포 직후 `/api/pilot/health`의 공급자별 `has_key`를 읽고, ③ 하나라도 false면 게이트가 배포 직전에 자동 캡처한 서빙 버전으로 즉시 롤백한다(재시도·임의 재배포 금지). 값은 읽지도 출력하지도 않으며 보고는 불리언과 개수·코드 이름으로만 한다.
+
+11. 새 경로의 수용 기준은 **모든 연산**을 열거한다. PC 경로는 목록·읽기·드라이브 각각의 성공·거부·복구와 dispatch/최종 응답을 확인하며, 일부 연산의 통과를 전체 완료로 쓰지 않는다.
+    근거 사례: 목록·읽기 성공 뒤에도 드라이브 503이 남았으므로 드라이브(c)를 독립 수용 항목으로 둔다(#5573).
+12. 새 진입점은 공용 장부·공용 엔드포인트의 **계약 테스트를 같은 PR에** 포함한다. admit → 멱등 등록 → dispatch → 결과·복구가 기존 경로와 같은 행을 사용하는지 증명하며, 운영 DB 직접 SQL로 계약 누락을 메우지 않는다.
+    근거 사례: Chat 도구 턴의 드라이브 503은 공용 `claw_runs` 계약을 함께 검증해야 함을 보였고, D1 직접 SQL 사례(#5790·#5796)는 코드·정식 게이트 대신 운영 상태를 손보는 절차로 삼지 않는다.
+13. 파일 SHA 고정 canary: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
+14. 모든 거부는 **코드 포함 로그 + 사용자 문장**으로 끝낸다. 거부 경계·안전한 코드로 원인을 구분하고 스트림 최종 오류 또는 거부 관찰을 남긴다. 비밀값·기기 ID·경로·본문은 로그에 넣지 않는다.
+    근거 사례: 드라이브의 schema 거부와 downstream 503을 구분할 진단이 없으면 같은 준비 중 화면으로 보였다(#5855·#5573).
+15. 테스트 픽스처는 운영의 실제 형태를 대표한다. 정식 기기 ID 문법(`@`·`+` 포함), 새 경로의 pending/admit/등록 상태와 실제 응답 모양을 합성 데이터로 재현하고, 거부·복구도 검증한다.
+    근거 사례: 단순 `office-pc` 픽스처는 운영 형태의 device_id 패턴 거부를 놓쳤다(#5855); 실제 식별자·자격증명은 픽스처에 복사하지 않는다.
+16. 파일 업로드·파싱·대용량 결과는 컴2 파일 레인이 담당한다. Worker 경로에 새 파일 처리 기능을 추가하지 않는다(#5881).
+17. 범위는 채팅/클로(일반 채팅·PC 레인·첨부 문서·자동화)와 축사·SNS(Util)·견적서(B66)·PDF·MD 변환(베타 핵심, 2026-10-28 개정)이다. 미룬 문제는 보류 목록 이슈(#5882)에 적고, 범위를 넓힐 때 그 목록부터 확인한다.
+
+### 0G. MVP/베타 운영 원칙 (Owner, 2026-10-26) — §0F와 충돌 시 0G 우선
+
+#### 운영 원칙 (Owner, 2026-10-26)
+1. 극한까지 점검하지 않는다. 실사용에서 오류가 나면 그때 고친다.
+2. 기본적인 사용만 되면 바로 다음 단계로 간다.
+3. 현재 목표는 완성 — 최소한의 MVP와 베타 사용이다. 견고화·관측성·문서 정비는 막히지 않는 한 뒤로.
+
+#### 점검·보고 규칙
+- 배포 후 점검은 일반 채팅 1회. PC 레인 점검은 PC 레인 코드가 바뀐 배포에만 1회.
+- 일반 채팅이 아예 안 되면 롤백(복구는 점검이 아니다). 그 외 간헐 오류는 기록만 하고 다음 단계 진행.
+- 아스트라 보고는 "됨/안 됨 + SHA 한 줄". 사전점검표·사후표·소명 요구 없음.
+- 한 번에 하나씩 지시, 쉬는 로컬은 구현 과제 우선.
+
 ## 1. Purpose
 
 AI Revenue Lab separates product authority, design decisions, implementation, validation, CTO review, owner decisions, merge and Production so that fast AI-assisted work does not turn into repeated broad rework.
@@ -241,6 +338,32 @@ PRIMARY_BLOCKERS=0
 Until then, report `ACTIVE`.
 
 Shared Padiem Platform infrastructure does not collapse products into one another. Product-local work remains with its product owner. A generic defect discovered inside a product is split to the proper Platform/Core/Engine/Control-Plane owner rather than moving the whole product task into that lane.
+
+### 3B-1. Product-boundary vocabulary carried by the entry point
+
+The following blocks state the product-independence boundary in the exact
+literal form reports and work orders use. They were moved here from the
+`AGENTS.md` entry point during the 2026-10-23 instruction-index
+restoration; `AGENTS.md` links to this section instead of duplicating them.
+
+Product boundaries remain strict. B66 Padiem Quote, B67 Padiem Legal, B62 Padiem Chat, and B54 Padiem Claw are independent products that may reuse Padiem Platform authorities. Shared Platform usage does not authorize moving product-local work into another product's lane.
+
+```text
+B66_IS_ENGINE=NO
+B66_IS_CLAW=NO
+B66_PRODUCT_INDEPENDENT=YES
+```
+
+Issue classification before implementation uses the same vocabulary as
+`docs/operations/WORKFLOW_STATUS_MODEL.md`:
+
+```text
+PRIMARY_BLOCKER
+PRIMARY_NONBLOCKING_FOLLOWUP
+UNRELATED_BACKLOG
+```
+
+Only `PRIMARY_BLOCKER` may preempt the primary lane.
 
 ## 3C. Implementation closeout + batched product verification issues
 
@@ -446,6 +569,7 @@ The developer:
 - does not expand all routes when the work order authorizes only an anchor/archetype slice;
 - runs the smallest relevant implementation self-checks and the work-order `DEV_FAST_GATE`;
 - after `DEV_FAST_GATE=PASS`, records `DEV_ACTOR_RELEASED=YES` and may move immediately to the next authorized issue instead of waiting for Windows/Ubuntu/full-browser validation;
+- per-slice proof selection (moved from the `AGENTS.md` entry point during the 2026-10-23 instruction-index restoration): for Windows-first slices, the focused Windows proof may be the `DEV_FAST_GATE`. For web/backend slices, use the smallest focused web/API/contract proof that actually exercises the change. Do not require every supported OS/browser in the implementer's synchronous critical path.
 - records exact base/head, files, diff, commands, exits, pass/fail/skip counts and limitations;
 - identifies legacy/cascade debt encountered;
 - does not self-assign independent validation or final CTO readiness.
@@ -548,19 +672,7 @@ Use the evidence type that matches the claim. A red external security/compliance
 
 ## 12. Revision invalidation
 
-Evidence belongs to the exact tested revision. A new commit affecting the judged behavior/surface may invalidate prior evidence.
-
-Before merge, re-read:
-
-- current `main`;
-- PR exact head;
-- changed files/diff;
-- CI/checks;
-- comments/review threads;
-- required visual/UX/runtime/security evidence;
-- applicable anchor/archetype/full-surface status.
-
-Use expected-head protection where available.
+정확 리비전 증거·머지 전 current main 재확인 절차: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 
 ## 13. Safety and scope rules
 
@@ -641,7 +753,7 @@ For P0/P1 or otherwise critical PRs, the final review also records the exact-hea
 A merge may be executed by the Implementation Worker only under explicit owner delegation. Delegation must be:
 
 - single-purpose (one named PR/revision),
-- head-SHA-pinned (invalidated by any new commit),
+- head-SHA-pinned 무효화: 폐지(#5895, 2026-10-27) — 대체: 대상 앱 경로 기준 main 최신(main_currency_guard).
 - condition-checked at execution time (re-read remote state; required CI/gate results still valid).
 
 ## 17. Historical records
@@ -663,3 +775,19 @@ In particular, a historical product direction document is now an implementation 
 - GitHub report handoff: `GITHUB_REPORT_HANDOFF_POLICY.md`
 - Owner-only model/provider decisions: `MODEL_CHANGE_OWNER_APPROVAL_POLICY.md`
 - Templates: `templates/`
+
+## 보류 목록 (나중에 반드시 확인)
+
+정본 이슈: #5882. 범위를 넓힐 때는 이 목록부터 다시 연다.
+
+- [ ] 웹 XLSX 원본 상한 1MiB → 1GiB(#5878 Draft: 선택 저장소·DB CHECK 마이그레이션 071·게이트 미완). 1GiB는 컴2 파일 레인 전제.
+- [ ] B66 상수 변경(#5877: 인증 미리보기·견적 번들·키라/체험 파일럿·가이드 초안·견적 이력 128KiB→1MiB 등)은 배포되지만 B66 흐름 실측 검증을 하지 않음 — 범위 재개 시 B66 E2E 1회.
+- [ ] SNS 메시지 상한 1MB→10MiB(#5872) 실측 미검증(Slack/Telegram 실제 한도는 공급자 기준).
+- [ ] Util은 등급 전달(#5810)까지만. Util 전용 오류 표시·스트리밍 없음.
+- [ ] 프로젝트 파일 본문 160KB / content_chars 40,000 DB CHECK(003/068/069) — 올리려면 project_files 재생성 마이그레이션+게이트.
+- [ ] 음성 STT 오디오 5MiB(base64), Drive 케이스폴더 PDF 4MB — 업로드 상한 통일(1GiB)은 컴2 파일 레인 이후.
+- [ ] #2824 격리 파서 전송 상한 512,768B — 파서 레인 소유자 판단 대기.
+- [ ] BYOK 2.0("키만 넣으면 공급자·엔드포인트 자동 등록") 설계 — Owner 사업 방향, 구현 시점 미정.
+- [ ] 다른 레인 코드가 Chat 배포에 실려 나가는 문제(#5817 파서 바인딩 미부착, #5850·#5862 등) — 배포마다 변경 스캔은 하되 기능 검증은 안 함.
+
+바인딩은 wrangler.toml이 정답, wrangler.toml 변경 PR은 CTO 검토 필수.

@@ -66,7 +66,7 @@ const CGI_SKILL = SavedQuoteSkill.buildSkill(Object.assign({}, CGI_SKILL_BASE, {
 }));
 const CGI_PROFILE = {
   company: "CGI상사",
-  representative: "김범신",
+  representative: "홍길동",
   businessNumber: "111-11-11111",
   address: "서울특별시",
   phone: "02-000-0000",
@@ -77,7 +77,7 @@ const CGI_PROFILE = {
 /* canonical 서버는 부분 CompanyProfile 을 허용한다 (유효기간/부가세 기본값 null) */
 const PARTIAL_CGI_PROFILE = {
   company: "CGI상사",
-  representative: "김범신",
+  representative: "홍길동",
   businessNumber: "111-11-11111",
   address: "서울특별시",
   phone: "02-000-0000",
@@ -171,7 +171,7 @@ function buildAccountEnv({ signedIn, withSkill, withProfile, profile }) {
       return jsonResponse(signedIn ? {
         authenticated: true,
         session_state: "signed_in",
-        user: { id: "usr_cgi", name: "김범신" },
+        user: { id: "usr_cgi", name: "홍길동" },
         methods: { google: false, password: false }
       } : { authenticated: false, methods: { google: false, password: false } });
     }
@@ -301,7 +301,7 @@ async function harnessA() {
   assert.equal(draft.items[0].qty, 100, "item qty");
   assert.equal(draft.items[0].unitPrice, 18000, "item unitPrice");
   assert.equal(draft.sender.company, "CGI상사", "sender from CompanyProfile (skill demo sender never leaks)");
-  assert.equal(draft.sender.rep, "김범신", "sender rep from CompanyProfile");
+  assert.equal(draft.sender.rep, "홍길동", "sender rep from CompanyProfile");
   assert.equal(draft.meta.validDays, CGI_SKILL.fixedDefaults.validDays,
     "SKILL_VALIDITY_DEFAULT_PRESERVED=YES (approved Skill validity outranks account defaults)");
   assert.equal(draft.tax.mode, CGI_SKILL.fixedDefaults.taxMode,

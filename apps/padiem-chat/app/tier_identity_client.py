@@ -8,10 +8,9 @@ from .attachments import ImageAttachment
 from .b14_client import B14Client, ChatRuntimeError, ChatStreamEvent
 from .model_policy import (
     ADMIN_B14_MODEL_ID,
-    ModelPolicyError,
     current_request_tier_id,
+    current_verified_member_grade,
     model_policy_is_request_executable,
-    product_tier_name,
     resolve_request_model_policy,
 )
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
@@ -21,14 +20,22 @@ from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 # normal conversation content untouched while preventing provider/model names
 # from being exposed when a user directly asks what AI/model is serving them.
 _SELF_IDENTITY_PATTERNS = (
+    re.compile(r"(?:너|넌|당신|너는|당신은).{0,8}(?:누구|정체)", re.IGNORECASE),
     re.compile(r"(?:너|넌|당신|너는|당신은).{0,16}(?:무슨|어떤|뭔|뭐).{0,8}(?:모델|ai|인공지능)", re.IGNORECASE),
-    re.compile(r"(?:무슨|어떤|뭔).{0,8}(?:모델|ai|인공지능).{0,12}(?:이야|인가|입니까|예요|세요|쓰고|사용)", re.IGNORECASE),
+    re.compile(r"(?:무슨|어떤|뭔|어느).{0,8}(?:모델|ai|인공지능).{0,16}(?:이야|야|인가|입니까|예요|세요|쓰니|쓰나|쓰고|씁니까|사용|회사)", re.IGNORECASE),
+    re.compile(r"(?:모델|언어모델)\s*(?:뭐|무엇|어떤|알려|말해)", re.IGNORECASE),
     re.compile(r"(?:기반|파운데이션|foundation|underlying).{0,10}(?:모델|model)", re.IGNORECASE),
     re.compile(r"(?:provider|프로바이더|제공자).{0,12}(?:뭐|무엇|어디|which|what)", re.IGNORECASE),
     re.compile(r"\bwhat\s+(?:ai|model)\s+are\s+you\b", re.IGNORECASE),
     re.compile(r"\bwhich\s+model\s+are\s+you\b", re.IGNORECASE),
     re.compile(r"\bwhat\s+model\s+(?:is\s+this|are\s+you\s+using)\b", re.IGNORECASE),
+    re.compile(r"(?:내|나의|제|나는|저는).{0,8}(?:회원)?\s*등급.{0,8}(?:뭐|무엇|어떤|인가|이야|예요)?", re.IGNORECASE),
 )
+
+
+def is_padiem_identity_question(text: str) -> bool:
+    """Whether a user turn asks for the assistant's identity or tier."""
+    return isinstance(text, str) and any(pattern.search(text.strip()) for pattern in _SELF_IDENTITY_PATTERNS)
 
 _UNDERLYING_DETAIL_MARKERS = (
     "기반 모델",
@@ -58,6 +65,14 @@ def _verified_admin_exact_dispatch(policy_model_id: str) -> bool:
     )
 
 
+_TIER_LABELS = {
+    "free": "PADIEM Free",
+    "plus": "PADIEM Plus",
+    "pro": "PADIEM Pro",
+    "max": "PADIEM Max",
+}
+
+
 def _latest_user_text(messages: list[dict[str, str]]) -> str:
     for message in reversed(messages):
         if message.get("role") == "user":
@@ -66,40 +81,25 @@ def _latest_user_text(messages: list[dict[str, str]]) -> str:
     return ""
 
 
-# #5009: one upstream model may back several grades (Muse Spark backs
-# Plus/Pro/Max), so a model id alone can no longer name the product tier.
-# The request profile bound by resolve_tier_policy carries the grade.
-_PROFILE_TIER_NAMES = {
-    "free": "Padiem Free",
-    "low": "Padiem Plus",
-    "medium": "Padiem Pro",
-    "high": "Padiem Max",
-}
-
-
 def tier_identity_answer(
     messages: list[dict[str, str]], model_id: str, profile: str = "free"
 ) -> str | None:
-    """Return a local product-identity answer without asserting route availability."""
     text = _latest_user_text(messages).strip()
-    if not text or not any(pattern.search(text) for pattern in _SELF_IDENTITY_PATTERNS):
+    if not is_padiem_identity_question(text):
         return None
-    tier = None
-    if profile in _PROFILE_TIER_NAMES:
-        tier = _PROFILE_TIER_NAMES.get(profile)
-    if tier is None:
-        try:
-            tier = product_tier_name(model_id)
-        except ModelPolicyError:
-            return None
-
+    # Request tier is bound only after server-side authorization. It names the
+    # selected execution mode, which may differ from the account's membership.
+    tier_id = current_request_tier_id()
+    tier = _TIER_LABELS.get(tier_id) if tier_id else None
+    identity = f"PADIEM Chat의 {tier} 모드" if tier else "PADIEM Chat AI"
     lowered = text.lower()
     if any(marker in lowered for marker in _UNDERLYING_DETAIL_MARKERS):
-        return (
-            f"저는 {tier}입니다. "
-            "Padiem Chat에서는 내부 라우팅에 사용되는 제공자나 기반 모델 정보는 공개하지 않습니다."
-        )
-    return f"저는 {tier}입니다."
+        return f"저는 {identity}입니다. 기반 모델과 공급자 정보는 안내하지 않습니다."
+    if "등급" in text and tier:
+        member_grade = current_verified_member_grade()
+        verified_label = _TIER_LABELS.get(member_grade) if member_grade else None
+        return f"현재 회원 등급은 {verified_label}입니다." if verified_label else "현재 회원 등급을 확인할 수 없습니다."
+    return f"저는 {identity}입니다."
 
 
 class PadiemTierB14Client(B14Client):
@@ -148,6 +148,8 @@ class PadiemTierB14Client(B14Client):
         *,
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
+        tools: tuple[Any, ...] = (),
+        tool_choice: Any = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         policy = resolve_request_model_policy(messages, require_executable=False)
         answer = tier_identity_answer(policy.messages, policy.model_id, policy.profile)
@@ -166,6 +168,8 @@ class PadiemTierB14Client(B14Client):
             messages,
             skill=skill,
             additional_system_context=additional_system_context,
+            **({"tools": tools} if tools else {}),
+            **({"tool_choice": tool_choice} if tool_choice is not None else {}),
         )
         try:
             async for event in stream:

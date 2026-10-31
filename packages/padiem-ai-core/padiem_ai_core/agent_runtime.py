@@ -33,6 +33,7 @@ import time
 from typing import Protocol
 import uuid
 
+from ._pc_core_invoke import pc_core_log, pc_core_stage
 from .agent_approval import ApprovalPause, approval_pause_from_tool_error
 from .agent_definition import AgentTerminalReason, BoundedAgentDefinition
 from .agent_profile_adapter import CompiledAgentProfile, effective_max_steps
@@ -54,6 +55,12 @@ from .tool_runtime import (
 
 MAX_APPROVAL_PAUSE_SECONDS = 86_400
 _IDENTIFIER_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+# #5015: a step driver may name its own failure with a bounded lowercase
+# detail code. Core keeps only that shape-checked identifier and never reads
+# the exception text, so a product can classify its own step failure (an
+# unparsable model answer, an unauthorized tool choice, a model-call error)
+# without Core importing product modules or inventing a telemetry system.
+_STEP_FAILURE_DETAIL_RE = re.compile(r"^[a-z][a-z0-9_]{0,47}$")
 
 
 class AgentRuntimeError(RuntimeError):
@@ -68,6 +75,20 @@ class AgentRuntimeError(RuntimeError):
 
     def to_public_dict(self) -> dict[str, str]:
         return {"code": self.code, "message": self.safe_message}
+
+
+def step_failure_code(exc: BaseException) -> str:
+    """The bounded public code for a step-driver failure (#5015).
+
+    A driver marks its own closed detail on the exception it raises; anything
+    else keeps the previous generic code. Only the identifier shape crosses
+    this boundary: the exception message, the model answer and every other
+    value stay where they were raised.
+    """
+    detail = getattr(exc, "code", None)
+    if isinstance(detail, str) and _STEP_FAILURE_DETAIL_RE.fullmatch(detail):
+        return f"agent_step_failed.{detail}"
+    return "agent_step_failed"
 
 
 class AgentStepKind(str, Enum):
@@ -492,20 +513,22 @@ class BoundedAgentRuntime:
             return False
         return self._elapsed(started) >= float(total_cap)
 
-    async def _ensure_run_active(self) -> None:
+    async def _ensure_run_active(self, *, diagnostic_tool_id: str | None = None) -> None:
         """Fail closed before model/tool dispatch when durable lease is revoked.
 
         Trusted hosts inject an owner/fingerprint-scoped ledger guard. This
         does not signal a running external Tool or replace Tool idempotency.
         """
-        if self._run_guard is None:
-            return
-        try:
-            active = self._run_guard()
-            if inspect.isawaitable(active):
-                active = await active
-        except Exception:
-            active = False
+        with pc_core_stage("run_guard", diagnostic_tool_id,
+                           guard_injected=self._run_guard is not None):
+            if self._run_guard is None:
+                return
+            try:
+                active = self._run_guard()
+                if inspect.isawaitable(active):
+                    active = await active
+            except Exception:
+                active = False
         if active is not True:
             raise AgentRuntimeError("agent_run_fenced", "Agent run is no longer active.")
 
@@ -662,9 +685,12 @@ class BoundedAgentRuntime:
                 raise
             except AgentRuntimeError:
                 raise
-            except Exception:
+            except Exception as exc:
+                # #5015: the public message stays generic, and the original
+                # exception is still not chained to the caller. The driver's
+                # own bounded detail code is preserved instead of being lost.
                 raise AgentRuntimeError(
-                    "agent_step_failed",
+                    step_failure_code(exc),
                     "Agent step execution failed.",
                 ) from None
 
@@ -706,6 +732,8 @@ class BoundedAgentRuntime:
 
             invocation = decision.invocation
             assert isinstance(invocation, ToolInvocation)
+            pc_core_log("decision", invocation.tool_id, "enter")
+            pc_core_log("decision", invocation.tool_id, "done")
 
             if budget.max_tool_calls is not None and tool_calls >= budget.max_tool_calls:
                 # #4379: a tool-call count is no longer a PADIEM ceiling. A
@@ -729,16 +757,18 @@ class BoundedAgentRuntime:
                     tool_events=tool_events,
                 )
 
-            await self._ensure_run_active()
+            with pc_core_stage("run_active", invocation.tool_id):
+                await self._ensure_run_active(diagnostic_tool_id=invocation.tool_id)
             try:
-                tool_result = await asyncio.wait_for(
-                    self._tool_runtime.execute(
-                        invocation,
-                        request.compiled_profile.runtime_profile,
-                        request.authorization,
-                    ),
-                    timeout=remaining,
-                )
+                with pc_core_stage("tool_runtime_wait_for", invocation.tool_id, timeout=remaining):
+                    tool_result = await asyncio.wait_for(
+                        self._tool_runtime.execute(
+                            invocation,
+                            request.compiled_profile.runtime_profile,
+                            request.authorization,
+                        ),
+                        timeout=remaining,
+                    )
             except asyncio.TimeoutError:
                 return self._terminal(
                     run_id=run_id,
@@ -750,6 +780,8 @@ class BoundedAgentRuntime:
             except asyncio.CancelledError:
                 raise
             except ToolRuntimeError as exc:
+                if exc.code == "invalid_tool_arguments":
+                    pc_core_log("input_schema_rejected", invocation.tool_id, "done")
                 if exc.event is not None:
                     tool_events.append(exc.event)
 

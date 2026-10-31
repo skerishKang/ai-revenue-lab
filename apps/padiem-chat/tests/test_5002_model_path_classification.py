@@ -10,7 +10,7 @@ import json
 import re
 from pathlib import Path
 
-from app.model_policy import AUTO_B14_MODEL_ID, EXECUTABLE_B14_MODEL_IDS
+from app.model_policy import EXECUTABLE_B14_MODEL_IDS
 
 TESTS = Path(__file__).resolve().parent
 MANIFEST = json.loads(
@@ -21,8 +21,13 @@ B14_IMPORT = re.compile(
     r"|from\s+app\s+import\s+b14_client)\b",
     re.MULTILINE,
 )
-# These execute the checked-in B14 source or read its authority directly.
+# These are B14-managed boundary tests that reach the checked-in B14 source or
+# the shared dispatch authority without a static app.b14_client import. The
+# two route-level Chat tests read the identity authority from Core after the
+# #5347 tier-aware instruction replaced the fixed module constant.
 B14_SOURCE_READERS = frozenset({
+    "test_attachments.py",
+    "test_auto_grounding.py",
     "test_b66_3906_reasoning_level.py",
     "test_b66_real_b14_source_authority.py",
     "test_tier_route_consumer_coverage.py",
@@ -99,5 +104,8 @@ def test_mock_modules_are_never_reported_as_live_e2e():
 
 
 def test_disabled_auto_stays_out_of_the_executable_set():
-    assert AUTO_B14_MODEL_ID == "b14/auto"
-    assert AUTO_B14_MODEL_ID not in EXECUTABLE_B14_MODEL_IDS
+    from app import model_policy as model_policy_module
+
+    # B1: the retired automatic-selection id is no longer a catalog name at all.
+    assert not hasattr(model_policy_module, "AUTO_B14_MODEL_ID")
+    assert "b14/auto" not in EXECUTABLE_B14_MODEL_IDS

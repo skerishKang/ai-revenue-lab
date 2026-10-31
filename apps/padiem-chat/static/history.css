@@ -134,9 +134,19 @@
   color: inherit;
 }
 
+/* #5666: use the shared settings-dialog dim. The auth-only 52% black dim made
+   every auth screen darker than any other popup in all four themes and hid the
+   page context behind the modal. */
 .auth-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.52);
-  backdrop-filter: blur(6px);
+  background: rgba(18, 24, 31, 0.38);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+html[data-theme="padiem-glass"] .auth-dialog::backdrop {
+  background: rgba(22, 30, 38, 0.32);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .auth-panel {
@@ -148,6 +158,31 @@
   background: var(--panel, #fff);
   color: var(--text, #202124);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+}
+
+/* #5666: the Glass theme reads var(--panel) at 46% alpha, which composited
+   into a murky gray over the dark backdrop. Give the auth panel the same
+   translucent surface as the settings dialog so it matches the shared Glass
+   visual language instead of dimming it away. */
+html[data-theme="padiem-glass"] .auth-panel {
+  background: linear-gradient(160deg, rgba(246, 249, 251, 0.76), rgba(216, 224, 229, 0.56));
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  box-shadow: 0 30px 90px rgba(17, 25, 33, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(34px) saturate(112%);
+  -webkit-backdrop-filter: blur(34px) saturate(112%);
+}
+
+/* #5666: the dark theme keeps its flat panel but gets the shared dialog
+   border/text treatment, and a primary CTA that is visible on it — the same
+   colors the dark theme already uses for its composer send button. */
+html[data-theme="dark"] .auth-panel {
+  color: #edf5fc;
+  border-color: #4b6478;
+}
+
+html[data-theme="dark"] .auth-primary {
+  background: #a2d5f5;
+  color: #132637;
 }
 
 .auth-header {
@@ -202,6 +237,26 @@
 .auth-google-logo {
   flex: 0 0 auto;
   display: block;
+}
+
+/* #5474: Free is usable without a login; the note under the login button names
+   what signing in adds, in the same Glass typography as the rest of the panel. */
+.auth-free-note {
+  display: grid;
+  gap: 2px;
+  margin: -8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.auth-free-note strong {
+  font-weight: 650;
+  opacity: 0.9;
+}
+
+.auth-free-note span {
+  opacity: 0.78;
 }
 
 .auth-primary {
@@ -399,4 +454,56 @@
     background: #f3f4f6;
     color: #111;
   }
+}
+
+/* #6119: the recent list is loading, never blank — gray rows while the read
+   is in flight, and one honest failure row with its retry button when the
+   read produced no answer. sidebar-history-scroll.css wipes every .history-row
+   background with !important, so the skeleton paints through the same scoped
+   selector at higher specificity; the fixed white alphas match the alphas the
+   sidebar's own row states read. */
+html body .app-shell .sidebar .history-row.history-skeleton {
+  min-height: 44px;
+  margin: 2px 0;
+  border-radius: 11px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .10) 25%, rgba(255, 255, 255, .22) 45%, rgba(255, 255, 255, .10) 65%) !important;
+  background-size: 200% 100%;
+  border: 0 !important;
+  box-shadow: none !important;
+  animation: history-skeleton-sweep 1.2s ease-in-out infinite;
+}
+
+@keyframes history-skeleton-sweep {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-row.history-skeleton { animation: none; }
+}
+
+.history-row.history-load-failed {
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #8a8f98; /* same gray the sidebar's own .history-empty line reads */
+}
+
+.history-row.history-load-failed .history-load-failed-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.history-row.history-load-failed .history-retry {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--input-border-strong, var(--line, rgba(26, 34, 48, .12)));
+  border-radius: 999px;
+  background: var(--panel, #ffffff);
+  color: var(--text, #17202a);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
 }

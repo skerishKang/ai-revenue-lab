@@ -1,0 +1,26 @@
+{
+ "state": "chat",
+ "collapsed": false,
+ "bar": {
+  "y": 0,
+  "h": 62
+ },
+ "barPosition": "sticky",
+ "barBackground": "rgba(0, 0, 0, 0)",
+ "barShadow": "rgba(20, 28, 36, 0.08) 0px 10px 32px 0px, rgba(255, 255, 255, 0.12) 0px 1px 0px 0px inset",
+ "btn": {
+  "x": 14,
+  "y": 9,
+  "w": 44,
+  "h": 44
+ },
+ "btnRadius": "12px",
+ "btnBackdrop": "blur(14px)",
+ "convScrollTop": 700,
+ "target": "before",
+ "browser": "edge",
+ "width": 390,
+ "surface": "chat",
+ "scroll": "scrolled",
+ "page_errors": []
+}

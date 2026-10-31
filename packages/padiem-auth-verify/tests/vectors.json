@@ -1,0 +1,28 @@
+{
+  "jwks": {
+    "keys": [
+      {
+        "key_ops": [
+          "verify"
+        ],
+        "ext": true,
+        "kty": "EC",
+        "x": "B3HKRWm0wR6qnLdZrkhNCrJ0tYCWX6IWsZAGv8YwB9Y",
+        "y": "6_wES_OI2ZKFvvQIa_AwWaDFP5coYCsb_LTRtpCfIQE",
+        "crv": "P-256",
+        "kid": "fixture",
+        "alg": "ES256",
+        "use": "sig"
+      }
+    ]
+  },
+  "now": 1001,
+  "audience": "lovetree-4-0",
+  "tokens": {
+    "valid": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZpeHR1cmUifQ.eyJpc3MiOiJodHRwczovL2F1dGgucGFkaWVtLm5ldCIsImF1ZCI6ImxvdmV0cmVlLTQtMCIsInN1YiI6InN5bnRoZXRpYyIsImFjY291bnRfaWQiOiJzdWJfZXhpc3RpbmciLCJzaWQiOiJzeW50aGV0aWNfc2Vzc2lvbiIsImlhdCI6MTAwMCwiZXhwIjoxOTAwLCJ0b2tlbl91c2UiOiJhY2Nlc3MifQ.YvQDthb23v0RVTy9DKguVcnNrh-mFvMkIXFVCUw78CchAAtpvcVhbkh9hdh-jtafDW4uDcuO45Ipa5gv455KQQ",
+    "wrong_audience": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZpeHR1cmUifQ.eyJpc3MiOiJodHRwczovL2F1dGgucGFkaWVtLm5ldCIsImF1ZCI6Im90aGVyIiwic3ViIjoic3ludGhldGljIiwiYWNjb3VudF9pZCI6InN1Yl9leGlzdGluZyIsInNpZCI6InN5bnRoZXRpY19zZXNzaW9uIiwiaWF0IjoxMDAwLCJleHAiOjE5MDAsInRva2VuX3VzZSI6ImFjY2VzcyJ9.demmfaAZuEFrLdWWShcV-KMELMdjIqisCivvwfQLguP8-QXXaa442erQQF_xQLuJWKxS7nKqPFR7gGKjGzacQA",
+    "wrong_issuer": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZpeHR1cmUifQ.eyJpc3MiOiJodHRwczovL3dyb25nLmV4YW1wbGUiLCJhdWQiOiJsb3ZldHJlZS00LTAiLCJzdWIiOiJzeW50aGV0aWMiLCJhY2NvdW50X2lkIjoic3ViX2V4aXN0aW5nIiwic2lkIjoic3ludGhldGljX3Nlc3Npb24iLCJpYXQiOjEwMDAsImV4cCI6MTkwMCwidG9rZW5fdXNlIjoiYWNjZXNzIn0.7A1oOxPzGSKjDrL9Yx6Qgcs9qcYOdpf2dI4B_TVFXAIylg9zPoiqGs2I4utKPSIxQqvZgkd0CWiE_5I-kiGAww",
+    "expired": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZpeHR1cmUifQ.eyJpc3MiOiJodHRwczovL2F1dGgucGFkaWVtLm5ldCIsImF1ZCI6ImxvdmV0cmVlLTQtMCIsInN1YiI6InN5bnRoZXRpYyIsImFjY291bnRfaWQiOiJzdWJfZXhpc3RpbmciLCJzaWQiOiJzeW50aGV0aWNfc2Vzc2lvbiIsImlhdCI6MSwiZXhwIjo5MDEsInRva2VuX3VzZSI6ImFjY2VzcyJ9.vGRrdB5-DZ9Tu-h2kjvLLKOYdQUiLnuVXBrqEd-YxCAHBRqTN3rKyDyCZE7HJqyBwhz9H9tWMs6u1RherZIpEQ",
+    "forged": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImZpeHR1cmUifQ.eyJpc3MiOiJodHRwczovL2F1dGgucGFkaWVtLm5ldCIsImF1ZCI6ImxvdmV0cmVlLTQtMCIsInN1YiI6InN5bnRoZXRpYyIsImFjY291bnRfaWQiOiJzdWJfZXhpc3RpbmciLCJzaWQiOiJzeW50aGV0aWNfc2Vzc2lvbiIsImlhdCI6MTAwMCwiZXhwIjoxOTAwLCJ0b2tlbl91c2UiOiJhY2Nlc3MifQ.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }
+}

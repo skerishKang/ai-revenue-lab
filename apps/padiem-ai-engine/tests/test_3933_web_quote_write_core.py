@@ -116,28 +116,21 @@ async def test_engines_write_authority_fails_closed_on_private_d1_drift(mutation
 
 
 @pytest.mark.asyncio
-async def test_exact_core_write_tool_pauses_requires_user_confirmation_and_rechecks_d1():
+async def test_exact_core_write_tool_runs_predelegated_and_rechecks_d1():
+    """Owner decision 2026-10-28: the connected owner's write runs without a pause."""
     db = database()
     resolver = D1WebQuoteWriteScopeResolver(D1(db))
     scope = await resolver(SEL)
     binding = build_web_quote_write_tool_binding(resolver)
     spec = quote_write_spec()
     assert spec.side_effect.value == "write"
-    assert spec.approval_policy.value == "user_confirmation"
+    assert spec.approval_policy.value == "external_authorization"
     assert spec.auth_scope == (SCOPE,)
     assert binding.registry.canonical_tool_ids == (CANONICAL_TOOL,)
     authority = binding.resolve_authority(AGENT_ID)
     invocation = ToolInvocation(tool_id=RUNTIME_TOOL, arguments=quote_write_arguments(scope))
-    with pytest.raises(ToolRuntimeError) as missing:
-        await binding.tool_runtime.execute(
-            invocation, authority.compiled.runtime_profile, authority.authorization)
-    assert missing.value.code == "tool_user_confirmation_required"
-    verified = ToolAuthorizationContext(
-        app_id=APP_ID, agent_id=authority.compiled.runtime_profile.id,
-        granted_auth_scopes=(SCOPE,), user_confirmed_tools=(RUNTIME_TOOL,),
-    )
     result = await binding.tool_runtime.execute(
-        invocation, authority.compiled.runtime_profile, verified,
+        invocation, authority.compiled.runtime_profile, authority.authorization,
     )
     assert result.output["ok"] is True
     assert result.output["core_tool_completed"] is True
@@ -148,27 +141,28 @@ async def test_exact_core_write_tool_pauses_requires_user_confirmation_and_reche
                "revision_document_id=?,revision_sha256=?",
                ("doc_"+"e"*32, SHA))
     with pytest.raises(ToolRuntimeError):
-        await binding.tool_runtime.execute(invocation, authority.compiled.runtime_profile, verified)
+        await binding.tool_runtime.execute(
+            invocation, authority.compiled.runtime_profile, authority.authorization)
     db.close()
 
 
 @pytest.mark.asyncio
-async def test_core_denies_changed_arguments_and_read_only_grant_cannot_write():
+async def test_core_denies_changed_arguments_and_a_context_without_the_grant():
     db = database()
     resolver = D1WebQuoteWriteScopeResolver(D1(db))
     scope = await resolver(SEL)
     binding = build_web_quote_write_tool_binding(resolver)
     authority = binding.resolve_authority(AGENT_ID)
-    read_only = ToolAuthorizationContext(
+    no_grant = ToolAuthorizationContext(
         app_id=APP_ID, agent_id=authority.compiled.runtime_profile.id,
         granted_auth_scopes=(SCOPE,),
         user_confirmed_tools=("workspace.xlsx.confirm_original_read",),
     )
     inv = ToolInvocation(tool_id=RUNTIME_TOOL, arguments=quote_write_arguments(scope))
     with pytest.raises(ToolRuntimeError) as denial:
-        await binding.tool_runtime.execute(inv, authority.compiled.runtime_profile, read_only)
-    assert denial.value.code == "tool_user_confirmation_required"
-    exact = replace(read_only, user_confirmed_tools=(RUNTIME_TOOL,))
+        await binding.tool_runtime.execute(inv, authority.compiled.runtime_profile, no_grant)
+    assert denial.value.code == "tool_external_authorization_required"
+    exact = replace(no_grant, externally_authorized_tools=(RUNTIME_TOOL,))
     for patch in (
         {"school_name": "Foreign"},
         {"edit_sha256": "e"*64},
@@ -212,7 +206,7 @@ def test_engine_write_registration_requires_host_owned_b62_d1_resolver():
         quote_edit_sha256(NAME, 1001)
 
 @pytest.mark.asyncio
-async def test_engine_does_not_resume_write_without_separate_durable_owner_approval():
+async def test_engine_completes_the_write_without_a_pause():
     from app.approval_verifier import AuthenticatedFirstPartyApprovalDecisionVerifier
     from app.orchestration_service import InMemoryContinuationStore
     from app.tool_execution_service import ToolExecutionEngineService
@@ -230,30 +224,11 @@ async def test_engine_does_not_resume_write_without_separate_durable_owner_appro
         "app_id": APP_ID, "agent_id": AGENT_ID,
         "tool_id": CANONICAL_TOOL, "arguments": quote_write_arguments(scope),
     })
-    assert started.status_code == 202, started.body
-    assert started.body["tool"]["status"] == "paused"
-    continuation_ref = started.body["tool"]["continuation_ref"]
-    record = engine._continuation_store.resolve(
-        app_id=APP_ID, continuation_ref=continuation_ref)
-    submission = {
-        "decision_id": "decision_hark_write_test",
-        "pause_id": record.pause.pause_id,
-        "outcome": "approved",
-        "authority_ref": "first_party_owner",
-        "evidence_ref": "first_party_session",
-        "decided_at": datetime.now(timezone.utc).isoformat(),
-    }
-    resumed = await engine.resume_payload({
-        "app_id": APP_ID, "continuation_ref": continuation_ref,
-        "decision": submission,
-    })
-    assert resumed.status_code == 403, resumed.body
-    assert resumed.body["error"]["code"] == "web_xlsx_write_grant_unavailable"
-    assert db.execute(
-        "SELECT state FROM claw_web_xlsx_quote_edit_receipts "
-        "WHERE selection_ref=?", (SEL,)
-    ).fetchone()["state"] == "dispatching"
-    # The untrusted, in-memory continuation may NEVER be provisioned with a
+    assert started.status_code == 200, started.body
+    assert started.body["tool"]["status"] == "completed"
+    assert "continuation_ref" not in started.body["tool"]
+    # The route-tagged B62 code deploy is the executing branch here. The
+    # untrusted, in-memory continuation may NEVER be provisioned with a
     # privileged callback as a replacement for real durable owner proof.
     with pytest.raises(ValueError):
         ToolExecutionEngineService(

@@ -37,7 +37,7 @@ def test_no_designated_grade_roster_offers_a_free_candidate():
 def test_the_owner_tier_fallback_candidate_list_has_no_free_model(monkeypatch):
     _ready(monkeypatch)
     decision = router_core.resolve_manual_route(
-        TIER_DEFAULT_B14_MODEL, allow_external_fallback=False, product_tier="free",
+        TIER_DEFAULT_B14_MODEL, product_tier="free",
     )
     offered = [item["model_id"] for item in decision.eligible_fallback]
     assert offered == list(TIER_FALLBACK_B14_MODELS["free"])
@@ -63,10 +63,13 @@ def test_a_registered_free_lane_is_never_offered_as_a_recovery_candidate(monkeyp
     monkeypatch.setattr(catalog, "CATALOG_MODELS", [free])
 
     decision = router_core.resolve_manual_route(
-        "google/gemini-3.1-flash-lite", allow_external_fallback=True, product_tier="plus",
+        "google/gemini-3.1-flash-lite", product_tier="plus",
     )
 
+    # B5: a non-roster manual route has no recovery candidates at all, so the
+    # registered free lane cannot be offered either.
     offered = [item["model_id"] for item in decision.eligible_fallback]
+    assert offered == []
     assert "opencode-go/beam-free" not in offered
 
 

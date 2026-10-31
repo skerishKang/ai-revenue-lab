@@ -133,17 +133,15 @@ html[data-theme="padiem-glass"] body .starter[data-skill="plan"] .starter-icon::
  * progressive text stays above the composer, and the Glass frame remains
  * lighter than a large opaque sheet.
  */
-html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {
-  padding-top: clamp(24px, 4vh, 44px) !important;
-  /* #5014: the reserved bottom space belongs to the shared composer clearance
-   * (interaction-polish.css). A second copy here would drop the software
-   * keyboard inset, because the fixed composer is raised by exactly that
-   * amount while the keyboard is open. */
-  /* The frame itself is not restyled here: the first screen is the authority
-   * for the panel (shared-six-panel-frame.css, CENTRAL_OWNER_HOME_VISUAL_LOCK),
-   * so the conversation keeps the same background, transparency, border and
-   * shadow as the landing and the mode only changes what is inside it. */
-}
+/* #5561: the vertical origin of the conversation belongs to the shared frame
+ * token (shared-six-panel-frame.css). This rule used to carry a second
+ * !important copy of it -- clamp(24px, 4vh, 44px) against the frame's 88px and
+ * the first screen's own inset -- so one element had three competing answers
+ * and a landing screen and a new Chat started 85px apart. The composer lane and
+ * the frame are unchanged: #5014's bottom space still belongs to the shared
+ * composer clearance (interaction-polish.css), and the Glass panel skin stays the
+ * first screen's authority (CENTRAL_OWNER_HOME_VISUAL_LOCK), so switching mode
+ * changes only what is inside the frame. */
 
 html[data-theme="padiem-glass"] body .app-shell:is([data-state="chat"],[data-state="claw"]) .message-list {
   gap: 22px !important;

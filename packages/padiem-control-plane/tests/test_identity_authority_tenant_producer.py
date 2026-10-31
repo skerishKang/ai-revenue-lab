@@ -69,7 +69,7 @@ _worker_spec.loader.exec_module(_worker_mod)
 
 class _FakeEnv:
     def __init__(self) -> None:
-        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw"
+        self.CONTROL_PLANE_ALLOWED_PRODUCTS = "b62,b54-padiem-claw,lovetree-4-0"
         self.CONTROL_PLANE_IDENTITY = _FakeNamespace()
 
 

@@ -10,6 +10,8 @@ a later Production activation gate.
 
 from __future__ import annotations
 
+from app.pc_tools_turn import CatalogToolCapabilities
+
 import asyncio
 import inspect
 
@@ -64,8 +66,9 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    CloudflareB14ServiceBindingTransport,
+    b14_upstream_from_bindings,
     build_b14_execution_configs,
+    build_b14_transport,
 )
 from app.cloudflare_external_transport import (
     calendar_worker_transport,
@@ -108,6 +111,11 @@ from app.document_context_service import (
     DocumentContextEngineService,
 )
 from app.document_reference import DOCUMENT_STORE_BINDING_NAME
+from app.file_lane_text_port import (
+    FILE_LANE_ORIGIN_ENV,
+    FileLaneTextPort,
+    file_lane_worker_transport,
+)
 from app.engine_composition import EngineServices
 from app.idempotency_replay_service import IdempotencyReplayEngineService
 from app.authority_diagnostic import (
@@ -309,6 +317,26 @@ def _document_authorities_for_env(
     except (TypeError, ValueError):
         return None, None
     return store, resolver
+
+
+def _file_lane_text_port_for_env(env: Any) -> FileLaneTextPort | None:
+    """Compose the COM2 file-lane text reader from ``FILE_LANE_ORIGIN`` (#5881).
+
+    The origin is a deployment-owned plain Worker var, never a request field,
+    and it must be a bare HTTPS origin. An absent or malformed value yields
+    ``None``: document admission keeps the inline path and refuses a reference
+    request fail closed. Engine holds no file-lane signing secret; Chat's
+    ticket travels through the request unchanged.
+    """
+    origin = legacy_worker._env_text(env, FILE_LANE_ORIGIN_ENV)
+    if origin is None:
+        return None
+    try:
+        return FileLaneTextPort(
+            origin=origin, transport=file_lane_worker_transport(origin)
+        )
+    except (TypeError, ValueError):
+        return None
 
 
 def _evidence_storage_for_env(env: Any) -> CloudflareD1EvidenceStoragePort | None:
@@ -987,6 +1015,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     binding = legacy_worker._binding_value(env, legacy_worker.B14_SERVICE_BINDING_NAME)
     image_byte_store, scope_authority = _multimodal_authorities_for_env(env)
     document_byte_store, document_resolver = _document_authorities_for_env(env)
+    file_lane_text_port = _file_lane_text_port_for_env(env)
     evidence_storage = _evidence_storage_for_env(env)
     if binding is None:
         unavailable = lambda app_id: (_ for _ in ()).throw(
@@ -1035,6 +1064,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             document_admission=DocumentAdmissionEngineService(
                 document_byte_store=document_byte_store,
                 scope_authority=scope_authority,
+                file_lane_text_port=file_lane_text_port,
             ),
             # E7 tool execution/continuation: the resolver factory below composes
             # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,
@@ -1054,16 +1084,19 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             scope_authority=scope_authority,
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
+    b14_upstream = b14_upstream_from_bindings(env)
+    transport = build_b14_transport(
         binding=binding,
         request_factory=Request,
         # B14 spends platform-owned Provider credentials on its catalog
         # execution lane. The deployment-owned proof secret lets B14 verify
         # this server-to-server caller before it resolves one.
         proof_secret=await _resolve_b14_proof_secret(env),
+        upstream=b14_upstream,
     )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=legacy_worker._b14_timeout_seconds_for_env(env),
+        upstream=b14_upstream,
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)
@@ -1233,6 +1266,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=AdmissionBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_streaming_runtime_factory=streaming_runtime_factory,
+            pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
@@ -1252,7 +1287,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                 and len(desktop_secret) >= 32 else None
             ),
             pc_query_step_driver_factory=(
-                (lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None:
+                (lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None, initial_decision=None:
                     build_live_pc_query_driver(
                         b14_client=b14_client, model_id=model_id,
                         model_policy=model_policy, task_type=task_type,
@@ -1260,6 +1295,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         service=chat_service, request_factory=Request,
                         secret=desktop_secret,
                         tool_arguments=tool_arguments,
+                        initial_decision=initial_decision,
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None
@@ -1301,6 +1337,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         document_admission=DocumentAdmissionEngineService(
             document_byte_store=document_byte_store,
             scope_authority=scope_authority,
+            file_lane_text_port=file_lane_text_port,
         ),
         # E7 tool execution/continuation: the resolver factory below composes
         # the real CP-OAuth/D1-backed tool binding resolver (A3 re-activated,

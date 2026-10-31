@@ -55,6 +55,8 @@ MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "035_b66_saved_
 # The reviewer writes approved Skills through the existing #3301 store, so the
 # candidate table is exercised against the real Saved Quote Skill schema too.
 SKILL_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "021_b66_saved_quote_skill.sql"
+# #3180 ③: the same table now also holds an owner-registered PC form.
+SKILL_KIND_MIGRATION = Path(__file__).resolve().parents[1] / "migrations" / "079_b66_saved_quote_skill_kind.sql"
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "b66_manual_candidate_v1.json"
 
 
@@ -124,6 +126,7 @@ def source():
     db.execute("CREATE TABLE users (id TEXT PRIMARY KEY)")
     db.executemany("INSERT INTO users(id) VALUES (?)", [(A,), (B,)])
     db.executescript(SKILL_MIGRATION.read_text(encoding="utf-8"))
+    db.executescript(SKILL_KIND_MIGRATION.read_text(encoding="utf-8"))
     db.executescript(MIGRATION.read_text(encoding="utf-8"))
     yield db
     db.close()
@@ -815,3 +818,60 @@ def test_operator_decision_route_approve_replay_and_reject(source):
     ).status_code == 409
     # Neither path can turn the separate signed-in B66 customer into an operator.
     assert customer.post(url, json={"action": "approve"}).status_code == 403
+
+
+# ── #3186 end-to-end — 새 견적서 만들기 → 운영자 승인 → 내 견적서 ──────
+
+
+def test_new_form_request_appears_as_my_quote_only_after_operator_approval(source):
+    """The customer flow the screen promises, over the real HTTP routes.
+
+    진입(승인 요청 접수) → 운영자 승인(관리자 큐) → `/api/b66/saved-skills` 목록.
+    A customer can only request; the list entry exists because a trusted
+    operator approved it, not because the browser said so.
+    """
+
+    admin, customer, candidate_id, url, grant = _decision_http_fixture(source)
+
+    # Before approval the owner has no "내 견적서" entry, only a pending request.
+    empty = customer.get("/api/b66/saved-skills")
+    assert empty.status_code == 200, empty.text
+    assert empty.json()["skills"] == []
+    queue = admin.get("/api/b66/admin/saved-skill-candidates")
+    assert queue.status_code == 200, queue.text
+    assert [row["candidate_id"] for row in queue.json()["candidates"]] == [candidate_id]
+
+    admin.app.state.b66_operator_grant_resolver = lambda request: grant()
+    admin.app.state.b66_operator_target_resolver = lambda request, row_id: _target(
+        user_id=B, workspace_id=WB,
+    )
+    decided = admin.post(url, json={"action": "approve"})
+    assert decided.status_code == 200, decided.text
+    assert decided.json()["approval"]["target_user_id"] == B
+
+    listed = customer.get("/api/b66/saved-skills")
+    assert listed.status_code == 200, listed.text
+    skills = listed.json()["skills"]
+    assert len(skills) == 1
+    entry = skills[0]
+    assert entry["skill_name"] == _candidate()["name"]
+    assert entry["skill_kind"] == "skill"
+    assert entry["status"] == "approved"
+    assert entry["skill_id"].startswith("saved-quote-")
+
+    detail = customer.get("/api/b66/saved-skills/" + entry["saved_skill_id"])
+    assert detail.status_code == 200, detail.text
+    assert detail.json()["saved_skill"]["skill"]["name"] == _candidate()["name"]
+
+    # The request closed, and no customer route created the skill.
+    assert source.execute(
+        "SELECT status FROM b66_saved_skill_candidate WHERE id=?", (candidate_id,),
+    ).fetchone()[0] == "approved"
+    assert source.execute("SELECT COUNT(*) FROM b66_saved_quote_skill").fetchone()[0] == 1
+
+    # Another account sees none of it, even though it shares the same database.
+    candidate_store, skill_store = _stores(source)
+    other = _client(candidate_store, skill_store, user=A)
+    blocked = other.get("/api/b66/saved-skills")
+    assert blocked.status_code == 200, blocked.text
+    assert blocked.json()["skills"] == []

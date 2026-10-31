@@ -6,7 +6,6 @@ on:
       - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/workflows/b54-google-oauth-production-gate.yml"
-      - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
   push:
     branches:
       - main
@@ -14,7 +13,6 @@ on:
       - ".github/workflows/b54-google-oauth-readonly-main-audit.yml"
       - ".github/scripts/cloudflare_served_version_cli.py"
       - ".github/workflows/b54-google-oauth-production-gate.yml"
-      - ".github/workflows/b62-control-plane-identity-binding-gate.yml"
 
 permissions:
   contents: read

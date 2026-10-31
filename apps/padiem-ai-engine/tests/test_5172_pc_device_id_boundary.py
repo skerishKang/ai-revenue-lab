@@ -58,3 +58,9 @@ def test_the_plan_boundary_accepts_no_other_argument():
         _selected_device_id({"device_id": MESH_NODE_ID, "path": "C:/"})
     with pytest.raises(ToolHandlerError):
         _selected_device_id({"device": MESH_NODE_ID})
+
+
+def test_drives_schema_uses_canonical_bare_device_pattern():
+    from kagent.pc_query_adapter import pc_drives_tool_spec
+    from padiem_ai_core.pc_device_identity import PC_DEVICE_ID_PATTERN
+    assert pc_drives_tool_spec().input_schema["properties"]["device_id"]["pattern"] == PC_DEVICE_ID_PATTERN

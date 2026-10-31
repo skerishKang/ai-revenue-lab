@@ -67,6 +67,9 @@ async def compose_scheduled_automation_execution(
     owner_resolver: ClawAutomationOwnerResolver,
     history_store: HistoryStore,
     task_alert_store: ClawTaskAlertProjectionStore,
+    push_store: Any | None = None,
+    push_sender: Any | None = None,
+    push_scope: str = "",
     now: datetime,
     recovery_bound: int | None = None,
     lease: Any | None = None,
@@ -88,7 +91,12 @@ async def compose_scheduled_automation_execution(
             trigger_receipt, ClawAutomationTriggerReceipt
         ):
             raise ContractError("scheduled discovery returned an invalid trigger receipt")
-        kwargs: dict[str, Any] = {"trigger_receipt": trigger_receipt}
+        kwargs: dict[str, Any] = {
+            "trigger_receipt": trigger_receipt,
+            "push_store": push_store,
+            "push_sender": push_sender,
+            "push_scope": push_scope,
+        }
         if recovery_bound is not None:
             kwargs["recovery_bound"] = recovery_bound
         if lease is not None:

@@ -131,7 +131,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: "0.12.5"
+          version: "0.13.5"
 
       - name: Dry-run package exact CP admission Worker
         working-directory: packages/padiem-control-plane
@@ -261,7 +261,7 @@ jobs:
         if: ${{ env.CP_STATE == 'absent' }}
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
         with:
-          version: "0.12.5"
+          version: "0.13.5"
 
       - name: Reconfirm exact main and live sequence state immediately before the only mutation
         if: ${{ env.CP_STATE == 'absent' }}

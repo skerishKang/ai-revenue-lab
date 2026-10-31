@@ -1,8 +1,9 @@
-"""Administrator-only Chat model selection: server gate and exact Muse dispatch.
+"""Administrator-only Chat model selection: server gate and contract dispatch.
 
 The Padiem 관리자 popup entry is visible only to the server-verified global
-model admin, and the Chat route dispatches exactly
-``opencode-go/muse-spark-1.3-contributor`` for it. Free/Plus/Pro/Max policy,
+model admin, and the Chat route dispatches exactly the shared Control Plane
+ADMIN route model for it (#5685 interim: the Free Google route; the Muse hold
+model applies only while that route is absent). Free/Plus/Pro/Max policy,
 their executability set, and ``b14/auto`` behavior stay unchanged.
 """
 from __future__ import annotations
@@ -11,11 +12,17 @@ import asyncio
 from pathlib import Path
 from types import SimpleNamespace
 
+from padiem_control_plane.product_tier_routes import (
+    ProductTierLabel,
+    active_route_for,
+)
+
 from app import tier_identity_client as tier_identity_module
 from app.member_grade_access import selected_admin_denial
 from app.model_policy import (
     ADMIN_B14_MODEL_ID,
     EXECUTABLE_B14_MODEL_IDS,
+    FREE_B14_MODEL_ID,
     current_request_tier_id,
     model_policy_is_executable,
     request_tier_context,
@@ -29,6 +36,7 @@ CAPABILITIES = (ROOT / "static" / "product-capabilities.js").read_text(encoding=
 APP_JS = (ROOT / "static" / "app.js").read_text(encoding="utf-8")
 
 MUSE_MODEL_ID = ADMIN_B14_MODEL_ID
+ADMIN_CONTRACT_PROFILE = "free" if ADMIN_B14_MODEL_ID == FREE_B14_MODEL_ID else "high"
 
 
 def _settings_request(*, authorizer=None, runtime_mode="b14", user_id="usr_admin"):
@@ -57,13 +65,15 @@ def _run(coro):
 
 
 def test_admin_model_id_is_the_owner_authorized_muse_model() -> None:
-    assert ADMIN_B14_MODEL_ID == MUSE_MODEL_ID
+    route = active_route_for(ProductTierLabel.ADMIN)
+    assert route is not None and route.model_id
+    assert ADMIN_B14_MODEL_ID == route.model_id
 
 
 def test_admin_tier_resolves_exact_muse_model_without_touching_grade_routes() -> None:
     policy = resolve_tier_policy([{"role": "user", "content": "안녕하세요"}], "admin")
     assert policy.model_id == MUSE_MODEL_ID
-    assert policy.profile == "high"
+    assert policy.profile == ADMIN_CONTRACT_PROFILE
 
 
 def test_admin_request_context_resolves_exact_muse_model() -> None:
@@ -76,7 +86,9 @@ def test_admin_request_context_resolves_exact_muse_model() -> None:
 
 
 def test_admin_model_is_pinned_and_gate_kept_even_as_tier_executable() -> None:
-    assert MUSE_MODEL_ID in (
+    # B8: raw provider model ids are not capability catalog rows. The admin
+    # lane remains pinned by its exact route and the verified gate below.
+    assert MUSE_MODEL_ID not in (
         __import__("app.model_policy", fromlist=["MODEL_CAPABILITIES"]).MODEL_CAPABILITIES
     )
     # #5009: Muse Spark is now the Plus/Pro/Max tier executable, so it belongs
@@ -195,7 +207,8 @@ def test_only_exact_admin_pair_bypasses_product_tier_executability() -> None:
 def test_popup_probes_server_admin_and_never_username_matching() -> None:
     assert "/api/b66/admin/me" in CAPABILITIES
     assert "/api/admin/models/me" not in CAPABILITIES
-    assert "Padiem 관리자" in CAPABILITIES
+    assert 'admin: "Padiem 관리자"' in CAPABILITIES
+    assert 'admin: "Padiem Admin"' in CAPABILITIES
     assert "refreshAdminPresence" in CAPABILITIES
     assert 'tier === "admin"' in CAPABILITIES
     assert "charliekant" not in CAPABILITIES

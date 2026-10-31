@@ -29,6 +29,7 @@ if str(_SCRIPTS_DIR) not in sys.path:
 from b62_web_secrets_store_contract import (  # noqa: E402
     expected_b14_service_proof_bindings,
     expected_claw_desktop_bindings,
+    expected_resend_alert_bindings,
     expected_oracle_mesh_bindings,
     expected_web_secret_bindings,
 )
@@ -213,10 +214,12 @@ def verify_secret_set(
     allow_oracle_mesh: bool = False,
     allow_claw_desktop_secret: bool = False,
     allow_b14_service_proof_secret: bool = False,
+    allow_resend_alert_secret: bool = False,
 ) -> None:
     if sum((allow_web_store_additions, allow_b66_membership_secret, allow_grafana_telemetry,
             allow_oracle_mesh, allow_claw_desktop_secret,
-            allow_b14_service_proof_secret)) > 1:
+            allow_b14_service_proof_secret,
+            allow_resend_alert_secret)) > 1:
         raise ServedVersionGuardError("multiple additive secret modes prohibited")
     require_required_secrets(post_bindings, stage="post-deploy")
     post = secret_name_type_set(post_bindings)
@@ -282,6 +285,20 @@ def verify_secret_set(
             matching = [x for x in post_bindings if x.get("name") == name]
             if len(matching) != 1 or any(matching[0].get(k) != v for k, v in identity.items()):
                 raise ServedVersionGuardError("B14 service proof served Secrets Store identity missing or drift")
+            if name not in originals:
+                additions.append((name, identity["type"]))
+        expected = tuple(sorted((*expected, *additions)))
+    if allow_resend_alert_secret:
+        # #5441: exactly the one Owner-registered transactional-mail identity may
+        # be added. No value is read; only the served identity is proven.
+        originals = {name: kind for name, kind in expected}
+        additions: list[tuple[str, str]] = []
+        for name, identity in expected_resend_alert_bindings().items():
+            if name in originals and originals[name] != identity["type"]:
+                raise ServedVersionGuardError("transactional-mail original binding type drift")
+            matching = [x for x in post_bindings if x.get("name") == name]
+            if len(matching) != 1 or any(matching[0].get(k) != v for k, v in identity.items()):
+                raise ServedVersionGuardError("transactional-mail served Secrets Store identity missing or drift")
             if name not in originals:
                 additions.append((name, identity["type"]))
         expected = tuple(sorted((*expected, *additions)))
@@ -355,6 +372,7 @@ def _run_verify(args: argparse.Namespace) -> int:
         allow_oracle_mesh=args.allow_add_existing_oracle_mesh,
         allow_claw_desktop_secret=args.allow_add_existing_claw_desktop_secret,
         allow_b14_service_proof_secret=args.allow_add_existing_b14_service_proof_secret,
+        allow_resend_alert_secret=args.allow_add_existing_resend_alert_secret,
     )
     print(f"POSTDEPLOY_SERVED_VERSION_ID={version_id}")
     print(f"POSTDEPLOY_SERVED_SECRET_COUNT={len(secret_name_type_set(bindings))}")
@@ -362,7 +380,8 @@ def _run_verify(args: argparse.Namespace) -> int:
     if (args.allow_add_existing_web_secrets_store or args.allow_add_existing_b66_membership_secret
             or args.allow_add_existing_grafana_telemetry or args.allow_add_existing_oracle_mesh
             or args.allow_add_existing_claw_desktop_secret
-            or args.allow_add_existing_b14_service_proof_secret):
+            or args.allow_add_existing_b14_service_proof_secret
+            or args.allow_add_existing_resend_alert_secret):
         print("SERVED_VERSION_SECRET_SET_APPROVED_ADDITIONS=PASS")
     else:
         print("SERVED_VERSION_SECRET_SET_EQUALITY=PASS")
@@ -388,6 +407,7 @@ def main(argv: list[str] | None = None) -> int:
     verify.add_argument("--allow-add-existing-oracle-mesh", action="store_true")
     verify.add_argument("--allow-add-existing-claw-desktop-secret", action="store_true")
     verify.add_argument("--allow-add-existing-b14-service-proof-secret", action="store_true")
+    verify.add_argument("--allow-add-existing-resend-alert-secret", action="store_true")
     verify.add_argument("--deployments", required=True, type=Path)
     verify.add_argument("--version-detail", required=True, type=Path)
     args = parser.parse_args(sys.argv[1:] if argv is None else argv)

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from starlette.routing import Router
+from starlette.routing import Route, Router
 from starlette.responses import RedirectResponse
 from starlette.requests import Request
 
@@ -21,10 +21,6 @@ from app.demo_data import (
 )
 from app.factory import render_template
 
-router = Router()
-
-
-@router.route("/", methods=["GET"])
 def home(request: Request):
     return render_template(
         request,
@@ -37,7 +33,6 @@ def home(request: Request):
     )
 
 
-@router.route("/models", methods=["GET"])
 def model_catalog(request: Request):
     filter_type = request.query_params.get("type", "")
     search = request.query_params.get("q", "").strip().lower()
@@ -88,7 +83,6 @@ def model_catalog(request: Request):
     )
 
 
-@router.route("/models/{model_id}", methods=["GET"])
 def model_detail(request: Request):
     model_id = request.path_params["model_id"]
     model = MODELS_BY_ID.get(model_id)
@@ -102,7 +96,6 @@ def model_detail(request: Request):
     )
 
 
-@router.route("/playground", methods=["GET"])
 def playground(request: Request):
     model_id = request.query_params.get("model", "")
     if model_id and model_id not in MODELS_BY_ID:
@@ -124,7 +117,6 @@ def playground(request: Request):
     )
 
 
-@router.route("/playground", methods=["POST"])
 async def playground_run(
     request: Request,
 ):
@@ -160,7 +152,6 @@ async def playground_run(
     )
 
 
-@router.route("/api-keys", methods=["GET"])
 def api_keys(request: Request):
     created = request.query_params.get("created")
     revoked = request.query_params.get("revoked")
@@ -182,12 +173,10 @@ def api_keys(request: Request):
     )
 
 
-@router.route("/api-keys/create", methods=["POST"])
 def api_key_create(request: Request):
     return RedirectResponse(url="/api-keys?created=1", status_code=303)
 
 
-@router.route("/api-keys/{key_id}/revoke", methods=["POST"])
 def api_key_revoke(request: Request):
     key_id = request.path_params["key_id"]
     valid_ids = {k.id for k in DEMO_API_KEYS}
@@ -197,7 +186,6 @@ def api_key_revoke(request: Request):
     return RedirectResponse(url=f"/api-keys?revoked={key_id}", status_code=303)
 
 
-@router.route("/usage", methods=["GET"])
 def usage(request: Request):
     summary = compute_usage_summary()
     return render_template(
@@ -210,7 +198,6 @@ def usage(request: Request):
     )
 
 
-@router.route("/docs", methods=["GET"])
 def docs(request: Request):
     model_id = request.query_params.get("model", "")
     if not model_id or model_id not in MODELS_BY_ID:
@@ -227,15 +214,33 @@ def docs(request: Request):
     )
 
 
-@router.route("/pricing", methods=["GET"])
 def pricing(request: Request):
     return render_template(request, "pricing.html", {})
 
 
-@router.route("/access", methods=["GET"])
 def access(request: Request):
     return render_template(
         request,
         "access.html",
         {"access_modes": ACCESS_MODES},
     )
+
+
+# The decorator form of this API is deprecated upstream, so the routes are declared
+# as the objects the Router takes: same paths, same methods, same endpoint functions.
+router = Router(
+    routes=[
+        Route("/", home, methods=["GET"]),
+        Route("/models", model_catalog, methods=["GET"]),
+        Route("/models/{model_id}", model_detail, methods=["GET"]),
+        Route("/playground", playground, methods=["GET"]),
+        Route("/playground", playground_run, methods=["POST"]),
+        Route("/api-keys", api_keys, methods=["GET"]),
+        Route("/api-keys/create", api_key_create, methods=["POST"]),
+        Route("/api-keys/{key_id}/revoke", api_key_revoke, methods=["POST"]),
+        Route("/usage", usage, methods=["GET"]),
+        Route("/docs", docs, methods=["GET"]),
+        Route("/pricing", pricing, methods=["GET"]),
+        Route("/access", access, methods=["GET"]),
+    ]
+)

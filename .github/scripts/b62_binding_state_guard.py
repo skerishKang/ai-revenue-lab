@@ -24,6 +24,7 @@ from b62_web_secrets_store_contract import (
     expected_b14_service_proof_bindings,
     expected_claw_desktop_bindings,
     expected_oracle_mesh_bindings,
+    expected_resend_alert_bindings,
     expected_web_secret_bindings,
 )
 from uuid import UUID
@@ -225,6 +226,11 @@ _B14_SERVICE_PROOF_APPROVED_ADDITIONS = frozenset(
     (b["type"], b["name"], b["store_id"], b["secret_name"])
     for b in expected_b14_service_proof_bindings().values()
 )
+# #5441: the one Owner-registered transactional-mail reference, never its value.
+_RESEND_ALERT_APPROVED_ADDITIONS = frozenset(
+    (b["type"], b["name"], b["store_id"], b["secret_name"])
+    for b in expected_resend_alert_bindings().values()
+)
 
 
 def assert_exact_b66_membership_secret_only(before: object, after: object) -> None:
@@ -318,6 +324,26 @@ def assert_exact_b14_service_proof_added_only(before: object, after: object) -> 
     if removed or unexpected_added:
         raise BindingStateError(
             "B14 service proof binding authority drift detected; "
+            f"removed_count={len(removed)} unexpected_added_count={len(unexpected_added)}"
+        )
+
+
+def assert_exact_resend_alert_added_only(before: object, after: object) -> None:
+    """Only the one exact transactional-mail Secret reference may be added.
+
+    Every previously served binding must remain identical; the approved
+    reference may already be present to keep idempotent code-only redeploys
+    valid.
+    """
+    prior = set(canonical_state(before))
+    current = set(canonical_state(after))
+    if not _RESEND_ALERT_APPROVED_ADDITIONS.issubset(current):
+        raise BindingStateError("canonical transactional-mail Secret binding missing")
+    removed = prior - current
+    unexpected_added = (current - prior) - _RESEND_ALERT_APPROVED_ADDITIONS
+    if removed or unexpected_added:
+        raise BindingStateError(
+            "transactional-mail binding authority drift detected; "
             f"removed_count={len(removed)} unexpected_added_count={len(unexpected_added)}"
         )
 
@@ -488,6 +514,19 @@ def assert_connector_broker_added_only(before: object, after: object) -> None:
         raise BindingStateError("expected canonical Connector Broker binding addition")
 
 
+def assert_document_parser_added_only(before: object, after: object) -> None:
+    expected = ("service", "DOCUMENT_PARSER_SERVICE", "padiem-document-parser", None, None)
+    old = set(canonical_state(before))
+    new = set(canonical_state(after))
+    for entry in old:
+        if entry[1] == expected[1] and entry != expected:
+            raise BindingStateError("Parser existing binding drift")
+    if old - new or new - old not in (set(), {expected}):
+        raise BindingStateError("Parser additive binding changed unrelated authority")
+    if expected not in new:
+        raise BindingStateError("Parser binding not served")
+
+
 def assert_claw_public_search_added_only(before: object, after: object) -> None:
     """Exactly the owner-approved public search ON flag; no other binding drift.
 
@@ -626,7 +665,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="#4139: only the one canonical shared Engine/Chat desktop reference")
     parser.add_argument("--expected-add-b14-service-proof-secret", action="store_true",
                         help="#5224: only the one canonical B14 caller-proof reference")
+    parser.add_argument("--expected-add-resend-alert", action="store_true",
+                        help="#5441: only the one canonical transactional-mail Secrets Store reference")
     parser.add_argument("--expected-add-hark-browser", action="store_true")
+    parser.add_argument("--expected-add-document-parser", action="store_true")
     parser.add_argument("--expected-add-connector-broker", action="store_true")
     parser.add_argument("--expected-add-claw-public-search", action="store_true")
     parser.add_argument("--check-connector-baseline", action="store_true",
@@ -648,8 +690,10 @@ def main(argv: list[str] | None = None) -> int:
             args.expected_add_oracle_mesh,
             args.expected_add_claw_desktop_secret,
             args.expected_add_b14_service_proof_secret,
+            args.expected_add_resend_alert,
             args.expected_add_hark_browser,
             args.expected_add_connector_broker,
+            args.expected_add_document_parser,
             args.expected_add_claw_public_search,
             args.check_connector_baseline,
             args.expected_add_b66_membership_secret,
@@ -689,6 +733,10 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("B14 service proof additive mode refuses unrelated authority flags")
             assert_exact_b14_service_proof_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_resend_alert:
+            if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
+                raise BindingStateError("transactional-mail additive mode refuses unrelated authority flags")
+            assert_exact_resend_alert_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_claw_public_search:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Claw search mode refuses unrelated authority flags")
@@ -697,6 +745,8 @@ def main(argv: list[str] | None = None) -> int:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Hark Browser mode refuses unrelated authorization flags")
             assert_hark_browser_added_only(_load(args.before), _load(args.after))
+        elif args.expected_add_document_parser:
+            assert_document_parser_added_only(_load(args.before), _load(args.after))
         elif args.expected_add_connector_broker:
             if args.owner_d1_database_id is not None or args.require_served_resource_integrity:
                 raise BindingStateError("Connector Broker mode refuses unrelated authorization flags")

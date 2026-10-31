@@ -294,8 +294,8 @@ async def _usage_gate_denial(request: Request) -> JSONResponse | None:
     return _usage_denied_response(decision) if not decision.allowed else None
 
 
-async def _resolve_canonical_tenant(request: Request) -> str | None:
-    """Resolve the canonical tenant_id from the signed-in session.
+async def _resolve_canonical_owner(request: Request) -> tuple[str, str] | None:
+    """Resolve (product user id, canonical tenant id) from the signed-in session.
 
     Flow:
         signed-in user_id → identity shadow → Control Plane session refresh
@@ -304,9 +304,11 @@ async def _resolve_canonical_tenant(request: Request) -> str | None:
         id, monotonic revision, ACTIVE effective state, snapshot type)
         → AuthSessionSnapshot.tenant_id
 
-    The tenant is returned only when every contract check passes; any
-    violation (revoked, expired, product/subject mismatch, revision rollback,
-    invalid snapshot) resolves to None and the caller fails closed.
+    The pair is returned only when every contract check passes; any violation
+    (revoked, expired, product/subject mismatch, revision rollback, invalid
+    snapshot) resolves to None and the caller fails closed. Both halves come
+    from one resolution, so a route can never hold a tenant it proved without
+    also holding the user the session proved.
     """
     if not auth_ready(request):
         return None
@@ -332,7 +334,37 @@ async def _resolve_canonical_tenant(request: Request) -> str | None:
     tenant_id = session.tenant_id
     if not isinstance(tenant_id, str) or not tenant_id:
         return None
-    return tenant_id
+    return product_user_id, tenant_id
+
+
+async def _resolve_canonical_tenant(request: Request) -> str | None:
+    """The canonical tenant_id alone; see ``_resolve_canonical_owner`` for the flow."""
+    owner = await _resolve_canonical_owner(request)
+    if owner is None:
+        return None
+    return owner[1]
+
+
+async def _owns_generated_document(
+    request: Request, product_user_id: str, document_id: str
+) -> bool:
+    """#2952 follow-up: a stored document read needs the user who minted it.
+
+    ``claw_document_metadata`` has no owner column, so the canonical owner
+    authority is the owner-scoped run row that recorded ``artifact_document_id``.
+    A missing run authority or no matching row is a refusal.
+    """
+    history_store: Any = getattr(request.app.state, "history_store", None)
+    lookup = getattr(history_store, "get_claw_run_for_artifact_document", None)
+    if lookup is None:
+        return False
+    try:
+        owned = lookup(product_user_id, document_id)
+        if inspect.isawaitable(owned):
+            owned = await owned
+    except Exception:
+        return False
+    return owned is not None
 
 
 async def _resolve_intake_session_reference(
@@ -529,6 +561,9 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
     if grade is None:
         return _error(422, "invalid_tier", "지원하지 않는 AI 등급입니다.")
     product_tier = grade.product_tier
+    # The administrator lane is not a member grade: its identity answer stays
+    # neutral instead of claiming the PLUS transport profile as a membership.
+    identity_tier_id = None if grade.admin_lane else grade.tier_id
     if "tier" in data:
         tier_denial = await claw_execution_tier_denial(
             request, current_user_id(request) if auth_ready(request) else None, grade
@@ -668,6 +703,7 @@ async def claw_manual_intake_execute(request: Request) -> JSONResponse:
         outcome = await adapter.execute(
             run, product_tier=product_tier, subject_id=subject_id,
             central_route_model_id=claw_route.model_id,
+            identity_tier_id=identity_tier_id,
         )
     except P01AdapterError as exc:
         # Canonical #830 invariant: refund only when B62 can prove the Engine
@@ -877,9 +913,15 @@ async def claw_manual_intake_artifact(request: Request) -> JSONResponse | Respon
     if not document_id or not re.match(r"^doc_[A-Za-z0-9]{32}$", document_id):
         return _error(400, "invalid_document_id", "잘못된 문서 ID입니다.")
 
-    tenant_id = await _resolve_canonical_tenant(request)
-    if tenant_id is None:
+    owner = await _resolve_canonical_owner(request)
+    if owner is None:
         return _error(401, "workspace_scope_unavailable", "인증 세션이 필요합니다.")
+    product_user_id, tenant_id = owner
+
+    # Tenant equality alone let a company-mate open another user's document
+    # bytes by id (#2952). Ownership is proven before any storage read.
+    if not await _owns_generated_document(request, product_user_id, document_id):
+        return _error(404, "artifact_not_found", "아티팩트를 찾을 수 없습니다.")
 
     workspace_store: Any = getattr(request.app.state, "workspace_document_store", None)
     if workspace_store is None:
@@ -1324,11 +1366,42 @@ async def claw_pending_result(request: Request) -> JSONResponse:
             row = await history.get_claw_run(uid, run_id)
             status = row.get("status")
         result = {"run_id": run_id, "conversation_id": cid, "status": status}
+        if (status == "failed" and row.get("action") == "pc_files_query"
+                and row.get("result_summary") == "pc_read_failed"):
+            result["reason"] = "pc_read_failed"
+        notice_reader = getattr(history, "get_pc_run_scope_notice", None)
+        if callable(notice_reader):
+            try:
+                notice = await notice_reader(user_id=uid, run_id=run_id)
+            except Exception:
+                notice = None
+            if isinstance(notice, str) and notice:
+                # #5573: the pinned scope is a separate notice, never an answer.
+                result["scope_notice"] = notice
         if status == "completed":
-            answer = await history.get_claw_run_result_message(uid, run_id, cid)
-            if not isinstance(answer, str):
+            # #5015: the owner's stored completion record and the actual
+            # assistant message are compared inside the owner's run and
+            # conversation scope. A model reply is reported as a model reply;
+            # it is never presented as a verified PC execution result, and an
+            # unverified run keeps the truthful unavailable state.
+            reader = getattr(history, "get_claw_run_result", None)
+            resolved: object = None
+            if callable(reader):
+                resolved = await reader(uid, run_id, cid)
+            else:
+                legacy = getattr(history, "get_claw_run_result_message", None)
+                if callable(legacy):
+                    answer = await legacy(uid, run_id, cid)
+                    if isinstance(answer, str) and answer:
+                        resolved = {"answer": answer, "answer_source": "pc_command_result"}
+            if not isinstance(resolved, dict) or not isinstance(resolved.get("answer"), str) \
+                    or not resolved["answer"]:
                 return _error(503, "run_result_unavailable", "Result unavailable")
-            result["answer"] = answer
+            source = resolved.get("answer_source")
+            result["answer"] = resolved["answer"]
+            result["answer_source"] = (
+                source if source in ("pc_command_result", "model_reply") else "unknown"
+            )
         return JSONResponse({"ok": True, "result": result},
                             headers=_NO_STORE_HEADERS)
     except Exception:
@@ -1434,13 +1507,14 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     - no ``claw_p01_adapter`` / ``create_claw_run`` / Engine / B14 dispatch, and
       deliberately no usage-gate call because nothing is dispatched;
     - storing the result is opt-in. With no ``artifact`` field the route writes
-      nothing at all; with ``artifact="docx"`` it writes through the existing
-      generated-document store -- the same D1 metadata plus private R2 bytes the
-      execute route already uses -- and the existing
-      ``GET /api/claw/manual-intake/artifact/{document_id}`` path serves it back.
-      That is the only persistence on this route: no new table, no migration and
-      no Claw Ops ledger write, and it needs the same canonical tenant authority
-      as the execute route, failing closed without it;
+      nothing at all; with ``artifact="docx"`` the route answers with the
+      document bytes themselves (``Content-Type`` / ``Content-Disposition`` of
+      the generated DOCX) and still writes nothing: the generated-document
+      store, D1 metadata and R2 are never touched, so no stored object exists
+      that another member of the same company could open by id (#2952
+      follow-up). The filename rule is the one ``build_document_artifact``
+      already produces. No new table, no migration and no Claw Ops ledger
+      write, and the comparison itself stays unpersisted;
     - a value the caller did not capture stays ``null`` plus an engine
       ``unknown_fields`` entry; the flow never fills a price, date or term in.
 
@@ -1491,12 +1565,10 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
     projection = {"ok": True, "comparison": comparison}
 
     if artifact_format is not None:
-        tenant_id = await _resolve_canonical_tenant(request)
-        if tenant_id is None:
-            return _error(503, "workspace_scope_unavailable", "문서 저장 권한을 확인할 수 없습니다.")
-        artifact_store: Any = getattr(request.app.state, "workspace_document_store", None)
-        if artifact_store is None:
-            return _error(503, "workspace_storage_unavailable", "문서 저장소가 설정되지 않았습니다.")
+        # #2952 follow-up: a comparison document is returned as these response
+        # bytes and is never persisted. Nothing reaches the generated-document
+        # store, so there is no stored object a company-mate could open by id,
+        # and no run/ledger row is minted for it.
         try:
             document_text = build_comparison_document(outcome)
             artifact = build_document_artifact(
@@ -1522,15 +1594,25 @@ async def claw_manual_intake_quote_compare(request: Request) -> JSONResponse:
                 total=outcome.document_total(),
                 markdown_fallback_text=document_text,
             )
-            metadata = await artifact_store.put_generated_docx(
-                tenant_id=tenant_id,
-                filename=artifact.filename,
-                body=artifact.content_bytes(),
-            )
-            projection["artifact"] = metadata.public_projection()
+            content = artifact.content_bytes()
         except DocumentExportError:
             return _error(500, "artifact_generation_failed", "문서 아티팩트 생성에 실패했습니다.")
-        except Exception:
-            return _error(500, "artifact_storage_failed", "문서 저장에 실패했습니다.")
+
+        import urllib.parse as _urllib_parse
+
+        return Response(
+            content,
+            status_code=200,
+            media_type=artifact.media_type,
+            headers={
+                "Content-Disposition": "attachment; filename*=UTF-8''"
+                + _urllib_parse.quote(artifact.filename, safe=""),
+                "Cache-Control": "no-store, max-age=0",
+                "Pragma": "no-cache",
+                "Referrer-Policy": "no-referrer",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Length": str(len(content)),
+            },
+        )
 
     return JSONResponse(projection, status_code=200, headers=_NO_STORE_HEADERS)

@@ -295,6 +295,11 @@ The generic pipeline lives in `tools/b66_generic/`; private customer source is n
 not been certified remains denied: the product path refuses unapproved bundles and tampered
 fingerprints before the renderer is reached.
 
+Item-by-item comparison of this contract's `#3595` acceptance flags against current `main`
+lives in
+[ISSUE_3595_ACCEPTANCE_MATRIX_2026-10-29.md](ISSUE_3595_ACCEPTANCE_MATRIX_2026-10-29.md).
+That table records evidence and gaps; it does not replace this contract's authority.
+
 ## 6. Renderer selection
 
 Renderer choice is subordinate to evidence.

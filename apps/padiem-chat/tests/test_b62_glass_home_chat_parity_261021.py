@@ -123,14 +123,203 @@ def test_the_chat_composer_carries_the_first_screen_surface() -> None:
 
 def test_the_chat_panel_is_not_restyled_by_the_brand_sheet() -> None:
     """The frame belongs to the owner lock, not to a chat-state override."""
+    # #5561: this rule used to hold a third !important inset for the same element
+    # (clamp(24px, 4vh, 44px), against the frame's 88px and the first screen's own
+    # value), so one box had three answers and the landing and a new Chat started
+    # the same empty screen 85px apart. The rule is gone, not re-tuned: the brand
+    # sheet has no vertical origin for the shared panel.
     css = BRAND.read_text(encoding="utf-8")
-    block = _block(
-        css, 'html[data-theme="padiem-glass"] body .app-shell[data-state="chat"] .conversation {'
+    assert ('body .app-shell[data-state="chat"] .conversation {') not in css
+
+
+# ---------------------------------------------------------------------------
+# #5561: one first-screen origin, read from one token by every Glass surface
+# ---------------------------------------------------------------------------
+
+# The files that own the shipped first-screen layout. A product or a mode adding
+# its own copy of the origin is what drifted the Claw brand line ~30px below the
+# Chat one, invisibly: nothing compared the two products' Y coordinates.
+ORIGIN_CONTRACT_FILES = (
+    "padiem-first-use.css", "shared-six-panel-frame.css",
+    "padiem-glass-brand-polish.css", "padiem-glass-portrait.css",
+)
+ORIGIN_TOKEN = "--padiem-first-screen-inset"
+
+
+def test_the_first_screen_origin_is_declared_once() -> None:
+    """One token holds the row the brand line and the hero start on."""
+    frame = FRAME.read_text(encoding="utf-8")
+    assert frame.count(f"{ORIGIN_TOKEN}:") == 1, "the token has two definitions"
+    assert "max(12px, calc((100dvh - 747px) / 3))" in frame
+    # The Claw hero block is 89px taller than Chat's (565px against 476px). The
+    # old second constant let that content difference move the shared origin,
+    # which is what the owner saw. The second expression is gone from both files.
+    second_constant = "100dvh - 836px"
+    assert second_constant not in frame
+    assert second_constant not in FIRST_USE.read_text(encoding="utf-8")
+    # Phase 2: the sheet that carried the two per-product constants no longer
+    # carries a consumer rule either. The one desktop origin rule sits next to
+    # the token, in the shared frame, and selects the layout variant a page opts
+    # into rather than an enumeration of product states.
+    first_use = FIRST_USE.read_text(encoding="utf-8")
+    assert "padding-top: var(--padiem-first-screen-inset" not in first_use
+    assert '.app-shell[data-layout-variant="conversation"]\n    .conversation:has(#emptyState:not([hidden]))' in frame
+
+
+def test_no_glass_surface_carries_its_own_copy_of_the_origin() -> None:
+    """Every first-screen inset on the shared panel reads the token.
+
+    The scan walks innermost declaration blocks, so a duplicate hiding inside a
+    media query -- which is where the phone and tablet copies lived -- is caught
+    the same way as a top-level one.
+    """
+    offenders = []
+    declaration = re.compile(r"(?:^|;)\s*padding-top\s*:")
+    for name in ORIGIN_CONTRACT_FILES:
+        # Comments are stripped and the property is matched as a declaration, so
+        # a note about the inset or a scroll-padding-top does not read as one.
+        css = re.sub(r"/\*.*?\*/", "", (STATIC / name).read_text(encoding="utf-8"),
+                     flags=re.S)
+        for selector, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+            if not declaration.search(body):
+                continue
+            # Only a rule that insets the shared panel itself owns the origin. A
+            # rule reaching past it -- the continuous thread's message list, for
+            # instance -- styles another element and stays that owner's business.
+            tails = [part.split()[-1] for part in selector.split(",") if part.split()]
+            if not any(tail.startswith(".conversation") for tail in tails):
+                continue
+            if f"var({ORIGIN_TOKEN}" in body:
+                continue
+            offenders.append((name, " ".join(selector.split())[:120],
+                              " ".join(body.split())[:80]))
+    assert offenders == [], offenders
+
+
+def css_rules(css: str) -> list[tuple[str, str]]:
+    """Innermost (selector, body) pairs of a sheet, comments removed."""
+    return re.findall(r"([^{}]+)\{([^{}]*)\}", re.sub(r"/\*.*?\*/", "", css, flags=re.S))
+
+
+def selector_tails(selector: str) -> list[str]:
+    return [part.split()[-1] for part in selector.split(",") if part.split()]
+
+
+def test_the_origin_is_read_only_by_the_shared_frame() -> None:
+    """The inset value is defined once and one sheet is allowed to apply it.
+
+    Phase 2 moved the consumer rule next to the definition, so the whole
+    first-screen composition has one owner. A new sheet that insets the shared
+    panel with its own copy of the origin is what made Home, Chat and Claw
+    disagree, so this scan runs over every sheet in the app, not a list.
+    """
+    readers = set()
+    for sheet in sorted(STATIC.glob("*.css")):
+        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+            if not re.search(r"(?:^|;)\s*padding-top\s*:", body):
+                continue
+            if not any(tail.startswith(".conversation") for tail in selector_tails(selector)):
+                continue
+            if f"var({ORIGIN_TOKEN}" in body:
+                readers.add(sheet.name)
+    assert readers == {FRAME.name}, readers
+
+
+def test_the_first_screen_layout_model_has_one_owner() -> None:
+    """No product may restate the hero container's layout model.
+
+    Claw carried `display: grid !important` for its own copy of the hero because
+    the theme sheet left the block a sequence: the brand line started 7.66px
+    lower in Chat at 900x900 and at 820x1180 with identical content, because a
+    block puts the line on a text line box and a grid puts it in the first row.
+    The shared frame declares the model once for the layout variant, so a rule
+    that scopes the same declaration to one product state is the second copy.
+    """
+    offenders = []
+    for sheet in sorted(STATIC.glob("*.css")):
+        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+            if "data-state" not in selector:
+                continue
+            hero = any(
+                tail.startswith((".empty-state", "#emptyState"))
+                for tail in selector_tails(selector)
+            )
+            if hero and re.search(r"(?:^|;)\s*display\s*:\s*grid", body):
+                offenders.append((sheet.name, " ".join(selector.split())[:120]))
+    assert offenders == [], offenders
+
+
+SHARED_SURFACES = (".conversation", "#emptyState", ".empty-state", ".composer-wrap",
+                   ".composer", ".starter-grid", ".eyebrow")
+
+
+def test_no_two_product_scopes_declare_the_same_geometry() -> None:
+    """One decision, one rule -- a second sheet copying it for another product fails.
+
+    This is the shape the owner asked to make impossible: #2594 added Claw to
+    the Chat desktop breathing room by pasting the whole block again with the
+    same four values, and the shared frame carried a second copy of the composer
+    lane position for Claw next to the Chat one, so the next product would add a
+    third. The scan strips the product scope from a selector and asks whether the
+    same shape then declares the same value from a different sheet: three states
+    in one rule is the correct form, two sheets for one decision is not.
+    `display` is left out because hiding the conversation on the calendar,
+    library and utility pages is each page's own answer, not a shared geometry.
+    """
+    state_scope = re.compile(r'\[data-state="[a-z]+"\]|:is\(\s*(?:\[data-state="[a-z]+"\]\s*,?\s*)+\)')
+    declarations: dict[tuple[str, str, str], set[str]] = {}
+    for sheet in sorted(STATIC.glob("*.css")):
+        for selector, body in css_rules(sheet.read_text(encoding="utf-8")):
+            if "data-state" not in selector:
+                continue
+            shape = " ".join(state_scope.sub("", selector).split())
+            if not any(surface in shape for surface in SHARED_SURFACES):
+                continue
+            for declaration in body.split(";"):
+                parts = declaration.split(":", 1)
+                if len(parts) != 2 or not parts[0].strip():
+                    continue
+                prop = " ".join(parts[0].split())
+                if prop == "display":
+                    continue
+                key = (shape, prop, " ".join(parts[1].split()))
+                declarations.setdefault(key, set()).add(sheet.name)
+    cross_sheet = {key: sorted(sheets) for key, sheets in declarations.items() if len(sheets) > 1}
+    assert cross_sheet == {}, cross_sheet
+
+
+def test_every_reachable_shell_state_declares_its_page_contract() -> None:
+    """The page contract covers every state the modules can put the shell in.
+
+    The registry is what tells the shared sheet which surface a page is, so a
+    state missing from it would silently lose the first-screen geometry. The scan
+    follows the assignments wherever they are written, because the workflow pages
+    set their own state in their own module.
+    """
+    sources = "\n".join(
+        (STATIC / name).read_text(encoding="utf-8")
+        for name in ("app.js", "calendar.js", "library.js", "util-menu.js")
     )
-    for forbidden in ("background:", "box-shadow:", "border-color:"):
-        assert forbidden not in block, forbidden
-    # The chat keeps its own top inset, which is content layout, not the frame.
-    assert "padding-top" in block
+    states = set(re.findall(r'shell\.dataset\.state\s*=\s*"([a-z]+)"', sources))
+    assert states, "no shell state is assigned anywhere"
+    registry = (STATIC / "app.js").read_text(encoding="utf-8").split("const PAGE_VIEWS", 1)[1]
+    declared = set(re.findall(r'pageId: "([a-z]+)"', registry.split("];", 1)[0]))
+    assert states <= declared, states - declared
+    assert 'shell.dataset.layoutVariant = conversationHero ? "conversation" : page.layoutVariant' in registry
+    assert "shell.dataset.pageId = page.pageId" in registry
+    # The landing must carry the contract in the markup too, or the first paint
+    # before app.js runs shows the hero without its origin.
+    markup = (STATIC / "index.html").read_text(encoding="utf-8")
+    assert 'data-layout-variant="conversation"' in markup
+
+
+def test_every_page_view_reads_the_same_origin_token() -> None:
+    """The five workflow pages already say they use the Chat/Claw eyebrow row."""
+    css = FRAME.read_text(encoding="utf-8")
+    shared = css.split(".calendar-view, .connectors-view, .library-view", 1)[1][:400]
+    assert f"var({ORIGIN_TOKEN})" in shared
+    # The copied expression is what made the other pages drift with the hero.
+    assert "clamp(52px, 7.4vh, 88px)" not in shared
 
 
 def test_the_chat_state_reads_the_first_screen_surface_tokens() -> None:

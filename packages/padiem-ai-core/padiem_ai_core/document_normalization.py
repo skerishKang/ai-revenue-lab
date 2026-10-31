@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import stat
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from io import BytesIO
@@ -10,7 +11,6 @@ from zipfile import ZIP_STORED, BadZipFile, ZipFile, ZipInfo
 
 from .document_semantics import (
     DOCUMENT_CONTENT_TRUST_CLASS,
-    MAX_DOCUMENT_SEGMENTS,
     MAX_SEGMENT_TEXT_CHARS,
     DocumentKind,
     DocumentLocator,
@@ -24,7 +24,17 @@ from .document_semantics import (
 )
 
 MAX_DOCUMENT_NAME_CHARS = 120
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). A
+#: document's character count is its length, not a safety property: what a text
+#: document has to satisfy is its type, its encoding, and the absence of NUL and
+#: an overwhelming share of control characters. Both numbers still size the
+#: isolated-parser transport ceiling, which is an allocation on a wire rather
+#: than a verdict about a document.
 MAX_DOCUMENT_CHARS = MAX_SEGMENT_TEXT_CHARS
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). The
+#: 96 KiB total was a product-side copy of a limit nobody imposed: the request
+#: transport and the model's own context window are the real ceilings, and each
+#: is reported by the layer that owns it rather than guessed here.
 MAX_TEXT_DOCUMENT_BYTES = 96 * 1024
 # #4379: a binary document carries no PADIEM byte total. The symbol is
 # retained for import compatibility and is no longer enforced.
@@ -34,18 +44,86 @@ MAX_BINARY_DOCUMENT_BYTES = 1024 * 1024 * 1024
 #: page, and bounded so a caller-supplied size can never inflate the section
 #: part without limit.
 MAX_HWPX_PICTURE_HWPUNIT = 1_000_000
+#: Retained for import compatibility and no longer enforced (#5734 stage 2). A
+#: page count is a document's length, not a safety property: the checks that
+#: describe a threat — active content, structure, provenance — stayed.
 MAX_PDF_PAGES = 80
+#: Retained for import compatibility and no longer enforced: a dense page is a
+#: dense page, and refusing it served no integrity purpose.
 MAX_PDF_PAGE_TEXT_CHARS = 16_000
 PDF_NATIVE_TEXT_PRESENT = "native_text_present"
 PDF_NATIVE_TEXT_ABSENT = "no_native_text_ocr_may_be_required"
+#: #5573: the OOXML bounds below were absolute capacity limits, and a normal
+#: large workbook or deck tripped them: a single worksheet part passes 1MiB, and
+#: a real 100MB document passes 8MiB uncompressed. Capacity is the owner's to
+#: spend, so those refusals are gone. What stays describes a decompression bomb
+#: rather than a big document: the ratio between the bytes handed over and the
+#: bytes they claim to expand into. Real content sits in the low tens; the
+#: classic bomb sits in the tens of thousands, so the guard is nowhere near a
+#: size limit a legitimate file has to work to stay under. The one absolute
+#: number that came back is the per-member ceiling below, and it came back for a
+#: different reason: what the isolate can hold, not how big a document may be.
+MAX_OOXML_TOTAL_INFLATION_RATIO = 1_000
+#: Retained for import compatibility and no longer enforced: an OOXML member
+#: count is bounded by the archive's own byte total, not by a PADIEM number.
 MAX_OOXML_ENTRIES = 256
 MAX_OOXML_MEMBER_NAME_CHARS = 255
-MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 1 * 1024 * 1024
+#: One member's absolute inflate ceiling, enforced (CTO 2026-10-26, #5876). This
+#: is a memory allocation, not a capacity preference: a Pyodide Worker isolate has
+#: 128MB, and the process must never hold more than 32MiB for a single archive
+#: part — the same buffering window #5872 set for response bodies. It is
+#: deliberately independent of the ratio guard above, because a document can pass
+#: a ratio test and still ask for more RAM than the isolate owns. The gate's
+#: `.xml`/`.rels` pre-read and every extraction read inherit it.
+MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES = 32 * 1024 * 1024
+# Worker callers retain their allocation ceiling. CPython file-lane callers
+# explicitly select None for this request; never mutate the shared constant.
+_OOXML_MEMBER_BUDGET: ContextVar[int | None] = ContextVar(
+    "ooxml_member_budget", default=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+)
+#: Retained for import compatibility and no longer enforced: members are read one
+#: at a time under their own bound, so no archive-wide uncompressed total is ever
+#: accumulated to compare against a number.
 MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES = 8 * 1024 * 1024
+#: Retained for import compatibility and no longer enforced: the reader walks
+#: every worksheet a workbook declares.
 MAX_XLSX_SHEETS = 20
+#: The default a caller gets when it asks for a table without saying how big.
+#: It is no longer a ceiling on what may be asked for: a caller may name any
+#: positive bound, and a worksheet bigger than these numbers is not refused.
 MAX_XLSX_ROWS = 500
 MAX_XLSX_COLUMNS = 50
+#: Retained for import compatibility and no longer enforced: counting the cells
+#: a document contains and then refusing the document is a capacity limit, not
+#: integrity. A sheet is read for as long as the caller asked for it.
 MAX_XLSX_NONEMPTY_CELLS = 5_000
+
+#: An OOXML package member is a document part, never a pointer to something
+#: outside the package. The #2824 pre-parser gate already refuses link entries;
+#: this is the same judgement so the archive authority cannot admit a package
+#: shape the gate refuses. ``_bounded_ooxml_repackage`` drops the mode bits and
+#: nothing here extracts to a host filesystem, so no escape is reachable in this
+#: package today — the refusal exists so the two authorities give one answer and
+#: so a future extraction sink inherits the decision instead of rediscovering it.
+_S_IFMT = 0o170000
+_S_IFLNK = stat.S_IFLNK
+
+#: ZIP stores the general-purpose flags twice — once in each local file header
+#: and once in the central directory. ``zipfile`` reports only the central copy,
+#: so an entry whose local header claims ``encrypted`` while the central record
+#: claims ``plain`` is never classified as encrypted on the stdlib path. One
+#: field with two disagreeing copies is a malformed package at best and an
+#: encryption-classification evasion at worst, and both answers are ``encrypted``.
+_ENCRYPTED_FLAG = 0x1
+_LOCAL_HEADER_SIGNATURE = b"PK\x03\x04"
+
+#: Office writes a password-protected OOXML document as an OLE compound file
+#: wrapping an ``EncryptedPackage`` stream, not as a ZIP. Directory-entry names
+#: in that wrapper are UTF-16LE. Without this marker the wrapper reaches the ZIP
+#: reader and is reported as a corrupt file, which is the wrong answer for the
+#: user's own encrypted document.
+_OLE_COMPOUND_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+_ENCRYPTED_PACKAGE_MARKER = "EncryptedPackage".encode("utf-16-le")
 
 TEXT_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "text/plain": frozenset({".txt"}),
@@ -59,9 +137,11 @@ BINARY_DOCUMENT_MEDIA: dict[str, frozenset[str]] = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document": frozenset({".docx"}),
     "application/vnd.openxmlformats-officedocument.presentationml.presentation": frozenset({".pptx"}),
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": frozenset({".xlsx"}),
-    # LEGACY_HWP_DECISION=UNSUPPORTED: legacy .hwp is an OLE2 compound binary, not a zip
-    # container, so no bounded pure-stdlib parser is realistic in this slice; application/x-hwp
-    # stays outside every allow-list and fails closed. HWPX below is the OOXML-style zip path.
+    # LEGACY_HWP_DECISION=FILE_LANE (2026-10-28 CTO decision, was UNSUPPORTED):
+    # legacy .hwp is an OLE2 compound binary and stays outside every allow-list
+    # HERE — this package still never parses it. It is read by the COM2 file
+    # lane's own olefile-based reader (BSD, no AGPL), and the Chat Worker only
+    # ferries bytes. HWPX below is the OOXML-style zip path this package owns.
     "application/hwp+zip": frozenset({".hwpx"}),
 }
 
@@ -107,16 +187,6 @@ class NormalizedDocument:
             raise DocumentNormalizationError(
                 "invalid_document_segments",
                 "Document segments must contain DocumentSegment values.",
-            )
-        if len(self.segments) > MAX_DOCUMENT_SEGMENTS:
-            raise DocumentNormalizationError(
-                "document_segment_limit",
-                "Document segments exceed the bounded count.",
-            )
-        if sum(item.char_count for item in self.segments) > MAX_DOCUMENT_CHARS:
-            raise DocumentNormalizationError(
-                "document_segment_budget",
-                "Document segments exceed the bounded character budget.",
             )
         orders = tuple(item.order for item in self.segments)
         if len(set(orders)) != len(orders):
@@ -200,8 +270,6 @@ def normalize_document_text(value: Any) -> str:
     text = value.removeprefix("\ufeff").replace("\r\n", "\n").replace("\r", "\n")
     if not text.strip():
         raise DocumentNormalizationError("empty_document", "Document text is empty.")
-    if len(text) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("text_too_long", "Document text exceeds the character limit.")
     if "\x00" in text:
         raise DocumentNormalizationError("binary_text_rejected", "NUL bytes are not allowed in text documents.")
     bad_controls = sum(1 for ch in text if ord(ch) < 32 and ch not in {"\n", "\t"})
@@ -223,12 +291,9 @@ def normalize_text_document(*, name: Any, media_type: Any, text: Any) -> Normali
     )
 
 
-def _append_bounded(parts: list[str], value: str) -> None:
-    if not value:
-        return
-    parts.append(value)
-    if sum(len(part) for part in parts) + max(0, len(parts) - 1) > MAX_DOCUMENT_CHARS:
-        raise DocumentNormalizationError("extracted_text_too_long", "Extracted document text exceeds the character limit.")
+def _append_part(parts: list[str], value: str) -> None:
+    if value:
+        parts.append(value)
 
 
 def _safe_ooxml_member(name: str) -> bool:
@@ -238,6 +303,33 @@ def _safe_ooxml_member(name: str) -> bool:
         return False
     parts = PurePosixPath(name).parts
     return all(part not in {"", ".", ".."} for part in parts)
+
+
+def _is_link_member(info: ZipInfo) -> bool:
+    """True when the entry's stored mode says it is a symbolic link."""
+
+    return ((info.external_attr >> 16) & _S_IFMT) == _S_IFLNK
+
+
+def _local_header_declares_encryption(payload: bytes, info: ZipInfo) -> bool:
+    """Read the *local* copy of the general-purpose flags for one entry."""
+
+    offset = info.header_offset
+    if offset < 0 or offset + 8 > len(payload):
+        return False
+    if payload[offset:offset + 4] != _LOCAL_HEADER_SIGNATURE:
+        return False
+    flags = int.from_bytes(payload[offset + 6:offset + 8], "little")
+    return bool(flags & _ENCRYPTED_FLAG)
+
+
+def _encrypted_ole_wrapper(payload: bytes) -> bool:
+    """True for the OLE wrapper Office writes around a password-protected package."""
+
+    return (
+        payload.startswith(_OLE_COMPOUND_MAGIC)
+        and _ENCRYPTED_PACKAGE_MARKER in payload
+    )
 
 
 def validate_ooxml_member_name(name: object) -> str:
@@ -262,8 +354,9 @@ def validate_ooxml_member_name(name: object) -> str:
     return name
 
 
-def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: int) -> bytes:
-    """Read one archive member with the inflate work bounded by the member bound.
+def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *,
+                         max_bytes: int | None = None) -> bytes:
+    """Read one archive member with the inflate work bounded twice over.
 
     ``ZipFile.read``/``ZipExtFile.read()`` inflate the *entire* deflate stream
     and only afterwards truncate the result to the declared uncompressed size,
@@ -273,15 +366,22 @@ def _read_member_bounded(archive: ZipFile, member: ZipInfo | str, *, max_bytes: 
     the streaming API caps the real inflate work at the bound; because the
     declared size is also the truncation cap ``read()`` applies, a well-formed
     archive reads byte-identically.
+
+    The second bound is runtime-owned: Worker/default calls use
+    :data:`MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES`. The CPython file lane explicitly
+    opts out of that Worker allocation ceiling for its own extraction context.
+    ``max_bytes`` may select a narrower read; neither option widens the declared
+    size or removes archive integrity checks.
     """
 
     info = member if isinstance(member, ZipInfo) else archive.getinfo(member)
-    limit = min(info.file_size, max_bytes)
+    ceiling = _OOXML_MEMBER_BUDGET.get() if max_bytes is None else max_bytes
+    limit = info.file_size if ceiling is None else min(info.file_size, ceiling)
     with archive.open(info) as handle:
         data = handle.read(limit + 1)
     if len(data) > limit:
         raise DocumentNormalizationError(
-            "ooxml_entry_size", "OOXML archive entry exceeds the size limit."
+            "ooxml_entry_size", "OOXML archive entry exceeds the member bound."
         )
     return data
 
@@ -316,42 +416,56 @@ def _bounded_ooxml_repackage(payload: bytes) -> bytes:
                 member.compress_type = ZIP_STORED
                 target.writestr(
                     member,
-                    _read_member_bounded(
-                        source, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    ),
+                    _read_member_bounded(source, info),
                 )
     return output.getvalue()
 
 
 def validate_ooxml_archive(payload: bytes) -> None:
-    # #4379: the archive byte total is not a PADIEM total. The entry count,
-    # the per-entry and the total uncompressed bounds below stay: they are
-    # the decompression-bomb protection, not a caller's data total.
+    # #5573: nothing here may refuse a document for being large. What stays is
+    # the structural judgement — member paths, encryption, and how far the
+    # declared sizes inflate relative to the bytes that carry them — because a
+    # decompression bomb is an integrity fact, not a capacity preference.
     if not isinstance(payload, (bytes, bytearray)) or not payload:
         raise DocumentNormalizationError("ooxml_archive_size", "OOXML archive size is out of bounds.")
+    archive_bytes = bytes(payload)
+    if _encrypted_ole_wrapper(archive_bytes):
+        raise DocumentNormalizationError(
+            "ooxml_encrypted", "Password-protected OOXML package."
+        )
     try:
-        with ZipFile(BytesIO(bytes(payload))) as archive:
+        with ZipFile(BytesIO(archive_bytes)) as archive:
             infos = archive.infolist()
-            if len(infos) > MAX_OOXML_ENTRIES:
-                raise DocumentNormalizationError("ooxml_entry_count", "OOXML archive contains too many entries.")
             total = 0
+            compressed_total = 0
             for info in infos:
                 if not _safe_ooxml_member(info.filename):
                     raise DocumentNormalizationError("ooxml_unsafe_path", "OOXML archive contains an unsafe member path.")
-                if info.flag_bits & 0x1:
-                    raise DocumentNormalizationError("ooxml_encrypted", "Encrypted OOXML entries are not supported.")
-                if info.file_size > MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES:
-                    raise DocumentNormalizationError("ooxml_entry_size", "OOXML archive entry exceeds the size limit.")
+                if _is_link_member(info):
+                    raise DocumentNormalizationError(
+                        "ooxml_link_entry", "OOXML archive contains a link entry."
+                    )
+                if info.flag_bits & _ENCRYPTED_FLAG or _local_header_declares_encryption(
+                    archive_bytes, info
+                ):
+                    raise DocumentNormalizationError(
+                        "ooxml_encrypted", "Encrypted OOXML entries are not supported."
+                    )
                 total += info.file_size
-                if total > MAX_OOXML_TOTAL_UNCOMPRESSED_BYTES:
-                    raise DocumentNormalizationError("ooxml_total_size", "OOXML archive exceeds the total uncompressed size limit.")
                 lowered = info.filename.lower()
                 if lowered.endswith(".xml") or lowered.endswith(".rels"):
-                    xml = _read_member_bounded(
-                        archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    xml = _read_member_bounded(archive, info)
                     if b"<!doctype" in xml.lower():
                         raise DocumentNormalizationError("ooxml_dtd_rejected", "DTDs are not supported in OOXML documents.")
+            # The judgement is one number against another the caller already
+            # handed over: bytes in, bytes out. A stored member costs nothing to
+            # inflate, so the ratio says nothing about it; the absolute member
+            # bound above is what still limits it once anything reads it. A
+            # member that turns a few kilobytes into megabytes is the shape this
+            # ratio exists to refuse.
+            if total > len(payload) * MAX_OOXML_TOTAL_INFLATION_RATIO:
+                raise DocumentNormalizationError(
+                    "ooxml_total_inflation", "OOXML archive inflates far beyond its stored bytes.")
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
@@ -371,15 +485,42 @@ def _local_name(element: ElementTree.Element) -> str:
     return element.tag.rsplit("}", 1)[-1]
 
 
-def extract_docx_text(payload: bytes) -> str:
+def _docx_paragraph_text(paragraph: ElementTree.Element) -> str:
+    return "".join(
+        node.text or "" for node in paragraph.iter() if _local_name(node) == "t"
+    ).strip()
+
+
+def _docx_table_rows(table: ElementTree.Element) -> list[str]:
+    """Read one table as ordered rows of cell text, preserving empty rows."""
+
+    rows: list[str] = []
+    for row in table.iter():
+        if _local_name(row) != "tr":
+            continue
+        cells: list[str] = []
+        for cell in row:
+            if _local_name(cell) != "tc":
+                continue
+            paragraphs = [
+                value
+                for paragraph in cell.iter()
+                if _local_name(paragraph) == "p"
+                if (value := _docx_paragraph_text(paragraph))
+            ]
+            if paragraphs:
+                cells.append(" ".join(paragraphs))
+        rows.append(" | ".join(cells))
+    return rows
+
+
+def _extract_docx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
     validate_ooxml_archive(payload)
     try:
         with ZipFile(BytesIO(payload)) as archive:
             try:
                 root = _parse_xml(
-                    _read_member_bounded(
-                        archive, "word/document.xml", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    _read_member_bounded(archive, "word/document.xml")
                 )
             except KeyError as exc:
                 raise DocumentNormalizationError("docx_missing_part", "DOCX is missing word/document.xml.") from exc
@@ -388,18 +529,49 @@ def extract_docx_text(payload: bytes) -> str:
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
 
-    paragraphs: list[str] = []
-    for paragraph in root.iter():
-        if _local_name(paragraph) != "p":
-            continue
-        pieces = [node.text or "" for node in paragraph.iter() if _local_name(node) == "t"]
-        value = "".join(pieces)
-        if value:
-            _append_bounded(paragraphs, value)
-    text = "\n".join(paragraphs).strip()
+    parts: list[str] = []
+    segments: list[DocumentSegment] = []
+    table_index = 0
+
+    def walk(container: ElementTree.Element) -> None:
+        nonlocal table_index
+        for child in container:
+            tag = _local_name(child)
+            if tag == "p":
+                value = _docx_paragraph_text(child)
+                if value:
+                    _append_part(parts, value)
+                    segments.append(DocumentSegment(text=value, order=len(segments)))
+            elif tag == "tbl":
+                table_index += 1
+                for row_index, row_value in enumerate(_docx_table_rows(child), start=1):
+                    if not row_value:
+                        continue
+                    _append_part(parts, row_value)
+                    segments.append(
+                        DocumentSegment(
+                            text=row_value,
+                            order=len(segments),
+                            locator=DocumentLocator(
+                                kind=LocatorKind.ROW,
+                                value=f"{table_index}.{row_index}",
+                                precision=LocatorPrecision.EXACT,
+                            ),
+                        )
+                    )
+            else:
+                walk(child)
+
+    body = next((element for element in root.iter() if _local_name(element) == "body"), root)
+    walk(body)
+    text = "\n".join(parts).strip()
     if not text:
         raise DocumentNormalizationError("docx_empty", "DOCX contains no readable text.")
-    return text
+    return text, tuple(segments)
+
+
+def extract_docx_text(payload: bytes) -> str:
+    return _extract_docx_blocks(payload)[0]
 
 
 def _slide_sort_key(name: str) -> tuple[int, str]:
@@ -408,7 +580,7 @@ def _slide_sort_key(name: str) -> tuple[int, str]:
     return (int(suffix) if suffix.isdigit() else 10**9, name)
 
 
-def extract_pptx_text(payload: bytes) -> str:
+def _extract_pptx_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
     validate_ooxml_archive(payload)
     try:
         with ZipFile(BytesIO(payload)) as archive:
@@ -422,25 +594,43 @@ def extract_pptx_text(payload: bytes) -> str:
             )
             if not slide_names:
                 raise DocumentNormalizationError("pptx_missing_slides", "PPTX contains no slide XML parts.")
-            slides: list[str] = []
-            for slide_name in slide_names:
+            parts: list[str] = []
+            segments: list[DocumentSegment] = []
+            for position, slide_name in enumerate(slide_names, start=1):
+                slide_number = _slide_sort_key(slide_name)[0]
+                if slide_number >= 10**9:
+                    slide_number = position
                 root = _parse_xml(
-                    _read_member_bounded(
-                        archive, slide_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                    )
+                    _read_member_bounded(archive, slide_name)
                 )
                 pieces = [node.text or "" for node in root.iter() if _local_name(node) == "t"]
                 slide = "\n".join(piece for piece in pieces if piece).strip()
-                if slide:
-                    _append_bounded(slides, slide)
+                if not slide:
+                    continue
+                _append_part(parts, slide)
+                segments.append(
+                    DocumentSegment(
+                        text=slide,
+                        order=len(segments),
+                        locator=DocumentLocator(
+                            kind=LocatorKind.SLIDE,
+                            value=str(slide_number),
+                            precision=LocatorPrecision.EXACT,
+                        ),
+                    )
+                )
     except DocumentNormalizationError:
         raise
     except (BadZipFile, OSError, ValueError, RuntimeError) as exc:
         raise DocumentNormalizationError("ooxml_malformed", "Malformed OOXML ZIP archive.") from exc
-    text = "\n".join(slides).strip()
+    text = "\n".join(parts).strip()
     if not text:
         raise DocumentNormalizationError("pptx_empty", "PPTX contains no readable text.")
-    return text
+    return text, tuple(segments)
+
+
+def extract_pptx_text(payload: bytes) -> str:
+    return _extract_pptx_blocks(payload)[0]
 
 
 def _hwpx_section_index(name: str) -> int | None:
@@ -844,7 +1034,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             names = archive.namelist()
             if "mimetype" in names:
                 declared = _read_member_bounded(
-                    archive, "mimetype", max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
+                    archive, "mimetype"
                 ).decode("utf-8", "replace").strip()
                 if declared != "application/hwp+zip":
                     raise DocumentNormalizationError(
@@ -855,9 +1045,7 @@ def parse_hwpx_sections(payload: bytes) -> tuple[HwpxParsedSection, ...]:
             if not located:
                 raise DocumentNormalizationError("hwpx_missing_part", "HWPX is missing Contents/section<N>.xml parts.")
             for index, section_name in sorted(located):
-                part = _read_member_bounded(
-                    archive, section_name, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                )
+                part = _read_member_bounded(archive, section_name)
                 root = _parse_xml(part)
                 facts = _ordered_section_block_facts(index=index, root=root, part=part)
                 fact_sections.append(facts)
@@ -893,10 +1081,10 @@ def extract_hwpx_text(payload: bytes) -> str:
         for paragraph in parsed.paragraphs:
             if paragraph.holds_nested_paragraph:
                 continue
-            _append_bounded(paragraphs, paragraph.text)
+            _append_part(paragraphs, paragraph.text)
         section = "\n".join(paragraphs).strip()
         if section:
-            _append_bounded(sections, section)
+            _append_part(sections, section)
     text = "\n".join(sections).strip()
     if not text:
         raise DocumentNormalizationError("hwpx_empty", "HWPX contains no readable text.")
@@ -942,9 +1130,7 @@ def read_hwpx_package_members(payload: bytes) -> tuple[HwpxPackageMember, ...]:
                 members.append(
                     HwpxPackageMember(
                         name=info.filename,
-                        payload=_read_member_bounded(
-                            archive, info, max_bytes=MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES
-                        ),
+                        payload=_read_member_bounded(archive, info),
                     )
                 )
     except DocumentNormalizationError:
@@ -998,7 +1184,17 @@ class PdfInspection:
         }
 
 
-def _open_pdf_reader(payload: Any) -> Any:
+def _open_pdf_reader(payload: Any, *, recover_broken_structure: bool = False) -> Any:
+    """Open a PDF through the single Core reader boundary.
+
+    `recover_broken_structure` is offered only to document-text reads. Some
+    exporters write a cross-reference section that strict pypdf refuses outright
+    while the objects themselves are intact, so the whole document disappears from
+    search and reading. Recovery re-reads the same bytes leniently; bytes that are
+    not a PDF at all still fail, and the encryption and page gates below are
+    unchanged.
+    """
+
     if hasattr(payload, "seek") and hasattr(payload, "read"):
         payload.seek(0)
         magic = payload.read(5)
@@ -1016,7 +1212,13 @@ def _open_pdf_reader(payload: Any) -> Any:
     try:
         reader = PdfReader(source, strict=True)
     except Exception as exc:
-        raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+        if not recover_broken_structure:
+            raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
+        try:
+            source.seek(0)
+            reader = PdfReader(source, strict=False)
+        except Exception as recovery_exc:
+            raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from recovery_exc
     if reader.is_encrypted:
         raise DocumentNormalizationError("pdf_encrypted", "Encrypted PDF documents are not supported.")
     if len(reader.pages) < 1:
@@ -1033,7 +1235,7 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
         raise DocumentNormalizationError("invalid_binary_payload", "PDF payload must be non-empty bytes.")
     binary = bytes(payload)
     # #4379: a binary document carries no PADIEM byte total.
-    reader = _open_pdf_reader(binary)
+    reader = _open_pdf_reader(binary, recover_broken_structure=True)
     try:
         page_count = len(reader.pages)
         pages: list[PdfPageInspection] = []
@@ -1042,8 +1244,6 @@ def inspect_pdf(*, name: Any, media_type: Any, payload: Any) -> PdfInspection:
                 text = (page.extract_text() or "").strip()
             except Exception as exc:
                 raise DocumentNormalizationError("pdf_page_text_invalid", "PDF page text could not be read safely.") from exc
-            if len(text) > MAX_PDF_PAGE_TEXT_CHARS:
-                raise DocumentNormalizationError("pdf_page_text_limit", "PDF page text exceeds the character limit.")
             pages.append(PdfPageInspection(index, index + 1, page_count, text))
     finally:
         reader.close() if hasattr(reader, "close") else None
@@ -1123,10 +1323,10 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
                 "invalid_pdf_page_provenance",
                 "PDF inspection page provenance is inconsistent.",
             )
-        if not isinstance(page.text, str) or len(page.text) > MAX_PDF_PAGE_TEXT_CHARS:
+        if not isinstance(page.text, str):
             raise DocumentNormalizationError(
                 "invalid_pdf_page_text",
-                "PDF inspection page text is invalid or exceeds the bounded limit.",
+                "PDF inspection page text is invalid.",
             )
         if not page.text.strip():
             continue
@@ -1166,24 +1366,41 @@ def normalize_pdf_inspection(inspection: PdfInspection) -> NormalizedDocument:
     )
 
 
-def _extract_pdf_text(payload: bytes) -> str:
-    reader = _open_pdf_reader(payload)
+def _extract_pdf_blocks(payload: bytes) -> tuple[str, tuple[DocumentSegment, ...]]:
+    reader = _open_pdf_reader(payload, recover_broken_structure=True)
     try:
         parts: list[str] = []
-        for page in reader.pages:
+        segments: list[DocumentSegment] = []
+        for index, page in enumerate(reader.pages):
             extracted = (page.extract_text() or "").strip()
-            if extracted:
-                _append_bounded(parts, extracted)
+            if not extracted:
+                continue
+            _append_part(parts, extracted)
+            segments.append(
+                DocumentSegment(
+                    text=extracted,
+                    order=len(segments),
+                    locator=DocumentLocator(
+                        kind=LocatorKind.PAGE,
+                        value=str(index + 1),
+                        precision=LocatorPrecision.EXACT,
+                    ),
+                )
+            )
         text = "\n\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("pdf_empty_text", "PDF contains no extractable text; OCR is not enabled.")
-        return text
+        return text, tuple(segments)
     except DocumentNormalizationError:
         raise
     except Exception as exc:
         raise DocumentNormalizationError("pdf_invalid", "PDF could not be parsed safely.") from exc
     finally:
         reader.close() if hasattr(reader, "close") else None
+
+
+def _extract_pdf_text(payload: bytes) -> str:
+    return _extract_pdf_blocks(payload)[0]
 
 
 def _cell_text(value: Any) -> str:
@@ -1200,37 +1417,58 @@ def _extract_xlsx_text(payload: bytes) -> str:
         from openpyxl import load_workbook
     except ModuleNotFoundError as exc:
         raise DocumentNormalizationError("document_dependency_unavailable", "XLSX extraction dependency is unavailable.") from exc
+    safe_payload = _bounded_ooxml_repackage(payload)
+    values_workbook = None
+    formulas_workbook = None
     try:
         # The third-party reader never receives the untrusted original archive:
-        # it reads the bounded, stored, sanitized copy instead.
-        workbook = load_workbook(
-            BytesIO(_bounded_ooxml_repackage(payload)),
+        # it reads the bounded, stored, sanitized copy instead. The second read
+        # keeps formula text next to the cached value of the same cell, so the
+        # model can see both what the formula means and what it currently shows.
+        values_workbook = load_workbook(
+            BytesIO(safe_payload),
             read_only=True,
             data_only=True,
             keep_links=False,
         )
+        formulas_workbook = load_workbook(
+            BytesIO(safe_payload),
+            read_only=True,
+            data_only=False,
+            keep_links=False,
+        )
     except Exception as exc:
+        if values_workbook is not None:
+            values_workbook.close()
         raise DocumentNormalizationError("xlsx_invalid", "XLSX could not be parsed safely.") from exc
     try:
-        if len(workbook.sheetnames) < 1:
+        if len(values_workbook.sheetnames) < 1:
             raise DocumentNormalizationError("xlsx_no_sheets", "XLSX contains no worksheets.")
         parts: list[str] = []
-        nonempty_cells = 0
-        for worksheet in workbook.worksheets:
-            max_row = int(worksheet.max_row or 0)
-            max_column = int(worksheet.max_column or 0)
-            for row in worksheet.iter_rows():
-                for cell in row:
-                    value = _cell_text(cell.value)
-                    if not value:
-                        continue
-                    _append_bounded(parts, f"[{worksheet.title}!{cell.coordinate}] {value}")
+        for value_sheet, formula_sheet in zip(
+            values_workbook.worksheets, formulas_workbook.worksheets
+        ):
+            for value_row, formula_row in zip(
+                value_sheet.iter_rows(), formula_sheet.iter_rows()
+            ):
+                for value_cell, formula_cell in zip(value_row, formula_row):
+                    value = _cell_text(value_cell.value)
+                    formula = formula_cell.value
+                    if isinstance(formula, str) and formula.startswith("="):
+                        shown = value or "(no cached value)"
+                        _append_part(
+                            parts,
+                            f"[{value_sheet.title}!{value_cell.coordinate}] {formula} => {shown}",
+                        )
+                    elif value:
+                        _append_part(parts, f"[{value_sheet.title}!{value_cell.coordinate}] {value}")
         text = "\n".join(parts).strip()
         if not text:
             raise DocumentNormalizationError("xlsx_empty", "XLSX contains no readable values.")
         return text
     finally:
-        workbook.close()
+        formulas_workbook.close()
+        values_workbook.close()
 
 
 @dataclass(frozen=True, slots=True)
@@ -1303,20 +1541,18 @@ def read_xlsx_table(
             "invalid_sheet_index",
             "Sheet index must be a non-negative integer.",
         )
-    if isinstance(max_rows, bool) or not isinstance(max_rows, int) or not 1 <= max_rows <= MAX_XLSX_ROWS:
-        raise DocumentNormalizationError(
-            "invalid_row_bound",
-            "Row bound is outside the supported range.",
-        )
-    if (
-        isinstance(max_columns, bool)
-        or not isinstance(max_columns, int)
-        or not 1 <= max_columns <= MAX_XLSX_COLUMNS
+    # A caller asking for a bigger table is asking for a bigger table. The bound
+    # has to be a usable positive number; the old ceiling that refused anything
+    # past 500 rows or 50 columns was a PADIEM preference applied to someone
+    # else's document, and it is gone.
+    for name, value, code in (
+        ("max_rows", max_rows, "invalid_row_bound"),
+        ("max_columns", max_columns, "invalid_column_bound"),
     ):
-        raise DocumentNormalizationError(
-            "invalid_column_bound",
-            "Column bound is outside the supported range.",
-        )
+        if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+            raise DocumentNormalizationError(
+                code, f"{name} must be a positive integer without coercion.",
+            )
 
     validate_ooxml_archive(bytes(binary))
     try:
@@ -1349,7 +1585,6 @@ def read_xlsx_table(
         headers: tuple[str, ...] = ()
         rows: list[tuple[str, ...]] = []
         total_rows_seen = 0
-        nonempty_cells = 0
         truncated = declared_rows > max_rows + 1
         column_limit = min(declared_columns, max_columns)
         row_limit = min(declared_rows, max_rows + 1)
@@ -1363,12 +1598,6 @@ def read_xlsx_table(
             if not any(value.strip() for value in values):
                 continue
             total_rows_seen += 1
-            nonempty_cells += sum(1 for value in values if value.strip())
-            if nonempty_cells > MAX_XLSX_NONEMPTY_CELLS:
-                raise DocumentNormalizationError(
-                    "xlsx_cell_budget",
-                    "XLSX contains too many non-empty cells.",
-                )
             if len(rows) >= max_rows:
                 truncated = True
                 continue
@@ -1391,7 +1620,30 @@ def read_xlsx_table(
         workbook.close()
 
 
-def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
+def extract_binary_document(
+    *, name: Any, media_type: Any, payload: Any,
+    ooxml_member_max_bytes: int | None = MAX_OOXML_ENTRY_UNCOMPRESSED_BYTES,
+) -> NormalizedDocument:
+    """Use the canonical parser with a runtime-owned OOXML allocation budget.
+
+    The default retains the Worker ceiling. Only a disk-backed CPython caller
+    selects None; archive path/encryption/DTD/inflation checks remain in force.
+    Context-local state prevents a concurrent Worker/default call inheriting it.
+    """
+    if ooxml_member_max_bytes is not None and (
+        isinstance(ooxml_member_max_bytes, bool)
+        or not isinstance(ooxml_member_max_bytes, int)
+        or ooxml_member_max_bytes < 1
+    ):
+        raise ValueError("ooxml_member_max_bytes must be positive or None")
+    token = _OOXML_MEMBER_BUDGET.set(ooxml_member_max_bytes)
+    try:
+        return _extract_binary_document(name=name, media_type=media_type, payload=payload)
+    finally:
+        _OOXML_MEMBER_BUDGET.reset(token)
+
+
+def _extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> NormalizedDocument:
     safe_name, safe_media = validate_document_identity(name=name, media_type=media_type, source_kind="binary")
     file_payload = (
         safe_media == "application/pdf"
@@ -1414,12 +1666,13 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         raise DocumentNormalizationError("empty_document", "Document payload is empty.")
     # #4379: a document payload carries no PADIEM byte total.
 
+    segments: tuple[DocumentSegment, ...] = ()
     if safe_media == "application/pdf":
-        text = _extract_pdf_text(binary)
+        text, segments = _extract_pdf_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        text = extract_docx_text(binary)
+        text, segments = _extract_docx_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-        text = extract_pptx_text(binary)
+        text, segments = _extract_pptx_blocks(binary)
     elif safe_media == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         text = _extract_xlsx_text(binary)
     elif safe_media == "application/hwp+zip":
@@ -1434,4 +1687,5 @@ def extract_binary_document(*, name: Any, media_type: Any, payload: Any) -> Norm
         text=normalized,
         byte_size=byte_size,
         source_kind="binary",
+        segments=segments,
     )

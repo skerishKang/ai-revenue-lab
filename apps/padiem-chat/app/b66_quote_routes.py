@@ -52,8 +52,8 @@ from .b66_grade_models import (
 )
 from padiem_control_plane.product_tier_routes import (
     FREE_PRIMARY_B14_MODEL_ID,
-    MUSE_B14_MODEL_ID,
 )
+from .model_policy import ADMIN_B14_MODEL_ID
 from .claw_memory_routes import _resolve_memory_workspace
 from .dispatch_quota import _clear_reservation, _refund_active_reservation
 
@@ -397,7 +397,17 @@ async def b66_saved_skills(request: Request) -> JSONResponse:
         return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
     if limit < 1:
         return _error(400, "invalid_limit", "limit 형식이 올바르지 않습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: the workspace is server-owned. A half-configured identity
+    # authority must stop the read here, exactly as the certified PDF and
+    # native-sol routes do, instead of handing a None scope to the store: the
+    # store's own validation is a second fence, not the one that decides.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = list_fn(user_id=uid, workspace_id=workspace_id, limit=min(limit, MAX_LIST_LIMIT))
         skills = await value if inspect.isawaitable(value) else value
@@ -417,7 +427,14 @@ async def b66_saved_skill_detail(request: Request) -> JSONResponse:
     get_fn = getattr(store, "get_skill", None) if store is not None else None
     if not callable(get_fn):
         return _error(503, "saved_quote_skill_unavailable", "내 견적서를 사용할 수 없습니다.")
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: same rule as the list route — no data read on an unresolved scope.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(
             user_id=uid,
@@ -483,13 +500,13 @@ async def b66_quote_models(request: Request) -> JSONResponse:
                 grade_model, transport_supported=_reasoning_transport_supported(request)),
         })
     if (await b66_verified_admin(request, uid)
-            and MUSE_B14_MODEL_ID in live_ready_ids
-            and MUSE_B14_MODEL_ID not in disabled):
+            and ADMIN_B14_MODEL_ID in live_ready_ids
+            and ADMIN_B14_MODEL_ID not in disabled):
         grade_choices.append(
             {"tier": B66_ADMIN_GRADE, "name": B66_ADMIN_NAME,
-             "model_id": MUSE_B14_MODEL_ID,
+             "model_id": ADMIN_B14_MODEL_ID,
              "reasoning_levels": reasoning_options_for_model(
-                 MUSE_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
+                 ADMIN_B14_MODEL_ID, transport_supported=_reasoning_transport_supported(request))}
         )
     # A configured default can only be offered if it remains permitted.
     proposed_default = getattr(request.app.state, "b66_quote_default_model_id", None)
@@ -554,7 +571,7 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
         if selected_grade == B66_ADMIN_GRADE:
             if not await b66_verified_admin(request, uid):
                 return _error(403, "admin_forbidden", "관리자 전용 기능입니다.")
-            expected_model = MUSE_B14_MODEL_ID
+            expected_model = ADMIN_B14_MODEL_ID
         else:
             member_grade = await verified_member_grade(request, uid, access)
             if grade_order.index(selected_grade) > grade_order.index(member_grade):
@@ -629,7 +646,14 @@ async def b66_quote_interpret(request: Request) -> JSONResponse:
     if not callable(get_fn) or not callable(interpret_fn):
         return _error(503, "quote_runtime_unavailable", "견적 대화 기능을 사용할 수 없습니다.")
 
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: same rule as the list route — no data read on an unresolved scope.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(
             user_id=uid,

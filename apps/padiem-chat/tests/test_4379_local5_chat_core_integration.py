@@ -15,7 +15,7 @@ Covered regressions (per the #4379 LOCAL5 work order):
 3. D1 keeps a bounded marked preview while R2 keeps the exact original, and the
    ORIGINAL is restored into the next model turn.
 4. An SSE answer accumulating past 1MiB across many chunks still completes.
-5. The completed path keeps the existing 8MiB server-memory safety ceiling.
+5. The completed path keeps the Owner-selected 32MiB server-memory safety ceiling.
 6. Another user's conversation and R2 objects are never read or mixed in.
 7. A missing original fails explicitly instead of quietly sending a truncated
    preview to the model.
@@ -266,7 +266,7 @@ async def _post(app: Any, endpoint: str, payload: dict[str, Any], *, user: str =
 
 
 def _payload(conversation_id: str | None = None, follow_up: str = FOLLOW_UP) -> dict[str, Any]:
-    body: dict[str, Any] = {"mode": "auto", "messages": [{"role": "user", "content": follow_up}]}
+    body: dict[str, Any] = {"messages": [{"role": "user", "content": follow_up}]}
     if conversation_id is not None:
         body["conversation_id"] = conversation_id
     return body
@@ -380,7 +380,7 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
     """A healthy answer accumulating past 1MiB is never truncated."""
     store, bucket = _history_fixture(tmp_path)
     streamed = (ANSWER_WORD * 20_000) + "::SSE_TAIL"
-    assert len(streamed.encode("utf-8")) > MAX_B14_RESPONSE_BYTES
+    assert len(streamed.encode("utf-8")) > 1_048_576
 
     # The stream route consumes SSE frames. Many small frames accumulate past
     # 1MiB without any single frame exceeding the per-event parser bound.
@@ -392,7 +392,7 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
     assert response.status_code == 200, response.text
     accumulated = _deltas(response.text)
     assert accumulated == streamed
-    assert len(accumulated.encode("utf-8")) > MAX_B14_RESPONSE_BYTES
+    assert len(accumulated.encode("utf-8")) > 1_048_576
     done = _done_payload(response.text)
     assert done is not None and done["done"] is True
     assert done.get("conversation_id")
@@ -401,12 +401,12 @@ def test_sse_answer_over_one_mib_completes_without_clipping(tmp_path):
 
 
 def test_sse_per_event_safety_limit_is_preserved(tmp_path):
-    """The per-event 1MiB parser ceiling still rejects one oversized frame."""
+    """The per-event configured parser ceiling still rejects one oversized frame."""
     store, _bucket = _history_fixture(tmp_path)
-    oversized = "A" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 4_096)
+    oversized = "A" * (MAX_B14_RESPONSE_BYTES + 4_096)
     # One oversized event: the per-event parser bound rejects that single frame.
-    feed = StreamingTransport(oversized, piece_chars=MAX_CONFIGURED_B14_RESPONSE_BYTES + 4_096)
-    assert len(oversized.encode("utf-8")) > MAX_CONFIGURED_B14_RESPONSE_BYTES
+    feed = StreamingTransport(oversized, piece_chars=MAX_B14_RESPONSE_BYTES + 4_096)
+    assert len(oversized.encode("utf-8")) > MAX_B14_RESPONSE_BYTES
 
     response = asyncio.run(_post(_chat(store, feed), "/api/chat/stream", _payload()))
 
@@ -415,12 +415,12 @@ def test_sse_per_event_safety_limit_is_preserved(tmp_path):
 
 
 # ── C. completed-response safety ceiling ─────────────────────────────────────
-def test_completed_answer_within_the_8mib_ceiling_is_processed(tmp_path):
+def test_completed_answer_within_the_owner_ceiling_is_processed(tmp_path):
     """A large but allowed completed answer is returned intact."""
     store, bucket = _history_fixture(tmp_path)
-    assert MAX_CONFIGURED_B14_RESPONSE_BYTES == 8 * 1_048_576
+    assert MAX_CONFIGURED_B14_RESPONSE_BYTES == 32 * 1_048_576
     allowed = ("가" * 700_000) + "::ALLOWED_TAIL"
-    assert MAX_B14_RESPONSE_BYTES < len(allowed.encode("utf-8")) < MAX_CONFIGURED_B14_RESPONSE_BYTES
+    assert 1_048_576 < len(allowed.encode("utf-8")) < MAX_CONFIGURED_B14_RESPONSE_BYTES
 
     feed = CompletedTransport(allowed)
     response = asyncio.run(_post(_chat(store, feed), "/api/chat", _payload()))
@@ -430,7 +430,7 @@ def test_completed_answer_within_the_8mib_ceiling_is_processed(tmp_path):
     assert allowed.encode("utf-8") in bucket.objects.values()
 
 
-def test_completed_answer_over_the_8mib_ceiling_is_an_explicit_error(tmp_path):
+def test_completed_answer_over_the_owner_ceiling_is_an_explicit_error(tmp_path):
     """An over-ceiling completed answer fails closed with a named error code."""
     store, bucket = _history_fixture(tmp_path)
     oversized = "A" * (MAX_CONFIGURED_B14_RESPONSE_BYTES + 4_096)

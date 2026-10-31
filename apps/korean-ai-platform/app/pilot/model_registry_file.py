@@ -16,6 +16,18 @@ _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$")
 _BINDING = re.compile(r"^[A-Z][A-Z0-9_]{0,63}$")
 _GROUPS = ("plus", "pro", "max")
 
+# The capability vocabulary the registry may use. A capability that is not
+# listed here is a typo, and a typo in the tool capability would silently
+# disable tool calling for that model instead of failing loudly.
+_KNOWN_CAPABILITIES = frozenset({
+    "chat",
+    "coding",
+    "free",
+    "image",
+    "long_context",
+    "tools",
+})
+
 class ModelRegistryError(ValueError):
     """Invalid source-controlled registry: reject without dispatch."""
 
@@ -81,6 +93,9 @@ def validate_registry(data: dict) -> dict:
             raise ModelRegistryError("invalid upstream identity")
         if not isinstance(m["capabilities"],list) or "chat" not in m["capabilities"] or len(set(m["capabilities"])) != len(m["capabilities"]) or not all(isinstance(x,str) and x for x in m["capabilities"]):
             raise ModelRegistryError("invalid model capabilities")
+        unknown = sorted(set(m["capabilities"]) - _KNOWN_CAPABILITIES)
+        if unknown:
+            raise ModelRegistryError("unknown model capability: " + unknown[0])
         if not isinstance(m["context_window"],int) or m["context_window"]<0 or isinstance(m["context_window"],bool):
             raise ModelRegistryError("invalid context window")
         for field in ("input_price_usd_per_1m","output_price_usd_per_1m"):

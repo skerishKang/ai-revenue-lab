@@ -13,7 +13,13 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 import urllib.request
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from ci_core_import_scope import core_focused_plan  # noqa: E402
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 MAX_FILES = 100
 FULL = "full"
@@ -23,7 +29,7 @@ UI_MIXED = "ui_mixed"
 TESTS_ONLY = "tests_only"
 B14_ONLY = "b14_only"
 B14_TESTS_ONLY = "b14_tests_only"
-CORE_PARSER_ONLY = "core_parser_only"
+CORE_FOCUSED_ONLY = "core_focused_only"
 B14_ATTEMPT_ONLY = "b14_attempt_only"
 
 # #4459: source-invariant static UI and changed pytest modules. Run every
@@ -60,7 +66,7 @@ def ui_mixed_test_modules(files: object) -> tuple[str, ...]:
 
 
 
-def impact_scope(files: object) -> str:
+def impact_scope(files: object, repo_root: Path | None = None) -> str:
     if not isinstance(files, list) or not 0 < len(files) <= MAX_FILES:
         return FULL
     paths = []
@@ -71,10 +77,7 @@ def impact_scope(files: object) -> str:
         if not isinstance(path, str) or not (
             path.startswith("apps/padiem-chat/")
             or path.startswith("apps/korean-ai-platform/")
-            or path in {
-                "packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py",
-                "packages/padiem-ai-core/tests/test_isolated_parser_client.py",
-            }
+            or path.startswith("packages/padiem-ai-core/")
         ):
             return FULL
         # Do not accept malformed paths, explicit traversal or duplicates.
@@ -94,14 +97,15 @@ def impact_scope(files: object) -> str:
     }
     if "apps/padiem-chat/app/b14_client.py" in paths and set(paths) <= b14_attempt_paths:
         return B14_ATTEMPT_ONLY
-    # Exact isolated-parser changes do not affect B62 chat routing or Worker bytes.
-    # Preserve the required B62 status with its focused core-parser check.
-    parser_paths = {
-        "packages/padiem-ai-core/padiem_ai_core/isolated_parser_client.py",
-        "packages/padiem-ai-core/tests/test_isolated_parser_client.py",
-    }
-    if all(p in parser_paths for p in paths):
-        return CORE_PARSER_ONLY
+    # #5341: a shared Core change that no product imports cannot change that
+    # product's runtime. The static import-scope proof decides it; anything the
+    # proof cannot establish stays on the full path.
+    core_paths = [p for p in paths if p.startswith("packages/padiem-ai-core/")]
+    if core_paths:
+        if len(core_paths) != len(paths):
+            return FULL
+        plan = core_focused_plan(repo_root or REPO_ROOT, files, "b62")
+        return CORE_FOCUSED_ONLY if plan else FULL
     # B14 unit-test-only changes never alter either product's shipped sources,
     # pinned dependencies or runtime probes. B14's independent validate-b14-alpha
     # workflow runs the *complete* B14 test suite on every such PR and main push.
@@ -197,16 +201,71 @@ def changed_files(event: dict, event_name: str, repository: str, token: str):
     return files
 
 
+def _load_event_files() -> tuple[dict, str, object | None]:
+    with Path(os.environ["GITHUB_EVENT_PATH"]).open(encoding="utf-8") as f:
+        event = json.load(f)
+    event_name = os.getenv("GITHUB_EVENT_NAME", "")
+    files = changed_files(event, event_name,
+                          os.getenv("GITHUB_REPOSITORY", ""),
+                          os.getenv("GITHUB_TOKEN", ""))
+    return event, event_name, files
+
+
+def core_product_scope(product: str) -> dict[str, object]:
+    """Focused Core plan for another product lane (Engine) or the safe full path."""
+    plan: dict[str, object] | None = None
+    try:
+        _, _, files = _load_event_files()
+        plan = core_focused_plan(REPO_ROOT, files, product)
+    except (OSError, ValueError, KeyError, TypeError, TimeoutError):
+        plan = None
+    except Exception:
+        # Network/API ambiguity must never silently shrink a CI test lane.
+        plan = None
+    if plan is None:
+        return {"independent": False, "modules": [], "tests": []}
+    return plan
+
+
+def _core_product_argument() -> str | None:
+    """Read the optional ``--core-product`` argument without argparse.
+
+    The classifier is imported and called directly by its contract tests, so
+    it must not consume or reject unrelated process arguments.
+    """
+    argv = sys.argv[1:]
+    if "--core-product" not in argv:
+        return None
+    index = argv.index("--core-product")
+    if index + 1 >= len(argv):
+        return None
+    product = argv[index + 1]
+    return product if product in ("b62", "engine") else None
+
+
 def main() -> None:
+    core_product = _core_product_argument()
+
+    if core_product:
+        plan = core_product_scope(core_product)
+        modules = plan.get("modules") or []
+        tests = plan.get("tests") or []
+        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
+            out.write(f"core_independent={'true' if plan.get('independent') else 'false'}\n")
+            out.write(f"core_modules={' '.join(modules)}\n")
+            out.write(f"core_tests={' '.join(tests)}\n")
+        print(
+            f"CORE_IMPACT_SCOPE={core_product}:"
+            f"{'INDEPENDENT' if plan.get('independent') else 'FULL'}"
+        )
+        return
+
     scope = FULL
     ui_tests: tuple[str, ...] = ()
+    core_tests: tuple[str, ...] = ()
+    core_modules: tuple[str, ...] = ()
     try:
-        with Path(os.environ["GITHUB_EVENT_PATH"]).open(encoding="utf-8") as f:
-            event = json.load(f)
-        event_name = os.getenv("GITHUB_EVENT_NAME", "")
-        files = changed_files(event, event_name,
-                              os.getenv("GITHUB_REPOSITORY", ""),
-                              os.getenv("GITHUB_TOKEN", ""))
+        event, event_name, files = _load_event_files()
         scope = impact_scope(files)
         if scope == UI_MIXED:
             # Require complete PR metadata, not just a possibly truncated
@@ -216,6 +275,13 @@ def main() -> None:
             if event_name != "pull_request" or type(count) is not int or count != len(files):
                 scope = FULL
         ui_tests = ui_mixed_test_modules(files) if scope == UI_MIXED else ()
+        if scope == CORE_FOCUSED_ONLY:
+            plan = core_focused_plan(REPO_ROOT, files, "b62")
+            if plan is None:
+                scope = FULL
+            else:
+                core_tests = tuple(plan.get("tests") or ())
+                core_modules = tuple(plan.get("modules") or ())
     except (OSError, ValueError, KeyError, TypeError, TimeoutError):
         scope = FULL
     except Exception:
@@ -224,6 +290,8 @@ def main() -> None:
     with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as out:
         out.write(f"scope={scope}\n")
         out.write(f"ui_tests={' '.join(ui_tests)}\n")
+        out.write(f"core_tests={' '.join(core_tests)}\n")
+        out.write(f"core_modules={' '.join(core_modules)}\n")
     print(f"B62_CI_IMPACT_SCOPE={scope}")
 
 

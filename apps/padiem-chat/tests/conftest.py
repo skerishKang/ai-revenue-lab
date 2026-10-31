@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 from pathlib import Path
 
 import httpx
@@ -108,6 +109,10 @@ _HOLD_POLICY_MODULES = {
     # #5108: the Chat route-execution gate is proven against the real shared
     # product-tier declaration, not the synthetic Plus route.
     "test_5108_chat_central_route_execution.py",
+    # #5015: the orchestration route must preserve the real selected grade
+    # (including the administrator exact model), so the synthetic Plus route
+    # would erase the contract under test.
+    "test_5015_orchestration_tier_model.py",
 }
 
 
@@ -210,3 +215,16 @@ def _synthetic_plus_route_for_non_policy_contracts(
             executable,
             raising=False,
         )
+
+
+@pytest.fixture
+def cross_app_source_paths(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep workspace packages visible to the cross-app subprocess from tests/."""
+    root = Path(__file__).resolve().parents[3]
+    paths = (root / "apps" / "korean-ai-code-agent" / "src",
+             root / "packages" / "padiem-ai-core",
+             root / "packages" / "padiem-control-plane",
+             root / "apps" / "padiem-ai-engine" / "clients" / "python")
+    existing = os.environ.get("PYTHONPATH", "")
+    value = os.pathsep.join(str(path) for path in paths)
+    monkeypatch.setenv("PYTHONPATH", value + (os.pathsep + existing if existing else ""))

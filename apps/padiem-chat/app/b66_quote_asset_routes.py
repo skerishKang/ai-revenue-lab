@@ -51,7 +51,15 @@ async def b66_quote_asset_detail(request: Request) -> Response:
     if not callable(get_fn):
         return _error(503, "quote_asset_unavailable", "견적 자산을 사용할 수 없습니다.")
 
-    workspace_id = await _resolve_memory_workspace(request, uid)
+    # #4316: an unresolved server-owned workspace stops the read before the
+    # store is asked, matching the certified PDF route's boundary.
+    try:
+        workspace_id = await _resolve_memory_workspace(request, uid)
+    except Exception:
+        workspace_id = None
+    if workspace_id is None:
+        return _error(503, "workspace_authority_unavailable",
+                      "계정 범위를 확인할 수 없습니다. 잠시 후 다시 시도해 주세요.")
     try:
         value = get_fn(user_id=uid, workspace_id=workspace_id, asset_id=asset_id)
         result = await value if inspect.isawaitable(value) else value

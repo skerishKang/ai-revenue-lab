@@ -10,6 +10,8 @@ from urllib.parse import urlparse
 
 from playwright.async_api import Browser, Page, Playwright, Route, async_playwright
 
+from b62_settings_actions import open_settings, settings_action_target, sign_out_via_settings
+
 
 BASE_URL = os.environ.get("B62_AUTH_HISTORY_QA_BASE_URL", "http://127.0.0.1:8769")
 OUT_DIR = Path(os.environ.get("B62_AUTH_HISTORY_QA_OUT_DIR", ".tmp/b62-auth-history-browser-qa"))
@@ -23,6 +25,55 @@ VIEWPORTS = {
 CASES = ("signed", "expired", "unavailable", "english-expired")
 USER_NAME = "브라우저 계정 사용자"
 STATIC_FONT_HOSTS = frozenset({"cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"})
+
+# #5917/#5980 answered the whole PC pairing surface at the route layer because a
+# read left to the local server ended in the card's own timeout abort, and this
+# harness counts an aborted request as a browser failure. The route answer
+# itself, though, travels the Playwright interception roundtrip, and a loaded
+# runner can cancel such a request inside the browser before any fixture code
+# runs: the boot pairing reads were recorded as net::ERR_ABORTED and failed
+# otherwise-green cases (runs 3449/3450/3451, exit code 123; reproduced locally
+# with a request aborted 10ms after issue, far inside the card's 12s guard, and
+# no product code aborts this URL). Serving the read inside the page, before
+# any script runs, removes the roundtrip: there is no network request left to
+# cancel, and the zero-browser-errors guard below stays strict for every other
+# request. The collection answers an empty account's link list; a sub-path
+# answers the route's own 404, because an account with no paired PC has no link
+# to read.
+_PAIRING_FETCH_OVERRIDE = """(() => {
+  const realFetch = typeof window.fetch === "function" ? window.fetch.bind(window) : null;
+  if (!realFetch) return;
+  const collection = "/api/pc/pairings";
+  const answer = (status, body) => Promise.resolve(
+    new Response(JSON.stringify(body), {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    }),
+  );
+  window.fetch = (input, init) => {
+    let path = "";
+    try {
+      const raw = typeof input === "string" ? input : (input && input.url) || "";
+      path = new URL(raw, window.location.href).pathname;
+      while (path.endsWith("/") && path.length > 1) path = path.slice(0, -1);
+    } catch (error) {
+      path = "";
+    }
+    if (path === collection) return answer(200, { links: [] });
+    if (path.startsWith(collection + "/")) {
+      return answer(404, { error: { code: "not_found" } });
+    }
+    return realFetch(input, init);
+  };
+})();
+"""
+
+
+async def _install_pairing_read_override(page: Page) -> None:
+    await page.add_init_script(_PAIRING_FETCH_OVERRIDE)
 
 
 async def _fulfill_json(route: Route, payload: Any, status: int = 200) -> None:
@@ -114,10 +165,19 @@ async def _install_fixtures(page: Page, state: dict[str, Any]) -> None:
         state["google_start_reads"] += 1
         await route.fulfill(status=204, body="")
 
+    async def no_runs(route: Route) -> None:
+        # #5895: opening a saved conversation also reads the owner's run history
+        # once, to continue a PC turn that is still running server-side. Left
+        # unmocked it becomes a real request to the local server on every
+        # conversation open, competing for the same connections the PC card
+        # reads. An account with no runs has nothing to continue.
+        await _fulfill_json(route, {"ok": True, "runs": []})
+
     await page.route("**/api/auth/status", auth_status)
     await page.route("**/api/auth/logout", logout)
     await page.route("**/api/projects", empty_projects)
     await page.route("**/api/conversations", empty_conversations)
+    await page.route("**/api/claw/runs**", no_runs)
     await page.route("**/auth/google/start", google_start)
 
 
@@ -324,6 +384,7 @@ async def _assert_visible_state(
     label: str,
     button_text: str,
     account_text: str,
+    settings_action: bool = False,
 ) -> dict[str, Any]:
     snapshot = await _account_snapshot(page)
     if snapshot.get("state") != expected or snapshot.get("rootHidden"):
@@ -334,10 +395,16 @@ async def _assert_visible_state(
         raise AssertionError(f"wrong account copy at {label}: {snapshot}")
     if snapshot.get("buttonDisabled") or snapshot.get("ariaDisabled") != "false":
         raise AssertionError(f"account action must be operable at {label}: {snapshot}")
+    if settings_action:
+        # #5560: the sign-out control moved into Settings > Account. The
+        # evidence is unchanged: the action is a visible 44px touch target.
+        target = await settings_action_target(page, "#settingsLogoutButton", label=f"{label}-{expected}-action")
+    else:
+        target = _validate_target(snapshot, f"{label}-{expected}-action")
     return {
         "state": expected,
         "hidden": False,
-        "target": _validate_target(snapshot, f"{label}-{expected}-action"),
+        "target": target,
         "status": "PASS",
     }
 
@@ -507,6 +574,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
         )
 
         await _install_static_font_stubs(page, stubbed_hosts)
+        await _install_pairing_read_override(page)
         await _install_fixtures(page, state)
 
         suffix = f"&lang={lang}" if lang else ""
@@ -545,7 +613,7 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
             "theme": theme,
             "viewport": viewport_name,
             "case": case,
-            "fixture_boundary": "browser-route-fixtures-plus-bounded-lifecycle-dom-probe",
+            "fixture_boundary": "browser-route-fixtures-plus-pairing-fetch-override-and-bounded-lifecycle-dom-probe",
             "decorative_font_network": "stubbed-before-network",
             "stubbed_decorative_font_hosts": sorted(stubbed_hosts & STATIC_FONT_HOSTS),
             "real_google_oauth": 0,
@@ -568,8 +636,9 @@ async def _run_case(theme: str, viewport_name: str, case: str) -> dict[str, Any]
                 label=label,
                 button_text="로그아웃",
                 account_text=USER_NAME,
+                settings_action=True,
             )
-            await _click_dom(page, "#loginButton", label=f"{label}-logout")
+            await sign_out_via_settings(page, label=f"{label}-logout")
             await _wait_counter(state, "logout_posts", 1, label=label)
             await _wait_state(page, "guest", label=f"{label}-logout-guest")
             result["guest"] = await _assert_visible_state(

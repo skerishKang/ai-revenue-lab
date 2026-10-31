@@ -330,8 +330,10 @@
       const composer = find("messageInput");
       const clawNav = find("clawNavButton");
       const prompt = "다음 회의 전사문을 바탕으로 회의록 초안을 작성해 주세요. 원문에 없는 사실·담당자·기한을 추정하지 말고, 주요 논의·결정사항·할 일 후보·미정 사항을 구분해 주세요.\\n\\n" + text.value.trim();
-      if (!composer || !clawNav || prompt.length > 9000 || (composer.maxLength > 0 && prompt.length > composer.maxLength)) {
-        say("전사문이 너무 길거나 Claw 입력창을 열 수 없습니다. TXT를 내려받아 파일로 전달하세요.");
+      // #5895-C: no transcript length ceiling. The composer carries the whole
+      // transcript; only a missing composer blocks the handoff.
+      if (!composer || !clawNav) {
+        say("Claw 입력창을 열 수 없습니다. TXT를 내려받아 파일로 전달하세요.");
         return;
       }
       clawNav.click();

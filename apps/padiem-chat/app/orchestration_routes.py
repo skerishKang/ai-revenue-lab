@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+from .file_lane import file_resolver
+
 import json
+import logging
 import re
 from typing import Any
 
@@ -11,13 +14,27 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from .auth_routes import auth_ready, current_user_id
+from .b14_client import PADIEM_IDENTITY_INSTRUCTION, _chat_product_identity_instruction
 from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
+from .central_model_route_runtime import chat_request_tier_context
+from .grounding import GroundingError, grounding_fallback_fields
 from .history import HistoryForbidden, HistoryStore
 from .history import PRODUCT_SCOPE_CHAT
-from .model_policy import ModelPolicyError, resolve_model_policy
+from .member_grade_access import selected_admin_denial, selected_grade_denial
+from .model_policy import (
+    ResolvedModelPolicy,
+    ModelPolicyError,
+    resolve_model_policy,
+    resolve_request_model_policy,
+)
 from .orchestration_bridge import B62EngineOrchestrationBridge, B62OrchestrationError
-from .request_contract import BrowserRequestError, _validate_payload
+from .public_chat import public_chat_result
+from .request_contract import BrowserRequestError, _validate_payload_async
+from .pc_correlation import run_hash
 from .usage_gate import UsageGate
+
+_PC_TRACE_LOG = logging.getLogger("padiem_chat.pc_correlation")
+_PC_TRACE_LOG.setLevel(logging.INFO)
 
 MAX_ORCHESTRATION_BROWSER_BODY_BYTES = 256 * 1024
 _CONTINUATION_RE = re.compile(r"^cont_[A-Za-z0-9_-]{8,123}$")
@@ -132,51 +149,28 @@ async def _save_terminal_history(
         return conversation_id
 
 
-async def _run_pc_lane(
-    request: Request,
-    *,
-    user_text: str,
-    skill: Any,
-    model_id: str,
-    tier: str,
-    conversation_id: str | None,
-    device_id: Any,
-) -> tuple[str | None, str | None]:
-    """Run the existing PC drive/file lane for this turn, if it applies.
+def public_grounding_evidence(items: Any) -> list[dict[str, Any]]:
+    """The browser-safe evidence projection for a grounded answer.
 
-    The lane itself decides whether the turn is a PC request, resolves the
-    server-verified target, and owns the plan, the grant checks and the answer
-    persistence. A turn that is not a PC request returns ``(None, None)`` and
-    the caller continues with the ordinary orchestration path.
+    The same allowlisted projection the Chat stream route uses: a title, a
+    public URL, a snippet, the retrieval time and the source type. The
+    provider identity stays server-side.
     """
-    from .chat_pc_drive import ChatPCDriveError, execute_chat_pc_drive_lane
-
-    try:
-        outcome = await execute_chat_pc_drive_lane(
-            request,
-            user_text=user_text,
-            skill=skill,
-            model_id=model_id,
-            conversation_id=conversation_id,
-            tier=tier,
-            device_id=device_id if isinstance(device_id, str) else None,
-        )
-    except ChatPCDriveError as exc:
-        raise _PcLaneRefusal(exc.code, exc.user_message, exc.status_code) from exc
-    if outcome is None:
-        return None, None
-    answer, lane_conversation_id = outcome
-    return answer, lane_conversation_id
-
-
-class _PcLaneRefusal(Exception):
-    """A bounded refusal from the existing PC lane."""
-
-    def __init__(self, code: str, message: str, status_code: int) -> None:
-        super().__init__(code)
-        self.code = code
-        self.message = message
-        self.status_code = status_code
+    raw = [
+        {
+            "id": item.id,
+            "title": item.title,
+            "url": item.url,
+            "snippet": item.snippet,
+            "retrieved_at": item.retrieved_at,
+            "provider": item.provider,
+            "source_type": item.source_type,
+        }
+        for item in items
+    ]
+    projected = public_chat_result({"evidence": raw})
+    evidence = projected.get("evidence", [])
+    return evidence if isinstance(evidence, list) else []
 
 
 async def api_orchestration(request: Request) -> JSONResponse:
@@ -188,16 +182,62 @@ async def api_orchestration(request: Request) -> JSONResponse:
         return _error("unauthorized", "이 기능을 사용하려면 로그인이 필요합니다.", 401)
     try:
         raw = await _json_body(request)
-        messages, skill, tool_request, attachments, conversation_id, project_id, custom = _validate_payload(raw)
-        if tool_request is not None or attachments or project_id is not None or custom is not None:
+        # Assign the same canonical run before logging even for older clients
+        # that do not supply one; the PC branch below reuses it for the Engine.
+        trace_run_id = raw.get("pc_run_id") if isinstance(raw, dict) else None
+        if isinstance(raw, dict) and trace_run_id is None:
+            from .chat_pc_drive import _new_lane_run_id
+            trace_run_id = _new_lane_run_id()
+        trace_run = run_hash(trace_run_id)
+        _PC_TRACE_LOG.info("pc_chat stage=request_received run_hash=%s", trace_run or "none")
+        messages, skill, tool_request, attachments, conversation_id, project_id, custom = await _validate_payload_async(raw, file_resolver=file_resolver(request))
+        _PC_TRACE_LOG.info("pc_chat stage=contract_accepted run_hash=%s", trace_run or "none")
+        user_credential_ref = None
+        if custom is not None:
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            try:
+                resolved = await resolve_reference(request.app.state, uid, custom)
+            except (CustomProviderError, CustomProviderSelectionError) as exc:
+                return _error(getattr(exc, "code", "custom_provider_unsupported"), str(getattr(exc, "message", "사용자 키를 확인해 주세요.")), getattr(exc, "status_code", 422))
+            if resolved is None:
+                return _error("orchestration_not_applicable", "B14 경유 미지원 또는 비활성 상태이므로 기존 직행 경로를 사용합니다.", 409)
+            byok_model, user_credential_ref = resolved
+        if tool_request is not None or attachments or project_id is not None:
             return _error(
                 "orchestration_not_applicable",
                 "이 요청은 기존 채팅 경로에서 처리합니다.",
                 409,
             )
-        policy = resolve_model_policy(messages)
+        # #5015: an explicit browser tier is a preference, not authority.
+        # Reuse the same server-side grade/administrator gates and resolver the
+        # Chat stream route applies. A request without a tier resolves the
+        # default product tier; slash-prefixed text stays ordinary prompt text.
+        if custom is not None:
+            policy = ResolvedModelPolicy(model_id=byok_model, messages=messages)
+            product_identity = PADIEM_IDENTITY_INSTRUCTION
+        elif "tier" in raw:
+            if raw.get("tier") == "admin":
+                admin_denial = await selected_admin_denial(request, uid)
+                if admin_denial is not None:
+                    return admin_denial
+            else:
+                tier_denial = await selected_grade_denial(request, uid, raw["tier"])
+                if tier_denial is not None:
+                    return tier_denial
+            async with chat_request_tier_context(request, raw["tier"]):
+                policy = resolve_request_model_policy(messages)
+                # #5347: the Chat stream route composes the product identity while
+                # the server-verified tier context is bound. The Engine lane has no
+                # B14 product default, so the same render is sampled here and
+                # carried on the Engine wire.
+                product_identity = _chat_product_identity_instruction()
+        else:
+            policy = resolve_model_policy(messages)
+            product_identity = PADIEM_IDENTITY_INSTRUCTION
     except BrowserRequestError as exc:
-        return _error("invalid_request", str(exc), 422)
+        return _error(exc.code, str(exc), 422)
     except ModelPolicyError as exc:
         return _error(exc.code, exc.message, 422)
     except B62OrchestrationError as exc:
@@ -227,37 +267,125 @@ async def api_orchestration(request: Request) -> JSONResponse:
             )
 
     user_text = _latest_user(messages)
-    # #5015: a browser turn may reach this surface instead of the Chat stream
-    # route. The generic bridge call below carries NO PC plan and NO selected
-    # target, so a PC request could never reach the existing PC file lane: the
-    # Engine would run a plan without the PC query steps, and the selected PC
-    # would never be part of the request. Reuse the existing PC module (the
-    # same one the Chat stream route uses) so the PC plan, the server-verified
-    # target and the existing Mesh grant checks stay exactly where they are.
-    # No second executor, no second target store, no browser-chosen target.
-    try:
-        pc_lane_answer, pc_lane_conversation_id = await _run_pc_lane(
-            request,
-            user_text=user_text,
-            skill=skill,
-            model_id=policy.model_id,
-            tier=raw.get("tier", "free") if isinstance(raw.get("tier"), str) else "free",
-            conversation_id=conversation_id,
-            device_id=raw.get("device_id"),
+    # The server verification chooses only whether PC tools may be offered.
+    # Model interpretation stays inside the same Engine turn.
+    from .chat_pc_drive import resolve_chat_pc_stream_context
+    pc_context = await resolve_chat_pc_stream_context(
+        request, uid=uid, requested_device_id=raw.get("device_id"),
+        user_text=user_text,
+    )
+    # #4469: in production the PADIEM Chat composer is answered by THIS lane
+    # (the browser tries the orchestration route first), so the shared public
+    # web search has to run here as well. The existing Core search decision,
+    # the existing TinyFish/Daum provider and the existing evidence
+    # projection are reused unchanged: only the lane that actually answers the
+    # turn now runs the retrieval. A request that needs no current external
+    # fact still performs no provider call.
+    auto_grounding = getattr(request.app.state, "auto_grounding", None)
+    prepare_grounding = getattr(auto_grounding, "prepare", None)
+    grounding_context: str | None = None
+    grounded_evidence: list[dict[str, Any]] = []
+    grounding_notice: dict[str, Any] = {}
+    auto_plan = None
+    if callable(prepare_grounding):
+        try:
+            _explicit = bool(raw.get("web_search")) if isinstance(raw, dict) else False
+            try:
+                auto_plan = await prepare_grounding(
+                    messages,
+                    skill=skill,
+                    additional_system_context=None,
+                    explicit_search=_explicit,
+                )
+            except TypeError:
+                auto_plan = await prepare_grounding(
+                    messages,
+                    skill=skill,
+                    additional_system_context=None,
+                )
+        except GroundingError as exc:
+            grounding_notice = grounding_fallback_fields(exc)
+        if getattr(auto_plan, "error", None) is not None:
+            grounding_notice = grounding_fallback_fields(auto_plan.error)
+        prepared = getattr(auto_plan, "prepared", None)
+        if prepared is not None:
+            grounding_context = prepared.context
+            grounded_evidence = public_grounding_evidence(prepared.evidence)
+
+    if pc_context is not None or user_credential_ref is not None:
+        if pc_context is None:
+            # A text-only BYOK turn stages message history, never a PC run.
+            pc_context = {"workspace_id": "personal", "subject_id": None, "pc_tools": None}
+        from .chat_pc_drive import ChatPCDriveError, _client_lane_run_id, pc_scope_notice_for_run
+        from .claw_live_events import chat_pc_orchestration_sse
+        begin = getattr(store, "begin_chat_stream_turn", None)
+        finish = getattr(store, "finish_chat_stream_turn", None)
+        if not callable(begin) or not callable(finish):
+            return _error("history_unavailable", "대화 기록을 현재 사용할 수 없습니다.", 503)
+        stream_messages = policy.messages
+        if conversation_id is not None:
+            from .chat_routes import _restore_owner_chat_model_messages
+            try:
+                stream_messages = await _restore_owner_chat_model_messages(
+                    store, uid, conversation_id, existing, list(policy.messages),
+                )
+            except OverflowError:
+                return _error("history_context_too_large", "대화 맥락이 전송 한도를 초과했습니다.", 413)
+            except Exception:
+                return _error("history_context_incomplete", "대화 맥락을 현재 복원할 수 없습니다.", 503)
+        try:
+            pc_run_id = _client_lane_run_id(raw.get("pc_run_id")) or trace_run_id
+            saved_id = await begin(
+                user_id=uid, run_id=pc_run_id, workspace_id=pc_context["workspace_id"],
+                user_text=user_text, conversation_id=conversation_id,
+            )
+        except HistoryForbidden:
+            return _error("chat_pc_run_id_conflict", "이미 사용한 PC 작업 실행 ID입니다.", 409)
+        except ChatPCDriveError as exc:
+            return _error(exc.code, exc.user_message, exc.status_code)
+        except Exception as exc:
+            error = ChatPCDriveError("chat_pc_store_unavailable", "대화 기록을 현재 사용할 수 없습니다.")
+            error.__cause__ = exc
+            return JSONResponse({"error": error.public_error()}, status_code=503)
+        stream = bridge.start_stream(
+            user_id=uid, messages=stream_messages, skill=skill, model_id=policy.model_id,
+            user_text=user_text, conversation_id=saved_id,
+            pc_tools=pc_context["pc_tools"], subject_id=pc_context["subject_id"],
+            session_id=pc_run_id, additional_system_context=grounding_context,
+            product_identity=product_identity,
+            **({"user_credential_ref": user_credential_ref,
+                "byok_selection": {"provider": custom.provider, "model": custom.model}}
+               if user_credential_ref is not None else {}),
         )
-    except _PcLaneRefusal as exc:
-        return _error(exc.code, exc.message, exc.status_code)
-    if pc_lane_answer is not None:
-        # The PC lane already persisted the verified exchange in its own
-        # conversation, so the answer is not stored a second time here.
-        payload: dict[str, Any] = {
-            "orchestration": {"status": "completed", "source": "pc_file_lane"},
-            "answer": pc_lane_answer,
-            "decision_status": "completed",
-        }
-        if pc_lane_conversation_id is not None:
-            payload["conversation_id"] = pc_lane_conversation_id
-        return JSONResponse(payload, headers={"Cache-Control": "no-store"})
+        async def scope_notice():
+            return await pc_scope_notice_for_run(request, run_id=pc_run_id)
+        async def fail_stream():
+            # A terminal Engine/contract error is evidence of failure; a browser
+            # disconnect is not. The existing owner-scoped guard preserves a
+            # verified completion and creates no row for an ordinary text turn.
+            await store.update_claw_run_status(uid, pc_run_id, "failed")
+        async def complete_stream(result):
+            fields = {"conversation_id": saved_id}
+            try:
+                await finish(user_id=uid, run_id=pc_run_id, answer=result.answer)
+            except Exception:
+                # Match normal history-save behavior: a verified answer remains
+                # visible even if optional history projection is unavailable.
+                pass
+            notice = await scope_notice()
+            if notice is not None:
+                fields["scope_notice"] = notice
+            return fields
+        completion_fields = dict(grounding_notice)
+        if grounded_evidence:
+            completion_fields.update(answer_status="answered_with_evidence",
+                evidence=grounded_evidence, tool={"id": "web_search", "title": "웹 검색"})
+        return chat_pc_orchestration_sse(
+            stream, pc_run_id=pc_run_id, on_completed=complete_stream,
+            on_scope=scope_notice, done_fields=completion_fields, on_failed=fail_stream,
+            pending_fields={"run_id": pc_run_id, "conversation_id": saved_id},
+        )
+
     try:
         result = await bridge.start(
             user_id=uid,
@@ -266,6 +394,8 @@ async def api_orchestration(request: Request) -> JSONResponse:
             model_id=policy.model_id,
             user_text=user_text,
             conversation_id=conversation_id,
+            additional_system_context=grounding_context,
+            product_identity=product_identity,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
@@ -282,10 +412,26 @@ async def api_orchestration(request: Request) -> JSONResponse:
         "answer": result.answer,
         "decision_status": result.decision_status,
     }
+    payload.update(grounding_notice)
+    if grounded_evidence:
+        # The browser contract for a grounded answer: the same tool marker and
+        # the same public evidence the Chat stream route already returns.
+        payload["answer_status"] = "answered_with_evidence"
+        payload["evidence"] = grounded_evidence
+        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
     if saved_id is not None:
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)
 
+def _resume_skill():
+    try:
+        from .task_modes import get_task_mode
+
+        return get_task_mode("auto")
+    except Exception:
+        from types import SimpleNamespace
+
+        return SimpleNamespace(id="auto")
 
 async def api_orchestration_resume(request: Request) -> JSONResponse:
     bridge = _bridge(request)
@@ -297,27 +443,76 @@ async def api_orchestration_resume(request: Request) -> JSONResponse:
     try:
         raw = await _json_body(request)
         continuation_ref, pause_id, outcome = parse_approval_intent(raw)
+        async def user_credential_resolver(selection):
+            from .byok_bridge import resolve_reference
+            from .byok_client import CustomProviderError
+            from .byok_credentials import CustomProviderSelectionError
+            from .request_contract import parse_custom_selection
+            try:
+                return await resolve_reference(request.app.state, uid, parse_custom_selection(selection))
+            except (CustomProviderError, CustomProviderSelectionError, BrowserRequestError):
+                raise B62OrchestrationError("byok_credential_required", "사용자 키를 다시 확인해 주세요.", status_code=409) from None
         result = await bridge.resume(
             user_id=uid,
             continuation_ref=continuation_ref,
             pause_id=pause_id,
             outcome=outcome,
+            user_credential_resolver=user_credential_resolver,
         )
     except B62OrchestrationError as exc:
         return _error(exc.code, exc.user_message, exc.status_code)
 
-    saved_id = await _save_terminal_history(
-        request,
-        user_id=uid,
-        conversation_id=result.conversation_id,
-        user_text=result.user_text,
-        answer=result.answer,
-    )
+    # #4469: resume must keep the same public evidence contract as the
+    # original grounded turn, so the sources survive an approval continuation.
+    grounded_evidence: list[dict[str, Any]] = []
+    auto_grounding = getattr(request.app.state, "auto_grounding", None)
+    prepare_grounding = getattr(auto_grounding, "prepare", None)
+    if callable(prepare_grounding) and isinstance(result.user_text, str) and result.user_text.strip():
+        try:
+            try:
+                auto_plan = await prepare_grounding(
+                    [{"role": "user", "content": result.user_text}],
+                    skill=_resume_skill(),
+                    additional_system_context=None,
+                    explicit_search=False,
+                )
+            except TypeError:
+                auto_plan = await prepare_grounding(
+                    [{"role": "user", "content": result.user_text}],
+                    skill=_resume_skill(),
+                    additional_system_context=None,
+                )
+        except GroundingError:
+            auto_plan = None
+        prepared = getattr(auto_plan, "prepared", None) if auto_plan is not None else None
+        if prepared is not None:
+            grounded_evidence = public_grounding_evidence(prepared.evidence)
+
+    stream_run_id = getattr(result, "stream_run_id", None)
+    if stream_run_id is not None:
+        # The first stream already persisted its user turn before pausing.
+        # Resume appends only the answer, under the same owner/run receipt.
+        saved_id = result.conversation_id
+        finish = getattr(getattr(request.app.state, "history_store", None), "finish_chat_stream_turn", None)
+        if isinstance(result.answer, str) and result.answer and callable(finish):
+            try:
+                saved_id = await finish(user_id=uid, run_id=stream_run_id, answer=result.answer)
+            except Exception:
+                pass
+    else:
+        saved_id = await _save_terminal_history(
+            request, user_id=uid, conversation_id=result.conversation_id,
+            user_text=result.user_text, answer=result.answer,
+        )
     payload: dict[str, Any] = {
         "orchestration": dict(result.orchestration),
         "answer": result.answer,
         "decision_status": result.decision_status,
     }
+    if grounded_evidence:
+        payload["answer_status"] = "answered_with_evidence"
+        payload["evidence"] = grounded_evidence
+        payload["tool"] = {"id": "web_search", "title": "웹 검색"}
     if saved_id is not None:
         payload["conversation_id"] = saved_id
     return JSONResponse(payload)

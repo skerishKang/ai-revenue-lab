@@ -129,7 +129,8 @@ class _Model:
         return None
 
     async def complete_registered_b66_chat_model(
-        self, messages, *, model, additional_system_context=None, model_parameters=None
+        self, messages, *, model, additional_system_context=None, model_parameters=None,
+        product_tier="free", verified_identity_tier=None,
     ):
         self.calls.append([dict(m) for m in messages])
         if self.delay:

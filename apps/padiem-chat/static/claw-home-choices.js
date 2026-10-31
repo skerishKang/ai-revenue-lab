@@ -93,9 +93,14 @@
       "pending_pc_expired", "canonical_consent_unavailable",
       "canonical_consent_unconfirmed", "canonical_challenge_unavailable",
       "canonical_challenge_invalid", "pc_delivery_unconfirmed",
+      // #3099: the canonical Broker already holds an ACTIVE binding for this
+      // device. Keep the exact code so the owner sees "already registered"
+      // instead of a generic failure or a credential timeout.
+      "duplicate_device_binding",
     ]);
 
     async function approveReadyPc(requestRef) {
+      let alreadyRegistered = false;
       try {
         // Existing authenticated, same-origin/CSRF-guarded owner POST contract.
         let response;
@@ -126,6 +131,14 @@
             // Diagnostic body unavailable; preserve the HTTP status and reject.
           }
           pcStage("approve_denied_" + safeCode);
+          if (safeCode === "duplicate_device_binding") {
+            // A definite canonical answer, not a timeout: this device already
+            // has an ACTIVE Broker binding. Guide the owner to check the
+            // existing registration instead of retrying.
+            alreadyRegistered = true;
+            pcNote("이미 등록된 기기입니다. 기존 등록 상태를 확인해 주세요.",
+                   "This computer is already registered. Check its current state.");
+          }
           throw new Error("owner_approval_refused");
         }
         let raw;
@@ -161,12 +174,30 @@
                "PC registration was requested. Checking the actual status.");
         const check = document.getElementById("clawComputerDeviceStatusButton");
         if (check && !check.disabled) check.click();
+        return true;
       } catch {
         pcStage("approve_failed");
-        pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
+        if (!alreadyRegistered) pcNote("PC 연결 요청이 완료되지 않았습니다. 자동 재시도하지 않습니다.",
                "The PC connection request did not complete. It will not retry automatically.");
+        return false;
       } finally {
         pcApprovalPending = false;
+      }
+    }
+
+    // The intermediate handoff page owns no approval authority. It only learns
+    // that THIS tab finished the one approve attempt, so it can close itself
+    // after the settlement instead of guessing from the app launch. The reply
+    // carries the same opaque request ref the offer arrived with.
+    function replyPcSettlement(requestRef, approved) {
+      if (!pcChannel) return;
+      try {
+        pcChannel.postMessage({
+          type: approved ? "pc_offer_approved" : "pc_offer_failed",
+          request_ref: requestRef,
+        });
+      } catch {
+        // The page closes on its own timeout; nothing else may be inferred.
       }
     }
 
@@ -188,12 +219,19 @@
       pcIntent.used = true;
       pcIntent = null;
       if (!valid) {
+        // No approval can run for this offer in this tab, so the handoff page
+        // must not wait forever: it is told the attempt failed and closes.
         pcStage("offer_context_rejected");
+        replyPcSettlement(data.request_ref, false);
         return;
       }
       pcStage("approve_post_dispatch");
       pcApprovalPending = true;
-      void approveReadyPc(data.request_ref);
+      void approveReadyPc(data.request_ref).then((approved) => {
+        replyPcSettlement(data.request_ref, approved === true);
+      }).catch(() => {
+        replyPcSettlement(data.request_ref, false);
+      });
     }
 
     function startPcConnectionFromOriginalClick() {
@@ -333,48 +371,84 @@
       }
     });
 
-    const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
-    const statusText = document.getElementById("clawComputerLiveStatus");
-    deviceStatus?.addEventListener("click", async () => {
-      if (!isClawHome() || !statusText || deviceStatus.disabled) return;
-      // Use the SAME existing, owner-scoped GET endpoint as the Claw device
-      // manager; this is status-only and cannot issue a pairing or task grant.
-      const en = document.documentElement.lang === "en";
-      const show = (ko, english) => {
-        statusText.textContent = en ? english : ko;
-        statusText.hidden = false;
-      };
-      deviceStatus.disabled = true;
-      show("컴퓨터 연결 상태를 확인하고 있습니다.", "Checking your computer connection.");
-      try {
-        const response = await fetch("/api/claw/local-access/devices", {
-          method: "GET", credentials: "same-origin", cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
-        if (response.status === 401 || response.status === 403) {
-          show("먼저 로그인해 주세요.", "Please sign in first.");
-        } else if (!response.ok) {
-          show("컴퓨터 연결을 아직 확인할 수 없습니다.", "Computer connection is not yet available.");
-        } else {
-          const raw = await response.text();
-          if (raw.length > 32768) throw new Error("invalid device response");
-          const data = JSON.parse(raw);
-          if (data?.ok !== true || data?.available !== true ||
-              data?.ownerScoped !== true || !Array.isArray(data.devices)) {
-            throw new Error("unverified device response");
-          }
-          const count = data.devices.length;
-          show(
-            count ? "승인된 컴퓨터 " + count + "대가 있습니다. 작업 시 별도 승인이 필요합니다." : "아직 승인된 컴퓨터가 없습니다.",
-            count ? count + " approved computer(s). Tasks still require approval." : "No approved computers yet.",
-          );
-        }
-      } catch (_) {
-        show("컴퓨터 연결 상태를 확인하지 못했습니다.", "Could not verify computer connection.");
-      } finally {
-        deviceStatus.disabled = false;
-      }
-    });
+  // #5555: the Connectors screen and the Claw home share the same computer
+  // card, so the same owner-scoped status readback serves both.
+  const connectorsSurfaceOpen = () => {
+    try {
+      const view = document.getElementById("connectorsView");
+      return Boolean(view && !view.hidden && view.getClientRects().length > 0);
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const deviceStatus = document.getElementById("clawComputerDeviceStatusButton");
+  const statusText = document.getElementById("clawComputerLiveStatus");
+  // #5553: this card and the composer control show the SAME computer
+  // connection state. The shared state module owns the classification and
+  // reads the existing device directory snapshot, so this card opens no
+  // connection of its own and the two surfaces cannot disagree.
+  const COMPUTER_STATE_COPY = {
+    connected: ["연결된 PC가 있습니다.", "A PC is connected."],
+    connecting: ["컴퓨터 연결 상태를 확인하는 중입니다.", "Checking the computer connection status."],
+    disconnected: ["연결된 PC가 없습니다.", "No PC is connected."],
+    unavailable: ["컴퓨터 연결 상태를 확인하지 못했습니다. 다시 시도해 주세요.", "The computer connection status could not be confirmed. Please retry."],
+    preparing: ["컴퓨터 연결 기능은 아직 준비 중입니다.", "The computer connection feature is not available yet."],
+  };
+  // The four connector states come from the shared vocabulary, so this card,
+  // the Claw tiles and the composer chip say the same line for the same
+  // state. The one static line in the card is retired as soon as the live
+  // state is written — one card never shows two different truths.
+  const VOCAB_STATE = { connected: "connected", connecting: "checking", disconnected: "disconnected", unavailable: "failed" };
+  function renderComputerState(state) {
+    if (!statusText || typeof state !== "string") return;
+    const copy = COMPUTER_STATE_COPY[state];
+    if (!copy) return;
+    const en = document.documentElement.lang === "en";
+    const vocab = window.PadiemConnectorVocabulary;
+    const key = VOCAB_STATE[state];
+    statusText.textContent = vocab && key ? (vocab.status(key) || (en ? copy[1] : copy[0])) : (en ? copy[1] : copy[0]);
+    statusText.hidden = false;
+    const card = document.getElementById("connectorComputerCard");
+    if (card) {
+      card.dataset.connectorStatus = state;
+      const staticLine = card.querySelector(".capability-read");
+      if (staticLine) staticLine.hidden = true;
+    }
+  }
+  function refreshComputerConnectionState() {
+    const shared = window.PadiemComputerConnectionState;
+    if (shared && typeof shared.current === "function") {
+      const detail = shared.current();
+      if (detail && typeof detail.state === "string") renderComputerState(detail.state);
+      return;
+    }
+    renderComputerState("connecting");
+  }
+  // The card follows the shared state, and asking for a re-read only
+  // triggers the EXISTING directory control.
+  window.addEventListener("padiem:computer-connection", (event) => {
+    const detail = event && event.detail ? event.detail : null;
+    renderComputerState(detail && typeof detail.state === "string" ? detail.state : "connecting");
+  });
+  deviceStatus?.addEventListener("click", () => {
+    if (!connectorsSurfaceOpen() && !isClawHome()) return;
+    const shared = window.PadiemComputerConnectionState;
+    if (shared && typeof shared.requestRead === "function") shared.requestRead();
+    refreshComputerConnectionState();
+  });
+  // The Connectors screen shows the live state without a click. The re-read is
+  // the existing directory control's own read, so no new endpoint and no second
+  // reader appear.
+  const connectorsShell = document.querySelector(".app-shell");
+  if (connectorsShell) {
+    new MutationObserver(() => {
+      if (!connectorsSurfaceOpen()) return;
+      const shared = window.PadiemComputerConnectionState;
+      if (shared && typeof shared.requestRead === "function") shared.requestRead();
+      refreshComputerConnectionState();
+    }).observe(connectorsShell, { attributes: true, attributeFilter: ["data-state"] });
+  }
   }
 
   if (document.readyState === "loading") {

@@ -362,8 +362,6 @@ class P01EngineOrchestrationClient:
                         event = orchestration_event_from_public(record["event"])
                     except (OrchestrationEventError, ValueError, TypeError) as exc:
                         raise fail("p01_stream_invalid_event") from exc
-                    if len(stream_events) >= 128:
-                        raise fail("p01_stream_event_budget")
                     if not stream_events:
                         if event.sequence != 1 or event.kind is not OrchestrationEventKind.RUN_STARTED:
                             raise fail("p01_stream_missing_start")
@@ -408,7 +406,14 @@ class P01EngineOrchestrationClient:
             engine_code = None
             if isinstance(exc.metadata, Mapping):
                 candidate = exc.metadata.get("engine_code")
-                if isinstance(candidate, str) and candidate in P01_FAILURE_DETAIL_TOOL_STAGES:
+                # #5015 follow-up: the decoder already bounded this identifier
+                # from the Engine's own error line. Limiting classification to
+                # tool stages made every provider failure on the live lane look
+                # like a generic downstream execution fault.
+                if (
+                    isinstance(candidate, str)
+                    and _BOUNDED_ENGINE_ERROR_CODE_RE.fullmatch(candidate)
+                ):
                     engine_code = candidate
             raise P01AdapterError(
                 "p01_engine_stream_failed",

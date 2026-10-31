@@ -142,11 +142,12 @@ async def web_xlsx_start_p01(request: Request) -> Response:
             emitter=refusal_emitter,
         )
         return _error(409, "web_xlsx_p01_pause_refused")
-    except Exception:
+    except Exception as exc:
         # Preserve uncertain reservation; browser must GET status, never retry POST.
         emit_dispatch_event(
             stage=STAGE_DISPATCH_UNKNOWN, pause_projected=False,
             reservation="retained", emitter=refusal_emitter,
+            engine_code=type(exc).__name__,
         )
         return _error(503, "web_xlsx_p01_dispatch_unknown")
     emit_dispatch_event(

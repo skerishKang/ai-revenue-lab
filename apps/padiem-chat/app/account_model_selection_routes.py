@@ -74,22 +74,50 @@ async def admin_state(request: Request, user_id: str) -> bool | None:
     return None
 
 
+def highest_available_tier(tiers: list[str], admin: bool | None) -> str | None:
+    """The tier this account may actually use right now, highest first.
+
+    #5222: an account with no stored preference, or one whose stored
+    preference it may no longer use, falls back to the tier it really has
+    instead of the Free tier. An administrator's highest tier is the
+    administrator lane; an ordinary member's highest tier is its own
+    server-verified grade.
+
+    The verified grade is the ceiling, not a floor: the user may still pick
+    any lower tier. An administrator authority that could not be confirmed is
+    NOT an administrator lane, so that lane is never presented as executable
+    before it is verified.
+    """
+    if admin is True:
+        return "admin"
+    if tiers:
+        return tiers[-1]
+    return None
+
+
 def _selection_payload(
     selection: dict[str, str] | None,
     tiers: list[str],
     admin: bool | None,
 ) -> dict[str, object]:
     stored_tier = selection["tier"] if selection else None
+    default_tier = highest_available_tier(tiers, admin)
     restorable = None
     if stored_tier in tiers:
         restorable = stored_tier
     elif stored_tier == "admin" and admin is True:
         restorable = "admin"
+    if restorable is None:
+        # No stored preference, or a preference this account may no longer
+        # use: the account's own highest available tier is the default. This
+        # is derived from the server-verified grade, never from a stored row.
+        restorable = default_tier
     return {
         "ok": True,
         "selection": selection,
         "stored_tier": stored_tier,
         "restorable_tier": restorable,
+        "default_tier": default_tier,
         "allowed_tiers": tiers,
         "admin_available": admin,
     }

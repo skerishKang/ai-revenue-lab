@@ -7,6 +7,8 @@ shared Padiem AI Core.
 
 from __future__ import annotations
 
+from app.pc_tools_turn import CatalogToolCapabilities
+
 import json
 from typing import Any, Callable
 from urllib.parse import urlparse
@@ -44,8 +46,9 @@ from app.cloudflare_request_body import (
     read_bounded_worker_request_body,
 )
 from app.cloudflare_transport import (
-    CloudflareB14ServiceBindingTransport,
+    b14_upstream_from_bindings,
     build_b14_execution_configs,
+    build_b14_transport,
 )
 from app.drive_case_pdf_binary import B67_CASE_PDF_BINARY_PATH
 from app.engine_composition import EngineServices
@@ -165,7 +168,7 @@ def _web_runtime_config_for_env(env: Any) -> WebRuntimeConfig:
     """
 
     timeout_raw = _env_text(env, ENGINE_WEB_TIMEOUT_SECONDS_ENV)
-    timeout = 15.0 if timeout_raw is None else float(timeout_raw)
+    timeout = 30.0 if timeout_raw is None else float(timeout_raw)
     return WebRuntimeConfig(
         provider=_env_text(env, ENGINE_WEB_PROVIDER_ENV) or "off",
         firecrawl_api_key=_env_text(env, ENGINE_FIRECRAWL_API_KEY_ENV),
@@ -192,7 +195,7 @@ def _engine_web_provider_for_env(env: Any):
         return TinyFishDaumPriorityWebProvider(
             tinyfish_key=_env_text(env, ENGINE_TINYFISH_API_KEY_ENV),
             daum_key=_env_text(env, ENGINE_DAUM_REST_API_KEY_ENV),
-            timeout_seconds=15.0 if timeout_raw is None else float(timeout_raw),
+            timeout_seconds=30.0 if timeout_raw is None else float(timeout_raw),
             daum_search_sort=_env_text(env, ENGINE_DAUM_SEARCH_SORT_ENV) or "accuracy",
             transport=transport,
         )
@@ -421,15 +424,18 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             tool_execution=ToolExecutionEngineService(tool_binding_resolver=None),
         )
 
-    transport = CloudflareB14ServiceBindingTransport(
+    b14_upstream = b14_upstream_from_bindings(env)
+    transport = build_b14_transport(
         binding=binding,
         request_factory=Request,
-        # B14 spends platform-owned Provider credentials on its catalog
-        # execution lane; prove this server-to-server caller before dispatch.
+        # B14 spends platform-owned Provider credentials on this lane.
+        # The proof binds this exact body to this deployment.
         proof_secret=await _resolve_b14_proof_secret(env),
+        upstream=b14_upstream,
     )
     completed_config, stream_config = build_b14_execution_configs(
         timeout_seconds=_b14_timeout_seconds_for_env(env),
+        upstream=b14_upstream,
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)
@@ -460,6 +466,8 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=OrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_streaming_runtime_factory=streaming_runtime_factory,
+            pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             # #4379: the durable ledger owns the tool payloads, so a long run
@@ -744,11 +752,18 @@ class Default(WorkerEntrypoint):
         services = await self.engine_services_factory(self.env)
 
         if path == ORCHESTRATION_STREAM_PATH:
+            # Optional presentation protocol, never execution authority.
+            progress_options = (
+                {"pc_progress": True}
+                if headers is not None and headers.get("X-Padiem-PC-Progress") == "1"
+                else {}
+            )
             prepared = await services.orchestration.prepare_stream(
                 method=method,
                 path=path,
                 content_type=content_type,
                 body=body,
+                **progress_options,
             )
             if isinstance(prepared, ServiceResponse):
                 return _json_response(prepared)

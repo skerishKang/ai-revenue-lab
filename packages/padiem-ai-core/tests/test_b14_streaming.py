@@ -13,6 +13,7 @@ from padiem_ai_core.b14_execution import (
     B14RoutingOptions,
 )
 from padiem_ai_core.b14_streaming import B14StreamingClient
+from padiem_ai_core.tool_channel import ToolDefinition
 
 
 BASE_URL = "https://b14.internal"
@@ -156,10 +157,11 @@ def test_comments_and_sse_metadata_are_ignored():
     "req",
     [
         request(model="b14/auto"),
-        request(routing=B14RoutingOptions(allow_external_fallback=True)),
     ],
 )
 def test_unsupported_stream_policy_fails_before_network(req: B14ChatRequest):
+    """B7: the retired auto id is refused; B5 removed the fallback knob, so
+    there is no routing option left that can disqualify a stream request."""
     calls = 0
 
     async def handler(http_request: httpx.Request) -> httpx.Response:
@@ -358,6 +360,23 @@ def test_fragmented_single_oversize_sse_frame_fails_closed():
         collect(client, request())
     assert err.value.code == "upstream_response_too_large"
 
+
+def test_default_stream_frame_above_one_mib_reaches_the_final_record():
+    content = "x" * (1024 * 1024 + 1)
+    frame = sse(chunk_payload(content=content))
+
+    async def handler(req):
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([frame[:500_000], frame[500_000:], b"data: [DONE]\n\n"]),
+        )
+
+    events = collect(B14StreamingClient(
+        B14ExecutionConfig(BASE_URL), transport=httpx.MockTransport(handler)
+    ), request())
+    assert "".join(e.delta_content or "" for e in events) == content
+    assert events[-1].done is True
+
 def test_timeout_and_transport_errors_are_normalized():
     async def timeout_handler(req: httpx.Request) -> httpx.Response:
         raise httpx.ReadTimeout("secret timeout detail", request=req)
@@ -515,3 +534,267 @@ def test_a_plain_streaming_routing_is_supported():
     )
     assert [event.delta_content for event in events if event.delta_content] == ["A"]
     assert events[-1].done is True
+
+
+# #5573 slice 3-B-1: the opt-in P01 events added by B14 #5697.
+def tool_request() -> B14ChatRequest:
+    return B14ChatRequest(
+        messages=({"role": "user", "content": "안녕하세요"},),
+        model="google/gemini-3.1-flash-lite",
+        tools=(ToolDefinition(name="pc_files"),),
+        tool_choice="auto",
+    )
+
+
+def named_sse(name: str, payload: dict) -> bytes:
+    return b"event: " + name.encode() + b"\n" + sse(payload)
+
+
+def tool_stream_client(raw: bytes):
+    stream = ChunkStream([raw[:17], raw[17:53], raw[53:]])
+    sent = []
+
+    async def handler(req: httpx.Request) -> httpx.Response:
+        sent.append(req.content)
+        return httpx.Response(
+            200, headers={"content-type": "text/event-stream"}, stream=stream
+        )
+
+    return (
+        B14StreamingClient(B14ExecutionConfig(BASE_URL), transport=httpx.MockTransport(handler)),
+        stream,
+        sent,
+    )
+
+
+@pytest.mark.parametrize("ending", [b"\n\n", b""])
+def test_b14_google_tool_call_fixture_parses_complete_arguments_and_done(ending):
+    # Exact frames from B14 test_google_tools_emit_tool_call_event (#5697).
+    raw = (
+        b'event: tool_call\ndata: {"id":"call_native","name":"pc_files","arguments":"{\\"plan\\":\\"files_list\\"}","index":0}\n\n'
+        b'event: done\ndata: {"finish_reason":"tool_calls"}' + ending
+    )
+    client, stream, _ = tool_stream_client(raw)
+    events = collect(client, tool_request())
+    assert len(events) == 2
+    assert events[0].tool_call.to_public_dict() == {
+        "id": "call_native", "name": "pc_files",
+        "arguments": {"plan": "files_list"}, "index": 0,
+    }
+    assert events[0].delta_content is None and not events[0].done
+    assert events[1].done and events[1].finish_reason == "tool_calls"
+    assert events[1].tool_call is None
+    assert stream.closed
+
+
+def test_a_streamed_call_signature_is_preserved_for_the_follow_up():
+    client, stream, _ = tool_stream_client(
+        named_sse("tool_call", {
+            "id": "call_1", "name": "pc_files", "arguments": '{"plan":"files_list"}',
+            "index": 0, "signature": "sig_native_abc123",
+        })
+        + named_sse("done", {"finish_reason": "tool_calls"})
+    )
+
+    events = collect(client, tool_request())
+
+    assert events[0].tool_call.signature == "sig_native_abc123"
+    assert events[0].tool_call.to_public_dict()["signature"] == "sig_native_abc123"
+    assert stream.closed
+
+
+def test_a_malformed_streamed_signature_is_refused():
+    for signature in (123, "", "x" * 65_537):
+        client, stream, _ = tool_stream_client(
+            named_sse("tool_call", {
+                "id": "call_1", "name": "pc_files", "arguments": "{}",
+                "index": 0, "signature": signature,
+            })
+        )
+
+        with pytest.raises(B14ExecutionError) as exc:
+            collect(client, tool_request())
+        assert exc.value.code == "malformed_upstream"
+        assert stream.closed
+
+
+@pytest.mark.parametrize("finish_reason", ["stop", "length", "tool_calls"])
+def test_tool_stream_done_preserves_finish_reason_and_last_text_route(finish_reason):
+    client, stream, _ = tool_stream_client(
+        sse(chunk_payload(content="text"))
+        + named_sse("tool_call", {
+            "id": "call_1", "name": "pc_files",
+            "arguments": '{"plan":"files_list"}', "index": 0,
+        })
+        + named_sse("done", {"finish_reason": finish_reason})
+    )
+    events = collect(client, tool_request())
+    assert events[-1].done and events[-1].finish_reason == finish_reason
+    assert events[-1].route == events[0].route
+    assert events[-1].route.selected_model == MODEL
+    assert stream.closed
+
+
+@pytest.mark.parametrize("arguments", [
+    "not-json", "", "[]", "null", "1", '"text"', None, {}, '{"n":NaN}',
+])
+def test_invalid_streamed_tool_arguments_terminate_before_following_events(arguments):
+    client, stream, _ = tool_stream_client(
+        named_sse("tool_call", {
+            "id": "call_1", "name": "pc_files", "arguments": arguments, "index": 0,
+        })
+        + sse(chunk_payload(content="must not arrive"))
+        + named_sse("done", {"finish_reason": "tool_calls"})
+    )
+
+    async def exercise():
+        received = []
+        with pytest.raises(B14ExecutionError) as exc:
+            async for event in client.stream(tool_request()):
+                received.append(event)
+        assert exc.value.code == "malformed_upstream"
+        assert exc.value.upstream_status_code == 200
+        assert received == []
+
+    asyncio.run(exercise())
+    assert stream.closed
+
+
+@pytest.mark.parametrize("name,payload", [
+    ("tool_call", {"id": "call_1", "name": "pc_files", "arguments": "{}", "index": -1}),
+    ("tool_call", {"id": "call_1", "name": "pc_files", "arguments": "{}", "index": True}),
+    ("tool_call", {"id": None, "name": "pc_files", "arguments": "{}", "index": 0}),
+    ("done", {}),
+    ("done", {"finish_reason": 1}),
+])
+def test_invalid_tool_event_metadata_is_malformed(name, payload):
+    client, stream, _ = tool_stream_client(named_sse(name, payload))
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(client, tool_request())
+    assert exc.value.code == "malformed_upstream"
+    assert stream.closed
+
+
+@pytest.mark.parametrize("name,payload", [
+    ("tool_call", {"id": "call_1", "name": "pc_files", "arguments": "{}", "index": 0}),
+    ("done", {"finish_reason": "stop"}),
+])
+def test_no_tools_keeps_named_events_unsupported(name, payload):
+    client, stream, _ = tool_stream_client(named_sse(name, payload))
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(client, request())
+    assert exc.value.code == "malformed_upstream"
+    assert stream.closed
+
+
+def test_stream_tools_request_bytes_and_legacy_public_objects_are_unchanged():
+    raw = sse(chunk_payload(content="hello")) + b"data: [DONE]\n\n"
+    client, _, bodies = tool_stream_client(raw)
+    events = collect(client, request())
+    legacy_body = '{"model":"openrouter/free","messages":[{"role":"user","content":"안녕하세요"}],"stream":true}'.encode()
+    assert bodies == [legacy_body]
+    expected_route = {
+        "request_id": "b14stream_1", "route_mode": "manual",
+        "selected_provider": "OpenRouter", "selected_model": MODEL,
+        "selected_upstream_model": MODEL, "selected_route_id": f"openrouter:{MODEL}",
+        "actual_response_model": None, "reason_codes": [], "fallback_used": False,
+        "attempt_count": 1, "route_evidence_status": "live_streaming_preview",
+        "estimated_krw": None,
+    }
+    expected = [
+        {
+            "response_id": "stream_1" if not done else None,
+            "model": MODEL if not done else None,
+            "delta_content": "hello" if not done else None, "finish_reason": None,
+            "usage": {"input_tokens": None, "output_tokens": None, "total_tokens": None},
+            "route": expected_route, "done": done,
+        }
+        for done in (False, True)
+    ]
+    actual = [event.to_public_dict() for event in events]
+    assert actual == expected
+    assert json.dumps(actual).encode() == json.dumps(expected).encode()
+
+    # Explicit empty tools/omitted tool_choice must produce the same wire bytes.
+    collect(client, B14ChatRequest(messages=request().messages, model=MODEL, tools=()))
+    assert bodies[-1] == legacy_body
+    collect(client, tool_request())
+    assert bodies[-1] == (
+        '{"model":"google/gemini-3.1-flash-lite","messages":[{"role":"user","content":"안녕하세요"}],'
+        '"tools":[{"type":"function","function":{"name":"pc_files","parameters":{"type":"object","properties":{}}}}],'
+        '"tool_choice":"auto","stream":true}'
+    ).encode()
+
+
+def test_tool_call_without_completion_is_not_a_successful_stream():
+    client, stream, _ = tool_stream_client(named_sse("tool_call", {
+        "id": "call_1", "name": "pc_files", "arguments": "{}", "index": 0,
+    }))
+    with pytest.raises(B14ExecutionError) as exc:
+        collect(client, tool_request())
+    assert exc.value.code == "malformed_upstream"
+    assert stream.closed
+
+
+def test_streamed_tool_call_public_arguments_remain_json_serializable():
+    arguments = {"filter": {"extensions": ["txt", "md"]}, "items": [{"nested": {"ok": True}}]}
+    client, _, _ = tool_stream_client(
+        named_sse("tool_call", {
+            "id": "call_1", "name": "pc_files",
+            "arguments": json.dumps(arguments), "index": 1,
+        }) + named_sse("done", {"finish_reason": "tool_calls"})
+    )
+    event = collect(client, tool_request())[0]
+    public = json.loads(json.dumps(event.to_public_dict()))
+    assert public["tool_call"]["arguments"] == arguments
+    assert public["tool_call"]["index"] == 1
+
+
+def _client_for(raw: bytes):
+    return B14StreamingClient(
+        B14ExecutionConfig(BASE_URL),
+        transport=httpx.MockTransport(lambda req: httpx.Response(
+            200, headers={"content-type": "text/event-stream"},
+            stream=ChunkStream([raw]),
+        )),
+    )
+
+
+def test_a_signed_text_chunk_reaches_the_consumer_with_its_token():
+    """#4727: the turn's own answer text can carry a continuation token too."""
+    signed = chunk_payload(content="확인")
+    signed["signature"] = "sig_turn_xyz"
+    raw = (
+        sse(signed)
+        + sse(chunk_payload(content="하겠습니다"))
+        + sse(chunk_payload(finish_reason="stop"))
+        + b"data: [DONE]\n\n"
+    )
+
+    events = collect(_client_for(raw), request())
+
+    assert events[0].signature == "sig_turn_xyz"
+    assert events[0].to_public_dict()["signature"] == "sig_turn_xyz"
+    # An unsigned chunk keeps the exact event and projection it always had.
+    assert events[1].signature is None
+    assert "signature" not in events[1].to_public_dict()
+    # The turn's merge rule is the last token it actually saw, not the last frame.
+    assert [e.signature for e in events if e.signature is not None] == ["sig_turn_xyz"]
+
+
+def test_a_malformed_text_token_is_refused():
+    for signature in (123, "", "x" * 65_537):
+        payload = chunk_payload(content="확인")
+        payload["signature"] = signature
+
+        with pytest.raises(B14ExecutionError) as exc:
+            collect(_client_for(sse(payload)), request())
+
+        assert exc.value.code == "malformed_upstream"
+
+
+def test_a_completion_event_cannot_carry_a_token():
+    from padiem_ai_core.b14_streaming import B14StreamEvent
+
+    with pytest.raises(ValueError):
+        B14StreamEvent(done=True, finish_reason="stop", signature="sig_turn_xyz")

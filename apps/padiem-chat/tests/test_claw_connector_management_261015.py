@@ -19,7 +19,9 @@ def test_existing_connectors_page_has_explicit_connect_and_remove_actions():
     assert 'src="./claw-connector-management.js"' in HTML
     assert HTML.index('src="./app.js"') < HTML.index('src="./claw-connector-management.js"')
     assert 'data-google-connector-connect="google-drive"' in HTML
-    assert '연결 삭제는 계정 인증을 제거하는 것' in HTML
+    # #5555 owner decision 2026-10-23: the header disclosure (and the long
+    # disconnect explanation) is removed from the screen entirely.
+    assert '연결 삭제는 계정 인증을 제거하는 것' not in HTML
     assert 'id="connectorComputerCard"' in HTML  # unchanged Windows area
 
 
@@ -48,7 +50,9 @@ def test_connection_management_never_forges_on_off_or_auto_deletes():
     assert 'data-connection-state =' not in MANAGER
     assert 'localStorage' not in MANAGER
     assert 'data-claw-connection="pc"' not in MANAGER
-    assert 'Google Drive 일시 중지는 아직 준비 중' in CHIP
+    assert 'Google 권한은 잠시 멈출 수 없어요' in CHIP
+    assert 'https://myaccount.google.com/connections' in CHIP
+    assert 'rel="noopener noreferrer"' in CHIP
     assert 'if(signedIn())void disconnectDrive();' not in CHIP
 
 

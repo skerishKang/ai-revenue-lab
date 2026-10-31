@@ -950,3 +950,132 @@ def test_worker_handler_and_cron_source_are_present_but_not_activated():
     assert "BACKGROUND_SCHEDULER_SOURCE_READY = True" in discovery_source
     assert "REAL_CLOUD_CRON_REGISTRATION = False" in discovery_source
     assert "PRODUCTION_SCHEDULER_ACTIVATION = False" in discovery_source
+
+# ---------------------------------------------------------------------------
+# #5034 — the scheduled lane must reach the existing Web Push delivery seam
+# ---------------------------------------------------------------------------
+
+
+_PUSH_KEYS = (
+    "PADIEM_CHAT_PUBLIC_BASE_URL",
+    "PADIEM_PUSH_VAPID_PRIVATE_KEY",
+    "PADIEM_PUSH_VAPID_PUBLIC_KEY",
+    "PADIEM_PUSH_VAPID_SUBJECT",
+)
+
+
+def _push_env(db, *, origin="https://chat.padiem.net", vapid=True):
+    from app.worker_config import (
+        D1_BINDING_NAME,
+        IDENTITY_AUTHORITY_SERVICE_BINDING_NAME,
+    )
+
+    values = {
+        D1_BINDING_NAME: db,
+        IDENTITY_AUTHORITY_SERVICE_BINDING_NAME: _IdentityBinding(),
+        "PADIEM_CHAT_AUTOMATION_SCHEDULER_ENABLED": True,
+    }
+    if origin is not None:
+        values["PADIEM_CHAT_PUBLIC_BASE_URL"] = origin
+    if vapid:
+        values["PADIEM_PUSH_VAPID_PRIVATE_KEY"] = "private-key"
+        values["PADIEM_PUSH_VAPID_PUBLIC_KEY"] = "public-key"
+        values["PADIEM_PUSH_VAPID_SUBJECT"] = "mailto:ops@padiem.net"
+    return SimpleNamespace(**values)
+
+
+def test_the_push_parts_come_from_the_reviewed_worker_bindings(monkeypatch):
+    module = _load_worker(monkeypatch)
+    monkeypatch.setattr(module, "build_push_transport", lambda: object())
+
+    store, sender, scope = module._push_delivery_parts(_push_env(object()), object())
+
+    assert isinstance(store, module.D1ClawPushSubscriptionStore)
+    assert sender is not None and sender.configured is True
+    assert scope == "https://chat.padiem.net/"
+
+
+def test_no_reviewed_origin_wires_no_push_parts(monkeypatch):
+    module = _load_worker(monkeypatch)
+    monkeypatch.setattr(module, "build_push_transport", lambda: object())
+
+    assert module._push_delivery_parts(_push_env(object(), origin=None), object()) == (
+        None, None, "",
+    )
+
+
+def test_a_missing_vapid_authority_is_never_a_delivery_claim(monkeypatch):
+    module = _load_worker(monkeypatch)
+    monkeypatch.setattr(module, "build_push_transport", lambda: object())
+
+    store, sender, scope = module._push_delivery_parts(
+        _push_env(object(), vapid=False), object(),
+    )
+
+    # The registry stays wired so the existing seam reports not_configured for
+    # every device attempt instead of reporting a send that never happened.
+    assert store is not None and sender is None and scope == "https://chat.padiem.net/"
+
+
+def test_a_d1_binding_absence_wires_nothing(monkeypatch):
+    module = _load_worker(monkeypatch)
+
+    assert module._push_delivery_parts(_push_env(None), None) == (None, None, "")
+
+
+async def test_worker_source_forwards_the_push_parts_to_the_composition(monkeypatch):
+    module = _load_worker(monkeypatch)
+    seen: dict[str, object] = {}
+
+    async def _capturing_compose(**kwargs):
+        seen.update(kwargs)
+        return "receipt"
+
+    sentinel_store, sentinel_sender = object(), object()
+    monkeypatch.setattr(
+        module, "compose_scheduled_automation_execution", _capturing_compose
+    )
+    monkeypatch.setattr(
+        module,
+        "_push_delivery_parts",
+        lambda env, db: (sentinel_store, sentinel_sender, "https://chat.padiem.net/"),
+    )
+    monkeypatch.setattr(module, "build_claw_p01_adapter", lambda env, **kwargs: object())
+
+    receipt = await module.run_scheduled_automation_source(_push_env(_route_db()), now=NOW)
+
+    assert receipt == "receipt"
+    assert seen["push_store"] is sentinel_store
+    assert seen["push_sender"] is sentinel_sender
+    assert seen["push_scope"] == "https://chat.padiem.net/"
+
+
+async def test_an_injected_lane_without_push_parts_still_runs_the_job(monkeypatch):
+    module = _load_worker(monkeypatch)
+    seen: dict[str, object] = {}
+
+    async def _capturing_compose(**kwargs):
+        seen.update(kwargs)
+        return "receipt"
+
+    monkeypatch.setattr(
+        module, "compose_scheduled_automation_execution", _capturing_compose
+    )
+
+    receipt = await module.run_scheduled_automation_source(
+        _worker_env(_route_db()),
+        now=NOW,
+        execution_ports=SimpleNamespace(
+            adapter=_RouteRecordingAdapter(),
+            owner_resolver=resolver(),
+            history_store=RecordingHistoryStore(),
+            task_alert_store=RecordingTaskAlertStore(),
+        ),
+    )
+
+    # No push authority is the historical state: the automation pass is
+    # unaffected and the delivery seam reports its own not_configured.
+    assert receipt == "receipt"
+    assert seen["push_store"] is None
+    assert seen["push_sender"] is None
+    assert seen["push_scope"] == ""

@@ -18,6 +18,7 @@ from padiem_ai_core import (
     OrchestrationResult,
 )
 from padiem_ai_core.logical_execution_identity import agent_identity_payload
+from padiem_ai_core.dispatch_preinstruction import render_product_identity_instruction
 from padiem_control_plane.product_tier_routes import (
     ProductTierLabel,
     ProductTierRoutesError,
@@ -42,6 +43,7 @@ from .runs import ClawRun, RunStateError
 
 P01_APP_ID = "b54-padiem-claw"
 P01_AGENT_ID = "b54-padiem-claw"
+PADIEM_CLAW_IDENTITY_INSTRUCTION = render_product_identity_instruction("claw", None)
 # #4379: the P01 run carries no PADIEM execution budget. None declares no
 # total, so the run is bounded by the platform and by cancellation.
 DEFAULT_P01_TIMEOUT_SECONDS: float | None = None
@@ -337,6 +339,7 @@ def _agent_profile(
     *,
     selected_model_id: str | None = None,
     central_route_model_id: str | None = None,
+    identity_tier_id: str | None = None,
 ) -> AgentProfile:
     """Return the conservative B54 product profile consumed by P01.
 
@@ -400,7 +403,12 @@ def _agent_profile(
         id=P01_AGENT_ID,
         title="Padiem Claw",
         description="B54 repository task execution consumer",
-        system_instruction=None,
+        system_instruction=render_product_identity_instruction(
+            "claw",
+            identity_tier_id
+            if identity_tier_id
+            else product_tier.value.removeprefix("Padiem ").lower(),
+        ),
         # Core is the only authority for these two enums (see
         # padiem_ai_core.b14_execution.B14RoutingOptions). Values outside the
         # Core sets are rejected while the B14 routing options are built, i.e.
@@ -488,6 +496,7 @@ class P01RequestFactory:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        identity_tier_id: str | None = None,
     ) -> P01RequestBundle:
         if run.terminal:
             raise P01AdapterError(
@@ -539,6 +548,7 @@ class P01RequestFactory:
                 product_tier or self._product_tier,
                 selected_model_id=selected_model_id,
                 central_route_model_id=central_route_model_id,
+                identity_tier_id=identity_tier_id,
             ),
             messages=({"role": "user", "content": run.intent.task},),
             session_id=run.run_id,
@@ -885,6 +895,7 @@ class P01CoreOrchestrationAdapter:
         pc_drive_query: bool = False,
         pc_files_query: bool = False,
         pc_files_device_id: str | None = None,
+        identity_tier_id: str | None = None,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
     ) -> ClawOrchestrationOutcome:
         try:
@@ -901,6 +912,7 @@ class P01CoreOrchestrationAdapter:
                 pc_drive_query=pc_drive_query,
                 pc_files_query=pc_files_query,
                 pc_files_device_id=pc_files_device_id,
+                identity_tier_id=identity_tier_id,
             )
             projector = ClawOrchestrationProjector(
                 run,

@@ -92,8 +92,8 @@ class _AuthStore:
     async def get_user(self, user_id: str):
         return None
 
-    async def get_conversation(self, user_id: str, conversation_id: str):
-        return None
+    async def get_conversation(self, user_id: str, conversation_id: str, product_scope: str):
+        return {"id": conversation_id} if conversation_id else None
 
 
 def _make_outcome(*, status: str = "completed", answer: str | None = "P01 결과"):
@@ -293,7 +293,8 @@ def test_b66_product_boundary_unchanged() -> None:
 def _make_evidence_outcome():
     outcome = _make_outcome()
     outcome.p01_run_id = "orch_evidence_001"
-    outcome.selected_route_id = "plus.agnes-3.0-flash.v1"
+    # #5484: B14 reports `platform:<provider>/<model>`; the header must carry it.
+    outcome.selected_route_id = "platform:opencode-go/muse-spark-1.3-contributor"
     outcome.provider_attempt_count = 1
     outcome.fallback_used = False
     return outcome
@@ -311,7 +312,10 @@ def test_claw_general_evidence_headers_emitted_only_with_opt_in_marker() -> None
     assert with_marker.status_code == 200
     assert with_marker.headers["x-padiem-claw-run-id"].startswith("run_")
     assert with_marker.headers["x-padiem-orchestration-run-id"] == "orch_evidence_001"
-    assert with_marker.headers["x-padiem-selected-route-id"] == "plus.agnes-3.0-flash.v1"
+    assert (
+        with_marker.headers["x-padiem-selected-route-id"]
+        == "platform:opencode-go/muse-spark-1.3-contributor"
+    )
     assert with_marker.headers["x-padiem-provider-attempts"] == "1"
     assert with_marker.headers["x-padiem-fallback-used"] == "false"
     # Without the exact marker the normal user surface is byte-identical.

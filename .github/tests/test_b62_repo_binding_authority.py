@@ -1,0 +1,126 @@
+import importlib.util
+import json
+import sys
+from pathlib import Path
+import subprocess
+import tomllib
+import pytest
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / '.github/scripts'))
+from b62_repo_binding_authority import binding_diff, inventory, index, verify_expected, BindingAuthorityError
+from b62_cloudflare_production_deploy_config import parse_live_bindings, production_plan, build_production_config
+
+
+def test_actual_declared_inventory_adds_only_the_reviewed_unserved_variable(capsys):
+    rows = json.loads((ROOT/'.github/tests/fixtures/b62_served_binding_inventory_20261026.json').read_text())
+    for row in rows:
+        if row['type'] == 'plain_text': row['text'] = '<synthetic-private-value>'
+    live = parse_live_bindings({'success': True, 'result': {'bindings': rows}})
+    repo_path = ROOT / 'apps/padiem-chat/wrangler.toml'
+    expected, values = production_plan(live, tomllib.loads(repo_path.read_text()))
+    # Three reviewed entries are declared and not yet served, and the reviewed
+    # inventory is what production is answering with today:
+    #   - #5919 declares PC_AGENT_INSTALL_URL in [vars] with an empty value, which
+    #     the pairing handoff reads as "not ready" until a deploy injects the real
+    #     https installer URL.
+    #   - #5923 declares the #5881 file-lane ticket secret; its value is stored by
+    #     the OWNER first and the next exact-main deploy attaches the binding.
+    #   - this change declares PADIEM_CHAT_FILE_LANE_ORIGIN in [vars] with an empty
+    #     value, which the file-lane client reports as "not connected" until a
+    #     deploy injects the COM2 origin.
+    #   - #5573 declares the PC queue switch (PC_QUEUE_BACKEND, PC_QUEUE_ORIGIN)
+    #     and its PC_QUEUE_SERVICE_SECRET secret name. They pair with the #6216
+    #     binding baseline entry and the OWNER-stored secret value: both must be
+    #     live in the same deploy window, because an undeclared live secret is a
+    #     refused removal and a declared missing one fails the served readback.
+    #   - The default-OFF account-comparison route adds two Secrets Store
+    #     bindings, a public key id and an opt-in switch. The production gate
+    #     must verify these exact additions just like every other binding.
+    # Each one is named here as a pending addition - never unexplained drift, and
+    # never a silent removal of something serving traffic. Each returns to an empty
+    # diff as its own deploy lands.
+    assert binding_diff(index(rows), expected) == {
+        'added': [{'name': 'PADIEM_CHAT_FILE_LANE_ORIGIN', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_FILE_LANE_TICKET_SECRET',
+                   'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_KID', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_CLIENT_PRIVATE_JWK', 'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_ENABLED', 'type': 'plain_text'},
+                  {'name': 'PADIEM_CHAT_SHARED_AUTH_COMPARE_STATE_KEY', 'type': 'secrets_store_secret'},
+                  {'name': 'PADIEM_CHAT_SHARED_LOGIN_ENABLED', 'type': 'plain_text'},
+                  {'name': 'PC_AGENT_INSTALL_URL', 'type': 'plain_text'},
+                  {'name': 'PC_QUEUE_BACKEND', 'type': 'plain_text'},
+                  {'name': 'PC_QUEUE_ORIGIN', 'type': 'plain_text'},
+                  {'name': 'PC_QUEUE_SERVICE_SECRET', 'type': 'secret_text'}],
+        'removed': [],
+        'changed': [],
+    }
+    assert '<synthetic-private-value>' not in capsys.readouterr().out
+
+
+def test_binding_exact_readback_detects_target_and_type_changes():
+    expected = index([{'name': 'SERVICE', 'type': 'service', 'service': 'expected'}])
+    verify_expected(expected, expected)
+    for entry in [{'name': 'SERVICE', 'type': 'service', 'service': 'different'}, {'name': 'SERVICE', 'type': 'browser'}]:
+        with pytest.raises(BindingAuthorityError): verify_expected(expected, index([entry]))
+
+
+def test_rollback_job_and_automatic_rollback_are_unchanged():
+    import hashlib, re
+    after = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text(encoding='utf-8')
+    # #5895 (2026-10-27): both rollback paths gained one stdout+step-summary line
+    # naming the version they put into service, so the pinned bytes moved. The
+    # assertions themselves are unchanged: any further edit still goes red.
+    # (2026-10-29): the job gained one env line, TARGET_SHA from the target_sha
+    # guard's normalized output; the Auto-rollback step below is byte-identical.
+    assert hashlib.sha256(after.split('\n  rollback-production-code:',1)[1].encode()).hexdigest() == '26aa913b37cecc5301fef890a1c705e9ea5582f825a89dd1c8cfafc7744c5763'
+    assert hashlib.sha256(re.search(r'      - name: Auto-rollback.*?(?=\n      - name:)',after,re.S).group().encode()).hexdigest() == '4f9afbff0a519c9e5be995bc72bb5020ea68153f7f32221ebdf0ff52984cd532'
+
+
+def test_workflow_uses_private_event_input_and_keeps_exact_main_and_d1_checks():
+    text = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text()
+    w = yaml.safe_load(text); trigger = w.get('on', w.get(True)); inputs = trigger['workflow_dispatch']['inputs']
+    assert 'allow_binding_removal' in inputs and inputs['allow_binding_removal']['default'] is False
+    assert 'set_var' in inputs and 'inputs.set_var' not in text
+    assert not any(n.startswith('attach_') for n in inputs)
+    assert 'activate_claw_public_search' not in inputs
+    assert '--dispatch-event "${GITHUB_EVENT_PATH}"' in text
+    assert 'PREMUTATION_EXACT_MAIN_SHA=PASS' in text
+    assert 'B62_D1_MIGRATION_008_SCHEMA=EXACT' in text
+    assert '--verify-served' in text
+
+
+def test_deploy_output_redaction_never_emits_guard_values():
+    from b62_redact_deploy_output import redact
+    variables = {'PRIVATE_GUARD': 'guard-abcdef-123456', 'MODE': 'b14'}
+    assert 'guard-abcdef-123456' not in redact('diagnostic guard-abcdef-123456\n', variables)
+    assert 'guard-abcdef-123456' not in redact('env.PRIVATE_GUARD ("guard-abcdef-123456")\n', variables)
+    assert 'b14' not in redact('mode b14\n', variables)
+
+
+def test_d1_schema_probes_use_repository_planned_identifiers():
+    text = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text()
+    deploy = yaml.safe_load(text)['jobs']['deploy-production-code']['steps']
+    generate = next(i for i,s in enumerate(deploy) if s.get('name')=='Generate exact production config from live settings')
+    probes = [(i,s) for i,s in enumerate(deploy) if 'db_id=' in s.get('run','')]
+    assert probes
+    for i,step in probes:
+        assert generate < i
+        assert 'b62-planned-d1-bindings.json' in step['run']
+        assert 'b62-settings-before.json' not in step['run']
+
+
+def test_repository_route_table_cannot_capture_worker_build_fields():
+    config = tomllib.loads((ROOT/'apps/padiem-chat/wrangler.toml').read_text())
+    assert config['base_dir'] == '.b66-worker-src'
+    assert config['routes'] == [{'pattern': 'chat.padiem.net', 'custom_domain': True}]
+
+
+def test_normal_deploy_has_no_legacy_live_target_or_variable_prerequisite():
+    text = (ROOT/'.github/workflows/b62-production-code-deploy-gate.yml').read_text()
+    steps = yaml.safe_load(text)['jobs']['deploy-production-code']['steps']
+    legacy = next(s for s in steps if 'deploy-prereq' in s.get('run', ''))
+    assert legacy['if'] == "${{ inputs.mode == 'recover_p01_sse_off' }}"
+

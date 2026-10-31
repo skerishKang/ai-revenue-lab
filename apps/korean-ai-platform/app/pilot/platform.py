@@ -13,6 +13,12 @@ Security boundary
 - redirects disabled; bounded per-phase timeouts; bounded response bytes;
 - missing required secret fails closed with zero upstream calls;
 - secret values are never logged, returned, or stored.
+
+The request-carried credential lane (#5824 PR-3a) lives here too, beside the
+transport guards it reuses. It accepts no platform credential and no
+caller-chosen host: the key comes from the request body, the address comes from
+``app.pilot.user_credential``'s fixed table, and the same byte/timeout/error
+contract applies to both.
 """
 
 from __future__ import annotations
@@ -25,6 +31,8 @@ import uuid
 from typing import Any
 
 import httpx
+
+from app.pilot.malformed_diagnostics import malformed
 
 from app.pilot.errors import (
     KiloFreeRateLimited,
@@ -48,7 +56,9 @@ from app.pilot.owner_model_exclusions import (
     excluded_from_owner_customer_selection,
     free_candidate_excluded_from_execution,
 )
-from app.pilot.stream_types import StreamEvent, StreamUsage
+from app.pilot.stream_types import (
+    StreamEvent, StreamUsage, _pop_sse_frames, _parse_sse_frame, _usage_from_payload,
+)
 from app.pilot.platform_secrets import (
     CredentialSource,
     PlatformProviderSpec,
@@ -58,18 +68,20 @@ from app.pilot.platform_secrets import (
 )
 from app.pilot.redaction import redact_sensitive
 from app.pilot.upstream_answer_contract import UpstreamEmptyAnswer, require_completed_text_answer
+from app.pilot.user_credential import UserCredential
 
 logger = logging.getLogger("korean-ai-platform.pilot.platform")
 
 # Resource guards, never provider/model generation-token limits.
-# Error bodies and individual SSE frames remain tightly bounded at 1MiB.
-MAX_RESPONSE_BYTES = 1024 * 1024
+# Error bodies and individual SSE frames are bounded at 10MiB: what one frame may
+# carry, not what a model may generate (#5734 stage 2).
+MAX_RESPONSE_BYTES = 10 * 1024 * 1024
 # A completed JSON response must be materialized as one dict for existing
-# callers. Use the existing conservative 8MiB maximum as a separate raw-body
-# memory budget (1/16 of the Workers 128MiB isolate), not a 1MiB output cutoff.
+# callers. 32MiB is the buffering window for a response body this platform holds
+# whole in memory (1/4 of the Workers 128MiB isolate), not an output cutoff.
 # Parsed JSON / response serialization can amplify memory; prefer SSE for
 # genuinely unbounded free-form model text.
-MAX_COMPLETED_RESPONSE_BYTES = 8 * 1024 * 1024
+MAX_COMPLETED_RESPONSE_BYTES = 32 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
 
 # All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
@@ -227,7 +239,7 @@ def _log_tokenharbor_rejection(
 
 
 def _raise_upstream_error(
-    status: int, provider_id: str = "", body_text: str = ""
+    status: int, provider_id: str = "", body_text: str = "", *, model_id: str = "unknown"
 ) -> None:
     if status in (401, 403):
         if provider_id == "tokenharbor":
@@ -249,12 +261,12 @@ def _raise_upstream_error(
             raise UpstreamBusyRateLimited()
         raise UpstreamRateLimited()
     if status == 400:
-        raise MalformedUpstreamResponse()
+        raise malformed("upstream_http_400", provider=provider_id, model=model_id, path="http_status")
     if 500 <= status < 600:
         raise UpstreamServerError()
     if 300 <= status < 500:
         raise UpstreamClientError(status)
-    raise MalformedUpstreamResponse()
+    raise malformed("unexpected_http_status", provider=provider_id, model=model_id, path="http_status")
 
 
 def _require_owner_allowed_live_model(
@@ -338,6 +350,115 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
     return bytes(buf)
 
 
+def _signature_as_extra_content(entry: dict[str, Any]) -> dict[str, Any]:
+    """Move B14's canonical ``signature`` onto Google's compatible field.
+
+    The same opaque token travels at ``extra_content.google.thought_signature``
+    whether it belongs to a tool call or to the assistant turn's own answer
+    text. The caller's object is never mutated.
+    """
+
+    clean = {key: value for key, value in entry.items() if key != "signature"}
+    extra = clean.get("extra_content")
+    extra = dict(extra) if isinstance(extra, dict) else {}
+    google = extra.get("google")
+    google = dict(google) if isinstance(google, dict) else {}
+    google["thought_signature"] = entry["signature"]
+    extra["google"] = google
+    clean["extra_content"] = extra
+    return clean
+
+
+def _openai_compatible_messages(
+    messages: list[dict[str, Any]], platform_provider_id: str,
+) -> list[dict[str, Any]]:
+    """Project B14's opaque signature onto an OpenAI-compatible wire.
+
+    B14's canonical field is ``signature`` (#4727), carried on a tool call and
+    on the assistant turn that answered with text. Google's compatible endpoint
+    expects the same value at ``extra_content.google.thought_signature``; every
+    other provider never saw this field and receives the exact message it
+    received before it existed. A call or turn without a signature keeps its
+    shape, and an unsigned message is passed through as the same object.
+    """
+
+    def project(entry: dict[str, Any]) -> dict[str, Any]:
+        if platform_provider_id == "google":
+            return _signature_as_extra_content(entry)
+        return {key: value for key, value in entry.items() if key != "signature"}
+
+    projected: list[dict[str, Any]] = []
+    for message in messages:
+        if not isinstance(message, dict):
+            projected.append(message)
+            continue
+        if message.get("role") == "tool" and "execution" in message:
+            # A compatible tool message has no outcome field, so the executor's
+            # status stays inside B14 and the provider receives the text its own
+            # schema allows. The native wire is the lane that carries it.
+            message = {
+                key: value for key, value in message.items() if key != "execution"
+            }
+        calls = message.get("tool_calls")
+        if isinstance(calls, list) and any(
+            isinstance(call, dict) and "signature" in call for call in calls
+        ):
+            message = {
+                **message,
+                "tool_calls": [
+                    project(call) if isinstance(call, dict) else call
+                    for call in calls
+                ],
+            }
+        if "signature" in message:
+            message = project(message)
+        projected.append(message)
+    return projected
+
+
+def _canonicalize_google_compat_signatures(response_data: dict[str, Any], *, model_id="unknown") -> None:
+    """Move a Google compatible response's signature onto B14's own field."""
+
+    from app.pilot.tool_channel import MAX_TOOL_SIGNATURE_CHARS
+
+    def canonical(entry: Any) -> None:
+        """One message or one tool call: provider field in, canonical field out."""
+
+        if not isinstance(entry, dict):
+            return
+        extra = entry.get("extra_content")
+        google = extra.get("google") if isinstance(extra, dict) else None
+        if not isinstance(google, dict) or "thought_signature" not in google:
+            return
+        signature = google.pop("thought_signature")
+        if (
+            not isinstance(signature, str)
+            or not signature.strip()
+            or len(signature) > MAX_TOOL_SIGNATURE_CHARS
+        ):
+            raise malformed("invalid_signature", response_data, provider="google", model=model_id, path="completed")
+        entry["signature"] = signature
+        if not google:
+            extra.pop("google", None)
+        if not extra:
+            entry.pop("extra_content", None)
+
+    choices = response_data.get("choices")
+    if not isinstance(choices, list):
+        return
+    for choice in choices:
+        message = choice.get("message") if isinstance(choice, dict) else None
+        if not isinstance(message, dict):
+            continue
+        # The turn's own answer text can carry the token, not only its calls.
+        canonical(message)
+        calls = message.get("tool_calls")
+        if not isinstance(calls, list):
+            continue
+        for call in calls:
+            canonical(call)
+
+
 async def call_platform_chat_completions(
     *,
     model_id: str,
@@ -348,6 +469,10 @@ async def call_platform_chat_completions(
     temperature: float | None = None,
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
+    # #5536: the model-native tool channel. The declaration travels with the
+    # request, and the tool choice selects how the model may use it.
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: Any = None,
     transport: httpx.AsyncBaseTransport | None = None,
     session_id: str | None = None,
 ) -> dict[str, Any]:
@@ -379,10 +504,12 @@ async def call_platform_chat_completions(
         if model_parameters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        # #4727: the Go adapter owns its own tool wire. It refuses a tool
+        # declaration the routed model cannot serve, so nothing is dropped here.
         return await call_go_model(
             model_id=model_id, upstream_model=upstream_model, messages=messages,
             session_id=session_id, max_tokens=max_tokens, temperature=temperature,
-            transport=transport,
+            tools=tools, tool_choice=tool_choice, transport=transport,
         )
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
@@ -393,7 +520,7 @@ async def call_platform_chat_completions(
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
     }
     if temperature is not None:
         body["temperature"] = float(temperature)
@@ -401,6 +528,12 @@ async def call_platform_chat_completions(
     # explicit limit; None intentionally delegates to the provider/model default.
     if max_tokens is not None:
         body["max_tokens"] = int(max_tokens)
+    # #5536: the tool declaration and the tool choice travel with the
+    # request. They are present only when the caller declared a tool.
+    if tools:
+        body["tools"] = list(tools)
+    if tool_choice is not None:
+        body["tool_choice"] = tool_choice
     # Re-validate direct adapter calls too. A caller must not bypass the
     # exact-model vendor API allow-list by skipping the gateway.
     if model_parameters:
@@ -445,7 +578,7 @@ async def call_platform_chat_completions(
                             response.headers, error_body,
                         )
                     _raise_upstream_error(
-                        response.status_code, platform_provider_id, error_body
+                        response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
                 body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
     except httpx.TimeoutException as exc:
@@ -462,16 +595,30 @@ async def call_platform_chat_completions(
     try:
         response_data = json.loads(body_bytes)
     except (json.JSONDecodeError, ValueError):
-        raise MalformedUpstreamResponse()
+        raise malformed("json_decode", provider=platform_provider_id, model=model_id, path="completed") from None
 
     if not isinstance(response_data, dict):
-        raise MalformedUpstreamResponse()
+        raise malformed("payload_not_object", response_data, provider=platform_provider_id, model=model_id, path="completed")
     if "choices" not in response_data:
-        raise MalformedUpstreamResponse()
+        raise malformed("choices_missing", response_data, provider=platform_provider_id, model=model_id, path="completed")
 
     # HTTP 200 with choices but no user-visible text is NOT a valid completion.
     # A small output budget may exhaust on reasoning alone; never call it success.
-    require_completed_text_answer(response_data)
+    # #5536: a declared tool makes a tool call a valid answer of its own.
+    try:
+        require_completed_text_answer(response_data, allow_tool_calls=bool(tools))
+        _usage_from_payload(response_data.get("usage"), provider=platform_provider_id,
+                            model=model_id, path="completed", payload=response_data)
+    except MalformedUpstreamResponse as exc:
+        # Usage validation already emitted its one structural warning.
+        if not exc.reason.startswith("usage_"):
+            raise malformed(exc.reason, response_data, provider=platform_provider_id,
+                            model=model_id, path="completed") from None
+        raise
+    # #4727: a Google compatible call's thought signature is relayed under
+    # B14's canonical contract field so a consumer can return it unchanged.
+    if platform_provider_id == "google":
+        _canonicalize_google_compat_signatures(response_data, model_id=model_id)
     choices = response_data["choices"]
 
     usage = response_data.get("usage")
@@ -515,6 +662,8 @@ async def stream_platform_chat_completions(
     temperature: float | None = None,
     max_tokens: int | None = None,
     model_parameters: dict[str, Any] | None = None,
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: Any = None,
     transport: httpx.AsyncBaseTransport | None = None,
     session_id: str | None = None,
 ) -> Any:
@@ -526,6 +675,10 @@ async def stream_platform_chat_completions(
     import os
 
     spec = _require_spec(platform_provider_id)
+
+    if tools and platform_provider_id != "opencode-go":
+        from .google_provider import require_stream_tool_support
+        require_stream_tool_support(model_id, platform_provider_id)
 
     provider_mode = _provider_mode()
 
@@ -542,7 +695,7 @@ async def stream_platform_chat_completions(
                 finish_reason="stop",
                 usage=StreamUsage(0, 0, 0),
             ),
-            StreamEvent(done=True),
+            StreamEvent(done=True, finish_reason="stop" if tools else None),
         ):
             yield event
         return
@@ -557,23 +710,40 @@ async def stream_platform_chat_completions(
         if model_parameters:
             from .errors import InvalidRequest
             raise InvalidRequest("Unverified model-native parameters for OpenCode Go.")
+        # #4727: the same adapter owns both the completed and the streaming Go
+        # tool wire, including the capability refusal for a model that cannot
+        # serve a call.
         async for event in stream_go_model(
             model_id=model_id, upstream_model=upstream_model, messages=messages,
             session_id=session_id, max_tokens=max_tokens, temperature=temperature,
-            transport=transport,
+            tools=tools, tool_choice=tool_choice, transport=transport,
         ):
             yield event
         return
     _require_owner_allowed_live_model(
         model_id, upstream_model, platform_provider_id
     )
+    if tools:
+        from .google_provider import stream_google_tool_calls
+        tool_stream = stream_google_tool_calls(
+            model_id=model_id, upstream_model=upstream_model, spec=spec,
+            messages=messages, tools=tools, tool_choice=tool_choice,
+            temperature=temperature, max_tokens=max_tokens,
+            model_parameters=model_parameters, transport=transport,
+        )
+        try:
+            async for event in tool_stream:
+                yield event
+        finally:
+            await tool_stream.aclose()
+        return
     from .worker_env import load_request_secret
     await load_request_secret(spec.credential_binding_name)
     headers = _request_headers(spec, model_id=model_id)
     chat_url = f"{spec.base_origin.rstrip('/')}/chat/completions"
     body: dict[str, Any] = {
         "model": upstream_model,
-        "messages": messages,
+        "messages": _openai_compatible_messages(messages, platform_provider_id),
         "stream": True,
     }
     if temperature is not None:
@@ -631,7 +801,7 @@ async def stream_platform_chat_completions(
                             response.headers, error_body,
                         )
                     _raise_upstream_error(
-                        response.status_code, platform_provider_id, error_body
+                        response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
 
                 # Bound our accumulator per frame without delaying first-token
@@ -646,7 +816,7 @@ async def stream_platform_chat_completions(
                     for frame in frames:
                         if len(frame) > MAX_RESPONSE_BYTES:
                             raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
-                        event = _parse_sse_frame(frame)
+                        event = _parse_sse_frame(frame, provider=platform_provider_id, model_id=model_id)
                         if event is None:
                             continue
                         if event.delta_content and event.delta_content.strip():
@@ -662,7 +832,7 @@ async def stream_platform_chat_completions(
                             return
 
                 if buffer.strip():
-                    event = _parse_sse_frame(buffer)
+                    event = _parse_sse_frame(buffer, provider=platform_provider_id, model_id=model_id)
                     if event is not None:
                         if event.delta_content and event.delta_content.strip():
                             saw_text = True
@@ -685,7 +855,7 @@ async def stream_platform_chat_completions(
         raise UpstreamServerError() from exc
 
     if not saw_done:
-        raise MalformedUpstreamResponse()
+        raise malformed("missing_done", provider=platform_provider_id, model=model_id, path="stream")
 
 
 
@@ -702,110 +872,288 @@ async def _iter_sse_bounded_slices(response: httpx.Response):
         for offset in range(0, len(block), 64 * 1024):
             yield block[offset:offset + 64 * 1024]
 
-def _pop_sse_frames(buffer: bytes) -> tuple[list[bytes], bytes]:
-    frames: list[bytes] = []
-    rest = buffer
-    while True:
-        candidates: list[tuple[int, bytes]] = []
-        for separator in (b"\r\n\r\n", b"\n\n"):
-            index = rest.find(separator)
-            if index >= 0:
-                candidates.append((index, separator))
-        if not candidates:
-            return frames, rest
-        index, separator = min(candidates, key=lambda item: item[0])
-        frames.append(rest[:index])
-        rest = rest[index + len(separator):]
+
+def _user_credential_headers(credential: UserCredential) -> dict[str, str]:
+    """The one place a caller-supplied key becomes an outbound header.
+
+    The platform plane's own secret resolution is not consulted: this header
+    carries the key that arrived with this request and nothing else. It is built
+    per call, held for the call, and never stored on the spec, the request or an
+    exception.
+    """
+    return {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {credential.key}",
+    }
 
 
-def _usage_from_payload(raw: Any) -> StreamUsage | None:
-    if raw is None:
-        return None
-    if not isinstance(raw, dict):
-        raise MalformedUpstreamResponse()
-    values: dict[str, int | None] = {}
-    for name in ("prompt_tokens", "completion_tokens", "total_tokens"):
-        value = raw.get(name)
-        if value is not None and (
-            isinstance(value, bool) or not isinstance(value, int) or value < 0
+def _user_credential_request_shape(
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None,
+    max_tokens: int | None,
+    *,
+    streaming: bool,
+) -> dict[str, Any]:
+    body: dict[str, Any] = {
+        "model": credential.upstream_model,
+        "messages": _openai_compatible_messages(messages, credential.provider_id),
+    }
+    if streaming:
+        body["stream"] = True
+    if temperature is not None:
+        body["temperature"] = float(temperature)
+    # Same rule as the platform adapter: no invented generation budget. None
+    # delegates to the provider/model default.
+    if max_tokens is not None:
+        body["max_tokens"] = int(max_tokens)
+    return body
+
+
+async def call_user_credential_chat_completions(
+    *,
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> dict[str, Any]:
+    """One completed call with the caller's own key: no pool, no roster, no retry.
+
+    This is the #5824 PR-3a request-carried credential lane. It deliberately
+    mirrors the platform adapter's transport contract (fixed origin, redirects
+    off, phase timeouts, bounded bytes, the same error mapping and answer
+    contract) while resolving no server-owned credential at all. A failure here
+    ends the request with the provider's own code; there is no second candidate
+    to try, because a substitution would either spend a platform key the caller
+    did not ask for or answer with a model the caller did not choose.
+    """
+    model_id = f"{credential.provider_id}/{credential.upstream_model}"
+
+    if _provider_mode() == "mock":
+        # Mock performs no provider call, so a caller key never leaves the
+        # process. The answer stays clearly labelled as simulated.
+        logger.info(
+            "user_credential_mock_call provider=%s model=%s (no real API call)",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(credential.upstream_model),
+        )
+        return _mock_response(model_id, credential.upstream_model, credential.provider_id)
+
+    client_kwargs: dict[str, Any] = {
+        "timeout": build_provider_http_timeout(model_id),
+    }
+    if transport is not None:
+        client_kwargs["transport"] = transport
+
+    start = time.monotonic()
+    try:
+        async with httpx.AsyncClient(**client_kwargs) as client:
+            async with client.stream(
+                "POST",
+                credential.chat_completions_url,
+                headers=_user_credential_headers(credential),
+                json=_user_credential_request_shape(
+                    credential, messages, temperature, max_tokens, streaming=False
+                ),
+                follow_redirects=False,
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    _raise_upstream_error(
+                        response.status_code, credential.provider_id,
+                        error_bytes.decode("utf-8", "replace"), model_id=model_id,
+                    )
+                body_bytes = await _read_bounded_body(
+                    response, cap=MAX_COMPLETED_RESPONSE_BYTES
+                )
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, credential.provider_id, exc, "completed")
+        raise UpstreamTimeout() from exc
+    except httpx.RequestError as exc:
+        logger.error(
+            "user_credential_request_error provider=%s error=%s",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(str(exc)),
+        )
+        raise UpstreamServerError() from exc
+
+    try:
+        response_data = json.loads(body_bytes)
+    except (json.JSONDecodeError, ValueError):
+        raise malformed(
+            "json_decode", provider=credential.provider_id, model=model_id,
+            path="completed",
+        ) from None
+    if not isinstance(response_data, dict):
+        raise malformed(
+            "payload_not_object", response_data, provider=credential.provider_id,
+            model=model_id, path="completed",
+        )
+    if "choices" not in response_data:
+        raise malformed(
+            "choices_missing", response_data, provider=credential.provider_id,
+            model=model_id, path="completed",
+        )
+
+    try:
+        require_completed_text_answer(response_data)
+        _usage_from_payload(
+            response_data.get("usage"), provider=credential.provider_id,
+            model=model_id, path="completed", payload=response_data,
+        )
+    except MalformedUpstreamResponse as exc:
+        if not exc.reason.startswith("usage_"):
+            raise malformed(
+                exc.reason, response_data, provider=credential.provider_id,
+                model=model_id, path="completed",
+            ) from None
+        raise
+
+    if credential.provider_id == "google":
+        _canonicalize_google_compat_signatures(response_data, model_id=model_id)
+
+    usage = response_data.get("usage")
+    prompt_tokens = usage.get("prompt_tokens") if isinstance(usage, dict) else None
+    completion_tokens = usage.get("completion_tokens") if isinstance(usage, dict) else None
+    total_tokens = usage.get("total_tokens") if isinstance(usage, dict) else None
+    actual = response_data.get("model")
+    actual_response_model = actual if isinstance(actual, str) and actual else None
+
+    return {
+        "id": response_data.get("id", f"b14byok_{uuid.uuid4().hex[:12]}"),
+        "object": "chat.completion",
+        "model": actual_response_model or credential.upstream_model,
+        "choices": response_data["choices"],
+        "usage": (
+            {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": total_tokens,
+            }
+            if usage
+            else None
+        ),
+        "_live": True,
+        "_upstream_latency_ms": int((time.monotonic() - start) * 1000),
+        "_requested_upstream_model": credential.upstream_model,
+        "_actual_response_model": actual_response_model,
+        "_response_bytes": len(body_bytes),
+    }
+
+
+async def stream_user_credential_chat_completions(
+    *,
+    credential: UserCredential,
+    messages: list[dict[str, Any]],
+    temperature: float | None = None,
+    max_tokens: int | None = None,
+    transport: httpx.AsyncBaseTransport | None = None,
+) -> Any:
+    """Streaming twin of :func:`call_user_credential_chat_completions`.
+
+    Same single-attempt contract: after a visible token a failure is terminal,
+    and no candidate list exists to advance to.
+    """
+    model_id = f"{credential.provider_id}/{credential.upstream_model}"
+
+    if _provider_mode() == "mock":
+        for event in (
+            StreamEvent(
+                response_id="b14byok_mock_stream",
+                model=credential.upstream_model,
+                delta_content="이것은 Mock 스트리밍 응답입니다. 실제 Provider 호출 없음.",
+            ),
+            StreamEvent(
+                response_id="b14byok_mock_stream",
+                model=credential.upstream_model,
+                finish_reason="stop",
+                usage=StreamUsage(0, 0, 0),
+            ),
+            StreamEvent(done=True, finish_reason="stop"),
         ):
-            raise MalformedUpstreamResponse()
-        values[name] = value
-    return StreamUsage(**values)
+            yield event
+        return
 
+    client_kwargs: dict[str, Any] = {
+        "timeout": build_provider_http_timeout(model_id),
+    }
+    if transport is not None:
+        client_kwargs["transport"] = transport
 
-def _parse_sse_frame(frame: bytes) -> StreamEvent | None:
+    saw_done = False
+    saw_text = False
+    last_finish_reason: str | None = None
+    buffer = b""
     try:
-        text = frame.decode("utf-8")
-    except UnicodeDecodeError as exc:
-        raise MalformedUpstreamResponse() from exc
+        async with httpx.AsyncClient(**client_kwargs) as client:
+            async with client.stream(
+                "POST",
+                credential.chat_completions_url,
+                headers=_user_credential_headers(credential),
+                json=_user_credential_request_shape(
+                    credential, messages, temperature, max_tokens, streaming=True
+                ),
+                follow_redirects=False,
+            ) as response:
+                if response.status_code < 200 or response.status_code >= 300:
+                    error_bytes = await _read_bounded_body(response)
+                    _raise_upstream_error(
+                        response.status_code, credential.provider_id,
+                        error_bytes.decode("utf-8", "replace"), model_id=model_id,
+                    )
+                async for chunk in _iter_sse_bounded_slices(response):
+                    buffer += chunk
+                    frames, buffer = _pop_sse_frames(buffer)
+                    if len(buffer) > MAX_RESPONSE_BYTES:
+                        raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                    for frame in frames:
+                        if len(frame) > MAX_RESPONSE_BYTES:
+                            raise UpstreamResponseTooLarge(MAX_RESPONSE_BYTES)
+                        event = _parse_sse_frame(
+                            frame, provider=credential.provider_id, model_id=model_id,
+                        )
+                        if event is None:
+                            continue
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
+                        yield event
+                        if event.done:
+                            return
 
-    data_lines: list[str] = []
-    for line in text.splitlines():
-        if not line or line.startswith(":"):
-            continue
-        if line.startswith("data:"):
-            value = line[5:]
-            if value.startswith(" "):
-                value = value[1:]
-            data_lines.append(value)
-            continue
+                if buffer.strip():
+                    event = _parse_sse_frame(
+                        buffer, provider=credential.provider_id, model_id=model_id,
+                    )
+                    if event is not None:
+                        if event.delta_content and event.delta_content.strip():
+                            saw_text = True
+                        if event.finish_reason is not None:
+                            last_finish_reason = event.finish_reason
+                        if event.done:
+                            if not saw_text:
+                                raise UpstreamEmptyAnswer(last_finish_reason, streamed=True)
+                            saw_done = True
+                        yield event
+    except httpx.TimeoutException as exc:
+        log_provider_timeout(logger, credential.provider_id, exc, "stream")
+        raise UpstreamTimeout() from exc
+    except httpx.RequestError as exc:
+        logger.error(
+            "user_credential_stream_error provider=%s error=%s",
+            redact_sensitive(credential.provider_id),
+            redact_sensitive(str(exc)),
+        )
+        raise UpstreamServerError() from exc
 
-    if not data_lines:
-        return None
-
-    data = "\n".join(data_lines).strip()
-    if data == "[DONE]":
-        return StreamEvent(done=True)
-    if not data:
-        raise MalformedUpstreamResponse()
-
-    try:
-        payload = json.loads(data)
-    except (json.JSONDecodeError, ValueError) as exc:
-        raise MalformedUpstreamResponse() from exc
-    if not isinstance(payload, dict):
-        raise MalformedUpstreamResponse()
-
-    response_id = payload.get("id")
-    model = payload.get("model")
-    if response_id is not None and not isinstance(response_id, str):
-        raise MalformedUpstreamResponse()
-    if model is not None and not isinstance(model, str):
-        raise MalformedUpstreamResponse()
-
-    usage = _usage_from_payload(payload.get("usage"))
-    choices = payload.get("choices")
-    if not isinstance(choices, list):
-        raise MalformedUpstreamResponse()
-
-    delta_content: str | None = None
-    finish_reason: str | None = None
-    if choices:
-        choice = choices[0]
-        if not isinstance(choice, dict):
-            raise MalformedUpstreamResponse()
-        delta = choice.get("delta")
-        if not isinstance(delta, dict):
-            raise MalformedUpstreamResponse()
-        content = delta.get("content")
-        if content is not None and not isinstance(content, str):
-            raise MalformedUpstreamResponse()
-        delta_content = content
-        finish_reason = choice.get("finish_reason")
-        if finish_reason is not None and not isinstance(finish_reason, str):
-            raise MalformedUpstreamResponse()
-    elif usage is None:
-        raise MalformedUpstreamResponse()
-
-    return StreamEvent(
-        response_id=response_id,
-        model=model,
-        delta_content=delta_content,
-        finish_reason=finish_reason,
-        usage=usage,
-    )
-
-
-# Model/provider registration is sourced exclusively from b14_models.json.
-# Loaded by catalog.py; do not call legacy module-local register_* functions here.
+    if not saw_done:
+        raise malformed(
+            "missing_done", provider=credential.provider_id, model=model_id,
+            path="stream",
+        )

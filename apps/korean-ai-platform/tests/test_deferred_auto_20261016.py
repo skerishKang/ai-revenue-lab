@@ -1,19 +1,13 @@
-"""Production default: generic b14/auto is deferred, exact model calls remain supported."""
+"""b14/auto is retired: the id is rejected as a string and the auto lane is gone (B7)."""
+import importlib
 from pathlib import Path
 
 import pytest
 from starlette.testclient import TestClient
 
 from app.factory import create_app
-from app.pilot.auto_availability import ensure_generic_auto_enabled
-from app.pilot.errors import PilotError
 
-AUTO = {"model": "b14/auto", "messages": [{"role":"user","content":"synthetic no-provider-call"}]}
-
-
-@pytest.fixture(autouse=True)
-def disable_generic_auto(monkeypatch):
-    monkeypatch.delenv("B14_ENABLE_FUTURE_AUTO", raising=False)
+AUTO = {"model": "b14/auto", "messages": [{"role": "user", "content": "synthetic no-provider-call"}]}
 
 
 @pytest.fixture
@@ -22,34 +16,38 @@ def client():
         yield c
 
 
-def test_deferred_auto_on_completions(client):
+def test_retired_auto_on_completions(client):
     r = client.post("/api/pilot/v1/chat/completions", json=AUTO)
     assert r.status_code == 422
-    assert r.json()["error"]["code"] == "auto_routing_deferred"
+    assert r.json()["error"]["code"] == "invalid_body"
+    assert "b14/auto" in r.json()["error"]["message"]
 
 
-def test_deferred_auto_on_resolve(client):
+def test_retired_auto_on_resolve(client):
     r = client.post("/api/pilot/router/resolve", json=AUTO)
     assert r.status_code == 422
-    assert r.json()["error"]["code"] == "auto_routing_deferred"
+    assert r.json()["error"]["code"] == "invalid_body"
 
 
-def test_deferred_auto_on_stream_preview(client):
+def test_auto_stream_preview_route_is_gone(client):
     r = client.post("/api/pilot/v1/chat/completions/auto-stream-preview", json={**AUTO, "stream": True})
-    assert r.status_code == 422
-    assert r.json()["error"]["code"] == "auto_routing_deferred"
+    assert r.status_code == 404
 
 
-def test_exact_model_is_not_deferred():
-    ensure_generic_auto_enabled("opencode-go/beam-free")
+def test_auto_lane_modules_do_not_exist():
+    for name in ("app.pilot.routing_policy", "app.pilot.auto_stream_gateway", "app.pilot.auto_availability"):
+        with pytest.raises(ModuleNotFoundError):
+            importlib.import_module(name)
 
 
-def test_future_code_preserved_but_explicit_opt_in_only(monkeypatch):
-    with pytest.raises(PilotError) as e:
-        ensure_generic_auto_enabled("b14/auto")
-    assert e.value.status_code == 422
-    monkeypatch.setenv("B14_ENABLE_FUTURE_AUTO", "1")
-    ensure_generic_auto_enabled("b14/auto")
+def test_future_auto_opt_in_no_longer_exists():
+    root = Path(__file__).resolve().parents[1]
+    env_example = (root / "b14.env.example").read_text(encoding="utf-8")
+    assert "B14_ENABLE_FUTURE_AUTO" not in env_example
+    app_source = "\n".join(
+        p.read_text(encoding="utf-8") for p in (root / "app").rglob("*.py")
+    )
+    assert "B14_ENABLE_FUTURE_AUTO" not in app_source
 
 
 def test_workspace_has_no_auto_selection():

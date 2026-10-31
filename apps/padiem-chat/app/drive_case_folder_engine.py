@@ -61,7 +61,15 @@ MAX_PDF_QUERY_CHARS = 200
 MAX_PDF_FILE_ID_CHARS = 200
 MAX_PDF_NAME_CHARS = 512
 MAX_PDF_CANDIDATES = 25
-MAX_PDF_BYTES = 4_000_000
+#: #5882 PR-E — the PDF read bound is derived from the Worker's memory, not from
+#: a round number. Answering a Drive PDF read holds the bytes three times over at
+#: peak: the engine's base64 (4/3 of the payload), the decoded bytes, and the
+#: framed response. Peak is therefore ~2.33x the PDF size, and 16 MiB of PDF is
+#: ~37 MiB peak — comfortably inside the Workers memory limit (128 MB) with room
+#: for the rest of the request. The former 4,000,000 bytes was arbitrary and
+#: refused ordinary scanned PDFs; Drive's own download contract sets no such
+#: ceiling, so the only real bound here is our memory.
+MAX_PDF_BYTES = 16 * 1024 * 1024
 MAX_PDF_BASE64_CHARS = ((MAX_PDF_BYTES + 2) // 3) * 4
 
 # #4379: the Engine -> Chat hop ships one length-prefixed frame instead of a

@@ -229,6 +229,11 @@ not end Oracle's role.
 
 ## 6. COM1 Mesh-only scheduled work — inventory and retirement order
 
+> **2026-10-30 #5643 update:** the `PADIEM-Mesh-Tunnel` row below is retired — the
+> agent has reached COM2 through its own ingress (mesh.padiem.net) since 2026-10-27,
+> without the COM1 forward. The source-side supervisor and task template were removed
+> in the #5643 cleanup; the host-side task removal runs on the CTO signal.
+
 Retirement is deliberately **not** done yet, because the transport leg
 above is not redundant. The inventory is captured so the retirement is a
 reviewed, reversible step.

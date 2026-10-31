@@ -22,6 +22,7 @@ import json
 import os
 from pathlib import Path
 import re
+import time
 from typing import Any, Callable, Protocol
 
 from .credential_install import ProtectedCredentialReceiverPort
@@ -45,6 +46,29 @@ MAX_FRAME_CHARS = 8192
 MAX_CREDENTIAL_BYTES = 4096
 FRAME_TIMEOUT_SECONDS = 10.0
 INSTALL_ACK_TIMEOUT_SECONDS = 25.0
+#: ``credential_once`` is NOT produced by this socket's ``credential_fetch``.
+#: The canonical producer is the owner-driven approval flow (the signed
+#: ``approve-link`` request -> Identity authorize -> Broker redeem -> the
+#: one-shot native delivery RPC), which runs on the SAME socket but on the
+#: server's own clock. The generic frame bound above is shorter than that
+#: canonical path (the server waits up to ``INSTALL_ACK_TIMEOUT_SECONDS`` for
+#: this PC's install ACK), so the PC used to abort a registration the server
+#: was still completing. This is a CLIENT CEILING only; the effective window
+#: is additionally limited by the remaining Broker gateway lease.
+CREDENTIAL_DELIVERY_TIMEOUT_SECONDS = 45.0
+#: The Broker's canonical gateway lease. The Broker refuses BOTH this PC's
+#: ``credential_fetch`` AND its later ``install_ack`` once the lease that
+#: started at ``begin`` expired, so the credential must arrive early enough
+#: for the ACK to still be authorized. The PC mirrors that TTL exactly like it
+#: already mirrors the 90s pending-PC offer TTL, so the wait can never
+#: outlive the lease - INDEPENDENT of any clock difference between the PC
+#: and the server. The absolute ``expires_at`` the Broker sends is a server
+#: wall-clock value and is therefore NOT used to size this window.
+GATEWAY_LEASE_TTL_SECONDS = 60.0
+#: The Broker authorizes this PC's ``install_ack`` against the SAME gateway
+#: lease, so the lease must still be alive after the credential arrives. This
+#: reserve keeps that time available for the protected install and the ACK.
+INSTALL_ACK_RESERVE_SECONDS = 10.0
 BOOTSTRAP_TRANSCRIPT = "padiem.connector-gateway-bootstrap.v1"
 SESSION_TRANSCRIPT = "padiem.connector-gateway-session.v1"
 _SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@+-]{0,255}$")
@@ -203,6 +227,24 @@ async def _receive(socket: DeviceTextSocket, fields: frozenset[str]) -> dict[str
     )
 
 
+async def _receive_credential_delivery(
+    socket: DeviceTextSocket, fields: frozenset[str], *, timeout: float,
+) -> dict[str, Any]:
+    """Wait for the canonical owner-driven credential delivery.
+
+    The delivery is produced by the server's owner approval flow, not by the
+    preceding ``credential_fetch`` frame, so it gets its own bounded window
+    instead of the generic per-frame bound. The caller supplies the effective
+    window, already limited by the remaining Broker gateway lease. It is still
+    bounded, still fail-closed, and never stores or acknowledges anything on
+    timeout.
+    """
+    return _frame(
+        await asyncio.wait_for(socket.receive_text(), timeout=timeout),
+        fields,
+    )
+
+
 async def run_review_only_device_session(
     *, socket: DeviceTextSocket, trusted_tls: TrustedDeviceTls,
     receiver: ProtectedCredentialReceiverPort, challenge_id: str,
@@ -228,6 +270,14 @@ async def run_review_only_device_session(
     clock = now or datetime.now(timezone.utc)
     if clock.tzinfo is None or clock.utcoffset() is None:
         raise DeviceSessionRefused("device_clock_invalid")
+    # START POINT of the lease budget: taken BEFORE the TLS verification and
+    # therefore before ``begin``. Everything from here to the credential wait
+    # (TLS verify, begin -> nonce, finish -> bootstrap_verified, and the
+    # credential_fetch send) is subtracted from the canonical lease TTL, so the
+    # budget can only under-estimate the remaining lease. It is a monotonic
+    # reading, so no difference between this PC's clock and the Broker's clock
+    # can change it.
+    lease_clock = time.monotonic()
     try:
         if await asyncio.wait_for(trusted_tls.verify(socket), timeout=5.0) is not True:
             raise DeviceSessionRefused("trusted_tls_required")
@@ -278,11 +328,28 @@ async def run_review_only_device_session(
         })
         if on_stage is not None:
             on_stage("device_session_credential_fetch_sent")
+        # The wait for the canonical credential is bounded by the Broker lease,
+        # not only by a client-side constant: the lease must still be alive
+        # when this PC installs the credential and its install ACK is
+        # authorized. The budget is derived from the LOCALLY measured time
+        # since this PC sent ``begin`` and the canonical lease TTL, so it is
+        # immune to a clock difference between this PC and the Broker. The
+        # local elapsed time is always at least the Broker's own elapsed time
+        # for the same window, so this budget can only be conservative.
+        lease_remaining = GATEWAY_LEASE_TTL_SECONDS - (
+            time.monotonic() - lease_clock
+        )
+        delivery_window = min(
+            CREDENTIAL_DELIVERY_TIMEOUT_SECONDS,
+            lease_remaining - INSTALL_ACK_RESERVE_SECONDS,
+        )
+        if delivery_window <= 0.0:
+            raise DeviceSessionRefused("device_credential_delivery_window_expired")
         try:
-            delivery = await _receive(socket, frozenset({
+            delivery = await _receive_credential_delivery(socket, frozenset({
                 "type", "challenge_id", "device_id", "lease_ref", "binding",
                 "credential_b64",
-            }))
+            }), timeout=delivery_window)
         except asyncio.TimeoutError as exc:
             raise DeviceSessionRefused("device_credential_response_timeout") from exc
         if (delivery["type"] != "credential_once"

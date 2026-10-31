@@ -29,16 +29,19 @@ from padiem_ai_core import (
     MAX_B14_RESPONSE_BYTES,
 )
 from padiem_ai_core.b14_execution import MAX_CONFIGURED_B14_RESPONSE_BYTES
+from padiem_ai_core.b14_streaming import B14StreamToolCall
+from padiem_ai_core.tool_channel import ToolDefinition
 
 from padiem_ai_core.dispatch_preinstruction import (
     render_dispatch_preinstruction,
+    render_product_identity_instruction,
     server_wall_clock,
 )
 
 from .attachments import ImageAttachment
 from .request_telemetry import emit_stage_event
 from .config import Settings
-from .model_policy import ModelPolicyError, model_supports, resolve_request_model_policy
+from .model_policy import ModelPolicyError, current_request_tier_id, model_supports, resolve_request_model_policy
 from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 
 # #4379: the provider context carries no PADIEM byte total. The provider and
@@ -47,14 +50,21 @@ from .task_modes import TaskMode, get_task_mode, task_mode_public_metadata
 MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES: int | None = None
 MAX_ADDITIONAL_SYSTEM_CONTEXT_CHARS = MAX_ADDITIONAL_SYSTEM_CONTEXT_BYTES  # import compatibility
 
-# Product identity policy. Padiem Chat is a general Korean-first assistant;
-# upstream model/provider identities are not part of the user-facing product.
-# The instruction is a branding policy, not an answer-style or length cap.
+# Product identity policy. Padiem Chat is the 파디엠챗 product: a general
+# Korean-first assistant. Unsolicited model/provider self-introduction is
+# forbidden (#5347). "너 누구야?" is answered as the 파디엠챗 assistant. When the
+# user explicitly asks which model is in use, the answer must be accurate and
+# grounded only in actual model/routing information provided to this
+# conversation; fabricating a provider/model identity is forbidden.
 PADIEM_IDENTITY_INSTRUCTION = (
-    "당신은 파디엠(Padiem)이 제공하는 AI 어시스턴트입니다. "
-    "자신의 모델 이름, 제조사, 버전, 아키텍처를 밝히지 마세요. "
-    "모델이나 제조사를 묻는 질문에는 '파디엠이 제공하는 AI 어시스턴트입니다'라고만 답하세요."
+    render_product_identity_instruction("chat", None)
 )
+
+
+def _chat_product_identity_instruction() -> str:
+    """Use the request-scoped, server-authorized tier; never infer Free."""
+    tier = current_request_tier_id()
+    return render_product_identity_instruction("chat", tier)
 
 
 class B14ServiceTransport(Protocol):
@@ -140,11 +150,45 @@ class _BeforeDispatchHTTPTransport(execution_httpx.AsyncBaseTransport):
 
 
 @dataclass(frozen=True, slots=True)
+class ChatToolCall:
+    """One model-requested tool call, projected without provider content.
+
+    ``arguments`` is model-authored data and carries no authority: the Product
+    still owns verification and the execution scope on the PC lane.
+    """
+
+    id: str
+    name: str
+    arguments: Mapping[str, Any]
+    index: int | None = None
+    # #4727: opaque provider continuation token; the product relays it, never
+    # interprets it, and it grants no execution authority.
+    signature: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
 class ChatStreamEvent:
     """Minimal B62 server-side stream event projected from Core execution."""
 
     delta_content: str | None = None
     done: bool = False
+    tool_call: ChatToolCall | None = None
+    finish_reason: str | None = None
+
+
+# #5573: Core owns tool-call validation (3-B-1). The product projection only
+# copies the already-validated identifier, name, arguments and index into the
+# B62-facing event, so no provider text is re-interpreted here.
+def _project_tool_call(raw: B14StreamToolCall | None) -> ChatToolCall | None:
+    if raw is None:
+        return None
+    return ChatToolCall(
+        id=raw.id,
+        name=raw.name,
+        arguments=dict(raw.arguments),
+        index=raw.index,
+        signature=raw.signature,
+    )
 
 
 @dataclass
@@ -325,18 +369,26 @@ def _agent_profile(
     skill: TaskMode,
     model: str,
     required_capabilities: tuple[str, ...],
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
     tier_stream_fallback: bool = False,
 ) -> AgentProfile:
-    """Convert B62-owned TaskMode/model policy into the locked Core contract."""
+    """Convert B62-owned TaskMode/model policy into the locked Core contract.
 
+    ``product_identity`` defaults to the Padiem Chat brand. A path that owns a
+    product-local identity (B66 quote dialogue) or is not user-facing prose at
+    all (B66 quote extraction) passes ``None`` so the Chat brand cannot reach it.
+    """
+
+    if product_identity == PADIEM_IDENTITY_INSTRUCTION:
+        product_identity = _chat_product_identity_instruction()
     skill_instruction = skill.system_instruction
-    if skill_instruction:
-        system_instruction = f"{PADIEM_IDENTITY_INSTRUCTION} {skill_instruction}"
+    if product_identity is not None and skill_instruction:
+        system_instruction = f"{product_identity} {skill_instruction}"
     else:
-        system_instruction = PADIEM_IDENTITY_INSTRUCTION
+        system_instruction = product_identity or skill_instruction
 
     return AgentProfile(
         id=f"b62-{skill.id}",
@@ -350,9 +402,9 @@ def _agent_profile(
         model_policy={
             "model": model,
             # Keep unchosen sampling absent: B14 honours provider native defaults.
-            # Arbitrary catalog-wide fallback stays disabled. This does not
-            # block the owner-pinned tier grade backup in the B14 gateway.
-            "allow_external_fallback": False,
+            # B14 offers no external fallback knob at all now: a manual route
+            # never substitutes another catalog model, and the owner-pinned
+            # tier grade backup in the B14 gateway does not depend on one.
             # No local attempt pin; upstream routing applies its own policy.
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **({"max_retries": max_retries} if max_retries is not None else {}),
@@ -375,17 +427,21 @@ def _execution_request(
     model: str,
     required_capabilities: tuple[str, ...],
     additional_system_context: str | None,
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     dispatch_sample: datetime | None = None,
     max_retries: int | None = None,
     model_parameters: Mapping[str, Any] | None = None,
     product_tier: str | None = None,
     tier_stream_fallback: bool = False,
+    tools: tuple[ToolDefinition, ...] = (),
+    tool_choice: Mapping[str, Any] | str | None = None,
 ) -> ExecutionRequest:
     return ExecutionRequest(
         agent=_agent_profile(
             skill=skill,
             model=model,
             required_capabilities=required_capabilities,
+            product_identity=product_identity,
             max_retries=max_retries,
             model_parameters=model_parameters,
             product_tier=product_tier,
@@ -395,6 +451,9 @@ def _execution_request(
         additional_system_context=_trusted_dispatch_context(
             additional_system_context, dispatch_sample
         ),
+        # #5573: an absent declaration keeps the request exactly as before.
+        **({"tools": tools} if tools else {}),
+        **({"tool_choice": tool_choice} if tool_choice is not None else {}),
     )
 
 
@@ -404,6 +463,7 @@ def _multimodal_execution_request(
     skill: TaskMode,
     model: str,
     additional_system_context: str | None,
+    product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     dispatch_sample: datetime | None = None,
 ) -> MultimodalExecutionRequest:
     return MultimodalExecutionRequest(
@@ -411,6 +471,7 @@ def _multimodal_execution_request(
             skill=skill,
             model=model,
             required_capabilities=("chat", "image"),
+            product_identity=product_identity,
         ),
         messages=tuple(messages),
         additional_system_context=_trusted_dispatch_context(
@@ -523,6 +584,12 @@ class B14Client:
         first_delta_emitted = False
         try:
             async for event in core_stream:
+                tool_call = _project_tool_call(event.tool_call)
+                finish_reason = event.finish_reason
+                if tool_call is not None:
+                    yield ChatStreamEvent(
+                        tool_call=tool_call, finish_reason=finish_reason,
+                    )
                 if event.delta_content:
                     if not first_delta_emitted:
                         # #4317 perf: `b14.stream` below is the WHOLE stream, so
@@ -536,10 +603,13 @@ class B14Client:
                             outcome="ok",
                             duration_ms=(time.perf_counter()-stream_started)*1000,
                         )
-                    yield ChatStreamEvent(delta_content=event.delta_content)
+                    yield ChatStreamEvent(
+                        delta_content=event.delta_content,
+                        finish_reason=finish_reason,
+                    )
                 if event.done:
                     stream_completed = True
-                    yield ChatStreamEvent(done=True)
+                    yield ChatStreamEvent(done=True, finish_reason=finish_reason)
         except ExecutionRuntimeError as exc:
             emit_stage_event(stage="b14.stream", outcome="error",
                              duration_ms=(time.perf_counter()-stream_started)*1000,
@@ -619,6 +689,8 @@ class B14Client:
         *,
         skill: TaskMode | None = None,
         additional_system_context: str | None = None,
+        tools: tuple[ToolDefinition, ...] = (),
+        tool_choice: Mapping[str, Any] | str | None = None,
     ) -> AsyncIterator[ChatStreamEvent]:
         """Compatibility entrypoint for B62's simple default UX.
 
@@ -655,23 +727,16 @@ class B14Client:
                 "AI 내부 스트리밍 연결이 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.",
             )
 
-        # Stream gateway forbids mid-stream model replacement. For the owner-
-        # selected tier pair primary, finish a bounded B14 completion and emit
-        # its answer as one SSE delta so a recoverable failure can use its
-        # fallback. beam-free is the Free-tier primary; each paid-tier primary
-        # comes from the shared per-tier declaration, and the manual
-        # single-attempt stream-preview structurally rejects it (owner-tier
-        # routes always carry fallback candidates), so it must not reach it.
-        # cat-jam-free is policy-disabled and no Chat path selects it.
+        # Stream gateway forbids mid-stream model replacement. Every owner-
+        # selected tier primary carries no local attempt pin (the model policy
+        # above), so the upstream may traverse the owner-pinned tier fallback
+        # on a recoverable error. The Free grade primary and the paid-grade
+        # primaries therefore share this one streaming path.
+        # #5002: a model that left the Free grade roster (or that the owner
+        # excluded from execution candidates) is no longer named here: no
+        # current Chat or Claw policy selects such a model, and a hardcoded
+        # identity for one would silently change the streaming shape.
         tier = _owner_product_tier(policy.profile)
-        if policy.model_id == "opencode-go/beam-free":
-            response = await self._complete_text(
-                policy.messages, skill=resolved_skill, model=policy.model_id,
-                additional_system_context=bounded_context, product_tier=tier,
-            )
-            yield ChatStreamEvent(delta_content=response["answer"])
-            yield ChatStreamEvent(done=True)
-            return
         request = _execution_request(
             policy.messages,
             skill=resolved_skill,
@@ -681,6 +746,8 @@ class B14Client:
             dispatch_sample=self._dispatch_wall_clock(),
             product_tier=tier,
             tier_stream_fallback=True,
+            tools=tools,
+            tool_choice=tool_choice,
         )
         inner_stream = self._stream_core(request)
         try:
@@ -704,6 +771,7 @@ class B14Client:
         model_parameters: Mapping[str, Any] | None = None,
         completed_response_budget_bytes: int = MAX_CONFIGURED_B14_RESPONSE_BYTES,
         product_tier: str | None = None,
+        product_identity: str | None = PADIEM_IDENTITY_INSTRUCTION,
     ) -> dict[str, Any]:
         request = _execution_request(
             messages,
@@ -711,6 +779,7 @@ class B14Client:
             model=model,
             required_capabilities=("chat",),
             additional_system_context=additional_system_context,
+            product_identity=product_identity,
             dispatch_sample=self._dispatch_wall_clock(),
             max_retries=max_retries,
             model_parameters=model_parameters,
@@ -842,6 +911,7 @@ class B14Client:
         additional_system_context: str | None = None,
         model_parameters: Mapping[str, Any] | None = None,
         product_tier: str = "free",
+        verified_identity_tier: str | None = None,
     ) -> dict[str, Any]:
         """Authenticated B66 ordinary model conversation, never quote extraction.
 
@@ -880,7 +950,8 @@ class B14Client:
             title="B66 AI conversation",
             short_description="Natural-language quoting consultation without write authority",
             system_instruction=(
-                "당신은 PADIEM B66의 실제 AI 견적 상담사입니다. 인사·일반 질문·일상 대화에도 "
+                render_product_identity_instruction("b66", verified_identity_tier)
+                + " 당신은 PADIEM B66의 AI 견적 상담사입니다. 인사·일반 질문·일상 대화에도 "
                 "자연스럽게 답하세요. "
                 "사용자가 견적을 만들고 싶다고 하면 '한 번에 설명하기'와 '질문에 답하며 작성하기' "
                 "두 가지 방법을 안내하고, 이미 제공한 정보는 다시 질문하지 마세요. "
@@ -910,6 +981,9 @@ class B14Client:
             max_retries=0,
             before_dispatch=self._prepare_registered_quote_dispatch,
             product_tier=product_tier,
+            # The B66 dialogue owns its product identity in ``dialogue_mode``;
+            # the Padiem Chat brand must never become its second persona.
+            product_identity=None,
             **kwargs,
         )
 
@@ -986,6 +1060,9 @@ class B14Client:
             # budgets. No same-route retry or arbitrary catalog fallback;
             # the preselected tier grade backup in B14 remains enabled.
             completed_response_budget_bytes=MAX_CONFIGURED_B14_RESPONSE_BYTES,
+            # Structured extraction is not a user persona: it carries no
+            # product identity, only the trusted clock and its extraction ask.
+            product_identity=None,
             **({"product_tier": product_tier} if product_tier is not None else {}),
             **native_kwargs,
         )

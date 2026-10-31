@@ -1,0 +1,30 @@
+{
+  "_comment": "Override unit names that differ on the host (MeshCentral/cloudflared are external). required=false entries are reported but do not fail the boot check.",
+  "units": [
+    {"unit": "padiem-mesh-queue.service", "kind": "service", "required": true},
+    {"unit": "padiem-file-lane.service", "kind": "service", "required": true},
+    {"unit": "padiem-oracle-mesh-executor.service", "kind": "service", "required": true},
+    {"unit": "padiem-connector-watch.service", "kind": "service", "required": true},
+    {"unit": "padiem-chat-com2.service", "kind": "service", "required": true},
+    {"unit": "padiem-broker.service", "kind": "service", "required": true},
+    {"unit": "cloudflared.service", "kind": "service", "required": true},
+    {"unit": "meshcentral.service", "kind": "service", "required": true},
+    {"unit": "padiem-mesh-queue-backup.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-mesh-queue-health.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-connector-watch.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-chat-com2-backup.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-chat-com2-health.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-broker-backup.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-broker-health.timer", "kind": "timer", "required": true},
+    {"unit": "padiem-offsite-backup.timer", "kind": "timer", "required": true}
+  ],
+  "health": [
+    {"name": "queue", "url": "http://127.0.0.1:8797/health", "expect": "any_ok"},
+    {"name": "file-lane", "url": "http://127.0.0.1:8788/health", "expect": "any_ok"},
+    {"name": "chat", "url": "http://127.0.0.1:8798/health", "expect": "status_ok"},
+    {"name": "broker", "url": "http://127.0.0.1:8799/health", "expect": "status_ok"}
+  ],
+  "tunnel": [
+    {"name": "chat-public", "url": "https://chat.padiem.net/health", "expect": "status_ok"}
+  ]
+}
