@@ -23,6 +23,10 @@ const render = vm.runInNewContext("(function(){" + app.slice(start, end) +
   "\nreturn {renderError, renderStreamError};})()", context);
 
 for (const [code, status, expected] of [
+  ["custom_credential_required", 400, "먼저 API 키를 등록해 주세요."],
+  ["custom_key_invalid", 400, "API 키를 확인해 주세요."],
+  ["custom_provider_auth_failed", 400, "API 키를 확인해 주세요."],
+  ["byok_auth_failed", 400, "API 키를 확인해 주세요."],
   ["entitlement_unavailable", 503, "지금은 서비스를 이용할 수 없습니다. 잠시 후 다시 시도해 주세요."],
   ["invalid_request", 400, "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요."],
   ["unknown_failure", 500, "요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요."],
@@ -54,6 +58,17 @@ for (const [code, status, expected] of [
     assert.equal(article.state, "failed");
   }
 }
+// Only a known attachment refusal is mapped; arbitrary suffixes stay hidden.
+const encrypted = "암호화된 DOCX는 현재 첨부할 수 없습니다.";
+const encryptedError = PadiemChatTransport.errorFor({error: {code: "invalid_request", message: encrypted}}, "", 422);
+assert.equal(encryptedError.message, encrypted);
+const content = {children: [], replaceChildren() {this.children = [];}, querySelector() {return null;}, appendChild(box) {this.children.push(box);}};
+const article = {querySelector: (selector) => selector === ".assistant-content" ? content : {}};
+render.renderError(article, encryptedError.message, [], null, null, null, false, "failed", null, encryptedError.code);
+assert.equal(content.children[0].message, encrypted);
+assert.equal(content.children[0].children[0].textContent, "참고 코드: invalid_request");
+assert.equal(PadiemChatTransport.streamErrorMessage({error: {code: "invalid_request", message: encrypted + " private details"}}, 422),
+  "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.");
 // Stream messages must use the closed mapping, even before the first token.
 const streamStart = app.indexOf("  async function requestStreamingAnswer(");
 const streamEnd = app.indexOf("\n  function cancelActiveStream(", streamStart);

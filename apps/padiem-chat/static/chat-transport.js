@@ -31,7 +31,27 @@
         return "화면이 오래되었습니다. 새로고침한 뒤 다시 시도해 주세요.";
       case "upstream_timeout":
         return "응답 시간이 초과되었습니다. 다시 시도해 주세요.";
+      case "custom_credential_required":
+        return "먼저 API 키를 등록해 주세요.";
+      case "custom_key_invalid":
+      case "custom_provider_auth_failed":
+      case "byok_auth_failed":
+        return "API 키를 확인해 주세요.";
       case "invalid_request":
+        // Attachment validation currently shares invalid_request. Match only
+        // known fixed messages and return local text, never arbitrary server text.
+        switch (data?.error?.message) {
+          case "암호화된 DOCX는 현재 첨부할 수 없습니다.":
+            return "암호화된 DOCX는 현재 첨부할 수 없습니다.";
+          case "암호화된 PDF는 현재 첨부할 수 없습니다.":
+            return "암호화된 PDF는 현재 첨부할 수 없습니다.";
+          case "암호화된 PPTX는 현재 첨부할 수 없습니다.":
+            return "암호화된 PPTX는 현재 첨부할 수 없습니다.";
+          case "암호화된 XLSX는 현재 첨부할 수 없습니다.":
+            return "암호화된 XLSX는 현재 첨부할 수 없습니다.";
+          case "암호화된 문서는 현재 첨부할 수 없습니다.":
+            return "암호화된 문서는 현재 첨부할 수 없습니다.";
+        }
       case "input_schema_rejected":
         return "요청 내용을 확인할 수 없습니다. 내용을 확인한 뒤 다시 시도해 주세요.";
       case "entitlement_unavailable":
