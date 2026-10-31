@@ -1,0 +1,51 @@
+# cloudflared ingress — chat.padiem.net → COM2 Chat (production entry).
+#
+# Status: EXAMPLE ONLY. No script in this repository installs this file and
+# nothing here activates a tunnel, a DNS record or a route. The gate workflow
+# that applies it is separate work.
+#
+# Origin port: 8798. Basis in the repository:
+#   deploy/host-com2/chat/padiem-chat-com2.service
+#     ExecStart=... -m uvicorn --factory app.local_cpython:build_app
+#                        --host 127.0.0.1 --port 8798
+#   (the same port the staging package documents as the production Chat host;
+#    the staging profile is 8801 and keeps chat-com2.padiem.net)
+#
+# One rule carries everything, because the app serves it:
+#   * /health — the app answers it directly; no separate health rule.
+#   * static pages — app_factory mounts StaticFiles at "/" when the release
+#     contains static/, so the same rule serves the page assets. When plan ⑤
+#     keeps assets on Cloudflare instead, that becomes a path rule added here,
+#     not a second hostname.
+#   * SSE / NDJSON and WebSocket upgrades — pass through unchanged.
+#     disableChunkedEncoding: false keeps the response chunked end to end.
+#
+# Edge-signed connector WSS (#6400,
+# packages/padiem-control-plane/com2_edge_proof.py): the verifier checks
+# x-padiem-edge-at / -id / -tls / -proof over "method, path, at, id, tls". That
+# payload contains no Host and no client IP, so a tunnel in front does not
+# invalidate the signature. Three conditions this file keeps:
+#   1. no path rewrite — the signed path is
+#      /api/claw/connector/gateway/session exactly;
+#   2. no header stripping — cloudflared forwards the four headers untouched
+#      and this file sets no header mutation;
+#   3. the signer runs at the edge, before the tunnel, and the WebSocket
+#      upgrade reaches the origin as an upgrade (no originRequest key here
+#      downgrades it).
+#
+# Placeholders only: never commit a real tunnel UUID, credentials path or
+# token. Fill them from the operator's secret store at install time.
+
+tunnel: CHAT_PUBLIC_TUNNEL_UUID
+credentials-file: /etc/cloudflared/CHAT_PUBLIC_TUNNEL_UUID.json
+
+ingress:
+  - hostname: chat.padiem.net
+    service: http://127.0.0.1:8798
+    originRequest:
+      connectTimeout: 30s
+      tcpKeepAlive: 30s
+      disableChunkedEncoding: false
+      noTLSVerify: false
+  # The catch-all stays last: an unknown hostname is refused, not proxied.
+  - service: http_status:404

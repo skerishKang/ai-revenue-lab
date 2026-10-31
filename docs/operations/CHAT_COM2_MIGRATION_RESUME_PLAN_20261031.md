@@ -104,6 +104,14 @@ ISSUE=#5115 (COM2 이전 추적)
 - **되돌리기**: 도메인을 Worker로 복귀하고 ③의 핸드백 절차로 컴2 변경분을 D1에 반영한 뒤 쓰기 재개.
 - **레인 PR**: ④-1 앞단 라우팅 구성(쓰기 효과 기준 폴백 분류 + 테스트) ④-2 전환 후 관찰·스모크 자동화 ④-3 스테이징에서 원복 리허설 1회 기록 — **3개**.
 
+**④-1 ingress 예시 파일 (이번 PR)**: 운영 `deploy/host-com2/chat/cloudflared-chat-public-com2.example.yml`(`chat.padiem.net` → `127.0.0.1:8798`), 되돌리기 `deploy/host-com2/chat/cloudflared-chat-public-worker-rollback.example.yml`(같은 hostname → Worker `workers.dev` origin). 둘 다 예시이고 설치·활성화 스크립트가 없습니다. 적용은 ④-1 게이트 워크플로가 이 파일을 읽어서 합니다. tunnel UUID·자격 파일 경로는 자리표시자이고 파일에 토큰이 없습니다.
+
+- 포트 근거: `deploy/host-com2/chat/padiem-chat-com2.service`의 `ExecStart ... --port 8798`(루프백 전용). 스테이징은 `8801`·`chat-com2.padiem.net`으로 분리돼 있습니다.
+- 단일 규칙으로 덮는 것: `/health`(앱이 직접 응답), 정적 페이지(`app_factory`가 `static/`이 있으면 `/`에 `StaticFiles` 마운트), SSE·NDJSON·WebSocket 업그레이드(`disableChunkedEncoding: false`). ⑤에서 정적 자산을 Cloudflare에 남기면 경로 규칙을 이 파일에 추가하고 hostname은 늘리지 않습니다.
+- #6400 edge proof와 맞물리는 지점: 서명 대상은 `method, path, at, id, tls`이고 Host·클라이언트 IP는 서명에 없습니다. 그래서 tunnel이 앞에 있어도 검증이 깨지지 않습니다. 조건은 ① 경로 rewrite 없음(서명 경로 `/api/claw/connector/gateway/session`) ② `x-padiem-edge-at`·`-id`·`-tls`·`-proof` 헤더 무변형 통과 ③ 서명자가 tunnel 앞(edge)에서 실행. 세 조건 중 하나라도 어긋나면 앱이 fail-closed로 거부합니다.
+- 확인 방법: ① `cloudflared tunnel --config <file> ingress validate`(오프라인) exit 0 ② `https://chat.padiem.net/health` 200 ③ 정적 페이지 1건 200 ④ `/api/chat/stream` 1턴 스트리밍 ⑤ 커넥터 게이트웨이 WSS 업그레이드가 edge proof 검증을 통과.
+- 되돌리기 우선순위: 기본은 hostname tunnel route(DNS) 제거 → `apps/padiem-chat/wrangler.toml`의 Worker custom domain(`chat.padiem.net`)이 다시 응답합니다. 예시 YAML의 Worker-origin 변형은 tunnel을 유지한 채 origin만 되돌리는 선택이고, `workers.dev` Host를 이 Worker가 받아들이는지는 실환경 확인 전에는 쓰지 않습니다.
+
 ### ⑤ Cloudflare Chat Worker를 정적 파일·입구만 남기고 정리
 
 - **완료 기준**: `padiem-chat` Worker에 남는 바인딩이 정적 assets·도메인·버전 메타데이터(및 봇 차단 설정)뿐. `B14_SERVICE`·`PADIEM_CHAT_DB`·`PADIEM_WORKSPACE_FILES`·identity/broker/STT/PDF/OAuth-state 서비스 바인딩·`PADIEM_*` 변수·시크릿이 기준선에서 제거되고, 기준선 파일이 새 상태로 리뷰 갱신. `scheduled()` 핸들러 제거 또는 비활성. R2는 컴2 백업 버킷만 남긴다.

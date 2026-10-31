@@ -1,0 +1,39 @@
+# cloudflared ingress — rollback: chat.padiem.net → the existing Cloudflare
+# Worker, without moving the hostname off this tunnel.
+#
+# Status: EXAMPLE ONLY, and NOT verified against a live Worker. Nothing here
+# is installed or activated by the repository.
+#
+# Two rollback paths exist and they are not equivalent:
+#
+#   A. Primary (plan ④): remove this hostname's tunnel route / DNS record so
+#      the Worker custom domain serves chat.padiem.net again. That path is
+#      declared in apps/padiem-chat/wrangler.toml ([[routes]] pattern
+#      chat.padiem.net, custom_domain = true) and needs no YAML.
+#   B. This file: keep the DNS record on the tunnel and switch only the
+#      origin back to the Worker's workers.dev entry point. It exists for a
+#      same-minute switchback when the tunnel must stay in place.
+#
+# Open point for path B: the Worker is reached by its own hostname, so the
+# request arrives with that Host instead of chat.padiem.net. Whether this
+# Worker accepts that (and whether httpHostHeader may be pointed back at
+# chat.padiem.net without re-entering the tunnel) is a live check the operator
+# must run before relying on B. Path A has no such question and is the
+# documented rollback.
+#
+# Placeholders only: tunnel UUID, credentials path and the workers.dev origin
+# are placeholders. Never commit a real tunnel ID, credentials path or token.
+
+tunnel: CHAT_PUBLIC_TUNNEL_UUID
+credentials-file: /etc/cloudflared/CHAT_PUBLIC_TUNNEL_UUID.json
+
+ingress:
+  - hostname: chat.padiem.net
+    service: https://PADIEM_CHAT_WORKERS_DEV_ORIGIN
+    originRequest:
+      connectTimeout: 30s
+      tcpKeepAlive: 30s
+      disableChunkedEncoding: false
+      noTLSVerify: false
+  # The catch-all stays last: an unknown hostname is refused, not proxied.
+  - service: http_status:404
