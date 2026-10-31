@@ -1,22 +1,18 @@
-# Chat connector WSS differential finding (2026-10-31)
+# Chat connector WSS parity work (2026-10-31)
 
-Source base dd348eeff. The test `apps/padiem-chat/tests/test_com2_prod_wss_parity.py`
-passes the same synthetic PC `pc_offer_begin` frame to actual production
-`maybe_dispatch_connector_gateway` and the COM2 `create_com2_gateway`
-entrypoints. The production Service Binding is a double delivering the frame
-to the real `LivePcWssOffer` class with a real local SQLite adapter. COM2
-uses the actual edge verifier and Starlette TestClient; no real CF runtime,
-network tunnel, production data or device is used.
+On base dd348eeff the COM2 gateway rejected production's first
+`pc_offer_begin` frame. The opt-in COM2 relay now forwards the frame to the
+broker socket owner, rather than constructing another owner or store.
+`test_com2_prod_wss_parity.py` sends the same synthetic first frame through
+the production dispatch and COM2 route: both return the same challenge, with
+the real `LivePcWssOffer` actor and a local SQLite adapter.
 
-| Input | Production path | COM2 host path |
-|---|---|---|
-| pc_offer_begin, synthetic valid key | Production dispatch hands off to Broker private PC-offer socket; actual actor emits pc_offer_challenge | COM2 opens the gateway socket, then closes 1011 because it expects a different first frame, `begin` |
-
-The response 101 is simulated by the Service Binding double. The test proves
-a protocol divergence, not live Worker behavior or successful enrollment.
-A full same-flow comparison cannot pass the first frame until the COM2 broker
-PC-offer route and secure host routing are implemented. Production also checks
-its configured public URL, release gates, and Worker TLS metadata; COM2 uses
-its own default-off gateway, signed edge proof and durable replay database.
-Those transport checks differ by design but require explicit parity review.
-Do not switch the production PC connector to this COM2 path on this evidence.
+This first-frame test uses a transport double. It does not yet compare proof,
+owner approval, credential/ACK, terminal result or close, and it does not
+prove production parity or live device behavior. The relay is default off
+(`PADIEM_COM2_PC_OFFER_RELAY_ENABLED`); enabling it requires the #6404
+loopback broker socket endpoint and its durable replay protection. It sends a
+new random request ID signed with the existing broker v1 service proof as the
+GET body; the broker must verify and atomically consume it. The exact relay
+contract and redirect/failure behavior need review before activation.
+No Cloudflare Worker, live COM2 service or production state was changed.
