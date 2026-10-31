@@ -16,7 +16,13 @@ Set `STAGING_CHAT_COOKIE` privately to the complete session Cookie header
 (e.g. `padiem_session=<value>`) in the process environment, never in a
 command line, source file, log, or shared shell history. Without the variable
 the suite runs the two guest checks only and reports the six login-dependent
-checks as `SKIP` (no requests, no writes). Run on the machine hosting staging:
+checks as `SKIP` (no requests, no writes). The suite performs one cookie-
+authenticated mutation (`POST /api/chat`). Against a staging-shaped server the
+same-origin guard compares that Origin with the server's own `public_base_url`
+(the https public origin; loopback is only allowed under `PADIEM_LOCAL_DEV`,
+which staging never sets), so set `STAGING_CHAT_EXPECTED_ORIGIN` to that exact
+https public origin — a configuration value, never a secret. The transport
+stays loopback HTTP. Run on the machine hosting staging:
 
 ```sh
 python apps/padiem-chat/scripts/staging_com2_e2e.py http://127.0.0.1:8801

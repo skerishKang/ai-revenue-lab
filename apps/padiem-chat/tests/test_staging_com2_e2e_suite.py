@@ -66,3 +66,9 @@ def test_suite_over_loopback(files_ready, pc_ready):
 def test_reject_non_loopback_before_connect(url):
     with pytest.raises(ValueError):
         suite.run(url, "session=x")
+
+
+@pytest.mark.parametrize("origin", ["http://chat-com2-staging.padiem.net", "//evil.test"])
+def test_reject_non_https_expected_origin(origin):
+    with pytest.raises(ValueError):
+        suite.run("http://127.0.0.1:8801", "session=x", origin)

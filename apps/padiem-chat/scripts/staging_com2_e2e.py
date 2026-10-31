@@ -2,6 +2,11 @@
 
 Without STAGING_CHAT_COOKIE the two guest checks still run and the six
 login-dependent checks are reported as SKIP (no requests, no writes).
+
+Staging-shaped servers enforce the #3476 same-origin guard with the server's
+configured public origin; set STAGING_CHAT_EXPECTED_ORIGIN to that exact
+public origin (a config value, never a secret) so the probe's POST/DELETE
+carry the Origin the server expects. The transport stays loopback HTTP.
 """
 import argparse
 import json
@@ -16,12 +21,17 @@ class NoRedirect(HTTPRedirectHandler):
         return None
 
 
-def run(base, cookie):
+def run(base, cookie, expected_origin=""):
     u = urlsplit(base)
     if (u.scheme != "http" or u.hostname not in ("127.0.0.1", "::1", "localhost")
             or u.username or u.password or u.path not in ("", "/") or u.query or u.fragment):
         raise ValueError("Only an HTTP loopback origin is allowed")
     base = base.rstrip("/")
+    mutate_origin = expected_origin.strip()
+    if mutate_origin and not mutate_origin.startswith("https://"):
+        raise ValueError("STAGING_CHAT_EXPECTED_ORIGIN must be the exact https public origin")
+    if not mutate_origin:
+        mutate_origin = base
     signed = bool(cookie)
     if signed and ("\n" in cookie or "\r" in cookie):
         raise ValueError("STAGING_CHAT_COOKIE must contain a session cookie header")
@@ -33,7 +43,7 @@ def run(base, cookie):
             headers["Cookie"] = cookie
         if body is not None:
             headers["Content-Type"] = "application/json"
-            headers["Origin"] = base
+            headers["Origin"] = mutate_origin
         req = Request(base + path, data=json.dumps(body).encode() if body is not None else None,
                       headers=headers, method=method)
         try:
@@ -97,7 +107,8 @@ def main():
     parser.add_argument("base_url", help="isolated mock Chat loopback origin")
     args = parser.parse_args()
     try:
-        passed, skipped = run(args.base_url, os.environ.get("STAGING_CHAT_COOKIE", ""))
+        passed, skipped = run(args.base_url, os.environ.get("STAGING_CHAT_COOKIE", ""),
+                              os.environ.get("STAGING_CHAT_EXPECTED_ORIGIN", ""))
     except Exception as exc:
         # Never include URLs, response bodies, cookies or exception messages.
         print("FAIL", type(exc).__name__)
