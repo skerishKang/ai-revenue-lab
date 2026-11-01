@@ -198,8 +198,14 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
                 result = submit(file_handlers[child](args))
                 if result.get("ok") is False and isinstance(result.get("stage"), str):
                     # A refused step keeps its own closed reason code, so a batch
-                    # reports why that step failed, not one generic failure.
-                    result["error"] = result["stage"]
+                    # reports why that step failed, not one generic failure. The
+                    # Korean hint the handler already carries travels with it —
+                    # the person reading the stopped batch reads Korean, not the
+                    # stage code.
+                    reason = result["stage"]
+                    if isinstance(result.get("hint"), str) and result["hint"].strip():
+                        reason = f"{reason} — {result['hint'].strip()}"
+                    result["error"] = reason
                 if op in {"write", "move", "delete"}:
                     from app.pc_action_verification import unavailable_action
                     verification = result.get("action_verification")
