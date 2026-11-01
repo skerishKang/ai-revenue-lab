@@ -892,8 +892,13 @@ def _requested_natural_pc_query(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
-_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
-_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
+# #6460: a document kind is a file noun too, so "내 PC에서 견적 들어간 엑셀
+# 찾아줘" reaches the PC file tools instead of ordinary chat.
+_PC_FILE_NOUNS = (
+    "파일", "폴더", "디렉터리", "디렉토리", "txt", "문서", "엑셀", "xlsx",
+    "워드", "docx", "한글", "hwpx", "pdf", "csv", "스프레드시트", "프레젠테이션",
+)
+_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어", "검색")
 
 
 def _requested_natural_pc_files(user_text: str) -> bool:

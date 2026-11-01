@@ -56,6 +56,19 @@ from padiem_ai_core.pc_device_identity import is_pc_device_id
 from .auth_routes import current_user_id
 from .claw_connector_enrollment_routes import _verified_owner_request
 from .claw_memory_routes import _resolve_memory_workspace
+from .claw_pc_read_command import (
+    pc_read_chunk_command,
+    pc_read_length,
+    pc_read_offset,
+)
+from .claw_pc_search_command import (
+    PC_SEARCH_MAX_LIMIT,
+    pc_search_command,
+    pc_search_mode,
+    pc_search_path,
+    pc_search_query,
+    pc_search_roots,
+)
 from .claw_local_task_result_projection import result_message_id
 from .control_plane_identity import IdentityBridgeError
 from .history import (
@@ -3454,7 +3467,10 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         claim = json.loads(encoded)
     except (ValueError, TypeError):
         return None, _error(422, "pc_scope_claim_invalid")
-    scopes = {"files_list": ["list"], "files": ["list", "read"],
+    # A name search is a listing that filters; a content search reads the same
+    # files a `files` grant may already read, one match line at a time.
+    scopes = {"files_list": ["list", "search_name"],
+              "files": ["list", "read", "search_name", "search_content"],
               "files_write": ["write", "move", "delete"],
               "query_drives": ["drives"], "none": []}
     if (
@@ -3463,8 +3479,15 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         or type(claim["version"]) is not int or claim["version"] != 1
         or not isinstance(claim["requested"], str) or claim["requested"] not in scopes
         or not isinstance(claim["admitted"], str) or claim["admitted"] not in scopes
-        or claim["ops"] != scopes[claim["admitted"]]
+        # The ops list is a ceiling, not an inventory: a claim produced by an
+        # Engine that predates a capability still names a real subset of the
+        # admitted scope, and the dispatch below refuses any op it did not
+        # name. Requiring the full list would fail every file call during a
+        # rolling deploy whose Chat side shipped one capability earlier.
+        or not set(claim["ops"]).issubset(scopes[claim["admitted"]])
         or not set(claim["ops"]).issubset(scopes[claim["requested"]])
+        or len(set(claim["ops"])) != len(claim["ops"])
+        or claim["source"] not in ("declared", "decision", "missing")
         or claim["source"] not in ("declared", "decision", "missing")
         or claim["app_id"] != ("padiem-chat" if product == "chat" else "b54-padiem-claw")
     ):
@@ -3615,9 +3638,28 @@ def _pc_files_powershell_literal(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
-#: The closed operation set this lane serves: two readers, three writers.
-_PC_FILES_OPS = ("list", "read", "write", "move", "delete")
+#: The closed operation set this lane serves: readers, one search, three writers.
+_PC_FILES_OPS = ("list", "read", "read_chunk", "search", "write", "move", "delete")
 _PC_WRITE_OPS = ("write", "move", "delete")
+
+
+def _pc_files_claim_op(op: Any, search_mode: Any) -> str | None:
+    """The scope-ceiling operation one dispatch needs, or None when invalid.
+
+    A search names which half of the file it reads, so the signed ceiling is
+    checked against ``search_name`` or ``search_content`` rather than the one
+    wire-level word both tools share.
+    """
+    if op == "read_chunk":
+        # A range read is the same read authority as read_file; the file is
+        # never sent whole, and the claim's `read` already covers it.
+        return "read"
+    if op != "search":
+        return op if op in _PC_FILES_OPS else None
+    mode = pc_search_mode(search_mode)
+    if mode is None:
+        return None
+    return "search_content" if mode == "content" else "search_name"
 #: Hidden per-drive backup folder. The original is copied here before anything
 #: changes, so a rollback never depends on somebody remembering a path.
 PC_BACKUP_FOLDER = ".padiem-backup"
@@ -4111,7 +4153,10 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         }
         # A write names its bytes and a move names where the file lands. Nothing
         # else may add a field, and the operation itself is validated below.
-        extra_fields = {"write": {"content"}, "move": {"destination"}}
+        # A search names its query and which side of the file it looks at.
+        extra_fields = {"write": {"content"}, "move": {"destination"},
+                        "search": {"query", "search_mode"},
+                        "read_chunk": {"offset", "length"}}
         named = payload.get("op")
         if isinstance(named, str) and named in extra_fields:
             expected = expected | extra_fields[named]
@@ -4225,6 +4270,8 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
             "tools": [
                 "claw.pc.list_files",
                 "claw.pc.read_file",
+                "claw.pc.search_files",
+                "claw.pc.search_contents",
                 "claw.pc.query_drives",
             ],
             "run_id": payload["run_id"],
@@ -4246,16 +4293,57 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         op = payload.get("op")
         if op not in _PC_FILES_OPS:
             return _error(422, "oracle_mesh_file_op_invalid")
+        search_mode = None
+        claim_op = op
+        if op == "search":
+            search_mode = pc_search_mode(payload.get("search_mode"))
+            claim_op = _pc_files_claim_op(op, search_mode)
+            if claim_op is None:
+                return _error(422, "oracle_mesh_file_search_invalid")
         # The independently signed ceiling is enforced before either dispatch
         # constructor. The existing owner/path/size/idempotency checks follow.
-        if scope_claim is not None and op not in scope_claim["ops"]:
+        if scope_claim is not None and claim_op not in scope_claim["ops"]:
             return _error(403, "pc_scope_denied")
-        picked = _pc_files_pick_root(roots, payload.get("path"))
-        if picked is None:
-            return _error(422, "oracle_mesh_file_path_invalid")
-        root, relative = picked
-        if op == "read" and not relative:
-            return _error(422, "oracle_mesh_file_path_invalid")
+        search_roots = None
+        if op == "search":
+            # No folder named means every approved root, in order: the owner's
+            # grant is the whole set, so a search never has to guess one and is
+            # never refused for not naming one.
+            search_path = pc_search_path(payload.get("path"))
+            if search_path is None:
+                return _error(422, "oracle_mesh_file_path_invalid")
+            if search_path:
+                picked = _pc_files_pick_root(roots, search_path)
+                if picked is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                picked_root, picked_relative = picked
+                label = next(
+                    (entry["label"] for entry in roots if entry["path"] == picked_root),
+                    None,
+                )
+                if label is None:
+                    return _error(422, "oracle_mesh_file_path_invalid")
+                search_roots = [{
+                    "label": label,
+                    "path": picked_root.rstrip("/") + (
+                        "/" + picked_relative if picked_relative else ""
+                    ),
+                }]
+            else:
+                search_roots = [
+                    {"label": entry["label"], "path": entry["path"]}
+                    for entry in roots
+                ]
+            if pc_search_roots(search_roots) is None:
+                return _error(503, "oracle_mesh_file_root_unavailable")
+            root = relative = None
+        else:
+            picked = _pc_files_pick_root(roots, payload.get("path"))
+            if picked is None:
+                return _error(422, "oracle_mesh_file_path_invalid")
+            root, relative = picked
+            if op == "read" and not relative:
+                return _error(422, "oracle_mesh_file_path_invalid")
         tool_call_ref = payload.get("tool_call_ref")
         if (
             not isinstance(tool_call_ref, str)
@@ -4313,6 +4401,25 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 tool_call_ref=tool_call_ref,
                 files_target=target,
             )
+        if op == "read_chunk":
+            offset = pc_read_offset(payload.get("offset"))
+            length = pc_read_length(payload.get("length"))
+            if offset is None or length is None or not relative:
+                return _error(422, "oracle_mesh_file_range_invalid")
+            command = pc_read_chunk_command(
+                root=root, relative=relative, offset=offset, length=length,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
+            )
         if op == "read":
             # #5015: the read reuses the existing kind="read" MeshCentral
             # download lane. No shell command is built for it.
@@ -4328,6 +4435,25 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
                 target=target,
                 root=root,
                 relative=relative,
+            )
+        if op == "search":
+            query = pc_search_query(payload.get("query"))
+            if query is None:
+                return _error(422, "oracle_mesh_file_search_invalid")
+            command = pc_search_command(
+                roots=search_roots, query=query, mode=search_mode,
+                limit=PC_SEARCH_MAX_LIMIT,
+            )
+            return await dispatch_oracle_mesh_command_intent(
+                request, command=command,
+                wire={
+                    "run_id": payload["run_id"],
+                    "device_id": selected,
+                    "confirmed": True,
+                },
+                trusted_owner=(session, uid, command_workspace),
+                tool_call_ref=tool_call_ref,
+                files_target=target,
             )
         command = _pc_files_command(
             op=op, root=root, relative=relative,

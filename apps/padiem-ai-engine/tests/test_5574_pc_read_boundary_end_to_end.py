@@ -423,7 +423,7 @@ def test_an_admitted_list_only_plan_refuses_read_intent_before_dispatch(
     # Admission succeeded: the model and list handler ran before the step gate.
     assert len(model.prompts) == 3
     assert "pc_scope_denied" in model.prompts[2]
-    assert all(claim["ops"] == ["list"] for claim in pc.claims)
+    assert all(claim["ops"] == ["list", "search_name"] for claim in pc.claims)
     assert pc.claims
     assert READ_TARGET in model.prompts[1]
     assert "read_file is not available" in model.prompts[0]
@@ -565,7 +565,7 @@ def test_request_scope_list_is_fixed_across_later_read_and_plan(declared):
     assert len(model.prompts) == 3  # No classifier or duplicate first B14 call.
     assert "pc_scope_denied" in model.prompts[-1]
     assert pc.claims and all(c["requested"] == c["admitted"] == "files_list" for c in pc.claims)
-    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert all(c["ops"] == ["list", "search_name"] for c in pc.claims)
     assert all(c["source"] == ("declared" if declared else "decision") for c in pc.claims)
 
 
@@ -591,7 +591,7 @@ def test_request_files_is_reduced_by_server_read_permission_before_dispatch():
     assert result["execution"]["metadata"]["status"] == "completed"
     assert pc.ops == ["list"]
     assert pc.claims and all(c["requested"] == "files" and c["admitted"] == "files_list" for c in pc.claims)
-    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert all(c["ops"] == ["list", "search_name"] for c in pc.claims)
     assert "pc_scope_denied" in model.prompts[-1]
 
 
@@ -643,12 +643,16 @@ def test_scope_decision_reuses_first_call_with_conversation_and_selected_model()
 def test_separate_runs_do_not_reuse_the_previous_turn_ceiling():
     first = json.loads(LIST_STEP)
     first["plan"] = "files_list"
-    for step, expected in ((json.dumps(first), ["list"]), (LIST_STEP, ["list", "read"])):
+    for step, expected, claim_ops in (
+        (json.dumps(first), ["list"], ["list", "search_name"]),
+        (LIST_STEP, ["list", "read"],
+         ["list", "read", "search_name", "search_content"]),
+    ):
         pc = _FakePcEndpoint()
         model = _ScriptedModel([step, WRONG_READ_STEP, COMPLETE_STEP])
         _orchestrate(_transport_for(model=model, pc=pc))
         assert pc.ops == expected
-        assert pc.claims and pc.claims[0]["ops"] == expected
+        assert pc.claims and pc.claims[0]["ops"] == claim_ops
 
 
 
@@ -685,7 +689,7 @@ def test_external_list_declaration_precedes_model_plan_and_blocks_read(selected_
     assert transport.bodies[0]["declared_plan"] == "files_list"
     assert pc.ops == ["list"]  # read dispatch 0, despite intent:read and later plan:files.
     assert all(c["requested"] == c["admitted"] == "files_list" for c in pc.claims)
-    assert all(c["ops"] == ["list"] and c["source"] == "declared" for c in pc.claims)
+    assert all(c["ops"] == ["list", "search_name"] and c["source"] == "declared" for c in pc.claims)
     assert len(model.prompts) == 3
     assert "In your FIRST step declare" not in model.prompts[0]
     assert "server admitted files_list" in model.prompts[0]
@@ -703,7 +707,7 @@ def test_external_files_declaration_is_capped_by_server_read_grant():
     assert transport.statuses == [200]
     assert pc.ops == ["list"]
     assert all(c["requested"] == "files" and c["admitted"] == "files_list" for c in pc.claims)
-    assert all(c["ops"] == ["list"] for c in pc.claims)
+    assert all(c["ops"] == ["list", "search_name"] for c in pc.claims)
     assert len(model.prompts) == 3 and "pc_scope_denied" in model.prompts[-1]
 
 
