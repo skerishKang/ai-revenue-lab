@@ -32,14 +32,33 @@
   const BOOK_PREFIX = "활동집 - ";
 
   function generationFailureText(error) {
-    const message = error && typeof error.message === "string" ? error.message.trim() : "";
-    return "생성 실패: " + (message || GEN_ERROR_FALLBACK);
+    const code = error && error.code;
+    const known = code === "invalid_request"
+      ? "입력 내용을 확인한 뒤 다시 시도해 주세요."
+      : error && error.status ? GEN_ERROR_COPY[error.status] : null;
+    const message = known || (error && error.message === GEN_OFFLINE_COPY ? GEN_OFFLINE_COPY : GEN_ERROR_FALLBACK);
+    return "생성 실패: " + message;
   }
 
-  // The failure line stays prefixed with 생성 실패: the session-restore code
-  // treats drafts that do not start with it as real content.
+  function clearGenerationFailure(output) {
+    if (output._errorCodeNote && output._errorCodeNote.parentNode) {
+      output._errorCodeNote.parentNode.removeChild(output._errorCodeNote);
+    }
+    output._errorCodeNote = null;
+  }
+
+  // Keep the failure prefix: drafts starting with it are not saved as content.
   function showGenerationFailure(output, retry, error) {
     output.value = generationFailureText(error);
+    clearGenerationFailure(output);
+    const code = error && error.code;
+    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code) && output.parentNode) {
+      const note = document.createElement("small");
+      note.className = "error-code";
+      note.textContent = "참고 코드: " + code;
+      output.parentNode.insertBefore(note, output.nextSibling);
+      output._errorCodeNote = note;
+    }
     if (retry) retry.hidden = false;
   }
 
@@ -74,10 +93,10 @@
     }
     if (!res.ok) {
       const data = await res.json().catch(() => null);
-      const message = data?.error?.message;
-      throw new Error(typeof message === "string" && message.trim()
-        ? message
-        : (GEN_ERROR_COPY[res.status] || GEN_ERROR_FALLBACK));
+      const error = new Error(GEN_ERROR_COPY[res.status] || GEN_ERROR_FALLBACK);
+      error.status = res.status;
+      error.code = typeof data?.error?.code === "string" ? data.error.code : "";
+      throw error;
     }
     const data = await res.json();
     return (data && data.answer) ? data.answer : (data && data.message ? data.message : JSON.stringify(data));
@@ -946,7 +965,7 @@
       speechResult.hidden = false;
       speechOutput.value = "생성 중...";
       try {
-        speechOutput.value = await apiChat(prompt, "speech");
+        speechOutput.value = await apiChat(prompt, "speech"); clearGenerationFailure(speechOutput);
       } catch (e) {
         showGenerationFailure(speechOutput, speechRetry, e);
       }
@@ -1731,7 +1750,7 @@
         setSnsEditing(null);
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(prompt, "sns"); }
+        try { output.value = await apiChat(prompt, "sns"); clearGenerationFailure(output); }
         catch (e) { showGenerationFailure(output, snsRetry, e); }
         if (previewBox) { previewBox.hidden = false; renderPreview(); }
       }
@@ -1875,7 +1894,7 @@
         prompt += "다음 항목으로 정리해 주세요:\n1. 회의 요약 (3-5문장)\n2. 주요 논의사항 (bullet)\n3. 결정사항 (bullet)\n4. 후속 업무 (담당자/일정이 원문에 있으면 포함)\n5. 미해결 사항";
         result.hidden = false;
         output.value = "생성 중...";
-        try { output.value = await apiChat(prompt, "meeting"); }
+        try { output.value = await apiChat(prompt, "meeting"); clearGenerationFailure(output); }
         catch (e) { showGenerationFailure(output, meetingRetry, e); }
       }
       form.addEventListener("submit", (e) => { e.preventDefault(); gen(); });
@@ -2174,7 +2193,7 @@
             prompt += "4. 마무리 인사\n\n";
             prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.";
             bookOutput.value = "생성 중...";
-            bookOutput.value = await apiChat(prompt, "meeting");
+            bookOutput.value = await apiChat(prompt, "meeting"); clearGenerationFailure(bookOutput);
           } catch (e) {
             showGenerationFailure(bookOutput, bookRetry, e);
           }
