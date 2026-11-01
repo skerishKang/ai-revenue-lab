@@ -421,7 +421,7 @@ def test_command_result_mode_keeps_its_done_only_contract(monkeypatch):
     assert status == 409
     assert body["error"]["code"] == "oracle_mesh_result_not_ready"
 
-def test_read_result_store_bound_is_twenty_mb_for_pc_files_and_six_mb_otherwise():
+def test_read_result_has_no_pc_read_cap_and_keeps_six_mb_for_other_lanes():
     oversized = "x" * (routes.PC_FILES_READ_MAX_BYTES + 1)
     raw = oversized.encode("utf-8")
     wire = {
@@ -429,9 +429,11 @@ def test_read_result_store_bound_is_twenty_mb_for_pc_files_and_six_mb_otherwise(
         "content_bytes": len(raw),
         "content_sha256": hashlib.sha256(raw).hexdigest(),
     }
+    # #5882 A: a verified PC read body is accepted whatever one answer's size
+    # is; a file larger than a page is paged by the Engine, not refused here.
     assert routes._verified_read_result_text(
         {"root_ref": routes._PC_FILES_READ_ROOT_REF}, wire,
-    ) is None
+    ) == oversized
     assert routes._verified_read_result_text(
         {"root_ref": "other-read-lane"}, wire,
     ) is not None
