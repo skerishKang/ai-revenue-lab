@@ -126,6 +126,9 @@ class ConnectorHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/health"):
             return self._json(HEALTH)
+        if self.path.startswith("/api/auth/status"):
+            return self._json({"ready": True, "authenticated": True, "session_state": "signed_in",
+                               "user": {"id": "usr_" + "a" * 32, "name": "Test User"}})
         if self.path.startswith(CONNECT_ENDPOINT):
             ConnectorHandler.directory_reads += 1
             return self._json(DIRECTORY)

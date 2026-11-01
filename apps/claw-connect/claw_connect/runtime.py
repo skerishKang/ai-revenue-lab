@@ -31,6 +31,9 @@ from .menu_model import (
     ACTION_DISCONNECT,
     ACTION_LOGIN,
     ACTION_OPEN_WEB,
+    ACTION_VIEW_STATUS,
+    ACTION_OPEN_LOGS,
+    STATE_LABELS,
     ACTION_QUIT,
     ACTION_RECONNECT,
     ACTION_AUTOSTART_ON,
@@ -234,6 +237,7 @@ class ConnectApp:
         """
         return self._enrollment.project_state(
             paused=self._user_paused or self._controller.state is ConnectionState.PAUSED,
+            connecting=self._controller.state is ConnectionState.CONNECTING,
             connected=self._controller.state is ConnectionState.CONNECTED,
         )
 
@@ -283,6 +287,20 @@ class ConnectApp:
         import webbrowser  # noqa: PLC0415
 
         webbrowser.open(WEB_URL)
+
+    def view_status(self) -> None:
+        import win32gui
+        win32gui.MessageBox(0, STATE_LABELS[self.connector_status()], CONNECT_PRODUCT, 0)
+
+    def open_logs(self) -> None:
+        import os
+        from pathlib import Path
+        base = os.environ.get("LOCALAPPDATA")
+        if not base:
+            return
+        folder = Path(base) / "Padiem" / "ClawConnect"
+        folder.mkdir(parents=True, exist_ok=True)
+        os.startfile(str(folder))
 
     def login(self) -> None:
         """Start the reviewed PADIEM login / PC-registration consent flow.
@@ -537,10 +555,15 @@ class ConnectApp:
 
     def _watch_quit_event(self) -> None:
         next_restart_at = time.monotonic() + 15.0
+        last_state = None
         while not self._quit.is_set():
             if self._quit_signal.wait(0.5):
                 self.quit()
                 return
+            state = self.connector_status()
+            if state != last_state:
+                last_state = state
+                self._refresh_tray()
             if self._offer_signal.wait(0):
                 record = self._enrollment.committed_record()
                 if record is not None and record.is_enrolled():
@@ -620,6 +643,8 @@ class ConnectApp:
     def actions(self) -> dict[str, Callable[[], None]]:
         return {
             ACTION_OPEN_WEB: self.open_web,
+            ACTION_VIEW_STATUS: self.view_status,
+            ACTION_OPEN_LOGS: self.open_logs,
             ACTION_LOGIN: self.login,
             ACTION_TOGGLE_PAUSE: self.toggle_pause,
             ACTION_RECONNECT: self.reconnect,

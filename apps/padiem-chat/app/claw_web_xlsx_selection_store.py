@@ -64,7 +64,7 @@ class D1WebXlsxSelectionStore:
             size = int(row["size_bytes"])
         except (ValueError, TypeError, KeyError) as exc:
             raise WebXlsxSelectionError("selection metadata corrupt") from exc
-        if not 0 < size <= 1_048_576:
+        if not 0 < size <= 1024 * 1024 * 1024:
             raise WebXlsxSelectionError("selection size corrupt")
         return {
             "selection_ref": row["selection_ref"],
@@ -102,7 +102,7 @@ class D1WebXlsxSelectionStore:
         if (source_expiry.tzinfo is None or source_expiry.utcoffset() is None
                 or source_expiry <= timestamp or type(filename) is not str
                 or not filename.lower().endswith(".xlsx")
-                or type(size) is not int or not 0 < size <= 1_048_576):
+                or type(size) is not int or not 0 < size <= 1024 * 1024 * 1024):
             raise WebXlsxSelectionError("expired or invalid source")
         expires_at = min(source_expiry, timestamp + _TTL)
         stamp = timestamp.isoformat()
