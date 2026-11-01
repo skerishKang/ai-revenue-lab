@@ -646,12 +646,13 @@ async def _capture_glass_preview(page: Page, *, variant: str) -> dict[str, Any]:
         label=f"glass-{variant}-evidence-early-260ms",
     )
     early_evidence_shell = early_evidence_sample["state"]
-    # CI may place a frame right on the strict 0.68 boundary (observed 0.672).
-    # Re-observe exactly ONCE on a fully reassembled, fresh pointer cycle only
-    # for near-boundary evidence. Every accepted cycle still must meet the
-    # unchanged >=0.68 progress and >=0.55 portal thresholds at 260ms.
+    # CI may place a frame right on the strict 0.68 boundary (observed 0.672),
+    # and a loaded runner can run the same 260ms window slower (observed
+    # 0.644). Re-observe exactly ONCE on a fully reassembled, fresh pointer
+    # cycle only for near-boundary evidence. Every accepted cycle still must
+    # meet the unchanged >=0.68 progress and >=0.55 portal thresholds at 260ms.
     if (
-        0.65 <= early_evidence_shell["progress"] < 0.68
+        0.60 <= early_evidence_shell["progress"] < 0.68
         and early_evidence_shell["portalOpacity"] >= 0.55
     ):
         await page.mouse.move(70, 80)
