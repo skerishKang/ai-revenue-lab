@@ -35,8 +35,8 @@ model, is executed by the same server-side step harness (admitted scope, signed
 dispatch, verified result), so the model choice never widens what may run.
 
 Registration is explicit/manual-pin only: each model lives in the exact-ID
-``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so
-``b14/auto`` and the legacy public summary surface are untouched. Missing
+``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so the
+legacy public summary surface stays untouched. Missing
 credential fails closed with zero upstream calls (generic platform adapter
 contract). Prices are the provider's published per-million-token rates; the
 API returns no dollar field, so no measured-cost claim is made here.

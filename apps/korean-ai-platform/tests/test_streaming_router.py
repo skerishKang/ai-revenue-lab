@@ -422,6 +422,7 @@ def test_public_gateway_still_rejects_stream_true_after_router_slice():
             "stream": True,
         },
     )
-    # B7: the retired id is refused at validation, before any stream handling.
-    assert response.status_code == 422
-    assert response.json()["error"]["code"] == "invalid_body"
+    # B7: the retired id is an unknown model — the canonical validator still
+    # refuses stream=true as always.
+    assert response.status_code == 400
+    assert response.json()["error"]["code"] == "stream_not_supported"

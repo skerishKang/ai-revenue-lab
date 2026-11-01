@@ -7,8 +7,8 @@ No Provider call is made during registration.
 Poolside is intentionally registered as an explicit-only model for the initial
 rollout: it is addressable by exact model ID but is not inserted into the
 legacy OpenRouter summary/auto-routing list. That keeps B14's historical
-OpenRouter catalog contract intact while preventing Poolside from being chosen
-by ``b14/auto`` before the owner explicitly approves that behavior.
+OpenRouter catalog contract intact while keeping Poolside out of every
+automatic selection surface; only the owner can approve another behavior.
 """
 
 from __future__ import annotations

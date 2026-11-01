@@ -75,7 +75,7 @@ def _now(value: datetime) -> datetime:
 
 
 def _model(value: str) -> str:
-    if not isinstance(value, str) or not MODEL_ID.fullmatch(value) or value.startswith("b14/auto"):
+    if not isinstance(value, str) or not MODEL_ID.fullmatch(value):
         raise _err("invalid_model_policy_model")
     return value
 

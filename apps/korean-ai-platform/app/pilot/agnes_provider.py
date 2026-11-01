@@ -10,8 +10,8 @@ binding name is ``PADIEM_B14_CREDENTIAL_01`` (names only; the value is never rea
 printed, or committed here).
 
 Registration is explicit/manual-pin only: the model lives in the exact-ID
-``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so
-``b14/auto`` and the legacy public summary surface are untouched. Missing
+``CATALOG_BY_ID`` table and is NOT appended to ``CATALOG_MODELS``, so the
+legacy public summary surface stays untouched. Missing
 credential fails closed with zero upstream calls (generic platform adapter
 contract). Pricing: the intake records a Credits-denominated free/default
 tier, not USD rates — no price or free claim is fabricated here.

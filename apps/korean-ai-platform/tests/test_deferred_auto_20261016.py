@@ -17,16 +17,17 @@ def client():
 
 
 def test_retired_auto_on_completions(client):
+    """B7: the retired id has no special case anywhere — it is an unknown
+    model, refused like any other string (no provider key to name a route)."""
     r = client.post("/api/pilot/v1/chat/completions", json=AUTO)
-    assert r.status_code == 422
-    assert r.json()["error"]["code"] == "invalid_body"
-    assert "b14/auto" in r.json()["error"]["message"]
+    assert r.status_code == 401
+    assert r.json()["error"]["code"] == "missing_provider_key"
 
 
 def test_retired_auto_on_resolve(client):
     r = client.post("/api/pilot/router/resolve", json=AUTO)
-    assert r.status_code == 422
-    assert r.json()["error"]["code"] == "invalid_body"
+    assert r.status_code == 400
+    assert r.json()["error"]["code"] == "unsupported_model"
 
 
 def test_auto_stream_preview_route_is_gone(client):

@@ -121,7 +121,7 @@ def validate_registry(data: dict) -> dict:
     for m in data["models"]:
         _strict_keys(m,expected,"model")
         mid=m["id"]
-        if not isinstance(mid,str) or not _ID.fullmatch(mid) or mid in found or mid=="b14/auto" or mid.startswith("padiem-profile/"):
+        if not isinstance(mid,str) or not _ID.fullmatch(mid) or mid in found or mid.startswith("padiem-profile/"):
             raise ModelRegistryError("invalid or duplicate model identity")
         found.add(mid)
         if m["provider_id"] not in data["providers"] or not mid.startswith(m["provider_id"]+"/"):
@@ -209,7 +209,7 @@ def install_models(data:dict|None=None) -> None:
             sort_order=index,enabled=(raw["enabled"] and data["providers"][raw["provider_id"]]["enabled"]),
         ))
     CATALOG_BY_ID.clear()
-    CATALOG_MODELS.clear()  # Existing b14/auto is not a user model.
+    CATALOG_MODELS.clear()
     for spec in specs:
         register_platform_provider(spec)
     for model in parsed:

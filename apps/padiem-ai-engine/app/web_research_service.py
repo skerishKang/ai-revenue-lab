@@ -403,7 +403,7 @@ class WebResearchEngineService:
                 allowed_tools=(),
                 required_capabilities=(),
                 # The planner must use the request's server-validated explicit
-                # model. It must not fall back to b14/auto or any default.
+                # model. It must not fall back to any default.
                 model_policy=dict(request.agent.model_policy),
                 max_steps=1,
             )
