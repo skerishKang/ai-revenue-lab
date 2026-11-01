@@ -316,3 +316,23 @@
     font-size: 14px !important;
   }
 }
+
+/* Fifth pass: the shell portrait is a second fixed art layer above the one
+   above, and the tier pill is a fixed-width box that a 14px label no longer
+   fits inside. */
+@media (max-width: 920px) {
+  html[data-theme="padiem-glass"] .glass-shell-portrait,
+  html[data-theme="padiem-glass"] .glass-shell-field {
+    display: none !important;
+  }
+
+  /* The pill keeps its own cap; at 14px the tier name needs the room. */
+  #composerForm .composer-tools .model-pill {
+    width: auto !important;
+    min-width: 44px !important;
+    max-width: 148px !important;
+    flex: 0 0 auto !important;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}

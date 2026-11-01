@@ -83,6 +83,7 @@ MEASURE = """(cfg) => {
     wide, taps, fonts,
     composerVisible: composerBox ? composerBox.top >= 0 && composerBox.bottom <= window.innerHeight + 1 : false,
     portraitContent: portrait.content,
+    shellPortrait: getComputedStyle(document.querySelector('.glass-shell-portrait') || document.body).display,
     bodyOverflow: getComputedStyle(document.body).overflow,
   };
 }
@@ -194,6 +195,7 @@ def test_the_first_screen_reaches_the_composer_and_hides_the_portrait_art(static
             value = page.evaluate(MEASURE, {"floor": TARGET_FLOOR, "textFloor": TEXT_FLOOR})
             assert value["composerVisible"], "the composer is below the fold on the first screen"
             assert value["portraitContent"] == "none", "the decorative portrait still paints over the phone screen"
+            assert value["shellPortrait"] == "none", "the shell portrait layer still paints over the phone screen"
         finally:
             browser.close()
 
@@ -270,6 +272,7 @@ def test_the_desktop_keeps_its_own_metrics(static_url):
             browser.close()
     assert value["overflowPx"] <= 1
     assert value["portraitContent"] != "none", "the phone rule reached the desktop portrait"
+    assert value["shellPortrait"] != "none", "the phone rule reached the desktop shell portrait"
     assert nav is not None and nav < TARGET_FLOOR, "the phone press floor leaked into the desktop sidebar"
 
 
