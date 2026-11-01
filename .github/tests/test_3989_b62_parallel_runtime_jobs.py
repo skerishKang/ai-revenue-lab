@@ -387,6 +387,10 @@ class ParallelB62JobsContract(unittest.TestCase):
             env["B62_FAIL_TARGET"] = fail_target
             env["TMPDIR"] = str(tmp)
             env["FAKE_UV_DIR"] = str(tmp)
+            # The bash one-liner invokes the script through $OVERLAP_SCRIPT;
+            # without this the job ran `bash ""` and no call was ever recorded
+            # (the Windows runner never saw it — the contract is POSIX-scoped).
+            env["OVERLAP_SCRIPT"] = str(script)
             # The fake uv must win command lookup inside MSYS bash: resolve the
             # dir natively in bash, grant the exec bit with bash's own chmod,
             # then prepend it to PATH. A Python chmod and a drive-letter PATH
