@@ -23,6 +23,8 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from pathlib import Path
+from .reparse_guard import walk_hits_reparse_point as reparse_walk_hit
 from typing import Any, Callable, Optional
 
 from .contracts import ContractError
@@ -159,6 +161,9 @@ MAX_READ_BYTES = 6_000_000
 PC_FILE_ERROR_PREFIX = "PADIEM_PC_FILE_ERROR:"
 PC_FILE_TOO_LARGE_MARKER = PC_FILE_ERROR_PREFIX + "too_large"
 PC_FILE_READ_FAILED_MARKER = PC_FILE_ERROR_PREFIX + "read_failed"
+#: #5994 D3 후속: the read path crossed a reparse point (junction/symlink) below
+#: the granted root and is refused before one byte is read.
+PC_FILE_LINK_REFUSED_MARKER = PC_FILE_ERROR_PREFIX + "link_refused"
 #: How much of a refusal's own message reaches the trace. The reason is what a
 #: silent read_failed cost on 2026-10-30; the bound keeps one line one line.
 _ERROR_TEXT_CHARS = 160
@@ -234,6 +239,10 @@ class OracleMeshDispatch:
     #: #5015: server-computed read bound. Only the poll response may set it;
     #: a missing value keeps the shared 6 MB read envelope for older servers.
     max_bytes: int | None = None
+    #: #5994 D3 후속: the granted root rides with the claim (newer servers).
+    #: When present, the read walks root→file and refuses a reparse-point
+    #: crossing before one byte is read. Older servers keep None (no guard).
+    granted_root: str | None = None
     # Only the authenticated queue projection may set these fields.
     background: bool = False
     owner_ref: str | None = None
@@ -369,6 +378,21 @@ class OracleMeshExecutor:
         self._queue_origin = queue_origin or None
         self._secret = channel_secret
         self._read_port = read_port
+        self._read_port = read_port
+        # #5994 D3 후속: the reparse guard travels with the executor — the same
+        self._read_port = read_port
+        self._read_port = read_port
+        # #5994 D3 후속: the reparse guard travels with the executor — the same
+        # judgment file (kagent/reparse_guard.py) is loaded directly so the read
+        # leg and the command lane can never disagree about the boundary.
+        import importlib.util as _ilu
+        guard_spec = _ilu.spec_from_file_location(
+            "kagent_reparse_guard",
+            str(Path(__file__).resolve().parent / "reparse_guard.py"),
+        )
+        guard_module = _ilu.module_from_spec(guard_spec)
+        guard_spec.loader.exec_module(guard_module)
+        self._reparse_guard = guard_module
         self._command_port = command_port
         self._desktop_port = desktop_port
         self._timeout = timeout_seconds
@@ -702,6 +726,11 @@ class OracleMeshExecutor:
             kind=kind,
             command_text=command_text,
             max_bytes=max_bytes,
+            granted_root=(
+                dispatch.get("granted_root")
+                if isinstance(dispatch.get("granted_root"), str)
+                and dispatch.get("granted_root") else None
+            ),
             background=background,
             owner_ref=owner_ref,
         )
@@ -727,6 +756,18 @@ class OracleMeshExecutor:
         so that body cannot cross it. A failed read is never collapsed into an
         empty success.
         """
+        # #5994 D3 후속: a junction or a symbolic link below the granted root
+        # must never carry a read outside it. The guard walks root→file before
+        # the official client runs, so not one byte of an outside file is read.
+        if dispatch.granted_root and reparse_walk_hit(
+            dispatch.granted_root, dispatch.file_path,
+        ):
+            self._trace_read(dispatch, "link_refused", time.monotonic(),
+                             error="reparse point below the granted root")
+            return OracleMeshExecutionOutcome(
+                termination="exited", exit_code=1,
+                body=PC_FILE_LINK_REFUSED_MARKER.encode("utf-8"),
+            )
         read_bound = dispatch.max_bytes
         if read_bound is None:
             read_bound = MAX_READ_BYTES
@@ -1932,6 +1973,7 @@ __all__ = [
     "MAX_COMMAND_BYTES",
     "MAX_READ_BYTES",
     "PC_FILE_ERROR_PREFIX",
+    "PC_FILE_LINK_REFUSED_MARKER",
     "PC_FILE_READ_FAILED_MARKER",
     "PC_FILE_TOO_LARGE_MARKER",
     "POLL_PATH",

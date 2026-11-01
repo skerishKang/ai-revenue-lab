@@ -101,6 +101,27 @@ def pc_read_chunk_command(
         '  \'{"ok":false,"error":"not_a_file"}\'',
         "  return",
         "}",
+        # #5994 D3 후속: a junction or a symbolic link below the granted root
+        # must never carry a chunk read outside it. Every folder from the root
+        # down to the file - and the file itself - is checked for the
+        # ReparsePoint attribute before one byte is read, and the refusal
+        # closes the read ({"ok":false,"error":"link_refused"}).
+        "$guardRoot=" + _ps_literal(root.rstrip("/") + "\\"),
+        "$guardHit=$null",
+        "try{",
+        "  $walk=$guardRoot",
+        "  foreach($seg in (" + _ps_literal(relative.replace("\\", "/")) + ".Replace('\\','/') -split '/')){",
+        "    if(-not $seg){continue}",
+        "    $walk=Join-Path $walk $seg",
+        "    if(-not (Test-Path -LiteralPath $walk)){break}",
+        "    $item=Get-Item -LiteralPath $walk -Force -ErrorAction SilentlyContinue",
+        "    if($item -and (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)){$guardHit=$walk;break}",
+        "  }",
+        "}catch{$guardHit=$guardRoot}",
+        "if($guardHit){",
+        '  \'{"ok":false,"error":"link_refused","message":"이 위치는 바로가기 폴더를 거쳐서 읽을 수 없습니다."}\'',
+        "  return",
+        "}",
         "$size=[int64]$items.Length",
     ]
     if office:

@@ -1970,6 +1970,16 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "expires_at": pending["expires_at"],
             "node_ref": pending["node_ref"],
             "file_path": pending["file_path"],
+            # #5994 D3 후속: the granted root rides with the claim so the PC
+            # executor can walk root→file and refuse a reparse-point crossing
+            # (junction/symlink) before it reads one byte.
+            "granted_root": (
+                pending["file_path"][: len(pending["file_path"])
+                                      - len(pending["path_relative"] or "") - 1]
+                if pending.get("path_relative")
+                and str(pending["file_path"]).endswith("/" + pending["path_relative"])
+                else None
+            ),
             "account_ref": pending["account_ref"],
             "device_id": pending["device_id"],
             "binding_ref": pending["binding_ref"],
