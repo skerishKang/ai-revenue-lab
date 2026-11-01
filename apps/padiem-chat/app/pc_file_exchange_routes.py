@@ -1327,7 +1327,10 @@ def _reference_text(name: str, content: bytes) -> str | None:
             from padiem_ai_core.document_normalization import extract_docx_text
 
             return extract_docx_text(content)
-        if suffix == ".hwpx":
+        if suffix in (".hwpx", ".hwp"):
+            # .hwp reaches here only when its bytes are a real HWPX (ZIP)
+            # package (#6126): the OLE2 legacy binary is refused upstream by
+            # its own signature, so both names take the one HWPX reader.
             from padiem_ai_core.document_normalization import extract_hwpx_text
 
             return extract_hwpx_text(content)
@@ -1343,61 +1346,12 @@ def _reference_text(name: str, content: bytes) -> str | None:
     return None
 
 
-LANE_HWP_TEXT_PATH = "/files/hwp-text"
-
-
-async def _lane_hwp_text(
-    request: Request, uid: str, payload: bytes,
-) -> tuple[str | None, str]:
-    """Legacy HWP text from the lane's own reader — bytes in, words out.
-
-    The Worker never imports olefile (#6034's rule): the bytes travel to the
-    COM2 lane with the same signed upload ticket every write uses, and the
-    lane's reader answers the words or its own refusal code. Answers
-    ``(text, code)`` — a code with no text is either that refusal or the
-    shared ``file_lane_unavailable``.
-    """
-
-    client = getattr(request.app.state, "file_lane_client", None)
-    if client is None or getattr(client, "ready", False) is not True:
-        return None, "file_lane_unavailable"
-    try:
-        # The client mints the same signed upload ticket every write uses; the
-        # budget is exactly these bytes, so the lane's own cap covers the read.
-        headers = client.upload_ticket(uid, len(payload))["headers"]
-    except Exception:
-        return None, "file_lane_unavailable"
-    try:
-        import httpx
-
-        async with httpx.AsyncClient(
-            transport=getattr(client, "_transport", None), timeout=None,
-            follow_redirects=False, trust_env=False,
-        ) as http:
-            response = await http.post(
-                client.origin + LANE_HWP_TEXT_PATH, headers=headers, content=payload,
-            )
-    except Exception:
-        return None, "file_lane_unavailable"
-    if response.status_code == 200:
-        try:
-            body = response.json()
-        except Exception:
-            body = None
-        if (isinstance(body, dict) and body.get("ok") is True
-                and isinstance(body.get("text"), str) and body["text"].strip()):
-            return body["text"], None
-        return None, "pc_reference_unreadable"
-    if response.status_code == 422:
-        try:
-            body = response.json()
-        except Exception:
-            body = None
-        if isinstance(body, dict) and isinstance(body.get("error"), dict):
-            code = body["error"].get("code")
-            if isinstance(code, str) and code:
-                return None, code
-    return None, "pc_reference_unreadable"
+# #6126: the file's own first bytes decide what a picked .hwp document is —
+# the OLE2 compound signature means the older binary Hangul format (never
+# converted, one guidance code), and the ZIP local-header signatures mean a
+# mislabeled file that is really an HWPX package and keeps working as HWPX.
+_HWP_OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
+_ZIP_LOCAL_MAGIC = (b"PK\x03\x04", b"PK\x05\x06", b"PK\x07\x08")
 
 
 async def pc_file_exchange_reference(request: Request) -> JSONResponse:
@@ -1428,16 +1382,17 @@ async def pc_file_exchange_reference(request: Request) -> JSONResponse:
     if refusal is not None:
         return refusal
     name = str(dispatch.get("file_path") or "").replace("\\", "/").rsplit("/", 1)[-1] or "파일"
-    if name.lower().endswith(".hwp"):
-        # Legacy HWP opens in the COM2 lane's own reader; the Worker only
-        # carries the bytes. A lane that is not running is answered as such.
-        text, code = await _lane_hwp_text(request, uid, content)
-        if text is None:
-            return _error(503 if code == "file_lane_unavailable" else 422, code)
-    else:
-        text = _reference_text(name, content)
-        if not isinstance(text, str) or not text.strip():
-            return _error(422, "pc_reference_unreadable")
+    if name.lower().endswith(".hwp") and content[:8] == _HWP_OLE_MAGIC:
+        # #6126: the older binary Hangul format is never converted. The bytes
+        # answer first — an OLE2 compound document is refused with the one
+        # save-as-HWPX guidance code every screen speaks (#2824's lane), so
+        # the owner gets an instruction instead of an error. A mislabeled
+        # .hwp whose bytes are a real HWPX (ZIP) package falls through and is
+        # read as HWPX below, exactly like a .hwpx upload.
+        return _error(422, "legacy_hwp_unsupported")
+    text = _reference_text(name, content)
+    if not isinstance(text, str) or not text.strip():
+        return _error(422, "pc_reference_unreadable")
     return _response({"ok": True, "name": name, "text": text, "chars": len(text)})
 
 

@@ -759,6 +759,7 @@
     preview: "가져온 글",
     unavailable: "PC 파일 창을 열지 못했습니다. 잠시 후 다시 시도해 주세요.",
     unreadable: "이 파일은 참고 글로 읽지 못했어요. 글자가 들어 있는 문서를 골라 주세요.",
+    hwpLegacy: "한글에서 ‘다른 이름으로 저장 → HWPX’로 저장한 뒤 다시 올려 주세요. HWPX로 저장하기: ① 한글에서 문서를 열고 ② 파일 - 다른 이름으로 저장을 고른 뒤 ③ 파일 형식을 HWPX로 정해 저장하세요.",
     hwpEncrypted: "암호가 걸린 한글 파일은 읽을 수 없어요.",
     hwpDistributable: "배포용으로 저장된 한글 파일은 읽을 수 없어요.",
     laneDown: "파일 읽기 서비스에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
@@ -887,6 +888,7 @@
         const refused = await res.json().catch(() => null);
         const code = refused && refused.error && typeof refused.error.code === "string"
           ? refused.error.code : "";
+        if (code === "legacy_hwp_unsupported") return { error: PC_REF_COPY.hwpLegacy };
         if (code === "hwp_encrypted") return { error: PC_REF_COPY.hwpEncrypted };
         if (code === "hwp_distributable") return { error: PC_REF_COPY.hwpDistributable };
         if (code === "file_lane_unavailable") return { error: PC_REF_COPY.laneDown };

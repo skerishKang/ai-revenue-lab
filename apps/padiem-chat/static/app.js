@@ -259,6 +259,11 @@
     runtimeNote.textContent = text;
     runtimeNote.dataset.state = state;
   }
+  // #6126: the one legacy-HWP answer the screens show — an ordinary save-as
+  // instruction plus the three HWPX steps, never an error state.
+  function hwpLegacyGuidance() {
+    return uiT("hwp-legacy-guidance") + "\n" + uiT("hwp-legacy-steps");
+  }
   // Short-lived overlay, not a new composer row.
   const composerInlineHint = document.getElementById("composerInlineHint");
   let composerInlineHintTimer = null;
@@ -852,9 +857,11 @@
       attachmentThumb.hidden = true;
       attachmentKind.hidden = false;
       attachmentKind.textContent = extensionOf(selectedAttachment.name).replace(".", "").toUpperCase() || "DOC";
-      setNote(extensionOf(selectedAttachment.name) === ".hwpx"
-        ? uiT("attachment-hwpx-note")
-        : uiT("attachment-document-note"));
+      // #6126: a .hwp name whose bytes are a real HWPX (ZIP) package is read
+      // as HWPX, so the note follows the actual media type, not the name.
+      const isHwpx = selectedAttachment.mediaType === "application/hwp+zip"
+        || extensionOf(selectedAttachment.name) === ".hwpx";
+      setNote(isHwpx ? uiT("attachment-hwpx-note") : uiT("attachment-document-note"));
     }
     attachmentName.textContent = selectedAttachment.name;
     attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);
@@ -870,8 +877,12 @@
   }
   async function readDocumentFile(file) {
     if (extensionOf(file.name) === ".hwp") {
-      const error = new Error(uiT("hwp-save-hwpx"));
+      // #6126 backstop: selection-time callers refuse an OLE2 .hwp by its own
+      // bytes before reaching here; this guard keeps the same one code and
+      // wording for any future caller that skips the sniff.
+      const error = new Error(uiT("hwp-legacy-guidance"));
       error.uiMessageSafe = true;
+      error.code = "legacy_hwp_unsupported";
       throw error;
     }
     const mediaType = documentMediaType(file);
@@ -900,6 +911,19 @@
       if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
         throw new Error(uiT("claw-image-attachment-unsupported"));
       }
+      // #6126: an uploaded .hwp is judged by its own bytes, not its name. The
+      // older OLE2 binary Hangul format is never converted — the composer note
+      // carries the ordinary save-as-HWPX guidance (no error state) and the
+      // picker is cleared. A mislabeled file whose bytes are a real HWPX (ZIP)
+      // package keeps working as HWPX through the binary document path.
+      const hwpFamily = extensionOf(file.name) === ".hwp"
+        ? (await binaryDocuments?.headerFamily?.(file)) || null
+        : null;
+      if (hwpFamily === "ole") {
+        attachmentFileInput.value = "";
+        setNote(hwpLegacyGuidance(), "normal");
+        return;
+      }
       const useFileLane = window.PadiemFileLane?.shouldUse(file);
       const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
       if (useFileLane && fileLaneAvailable) {
@@ -907,6 +931,7 @@
       } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
         throw new Error(uiT("file-lane-unavailable"));
       } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+      else if (hwpFamily === "zip" && binaryDocuments?.hwpxMedia) next = await binaryDocuments.read(file, { mediaType: binaryDocuments.hwpxMedia });
       else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
       else next = await readDocumentFile(file);
       if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
@@ -1207,9 +1232,27 @@
     // Clear any stale error so a successful retry never leaves the old message up.
     projectFormError.hidden = true;
     projectFormError.textContent = "";
+    // #6126: a project .hwp is judged by its own bytes. The older OLE2 binary
+    // Hangul format is never converted — the panel answers with the ordinary
+    // save-as-HWPX guidance as a status note (not the error row) — and a
+    // mislabeled file whose bytes are a real HWPX (ZIP) package keeps working
+    // as HWPX through the same binary upload the .hwpx extension uses.
+    const hwpFamily = extensionOf(file.name) === ".hwp"
+      ? (await binaryDocuments?.headerFamily?.(file)) || null
+      : null;
+    if (hwpFamily === "ole") {
+      if (projectFileStatus) {
+        projectFileStatus.textContent = hwpLegacyGuidance();
+        projectFileStatus.hidden = false;
+      }
+      return;
+    }
     setProjectFileBusy(true);
     try {
-      const projectBinary = projectBinaryMediaType(file);
+      let projectBinary = projectBinaryMediaType(file);
+      if (!projectBinary && hwpFamily === "zip" && binaryDocuments?.hwpxMedia) {
+        projectBinary = binaryDocuments.hwpxMedia;
+      }
       if (projectBinary) {
         // #6579: every binary goes through the shared tus module, which owns the
         // progress line, the resume policy and the first-party guidance copy.
