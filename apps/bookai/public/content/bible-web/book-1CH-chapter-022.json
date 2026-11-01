@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:022",
+  "unit_ordinal": 360,
+  "unit_label": "1CH 22",
+  "book_code": "1CH",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:22:1",
+      "sequence": 10966,
+      "chapter_label": "1CH 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "Then David said, “This is the house of the LORD God, and this is the altar of burnt offering for Israel.”",
+      "ko": "다윗이 가로되 이는 여호와 하나님의 전이요 이는 이스라엘의 번제단이라 하였더라",
+      "source_text_hash": "bcec6a52cdad28d8402f1badd0400b4247fa5581ed180fde3986c79e12417d4f",
+      "translation_text_hash": "2a70a8880f35d8ea4d0bd542cc26462fb10e1c04b8966cd8e50bd775faf2bacc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 이는 여호와 하나님의 전이요 이는 이스라엘의 번제단이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2a70a8880f35d8ea4d0bd542cc26462fb10e1c04b8966cd8e50bd775faf2bacc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:2",
+      "sequence": 10967,
+      "chapter_label": "1CH 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "David gave orders to gather together the foreigners who were in the land of Israel; and he set masons to cut dressed stones to build God’s house.",
+      "ko": "다윗이 명하여 이스라엘 땅에 우거하는 이방 사람을 모으고 석수를 시켜 하나님의 전을 건축할 돌을 다듬게 하고",
+      "source_text_hash": "70c516b37d2bcfeee81678248ea836ea6bc34bb8843499e78162679c940d1d15",
+      "translation_text_hash": "eb561787957a37dd1be1bf9d171b53d908ad4bb6d584bb695d1ed5dc0f16a2f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 명하여 이스라엘 땅에 우거하는 이방 사람을 모으고 석수를 시켜 하나님의 전을 건축할 돌을 다듬게 하고"
+      ],
+      "raw_text_hashes": [
+        "eb561787957a37dd1be1bf9d171b53d908ad4bb6d584bb695d1ed5dc0f16a2f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:3",
+      "sequence": 10968,
+      "chapter_label": "1CH 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "David prepared iron in abundance for the nails for the doors of the gates and for the couplings, and bronze in abundance without weight,",
+      "ko": "다윗이 또 문짝못과 거멀못에 쓸 철을 한 없이 준비하고 또 심히 많아서 중수를 셀 수 없는 놋을 준비하고",
+      "source_text_hash": "cba29958f3f8ce21f52bd9d8270056500f53e855f963fc964ee6e222322e28ba",
+      "translation_text_hash": "b8b47dbc3acb13ced135c94de4af1464059d58e48461da9b3a3b83a39e7792cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 또 문짝못과 거멀못에 쓸 철을 한 없이 준비하고 또 심히 많아서 중수를 셀 수 없는 놋을 준비하고"
+      ],
+      "raw_text_hashes": [
+        "b8b47dbc3acb13ced135c94de4af1464059d58e48461da9b3a3b83a39e7792cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:4",
+      "sequence": 10969,
+      "chapter_label": "1CH 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "and cedar trees without number, for the Sidonians and the people of Tyre brought cedar trees in abundance to David.",
+      "ko": "또 백향목을 무수히 준비하였으니 이는 시돈 사람과 두로 사람이 백향목을 다윗에게로 많이 수운하여 왔음이라",
+      "source_text_hash": "12b30b0f9ab595ff5ff8d81c8c153c329008c54874ddd609784ff35e412c36d6",
+      "translation_text_hash": "57058df2599376a8d857bc24cba53f64edf9dacf10cbc038f01b7e68f7c1eec3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 백향목을 무수히 준비하였으니 이는 시돈 사람과 두로 사람이 백향목을 다윗에게로 많이 수운하여 왔음이라"
+      ],
+      "raw_text_hashes": [
+        "57058df2599376a8d857bc24cba53f64edf9dacf10cbc038f01b7e68f7c1eec3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:5",
+      "sequence": 10970,
+      "chapter_label": "1CH 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "David said, “Solomon my son is young and tender, and the house that is to be built for the LORD must be exceedingly magnificent, of fame and of glory throughout all countries. I will therefore make preparation for it.” So David prepared abundantly before his death.",
+      "ko": "다윗이 가로되 내 아들 솔로몬이 어리고 연약하고 여호와를 위하여 건축할 전은 극히 장려하여 만국에 명성과 영광이 있게 하여야 할찌라 그러므로 내가 이제 위하여 준비하리라 하고 죽기 전에 많이 준비하였더라",
+      "source_text_hash": "147cd1e5119ebc1ccada90816e21bcc9d19fdbbcb38201a9dec3b9dd0de322d4",
+      "translation_text_hash": "7cbf216dda5552e0c6421efb435c385795ba07ae8dd61835ac3f4a3aeddce31c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 가로되 내 아들 솔로몬이 어리고 연약하고 여호와를 위하여 건축할 전은 극히 장려하여 만국에 명성과 영광이 있게 하여야 할찌라 그러므로 내가 이제 위하여 준비하리라 하고 죽기 전에 많이 준비하였더라"
+      ],
+      "raw_text_hashes": [
+        "7cbf216dda5552e0c6421efb435c385795ba07ae8dd61835ac3f4a3aeddce31c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:6",
+      "sequence": 10971,
+      "chapter_label": "1CH 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "Then he called for Solomon his son, and commanded him to build a house for the LORD, the God of Israel.",
+      "ko": "다윗이 그 아들 솔로몬을 불러 이스라엘 하나님 여호와를 위하여 전을 건축하기를 부탁하여",
+      "source_text_hash": "ce4acb1b69687f891bba6edd422d0a7b13f6d35b6526ab0edf0ad9cea8edc102",
+      "translation_text_hash": "d78e245d58c993d870fef245e2a65baf805da67e380ea4bdbad7850acba3e33f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 아들 솔로몬을 불러 이스라엘 하나님 여호와를 위하여 전을 건축하기를 부탁하여"
+      ],
+      "raw_text_hashes": [
+        "d78e245d58c993d870fef245e2a65baf805da67e380ea4bdbad7850acba3e33f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:7",
+      "sequence": 10972,
+      "chapter_label": "1CH 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "David said to Solomon his son, “As for me, it was in my heart to build a house to the name of the LORD my God.",
+      "ko": "이르되 내 아들아 나는 내 하나님 여호와의 이름을 위하여 전을 건축할 마음이 있었으나",
+      "source_text_hash": "974a7306423a1a8bee00fcbb1e8ae8f1ea822211a76a6cb46c4f5cf0e0e13e73",
+      "translation_text_hash": "fb1a8f5b386b4456cc2aa190d1e8def70995ce62b246a63ab8e985cb4af70993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 내 아들아 나는 내 하나님 여호와의 이름을 위하여 전을 건축할 마음이 있었으나"
+      ],
+      "raw_text_hashes": [
+        "fb1a8f5b386b4456cc2aa190d1e8def70995ce62b246a63ab8e985cb4af70993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:8",
+      "sequence": 10973,
+      "chapter_label": "1CH 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "But the LORD’s word came to me, saying, ‘You have shed blood abundantly and have made great wars. You shall not build a house to my name, because you have shed much blood on the earth in my sight.",
+      "ko": "여호와의 말씀이 내게 임하여 이르시되 너는 피를 심히 많이 흘렸고 크게 전쟁하였느니라 네가 내 앞에서 땅에 피를 많이 흘렸은즉 내 이름을 위하여 전을 건축하지 못하리라",
+      "source_text_hash": "4eb621eb8008df5ac283ce6ed33f4a337b8092483028e64638240195b8502271",
+      "translation_text_hash": "05091d62ee22d906e3d38098aa52ab6d3f1b63ce2a1a949351eeb10ba7949965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 이르시되 너는 피를 심히 많이 흘렸고 크게 전쟁하였느니라 네가 내 앞에서 땅에 피를 많이 흘렸은즉 내 이름을 위하여 전을 건축하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "05091d62ee22d906e3d38098aa52ab6d3f1b63ce2a1a949351eeb10ba7949965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:9",
+      "sequence": 10974,
+      "chapter_label": "1CH 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, a son shall be born to you, who shall be a man of peace. I will give him rest from all his enemies all around; for his name shall be Solomon, and I will give peace and quietness to Israel in his days.",
+      "ko": "한 아들이 네게서 나리니 저는 평강의 사람이라 내가 저로 사면 모든 대적에게서 평강하게 하리라 그 이름을 솔로몬이라 하리니 이는 내가 저의 생전에 평안과 안정을 이스라엘에게 줄 것임이니라",
+      "source_text_hash": "677fd236da373ab54a030aab2c3110123e7085944e932b7078389fec7c44f3ea",
+      "translation_text_hash": "ded0b89d3a2989723a81a8b87556db54714a524f196a986e08fc9ee761902450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 아들이 네게서 나리니 저는 평강의 사람이라 내가 저로 사면 모든 대적에게서 평강하게 하리라 그 이름을 솔로몬이라 하리니 이는 내가 저의 생전에 평안과 안정을 이스라엘에게 줄 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "ded0b89d3a2989723a81a8b87556db54714a524f196a986e08fc9ee761902450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:10",
+      "sequence": 10975,
+      "chapter_label": "1CH 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "He shall build a house for my name; and he will be my son, and I will be his father; and I will establish the throne of his kingdom over Israel forever.’",
+      "ko": "저가 내 이름을 위하여 전을 건축할찌라 저는 내 아들이 되고 나는 저의 아비가 되어 그 나라 위를 이스라엘 위에 굳게 세워 영원까지 이르게 하리라 하셨나니",
+      "source_text_hash": "002d4cd2408b906a947c7c21377901c20c7edff52f3e752e1208786297d8e5d1",
+      "translation_text_hash": "293cd08a6da0bfa6557d419e57292ec0422071ea0bf6d6eb4cc083f25d02826b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 내 이름을 위하여 전을 건축할찌라 저는 내 아들이 되고 나는 저의 아비가 되어 그 나라 위를 이스라엘 위에 굳게 세워 영원까지 이르게 하리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "293cd08a6da0bfa6557d419e57292ec0422071ea0bf6d6eb4cc083f25d02826b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:11",
+      "sequence": 10976,
+      "chapter_label": "1CH 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "Now, my son, may the LORD be with you and prosper you, and build the house of the LORD your God, as he has spoken concerning you.",
+      "ko": "내 아들아 여호와께서 너와 함께 하시기를 원하며 네가 형통하여 여호와께서 네게 대하여 말씀하신대로 여호와의 전을 건축하며",
+      "source_text_hash": "2d40e5ba870f9d18aa24581bbd211149b655926451c472b6265acf024e9e2c52",
+      "translation_text_hash": "8449f1004e955dde7b25e7ffebdc42bc789987d169ef39edd1df0b5b7e1882a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 여호와께서 너와 함께 하시기를 원하며 네가 형통하여 여호와께서 네게 대하여 말씀하신대로 여호와의 전을 건축하며"
+      ],
+      "raw_text_hashes": [
+        "8449f1004e955dde7b25e7ffebdc42bc789987d169ef39edd1df0b5b7e1882a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:12",
+      "sequence": 10977,
+      "chapter_label": "1CH 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "May the LORD give you discretion and understanding, and put you in charge of Israel, so that you may keep the law of the LORD your God.",
+      "ko": "여호와께서 네게 지혜와 총명을 주사 너로 이스라엘을 다스리게 하시고 너의 하나님 여호와의 율법을 지키게 하시기를 더욱 원하노라",
+      "source_text_hash": "403a77b04d8af3a8f4e6777f3f6e745711d2e2de96b5aeab1b37eaa5ef3af2a9",
+      "translation_text_hash": "eaa1218e34796c7beccf830a430673a62f5bafd5c2315c1aa3c62e21338138b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네게 지혜와 총명을 주사 너로 이스라엘을 다스리게 하시고 너의 하나님 여호와의 율법을 지키게 하시기를 더욱 원하노라"
+      ],
+      "raw_text_hashes": [
+        "eaa1218e34796c7beccf830a430673a62f5bafd5c2315c1aa3c62e21338138b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:13",
+      "sequence": 10978,
+      "chapter_label": "1CH 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "Then you will prosper, if you observe to do the statutes and the ordinances which the LORD gave Moses concerning Israel. Be strong and courageous. Don’t be afraid and don’t be dismayed.",
+      "ko": "네가 만일 여호와께서 모세로 이스라엘에게 명하신 모든 율례와 규례를 삼가 행하면 형통하리니 강하고 담대하여 두려워 말고 놀라지 말찌어다",
+      "source_text_hash": "038a4c97c84a7ceb7c58d90a9f8103ad5ac88a50d28945eb2604ce39595f30d8",
+      "translation_text_hash": "0a09ca258c5e11bb95351c56ad382543f02db7f8c6b0197d7d8a6869eda32539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 여호와께서 모세로 이스라엘에게 명하신 모든 율례와 규례를 삼가 행하면 형통하리니 강하고 담대하여 두려워 말고 놀라지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "0a09ca258c5e11bb95351c56ad382543f02db7f8c6b0197d7d8a6869eda32539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:14",
+      "sequence": 10979,
+      "chapter_label": "1CH 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "Now, behold, in my affliction I have prepared for the LORD’s house one hundred thousand talents of gold, one million talents of silver, and bronze and iron without weight; for it is in abundance. I have also prepared timber and stone; and you may add to them.",
+      "ko": "내가 환난 중에 여호와의 전을 위하여 금 십만 달란트와 은 일백만 달란트와 놋과 철을 그 중수를 셀 수 없을만큼 심히 많이 예비하였고 또 재목과 돌을 예비하였으나 너는 더할 것이며",
+      "source_text_hash": "0bcd84d68b5fe65249353c9ffd2e4873001cb5d30c5183cd0c4ec13dd3fe108d",
+      "translation_text_hash": "a124407871702c7661801dd039a058f00e5c043da8611a6f33c8ee04dda94580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난 중에 여호와의 전을 위하여 금 십만 달란트와 은 일백만 달란트와 놋과 철을 그 중수를 셀 수 없을만큼 심히 많이 예비하였고 또 재목과 돌을 예비하였으나 너는 더할 것이며"
+      ],
+      "raw_text_hashes": [
+        "a124407871702c7661801dd039a058f00e5c043da8611a6f33c8ee04dda94580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:15",
+      "sequence": 10980,
+      "chapter_label": "1CH 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "There are also workmen with you in abundance—cutters and workers of stone and timber, and all kinds of men who are skillful in every kind of work;",
+      "ko": "또 공장이 네게 많이 있나니 곧 석수와 목수와 온갖 일에 익숙한 모든 사람이니라",
+      "source_text_hash": "f072c5625701fefa6b2c524eda513dc4e1d0ebe97b7e77467ae984282e826bb7",
+      "translation_text_hash": "1f654becec5ec2b03cd431cc1a984a07b1fb932ca63c330896e787ce6373fdae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 공장이 네게 많이 있나니 곧 석수와 목수와 온갖 일에 익숙한 모든 사람이니라"
+      ],
+      "raw_text_hashes": [
+        "1f654becec5ec2b03cd431cc1a984a07b1fb932ca63c330896e787ce6373fdae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:16",
+      "sequence": 10981,
+      "chapter_label": "1CH 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "of the gold, the silver, the bronze, and the iron, there is no number. Arise and be doing, and may the LORD be with you.”",
+      "ko": "금과 은과 놋과 철이 무수하니 너는 일어나 일하라 여호와께서 너와 함께 계실찌로다",
+      "source_text_hash": "bf6f3b4100154614217e30ad8f1f424f34a964803f70b527112f5cdcf189d9b4",
+      "translation_text_hash": "3581dba6c44eeac0db927674317e9884a9e6df9989ba92517737d43000aaaad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금과 은과 놋과 철이 무수하니 너는 일어나 일하라 여호와께서 너와 함께 계실찌로다"
+      ],
+      "raw_text_hashes": [
+        "3581dba6c44eeac0db927674317e9884a9e6df9989ba92517737d43000aaaad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:17",
+      "sequence": 10982,
+      "chapter_label": "1CH 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "David also commanded all the princes of Israel to help Solomon his son, saying,",
+      "ko": "다윗이 또 이스라엘 모든 방백에게 명하여 그 아들 솔로몬을 도우라 하여 가로되",
+      "source_text_hash": "ab2ed26aead17cd4e8f489fb2b165cb603df87b79287005c9487d4acf494a88f",
+      "translation_text_hash": "8252a04c08ae55289edcb0d23621479ba76547f27e07a56d927dc88048770549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 또 이스라엘 모든 방백에게 명하여 그 아들 솔로몬을 도우라 하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "8252a04c08ae55289edcb0d23621479ba76547f27e07a56d927dc88048770549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:18",
+      "sequence": 10983,
+      "chapter_label": "1CH 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "“Isn’t the LORD your God with you? Hasn’t he given you rest on every side? For he has delivered the inhabitants of the land into my hand; and the land is subdued before the LORD and before his people.",
+      "ko": "너희 하나님 여호와께서 너희와 함께 하지 아니하시느냐 사면으로 너희에게 평강을 주지 아니하셨느냐 이 땅 거민을 내 손에 붙이사 이 땅으로 여호와와 그 백성 앞에 복종하게 하셨나니",
+      "source_text_hash": "66506f55e5ae98b735dc646e82d08483c0e52bf2c58ae88a09aa02ef026b2d91",
+      "translation_text_hash": "9f248765b27cb246f0f79e704aaed89ad4cc23ac83e29e76dce91af362a4c266",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 너희와 함께 하지 아니하시느냐 사면으로 너희에게 평강을 주지 아니하셨느냐 이 땅 거민을 내 손에 붙이사 이 땅으로 여호와와 그 백성 앞에 복종하게 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "9f248765b27cb246f0f79e704aaed89ad4cc23ac83e29e76dce91af362a4c266"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:22:19",
+      "sequence": 10984,
+      "chapter_label": "1CH 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "Now set your heart and your soul to follow the LORD your God. Arise therefore, and build the sanctuary of the LORD God, to bring the ark of the LORD’s covenant and the holy vessels of God into the house that is to be built for the LORD’s name.”",
+      "ko": "이제 너희는 마음과 정신을 진정하여 너희 하나님 여호와를 구하고 일어나서 여호와 하나님의 성소를 건축하고 여호와의 언약궤와 하나님의 거룩한 기구를 가져다가 여호와의 이름을 위하여 건축한 전에 드리게 하라 하였더라",
+      "source_text_hash": "5cc2d975b52b85144df2d25e6143b408f4f7598dff1b489cf6950d9c8c6f8fbf",
+      "translation_text_hash": "c7f82acac76af10224cbb893d64c1f84cfecd672e24f9a9b96b6c857ee50093e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 마음과 정신을 진정하여 너희 하나님 여호와를 구하고 일어나서 여호와 하나님의 성소를 건축하고 여호와의 언약궤와 하나님의 거룩한 기구를 가져다가 여호와의 이름을 위하여 건축한 전에 드리게 하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "c7f82acac76af10224cbb893d64c1f84cfecd672e24f9a9b96b6c857ee50093e"
+      ]
+    }
+  ]
+}

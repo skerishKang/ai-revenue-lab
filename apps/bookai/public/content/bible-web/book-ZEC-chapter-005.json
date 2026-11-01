@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:005",
+  "unit_ordinal": 916,
+  "unit_label": "ZEC 5",
+  "book_code": "ZEC",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:5:1",
+      "sequence": 22938,
+      "chapter_label": "ZEC 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Then again I lifted up my eyes and saw, and behold, a flying scroll.",
+      "ko": "내가 다시 눈을 든즉 날아가는 두루마리가 보이더라",
+      "source_text_hash": "54b3ebeb4279d57509756447d7651c4f91e288f58b64f503259764ad27103780",
+      "translation_text_hash": "bfc5bfff401281e699d741c62c9dda6cdb29af6bd82895141ab10d0977d459bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다시 눈을 든즉 날아가는 두루마리가 보이더라"
+      ],
+      "raw_text_hashes": [
+        "bfc5bfff401281e699d741c62c9dda6cdb29af6bd82895141ab10d0977d459bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:2",
+      "sequence": 22939,
+      "chapter_label": "ZEC 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "He said to me, “What do you see?” I answered, “I see a flying scroll; its length is twenty cubits, and its width ten cubits.”",
+      "ko": "그가 내게 묻되 네가 무엇을 보느냐 하기로 내가 대답하되 날아가는 두루마리를 보나이다 그 장이 이십 규빗이요 광이 십 규빗이니이다",
+      "source_text_hash": "450f87f52fbf79d6a0f614d10e0eff0abf8828456209981d5c548364b9d4f425",
+      "translation_text_hash": "9fe299ff7b35b5b52272a63f2d2bde0e8312a1347eaf19332dd68147b3b3c2b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 묻되 네가 무엇을 보느냐 하기로 내가 대답하되 날아가는 두루마리를 보나이다 그 장이 이십 규빗이요 광이 십 규빗이니이다"
+      ],
+      "raw_text_hashes": [
+        "9fe299ff7b35b5b52272a63f2d2bde0e8312a1347eaf19332dd68147b3b3c2b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:3",
+      "sequence": 22940,
+      "chapter_label": "ZEC 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Then he said to me, “This is the curse that goes out over the surface of the whole land, for everyone who steals shall be cut off according to it on the one side; and everyone who swears falsely shall be cut off according to it on the other side.",
+      "ko": "그가 내게 이르되 이는 온 지면에 두루 행하는 저주라 무릇 도적질하는 자는 그 이편 글대로 끊쳐지고 무릇 맹세하는 자는 그 저편 글대로 끊쳐지리라",
+      "source_text_hash": "316c341060769366dbebdb8397fc0c215cc50a1e64bc2a4dd806ac9dca8a9f5d",
+      "translation_text_hash": "54027a5c2ce8a7820f20a5a50c9e92c43e669b4508fe4d0e306451229eb9565f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르되 이는 온 지면에 두루 행하는 저주라 무릇 도적질하는 자는 그 이편 글대로 끊쳐지고 무릇 맹세하는 자는 그 저편 글대로 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "54027a5c2ce8a7820f20a5a50c9e92c43e669b4508fe4d0e306451229eb9565f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:4",
+      "sequence": 22941,
+      "chapter_label": "ZEC 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "I will cause it to go out,” says the LORD of Armies, “and it will enter into the house of the thief, and into the house of him who swears falsely by my name; and it will remain in the middle of his house, and will destroy it with its timber and its stones.”",
+      "ko": "만군의 여호와께서 가라사대 내가 이것을 발하였나니 도적의 집에도 들어가며 내 이름을 가리켜 망령되이 맹세하는 자의 집에도 들어가서 그 집에 머무르며 그 집을 그 나무와 그 돌을 아울러 사르리라 하셨느니라",
+      "source_text_hash": "3f4a6bbc4761c559df25bc51bb245b1e24fd06ba3200498ab0c6a8c7a6c54b84",
+      "translation_text_hash": "2db1f7bfbd0b0d4fffbd2bbd041e9b0d1087818d20d40210ac6381f1147fa38a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 가라사대 내가 이것을 발하였나니 도적의 집에도 들어가며 내 이름을 가리켜 망령되이 맹세하는 자의 집에도 들어가서 그 집에 머무르며 그 집을 그 나무와 그 돌을 아울러 사르리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2db1f7bfbd0b0d4fffbd2bbd041e9b0d1087818d20d40210ac6381f1147fa38a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:5",
+      "sequence": 22942,
+      "chapter_label": "ZEC 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Then the angel who talked with me came forward and said to me, “Lift up now your eyes and see what this is that is appearing.”",
+      "ko": "내게 말하던 천사가 나아와서 내게 이르되 너는 눈을 들어 나오는 이것이 무엇인가 보라 하기로",
+      "source_text_hash": "0f873bbc512d1a5e29259e22d2c8e2f8dbf0540e491141c0b8aa096a0f2ce33e",
+      "translation_text_hash": "ef931482f4c99fdbb92292acc6b8e53e42a2d24b0df4f72f015d1d357cfad5fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하던 천사가 나아와서 내게 이르되 너는 눈을 들어 나오는 이것이 무엇인가 보라 하기로"
+      ],
+      "raw_text_hashes": [
+        "ef931482f4c99fdbb92292acc6b8e53e42a2d24b0df4f72f015d1d357cfad5fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:6",
+      "sequence": 22943,
+      "chapter_label": "ZEC 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "I said, “What is it?” He said, “This is the ephah basket that is appearing.” He said moreover, “This is their appearance in all the land—",
+      "ko": "내가 묻되 이것이 무엇이니이까 그가 가로되 나오는 이것이 에바니라 또 가로되 온 땅에서 그들의 모양이 이러하니라",
+      "source_text_hash": "de3c3d2274e4ed8d3b4c82de3b5d34baab81bb9026012f98ed8ff2affba10fe2",
+      "translation_text_hash": "564514d1a5059f618dd7e27987dc62fc0addc34b6b7e54a483587f26fdcbebf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 묻되 이것이 무엇이니이까 그가 가로되 나오는 이것이 에바니라 또 가로되 온 땅에서 그들의 모양이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "564514d1a5059f618dd7e27987dc62fc0addc34b6b7e54a483587f26fdcbebf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:7",
+      "sequence": 22944,
+      "chapter_label": "ZEC 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "and behold, a lead cover weighing one talent was lifted up—and there was a woman sitting in the middle of the ephah basket.”",
+      "ko": "이 에바 가운데에는 한 여인이 앉았느니라 하는 동시에 둥근 납 한 조각이 들리더라",
+      "source_text_hash": "a95aa6bdaf830afaaeecaabd3376199ee2325dfad7264c2314b3d6436872eb45",
+      "translation_text_hash": "725f17ea3aceed3a7ca58b6a7ba950f640ef9415f10c4d5492a5f8a91fdb9cb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 에바 가운데에는 한 여인이 앉았느니라 하는 동시에 둥근 납 한 조각이 들리더라"
+      ],
+      "raw_text_hashes": [
+        "725f17ea3aceed3a7ca58b6a7ba950f640ef9415f10c4d5492a5f8a91fdb9cb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:8",
+      "sequence": 22945,
+      "chapter_label": "ZEC 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "He said, “This is Wickedness;” and he threw her down into the middle of the ephah basket; and he threw the lead weight on its mouth.",
+      "ko": "그가 가로되 이는 악이라 하고 그 여인을 에바 속으로 던져 넣고 납 조각을 에바 아구리 위에 던져 덮더라",
+      "source_text_hash": "52f62e27488cd3b713cd242af3630f3d8fb528047d049c783e388918637a4a99",
+      "translation_text_hash": "aa2755eaed0ee9a689e81a90e8a46d6f1b4950f783d6b3fa2502a4c80ecdbbdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 이는 악이라 하고 그 여인을 에바 속으로 던져 넣고 납 조각을 에바 아구리 위에 던져 덮더라"
+      ],
+      "raw_text_hashes": [
+        "aa2755eaed0ee9a689e81a90e8a46d6f1b4950f783d6b3fa2502a4c80ecdbbdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:9",
+      "sequence": 22946,
+      "chapter_label": "ZEC 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Then I lifted up my eyes and saw, and behold, there were two women; and the wind was in their wings. Now they had wings like the wings of a stork, and they lifted up the ephah basket between earth and the sky.",
+      "ko": "내가 또 눈을 들어 본즉 두 여인이 나왔는데 학의 날개 같은 날개가 있고 그 날개에 바람이 있더라 그들이 그 에바를 천지 사이에 들었기로",
+      "source_text_hash": "8f26bead973013c20700860fba137bde4adf16ac7f1a823c6169da1612df4e4e",
+      "translation_text_hash": "efe9b30703202c4851e6ecfedd07d6f69889bb3ea54f2ce3fb4ff55d6bea8d21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 눈을 들어 본즉 두 여인이 나왔는데 학의 날개 같은 날개가 있고 그 날개에 바람이 있더라 그들이 그 에바를 천지 사이에 들었기로"
+      ],
+      "raw_text_hashes": [
+        "efe9b30703202c4851e6ecfedd07d6f69889bb3ea54f2ce3fb4ff55d6bea8d21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:10",
+      "sequence": 22947,
+      "chapter_label": "ZEC 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Then I said to the angel who talked with me, “Where are these carrying the ephah basket?”",
+      "ko": "내가 내게 말하는 천사에게 묻되 그들이 에바를 어디로 옮겨 가나이까 하매",
+      "source_text_hash": "0c68be37a81a800e31ce517a42928518a3c470911795bbc64491a9e63b83d945",
+      "translation_text_hash": "5261b514cf416693a037676c8e8ec19ea63fa75d6407c77362ce6869eefa0c1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내게 말하는 천사에게 묻되 그들이 에바를 어디로 옮겨 가나이까 하매"
+      ],
+      "raw_text_hashes": [
+        "5261b514cf416693a037676c8e8ec19ea63fa75d6407c77362ce6869eefa0c1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:5:11",
+      "sequence": 22948,
+      "chapter_label": "ZEC 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "He said to me, “To build her a house in the land of Shinar. When it is prepared, she will be set there in her own place.”",
+      "ko": "내게 이르되 그들이 시날 땅으로 가서 그를 위하여 집을 지으려함이니라 준공되면 그가 제 처소에 머물게 되리라 하더라",
+      "source_text_hash": "2eaa6bea8009272c49451bbe8ddc0cdff905aa19e498201c472844d6ad37708e",
+      "translation_text_hash": "fac0776ade57dc15e3c53b6bef2e350289a807122c72db5718f09f312506285d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르되 그들이 시날 땅으로 가서 그를 위하여 집을 지으려함이니라 준공되면 그가 제 처소에 머물게 되리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "fac0776ade57dc15e3c53b6bef2e350289a807122c72db5718f09f312506285d"
+      ]
+    }
+  ]
+}

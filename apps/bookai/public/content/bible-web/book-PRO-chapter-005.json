@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:005",
+  "unit_ordinal": 633,
+  "unit_label": "PRO 5",
+  "book_code": "PRO",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:5:1",
+      "sequence": 16519,
+      "chapter_label": "PRO 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "My son, pay attention to my wisdom. Turn your ear to my understanding,",
+      "ko": "내 아들아 내 지혜에 주의하며 내 명철에 네 귀를 기울여서",
+      "source_text_hash": "eec81b439bb17b9942493ffbac9be4e858d324d5cac5858f5b49270e802d9828",
+      "translation_text_hash": "e3287de0797ab07974012ce2659307948be7d22954a0169e6fe04f4965b90a6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 내 지혜에 주의하며 내 명철에 네 귀를 기울여서"
+      ],
+      "raw_text_hashes": [
+        "e3287de0797ab07974012ce2659307948be7d22954a0169e6fe04f4965b90a6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:2",
+      "sequence": 16520,
+      "chapter_label": "PRO 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "that you may maintain discretion, that your lips may preserve knowledge.",
+      "ko": "근신을 지키며 네 입술로 지식을 지키도록 하라",
+      "source_text_hash": "4935fd371f72da49e08c3136a11afe646358b08f0cbc00cb77bab2bc1f4116df",
+      "translation_text_hash": "db09a6a47f03cf15ffd1369f2da0b05a5827c5be04f16f451816321ba8d773f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근신을 지키며 네 입술로 지식을 지키도록 하라"
+      ],
+      "raw_text_hashes": [
+        "db09a6a47f03cf15ffd1369f2da0b05a5827c5be04f16f451816321ba8d773f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:3",
+      "sequence": 16521,
+      "chapter_label": "PRO 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "For the lips of an adulteress drip honey. Her mouth is smoother than oil,",
+      "ko": "대저 음녀의 입술은 꿀을 떨어뜨리며 그 입은 기름보다 미끄러우나",
+      "source_text_hash": "74fdc863461e39eb306b5eae7e6232c9cdc48da5a3a071cf1bd72187ed9de688",
+      "translation_text_hash": "d8ae70207189c98c09d5abc1a77e9214a2f96aa2af67c2679a5fd8264540b690",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 음녀의 입술은 꿀을 떨어뜨리며 그 입은 기름보다 미끄러우나"
+      ],
+      "raw_text_hashes": [
+        "d8ae70207189c98c09d5abc1a77e9214a2f96aa2af67c2679a5fd8264540b690"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:4",
+      "sequence": 16522,
+      "chapter_label": "PRO 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "but in the end she is as bitter as wormwood, and as sharp as a two-edged sword.",
+      "ko": "나중은 쑥 같이 쓰고 두 날 가진 칼 같이 날카로우며",
+      "source_text_hash": "4bf3e365f7e1dced9325e98af8e523c18092bfc5fca3e7a1f8f7aeaef182664f",
+      "translation_text_hash": "1bc3454295c0d4606149604da9340bbc6d27621dfbb99ee34d424c4619d9c379",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나중은 쑥 같이 쓰고 두 날 가진 칼 같이 날카로우며"
+      ],
+      "raw_text_hashes": [
+        "1bc3454295c0d4606149604da9340bbc6d27621dfbb99ee34d424c4619d9c379"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:5",
+      "sequence": 16523,
+      "chapter_label": "PRO 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Her feet go down to death. Her steps lead straight to Sheol.",
+      "ko": "그 발은 사지로 내려가며 그 걸음은 음부로 나아가나니",
+      "source_text_hash": "061a07b7ff153e131564a29eed3c5e40d22553cb8328f2e31fa07c3d7673d536",
+      "translation_text_hash": "d28f5cda640514e411760d411d97ce658467c163291aa50815fb2136447c5bbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발은 사지로 내려가며 그 걸음은 음부로 나아가나니"
+      ],
+      "raw_text_hashes": [
+        "d28f5cda640514e411760d411d97ce658467c163291aa50815fb2136447c5bbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:6",
+      "sequence": 16524,
+      "chapter_label": "PRO 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "She gives no thought to the way of life. Her ways are crooked, and she doesn’t know it.",
+      "ko": "그는 생명의 평탄한 길을 찾지 못하며 자기 길이 든든치 못하여도 그것을 깨닫지 못하느니라",
+      "source_text_hash": "2b6e9bcd0e3f01c2bdd6c5c8cad07df170408ed88ddbd042a1b3c154d338057b",
+      "translation_text_hash": "26ca548b5e641720e3c23e8cf2c843aeed080834ea75abf4291354074d060a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 생명의 평탄한 길을 찾지 못하며 자기 길이 든든치 못하여도 그것을 깨닫지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "26ca548b5e641720e3c23e8cf2c843aeed080834ea75abf4291354074d060a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:7",
+      "sequence": 16525,
+      "chapter_label": "PRO 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore, my sons, listen to me. Don’t depart from the words of my mouth.",
+      "ko": "그런즉 아들들아 나를 들으며 내 입의 말을 버리지 말고",
+      "source_text_hash": "c07762c0d095ffe7bb44aa86ef38c457a4e4707b0289c7ffb510ca4b1621e783",
+      "translation_text_hash": "9fc33f5cbed7f43bc7d74b5d6f2d4db9a9cf2188d1bbf76621b9d836e000609d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 아들들아 나를 들으며 내 입의 말을 버리지 말고"
+      ],
+      "raw_text_hashes": [
+        "9fc33f5cbed7f43bc7d74b5d6f2d4db9a9cf2188d1bbf76621b9d836e000609d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:8",
+      "sequence": 16526,
+      "chapter_label": "PRO 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Remove your way far from her. Don’t come near the door of her house,",
+      "ko": "네 길을 그에게서 멀리하라 그 집 문에도 가까이 가지 말라",
+      "source_text_hash": "98e24b5c6a2857d1bd5e6fc18b119f140b43e5aebd214d10c3ce11c0628e78d6",
+      "translation_text_hash": "d1f668644a26b8c47cd96130688c6c89c8f10c26d97bd8e7ee251fcca76f7118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 길을 그에게서 멀리하라 그 집 문에도 가까이 가지 말라"
+      ],
+      "raw_text_hashes": [
+        "d1f668644a26b8c47cd96130688c6c89c8f10c26d97bd8e7ee251fcca76f7118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:9",
+      "sequence": 16527,
+      "chapter_label": "PRO 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "lest you give your honor to others, and your years to the cruel one;",
+      "ko": "두렵건대 네 존영이 남에게 잃어버리게 되며 네 수한이 잔포자에게 빼앗기게 될까 하노라",
+      "source_text_hash": "79b84f9893b791d37783bdc4d8411a2de2523b6669e1bdfd12d15cbf1da2913c",
+      "translation_text_hash": "a4d49c54f0a720358f2c43511b9fae6f41332c7fcb64f52e8a6ba04d1e477f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 네 존영이 남에게 잃어버리게 되며 네 수한이 잔포자에게 빼앗기게 될까 하노라"
+      ],
+      "raw_text_hashes": [
+        "a4d49c54f0a720358f2c43511b9fae6f41332c7fcb64f52e8a6ba04d1e477f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:10",
+      "sequence": 16528,
+      "chapter_label": "PRO 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "lest strangers feast on your wealth, and your labors enrich another man’s house.",
+      "ko": "두렵건대 타인이 네 재물로 충족하게 되며 네 수고한 것이 외인의 집에 있게 될까 하노라",
+      "source_text_hash": "873a5b3278290888aeaaea44133c4ca410542faa045c6922a3a9f9116ab8b6d5",
+      "translation_text_hash": "6092e6bcc9a61261248c2231fea9af7eb4ecc1ad167c6e2a7bb1ff037999b99b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 타인이 네 재물로 충족하게 되며 네 수고한 것이 외인의 집에 있게 될까 하노라"
+      ],
+      "raw_text_hashes": [
+        "6092e6bcc9a61261248c2231fea9af7eb4ecc1ad167c6e2a7bb1ff037999b99b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:11",
+      "sequence": 16529,
+      "chapter_label": "PRO 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "You will groan at your latter end, when your flesh and your body are consumed,",
+      "ko": "두렵건대 마지막에 이르러 네 몸, 네 육체가 쇠패할 때에 네가 한탄하여",
+      "source_text_hash": "1a4bc09002db36459ba20e05511d088c19b45b469833c5a6479bbc56bcb7f209",
+      "translation_text_hash": "642bf016cf869cdbe1fb17ade5729485c82a18772a357c8a299905856604b4df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두렵건대 마지막에 이르러 네 몸, 네 육체가 쇠패할 때에 네가 한탄하여"
+      ],
+      "raw_text_hashes": [
+        "642bf016cf869cdbe1fb17ade5729485c82a18772a357c8a299905856604b4df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:12",
+      "sequence": 16530,
+      "chapter_label": "PRO 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "and say, “How I have hated instruction, and my heart despised reproof.",
+      "ko": "말하기를 내가 어찌하여 훈계를 싫어하며 내 마음이 꾸지람을 가벼이 여기고",
+      "source_text_hash": "c2783feb23e83f8f84b5fa6de4b4990b87a06e74c303781f2d9b517bdf0b48c9",
+      "translation_text_hash": "9821e58e6b5344fbafb795f82f022a270683812fcb625379fc286f89065a567d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 내가 어찌하여 훈계를 싫어하며 내 마음이 꾸지람을 가벼이 여기고"
+      ],
+      "raw_text_hashes": [
+        "9821e58e6b5344fbafb795f82f022a270683812fcb625379fc286f89065a567d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:13",
+      "sequence": 16531,
+      "chapter_label": "PRO 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "I haven’t obeyed the voice of my teachers, nor turned my ear to those who instructed me!",
+      "ko": "내 선생의 목소리를 청종치 아니하며 나를 가르치는 이에게 귀를 기울이지 아니하였던고",
+      "source_text_hash": "18d02e09966cd819bd88db3a70c92ccc6a561cc721508dfcd483406c3c14f3b9",
+      "translation_text_hash": "48da248b5c1a39bed11fbd506dcc88bbe96b7ea25f601800000dd319aab6869e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 선생의 목소리를 청종치 아니하며 나를 가르치는 이에게 귀를 기울이지 아니하였던고"
+      ],
+      "raw_text_hashes": [
+        "48da248b5c1a39bed11fbd506dcc88bbe96b7ea25f601800000dd319aab6869e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:14",
+      "sequence": 16532,
+      "chapter_label": "PRO 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "I have come to the brink of utter ruin, among the gathered assembly.”",
+      "ko": "많은 무리들이 모인 중에서 모든 악에 거의 빠지게 되었었노라 하게 될까 하노라",
+      "source_text_hash": "08b4184960a7928f6043ebf94008ad3758151c5e3e221ee302393e5a8b15dbfd",
+      "translation_text_hash": "3075c94ab286aa69a1701a36af538b6caf44f992a72f0cd94068ec4ba1940485",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 무리들이 모인 중에서 모든 악에 거의 빠지게 되었었노라 하게 될까 하노라"
+      ],
+      "raw_text_hashes": [
+        "3075c94ab286aa69a1701a36af538b6caf44f992a72f0cd94068ec4ba1940485"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:15",
+      "sequence": 16533,
+      "chapter_label": "PRO 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Drink water out of your own cistern, running water out of your own well.",
+      "ko": "너는 네 우물에서 물을 마시며 네 샘에서 흐르는 물을 마시라",
+      "source_text_hash": "b8901f65e3ebfa00c566f90a78808315569a761e95e8c14396cd4eea89c157c9",
+      "translation_text_hash": "7299697e098b635988dda52ee055882fbf01b861505f9731adeb4b6b1e21cccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 우물에서 물을 마시며 네 샘에서 흐르는 물을 마시라"
+      ],
+      "raw_text_hashes": [
+        "7299697e098b635988dda52ee055882fbf01b861505f9731adeb4b6b1e21cccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:16",
+      "sequence": 16534,
+      "chapter_label": "PRO 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Should your springs overflow in the streets, streams of water in the public squares?",
+      "ko": "어찌하여 네 샘물을 집 밖으로 넘치게 하겠으며 네 도랑물을 거리로 흘러가게 하겠느냐",
+      "source_text_hash": "3ef5e9e75226a83ac8b7b436003864862a3b6a9c4e0073dece3c64d70a7c1f8f",
+      "translation_text_hash": "754a6e156b234140174f7e27cce11ce99423114a69860a01b083caf5b7969668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 네 샘물을 집 밖으로 넘치게 하겠으며 네 도랑물을 거리로 흘러가게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "754a6e156b234140174f7e27cce11ce99423114a69860a01b083caf5b7969668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:17",
+      "sequence": 16535,
+      "chapter_label": "PRO 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Let them be for yourself alone, not for strangers with you.",
+      "ko": "그 물로 네게만 있게 하고 타인으로 더불어 그것을 나누지 말라",
+      "source_text_hash": "5fa8c3232e8108b2fcdc2eec1fb68168652790f000e57a08236f4ad6296a5818",
+      "translation_text_hash": "aaf7600660ba1774134c1c316ee745c46deeb524835efdbff4a92fc57788fbd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 물로 네게만 있게 하고 타인으로 더불어 그것을 나누지 말라"
+      ],
+      "raw_text_hashes": [
+        "aaf7600660ba1774134c1c316ee745c46deeb524835efdbff4a92fc57788fbd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:18",
+      "sequence": 16536,
+      "chapter_label": "PRO 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Let your spring be blessed. Rejoice in the wife of your youth.",
+      "ko": "네 샘으로 복되게 하라 네가 젊어서 취한 아내를 즐거워하라",
+      "source_text_hash": "e314cfd13999bc9c477d23da9c3aa27581fee9188f54440c6db48d717b29e065",
+      "translation_text_hash": "2ea31a8fd3699a6eabe27dc1d62f827feb6c813a4a4e394f759fa17039e0711a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 샘으로 복되게 하라 네가 젊어서 취한 아내를 즐거워하라"
+      ],
+      "raw_text_hashes": [
+        "2ea31a8fd3699a6eabe27dc1d62f827feb6c813a4a4e394f759fa17039e0711a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:19",
+      "sequence": 16537,
+      "chapter_label": "PRO 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "A loving doe and a graceful deer— let her breasts satisfy you at all times. Be captivated always with her love.",
+      "ko": "그는 사랑스러운 암사슴 같고 아름다운 암노루 같으니 너는 그 품을 항상 족하게 여기며 그 사랑을 항상 연모하라",
+      "source_text_hash": "41dd407f13cccf94bce314d522b18d0d00447304ba4eb96342f00b65c7bcf7a3",
+      "translation_text_hash": "55023bb5e915beba1cce001aa29ffd40b79e051525fe42946f1fd20779d2973d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 사랑스러운 암사슴 같고 아름다운 암노루 같으니 너는 그 품을 항상 족하게 여기며 그 사랑을 항상 연모하라"
+      ],
+      "raw_text_hashes": [
+        "55023bb5e915beba1cce001aa29ffd40b79e051525fe42946f1fd20779d2973d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:20",
+      "sequence": 16538,
+      "chapter_label": "PRO 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "For why should you, my son, be captivated with an adulteress? Why embrace the bosom of another?",
+      "ko": "내 아들아 어찌하여 음녀를 연모하겠으며 어찌하여 이방 계집의 가슴을 안겠느냐",
+      "source_text_hash": "a508025750f810bca8e3fa09574a788d41872e30103225a68d185c8a14260d56",
+      "translation_text_hash": "6a2f624075f3e2178355d843b8a1db807cbd4a4428166a2fe878a43b9e98db52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 어찌하여 음녀를 연모하겠으며 어찌하여 이방 계집의 가슴을 안겠느냐"
+      ],
+      "raw_text_hashes": [
+        "6a2f624075f3e2178355d843b8a1db807cbd4a4428166a2fe878a43b9e98db52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:21",
+      "sequence": 16539,
+      "chapter_label": "PRO 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "For the ways of man are before the LORD’s eyes. He examines all his paths.",
+      "ko": "대저 사람의 길은 여호와의 눈 앞에 있나니 그가 그 모든 길을 평탄케 하시느니라",
+      "source_text_hash": "8a9e52a92b5bf48c371559929e766858c72a470f523290cb98e92526ced5513d",
+      "translation_text_hash": "309025fc83665363171ec6570786dd50ccd25b0c19571d10eb1663f68a426c79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 사람의 길은 여호와의 눈 앞에 있나니 그가 그 모든 길을 평탄케 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "309025fc83665363171ec6570786dd50ccd25b0c19571d10eb1663f68a426c79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:22",
+      "sequence": 16540,
+      "chapter_label": "PRO 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "The evil deeds of the wicked ensnare him. The cords of his sin hold him firmly.",
+      "ko": "악인은 자기의 악에 걸리며 그 죄의 줄에 매이나니",
+      "source_text_hash": "1f0205191095116679b789992a10e7139da35a248e6ab5a76f90c9253dd73b49",
+      "translation_text_hash": "58363fa3dd11189ebced4a24792cb20593b0c65f285dc5286dd3951ebf5f1d4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 자기의 악에 걸리며 그 죄의 줄에 매이나니"
+      ],
+      "raw_text_hashes": [
+        "58363fa3dd11189ebced4a24792cb20593b0c65f285dc5286dd3951ebf5f1d4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:5:23",
+      "sequence": 16541,
+      "chapter_label": "PRO 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "He will die for lack of instruction. In the greatness of his folly, he will go astray.",
+      "ko": "그는 훈계를 받지 아니함을 인하여 죽겠고 미련함이 많음을 인하여 혼미하게 되느니라",
+      "source_text_hash": "682b259c010dad5edc5451d46ed5ee99798b9102570278ee8d5c1d9dc7979206",
+      "translation_text_hash": "4811a28bb5de806c7a93cd97622795637544a28cdaf0c54a7daa4a2efc309d99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 훈계를 받지 아니함을 인하여 죽겠고 미련함이 많음을 인하여 혼미하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "4811a28bb5de806c7a93cd97622795637544a28cdaf0c54a7daa4a2efc309d99"
+      ]
+    }
+  ]
+}

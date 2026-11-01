@@ -76,6 +76,7 @@ def test_allowed_field_sets_exact_membership():
     assert _ORCHESTRATE_ALLOWED == _EXEC_FIELDS | {
         "agent_plan", "recovery_policy", "max_retries", "subject_id",
         "require_evidence", "require_verification", "tool_arguments", "declared_plan", "pc_tools",
+        "pc_action_context",
     }
     assert _RESUME_ALLOWED == _EXEC_FIELDS | {
         "continuation_ref", "decision", "tool_arguments",

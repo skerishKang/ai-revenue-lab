@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:037",
+  "unit_ordinal": 473,
+  "unit_label": "JOB 37",
+  "book_code": "JOB",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:37:1",
+      "sequence": 13771,
+      "chapter_label": "JOB 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "“Yes, at this my heart trembles, and is moved out of its place.",
+      "ko": "이로 인하여 내 마음이 떨며 자기 처소에서 떠나느니라",
+      "source_text_hash": "4b785facfff2ec363bafe8440acafa8843d6549efd68118648bfd73bb67d5309",
+      "translation_text_hash": "3f64de709b72088fa053aae285c868a7b453d5f53646af76b65899934ebfb7fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 내 마음이 떨며 자기 처소에서 떠나느니라"
+      ],
+      "raw_text_hashes": [
+        "3f64de709b72088fa053aae285c868a7b453d5f53646af76b65899934ebfb7fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:2",
+      "sequence": 13772,
+      "chapter_label": "JOB 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "Hear, oh, hear the noise of his voice, the sound that goes out of his mouth.",
+      "ko": "하나님의 음성 곧 그 입에서 나오는 소리를 들으라 들으라",
+      "source_text_hash": "f6a571e6fd492786791e2729e927569f5920a6929c805b8853d041c423d71bc8",
+      "translation_text_hash": "c46bf4a48bd1ab6d5bb7b4efda51b9fd8886de186c924f2db7aab55e371328fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 음성 곧 그 입에서 나오는 소리를 들으라 들으라"
+      ],
+      "raw_text_hashes": [
+        "c46bf4a48bd1ab6d5bb7b4efda51b9fd8886de186c924f2db7aab55e371328fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:3",
+      "sequence": 13773,
+      "chapter_label": "JOB 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "He sends it out under the whole sky, and his lightning to the ends of the earth.",
+      "ko": "그 소리를 천하에 퍼치시며 번개 빛으로 땅끝까지 이르게 하시고",
+      "source_text_hash": "df4ead92f32218ff84e553f4fa626e32bfcff8b5fe04d1c61b38917d3b405108",
+      "translation_text_hash": "29325ab00dab86d9f21aa1f13df338e37a0365beedc31a8959b4e9ef333f2747",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소리를 천하에 퍼치시며 번개 빛으로 땅끝까지 이르게 하시고"
+      ],
+      "raw_text_hashes": [
+        "29325ab00dab86d9f21aa1f13df338e37a0365beedc31a8959b4e9ef333f2747"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:4",
+      "sequence": 13774,
+      "chapter_label": "JOB 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "After it a voice roars. He thunders with the voice of his majesty. He doesn’t hold back anything when his voice is heard.",
+      "ko": "그 후에 음성을 발하시며 위엄의 울리는 음성을 내시고는 그 음성이 들릴 때에 번개 빛을 금치 아니하시느니라",
+      "source_text_hash": "41bdfbfedd031d8aeb1c558f8700d61ec2393f23ff30e689e1e0666c0d99f161",
+      "translation_text_hash": "58d611d2572f60f342d739d44babb8ee66a26a5a144be2268a5e2b357257db4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 음성을 발하시며 위엄의 울리는 음성을 내시고는 그 음성이 들릴 때에 번개 빛을 금치 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "58d611d2572f60f342d739d44babb8ee66a26a5a144be2268a5e2b357257db4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:5",
+      "sequence": 13775,
+      "chapter_label": "JOB 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "God thunders marvelously with his voice. He does great things, which we can’t comprehend.",
+      "ko": "하나님이 기이하게 음성을 울리시며 우리의 헤아릴 수 없는 큰 일을 행하시느니라",
+      "source_text_hash": "24fd73763fc47c4a4b35f87dd612e976b105622407aa23eee978bc08fd500d77",
+      "translation_text_hash": "ec95cb7f7a2165dca0697a9cbed9a1641736f8ed74a7187005d22b599849e549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 기이하게 음성을 울리시며 우리의 헤아릴 수 없는 큰 일을 행하시느니라"
+      ],
+      "raw_text_hashes": [
+        "ec95cb7f7a2165dca0697a9cbed9a1641736f8ed74a7187005d22b599849e549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:6",
+      "sequence": 13776,
+      "chapter_label": "JOB 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "For he says to the snow, ‘Fall on the earth,’ likewise to the shower of rain, and to the showers of his mighty rain.",
+      "ko": "눈을 명하여 땅에 내리라 하시며 적은 비와 큰 비도 그 같이 내리게 하시느니라",
+      "source_text_hash": "4b77216bf74480a473eaf89bfa520ba5b075f8ea97935217412448b755adc6f0",
+      "translation_text_hash": "1f9bcad593f3fa4e2457c02e234bd372b95c87d8d34db24f4031bf31d4b97455",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈을 명하여 땅에 내리라 하시며 적은 비와 큰 비도 그 같이 내리게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "1f9bcad593f3fa4e2457c02e234bd372b95c87d8d34db24f4031bf31d4b97455"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:7",
+      "sequence": 13777,
+      "chapter_label": "JOB 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "He seals up the hand of every man, that all men whom he has made may know it.",
+      "ko": "그가 각 사람의 손을 봉하시나니 이는 그 지으신 모든 사람으로 그것을 알게 하려 하심이니라",
+      "source_text_hash": "2d006e406f316a86246806ed9448c408d89c1bf3151a876e652f2a241cfe36b9",
+      "translation_text_hash": "41171a1352d9ecaecc5acd9df76975650e59a9081e31be9afc03ce3ae483f6ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 각 사람의 손을 봉하시나니 이는 그 지으신 모든 사람으로 그것을 알게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "41171a1352d9ecaecc5acd9df76975650e59a9081e31be9afc03ce3ae483f6ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:8",
+      "sequence": 13778,
+      "chapter_label": "JOB 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "Then the animals take cover, and remain in their dens.",
+      "ko": "짐승들은 숨는 곳으로 들어가서 그 굴에 머물며",
+      "source_text_hash": "29efc2fe6893278cc694664621986f2f48b80d37ec5b678f9d08fa7d68aab37a",
+      "translation_text_hash": "9771b3940921176321e0c697b7d443b13c57b4d539ce7de1a56025f4269f5f7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "짐승들은 숨는 곳으로 들어가서 그 굴에 머물며"
+      ],
+      "raw_text_hashes": [
+        "9771b3940921176321e0c697b7d443b13c57b4d539ce7de1a56025f4269f5f7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:9",
+      "sequence": 13779,
+      "chapter_label": "JOB 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "Out of its room comes the storm, and cold out of the north.",
+      "ko": "남방 밀실에서는 광풍이 이르고 북방에서는 찬 기운이 이르며",
+      "source_text_hash": "2084ccfd66e2510e7dbfedc323f1a6bb29564cd76b34efad4a67ce180ad8c3c2",
+      "translation_text_hash": "bc7525fbb66b2bc43efede1c22c159e32664ede40a48190451495fb7da434daa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남방 밀실에서는 광풍이 이르고 북방에서는 찬 기운이 이르며"
+      ],
+      "raw_text_hashes": [
+        "bc7525fbb66b2bc43efede1c22c159e32664ede40a48190451495fb7da434daa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:10",
+      "sequence": 13780,
+      "chapter_label": "JOB 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "By the breath of God, ice is given, and the width of the waters is frozen.",
+      "ko": "하나님의 부시는 기운에 얼음이 얼고 물의 넓이가 줄어지느니라",
+      "source_text_hash": "947be58a732e5961b3ba56ebc5f6f5f9b75216131ca8b36e869d0ebc5a5d6aac",
+      "translation_text_hash": "a704102d33e09956b15854edd5395610c8ab9b32f9f89bc9377de800f8721add",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 부시는 기운에 얼음이 얼고 물의 넓이가 줄어지느니라"
+      ],
+      "raw_text_hashes": [
+        "a704102d33e09956b15854edd5395610c8ab9b32f9f89bc9377de800f8721add"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:11",
+      "sequence": 13781,
+      "chapter_label": "JOB 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, he loads the thick cloud with moisture. He spreads abroad the cloud of his lightning.",
+      "ko": "그가 습기로 빽빽한 구름 위에 실으시고 번개 빛의 구름을 널리 펴신즉",
+      "source_text_hash": "d428f74eade434c2472292afbb944bd09f0326d38cede7954b7a7bb7b7724648",
+      "translation_text_hash": "1c15da369b557513e0ea075abc2175b95c6ff863a1df1620bc9ee8f9cdfdfca0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 습기로 빽빽한 구름 위에 실으시고 번개 빛의 구름을 널리 펴신즉"
+      ],
+      "raw_text_hashes": [
+        "1c15da369b557513e0ea075abc2175b95c6ff863a1df1620bc9ee8f9cdfdfca0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:12",
+      "sequence": 13782,
+      "chapter_label": "JOB 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "It is turned around by his guidance, that they may do whatever he commands them on the surface of the habitable world,",
+      "ko": "구름이 인도하시는대로 두루 행하나니 이는 무릇 그의 명하시는 것을 세계상에 이루려 함이라",
+      "source_text_hash": "6bf0a94141f4429450d057c1afcb36974d49cb14fe4d7ad7db6121b3b5d76f35",
+      "translation_text_hash": "7ebb152c9e4edcdc95b3e8ea3069b104ef024e5d1b7900eccdcafe592b501e71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 인도하시는대로 두루 행하나니 이는 무릇 그의 명하시는 것을 세계상에 이루려 함이라"
+      ],
+      "raw_text_hashes": [
+        "7ebb152c9e4edcdc95b3e8ea3069b104ef024e5d1b7900eccdcafe592b501e71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:13",
+      "sequence": 13783,
+      "chapter_label": "JOB 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "whether it is for correction, or for his land, or for loving kindness, that he causes it to come.",
+      "ko": "혹 징벌을 위하며 혹 토지를 위하며 혹 긍휼 베푸심을 위하여 구름으로 오게 하시느니라",
+      "source_text_hash": "3bbb40ebba91900c3287c077ac65155c9536d8b607eddfdc7faaef2581b3ff45",
+      "translation_text_hash": "d5ecc4a46735cb42d7d903ae5493d7ef4ad94fa8666617621b9f5671f3da2a08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 징벌을 위하며 혹 토지를 위하며 혹 긍휼 베푸심을 위하여 구름으로 오게 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "d5ecc4a46735cb42d7d903ae5493d7ef4ad94fa8666617621b9f5671f3da2a08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:14",
+      "sequence": 13784,
+      "chapter_label": "JOB 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "“Listen to this, Job. Stand still, and consider the wondrous works of God.",
+      "ko": "욥이여 이것을 듣고 가만히 서서 하나님의 기묘하신 일을 궁구하라",
+      "source_text_hash": "cf6e3c3714592309b5103fbee4957c101a987ef6a375929890e9f186b38d78e5",
+      "translation_text_hash": "b829f9ab82c33395ec6f72c07619efeb239658cc36c998990ca35665c9fd0010",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이여 이것을 듣고 가만히 서서 하나님의 기묘하신 일을 궁구하라"
+      ],
+      "raw_text_hashes": [
+        "b829f9ab82c33395ec6f72c07619efeb239658cc36c998990ca35665c9fd0010"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:15",
+      "sequence": 13785,
+      "chapter_label": "JOB 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "Do you know how God controls them, and causes the lightning of his cloud to shine?",
+      "ko": "하나님이 어떻게 이런 것들에게 명령하셔서 그 구름의 번개 빛으로 번쩍 번쩍하게 하시는지 네가 아느냐",
+      "source_text_hash": "41cad3a8f3ceb921389b5aa307eaa689d636c73221ba314342b0e0740fb0c099",
+      "translation_text_hash": "f2bb3f91acd8139e5474f007dcbf8eb3418a0ef948889624a735ece89a07cf9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 어떻게 이런 것들에게 명령하셔서 그 구름의 번개 빛으로 번쩍 번쩍하게 하시는지 네가 아느냐"
+      ],
+      "raw_text_hashes": [
+        "f2bb3f91acd8139e5474f007dcbf8eb3418a0ef948889624a735ece89a07cf9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:16",
+      "sequence": 13786,
+      "chapter_label": "JOB 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "Do you know the workings of the clouds, the wondrous works of him who is perfect in knowledge?",
+      "ko": "구름의 평평하게 뜬 것과 지혜가 온전하신 자의 기묘한 일을 네가 아느냐",
+      "source_text_hash": "d27b0694108077d1488022baec7abc173b9b3f78844da30fd458bf0fea222500",
+      "translation_text_hash": "b6fb1138ef988dd0d6fc63a05b27cc56e60aa5343ba722529a6068395a77cb20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름의 평평하게 뜬 것과 지혜가 온전하신 자의 기묘한 일을 네가 아느냐"
+      ],
+      "raw_text_hashes": [
+        "b6fb1138ef988dd0d6fc63a05b27cc56e60aa5343ba722529a6068395a77cb20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:17",
+      "sequence": 13787,
+      "chapter_label": "JOB 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "You whose clothing is warm when the earth is still by reason of the south wind?",
+      "ko": "남풍으로하여 땅이 고요할 때에 네 의복이 따뜻한 까닭을 네가 아느냐",
+      "source_text_hash": "a61e40471e881be066ae7fba33e3fc4faaed299b9933dae395d702205c84cc6b",
+      "translation_text_hash": "d302594a06d607b32139dd59dfe20586ab7b20d20a14a7e236f01665693ca35e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남풍으로하여 땅이 고요할 때에 네 의복이 따뜻한 까닭을 네가 아느냐"
+      ],
+      "raw_text_hashes": [
+        "d302594a06d607b32139dd59dfe20586ab7b20d20a14a7e236f01665693ca35e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:18",
+      "sequence": 13788,
+      "chapter_label": "JOB 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "Can you, with him, spread out the sky, which is strong as a cast metal mirror?",
+      "ko": "네가 능히 그와 함께 하여 부은 거울 같은 견고한 궁창을 펼 수 있느냐",
+      "source_text_hash": "e4c26418d61d2d0d998c9bb8d82874e72e4f4cb4a2e2a887466b9ce68c8cf3a3",
+      "translation_text_hash": "ee72546dee554a093b3ec2d25c45f059869a7f30d7dc0dc247b4919b3ade6942",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 능히 그와 함께 하여 부은 거울 같은 견고한 궁창을 펼 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "ee72546dee554a093b3ec2d25c45f059869a7f30d7dc0dc247b4919b3ade6942"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:19",
+      "sequence": 13789,
+      "chapter_label": "JOB 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "Teach us what we will tell him, for we can’t make our case by reason of darkness.",
+      "ko": "우리가 그에게 할 말을 너는 우리에게 가르치라 우리는 어두워서 진술하지 못하겠노라",
+      "source_text_hash": "b77524635eef79c71a70ba67be25c693f493d459d7ae139f51cf5ac5d81421ba",
+      "translation_text_hash": "b2a9cf983561fa6c600e7897d92a70b832659de03644bd229a0c5a25f28637a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그에게 할 말을 너는 우리에게 가르치라 우리는 어두워서 진술하지 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "b2a9cf983561fa6c600e7897d92a70b832659de03644bd229a0c5a25f28637a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:20",
+      "sequence": 13790,
+      "chapter_label": "JOB 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "Will it be told him that I would speak? Or should a man wish that he were swallowed up?",
+      "ko": "내가 말하고 싶은 것을 어찌 그에게 고할 수 있으랴 어찌 삼키우기를 바랄 자가 있으랴",
+      "source_text_hash": "24d9dcd86ced819939cc009dc144baee91454a231b067401aca5872bd752030d",
+      "translation_text_hash": "f157c6fd642808b3d0a64b89e7672ea08411733e84e24eccff88b90612769833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하고 싶은 것을 어찌 그에게 고할 수 있으랴 어찌 삼키우기를 바랄 자가 있으랴"
+      ],
+      "raw_text_hashes": [
+        "f157c6fd642808b3d0a64b89e7672ea08411733e84e24eccff88b90612769833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:21",
+      "sequence": 13791,
+      "chapter_label": "JOB 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "Now men don’t see the light which is bright in the skies, but the wind passes, and clears them.",
+      "ko": "사람이 어떤 때는 궁창의 광명을 볼 수 없어도 바람이 지나가면 맑아지느니라",
+      "source_text_hash": "c9382e28d33d45a31a160c49e242ddd942f3984ccf230317da7674090b5b5a35",
+      "translation_text_hash": "91f430d37877e99dd77337355ee27077bf626f1b7f5fff58fa96011b1bfa0335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 어떤 때는 궁창의 광명을 볼 수 없어도 바람이 지나가면 맑아지느니라"
+      ],
+      "raw_text_hashes": [
+        "91f430d37877e99dd77337355ee27077bf626f1b7f5fff58fa96011b1bfa0335"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:22",
+      "sequence": 13792,
+      "chapter_label": "JOB 37",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 22
+        }
+      ],
+      "en": "Out of the north comes golden splendor. With God is awesome majesty.",
+      "ko": "북방에서는 금 빛이 나오나니 하나님께는 두려운 위엄이 있느니라",
+      "source_text_hash": "ef1e6906c98a2af249f5e9bd1fdcdf04b38e5d462d941b8dfda19e01d2d8cfe8",
+      "translation_text_hash": "825f14eda9048bb8de97bbbea5f3c3454e1bf81f57759bba64fe8306cdb4f561",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "북방에서는 금 빛이 나오나니 하나님께는 두려운 위엄이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "825f14eda9048bb8de97bbbea5f3c3454e1bf81f57759bba64fe8306cdb4f561"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:23",
+      "sequence": 13793,
+      "chapter_label": "JOB 37",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 23
+        }
+      ],
+      "en": "We can’t reach the Almighty. He is exalted in power. In justice and great righteousness, he will not oppress.",
+      "ko": "전능자를 우리가 측량할 수 없나니 그는 권능이 지극히 크사 심판이나 무한한 공의를 굽히지 아니 하심이니라",
+      "source_text_hash": "c0aff8d4d31bee2486d68f831fa84996dbe830e8c57723b419be6ad5866c1a3f",
+      "translation_text_hash": "2ae086fbf1de0a4d45cc20db4bfbd908fbfe16030db804d43e4de6e71e4bcc1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전능자를 우리가 측량할 수 없나니 그는 권능이 지극히 크사 심판이나 무한한 공의를 굽히지 아니 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "2ae086fbf1de0a4d45cc20db4bfbd908fbfe16030db804d43e4de6e71e4bcc1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:37:24",
+      "sequence": 13794,
+      "chapter_label": "JOB 37",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 37,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 37,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore men revere him. He doesn’t regard any who are wise of heart.”",
+      "ko": "그러므로 사람들은 그를 경외하고 그는 마음에 지혜롭다 하는 자를 돌아보지 아니하시느니라",
+      "source_text_hash": "f21f8abe5f2ba32622c2f48893fef49300ce60bae600adb93a08dc0c3a22a997",
+      "translation_text_hash": "2358f46897d5fd69d328cf6543b2289c0c2a1d5bd7d4b06fe1099e81f7b612f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 사람들은 그를 경외하고 그는 마음에 지혜롭다 하는 자를 돌아보지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "2358f46897d5fd69d328cf6543b2289c0c2a1d5bd7d4b06fe1099e81f7b612f8"
+      ]
+    }
+  ]
+}

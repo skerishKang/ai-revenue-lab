@@ -1,0 +1,5645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:119",
+  "unit_ordinal": 597,
+  "unit_label": "PSA 119",
+  "book_code": "PSA",
+  "chapter_number": 119,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:119:1",
+      "sequence": 15900,
+      "chapter_label": "PSA 119",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 1
+        }
+      ],
+      "en": "Blessed are those whose ways are blameless, who walk according to the LORD’s law.",
+      "ko": "행위 완전하여 여호와의 법에 행하는 자가 복이 있음이여",
+      "source_text_hash": "f0ef59b17f8cbb499f127d7330c1c82ca271b9dfbe61bb98619fd6942bbfb6c4",
+      "translation_text_hash": "de543064bd9f18a0e4dd3e471d25029700d286f1139338ea88263d34739cb6d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행위 완전하여 여호와의 법에 행하는 자가 복이 있음이여"
+      ],
+      "raw_text_hashes": [
+        "de543064bd9f18a0e4dd3e471d25029700d286f1139338ea88263d34739cb6d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:2",
+      "sequence": 15901,
+      "chapter_label": "PSA 119",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 2
+        }
+      ],
+      "en": "Blessed are those who keep his statutes, who seek him with their whole heart.",
+      "ko": "여호와의 증거를 지키고 전심으로 여호와를 구하는 자가 복이 있도다",
+      "source_text_hash": "7c5d2b5c207805846c45f789e6f975f2cfc74364453188b7dbefab835d199cd5",
+      "translation_text_hash": "ed3b1e60aabd28dc2aa66d360ddf62cb9a900f5a45002786036ffa00eb30b0e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 증거를 지키고 전심으로 여호와를 구하는 자가 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "ed3b1e60aabd28dc2aa66d360ddf62cb9a900f5a45002786036ffa00eb30b0e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:3",
+      "sequence": 15902,
+      "chapter_label": "PSA 119",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, they do nothing wrong. They walk in his ways.",
+      "ko": "실로 저희는 불의를 행치 아니하고 주의 도를 행하는도다",
+      "source_text_hash": "e42392b2e1eca0b5d1dc104f87d894d8d5e5c2bb807705049a6b9862076a14d2",
+      "translation_text_hash": "7891e76dbb9dfeaccd8f9680fcb3eef8fcaf1d2abc3a4818bd4933838b94761d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "실로 저희는 불의를 행치 아니하고 주의 도를 행하는도다"
+      ],
+      "raw_text_hashes": [
+        "7891e76dbb9dfeaccd8f9680fcb3eef8fcaf1d2abc3a4818bd4933838b94761d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:4",
+      "sequence": 15903,
+      "chapter_label": "PSA 119",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 4
+        }
+      ],
+      "en": "You have commanded your precepts, that we should fully obey them.",
+      "ko": "주께서 주의 법도로 명하사 우리로 근실히 지키게 하셨나이다",
+      "source_text_hash": "bf955eaf7e46f90726624a615dd1714487b1086cd07c94cd4a393b12be20db7e",
+      "translation_text_hash": "83dc80823775d15d916a2e4b8a7c9990d48bef9f2217378aa1d191b88e38f060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 주의 법도로 명하사 우리로 근실히 지키게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "83dc80823775d15d916a2e4b8a7c9990d48bef9f2217378aa1d191b88e38f060"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:5",
+      "sequence": 15904,
+      "chapter_label": "PSA 119",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 5
+        }
+      ],
+      "en": "Oh that my ways were steadfast to obey your statutes!",
+      "ko": "내 길을 굳이 정하사 주의 율례를 지키게 하소서",
+      "source_text_hash": "60dfaef666a15abb24fe1b07ef20bbc5d3b0b12327e1c8050cbdc7d9765cbf6b",
+      "translation_text_hash": "819700a78e33ceced19f1df5ede390c8e5775eb7bbff71ebcdd18a2e014289e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 길을 굳이 정하사 주의 율례를 지키게 하소서"
+      ],
+      "raw_text_hashes": [
+        "819700a78e33ceced19f1df5ede390c8e5775eb7bbff71ebcdd18a2e014289e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:6",
+      "sequence": 15905,
+      "chapter_label": "PSA 119",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 6
+        }
+      ],
+      "en": "Then I wouldn’t be disappointed, when I consider all of your commandments.",
+      "ko": "내가 주의 모든 계명에 주의할 때에는 부끄럽지 아니하리이다",
+      "source_text_hash": "605efee8cfcbcc244d6be33e03e5b9b41dae2346bd9729f944eb2b8590569508",
+      "translation_text_hash": "c96540b4df70b017df5f29f12ccb9900731977401e23a67d90dbeb8023ae5617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 모든 계명에 주의할 때에는 부끄럽지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "c96540b4df70b017df5f29f12ccb9900731977401e23a67d90dbeb8023ae5617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:7",
+      "sequence": 15906,
+      "chapter_label": "PSA 119",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 7
+        }
+      ],
+      "en": "I will give thanks to you with uprightness of heart, when I learn your righteous judgments.",
+      "ko": "내가 주의 의로운 판단을 배울 때에는 정직한 마음으로 주께 감사하리이다",
+      "source_text_hash": "df02a8e73c5b6e561a81651fb11de026af0c88197dc5925a08c8b3f0131d0d35",
+      "translation_text_hash": "a831547c5fe17f5ccd8e38502b7140c6e70e9eff5f8430e5cfcaa1b1ea0f2450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 의로운 판단을 배울 때에는 정직한 마음으로 주께 감사하리이다"
+      ],
+      "raw_text_hashes": [
+        "a831547c5fe17f5ccd8e38502b7140c6e70e9eff5f8430e5cfcaa1b1ea0f2450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:8",
+      "sequence": 15907,
+      "chapter_label": "PSA 119",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 8
+        }
+      ],
+      "en": "I will observe your statutes. Don’t utterly forsake me. BETH",
+      "ko": "내가 주의 율례를 지키오리니 나를 아주 버리지 마옵소서",
+      "source_text_hash": "fd34dfc5c5ee41f2b2572f1249816235acc241e6eef43ce557449dc0142bda13",
+      "translation_text_hash": "57b467ba89b232508b0ad1902c11ae12801b7ea67829a115deadaade5302f0a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 율례를 지키오리니 나를 아주 버리지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "57b467ba89b232508b0ad1902c11ae12801b7ea67829a115deadaade5302f0a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:9",
+      "sequence": 15908,
+      "chapter_label": "PSA 119",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 9
+        }
+      ],
+      "en": "How can a young man keep his way pure? By living according to your word.",
+      "ko": "청년이 무엇으로 그 행실을 깨끗케 하리이까 주의 말씀을 따라 삼갈 것이니이다",
+      "source_text_hash": "3709e9242cbaacd3d0e6eef89e679e08d30e02390cfdf6abf0ff17d7a9a277ce",
+      "translation_text_hash": "08deac715e471c5852ba37b421bbd27fb48c2d2a5c2884452ac45f90eefd48e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청년이 무엇으로 그 행실을 깨끗케 하리이까 주의 말씀을 따라 삼갈 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "08deac715e471c5852ba37b421bbd27fb48c2d2a5c2884452ac45f90eefd48e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:10",
+      "sequence": 15909,
+      "chapter_label": "PSA 119",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 10
+        }
+      ],
+      "en": "With my whole heart I have sought you. Don’t let me wander from your commandments.",
+      "ko": "내가 전심으로 주를 찾았사오니 주의 계명에서 떠나지 말게 하소서",
+      "source_text_hash": "b1326149da228fc6ceac2ee6a3d2b3e32fab467e1182d7350c3e3360e605ba11",
+      "translation_text_hash": "e99f808c36e592df842c9ac463f406df22b0453f4a7effcc1a6ffa3618630966",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전심으로 주를 찾았사오니 주의 계명에서 떠나지 말게 하소서"
+      ],
+      "raw_text_hashes": [
+        "e99f808c36e592df842c9ac463f406df22b0453f4a7effcc1a6ffa3618630966"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:11",
+      "sequence": 15910,
+      "chapter_label": "PSA 119",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 11
+        }
+      ],
+      "en": "I have hidden your word in my heart, that I might not sin against you.",
+      "ko": "내가 주께 범죄치 아니하려 하여 주의 말씀을 내 마음에 두었나이다",
+      "source_text_hash": "d508ab78be9525a875eb4950f091fc9668a2f1e38ab7a428ae78c3e02501e658",
+      "translation_text_hash": "6e8f95455e791665b20323527e27c68531a7f53d696038a9231351cf75a82a6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 범죄치 아니하려 하여 주의 말씀을 내 마음에 두었나이다"
+      ],
+      "raw_text_hashes": [
+        "6e8f95455e791665b20323527e27c68531a7f53d696038a9231351cf75a82a6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:12",
+      "sequence": 15911,
+      "chapter_label": "PSA 119",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 12
+        }
+      ],
+      "en": "Blessed are you, LORD. Teach me your statutes.",
+      "ko": "찬송을 받으실 여호와여 주의 율례를 내게 가르치소서",
+      "source_text_hash": "b0f3056784a930299b462d6bc0f2ba882c985e3ccb8dcb1d08611755dfd3c07c",
+      "translation_text_hash": "b72b57f4f971f1a988d1d137c2930b2dfbfe70195422d52f439ba9eeb5f2e6ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송을 받으실 여호와여 주의 율례를 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "b72b57f4f971f1a988d1d137c2930b2dfbfe70195422d52f439ba9eeb5f2e6ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:13",
+      "sequence": 15912,
+      "chapter_label": "PSA 119",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 13
+        }
+      ],
+      "en": "With my lips, I have declared all the ordinances of your mouth.",
+      "ko": "주의 입의 모든 규례를 나의 입술로 선포하였으며",
+      "source_text_hash": "3633bfd58e165994fad57679f46071b2d1fbd97075578961a6bf2b95cf5303b6",
+      "translation_text_hash": "e168e87cfbf0528c278f79830812b37b6942a6e288e557ec1c5c85031e1b07e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 입의 모든 규례를 나의 입술로 선포하였으며"
+      ],
+      "raw_text_hashes": [
+        "e168e87cfbf0528c278f79830812b37b6942a6e288e557ec1c5c85031e1b07e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:14",
+      "sequence": 15913,
+      "chapter_label": "PSA 119",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 14
+        }
+      ],
+      "en": "I have rejoiced in the way of your testimonies, as much as in all riches.",
+      "ko": "내가 모든 재물을 즐거워함 같이 주의 증거의 도를 즐거워하였나이다",
+      "source_text_hash": "5cce9e506ad12343f3998565f2840ad048cae3180e242729ece462c76f276871",
+      "translation_text_hash": "1aa5868a856d7c54e2e660f2d82adcf074371a66f710bcd4acc93efc71f28295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모든 재물을 즐거워함 같이 주의 증거의 도를 즐거워하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1aa5868a856d7c54e2e660f2d82adcf074371a66f710bcd4acc93efc71f28295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:15",
+      "sequence": 15914,
+      "chapter_label": "PSA 119",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 15
+        }
+      ],
+      "en": "I will meditate on your precepts, and consider your ways.",
+      "ko": "내가 주의 법도를 묵상하며 주의 도에 주의하며",
+      "source_text_hash": "202624d18fb43047f70a18c51629022878bcf172c3ea3437871c7ff69250d685",
+      "translation_text_hash": "aa478614903125d6cebceed059f1f693ef066ddb24212590c1cf8766179be5c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도를 묵상하며 주의 도에 주의하며"
+      ],
+      "raw_text_hashes": [
+        "aa478614903125d6cebceed059f1f693ef066ddb24212590c1cf8766179be5c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:16",
+      "sequence": 15915,
+      "chapter_label": "PSA 119",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 16
+        }
+      ],
+      "en": "I will delight myself in your statutes. I will not forget your word. GIMEL",
+      "ko": "주의 율례를 즐거워하며 주의 말씀을 잊지 아니하리이다",
+      "source_text_hash": "292faf14748b7e38c259c9b30e55ed0fa2323d7cae0952866d5deea596231011",
+      "translation_text_hash": "d33716926446f192e894f34710f4a8485ef72040845ac6d88270d378d3bb3ea5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 율례를 즐거워하며 주의 말씀을 잊지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "d33716926446f192e894f34710f4a8485ef72040845ac6d88270d378d3bb3ea5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:17",
+      "sequence": 15916,
+      "chapter_label": "PSA 119",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 17
+        }
+      ],
+      "en": "Do good to your servant. I will live and I will obey your word.",
+      "ko": "주의 종을 후대하여 살게 하소서 그리하시면 주의 말씀을 지키리이다",
+      "source_text_hash": "ef9252a67e0e10038f8f3f54eecaa2ee8990832a14b269aaff9d4e006ca873a8",
+      "translation_text_hash": "47adef71ea7f754d4f1faee91a5957d55eb75122cb25b316acd62a2afa3cea73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종을 후대하여 살게 하소서 그리하시면 주의 말씀을 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "47adef71ea7f754d4f1faee91a5957d55eb75122cb25b316acd62a2afa3cea73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:18",
+      "sequence": 15917,
+      "chapter_label": "PSA 119",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 18
+        }
+      ],
+      "en": "Open my eyes, that I may see wondrous things out of your law.",
+      "ko": "내 눈을 열어서 주의 법의 기이한 것을 보게 하소서",
+      "source_text_hash": "d0d6bdcf9788fde1ec94b378c3e9c6b9e6a3fdb0cbfc9b963cf06f86cdd8ff9d",
+      "translation_text_hash": "b15491c85557f138420ae50f48019a1a3f60b4d3025dba16e084907e9bb9d264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈을 열어서 주의 법의 기이한 것을 보게 하소서"
+      ],
+      "raw_text_hashes": [
+        "b15491c85557f138420ae50f48019a1a3f60b4d3025dba16e084907e9bb9d264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:19",
+      "sequence": 15918,
+      "chapter_label": "PSA 119",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 19
+        }
+      ],
+      "en": "I am a stranger on the earth. Don’t hide your commandments from me.",
+      "ko": "나는 땅에서 객이 되었사오니 주의 계명을 내게 숨기지 마소서",
+      "source_text_hash": "646a1f6ccad2cb9f188f2996694b40fa28af14d37f4374da9f4448390b9df1b4",
+      "translation_text_hash": "b6c0860667d062f7ed87d31f64519ca4a8a1777b009e03e033b9d258f697cf9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 땅에서 객이 되었사오니 주의 계명을 내게 숨기지 마소서"
+      ],
+      "raw_text_hashes": [
+        "b6c0860667d062f7ed87d31f64519ca4a8a1777b009e03e033b9d258f697cf9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:20",
+      "sequence": 15919,
+      "chapter_label": "PSA 119",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 20
+        }
+      ],
+      "en": "My soul is consumed with longing for your ordinances at all times.",
+      "ko": "주의 규례를 항상 사모함으로 내 마음이 상하나이다",
+      "source_text_hash": "f8e6975196968638bcde4a90a02dd2c61580eb69ad2f8fced63a95c205fb01c7",
+      "translation_text_hash": "1ac1111b9183ded5ae6848556b7c0dda5b652c4206210f906654d4c0ad1d71ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 규례를 항상 사모함으로 내 마음이 상하나이다"
+      ],
+      "raw_text_hashes": [
+        "1ac1111b9183ded5ae6848556b7c0dda5b652c4206210f906654d4c0ad1d71ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:21",
+      "sequence": 15920,
+      "chapter_label": "PSA 119",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 21
+        }
+      ],
+      "en": "You have rebuked the proud who are cursed, who wander from your commandments.",
+      "ko": "교만하여 저주를 받으며 주의 계명에서 떠나는 자를 주께서 꾸짖으셨나이다",
+      "source_text_hash": "ab3938595a66fd517e63eeb6df07df8202f54185aca4bad0f5d8d85d86d7d3ca",
+      "translation_text_hash": "11fbdca4c5173c8f37a765052a64883b6920512d0af47fe9a86500ab0f9362e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만하여 저주를 받으며 주의 계명에서 떠나는 자를 주께서 꾸짖으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "11fbdca4c5173c8f37a765052a64883b6920512d0af47fe9a86500ab0f9362e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:22",
+      "sequence": 15921,
+      "chapter_label": "PSA 119",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 22
+        }
+      ],
+      "en": "Take reproach and contempt away from me, for I have kept your statutes.",
+      "ko": "내가 주의 증거를 지켰사오니 훼방과 멸시를 내게서 떠나게 하소서",
+      "source_text_hash": "8d9752cc9514fdd2779925397ac60500fe4d1333b07d9b79f277e65d7cad5803",
+      "translation_text_hash": "85c1dcae8fec81ee412815d2ea9213fe94def152727811d290dd5af43476c4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 증거를 지켰사오니 훼방과 멸시를 내게서 떠나게 하소서"
+      ],
+      "raw_text_hashes": [
+        "85c1dcae8fec81ee412815d2ea9213fe94def152727811d290dd5af43476c4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:23",
+      "sequence": 15922,
+      "chapter_label": "PSA 119",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 23
+        }
+      ],
+      "en": "Though princes sit and slander me, your servant will meditate on your statutes.",
+      "ko": "방백들도 앉아 나를 훼방하였사오나 주의 종은 주의 율례를 묵상하였나이다",
+      "source_text_hash": "b7980edd81e9e4c74761a1234ccdb5baf0fa45919ebaf101cb3b7b88075fd482",
+      "translation_text_hash": "5cdcdaa983b277be9137f42e6dabd45303b72c2690b6b49e13735043d413efb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들도 앉아 나를 훼방하였사오나 주의 종은 주의 율례를 묵상하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5cdcdaa983b277be9137f42e6dabd45303b72c2690b6b49e13735043d413efb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:24",
+      "sequence": 15923,
+      "chapter_label": "PSA 119",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 24
+        }
+      ],
+      "en": "Indeed your statutes are my delight, and my counselors. DALETH",
+      "ko": "주의 증거는 나의 즐거움이요 나의 모사니이다",
+      "source_text_hash": "eecbe345f201cde16bddfc7b424e34c1cedd06dca03e6c3693dd299217a6e879",
+      "translation_text_hash": "15cafd9ae7bc2065c3742f8714052d3d826d1a2c7aab8dedc28970e7d3e7c5e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 증거는 나의 즐거움이요 나의 모사니이다"
+      ],
+      "raw_text_hashes": [
+        "15cafd9ae7bc2065c3742f8714052d3d826d1a2c7aab8dedc28970e7d3e7c5e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:25",
+      "sequence": 15924,
+      "chapter_label": "PSA 119",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 25
+        }
+      ],
+      "en": "My soul is laid low in the dust. Revive me according to your word!",
+      "ko": "내 영혼이 진토에 붙었사오니 주의 말씀대로 나를 소성케 하소서",
+      "source_text_hash": "011a0a6996195248e5f826a647e5afdd6c10e2e014dedd456eb76b7e21f3e8ff",
+      "translation_text_hash": "c80fb3e8b9da828463a7c1788c1fba5e30530238336effa6af3899bc1693233f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 진토에 붙었사오니 주의 말씀대로 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "c80fb3e8b9da828463a7c1788c1fba5e30530238336effa6af3899bc1693233f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:26",
+      "sequence": 15925,
+      "chapter_label": "PSA 119",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 26
+        }
+      ],
+      "en": "I declared my ways, and you answered me. Teach me your statutes.",
+      "ko": "내가 나의 행위를 고하매 주께서 내게 응답하셨으니 주의 율례를 내게 가르치소서",
+      "source_text_hash": "55ad515289976b4eeb715fa8bde5153a36e508e827313111d8380409730f13b3",
+      "translation_text_hash": "27e17104a64604cda19a8702ddf299db4101dc61f7da48cb10855523e8221f95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 행위를 고하매 주께서 내게 응답하셨으니 주의 율례를 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "27e17104a64604cda19a8702ddf299db4101dc61f7da48cb10855523e8221f95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:27",
+      "sequence": 15926,
+      "chapter_label": "PSA 119",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 27
+        }
+      ],
+      "en": "Let me understand the teaching of your precepts! Then I will meditate on your wondrous works.",
+      "ko": "나로 주의 법도의 길을 깨닫게 하소서 그리하시면 내가 주의 기사를 묵상하리이다",
+      "source_text_hash": "415426c61ff7e9d69803a8d8856fd0c358707ea1e939e68961d9ac9c609c363e",
+      "translation_text_hash": "19af31049b30a4d3622006b3f02a85ab02a1f95182ed6a63e325cdcb8970f834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 주의 법도의 길을 깨닫게 하소서 그리하시면 내가 주의 기사를 묵상하리이다"
+      ],
+      "raw_text_hashes": [
+        "19af31049b30a4d3622006b3f02a85ab02a1f95182ed6a63e325cdcb8970f834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:28",
+      "sequence": 15927,
+      "chapter_label": "PSA 119",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 28
+        }
+      ],
+      "en": "My soul is weary with sorrow; strengthen me according to your word.",
+      "ko": "나의 영혼이 눌림을 인하여 녹사오니 주의 말씀대로 나를 세우소서",
+      "source_text_hash": "4488acf90aff5559950b8427dc88ff6f5ba39b9d5f3cb314716ad87ebb1ba7e6",
+      "translation_text_hash": "c61d60103774e642ff62f557c65b624428e0d402f1989dfb43ad270ea24cf041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼이 눌림을 인하여 녹사오니 주의 말씀대로 나를 세우소서"
+      ],
+      "raw_text_hashes": [
+        "c61d60103774e642ff62f557c65b624428e0d402f1989dfb43ad270ea24cf041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:29",
+      "sequence": 15928,
+      "chapter_label": "PSA 119",
+      "verse_label": "29",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 29
+        }
+      ],
+      "en": "Keep me from the way of deceit. Grant me your law graciously!",
+      "ko": "거짓 행위를 내게서 떠나게 하시고 주의 법을 내게 은혜로이 베푸소서",
+      "source_text_hash": "5ecb1fc9635db551c071f07d72882dd034c93f86f2b149afaba511b4c5ec8654",
+      "translation_text_hash": "3b410c3c5587299d3bb9b84d166e420a6bfe9c026a4ced808f3ebac5f4a35daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 행위를 내게서 떠나게 하시고 주의 법을 내게 은혜로이 베푸소서"
+      ],
+      "raw_text_hashes": [
+        "3b410c3c5587299d3bb9b84d166e420a6bfe9c026a4ced808f3ebac5f4a35daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:30",
+      "sequence": 15929,
+      "chapter_label": "PSA 119",
+      "verse_label": "30",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 30
+        }
+      ],
+      "en": "I have chosen the way of truth. I have set your ordinances before me.",
+      "ko": "내가 성실한 길을 택하고 주의 규례를 내 앞에 두었나이다",
+      "source_text_hash": "db32b96dc53125c28b3d596e0c3a3e36b6074573b9832f50c06621f0b0e9b825",
+      "translation_text_hash": "3ef9ff501ec69063ab6923d7095a2f71d0b4640277426d098f8f0345b2553aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 성실한 길을 택하고 주의 규례를 내 앞에 두었나이다"
+      ],
+      "raw_text_hashes": [
+        "3ef9ff501ec69063ab6923d7095a2f71d0b4640277426d098f8f0345b2553aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:31",
+      "sequence": 15930,
+      "chapter_label": "PSA 119",
+      "verse_label": "31",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 31
+        }
+      ],
+      "en": "I cling to your statutes, LORD. Don’t let me be disappointed.",
+      "ko": "내가 주의 증거에 밀접하였사오니 여호와여 나로 수치를 당케 마소서",
+      "source_text_hash": "1a9a1211e4162f22f78a54889a101786dbb162e9a1443c9f8f6d1254c04159c0",
+      "translation_text_hash": "3f08ea0e4639fa7441d4e2ed98d9d2e2d2031e437afd13525a0f1119951c3914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 증거에 밀접하였사오니 여호와여 나로 수치를 당케 마소서"
+      ],
+      "raw_text_hashes": [
+        "3f08ea0e4639fa7441d4e2ed98d9d2e2d2031e437afd13525a0f1119951c3914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:32",
+      "sequence": 15931,
+      "chapter_label": "PSA 119",
+      "verse_label": "32",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 32
+        }
+      ],
+      "en": "I run in the path of your commandments, for you have set my heart free. HE",
+      "ko": "주께서 내 마음을 넓히시오면 내가 주의 계명의 길로 달려가리이다",
+      "source_text_hash": "f958adb5e3173664714d2dd0bab5fb82b0e36a0d80dd85d08508a53cca3bc1ad",
+      "translation_text_hash": "627fc788905679c62b3a350bfc40acfeabc92a09067d3f2ce1a81d8f2958ec7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 마음을 넓히시오면 내가 주의 계명의 길로 달려가리이다"
+      ],
+      "raw_text_hashes": [
+        "627fc788905679c62b3a350bfc40acfeabc92a09067d3f2ce1a81d8f2958ec7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:33",
+      "sequence": 15932,
+      "chapter_label": "PSA 119",
+      "verse_label": "33",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 33
+        }
+      ],
+      "en": "Teach me, LORD, the way of your statutes. I will keep them to the end.",
+      "ko": "여호와여 주의 율례의 도를 내게 가르치소서 내가 끝까지 지키리이다",
+      "source_text_hash": "c0d1bf34ff41dffbb23fd6b78b108c0b7312558ce8bea6e4120f750bf3941ee9",
+      "translation_text_hash": "b07f1e5f30c518edc5ec904489d27434dd81234afb4baf6459e61d886f650223",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 율례의 도를 내게 가르치소서 내가 끝까지 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "b07f1e5f30c518edc5ec904489d27434dd81234afb4baf6459e61d886f650223"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:34",
+      "sequence": 15933,
+      "chapter_label": "PSA 119",
+      "verse_label": "34",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 34
+        }
+      ],
+      "en": "Give me understanding, and I will keep your law. Yes, I will obey it with my whole heart.",
+      "ko": "나로 깨닫게 하소서 내가 주의 법을 준행하며 전심으로 지키리이다",
+      "source_text_hash": "b4a62fb0c908b3020d06a297798c9c9f7c3de1ea7e8142f3c60135c1d1281131",
+      "translation_text_hash": "275ad9bab8df797503e24817e4e74fe408d9a6cb7feb873346b9eabb892821c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 깨닫게 하소서 내가 주의 법을 준행하며 전심으로 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "275ad9bab8df797503e24817e4e74fe408d9a6cb7feb873346b9eabb892821c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:35",
+      "sequence": 15934,
+      "chapter_label": "PSA 119",
+      "verse_label": "35",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 35
+        }
+      ],
+      "en": "Direct me in the path of your commandments, for I delight in them.",
+      "ko": "나로 주의 계명의 첩경으로 행케 하소서 내가 이를 즐거워함이니이다",
+      "source_text_hash": "ba0934bdf8460cfdbad836ae859ee60e5aa1740c5b429ddd2f67324f9bd1bc8a",
+      "translation_text_hash": "91a8a178660b4c7f0647aa97c14a98c05fbf1ee76c8c294db019d5f262ff036b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나로 주의 계명의 첩경으로 행케 하소서 내가 이를 즐거워함이니이다"
+      ],
+      "raw_text_hashes": [
+        "91a8a178660b4c7f0647aa97c14a98c05fbf1ee76c8c294db019d5f262ff036b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:36",
+      "sequence": 15935,
+      "chapter_label": "PSA 119",
+      "verse_label": "36",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 36
+        }
+      ],
+      "en": "Turn my heart toward your statutes, not toward selfish gain.",
+      "ko": "내 마음을 주의 증거로 향하게 하시고 탐욕으로 향치 말게 하소서",
+      "source_text_hash": "b6dae1d9794facf429296605bcdfb1cf5801c77f7eef31a21920d653cb02d5be",
+      "translation_text_hash": "af05a8cb08b6060118851180d0b22d39a8d5af1184583f03b761067129692c29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음을 주의 증거로 향하게 하시고 탐욕으로 향치 말게 하소서"
+      ],
+      "raw_text_hashes": [
+        "af05a8cb08b6060118851180d0b22d39a8d5af1184583f03b761067129692c29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:37",
+      "sequence": 15936,
+      "chapter_label": "PSA 119",
+      "verse_label": "37",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 37
+        }
+      ],
+      "en": "Turn my eyes away from looking at worthless things. Revive me in your ways.",
+      "ko": "내 눈을 돌이켜 허탄한 것을 보지 말게 하시고 주의 도에 나를 소성케 하소서",
+      "source_text_hash": "d88e24642cdddd4e7d40bbcf31aa6607b5995ba1f96c5061bee5721b206662eb",
+      "translation_text_hash": "e78596dde294d778153f2f82b5c86b701bd2d369b7ee1c5f39f13a78817dac6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈을 돌이켜 허탄한 것을 보지 말게 하시고 주의 도에 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "e78596dde294d778153f2f82b5c86b701bd2d369b7ee1c5f39f13a78817dac6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:38",
+      "sequence": 15937,
+      "chapter_label": "PSA 119",
+      "verse_label": "38",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 38
+        }
+      ],
+      "en": "Fulfill your promise to your servant, that you may be feared.",
+      "ko": "주를 경외케 하는 주의 말씀을 주의 종에게 세우소서",
+      "source_text_hash": "0689e9c814fb21fb573a406c30c87efb4613ff788ebf03d57d25705c22d909aa",
+      "translation_text_hash": "b96173f624f8b6a4436c15d13f2bd107431c2f6fee91b6d696927e2947dd5e00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 경외케 하는 주의 말씀을 주의 종에게 세우소서"
+      ],
+      "raw_text_hashes": [
+        "b96173f624f8b6a4436c15d13f2bd107431c2f6fee91b6d696927e2947dd5e00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:39",
+      "sequence": 15938,
+      "chapter_label": "PSA 119",
+      "verse_label": "39",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 39
+        }
+      ],
+      "en": "Take away my disgrace that I dread, for your ordinances are good.",
+      "ko": "나의 두려워하는 훼방을 내게서 떠나게 하소서 주의 규례는 선하심이니이다",
+      "source_text_hash": "cc1480551038d203f2b50630feb93e1e38b250a9e62168cbf3714c8ae777053d",
+      "translation_text_hash": "227f0f0a714abce1012707c59deb0d950a0aabd50cf309ed9d2e5a89886f3bdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 두려워하는 훼방을 내게서 떠나게 하소서 주의 규례는 선하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "227f0f0a714abce1012707c59deb0d950a0aabd50cf309ed9d2e5a89886f3bdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:40",
+      "sequence": 15939,
+      "chapter_label": "PSA 119",
+      "verse_label": "40",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 40
+        }
+      ],
+      "en": "Behold, I long for your precepts! Revive me in your righteousness. VAV",
+      "ko": "내가 주의 법도를 사모하였사오니 주의 의에 나를 소성케 하소서",
+      "source_text_hash": "4eba1853f9b3d1804765a5829ed15daf7f7d1ae866b198917a536858c5225c72",
+      "translation_text_hash": "c69591208b8fc80bbe5f07b6973e5b7ad83d0e842762d392aa5ab7b784c68d60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도를 사모하였사오니 주의 의에 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "c69591208b8fc80bbe5f07b6973e5b7ad83d0e842762d392aa5ab7b784c68d60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:41",
+      "sequence": 15940,
+      "chapter_label": "PSA 119",
+      "verse_label": "41",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 41
+        }
+      ],
+      "en": "Let your loving kindness also come to me, LORD, your salvation, according to your word.",
+      "ko": "여호와여 주의 말씀대로 주의 인자하심과 주의 구원을 내게 임하게 하소서",
+      "source_text_hash": "40572bada4814231bba7d5e076c29310fad0a2c944344d3e188273f767678eed",
+      "translation_text_hash": "58bb7c4a487d975d1d4f773dd3262f425c07c869727b0b06166529294629c4d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 말씀대로 주의 인자하심과 주의 구원을 내게 임하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "58bb7c4a487d975d1d4f773dd3262f425c07c869727b0b06166529294629c4d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:42",
+      "sequence": 15941,
+      "chapter_label": "PSA 119",
+      "verse_label": "42",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 42
+        }
+      ],
+      "en": "So I will have an answer for him who reproaches me, for I trust in your word.",
+      "ko": "그리하시면 내가 나를 훼방하는 자에게 대답할 말이 있사오리니 내가 주의 말씀을 의뢰함이니이다",
+      "source_text_hash": "f1e2596588f232cc1b05fe59db2f2a5e19c50f0bea21ff892b03f4b642631862",
+      "translation_text_hash": "0722fe8bac46a8fbd4cc8c10fa67eab1c61caab6b10b09dca969fa2aa7e35f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하시면 내가 나를 훼방하는 자에게 대답할 말이 있사오리니 내가 주의 말씀을 의뢰함이니이다"
+      ],
+      "raw_text_hashes": [
+        "0722fe8bac46a8fbd4cc8c10fa67eab1c61caab6b10b09dca969fa2aa7e35f31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:43",
+      "sequence": 15942,
+      "chapter_label": "PSA 119",
+      "verse_label": "43",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 43
+        }
+      ],
+      "en": "Don’t snatch the word of truth out of my mouth, for I put my hope in your ordinances.",
+      "ko": "진리의 말씀이 내 입에서 조금도 떠나지 말게 하소서 내가 주의 규례를 바랐음이니이다",
+      "source_text_hash": "0b6f3267ca2c1240b6aca2a1092bb6cc6132ffcd4067da19e27326ffd30de732",
+      "translation_text_hash": "4bbcd9c0a12ba735035a4ff0e56435d17b85a05e34c73557ad5adf594067dfda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리의 말씀이 내 입에서 조금도 떠나지 말게 하소서 내가 주의 규례를 바랐음이니이다"
+      ],
+      "raw_text_hashes": [
+        "4bbcd9c0a12ba735035a4ff0e56435d17b85a05e34c73557ad5adf594067dfda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:44",
+      "sequence": 15943,
+      "chapter_label": "PSA 119",
+      "verse_label": "44",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 44
+        }
+      ],
+      "en": "So I will obey your law continually, forever and ever.",
+      "ko": "내가 주의 율법을 항상 영영히 끝 없이 지키리이다",
+      "source_text_hash": "937cc946a5382d9c5376f3d77472ef99a31bcc0977543f4239dd7ab8c4a733e1",
+      "translation_text_hash": "287a3836670ad8313f642072a489050b5b37b9106b19d3bf1a27eea49ee181b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 율법을 항상 영영히 끝 없이 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "287a3836670ad8313f642072a489050b5b37b9106b19d3bf1a27eea49ee181b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:45",
+      "sequence": 15944,
+      "chapter_label": "PSA 119",
+      "verse_label": "45",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 45
+        }
+      ],
+      "en": "I will walk in liberty, for I have sought your precepts.",
+      "ko": "내가 주의 법도를 구하였사오니 자유롭게 행보할 것이오며",
+      "source_text_hash": "4836106ae1f63c2190f69e331ea76655b2b436dd2d01eba35ca49700f812332c",
+      "translation_text_hash": "93c036c4319f617a971dd7aca9b7858bda10c973609f65f58a4250fb51c00de4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도를 구하였사오니 자유롭게 행보할 것이오며"
+      ],
+      "raw_text_hashes": [
+        "93c036c4319f617a971dd7aca9b7858bda10c973609f65f58a4250fb51c00de4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:46",
+      "sequence": 15945,
+      "chapter_label": "PSA 119",
+      "verse_label": "46",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 46
+        }
+      ],
+      "en": "I will also speak of your statutes before kings, and will not be disappointed.",
+      "ko": "또 열왕 앞에 주의 증거를 말할 때에 수치를 당치 아니하겠사오며",
+      "source_text_hash": "d13a2392459e617fd4be32063a081ed79a63cfc1affeb49a4df09e59a14aa194",
+      "translation_text_hash": "e28c9f2c8f7a62c87ae050f0d29986a1cac8b0e62c9c3b6bf0f5f06bd35e9cd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 열왕 앞에 주의 증거를 말할 때에 수치를 당치 아니하겠사오며"
+      ],
+      "raw_text_hashes": [
+        "e28c9f2c8f7a62c87ae050f0d29986a1cac8b0e62c9c3b6bf0f5f06bd35e9cd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:47",
+      "sequence": 15946,
+      "chapter_label": "PSA 119",
+      "verse_label": "47",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 47
+        }
+      ],
+      "en": "I will delight myself in your commandments, because I love them.",
+      "ko": "나의 사랑하는바 주의 계명을 스스로 즐거워하며",
+      "source_text_hash": "29c7204d099c1095b510af0e86ea37787561b9b89754612146d1da9034613547",
+      "translation_text_hash": "2955321e330335528ac9334b824f4774b0e97e8e68ab7e43febc8cc3997a9825",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는바 주의 계명을 스스로 즐거워하며"
+      ],
+      "raw_text_hashes": [
+        "2955321e330335528ac9334b824f4774b0e97e8e68ab7e43febc8cc3997a9825"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:48",
+      "sequence": 15947,
+      "chapter_label": "PSA 119",
+      "verse_label": "48",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 48
+        }
+      ],
+      "en": "I reach out my hands for your commandments, which I love. I will meditate on your statutes. ZAYIN",
+      "ko": "또 나의 사랑하는바 주의 계명에 내 손을 들고 주의 율례를 묵상하리이다",
+      "source_text_hash": "337e1a6607bca007dbbce5606f5d3df0fbd58ea5a26f05e9ace33213bc46c384",
+      "translation_text_hash": "7caae579303c7cde2c99ba44dd9a2ac827468f960a5c92f22e20d9743abd562a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나의 사랑하는바 주의 계명에 내 손을 들고 주의 율례를 묵상하리이다"
+      ],
+      "raw_text_hashes": [
+        "7caae579303c7cde2c99ba44dd9a2ac827468f960a5c92f22e20d9743abd562a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:49",
+      "sequence": 15948,
+      "chapter_label": "PSA 119",
+      "verse_label": "49",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 49
+        }
+      ],
+      "en": "Remember your word to your servant, because you gave me hope.",
+      "ko": "주의 종에게 하신 말씀을 기억하소서 주께서 나로 소망이 있게 하셨나이다",
+      "source_text_hash": "0bae6ce2840b8becbb375126dcaedea7ebb8409a9cbe4ea4b46b95f3adc35f40",
+      "translation_text_hash": "69852a4b427dbfb980769568563b9674b5d81e4e20b2b10f1ed1f6e3bf9bf78d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종에게 하신 말씀을 기억하소서 주께서 나로 소망이 있게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "69852a4b427dbfb980769568563b9674b5d81e4e20b2b10f1ed1f6e3bf9bf78d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:50",
+      "sequence": 15949,
+      "chapter_label": "PSA 119",
+      "verse_label": "50",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 50
+        }
+      ],
+      "en": "This is my comfort in my affliction, for your word has revived me.",
+      "ko": "이 말씀은 나의 곤란 중에 위로라 주의 말씀이 나를 살리셨음이니이다",
+      "source_text_hash": "9ada776292dee0136b3925e2855870fa4fb64fba77c5f0989e4616aff090c351",
+      "translation_text_hash": "9f3c6aac76a5c9d2eee29bb152c5942d87a367b0aa5aeed7dcea645af146256a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀은 나의 곤란 중에 위로라 주의 말씀이 나를 살리셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "9f3c6aac76a5c9d2eee29bb152c5942d87a367b0aa5aeed7dcea645af146256a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:51",
+      "sequence": 15950,
+      "chapter_label": "PSA 119",
+      "verse_label": "51",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 51
+        }
+      ],
+      "en": "The arrogant mock me excessively, but I don’t swerve from your law.",
+      "ko": "교만한 자가 나를 심히 조롱하였어도 나는 주의 법을 떠나지 아니하였나이다",
+      "source_text_hash": "87ae9db21da9efe3ce3dcae181dffe98d0935373eb5fe485dda73bee1f3b60da",
+      "translation_text_hash": "bbfff79d94dbfd83dabff7ab37da54448b11e830769c13121ba2cb796cf3bcb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만한 자가 나를 심히 조롱하였어도 나는 주의 법을 떠나지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "bbfff79d94dbfd83dabff7ab37da54448b11e830769c13121ba2cb796cf3bcb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:52",
+      "sequence": 15951,
+      "chapter_label": "PSA 119",
+      "verse_label": "52",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 52
+        }
+      ],
+      "en": "I remember your ordinances of old, LORD, and have comforted myself.",
+      "ko": "여호와여 주의 옛 규례를 내가 기억하고 스스로 위로하였나이다",
+      "source_text_hash": "c05dbf73ff313a64e802752170b9e4cfd800aa56bc778ce2ac88d7d299bbf2d7",
+      "translation_text_hash": "adf694627785bc340a5a70fefd7d2372e61726f27b3a08c8bb608468298e3df4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 옛 규례를 내가 기억하고 스스로 위로하였나이다"
+      ],
+      "raw_text_hashes": [
+        "adf694627785bc340a5a70fefd7d2372e61726f27b3a08c8bb608468298e3df4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:53",
+      "sequence": 15952,
+      "chapter_label": "PSA 119",
+      "verse_label": "53",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 53
+        }
+      ],
+      "en": "Indignation has taken hold on me, because of the wicked who forsake your law.",
+      "ko": "주의 율법을 버린 악인들을 인하여 내가 맹렬한 노에 잡혔나이다",
+      "source_text_hash": "cd004b5868ef9660a714bfcb17d799f1179b204a956b82edc22a562bcc1d8feb",
+      "translation_text_hash": "b55cf1ff10e9ff12401a7e8624d90ccb8ef827ab262509243ef26be26a6dfe76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 율법을 버린 악인들을 인하여 내가 맹렬한 노에 잡혔나이다"
+      ],
+      "raw_text_hashes": [
+        "b55cf1ff10e9ff12401a7e8624d90ccb8ef827ab262509243ef26be26a6dfe76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:54",
+      "sequence": 15953,
+      "chapter_label": "PSA 119",
+      "verse_label": "54",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 54
+        }
+      ],
+      "en": "Your statutes have been my songs in the house where I live.",
+      "ko": "나의 나그네 된 집에서 주의 율례가 나의 노래가 되었나이다",
+      "source_text_hash": "9307e6aa352e1a680419fafc5f094f5dc5964926b962f83511201c6ef61a70dd",
+      "translation_text_hash": "b32dfbd8570efc5858825c7e7c7e23a726d5c937afb7c6a1c5b7171435486382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 나그네 된 집에서 주의 율례가 나의 노래가 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "b32dfbd8570efc5858825c7e7c7e23a726d5c937afb7c6a1c5b7171435486382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:55",
+      "sequence": 15954,
+      "chapter_label": "PSA 119",
+      "verse_label": "55",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 55
+        }
+      ],
+      "en": "I have remembered your name, LORD, in the night, and I obey your law.",
+      "ko": "여호와여 내가 밤에 주의 이름을 기억하고 주의 법을 지켰나이다",
+      "source_text_hash": "149c21ed0e493945b2d35554d07305ed3775d1681dc3d59093e8a44f10e626cf",
+      "translation_text_hash": "561f304be91544c44243be5e183616aa921a5b6793300f1a11763ba2f2e60e2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 밤에 주의 이름을 기억하고 주의 법을 지켰나이다"
+      ],
+      "raw_text_hashes": [
+        "561f304be91544c44243be5e183616aa921a5b6793300f1a11763ba2f2e60e2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:56",
+      "sequence": 15955,
+      "chapter_label": "PSA 119",
+      "verse_label": "56",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 56
+        }
+      ],
+      "en": "This is my way, that I keep your precepts. HETH",
+      "ko": "내 소유는 이것이니 곧 주의 법도를 지킨 것이니이다",
+      "source_text_hash": "c36827df9c38b890a97106572f06fd4e33dcae52cc961d137f44be4ea0d82be8",
+      "translation_text_hash": "01872aa5311d15e304a5ec440b5f24460e9cc25df1638f5275fc22f37aae6229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 소유는 이것이니 곧 주의 법도를 지킨 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "01872aa5311d15e304a5ec440b5f24460e9cc25df1638f5275fc22f37aae6229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:57",
+      "sequence": 15956,
+      "chapter_label": "PSA 119",
+      "verse_label": "57",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 57
+        }
+      ],
+      "en": "The LORD is my portion. I promised to obey your words.",
+      "ko": "여호와는 나의 분깃이시니 나는 주의 말씀을 지키리라 하였나이다",
+      "source_text_hash": "a4ce2b949fcfad23096522fc74727106f71dbc35841a2e02049c29317eb74f70",
+      "translation_text_hash": "44d6f83fb265ecee382512d88ea65ede9faefc8342df6b137254f3260d45d8f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 분깃이시니 나는 주의 말씀을 지키리라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "44d6f83fb265ecee382512d88ea65ede9faefc8342df6b137254f3260d45d8f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:58",
+      "sequence": 15957,
+      "chapter_label": "PSA 119",
+      "verse_label": "58",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 58
+        }
+      ],
+      "en": "I sought your favor with my whole heart. Be merciful to me according to your word.",
+      "ko": "내가 전심으로 주의 은혜를 구하였사오니 주의 말씀대로 나를 긍휼히 여기소서",
+      "source_text_hash": "e79d07e72d96c9faa009e078aa433f5c9c6b1bf4172820215dff30b1df14e14c",
+      "translation_text_hash": "18d3c7a2e17bb2a83e84798151c78ef25d4b27e45630ae79c0643bb834e878d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전심으로 주의 은혜를 구하였사오니 주의 말씀대로 나를 긍휼히 여기소서"
+      ],
+      "raw_text_hashes": [
+        "18d3c7a2e17bb2a83e84798151c78ef25d4b27e45630ae79c0643bb834e878d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:59",
+      "sequence": 15958,
+      "chapter_label": "PSA 119",
+      "verse_label": "59",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 59
+        }
+      ],
+      "en": "I considered my ways, and turned my steps to your statutes.",
+      "ko": "내가 내 행위를 생각하고 주의 증거로 내 발을 돌이켰사오며",
+      "source_text_hash": "63a30d91985045088c9e6ae63d443587575ede1684ee61fbf4167a3369c7418c",
+      "translation_text_hash": "c11dff57deea90571608d99667e948aff965a267fb71d91e084200c27b0fc5dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 행위를 생각하고 주의 증거로 내 발을 돌이켰사오며"
+      ],
+      "raw_text_hashes": [
+        "c11dff57deea90571608d99667e948aff965a267fb71d91e084200c27b0fc5dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:60",
+      "sequence": 15959,
+      "chapter_label": "PSA 119",
+      "verse_label": "60",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 60
+        }
+      ],
+      "en": "I will hurry, and not delay, to obey your commandments.",
+      "ko": "주의 계명을 지키기에 신속히 하고 지체치 아니하였나이다",
+      "source_text_hash": "8073e72bceb5165fec21ff1ceaf13b40e2ebbb7e52ffe95e4dc3dd3c204060f0",
+      "translation_text_hash": "1b9369a1b609c8bdba2226e1eba55cbf5981c81e15fd877d1e415a14c2f09614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 계명을 지키기에 신속히 하고 지체치 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1b9369a1b609c8bdba2226e1eba55cbf5981c81e15fd877d1e415a14c2f09614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:61",
+      "sequence": 15960,
+      "chapter_label": "PSA 119",
+      "verse_label": "61",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 61
+        }
+      ],
+      "en": "The ropes of the wicked bind me, but I won’t forget your law.",
+      "ko": "악인의 줄이 내게 두루 얽혔을지라도 나는 주의 법을 잊지 아니하였나이다",
+      "source_text_hash": "1c89eeb4030edf961a0fa27f6a8ab565bba7a8c4b1790a2fa57733bb24a37d82",
+      "translation_text_hash": "26c74df7bebfdf66300020465463f57a0e2898d47f0a8c543f1317b8c38906d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 줄이 내게 두루 얽혔을지라도 나는 주의 법을 잊지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "26c74df7bebfdf66300020465463f57a0e2898d47f0a8c543f1317b8c38906d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:62",
+      "sequence": 15961,
+      "chapter_label": "PSA 119",
+      "verse_label": "62",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 62
+        }
+      ],
+      "en": "At midnight I will rise to give thanks to you, because of your righteous ordinances.",
+      "ko": "내가 주의 의로운 규례를 인하여 밤중에 일어나 주께 감사하리이다",
+      "source_text_hash": "b6f9ea6b720bcbd5500e1a973e89cd5453d61d4bd34acd3ee38c56010252a459",
+      "translation_text_hash": "0a7eb930c0bda282f11572aef01b1ea5d61959fc9ab8bd89bb85448f74f00ff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 의로운 규례를 인하여 밤중에 일어나 주께 감사하리이다"
+      ],
+      "raw_text_hashes": [
+        "0a7eb930c0bda282f11572aef01b1ea5d61959fc9ab8bd89bb85448f74f00ff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:63",
+      "sequence": 15962,
+      "chapter_label": "PSA 119",
+      "verse_label": "63",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 63
+        }
+      ],
+      "en": "I am a friend of all those who fear you, of those who observe your precepts.",
+      "ko": "나는 주를 경외하는 모든 자와 주의 법도를 지키는 자의 동무라",
+      "source_text_hash": "b1ecf4320cc57bd20b9350f34777dc0e9df9f20dd9575ffb1315f5acf2614d98",
+      "translation_text_hash": "fccaba009e7d780247bf5aecf7126e071f1ee33d687446e40bcae084ad05647e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주를 경외하는 모든 자와 주의 법도를 지키는 자의 동무라"
+      ],
+      "raw_text_hashes": [
+        "fccaba009e7d780247bf5aecf7126e071f1ee33d687446e40bcae084ad05647e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:64",
+      "sequence": 15963,
+      "chapter_label": "PSA 119",
+      "verse_label": "64",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 64
+        }
+      ],
+      "en": "The earth is full of your loving kindness, LORD. Teach me your statutes. TETH",
+      "ko": "여호와여 주의 인자하심이 땅에 충만하였사오니 주의 율례로 나를 가르치소서",
+      "source_text_hash": "489c9f8615f4d03ff2bf9d51d39e40a3688e7fde00076e41d228b028e3a631ba",
+      "translation_text_hash": "5b60284091292acf15b772707a641c452e3b5caf2883751056b9d221a79673ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 인자하심이 땅에 충만하였사오니 주의 율례로 나를 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "5b60284091292acf15b772707a641c452e3b5caf2883751056b9d221a79673ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:65",
+      "sequence": 15964,
+      "chapter_label": "PSA 119",
+      "verse_label": "65",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 65
+        }
+      ],
+      "en": "You have treated your servant well, according to your word, LORD.",
+      "ko": "여호와여 주의 말씀대로 주의 종을 선대하셨나이다",
+      "source_text_hash": "7b0f00b14f7552ee101a56c84c86aff8f402a78f53889362e43e4d6c87186ed9",
+      "translation_text_hash": "6f571e58a89c35357cfa9c95783d58d2b9df61791b0d50923e2891187aca0782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 말씀대로 주의 종을 선대하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "6f571e58a89c35357cfa9c95783d58d2b9df61791b0d50923e2891187aca0782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:66",
+      "sequence": 15965,
+      "chapter_label": "PSA 119",
+      "verse_label": "66",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 66
+        }
+      ],
+      "en": "Teach me good judgment and knowledge, for I believe in your commandments.",
+      "ko": "내가 주의 계명을 믿었사오니 명철과 지식을 내게 가르치소서",
+      "source_text_hash": "a708bf2c3ebf54be94bf43b997cbd896ed37f640e2c9532c861942675d7b1e50",
+      "translation_text_hash": "22e784b5f1825ec1d074b7be63781ad779ba38e182728e47ede8d66e6e154b07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 계명을 믿었사오니 명철과 지식을 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "22e784b5f1825ec1d074b7be63781ad779ba38e182728e47ede8d66e6e154b07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:67",
+      "sequence": 15966,
+      "chapter_label": "PSA 119",
+      "verse_label": "67",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 67
+        }
+      ],
+      "en": "Before I was afflicted, I went astray; but now I observe your word.",
+      "ko": "고난 당하기 전에는 내가 그릇 행하였더니 이제는 주의 말씀을 지키나이다",
+      "source_text_hash": "720d54c58b527f66d93c02a5a5503d5f5d25ef077fc5279ff3cfbcc5d22ea3f2",
+      "translation_text_hash": "98434c6de0c4f3f77d7daab9cc824b768cbd8eb43c525c87d37baaa498e566c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고난 당하기 전에는 내가 그릇 행하였더니 이제는 주의 말씀을 지키나이다"
+      ],
+      "raw_text_hashes": [
+        "98434c6de0c4f3f77d7daab9cc824b768cbd8eb43c525c87d37baaa498e566c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:68",
+      "sequence": 15967,
+      "chapter_label": "PSA 119",
+      "verse_label": "68",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 68
+        }
+      ],
+      "en": "You are good, and do good. Teach me your statutes.",
+      "ko": "주는 선하사 선을 행하시오니 주의 율례로 나를 가르치소서",
+      "source_text_hash": "15892c52370b82314332d84b2020bd021b8250feb85c67306169633e9b4ddd4d",
+      "translation_text_hash": "1bdbc8a737a1bf4bc5b66830fbfab3f3fa22ffbe1f4e51025a59b9c0f9490e63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 선하사 선을 행하시오니 주의 율례로 나를 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "1bdbc8a737a1bf4bc5b66830fbfab3f3fa22ffbe1f4e51025a59b9c0f9490e63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:69",
+      "sequence": 15968,
+      "chapter_label": "PSA 119",
+      "verse_label": "69",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 69
+        }
+      ],
+      "en": "The proud have smeared a lie upon me. With my whole heart, I will keep your precepts.",
+      "ko": "교만한 자가 거짓을 지어 나를 치려 하였사오나 나는 전심으로 주의 법도를 지키리이다",
+      "source_text_hash": "366ad793a187382f58f80bf7212edc611bae52371c47223a3dd1327b8aef2a9d",
+      "translation_text_hash": "2dcfd92942baade2afe6fada7d4f5591e51a6af94d6fb7490694de0b1546d16f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만한 자가 거짓을 지어 나를 치려 하였사오나 나는 전심으로 주의 법도를 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "2dcfd92942baade2afe6fada7d4f5591e51a6af94d6fb7490694de0b1546d16f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:70",
+      "sequence": 15969,
+      "chapter_label": "PSA 119",
+      "verse_label": "70",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 70
+        }
+      ],
+      "en": "Their heart is as callous as the fat, but I delight in your law.",
+      "ko": "저희 마음은 살쪄 지방 같으나 나는 주의 법을 즐거워하나이다",
+      "source_text_hash": "13218177d827f2a938cd9e6ca3ed495e82c0e740840b40cf67e2af33223063e8",
+      "translation_text_hash": "789dcb59c76b1187e0c263b4cd08679faf5b7ba71c2f709e026ba793218cf546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 마음은 살쪄 지방 같으나 나는 주의 법을 즐거워하나이다"
+      ],
+      "raw_text_hashes": [
+        "789dcb59c76b1187e0c263b4cd08679faf5b7ba71c2f709e026ba793218cf546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:71",
+      "sequence": 15970,
+      "chapter_label": "PSA 119",
+      "verse_label": "71",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 71
+        }
+      ],
+      "en": "It is good for me that I have been afflicted, that I may learn your statutes.",
+      "ko": "고난 당한 것이 내게 유익이라 이로 인하여 내가 주의 율례를 배우게 되었나이다",
+      "source_text_hash": "8bb3ebfb6529209e312074784262b0c58e0bb4813320d01b7d14049137a0cd6c",
+      "translation_text_hash": "575bcf97ca27b07a372a45f2bfcd8f9c1fe261f101d590769a4b3276fcfbf72b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고난 당한 것이 내게 유익이라 이로 인하여 내가 주의 율례를 배우게 되었나이다"
+      ],
+      "raw_text_hashes": [
+        "575bcf97ca27b07a372a45f2bfcd8f9c1fe261f101d590769a4b3276fcfbf72b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:72",
+      "sequence": 15971,
+      "chapter_label": "PSA 119",
+      "verse_label": "72",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 72
+        }
+      ],
+      "en": "The law of your mouth is better to me than thousands of pieces of gold and silver. YODH",
+      "ko": "주의 입의 법이 내게는 천천 금은보다 승하니이다",
+      "source_text_hash": "24f8f81cad32e8a50cc2906c2321c0f3700d33639fdcce71ed323921847de7ef",
+      "translation_text_hash": "626d548c3a2d672299dc5954beaf0ba07bc17e7359aafea561faece775addeb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 입의 법이 내게는 천천 금은보다 승하니이다"
+      ],
+      "raw_text_hashes": [
+        "626d548c3a2d672299dc5954beaf0ba07bc17e7359aafea561faece775addeb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:73",
+      "sequence": 15972,
+      "chapter_label": "PSA 119",
+      "verse_label": "73",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 73
+        }
+      ],
+      "en": "Your hands have made me and formed me. Give me understanding, that I may learn your commandments.",
+      "ko": "주의 손이 나를 만들고 세우셨사오니 나로 깨닫게 하사 주의 계명을 배우게 하소서",
+      "source_text_hash": "8b49dc450b105f5fc1b8316c6db8f3cde6506a05cf31cab4d3cdf39e6bfc072c",
+      "translation_text_hash": "bc780b82c83bfee97e2131e6a6a02ba91e60b1f12af52afb4d74304eb55fdb30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 손이 나를 만들고 세우셨사오니 나로 깨닫게 하사 주의 계명을 배우게 하소서"
+      ],
+      "raw_text_hashes": [
+        "bc780b82c83bfee97e2131e6a6a02ba91e60b1f12af52afb4d74304eb55fdb30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:74",
+      "sequence": 15973,
+      "chapter_label": "PSA 119",
+      "verse_label": "74",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 74
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 74
+        }
+      ],
+      "en": "Those who fear you will see me and be glad, because I have put my hope in your word.",
+      "ko": "주를 경외하는 자가 나를 보고 기뻐할것은 내가 주의 말씀을 바라는 연고니이다",
+      "source_text_hash": "6623c87c6909f7ca920b033a9a24c7bd2c6c6a70ea780ec3bed0ac8c45dc22e2",
+      "translation_text_hash": "a6f3cda19a6d878a969a2d1c8c73f2ab2f10495f36ca4a2d688a3524c14bfadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 경외하는 자가 나를 보고 기뻐할것은 내가 주의 말씀을 바라는 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "a6f3cda19a6d878a969a2d1c8c73f2ab2f10495f36ca4a2d688a3524c14bfadf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:75",
+      "sequence": 15974,
+      "chapter_label": "PSA 119",
+      "verse_label": "75",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 75
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 75
+        }
+      ],
+      "en": "LORD, I know that your judgments are righteous, that in faithfulness you have afflicted me.",
+      "ko": "여호와여 내가 알거니와 주의 판단은 의로우시고 주께서 나를 괴롭게 하심은 성실하심으로 말미암음이니이다",
+      "source_text_hash": "0ea3d84dc8ff2425333a522e6ec4442d4b99668e830a315eacf36cf3b7aadeeb",
+      "translation_text_hash": "417c6997d15530f7f2e23de7463774f876e7ea6d73db2f62f5a446879845279d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 알거니와 주의 판단은 의로우시고 주께서 나를 괴롭게 하심은 성실하심으로 말미암음이니이다"
+      ],
+      "raw_text_hashes": [
+        "417c6997d15530f7f2e23de7463774f876e7ea6d73db2f62f5a446879845279d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:76",
+      "sequence": 15975,
+      "chapter_label": "PSA 119",
+      "verse_label": "76",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 76
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 76
+        }
+      ],
+      "en": "Please let your loving kindness be for my comfort, according to your word to your servant.",
+      "ko": "구하오니 주의 종에게 하신 말씀대로 주의 인자하심이 나의 위안이 되게 하시며",
+      "source_text_hash": "0bbd6d47d74ff795911623ca7949b85f53444e06ebda477636638f2b9a0bb5c1",
+      "translation_text_hash": "c2a74b1d569673ed4eff8ff10064c06d48a6d08bebfba965c152440cb0543cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구하오니 주의 종에게 하신 말씀대로 주의 인자하심이 나의 위안이 되게 하시며"
+      ],
+      "raw_text_hashes": [
+        "c2a74b1d569673ed4eff8ff10064c06d48a6d08bebfba965c152440cb0543cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:77",
+      "sequence": 15976,
+      "chapter_label": "PSA 119",
+      "verse_label": "77",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 77
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 77
+        }
+      ],
+      "en": "Let your tender mercies come to me, that I may live; for your law is my delight.",
+      "ko": "주의 긍휼히 여기심이 내게 임하사 나로 살게 하소서 주의 법은 나의 즐거움이니이다",
+      "source_text_hash": "9f14d84878aba7ffe34499a21d724e78a672621a50c336f5a16bcd358e1f6b59",
+      "translation_text_hash": "064e1991742a606adc8f7ec41db84c58c2716b2c63dd92499e203931e4a588a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 긍휼히 여기심이 내게 임하사 나로 살게 하소서 주의 법은 나의 즐거움이니이다"
+      ],
+      "raw_text_hashes": [
+        "064e1991742a606adc8f7ec41db84c58c2716b2c63dd92499e203931e4a588a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:78",
+      "sequence": 15977,
+      "chapter_label": "PSA 119",
+      "verse_label": "78",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 78
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 78
+        }
+      ],
+      "en": "Let the proud be disappointed, for they have overthrown me wrongfully. I will meditate on your precepts.",
+      "ko": "교만한 자가 무고히 나를 엎드러뜨렸으니 저희로 수치를 당케하소서 나는 주의 법도를 묵상하리이다",
+      "source_text_hash": "a67c8078e94df7e3561953954e11e5d6ed41f009feb15d802e158d31a95c6603",
+      "translation_text_hash": "d9ceab0b8f6327463e78ece331fdc3a975e2552a72e18b4b5effce8fe2facc53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만한 자가 무고히 나를 엎드러뜨렸으니 저희로 수치를 당케하소서 나는 주의 법도를 묵상하리이다"
+      ],
+      "raw_text_hashes": [
+        "d9ceab0b8f6327463e78ece331fdc3a975e2552a72e18b4b5effce8fe2facc53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:79",
+      "sequence": 15978,
+      "chapter_label": "PSA 119",
+      "verse_label": "79",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 79
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 79
+        }
+      ],
+      "en": "Let those who fear you turn to me. They will know your statutes.",
+      "ko": "주를 경외하는 자로 내게 돌아오게 하소서 그리하시면 저희가 주의 증거를 알리이다",
+      "source_text_hash": "4ca0e6476343df63b0c4711ecf9d470e6e1965c472cf654738940d8b953d3064",
+      "translation_text_hash": "1981a69ee6333479a77c427d20b3b75021f8b25f4c82ddeed1baf123e533000c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 경외하는 자로 내게 돌아오게 하소서 그리하시면 저희가 주의 증거를 알리이다"
+      ],
+      "raw_text_hashes": [
+        "1981a69ee6333479a77c427d20b3b75021f8b25f4c82ddeed1baf123e533000c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:80",
+      "sequence": 15979,
+      "chapter_label": "PSA 119",
+      "verse_label": "80",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 80
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 80
+        }
+      ],
+      "en": "Let my heart be blameless toward your decrees, that I may not be disappointed. KAPF",
+      "ko": "내 마음으로 주의 율례에 완전케 하사 나로 수치를 당치 않게 하소서",
+      "source_text_hash": "e2f28b2fb1f3b921b76f292200c16a6097b20a9e0956f8ab135fd00923eeff93",
+      "translation_text_hash": "a3c90e4580b9cc9666af943ec7f4f3d9bea5a541547850da2f29247f4bcfb63b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음으로 주의 율례에 완전케 하사 나로 수치를 당치 않게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a3c90e4580b9cc9666af943ec7f4f3d9bea5a541547850da2f29247f4bcfb63b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:81",
+      "sequence": 15980,
+      "chapter_label": "PSA 119",
+      "verse_label": "81",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 81
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 81
+        }
+      ],
+      "en": "My soul faints for your salvation. I hope in your word.",
+      "ko": "나의 영혼이 주의 구원을 사모하기에 피곤하오나 나는 오히려 주의 말씀을 바라나이다",
+      "source_text_hash": "133ea354cdaeb3f66f0b512e770fbb18acb090a5adda4453ac5c160a4207c0fe",
+      "translation_text_hash": "5940c84da81c8cdf3f55c6804c18d65c51e2c24c3d453eb04ce6166f5aebd587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 영혼이 주의 구원을 사모하기에 피곤하오나 나는 오히려 주의 말씀을 바라나이다"
+      ],
+      "raw_text_hashes": [
+        "5940c84da81c8cdf3f55c6804c18d65c51e2c24c3d453eb04ce6166f5aebd587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:82",
+      "sequence": 15981,
+      "chapter_label": "PSA 119",
+      "verse_label": "82",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 82
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 82
+        }
+      ],
+      "en": "My eyes fail for your word. I say, “When will you comfort me?”",
+      "ko": "나의 말이 주께서 언제나 나를 안위하시겠나이까 하면서 내 눈이 주의 말씀을 바라기에 피곤하니이다",
+      "source_text_hash": "e6b8c0e8312ac55f804b8cfb1cfc8244a88a344d2defc4fbd8d4a31fb0f0fca2",
+      "translation_text_hash": "4fefa790ab084635dbbc5d1a356904a9b622702921ffaf049863aceb0ace0043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 말이 주께서 언제나 나를 안위하시겠나이까 하면서 내 눈이 주의 말씀을 바라기에 피곤하니이다"
+      ],
+      "raw_text_hashes": [
+        "4fefa790ab084635dbbc5d1a356904a9b622702921ffaf049863aceb0ace0043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:83",
+      "sequence": 15982,
+      "chapter_label": "PSA 119",
+      "verse_label": "83",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 83
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 83
+        }
+      ],
+      "en": "For I have become like a wineskin in the smoke. I don’t forget your statutes.",
+      "ko": "내가 연기 중의 가죽병 같이 되었으나 오히려 주의 율례를 잊지 아니하나이다",
+      "source_text_hash": "b9ca18e38650b34a19b88256db08c61c44f487183f3a5ee3101a22c3124a6e96",
+      "translation_text_hash": "2e6be4758c935bd3ac620930dbb42d1c2eb64fc8d98d3280eb8f6ef56f65ebbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 연기 중의 가죽병 같이 되었으나 오히려 주의 율례를 잊지 아니하나이다"
+      ],
+      "raw_text_hashes": [
+        "2e6be4758c935bd3ac620930dbb42d1c2eb64fc8d98d3280eb8f6ef56f65ebbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:84",
+      "sequence": 15983,
+      "chapter_label": "PSA 119",
+      "verse_label": "84",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 84
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 84
+        }
+      ],
+      "en": "How many are the days of your servant? When will you execute judgment on those who persecute me?",
+      "ko": "주의 종의 날이 얼마나 되나이까 나를 핍박하는 자를 주께서 언제나 국문하시리이까",
+      "source_text_hash": "fb7126299d9b6c24a915eb55e8385b61c32e0917b8d5d2bd7089eb1939ca0ed5",
+      "translation_text_hash": "3dc1270b939dc6bbc9ef9e8a9bccc566df6e694f24701a80b87783cbfd1b64af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종의 날이 얼마나 되나이까 나를 핍박하는 자를 주께서 언제나 국문하시리이까"
+      ],
+      "raw_text_hashes": [
+        "3dc1270b939dc6bbc9ef9e8a9bccc566df6e694f24701a80b87783cbfd1b64af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:85",
+      "sequence": 15984,
+      "chapter_label": "PSA 119",
+      "verse_label": "85",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 85
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 85
+        }
+      ],
+      "en": "The proud have dug pits for me, contrary to your law.",
+      "ko": "주의 법을 좇지아니하는 교만한 자가 나를 해하려고 웅덩이를 팠나이다",
+      "source_text_hash": "833f46c706b0525d0a548fb24096e5da0efc71daecfad7515871ddfe557c8b44",
+      "translation_text_hash": "1eaa224c5259c98cdd5f4acbc9c86c742028d9143c2b1c800c31a08cba70871a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 법을 좇지아니하는 교만한 자가 나를 해하려고 웅덩이를 팠나이다"
+      ],
+      "raw_text_hashes": [
+        "1eaa224c5259c98cdd5f4acbc9c86c742028d9143c2b1c800c31a08cba70871a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:86",
+      "sequence": 15985,
+      "chapter_label": "PSA 119",
+      "verse_label": "86",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 86
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 86
+        }
+      ],
+      "en": "All of your commandments are faithful. They persecute me wrongfully. Help me!",
+      "ko": "주의 모든 계명은 신실하니이다 저희가 무고히 나를 핍박하오니 나를 도우소서",
+      "source_text_hash": "9630ff5721a783aa938696d4adefd38fb89cfdff645f5766f3a38cedc8a65f4e",
+      "translation_text_hash": "f4037fb0fb0f76bf61eaa121e881d98e22060fabc70a01209abb754979f34b75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 모든 계명은 신실하니이다 저희가 무고히 나를 핍박하오니 나를 도우소서"
+      ],
+      "raw_text_hashes": [
+        "f4037fb0fb0f76bf61eaa121e881d98e22060fabc70a01209abb754979f34b75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:87",
+      "sequence": 15986,
+      "chapter_label": "PSA 119",
+      "verse_label": "87",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 87
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 87
+        }
+      ],
+      "en": "They had almost wiped me from the earth, but I didn’t forsake your precepts.",
+      "ko": "저희가 나를 세상에서 거의 멸하였으나 나는 주의 법도를 버리지 아니하였사오니",
+      "source_text_hash": "adc48a0b5ba9201a0e8c5868c9da40d07212f333968b0a0fe433a99679d8147c",
+      "translation_text_hash": "76592c9c973756b51ab116711deeb82d4c7258dadee0ee0f99796f03ac827520",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나를 세상에서 거의 멸하였으나 나는 주의 법도를 버리지 아니하였사오니"
+      ],
+      "raw_text_hashes": [
+        "76592c9c973756b51ab116711deeb82d4c7258dadee0ee0f99796f03ac827520"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:88",
+      "sequence": 15987,
+      "chapter_label": "PSA 119",
+      "verse_label": "88",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 88
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 88
+        }
+      ],
+      "en": "Preserve my life according to your loving kindness, so I will obey the statutes of your mouth. LAMEDH",
+      "ko": "주의 인자하심을 따라 나로 소성케 하소서 그리하시면 주의 입의 증거를 내가 지키리이다",
+      "source_text_hash": "ffa4fd9ca6ab02cd5ba3e7a5635aa9183d3d6b33ea485ac9395753f993669fe9",
+      "translation_text_hash": "817e7fcb565d47b1d74bf37cebeae918a511d566f9534db8dafa8e06c009e3c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하심을 따라 나로 소성케 하소서 그리하시면 주의 입의 증거를 내가 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "817e7fcb565d47b1d74bf37cebeae918a511d566f9534db8dafa8e06c009e3c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:89",
+      "sequence": 15988,
+      "chapter_label": "PSA 119",
+      "verse_label": "89",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 89
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 89
+        }
+      ],
+      "en": "LORD, your word is settled in heaven forever.",
+      "ko": "여호와여 주의 말씀이 영원히 하늘에 굳게 섰사오며",
+      "source_text_hash": "842a713ed974c857f75df51b4a5e185736b291c46e4c9a689d65c8654d023207",
+      "translation_text_hash": "eb0c43ae3349f6915b353c1b85b58fae58ab4dbd33d3ca460f3ca657fd57b4f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 말씀이 영원히 하늘에 굳게 섰사오며"
+      ],
+      "raw_text_hashes": [
+        "eb0c43ae3349f6915b353c1b85b58fae58ab4dbd33d3ca460f3ca657fd57b4f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:90",
+      "sequence": 15989,
+      "chapter_label": "PSA 119",
+      "verse_label": "90",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 90
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 90
+        }
+      ],
+      "en": "Your faithfulness is to all generations. You have established the earth, and it remains.",
+      "ko": "주의 성실하심은 대대에 이르나이다 주께서 땅을 세우셨으므로 땅이 항상 있사오니",
+      "source_text_hash": "1b34cd08055e7c1cfc0a0f18aeccf9396bdace1a9fcaa37fe30efae55485ab65",
+      "translation_text_hash": "f95e607513f9a79e84ef2c58ebd7968776785373373393a7480fa3a1382c0987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 성실하심은 대대에 이르나이다 주께서 땅을 세우셨으므로 땅이 항상 있사오니"
+      ],
+      "raw_text_hashes": [
+        "f95e607513f9a79e84ef2c58ebd7968776785373373393a7480fa3a1382c0987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:91",
+      "sequence": 15990,
+      "chapter_label": "PSA 119",
+      "verse_label": "91",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 91
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 91
+        }
+      ],
+      "en": "Your laws remain to this day, for all things serve you.",
+      "ko": "천지가 주의 규례대로 오늘까지 있음은 만물이 주의 종이 된 연고니이다",
+      "source_text_hash": "c6ccc74abeefe6ca561d6e6a79c214059132449d7d214b97e478d5c92f1e7a48",
+      "translation_text_hash": "dc8b4bab3bccdfc926fb7bf49cc232df35c99798341ab086a4f733f15c166033",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지가 주의 규례대로 오늘까지 있음은 만물이 주의 종이 된 연고니이다"
+      ],
+      "raw_text_hashes": [
+        "dc8b4bab3bccdfc926fb7bf49cc232df35c99798341ab086a4f733f15c166033"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:92",
+      "sequence": 15991,
+      "chapter_label": "PSA 119",
+      "verse_label": "92",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 92
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 92
+        }
+      ],
+      "en": "Unless your law had been my delight, I would have perished in my affliction.",
+      "ko": "주의 법이 나의 즐거움이 되지 아니하였더면 내가 내 고난 중에 멸망하였으리이다",
+      "source_text_hash": "56c753302955aba7a3cf3a2c28429675d20bec3582e4f199256d79eccd0513c9",
+      "translation_text_hash": "785b70d9be34eac97fc3cd0e0039e560ba2f5393d1c897daf3a7d6140e8dd398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 법이 나의 즐거움이 되지 아니하였더면 내가 내 고난 중에 멸망하였으리이다"
+      ],
+      "raw_text_hashes": [
+        "785b70d9be34eac97fc3cd0e0039e560ba2f5393d1c897daf3a7d6140e8dd398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:93",
+      "sequence": 15992,
+      "chapter_label": "PSA 119",
+      "verse_label": "93",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 93
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 93
+        }
+      ],
+      "en": "I will never forget your precepts, for with them, you have revived me.",
+      "ko": "내가 주의 법도를 영원히 잊지 아니하오니 주께서 이것들로 나를 살게 하심이니이다",
+      "source_text_hash": "218ec531da3ec9f8110060609a577e6d10da9038d323571ce3d10e98d903d34d",
+      "translation_text_hash": "9a7d3dc819f5adb88e926dea7ff4fdb7a364820dec087a094a8591df1f6ec32d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도를 영원히 잊지 아니하오니 주께서 이것들로 나를 살게 하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "9a7d3dc819f5adb88e926dea7ff4fdb7a364820dec087a094a8591df1f6ec32d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:94",
+      "sequence": 15993,
+      "chapter_label": "PSA 119",
+      "verse_label": "94",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 94
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 94
+        }
+      ],
+      "en": "I am yours. Save me, for I have sought your precepts.",
+      "ko": "나는 주의 것이오니 나를 구원하소서 내가 주의 법도를 찾았나이다",
+      "source_text_hash": "017218115bb54d2df73d8be6812a8c5338ec089766c0d7d20393d46e243b059d",
+      "translation_text_hash": "3f4cb2e2484a83ea517c9839f74fa3a315e5b6cf98290b6c4d9d5fbc31a3f5eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주의 것이오니 나를 구원하소서 내가 주의 법도를 찾았나이다"
+      ],
+      "raw_text_hashes": [
+        "3f4cb2e2484a83ea517c9839f74fa3a315e5b6cf98290b6c4d9d5fbc31a3f5eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:95",
+      "sequence": 15994,
+      "chapter_label": "PSA 119",
+      "verse_label": "95",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 95
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 95
+        }
+      ],
+      "en": "The wicked have waited for me, to destroy me. I will consider your statutes.",
+      "ko": "악인이 나를 멸하려고 엿보오나 나는 주의 증거를 생각하겠나이다",
+      "source_text_hash": "a61251eba249ad9015335229dd2ccf0b1bda78e433be9012de7e5da327c44421",
+      "translation_text_hash": "fab4ef0205b4e9ff194aa6287280ecf307d21df22ea01d3a6041303528cfeaea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 나를 멸하려고 엿보오나 나는 주의 증거를 생각하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "fab4ef0205b4e9ff194aa6287280ecf307d21df22ea01d3a6041303528cfeaea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:96",
+      "sequence": 15995,
+      "chapter_label": "PSA 119",
+      "verse_label": "96",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 96
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 96
+        }
+      ],
+      "en": "I have seen a limit to all perfection, but your commands are boundless. MEM",
+      "ko": "내가 보니 모든 완전한 것이 다 끝이 있어도 주의 계명은 심히 넓으니이다",
+      "source_text_hash": "fd6fed15e80336f2abd723020cc3d5b57a4da7fc61701a604425e3a3c2a80f8a",
+      "translation_text_hash": "452e050de240eb39ef45641d63ac58715d51634812c973191b548cb617203a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 모든 완전한 것이 다 끝이 있어도 주의 계명은 심히 넓으니이다"
+      ],
+      "raw_text_hashes": [
+        "452e050de240eb39ef45641d63ac58715d51634812c973191b548cb617203a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:97",
+      "sequence": 15996,
+      "chapter_label": "PSA 119",
+      "verse_label": "97",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 97
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 97
+        }
+      ],
+      "en": "How I love your law! It is my meditation all day.",
+      "ko": "내가 주의 법을 어찌 그리 사랑하는지요 내가 그것을 종일 묵상하나이다",
+      "source_text_hash": "4ded5715ad73c805c3ab08044c020069ed5c0cc876640675d3528539922f6137",
+      "translation_text_hash": "f474b18b414e597d320031b77db4b587f10b27e5d4d755794223258b7e980184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법을 어찌 그리 사랑하는지요 내가 그것을 종일 묵상하나이다"
+      ],
+      "raw_text_hashes": [
+        "f474b18b414e597d320031b77db4b587f10b27e5d4d755794223258b7e980184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:98",
+      "sequence": 15997,
+      "chapter_label": "PSA 119",
+      "verse_label": "98",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 98
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 98
+        }
+      ],
+      "en": "Your commandments make me wiser than my enemies, for your commandments are always with me.",
+      "ko": "주의 계명이 항상 나와 함께하므로 그것이 나로 원수보다 지혜롭게 하나이다",
+      "source_text_hash": "422d9804bd693b3372ee073469a082bb90b36abd6c27d14b4b4db58ced0dd74a",
+      "translation_text_hash": "7d5961995753a0d9e2a66e47279350862c769cf98070c201722954c2a95624b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 계명이 항상 나와 함께하므로 그것이 나로 원수보다 지혜롭게 하나이다"
+      ],
+      "raw_text_hashes": [
+        "7d5961995753a0d9e2a66e47279350862c769cf98070c201722954c2a95624b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:99",
+      "sequence": 15998,
+      "chapter_label": "PSA 119",
+      "verse_label": "99",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 99
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 99
+        }
+      ],
+      "en": "I have more understanding than all my teachers, for your testimonies are my meditation.",
+      "ko": "내가 주의 증거를 묵상하므로 나의 명철함이 나의 모든 스승보다 승하며",
+      "source_text_hash": "ba17eb7326997b41ca337ea625a7290cdfaf65e38ae548d55726db524821a3a8",
+      "translation_text_hash": "3462d8986c695be06023990e81f52fc779d585f149f7f8e08a3d7c2f542414a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 증거를 묵상하므로 나의 명철함이 나의 모든 스승보다 승하며"
+      ],
+      "raw_text_hashes": [
+        "3462d8986c695be06023990e81f52fc779d585f149f7f8e08a3d7c2f542414a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:100",
+      "sequence": 15999,
+      "chapter_label": "PSA 119",
+      "verse_label": "100",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 100
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 100
+        }
+      ],
+      "en": "I understand more than the aged, because I have kept your precepts.",
+      "ko": "주의 법도를 지키므로 나의 명철함이 노인보다 승하니이다",
+      "source_text_hash": "941f06d938dc0d2611f40a425138a15631a22badba0ab55502a6eecf9867d327",
+      "translation_text_hash": "bfdd16a006b7f2e2dad64cc3a7b4ffa8e9be311d597dc198135e7510ee9d3b1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 법도를 지키므로 나의 명철함이 노인보다 승하니이다"
+      ],
+      "raw_text_hashes": [
+        "bfdd16a006b7f2e2dad64cc3a7b4ffa8e9be311d597dc198135e7510ee9d3b1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:101",
+      "sequence": 16000,
+      "chapter_label": "PSA 119",
+      "verse_label": "101",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 101
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 101
+        }
+      ],
+      "en": "I have kept my feet from every evil way, that I might observe your word.",
+      "ko": "내가 주의 말씀을 지키려고 발을 금하여 모든 악한 길로 가지 아니하였사오며",
+      "source_text_hash": "c9cebf1a831965da00000e8a9356d30b52ff76e163ea695604ea1a0a18b9c86f",
+      "translation_text_hash": "4f9c40a3ea494b6d214bbc4a7af433582075e843a2a6545ed174bac10192e127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 말씀을 지키려고 발을 금하여 모든 악한 길로 가지 아니하였사오며"
+      ],
+      "raw_text_hashes": [
+        "4f9c40a3ea494b6d214bbc4a7af433582075e843a2a6545ed174bac10192e127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:102",
+      "sequence": 16001,
+      "chapter_label": "PSA 119",
+      "verse_label": "102",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 102
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 102
+        }
+      ],
+      "en": "I have not turned away from your ordinances, for you have taught me.",
+      "ko": "주께서 나를 가르치셨으므로 내가 주의 규례에서 떠나지 아니하였나이다",
+      "source_text_hash": "cee991652681b0d17313093496e3387fd8e183065923dfcf848a7faec340a888",
+      "translation_text_hash": "b5bb3a9f5d0274cef1865ff9fb46eec24531e02087771c7b33c94f4afcb6c03a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 가르치셨으므로 내가 주의 규례에서 떠나지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "b5bb3a9f5d0274cef1865ff9fb46eec24531e02087771c7b33c94f4afcb6c03a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:103",
+      "sequence": 16002,
+      "chapter_label": "PSA 119",
+      "verse_label": "103",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 103
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 103
+        }
+      ],
+      "en": "How sweet are your promises to my taste, more than honey to my mouth!",
+      "ko": "주의 말씀의 맛이 내게 어찌 그리 단지요 내 입에 꿀보다 더하니이다",
+      "source_text_hash": "5145fc9f5b78f65eef86590993a7a297fc950ef48d68dcc2f9c0969ec8af5ac3",
+      "translation_text_hash": "53ec654bdb5f0f8cce57bac3804d42588e1268f2c599b654dcba90b4e7bf7a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀의 맛이 내게 어찌 그리 단지요 내 입에 꿀보다 더하니이다"
+      ],
+      "raw_text_hashes": [
+        "53ec654bdb5f0f8cce57bac3804d42588e1268f2c599b654dcba90b4e7bf7a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:104",
+      "sequence": 16003,
+      "chapter_label": "PSA 119",
+      "verse_label": "104",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 104
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 104
+        }
+      ],
+      "en": "Through your precepts, I get understanding; therefore I hate every false way. NUN",
+      "ko": "주의 법도로 인하여 내가 명철케 되었으므로 모든 거짓 행위를 미워하나이다",
+      "source_text_hash": "649b9e219e057fcaecc82545f5804e9f6ebabc3ebdf546d55a9a660b8202d6fe",
+      "translation_text_hash": "7ae5eda137463a2ac08dc7f14b4305fac9057a259da27e989d339775701923e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 법도로 인하여 내가 명철케 되었으므로 모든 거짓 행위를 미워하나이다"
+      ],
+      "raw_text_hashes": [
+        "7ae5eda137463a2ac08dc7f14b4305fac9057a259da27e989d339775701923e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:105",
+      "sequence": 16004,
+      "chapter_label": "PSA 119",
+      "verse_label": "105",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 105
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 105
+        }
+      ],
+      "en": "Your word is a lamp to my feet, and a light for my path.",
+      "ko": "주의 말씀은 내 발에 등이요 내 길에 빛이니이다",
+      "source_text_hash": "6bef518237c67747c2807509e2b6e95a39e1d188fc4cadc5eac9eecb5f161a20",
+      "translation_text_hash": "d1babdb671cf7a0d1006e5bb57c3468ee042ca43308a3d78063838b22fe8f57a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀은 내 발에 등이요 내 길에 빛이니이다"
+      ],
+      "raw_text_hashes": [
+        "d1babdb671cf7a0d1006e5bb57c3468ee042ca43308a3d78063838b22fe8f57a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:106",
+      "sequence": 16005,
+      "chapter_label": "PSA 119",
+      "verse_label": "106",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 106
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 106
+        }
+      ],
+      "en": "I have sworn, and have confirmed it, that I will obey your righteous ordinances.",
+      "ko": "주의 의로운 규례를 지키기로 맹세하고 굳게 정하였나이다",
+      "source_text_hash": "cb1c4162d1ec5a41ca1c067645dd7d442de715e76acaeaa3e3850b3eb0471bbb",
+      "translation_text_hash": "4d373c54d1cfe0ab0bab8898c3d0218385ee27a989e33174e5aa16e421a127eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 의로운 규례를 지키기로 맹세하고 굳게 정하였나이다"
+      ],
+      "raw_text_hashes": [
+        "4d373c54d1cfe0ab0bab8898c3d0218385ee27a989e33174e5aa16e421a127eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:107",
+      "sequence": 16006,
+      "chapter_label": "PSA 119",
+      "verse_label": "107",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 107
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 107
+        }
+      ],
+      "en": "I am afflicted very much. Revive me, LORD, according to your word.",
+      "ko": "나의 고난이 막심하오니 여호와여 주의 말씀대로 나를 소성케 하소서",
+      "source_text_hash": "974df9108d95855a814526f189ada524f4ca3cd8c25fab64c51b44b6208a51bb",
+      "translation_text_hash": "89c0f8e1b38d6a879795aca335a0a94063b709526b191c9872e2a2b0ba982eac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 고난이 막심하오니 여호와여 주의 말씀대로 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "89c0f8e1b38d6a879795aca335a0a94063b709526b191c9872e2a2b0ba982eac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:108",
+      "sequence": 16007,
+      "chapter_label": "PSA 119",
+      "verse_label": "108",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 108
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 108
+        }
+      ],
+      "en": "Accept, I beg you, the willing offerings of my mouth. LORD, teach me your ordinances.",
+      "ko": "여호와여 구하오니 내 입의 낙헌제를 받으시고 주의 규례로 나를 가르치소서",
+      "source_text_hash": "5e82110e962f843833d8bb40286729db6a6e36b2a7c460fce81586954305372a",
+      "translation_text_hash": "7749bbd1df96c8d57c5ad12d703e2a3353f8dfa55e8319fd98a8ae9fb85548d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 구하오니 내 입의 낙헌제를 받으시고 주의 규례로 나를 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "7749bbd1df96c8d57c5ad12d703e2a3353f8dfa55e8319fd98a8ae9fb85548d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:109",
+      "sequence": 16008,
+      "chapter_label": "PSA 119",
+      "verse_label": "109",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 109
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 109
+        }
+      ],
+      "en": "My soul is continually in my hand, yet I won’t forget your law.",
+      "ko": "나의 생명이 항상 위경에 있사오나 주의 법은 잊지 아니하나이다",
+      "source_text_hash": "9449c951486f93267bef5a37701bc2fdffd555739e77a21dfbd36bc082bad74f",
+      "translation_text_hash": "7db85ec64aef4db7db0408f5a674da2bfeb32c5a3023f0bd63fc42954f19cc4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 생명이 항상 위경에 있사오나 주의 법은 잊지 아니하나이다"
+      ],
+      "raw_text_hashes": [
+        "7db85ec64aef4db7db0408f5a674da2bfeb32c5a3023f0bd63fc42954f19cc4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:110",
+      "sequence": 16009,
+      "chapter_label": "PSA 119",
+      "verse_label": "110",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 110
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 110
+        }
+      ],
+      "en": "The wicked have laid a snare for me, yet I haven’t gone astray from your precepts.",
+      "ko": "악인이 나를 해하려고 올무를 놓았사오나 나는 주의 법도에서 떠나지 아니하였나이다",
+      "source_text_hash": "3e583a740253cb10e2ca0aaf13ef11e2ab4b0e39054796f56833157bbe9d4a06",
+      "translation_text_hash": "beccadb7453ae8853b39f31936efad637188276c7a269d293b322d95d8d4bc7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 나를 해하려고 올무를 놓았사오나 나는 주의 법도에서 떠나지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "beccadb7453ae8853b39f31936efad637188276c7a269d293b322d95d8d4bc7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:111",
+      "sequence": 16010,
+      "chapter_label": "PSA 119",
+      "verse_label": "111",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 111
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 111
+        }
+      ],
+      "en": "I have taken your testimonies as a heritage forever, for they are the joy of my heart.",
+      "ko": "주의 증거로 내가 영원히 기업을 삼았사오니 이는 내 마음의 즐거움이 됨이니이다",
+      "source_text_hash": "1eec758681427d7d078d829576f378e371c00b6a06a2307499831eea1ac6c6db",
+      "translation_text_hash": "fd0d01b8f757a51910bde1503b974a99fab4f720860853c39405f13d032f0fad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 증거로 내가 영원히 기업을 삼았사오니 이는 내 마음의 즐거움이 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "fd0d01b8f757a51910bde1503b974a99fab4f720860853c39405f13d032f0fad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:112",
+      "sequence": 16011,
+      "chapter_label": "PSA 119",
+      "verse_label": "112",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 112
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 112
+        }
+      ],
+      "en": "I have set my heart to perform your statutes forever, even to the end. SAMEKH",
+      "ko": "내가 주의 율례를 길이 끝까지 행하려고 내 마음을 기울였나이다",
+      "source_text_hash": "17b202d1a6b2a76282ce95777649bd3e1e3c28725bed28b91514292cbee61713",
+      "translation_text_hash": "b01497598bf8d7e723c8a06d1b9011ea8a7a43285933a16352185650203c2efa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 율례를 길이 끝까지 행하려고 내 마음을 기울였나이다"
+      ],
+      "raw_text_hashes": [
+        "b01497598bf8d7e723c8a06d1b9011ea8a7a43285933a16352185650203c2efa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:113",
+      "sequence": 16012,
+      "chapter_label": "PSA 119",
+      "verse_label": "113",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 113
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 113
+        }
+      ],
+      "en": "I hate double-minded men, but I love your law.",
+      "ko": "내가 두 마음 품는 자를 미워하고 주의 법을 사랑하나이다",
+      "source_text_hash": "c35eefeb943f41eb91ca70a839bf7c826e4f3d5865789f0e9045cfbabb8b3741",
+      "translation_text_hash": "b400235672496d4c7aaec8557b16450d4d38e60cf533f79d3fb6260b3b9726b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두 마음 품는 자를 미워하고 주의 법을 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "b400235672496d4c7aaec8557b16450d4d38e60cf533f79d3fb6260b3b9726b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:114",
+      "sequence": 16013,
+      "chapter_label": "PSA 119",
+      "verse_label": "114",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 114
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 114
+        }
+      ],
+      "en": "You are my hiding place and my shield. I hope in your word.",
+      "ko": "주는 나의 은신처요 방패시라 내가 주의 말씀을 바라나이다",
+      "source_text_hash": "5b5eff4b00c776a9bf0de97814fee1b9c1c4893866886c4d659a36b676f2ba5b",
+      "translation_text_hash": "169c53fe9a99ab25f9dde7209a16bdbb33ca4d884614885e59cb66f7d37adafd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 은신처요 방패시라 내가 주의 말씀을 바라나이다"
+      ],
+      "raw_text_hashes": [
+        "169c53fe9a99ab25f9dde7209a16bdbb33ca4d884614885e59cb66f7d37adafd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:115",
+      "sequence": 16014,
+      "chapter_label": "PSA 119",
+      "verse_label": "115",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 115
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 115
+        }
+      ],
+      "en": "Depart from me, you evildoers, that I may keep the commandments of my God.",
+      "ko": "너희 행악자여 나를 떠날찌어다 나는 내 하나님의 계명을 지키리로다",
+      "source_text_hash": "528b52566457903e395479fd8fccbaddfdcb2544f882e8f8009ae791d07125c4",
+      "translation_text_hash": "a0bf1ca171d218f2a7cad1bbd47fd0b2448c4b9d5df5504741d964737c6d09eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 행악자여 나를 떠날찌어다 나는 내 하나님의 계명을 지키리로다"
+      ],
+      "raw_text_hashes": [
+        "a0bf1ca171d218f2a7cad1bbd47fd0b2448c4b9d5df5504741d964737c6d09eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:116",
+      "sequence": 16015,
+      "chapter_label": "PSA 119",
+      "verse_label": "116",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 116
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 116
+        }
+      ],
+      "en": "Uphold me according to your word, that I may live. Let me not be ashamed of my hope.",
+      "ko": "주의 말씀대로 나를 붙들어 살게 하시고 내 소망이 부끄럽지 말게 하소서",
+      "source_text_hash": "25261b490b547f640c393a2877aa2e9af7af57372374f44d237634fee9965ca1",
+      "translation_text_hash": "99624bf6e43f091fa1b790640139b4bcaf49abb37043dfebc949798f130f3a62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀대로 나를 붙들어 살게 하시고 내 소망이 부끄럽지 말게 하소서"
+      ],
+      "raw_text_hashes": [
+        "99624bf6e43f091fa1b790640139b4bcaf49abb37043dfebc949798f130f3a62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:117",
+      "sequence": 16016,
+      "chapter_label": "PSA 119",
+      "verse_label": "117",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 117
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 117
+        }
+      ],
+      "en": "Hold me up, and I will be safe, and will have respect for your statutes continually.",
+      "ko": "나를 붙드소서 그리하시면 내가 구원을 얻고 주의 율례에 항상 주의하리이다",
+      "source_text_hash": "78e3d6c31770572ea7ae765f422bea4f9318149f0258f6a2629bf3bc5890c4e3",
+      "translation_text_hash": "0b31be740f9ca9ff1c96e3c70e2eb4c9d154daa0f8f1c41c9e113f4c3b1113aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 붙드소서 그리하시면 내가 구원을 얻고 주의 율례에 항상 주의하리이다"
+      ],
+      "raw_text_hashes": [
+        "0b31be740f9ca9ff1c96e3c70e2eb4c9d154daa0f8f1c41c9e113f4c3b1113aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:118",
+      "sequence": 16017,
+      "chapter_label": "PSA 119",
+      "verse_label": "118",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 118
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 118
+        }
+      ],
+      "en": "You reject all those who stray from your statutes, for their deceit is in vain.",
+      "ko": "주의 율례에서 떠나는 자는 주께서 다 멸시하셨으니 저희 궤사는 허무함이니이다",
+      "source_text_hash": "cafff3b9fd2722df7e50f021012f857d6ec246310fdfc087681a6bbdaf5b8ce9",
+      "translation_text_hash": "06ce4e58448458387b0c301618336f32bf19fa2de3508ff2cc2deff0f5aab3b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 율례에서 떠나는 자는 주께서 다 멸시하셨으니 저희 궤사는 허무함이니이다"
+      ],
+      "raw_text_hashes": [
+        "06ce4e58448458387b0c301618336f32bf19fa2de3508ff2cc2deff0f5aab3b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:119",
+      "sequence": 16018,
+      "chapter_label": "PSA 119",
+      "verse_label": "119",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 119
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 119
+        }
+      ],
+      "en": "You put away all the wicked of the earth like dross. Therefore I love your testimonies.",
+      "ko": "주께서 세상의 모든 악인을 찌끼 같이 버리시니 그러므로 내가 주의 증거를 사랑하나이다",
+      "source_text_hash": "50115ab0869814adcabc819f8d65d2ef5724147939fb538c65a8e5be3c870bf6",
+      "translation_text_hash": "2a03f1fe6d776e00858f3a0101b703fb68234cbc017bc5371fcab9963828bd67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 세상의 모든 악인을 찌끼 같이 버리시니 그러므로 내가 주의 증거를 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "2a03f1fe6d776e00858f3a0101b703fb68234cbc017bc5371fcab9963828bd67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:120",
+      "sequence": 16019,
+      "chapter_label": "PSA 119",
+      "verse_label": "120",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 120
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 120
+        }
+      ],
+      "en": "My flesh trembles for fear of you. I am afraid of your judgments. AYIN",
+      "ko": "내 육체가 주를 두려워함으로 떨며 내가 또 주의 판단을 두려워하나이다",
+      "source_text_hash": "a001849ccbb86e312847509c0b97ee52c2e52197d2fc928e9823d4aeab4dd2c1",
+      "translation_text_hash": "04fbbbe329be74ee3134f7da18a3ffdcc2a98e3ae5951314a2965142a1ca5afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 육체가 주를 두려워함으로 떨며 내가 또 주의 판단을 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "04fbbbe329be74ee3134f7da18a3ffdcc2a98e3ae5951314a2965142a1ca5afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:121",
+      "sequence": 16020,
+      "chapter_label": "PSA 119",
+      "verse_label": "121",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 121
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 121
+        }
+      ],
+      "en": "I have done what is just and righteous. Don’t leave me to my oppressors.",
+      "ko": "내가 공과 의를 행하였사오니 나를 압박자에게 붙이지 마옵소서",
+      "source_text_hash": "f8d881e3480121fe225582f52399c41c215db0aa351b6cef2fd698f1ab7f1475",
+      "translation_text_hash": "a8426ebf4b7e15d0bc900d605a288c0625ca248bcea03a8d4fe967946e6f3343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 공과 의를 행하였사오니 나를 압박자에게 붙이지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "a8426ebf4b7e15d0bc900d605a288c0625ca248bcea03a8d4fe967946e6f3343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:122",
+      "sequence": 16021,
+      "chapter_label": "PSA 119",
+      "verse_label": "122",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 122
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 122
+        }
+      ],
+      "en": "Ensure your servant’s well-being. Don’t let the proud oppress me.",
+      "ko": "주의 종을 보증하사 복을 얻게 하시고 교만한 자가 나를 압박하지 못하게 하소서",
+      "source_text_hash": "f8f97ed76f06645d8c4e75824fca6ab1b41544922df36b9dd78632cb75c4821f",
+      "translation_text_hash": "e3fa58c7ebf7303d9687e2eac71ca26f0c1b47bccc923a01935b109fe1597c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종을 보증하사 복을 얻게 하시고 교만한 자가 나를 압박하지 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "e3fa58c7ebf7303d9687e2eac71ca26f0c1b47bccc923a01935b109fe1597c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:123",
+      "sequence": 16022,
+      "chapter_label": "PSA 119",
+      "verse_label": "123",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 123
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 123
+        }
+      ],
+      "en": "My eyes fail looking for your salvation, for your righteous word.",
+      "ko": "내 눈이 주의 구원과 주의 의로운 말씀을 사모하기에 피곤하니이다",
+      "source_text_hash": "2bf1dbf1c677a1ab2ae3979ac9d7cf470d91e8425f98666d91f9aeed495a636c",
+      "translation_text_hash": "ee540840ec5b11a849b7fe5218c6326756a5004ece87f36bddba36bb4bd0d432",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈이 주의 구원과 주의 의로운 말씀을 사모하기에 피곤하니이다"
+      ],
+      "raw_text_hashes": [
+        "ee540840ec5b11a849b7fe5218c6326756a5004ece87f36bddba36bb4bd0d432"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:124",
+      "sequence": 16023,
+      "chapter_label": "PSA 119",
+      "verse_label": "124",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 124
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 124
+        }
+      ],
+      "en": "Deal with your servant according to your loving kindness. Teach me your statutes.",
+      "ko": "주의 인자하신 대로 주의 종에게 행하사 주의 율례로 내게 가르치소서",
+      "source_text_hash": "6d04d3cd7385b809745089b72f88f8952400eb63450e1ec56206a8a46c88ecf5",
+      "translation_text_hash": "2743d141ad1d5f0e3949d64deff32646e810bb43caa060ffecdb778c0a1d3807",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하신 대로 주의 종에게 행하사 주의 율례로 내게 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "2743d141ad1d5f0e3949d64deff32646e810bb43caa060ffecdb778c0a1d3807"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:125",
+      "sequence": 16024,
+      "chapter_label": "PSA 119",
+      "verse_label": "125",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 125
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 125
+        }
+      ],
+      "en": "I am your servant. Give me understanding, that I may know your testimonies.",
+      "ko": "나는 주의 종이오니 깨닫게 하사 주의 증거를 알게 하소서",
+      "source_text_hash": "fbbc417baa5fc4b9b8a0db7f54d066a2c0084385ca868ff892cae2e2adc27da0",
+      "translation_text_hash": "60cb2f8edbd5fdea906a32820f2c88460625353f5cf83d3d2c08cdfb854ab2a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주의 종이오니 깨닫게 하사 주의 증거를 알게 하소서"
+      ],
+      "raw_text_hashes": [
+        "60cb2f8edbd5fdea906a32820f2c88460625353f5cf83d3d2c08cdfb854ab2a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:126",
+      "sequence": 16025,
+      "chapter_label": "PSA 119",
+      "verse_label": "126",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 126
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 126
+        }
+      ],
+      "en": "It is time to act, LORD, for they break your law.",
+      "ko": "저희가 주의 법을 폐하였사오니 지금은 여호와의 일하실 때니이다",
+      "source_text_hash": "9d823bd4b442ca9821d34f8d4e265bf0e5c32ede0738f1bcea56acbbee5cc257",
+      "translation_text_hash": "e5d5c5c1727a713af83f53a0b028d564f872addf8f72a7e8a41470cd165f5340",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 법을 폐하였사오니 지금은 여호와의 일하실 때니이다"
+      ],
+      "raw_text_hashes": [
+        "e5d5c5c1727a713af83f53a0b028d564f872addf8f72a7e8a41470cd165f5340"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:127",
+      "sequence": 16026,
+      "chapter_label": "PSA 119",
+      "verse_label": "127",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 127
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 127
+        }
+      ],
+      "en": "Therefore I love your commandments more than gold, yes, more than pure gold.",
+      "ko": "그러므로 내가 주의 계명을 금 곧 정금보다 더 사랑하나이다",
+      "source_text_hash": "4c4c6085beeee06153e7e5093cae2077905586ef871b9446f8932fd7bc3af579",
+      "translation_text_hash": "96ae1d25e51856cd44d43431e44dca53868d8a6726b7c6187f20f42b355bcf5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 주의 계명을 금 곧 정금보다 더 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "96ae1d25e51856cd44d43431e44dca53868d8a6726b7c6187f20f42b355bcf5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:128",
+      "sequence": 16027,
+      "chapter_label": "PSA 119",
+      "verse_label": "128",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 128
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 128
+        }
+      ],
+      "en": "Therefore I consider all of your precepts to be right. I hate every false way. PE",
+      "ko": "그러므로 내가 범사에 주의 법도를 바르게 여기고 모든 거짓 행위를 미워하나이다",
+      "source_text_hash": "08ef21749f7c6b3b44b9591721df1c0890ff85f6c2800ba74d07e2365a98c88b",
+      "translation_text_hash": "da96361cf34ddba392cbf65232e836da2a493a3739dc60839bbe59399e366bb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 범사에 주의 법도를 바르게 여기고 모든 거짓 행위를 미워하나이다"
+      ],
+      "raw_text_hashes": [
+        "da96361cf34ddba392cbf65232e836da2a493a3739dc60839bbe59399e366bb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:129",
+      "sequence": 16028,
+      "chapter_label": "PSA 119",
+      "verse_label": "129",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 129
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 129
+        }
+      ],
+      "en": "Your testimonies are wonderful, therefore my soul keeps them.",
+      "ko": "주의 증거가 기이하므로 내 영혼이 이를 지키나이다",
+      "source_text_hash": "226e991f81239afab1af406cfa72157d0b26f43fec09e4b79521c618b8be0fd4",
+      "translation_text_hash": "1c95972800fb5934aac1b553ce722adfd2c8c88d50227265d3a4cec72a5b4846",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 증거가 기이하므로 내 영혼이 이를 지키나이다"
+      ],
+      "raw_text_hashes": [
+        "1c95972800fb5934aac1b553ce722adfd2c8c88d50227265d3a4cec72a5b4846"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:130",
+      "sequence": 16029,
+      "chapter_label": "PSA 119",
+      "verse_label": "130",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 130
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 130
+        }
+      ],
+      "en": "The entrance of your words gives light. It gives understanding to the simple.",
+      "ko": "주의 말씀을 열므로 우둔한 자에게 비취어 깨닫게 하나이다",
+      "source_text_hash": "1e14a6bebf56ecee966a181702bafcefad07f3632c606014a5604e886f7d3d36",
+      "translation_text_hash": "38858bb462e8f760e60969fd94ce181d765f2e04f1b0f5bb9007dba6aca0bfb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀을 열므로 우둔한 자에게 비취어 깨닫게 하나이다"
+      ],
+      "raw_text_hashes": [
+        "38858bb462e8f760e60969fd94ce181d765f2e04f1b0f5bb9007dba6aca0bfb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:131",
+      "sequence": 16030,
+      "chapter_label": "PSA 119",
+      "verse_label": "131",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 131
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 131
+        }
+      ],
+      "en": "I opened my mouth wide and panted, for I longed for your commandments.",
+      "ko": "내가 주의 계명을 사모하므로 입을 열고 헐떡였나이다",
+      "source_text_hash": "2a5b193d72148bca408424c97025667af20381e2c3686bfbd8b6c1a1818b6f75",
+      "translation_text_hash": "7b5084d65d2a1a681cc3407a3a0d4b4fe9892ea12d2ac880fb2d8318246fd617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 계명을 사모하므로 입을 열고 헐떡였나이다"
+      ],
+      "raw_text_hashes": [
+        "7b5084d65d2a1a681cc3407a3a0d4b4fe9892ea12d2ac880fb2d8318246fd617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:132",
+      "sequence": 16031,
+      "chapter_label": "PSA 119",
+      "verse_label": "132",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 132
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 132
+        }
+      ],
+      "en": "Turn to me, and have mercy on me, as you always do to those who love your name.",
+      "ko": "주의 이름을 사랑하는 자에게 베푸시던 대로 내게 돌이키사 나를 긍휼히 여기소서",
+      "source_text_hash": "190c35edc184360538b99e043c0fd3a01f922bad3f8a0a72db48f9118959a7a2",
+      "translation_text_hash": "5852af3648a1b09694c0ac49cf858d79da24a51a7cf960197643f5a1c0cd254a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 이름을 사랑하는 자에게 베푸시던 대로 내게 돌이키사 나를 긍휼히 여기소서"
+      ],
+      "raw_text_hashes": [
+        "5852af3648a1b09694c0ac49cf858d79da24a51a7cf960197643f5a1c0cd254a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:133",
+      "sequence": 16032,
+      "chapter_label": "PSA 119",
+      "verse_label": "133",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 133
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 133
+        }
+      ],
+      "en": "Establish my footsteps in your word. Don’t let any iniquity have dominion over me.",
+      "ko": "나의 행보를 주의 말씀에 굳게 세우시고 아무 죄악이 나를 주장치 못하게 하소서",
+      "source_text_hash": "765203380cfeaff936951138bba94fb21b59080fe437d0c0c374afc1d09b4836",
+      "translation_text_hash": "31620dfb7f552e39c18b4ac406cd1d007713baaae09b79c1965d364cde0395dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 행보를 주의 말씀에 굳게 세우시고 아무 죄악이 나를 주장치 못하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "31620dfb7f552e39c18b4ac406cd1d007713baaae09b79c1965d364cde0395dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:134",
+      "sequence": 16033,
+      "chapter_label": "PSA 119",
+      "verse_label": "134",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 134
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 134
+        }
+      ],
+      "en": "Redeem me from the oppression of man, so I will observe your precepts.",
+      "ko": "사람의 압박에서 나를 구속하소서 그리하시면 내가 주의 법도를 지키리이다",
+      "source_text_hash": "04cc7c39a9d8818a9a1de09f239084146aba11175c1677f020dff6db9b87f829",
+      "translation_text_hash": "c264cff2677e213f3f4f581ab724df7ca1810123d20a5fa820653442a87092b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 압박에서 나를 구속하소서 그리하시면 내가 주의 법도를 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "c264cff2677e213f3f4f581ab724df7ca1810123d20a5fa820653442a87092b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:135",
+      "sequence": 16034,
+      "chapter_label": "PSA 119",
+      "verse_label": "135",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 135
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 135
+        }
+      ],
+      "en": "Make your face shine on your servant. Teach me your statutes.",
+      "ko": "주의 얼굴로 주의 종에게 비취시고 주의 율례로 나를 가르치소서",
+      "source_text_hash": "7fc8bf01bfec4f257c9abeae2e2eaadc00f041499a395463939cc72885164c37",
+      "translation_text_hash": "2582a5cbd0195a6da442ee0bc42d722dfdf881baefea719d6af9b20fffe8febc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 얼굴로 주의 종에게 비취시고 주의 율례로 나를 가르치소서"
+      ],
+      "raw_text_hashes": [
+        "2582a5cbd0195a6da442ee0bc42d722dfdf881baefea719d6af9b20fffe8febc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:136",
+      "sequence": 16035,
+      "chapter_label": "PSA 119",
+      "verse_label": "136",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 136
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 136
+        }
+      ],
+      "en": "Streams of tears run down my eyes, because they don’t observe your law. TZADHE",
+      "ko": "저희가 주의 법을 지키지 아니하므로 내 눈물이 시냇물 같이 흐르나이다",
+      "source_text_hash": "204e8be4070021ecf1b44a3f43c0336664744b3c6b31d07ead6b856bd310d965",
+      "translation_text_hash": "ad5503ca7eda3dc3e73c56ded22a2ed3fe92e8e1a9042fbbe844fcea20669451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 법을 지키지 아니하므로 내 눈물이 시냇물 같이 흐르나이다"
+      ],
+      "raw_text_hashes": [
+        "ad5503ca7eda3dc3e73c56ded22a2ed3fe92e8e1a9042fbbe844fcea20669451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:137",
+      "sequence": 16036,
+      "chapter_label": "PSA 119",
+      "verse_label": "137",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 137
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 137
+        }
+      ],
+      "en": "You are righteous, LORD. Your judgments are upright.",
+      "ko": "여호와여 주는 의로우시고 주의 판단은 정직하시니이다",
+      "source_text_hash": "e53cb7c70f97842572ca8a44fa2dca35b15701eaeca7acb09c8dfeb9cf8675e1",
+      "translation_text_hash": "08db090d68e2a7289aeb0b6497a9c8da780d5429326cae078cbddc03293eda14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 의로우시고 주의 판단은 정직하시니이다"
+      ],
+      "raw_text_hashes": [
+        "08db090d68e2a7289aeb0b6497a9c8da780d5429326cae078cbddc03293eda14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:138",
+      "sequence": 16037,
+      "chapter_label": "PSA 119",
+      "verse_label": "138",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 138
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 138
+        }
+      ],
+      "en": "You have commanded your statutes in righteousness. They are fully trustworthy.",
+      "ko": "주의 명하신 증거는 의롭고 지극히 성실하도소이다",
+      "source_text_hash": "f59d81ae3098fa96dafa9139aa5e416a3256e16d402b009be90bdb2b838f9635",
+      "translation_text_hash": "64f03539fb68bbc81bd93dd9557674d293b0f35e6bb18442be086512d7a8cc8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 명하신 증거는 의롭고 지극히 성실하도소이다"
+      ],
+      "raw_text_hashes": [
+        "64f03539fb68bbc81bd93dd9557674d293b0f35e6bb18442be086512d7a8cc8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:139",
+      "sequence": 16038,
+      "chapter_label": "PSA 119",
+      "verse_label": "139",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 139
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 139
+        }
+      ],
+      "en": "My zeal wears me out, because my enemies ignore your words.",
+      "ko": "내 대적이 주의 말씀을 잊어버렸으므로 내 열성이 나를 소멸하였나이다",
+      "source_text_hash": "c5df011cbaf212ae9929b93c73cd9e2512a2b96e0ca8514eeed7b454784f12ef",
+      "translation_text_hash": "8d75ef510e486d9fb9ad708b0c08d1f4269100799c167e180566104a608ea872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 대적이 주의 말씀을 잊어버렸으므로 내 열성이 나를 소멸하였나이다"
+      ],
+      "raw_text_hashes": [
+        "8d75ef510e486d9fb9ad708b0c08d1f4269100799c167e180566104a608ea872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:140",
+      "sequence": 16039,
+      "chapter_label": "PSA 119",
+      "verse_label": "140",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 140
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 140
+        }
+      ],
+      "en": "Your promises have been thoroughly tested, and your servant loves them.",
+      "ko": "주의 말씀이 심히 정미하므로 주의 종이 이를 사랑하나이다",
+      "source_text_hash": "bfc75517873fe1a51143914fa4b056a1c4f73c67415fabd086c7170533c976dd",
+      "translation_text_hash": "4dff6b8ae4b1a5015db1c4414a58b0cc1bc18edd73998c0abb704e74d56b0deb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀이 심히 정미하므로 주의 종이 이를 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "4dff6b8ae4b1a5015db1c4414a58b0cc1bc18edd73998c0abb704e74d56b0deb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:141",
+      "sequence": 16040,
+      "chapter_label": "PSA 119",
+      "verse_label": "141",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 141
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 141
+        }
+      ],
+      "en": "I am small and despised. I don’t forget your precepts.",
+      "ko": "내가 미천하여 멸시를 당하나 주의 법도를 잊지 아니하였나이다",
+      "source_text_hash": "4a81abae5fea4586c9f6cbefb90c7228067211ee70a3ecfb5640547b1e81c240",
+      "translation_text_hash": "5364bbb12d8cf5609b2224ec89e2be164ef85a4a3b5a91c4f00fade802fd19de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 미천하여 멸시를 당하나 주의 법도를 잊지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5364bbb12d8cf5609b2224ec89e2be164ef85a4a3b5a91c4f00fade802fd19de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:142",
+      "sequence": 16041,
+      "chapter_label": "PSA 119",
+      "verse_label": "142",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 142
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 142
+        }
+      ],
+      "en": "Your righteousness is an everlasting righteousness. Your law is truth.",
+      "ko": "주의 의는 영원한 의요 주의 법은 진리로소이다",
+      "source_text_hash": "ffb4723f1923c11e860bd901acb963f027d20aaaa6631eb30e72ce00d187a87e",
+      "translation_text_hash": "7bae5e65697baa07a09d936caa516eedaa5fc37c57213521e9291f6b900a33b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 의는 영원한 의요 주의 법은 진리로소이다"
+      ],
+      "raw_text_hashes": [
+        "7bae5e65697baa07a09d936caa516eedaa5fc37c57213521e9291f6b900a33b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:143",
+      "sequence": 16042,
+      "chapter_label": "PSA 119",
+      "verse_label": "143",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 143
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 143
+        }
+      ],
+      "en": "Trouble and anguish have taken hold of me. Your commandments are my delight.",
+      "ko": "환난과 우환이 내게 미쳤으나 주의 계명은 나의 즐거움이니이다",
+      "source_text_hash": "a586db1050162e7b73cb7898b4dbe3e431bda45e6e0869374134e8b89d78ecd1",
+      "translation_text_hash": "793540ed73b3cc4ffac485321df50865e897c2abc0c23a986134dda3218c4aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난과 우환이 내게 미쳤으나 주의 계명은 나의 즐거움이니이다"
+      ],
+      "raw_text_hashes": [
+        "793540ed73b3cc4ffac485321df50865e897c2abc0c23a986134dda3218c4aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:144",
+      "sequence": 16043,
+      "chapter_label": "PSA 119",
+      "verse_label": "144",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 144
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 144
+        }
+      ],
+      "en": "Your testimonies are righteous forever. Give me understanding, that I may live. QOPH",
+      "ko": "주의 증거는 영원히 의로우시니 나로 깨닫게 하사 살게 하소서",
+      "source_text_hash": "3c7586b2202b3b59341a4614bf2316a5ee1f75762199ad9346d58e7d31bdea4b",
+      "translation_text_hash": "2e9201444bd771a42fc9cd30316a0fb9e424658da06ccd2ee670643217d86e0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 증거는 영원히 의로우시니 나로 깨닫게 하사 살게 하소서"
+      ],
+      "raw_text_hashes": [
+        "2e9201444bd771a42fc9cd30316a0fb9e424658da06ccd2ee670643217d86e0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:145",
+      "sequence": 16044,
+      "chapter_label": "PSA 119",
+      "verse_label": "145",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 145
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 145
+        }
+      ],
+      "en": "I have called with my whole heart. Answer me, LORD! I will keep your statutes.",
+      "ko": "여호와여 내가 전심으로 부르짖었사오니 내게 응답하소서 내가 주의 율례를 지키리이다",
+      "source_text_hash": "e8defdfa16cd3c2047604e867fa0617beae1a689fc28e10cb01a488221126716",
+      "translation_text_hash": "77d0c35ca9a0152e2393e6da32cdb5b494ceb91a3ded22d4462b4d716e1961b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 전심으로 부르짖었사오니 내게 응답하소서 내가 주의 율례를 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "77d0c35ca9a0152e2393e6da32cdb5b494ceb91a3ded22d4462b4d716e1961b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:146",
+      "sequence": 16045,
+      "chapter_label": "PSA 119",
+      "verse_label": "146",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 146
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 146
+        }
+      ],
+      "en": "I have called to you. Save me! I will obey your statutes.",
+      "ko": "내가 주께 부르짖었사오니 나를 구원하소서 내가 주의 증거를 지키리이다",
+      "source_text_hash": "bbe98bb00a82ffa1557c1eec602e577e22edacb2f1aa20fed996698eb0d05ecd",
+      "translation_text_hash": "093c0f485153c138f5fe09820d0d09aeacbb225b70be8e9bc865733edce6bb0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 부르짖었사오니 나를 구원하소서 내가 주의 증거를 지키리이다"
+      ],
+      "raw_text_hashes": [
+        "093c0f485153c138f5fe09820d0d09aeacbb225b70be8e9bc865733edce6bb0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:147",
+      "sequence": 16046,
+      "chapter_label": "PSA 119",
+      "verse_label": "147",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 147
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 147
+        }
+      ],
+      "en": "I rise before dawn and cry for help. I put my hope in your words.",
+      "ko": "내가 새벽 전에 부르짖으며 주의 말씀을 바랐사오며",
+      "source_text_hash": "eaaff10111c87c3ffdb07bfbb11143c77588ff299e50b4fffaf60886fbb3b967",
+      "translation_text_hash": "109d4ec698b0d4d56c94672e90441c1ece2c36fa84b3f27a11b3bf2da4d268d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 새벽 전에 부르짖으며 주의 말씀을 바랐사오며"
+      ],
+      "raw_text_hashes": [
+        "109d4ec698b0d4d56c94672e90441c1ece2c36fa84b3f27a11b3bf2da4d268d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:148",
+      "sequence": 16047,
+      "chapter_label": "PSA 119",
+      "verse_label": "148",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 148
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 148
+        }
+      ],
+      "en": "My eyes stay open through the night watches, that I might meditate on your word.",
+      "ko": "주의 말씀을 묵상하려고 내 눈이 야경이 깊기 전에 깨었나이다",
+      "source_text_hash": "4a28e5398af1a20e0b833a0a8ad5ca72f5074c9a95da3c8f4aad4f74530c5181",
+      "translation_text_hash": "386dafa328c4c8193a2af45641210059e53f478e2dc418520130fcba79dfc009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀을 묵상하려고 내 눈이 야경이 깊기 전에 깨었나이다"
+      ],
+      "raw_text_hashes": [
+        "386dafa328c4c8193a2af45641210059e53f478e2dc418520130fcba79dfc009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:149",
+      "sequence": 16048,
+      "chapter_label": "PSA 119",
+      "verse_label": "149",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 149
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 149
+        }
+      ],
+      "en": "Hear my voice according to your loving kindness. Revive me, LORD, according to your ordinances.",
+      "ko": "주의 인자하심을 따라 내 소리를 들으소서 여호와여 주의 규례를 따라 나를 살리소서",
+      "source_text_hash": "b48523f0373524b3bb23cb024b1e43e39190320702d0c1bc49e8bd898630868a",
+      "translation_text_hash": "e84db4c8afebd2a4e90e071b7aca211cdee4f555f94f320bda493c04ef281b50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하심을 따라 내 소리를 들으소서 여호와여 주의 규례를 따라 나를 살리소서"
+      ],
+      "raw_text_hashes": [
+        "e84db4c8afebd2a4e90e071b7aca211cdee4f555f94f320bda493c04ef281b50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:150",
+      "sequence": 16049,
+      "chapter_label": "PSA 119",
+      "verse_label": "150",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 150
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 150
+        }
+      ],
+      "en": "They draw near who follow after wickedness. They are far from your law.",
+      "ko": "악을 좇는 자가 가까이 왔사오니 저희는 주의 법에서 머니이다",
+      "source_text_hash": "6ca0a9af8e9fa5d4f42a100117fa2c72235956e2f0c2272b88e217fe5390fc0b",
+      "translation_text_hash": "9b7a812d0d4d590648f41c09b1531c06c4d2f4bbc9f7900d5449d9b9a14d71b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 좇는 자가 가까이 왔사오니 저희는 주의 법에서 머니이다"
+      ],
+      "raw_text_hashes": [
+        "9b7a812d0d4d590648f41c09b1531c06c4d2f4bbc9f7900d5449d9b9a14d71b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:151",
+      "sequence": 16050,
+      "chapter_label": "PSA 119",
+      "verse_label": "151",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 151
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 151
+        }
+      ],
+      "en": "You are near, LORD. All your commandments are truth.",
+      "ko": "여호와여 주께서 가까이 계시오니 주의 모든 계명은 진리니이다",
+      "source_text_hash": "cd75ab3109ba7d2988e0234fa4f7fda133ebfec8c7d9e1d44275440c8082762e",
+      "translation_text_hash": "248a04ddefa3161ff8370a0e4bfdbdcba5b52300a3c6a8cd77ce8a14ba55eb9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 가까이 계시오니 주의 모든 계명은 진리니이다"
+      ],
+      "raw_text_hashes": [
+        "248a04ddefa3161ff8370a0e4bfdbdcba5b52300a3c6a8cd77ce8a14ba55eb9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:152",
+      "sequence": 16051,
+      "chapter_label": "PSA 119",
+      "verse_label": "152",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 152
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 152
+        }
+      ],
+      "en": "Of old I have known from your testimonies, that you have founded them forever. RESH",
+      "ko": "내가 전부터 주의 증거를 궁구하므로 주께서 영원히 세우신 것인 줄을 알았나이다",
+      "source_text_hash": "c4a8de73818459d7f729d308f0005b978ae7fbbac6be5b874dfb04485cebc953",
+      "translation_text_hash": "cb573441d0a0a217b32b1fb65aea4dced1fdc71a48b76734f9e87eb99d0ee2d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전부터 주의 증거를 궁구하므로 주께서 영원히 세우신 것인 줄을 알았나이다"
+      ],
+      "raw_text_hashes": [
+        "cb573441d0a0a217b32b1fb65aea4dced1fdc71a48b76734f9e87eb99d0ee2d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:153",
+      "sequence": 16052,
+      "chapter_label": "PSA 119",
+      "verse_label": "153",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 153
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 153
+        }
+      ],
+      "en": "Consider my affliction, and deliver me, for I don’t forget your law.",
+      "ko": "나의 고난을 보시고 나를 건지소서 내가 주의 법을 잊지 아니함이니이다",
+      "source_text_hash": "eb99a41e8e391eddbe2c939f75f1b3d26e9241cd24cf46508b3ee7bd9186678a",
+      "translation_text_hash": "b2f228719d270452d774f19e754a189599cdc5d001fce6a44d6190d67d77a8be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 고난을 보시고 나를 건지소서 내가 주의 법을 잊지 아니함이니이다"
+      ],
+      "raw_text_hashes": [
+        "b2f228719d270452d774f19e754a189599cdc5d001fce6a44d6190d67d77a8be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:154",
+      "sequence": 16053,
+      "chapter_label": "PSA 119",
+      "verse_label": "154",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 154
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 154
+        }
+      ],
+      "en": "Plead my cause, and redeem me! Revive me according to your promise.",
+      "ko": "주는 나의 원한을 펴시고 나를 구속하사 주의 말씀대로 나를 소성케 하소서",
+      "source_text_hash": "adf974a6621b1b32498145f62aac5a0a75800e23349c02e0d2bec0f84284b476",
+      "translation_text_hash": "b16f85580942530eadc5607ed98b2b7bfd595a8d722e49fa4b4b3009c233007a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 원한을 펴시고 나를 구속하사 주의 말씀대로 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "b16f85580942530eadc5607ed98b2b7bfd595a8d722e49fa4b4b3009c233007a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:155",
+      "sequence": 16054,
+      "chapter_label": "PSA 119",
+      "verse_label": "155",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 155
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 155
+        }
+      ],
+      "en": "Salvation is far from the wicked, for they don’t seek your statutes.",
+      "ko": "구원이 악인에게서 멀어짐은 저희가 주의 율례를 구하지 아니함이니이다",
+      "source_text_hash": "90c348f537d9e8e95e93d2ad0b8b971a82c049827cc97899fba59c8588296753",
+      "translation_text_hash": "1f48dc630534e7251a3ed4e6b808b741f4f35c33bad6d83574c250fe8982b0a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구원이 악인에게서 멀어짐은 저희가 주의 율례를 구하지 아니함이니이다"
+      ],
+      "raw_text_hashes": [
+        "1f48dc630534e7251a3ed4e6b808b741f4f35c33bad6d83574c250fe8982b0a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:156",
+      "sequence": 16055,
+      "chapter_label": "PSA 119",
+      "verse_label": "156",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 156
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 156
+        }
+      ],
+      "en": "Great are your tender mercies, LORD. Revive me according to your ordinances.",
+      "ko": "여호와여 주의 긍휼이 크오니 주의 규례를 따라 나를 소성케 하소서",
+      "source_text_hash": "4df3f6ada5e208a996a9a9d9fbae1e0642b1f9f60b6e562c5ef107799b8b0d94",
+      "translation_text_hash": "7526f510d2004b238d9a77adf58874c44efa0d6610d4ab7dc8a4add7fe0f789e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 긍휼이 크오니 주의 규례를 따라 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "7526f510d2004b238d9a77adf58874c44efa0d6610d4ab7dc8a4add7fe0f789e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:157",
+      "sequence": 16056,
+      "chapter_label": "PSA 119",
+      "verse_label": "157",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 157
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 157
+        }
+      ],
+      "en": "Many are my persecutors and my adversaries. I haven’t swerved from your testimonies.",
+      "ko": "나를 핍박하는 자와 나의 대적이 많으나 나는 주의 증거에서 떠나지 아니하였나이다",
+      "source_text_hash": "e28ea773d69bc58690c15359ba5bb2283355da0fddbf58a04227cb94312df52f",
+      "translation_text_hash": "1296aec241835a46643f02b180bdd7b6c26517ec3972bdd4f737d15e3aae7926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 핍박하는 자와 나의 대적이 많으나 나는 주의 증거에서 떠나지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1296aec241835a46643f02b180bdd7b6c26517ec3972bdd4f737d15e3aae7926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:158",
+      "sequence": 16057,
+      "chapter_label": "PSA 119",
+      "verse_label": "158",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 158
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 158
+        }
+      ],
+      "en": "I look at the faithless with loathing, because they don’t observe your word.",
+      "ko": "주의 말씀을 지키지 아니하는 궤사한 자를 내가 보고 슬퍼하였나이다",
+      "source_text_hash": "1ad78a1b251378796e3096c8eb0e8c601ebb661f4f4c07b2de8515e5643a7d6a",
+      "translation_text_hash": "8cbeba61b86621821b4b3ffd837fd27dc7dd625626eb2baa8d30aebc2a38e7fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀을 지키지 아니하는 궤사한 자를 내가 보고 슬퍼하였나이다"
+      ],
+      "raw_text_hashes": [
+        "8cbeba61b86621821b4b3ffd837fd27dc7dd625626eb2baa8d30aebc2a38e7fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:159",
+      "sequence": 16058,
+      "chapter_label": "PSA 119",
+      "verse_label": "159",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 159
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 159
+        }
+      ],
+      "en": "Consider how I love your precepts. Revive me, LORD, according to your loving kindness.",
+      "ko": "내가 주의 법도 사랑함을 보옵소서 여호와여 주의 인자하신 대로 나를 소성케 하소서",
+      "source_text_hash": "6c0314f0a037da17e93a3cd387b000dab8bda25a96e266f4a4df169111e5eecf",
+      "translation_text_hash": "58ae5d9ce27abe5b9f0f7ff2e4aa9a128f7a0a00854c7c4a307b3b0ba3af29f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도 사랑함을 보옵소서 여호와여 주의 인자하신 대로 나를 소성케 하소서"
+      ],
+      "raw_text_hashes": [
+        "58ae5d9ce27abe5b9f0f7ff2e4aa9a128f7a0a00854c7c4a307b3b0ba3af29f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:160",
+      "sequence": 16059,
+      "chapter_label": "PSA 119",
+      "verse_label": "160",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 160
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 160
+        }
+      ],
+      "en": "All of your words are truth. Every one of your righteous ordinances endures forever. SIN AND SHIN",
+      "ko": "주의 말씀의 강령은 진리오니 주의 의로운 모든 규례가 영원하리이다",
+      "source_text_hash": "4a6520f71e51fd06405125d12d9a7691a62f518053e659304f882b88bad7dba9",
+      "translation_text_hash": "a29a07493b13b01862e53c28e5462146025c29d367afc8a4773ec83610b6a4d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 말씀의 강령은 진리오니 주의 의로운 모든 규례가 영원하리이다"
+      ],
+      "raw_text_hashes": [
+        "a29a07493b13b01862e53c28e5462146025c29d367afc8a4773ec83610b6a4d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:161",
+      "sequence": 16060,
+      "chapter_label": "PSA 119",
+      "verse_label": "161",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 161
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 161
+        }
+      ],
+      "en": "Princes have persecuted me without a cause, but my heart stands in awe of your words.",
+      "ko": "방백들이 무고히 나를 핍박하오나 나의 마음은 주의 말씀만 경외하나이다",
+      "source_text_hash": "8b4c081ec462bac21f2e8bc1b24337511f43c9f2bebb32b567e7c09ebb72f224",
+      "translation_text_hash": "1c20bcc219f4db9739415012ca9b8991164ff74600a61921a18a10cddee624be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들이 무고히 나를 핍박하오나 나의 마음은 주의 말씀만 경외하나이다"
+      ],
+      "raw_text_hashes": [
+        "1c20bcc219f4db9739415012ca9b8991164ff74600a61921a18a10cddee624be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:162",
+      "sequence": 16061,
+      "chapter_label": "PSA 119",
+      "verse_label": "162",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 162
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 162
+        }
+      ],
+      "en": "I rejoice at your word, as one who finds great plunder.",
+      "ko": "사람이 많은 탈취물을 얻은 것처럼 나는 주의 말씀을 즐거워하나이다",
+      "source_text_hash": "923dc1299b50ad484c98fc2313d224857842c619d48d6e1063eb0a0a57f818ee",
+      "translation_text_hash": "48cc5bbeb7b2db28200c53bc7791b3eaa4f6f56d4d9e75b6815befbef433a6dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 많은 탈취물을 얻은 것처럼 나는 주의 말씀을 즐거워하나이다"
+      ],
+      "raw_text_hashes": [
+        "48cc5bbeb7b2db28200c53bc7791b3eaa4f6f56d4d9e75b6815befbef433a6dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:163",
+      "sequence": 16062,
+      "chapter_label": "PSA 119",
+      "verse_label": "163",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 163
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 163
+        }
+      ],
+      "en": "I hate and abhor falsehood. I love your law.",
+      "ko": "내가 거짓을 미워하며 싫어하고 주의 법을 사랑하나이다",
+      "source_text_hash": "ed85c78045e4d27cc0258bc7c1d7afed3ff29e5f24da2073028b26856d6528d4",
+      "translation_text_hash": "c3ab048e46262c091a0579d94343100ddb3cf9397ac34ff02f05e58fe3c612da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 거짓을 미워하며 싫어하고 주의 법을 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "c3ab048e46262c091a0579d94343100ddb3cf9397ac34ff02f05e58fe3c612da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:164",
+      "sequence": 16063,
+      "chapter_label": "PSA 119",
+      "verse_label": "164",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 164
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 164
+        }
+      ],
+      "en": "Seven times a day, I praise you, because of your righteous ordinances.",
+      "ko": "주의 의로운 규례를 인하여 내가 하루 일곱번씩 주를 찬양하나이다",
+      "source_text_hash": "bce43bb7da88c73cddd38e292a6afa10dbd1ecfa22ee126afc8ec6fb9b38fcc1",
+      "translation_text_hash": "c4e9791b09b9f7abd88cf0b7e7da71be6ea40f7131b63589bd15e10e26e04fc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 의로운 규례를 인하여 내가 하루 일곱번씩 주를 찬양하나이다"
+      ],
+      "raw_text_hashes": [
+        "c4e9791b09b9f7abd88cf0b7e7da71be6ea40f7131b63589bd15e10e26e04fc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:165",
+      "sequence": 16064,
+      "chapter_label": "PSA 119",
+      "verse_label": "165",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 165
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 165
+        }
+      ],
+      "en": "Those who love your law have great peace. Nothing causes them to stumble.",
+      "ko": "주의 법을 사랑하는 자에게는 큰 평안이 있으니 저희에게 장애물이 없으리이다",
+      "source_text_hash": "8b839afd721ec360cce1f00535eb44a0ea2bafb8108dfb7516b67ad6d609601f",
+      "translation_text_hash": "991165aff947e083ca23581d20f791295948c9dfdda6a51ca75b34c102634cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 법을 사랑하는 자에게는 큰 평안이 있으니 저희에게 장애물이 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "991165aff947e083ca23581d20f791295948c9dfdda6a51ca75b34c102634cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:166",
+      "sequence": 16065,
+      "chapter_label": "PSA 119",
+      "verse_label": "166",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 166
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 166
+        }
+      ],
+      "en": "I have hoped for your salvation, LORD. I have done your commandments.",
+      "ko": "여호와여 내가 주의 구원을 바라며 주의 계명을 행하였나이다",
+      "source_text_hash": "775e47372c72033af624d1faa429c92cc8805fb12231bea88cbad664cbb411ea",
+      "translation_text_hash": "1c2d0e2d7dabfd530acdfc30eac8d79f85daf326904d2443d02c1ffbff45f627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주의 구원을 바라며 주의 계명을 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1c2d0e2d7dabfd530acdfc30eac8d79f85daf326904d2443d02c1ffbff45f627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:167",
+      "sequence": 16066,
+      "chapter_label": "PSA 119",
+      "verse_label": "167",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 167
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 167
+        }
+      ],
+      "en": "My soul has observed your testimonies. I love them exceedingly.",
+      "ko": "내 심령이 주의 증거를 지켰사오며 내가 이를 지극히 사랑하나이다",
+      "source_text_hash": "fb83916b5bd22becc989b87b572565a5a741cdc9f568aabf7c3594abdca838df",
+      "translation_text_hash": "5baaa65662dcea0c48d778625594316736fdde7dc4efce6a3ec32404658a408d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 심령이 주의 증거를 지켰사오며 내가 이를 지극히 사랑하나이다"
+      ],
+      "raw_text_hashes": [
+        "5baaa65662dcea0c48d778625594316736fdde7dc4efce6a3ec32404658a408d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:168",
+      "sequence": 16067,
+      "chapter_label": "PSA 119",
+      "verse_label": "168",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 168
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 168
+        }
+      ],
+      "en": "I have obeyed your precepts and your testimonies, for all my ways are before you. TAV",
+      "ko": "내가 주의 법도와 증거를 지켰사오니 나의 모든 행위가 주의 앞에 있음이니이다",
+      "source_text_hash": "e84dc3b77a4a883f5f89eae528620861c4018f885d361f6bf602c222d9d2a3d9",
+      "translation_text_hash": "eb15f2e39f339fdc7cdb36edd0d64c231f3498cbb1368fa1dd2ae82aa560c6d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도와 증거를 지켰사오니 나의 모든 행위가 주의 앞에 있음이니이다"
+      ],
+      "raw_text_hashes": [
+        "eb15f2e39f339fdc7cdb36edd0d64c231f3498cbb1368fa1dd2ae82aa560c6d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:169",
+      "sequence": 16068,
+      "chapter_label": "PSA 119",
+      "verse_label": "169",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 169
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 169
+        }
+      ],
+      "en": "Let my cry come before you, LORD. Give me understanding according to your word.",
+      "ko": "여호와여 나의 부르짖음이 주의 앞에 이르게 하시고 주의 말씀대로 나를 깨닫게 하소서",
+      "source_text_hash": "b4bc98b78ebda725001ab194a6e16c9e1dec038bc22c78c187db4000b5dd4111",
+      "translation_text_hash": "7d8d7694c2cbfe065489c62138d31466e92094dbcc6d6044e34e4f897bf18598",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나의 부르짖음이 주의 앞에 이르게 하시고 주의 말씀대로 나를 깨닫게 하소서"
+      ],
+      "raw_text_hashes": [
+        "7d8d7694c2cbfe065489c62138d31466e92094dbcc6d6044e34e4f897bf18598"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:170",
+      "sequence": 16069,
+      "chapter_label": "PSA 119",
+      "verse_label": "170",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 170
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 170
+        }
+      ],
+      "en": "Let my supplication come before you. Deliver me according to your word.",
+      "ko": "나의 간구가 주의 앞에 달하게 하시고 주의 말씀대로 나를 건지소서",
+      "source_text_hash": "f360e19e5722ee3b632764fd2d3d24979a83cc759a50998e24142c89a1af443a",
+      "translation_text_hash": "4a919531e9e6d6be7ded6b8586f2687660e932d6e0047e61f626d2ec0660f872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 간구가 주의 앞에 달하게 하시고 주의 말씀대로 나를 건지소서"
+      ],
+      "raw_text_hashes": [
+        "4a919531e9e6d6be7ded6b8586f2687660e932d6e0047e61f626d2ec0660f872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:171",
+      "sequence": 16070,
+      "chapter_label": "PSA 119",
+      "verse_label": "171",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 171
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 171
+        }
+      ],
+      "en": "Let my lips utter praise, for you teach me your statutes.",
+      "ko": "주께서 율례를 내게 가르치시므로 내 입술이 찬송을 발할찌니이다",
+      "source_text_hash": "d6cf7f02b69910103c96b94a0330b69c531d2590bcf2935044e5dc3c4f8b879c",
+      "translation_text_hash": "094c99e2dfcc7bd5cc722e758c760c58818ccd78e39ed2dc1ef4b94a04fd4893",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 율례를 내게 가르치시므로 내 입술이 찬송을 발할찌니이다"
+      ],
+      "raw_text_hashes": [
+        "094c99e2dfcc7bd5cc722e758c760c58818ccd78e39ed2dc1ef4b94a04fd4893"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:172",
+      "sequence": 16071,
+      "chapter_label": "PSA 119",
+      "verse_label": "172",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 172
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 172
+        }
+      ],
+      "en": "Let my tongue sing of your word, for all your commandments are righteousness.",
+      "ko": "주의 모든 계명이 의로우므로 내 혀가 주의 말씀을 노래할찌니이다",
+      "source_text_hash": "c830d95bdaca1f632d9553976e9d5b1439beee4200c9b8b0e9d19f31136606c4",
+      "translation_text_hash": "10dae1492e373979abdea751b0789e3ce707b029e282d8c3af9592b47f51918f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 모든 계명이 의로우므로 내 혀가 주의 말씀을 노래할찌니이다"
+      ],
+      "raw_text_hashes": [
+        "10dae1492e373979abdea751b0789e3ce707b029e282d8c3af9592b47f51918f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:173",
+      "sequence": 16072,
+      "chapter_label": "PSA 119",
+      "verse_label": "173",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 173
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 173
+        }
+      ],
+      "en": "Let your hand be ready to help me, for I have chosen your precepts.",
+      "ko": "내가 주의 법도를 택하였사오니 주의 손이 항상 나의 도움이 되게 하소서",
+      "source_text_hash": "30fa02a9d8c1408380405122e5736afc1d58721c34b8a56fab428831b69ee235",
+      "translation_text_hash": "ae26a02cb68d09d1cc55b44c432b3cbe17f9e7695d9cfe74d8e21d03a3ef24d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 법도를 택하였사오니 주의 손이 항상 나의 도움이 되게 하소서"
+      ],
+      "raw_text_hashes": [
+        "ae26a02cb68d09d1cc55b44c432b3cbe17f9e7695d9cfe74d8e21d03a3ef24d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:174",
+      "sequence": 16073,
+      "chapter_label": "PSA 119",
+      "verse_label": "174",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 174
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 174
+        }
+      ],
+      "en": "I have longed for your salvation, LORD. Your law is my delight.",
+      "ko": "여호와여 내가 주의 구원을 사모하였사오며 주의 법을 즐거워하나이다",
+      "source_text_hash": "76bae190d58173b80fdfc68c2b2cdf528904410833dd219a0e2e1a78ce61b841",
+      "translation_text_hash": "75c2bae484ffce6db479cdc9b7d4bbe17d9d5f140aa76708715d7c226fc3dd57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주의 구원을 사모하였사오며 주의 법을 즐거워하나이다"
+      ],
+      "raw_text_hashes": [
+        "75c2bae484ffce6db479cdc9b7d4bbe17d9d5f140aa76708715d7c226fc3dd57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:175",
+      "sequence": 16074,
+      "chapter_label": "PSA 119",
+      "verse_label": "175",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 175
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 175
+        }
+      ],
+      "en": "Let my soul live, that I may praise you. Let your ordinances help me.",
+      "ko": "내 혼을 살게 하소서 그리하시면 주를 찬송하리이다 주의 규례가 나를 돕게 하소서",
+      "source_text_hash": "fc31ac371401413cc327a74233817d4198cea7a5b56de4637bb475cdb571fe3e",
+      "translation_text_hash": "26e896cb18e53a6f6c765738916553e91b29aacecdfe488ad1d6cb0ce1dcdad5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 혼을 살게 하소서 그리하시면 주를 찬송하리이다 주의 규례가 나를 돕게 하소서"
+      ],
+      "raw_text_hashes": [
+        "26e896cb18e53a6f6c765738916553e91b29aacecdfe488ad1d6cb0ce1dcdad5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:119:176",
+      "sequence": 16075,
+      "chapter_label": "PSA 119",
+      "verse_label": "176",
+      "locator": {
+        "book": "PSA",
+        "chapter": 119,
+        "verse": 176
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 119,
+          "verse": 176
+        }
+      ],
+      "en": "I have gone astray like a lost sheep. Seek your servant, for I don’t forget your commandments.",
+      "ko": "잃은 양 같이 내가 유리하오니 주의 종을 찾으소서 내가 주의 계명을 잊지 아니함이니이다",
+      "source_text_hash": "97f2857b5ca675775fb1248f3f902e88ea6b8e23a307c3cad4b8860fb0eb1357",
+      "translation_text_hash": "bbb31b4d1b48ea91a7f1fade47d71d1f0367d29bfeb4dd91bdcf163f0948ab5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잃은 양 같이 내가 유리하오니 주의 종을 찾으소서 내가 주의 계명을 잊지 아니함이니이다"
+      ],
+      "raw_text_hashes": [
+        "bbb31b4d1b48ea91a7f1fade47d71d1f0367d29bfeb4dd91bdcf163f0948ab5b"
+      ]
+    }
+  ]
+}

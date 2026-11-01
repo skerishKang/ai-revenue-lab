@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:027",
+  "unit_ordinal": 180,
+  "unit_label": "DEU 27",
+  "book_code": "DEU",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:27:1",
+      "sequence": 5587,
+      "chapter_label": "DEU 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "Moses and the elders of Israel commanded the people, saying, “Keep all the commandment which I command you today.",
+      "ko": "모세가 이스라엘 장로들로 더불어 백성에게 명하여 가로되 내가 오늘날 너희에게 명하는 이 명령을 너희는 다 지킬찌니라",
+      "source_text_hash": "3a481aaedec02a02a4eb43a8c53bda77eacffeafe3d9e7d42759617c3679ad7d",
+      "translation_text_hash": "55e38cde4a3987932f314e3e7ee082cfea0212915885c6b5a391f72f110ef7b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 장로들로 더불어 백성에게 명하여 가로되 내가 오늘날 너희에게 명하는 이 명령을 너희는 다 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "55e38cde4a3987932f314e3e7ee082cfea0212915885c6b5a391f72f110ef7b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:2",
+      "sequence": 5588,
+      "chapter_label": "DEU 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "It shall be on the day when you shall pass over the Jordan to the land which the LORD your God gives you, that you shall set yourself up great stones, and coat them with plaster.",
+      "ko": "너희가 요단을 건너 네 하나님 여호와께서 네게 주시는 땅에 들어가는 날에 큰 돌들을 세우고 석회를 바르라",
+      "source_text_hash": "cc17030855e59e0795dfa2240ab21cafacbf7c6ea0899dfb48d6fcbed97bda48",
+      "translation_text_hash": "ec2ee838e9c81616eaf92aea648b5ce2a44b568fdc33d9674147559873176833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요단을 건너 네 하나님 여호와께서 네게 주시는 땅에 들어가는 날에 큰 돌들을 세우고 석회를 바르라"
+      ],
+      "raw_text_hashes": [
+        "ec2ee838e9c81616eaf92aea648b5ce2a44b568fdc33d9674147559873176833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:3",
+      "sequence": 5589,
+      "chapter_label": "DEU 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "You shall write on them all the words of this law, when you have passed over, that you may go in to the land which the LORD your God gives you, a land flowing with milk and honey, as the LORD, the God of your fathers, has promised you.",
+      "ko": "이미 건넌 후에 이 율법의 모든 말씀을 그 위에 기록하라 그리하면 네 하나님 여호와께서 네게 주시는 땅 곧 젖과 꿀이 흐르는 땅에 네가 들어가기를 네 열조의 하나님 여호와께서 네게 말씀하신 대로 하리니",
+      "source_text_hash": "5794fb9f4c730a441dbbcfd1941d408dfeb81f256da73c24ddd32151257843db",
+      "translation_text_hash": "008f9e5ab0663f30f9376581752a8660a0e775d2251aa91cffb95080b79618f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이미 건넌 후에 이 율법의 모든 말씀을 그 위에 기록하라 그리하면 네 하나님 여호와께서 네게 주시는 땅 곧 젖과 꿀이 흐르는 땅에 네가 들어가기를 네 열조의 하나님 여호와께서 네게 말씀하신 대로 하리니"
+      ],
+      "raw_text_hashes": [
+        "008f9e5ab0663f30f9376581752a8660a0e775d2251aa91cffb95080b79618f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:4",
+      "sequence": 5590,
+      "chapter_label": "DEU 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "It shall be, when you have crossed over the Jordan, that you shall set up these stones, which I command you today, on Mount Ebal, and you shall coat them with plaster.",
+      "ko": "너희가 요단을 건너거든 내가 오늘날 너희에게 명하는 이 돌들을 에발산에 세우고 그 위에 석회를 바를 것이며",
+      "source_text_hash": "d588b7bbcc51c9a073a3d0bc66ae83574a7438fd7ddcd379ddadac3470e1269c",
+      "translation_text_hash": "b8418f8cac9e83580fc297d8b87b32e766346a0749b162c7d9539c9d03d81faf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요단을 건너거든 내가 오늘날 너희에게 명하는 이 돌들을 에발산에 세우고 그 위에 석회를 바를 것이며"
+      ],
+      "raw_text_hashes": [
+        "b8418f8cac9e83580fc297d8b87b32e766346a0749b162c7d9539c9d03d81faf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:5",
+      "sequence": 5591,
+      "chapter_label": "DEU 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "There you shall build an altar to the LORD your God, an altar of stones. You shall not use any iron tool on them.",
+      "ko": "또 거기서 네 하나님 여호와를 위하여 단 곧 돌단을 쌓되 그것에 철기를 대지 말찌니라",
+      "source_text_hash": "69a5d0e144e0bdd6bf984c9c7ead786b4fef3ae33da78eb75594904513c9f72e",
+      "translation_text_hash": "81bc4eff2cda0f13f7868bdda053d2fdc04fe26a201057aeaa4d93c48901bf30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거기서 네 하나님 여호와를 위하여 단 곧 돌단을 쌓되 그것에 철기를 대지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "81bc4eff2cda0f13f7868bdda053d2fdc04fe26a201057aeaa4d93c48901bf30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:6",
+      "sequence": 5592,
+      "chapter_label": "DEU 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "You shall build the LORD your God’s altar of uncut stones. You shall offer burnt offerings on it to the LORD your God.",
+      "ko": "너는 다듬지 않은 돌로 네 하나님 여호와의 단을 쌓고 그 위에 네 하나님 여호와께 번제를 드릴 것이며",
+      "source_text_hash": "0431161e56ad6af478690b109f6893a1ace1ee6f34115c42aaba7d8c89458cdd",
+      "translation_text_hash": "905cc3f11fa8fd1e6bf238c3ec36cf8986478f79b8397300a596f2efea2fcc0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 다듬지 않은 돌로 네 하나님 여호와의 단을 쌓고 그 위에 네 하나님 여호와께 번제를 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "905cc3f11fa8fd1e6bf238c3ec36cf8986478f79b8397300a596f2efea2fcc0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:7",
+      "sequence": 5593,
+      "chapter_label": "DEU 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "You shall sacrifice peace offerings, and shall eat there. You shall rejoice before the LORD your God.",
+      "ko": "또 화목제를 드리고 거기서 먹으며 네 하나님 여호와 앞에서 즐거워하라",
+      "source_text_hash": "53cc438efe072283b239f90b1ef9c04d928252bb6d38468bfe43853c534434c4",
+      "translation_text_hash": "34d4e5368acac3dcd4f9b1812c3ff8caf33b2fa0f933fb5ea60b9be9f9bac7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 화목제를 드리고 거기서 먹으며 네 하나님 여호와 앞에서 즐거워하라"
+      ],
+      "raw_text_hashes": [
+        "34d4e5368acac3dcd4f9b1812c3ff8caf33b2fa0f933fb5ea60b9be9f9bac7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:8",
+      "sequence": 5594,
+      "chapter_label": "DEU 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "You shall write on the stones all the words of this law very plainly.”",
+      "ko": "너는 이 율법의 모든 말씀을 그 돌들 위에 명백히 기록할찌니라",
+      "source_text_hash": "64a7b47c0ba47b77d4ca3e76ce0842a150a156407d8a311ceac5c6c585d0ea12",
+      "translation_text_hash": "e400a70fe36838bacdd0a0a7c48fe48485ea83c33d851048eef36a831e6d171d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 율법의 모든 말씀을 그 돌들 위에 명백히 기록할찌니라"
+      ],
+      "raw_text_hashes": [
+        "e400a70fe36838bacdd0a0a7c48fe48485ea83c33d851048eef36a831e6d171d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:9",
+      "sequence": 5595,
+      "chapter_label": "DEU 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "Moses and the Levitical priests spoke to all Israel, saying, “Be silent and listen, Israel! Today you have become the people of the LORD your God.",
+      "ko": "모세가 레위 제사장들로 더불어 온 이스라엘에게 고하여 가로되 이스라엘아 잠잠히 들으라 오늘날 네가 네 하나님 여호와의 백성이 되었으니",
+      "source_text_hash": "436cee849531a8327f01964b236e3ce87ee687e9f4ef2cc8d4796dec6404206d",
+      "translation_text_hash": "c2b241c28cbe6c8a21a1e49a44084d1dfe1a70dc5a00caf15101e98aee4fa68d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 레위 제사장들로 더불어 온 이스라엘에게 고하여 가로되 이스라엘아 잠잠히 들으라 오늘날 네가 네 하나님 여호와의 백성이 되었으니"
+      ],
+      "raw_text_hashes": [
+        "c2b241c28cbe6c8a21a1e49a44084d1dfe1a70dc5a00caf15101e98aee4fa68d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:10",
+      "sequence": 5596,
+      "chapter_label": "DEU 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "You shall therefore obey the LORD your God’s voice, and do his commandments and his statutes, which I command you today.”",
+      "ko": "그런즉 네 하나님 여호와의 말씀을 복종하여 내가 오늘날 네게 명하는 그 명령과 규례를 행할찌니라",
+      "source_text_hash": "4b01e2fda661820fdc7a1a9448fc0493f0b882e085d32e0125ae202c8a38ffff",
+      "translation_text_hash": "7a0eaf9cf62c6fe7babac751c18bc8fe5fdef82779fd18202e9c6b7330767dc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 네 하나님 여호와의 말씀을 복종하여 내가 오늘날 네게 명하는 그 명령과 규례를 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "7a0eaf9cf62c6fe7babac751c18bc8fe5fdef82779fd18202e9c6b7330767dc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:11",
+      "sequence": 5597,
+      "chapter_label": "DEU 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "Moses commanded the people the same day, saying,",
+      "ko": "모세가 당일에 백성에게 명하여 가로되",
+      "source_text_hash": "7dea0f9f29d27a54ef5f287c1b09ee0735e652b279f71ff8c3ce98322710ab48",
+      "translation_text_hash": "ca9ada6f2b83c1de1e3408f20468d8015870c6e044b213be5c45c2e2b947cf1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 당일에 백성에게 명하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "ca9ada6f2b83c1de1e3408f20468d8015870c6e044b213be5c45c2e2b947cf1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:12",
+      "sequence": 5598,
+      "chapter_label": "DEU 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "“These shall stand on Mount Gerizim to bless the people, when you have crossed over the Jordan: Simeon, Levi, Judah, Issachar, Joseph, and Benjamin.",
+      "ko": "너희가 요단을 건넌 후에 시므온과 레위와 유다와 잇사갈과 요셉과 베냐민은 백성을 축복하기 위하여 그리심산에 서고",
+      "source_text_hash": "79a108065f90beef656a6c145c2e5c9e45de4f7d09dfc394a9ef405eba39cf91",
+      "translation_text_hash": "dda700b094e38caa1762fc585008637611460ddd947742d2edd2c8fe6d846f08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요단을 건넌 후에 시므온과 레위와 유다와 잇사갈과 요셉과 베냐민은 백성을 축복하기 위하여 그리심산에 서고"
+      ],
+      "raw_text_hashes": [
+        "dda700b094e38caa1762fc585008637611460ddd947742d2edd2c8fe6d846f08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:13",
+      "sequence": 5599,
+      "chapter_label": "DEU 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "These shall stand on Mount Ebal for the curse: Reuben, Gad, Asher, Zebulun, Dan, and Naphtali.",
+      "ko": "르우벤과 갓과 아셀과 스불론과 단과 납달리는 저주하기 위하여 에발산에 서고",
+      "source_text_hash": "cdd0e63c05f54c0584707b3a13f7e7197b18b25500699e09c2cb1133f88c2f7f",
+      "translation_text_hash": "99473d33c6e05a2beed7a84ed3179adfca486fa15443fc92a4557a433319aef6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤과 갓과 아셀과 스불론과 단과 납달리는 저주하기 위하여 에발산에 서고"
+      ],
+      "raw_text_hashes": [
+        "99473d33c6e05a2beed7a84ed3179adfca486fa15443fc92a4557a433319aef6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:14",
+      "sequence": 5600,
+      "chapter_label": "DEU 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "With a loud voice, the Levites shall say to all the men of Israel,",
+      "ko": "레위 사람은 큰 소리로 이스라엘 모든 사람에게 말하여 이르기를",
+      "source_text_hash": "693f806325dd90ff7221d84c48299da9e4fd379cd92a97acbdffb55a745889f8",
+      "translation_text_hash": "a621b5cfa9c907df83dc3ac6ca58b2a4a78682251cce57865fed088b56512151",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람은 큰 소리로 이스라엘 모든 사람에게 말하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "a621b5cfa9c907df83dc3ac6ca58b2a4a78682251cce57865fed088b56512151"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:15",
+      "sequence": 5601,
+      "chapter_label": "DEU 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "‘Cursed is the man who makes an engraved or molten image, an abomination to the LORD, the work of the hands of the craftsman, and sets it up in secret.’ All the people shall answer and say, ‘Amen.’",
+      "ko": "장색의 손으로 조각하였거나 부어 만든 우상은 여호와께 가증하니 그것을 만들어 은밀히 세우는 자는 저주를 받을 것이라 할 것이요 모든 백성은 응답하여 아멘 할찌니라",
+      "source_text_hash": "a1d5d16da40fa1bf33b5c7abd76d0716425fb9dc263cfec3de81618bd1902347",
+      "translation_text_hash": "92c23f7298c85b9dc74688292454d5cc79af09f192e6de0a84d1d4882f180289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장색의 손으로 조각하였거나 부어 만든 우상은 여호와께 가증하니 그것을 만들어 은밀히 세우는 자는 저주를 받을 것이라 할 것이요 모든 백성은 응답하여 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "92c23f7298c85b9dc74688292454d5cc79af09f192e6de0a84d1d4882f180289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:16",
+      "sequence": 5602,
+      "chapter_label": "DEU 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "‘Cursed is he who dishonors his father or his mother.’ All the people shall say, ‘Amen.’",
+      "ko": "그 부모를 경홀히 여기는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "b46704912240a87e1152ec513c341d4d3c5b8f04a0f05c1997c3862ed8c6a6fd",
+      "translation_text_hash": "dcb4cd7acf973c859da9ed097b43d58ccf89a97833212309a0aa5468add73c04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모를 경홀히 여기는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "dcb4cd7acf973c859da9ed097b43d58ccf89a97833212309a0aa5468add73c04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:17",
+      "sequence": 5603,
+      "chapter_label": "DEU 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "‘Cursed is he who removes his neighbor’s landmark.’ All the people shall say, ‘Amen.’",
+      "ko": "그 이웃의 지계표를 옮기는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "d4ca00a12a8ee8906db31bfd990f7d15427df99bfbcf28374c8e73b5f9d378bf",
+      "translation_text_hash": "749711bd9865412323c7f89761178c3bd9f5b12532ea5f49839b4aef28020847",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이웃의 지계표를 옮기는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "749711bd9865412323c7f89761178c3bd9f5b12532ea5f49839b4aef28020847"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:18",
+      "sequence": 5604,
+      "chapter_label": "DEU 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "‘Cursed is he who leads the blind astray on the road.’ All the people shall say, ‘Amen.’",
+      "ko": "소경으로 길을 잃게 하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "7be12fadd61ad6894589e11088f59dadeca79f3c2bb4635faab4635283e707cd",
+      "translation_text_hash": "1a5524676bf0e211d226ead2043ad2eb1c61d7fef5c5a1052f765277029a5047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경으로 길을 잃게 하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "1a5524676bf0e211d226ead2043ad2eb1c61d7fef5c5a1052f765277029a5047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:19",
+      "sequence": 5605,
+      "chapter_label": "DEU 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "‘Cursed is he who withholds justice from the foreigner, fatherless, and widow.’ All the people shall say, ‘Amen.’",
+      "ko": "객이나 고아나 과부의 송사를 억울케 하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "8b835146acee379bc223f500d46f5ee1272917d7fe1a6ae652f2df198b94e8c1",
+      "translation_text_hash": "22c8cab62633c8b62946d2e2688b68a5cc5ffbef3fd03fd798c971c533758027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "객이나 고아나 과부의 송사를 억울케 하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "22c8cab62633c8b62946d2e2688b68a5cc5ffbef3fd03fd798c971c533758027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:20",
+      "sequence": 5606,
+      "chapter_label": "DEU 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "‘Cursed is he who lies with his father’s wife, because he dishonors his father’s bed.’ All the people shall say, ‘Amen.’",
+      "ko": "계모와 구합하는 자는 그 아비의 하체를 드러내었으니 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "ebabcf6afe658565c6debe5fdf32db49ad2969250fde0ca24107cde7e089110b",
+      "translation_text_hash": "dbd7aa8ec6582d8be46e310138155d962dd6ae3dbfae6261bd215d5d415f39d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계모와 구합하는 자는 그 아비의 하체를 드러내었으니 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "dbd7aa8ec6582d8be46e310138155d962dd6ae3dbfae6261bd215d5d415f39d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:21",
+      "sequence": 5607,
+      "chapter_label": "DEU 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "‘Cursed is he who lies with any kind of animal.’ All the people shall say, ‘Amen.’",
+      "ko": "무릇 짐승과 교합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "12340aa9bddeac2692a6514ac75d89fec03819dea533e2d20cf6830f0c220c75",
+      "translation_text_hash": "4c4f92e31f0e7c114de5230a3e419ca0677ce2d74072b0a94c90c407d3fb181e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 짐승과 교합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "4c4f92e31f0e7c114de5230a3e419ca0677ce2d74072b0a94c90c407d3fb181e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:22",
+      "sequence": 5608,
+      "chapter_label": "DEU 27",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 22
+        }
+      ],
+      "en": "‘Cursed is he who lies with his sister, his father’s daughter or his mother’s daughter.’ All the people shall say, ‘Amen.’",
+      "ko": "그 자매 곧 그 아비의 딸이나 어미의 딸과 구합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "eda75dd6e7dec02f452a016621f3ebea8b7e6fd4473ef6214e6168693eb7bb29",
+      "translation_text_hash": "612d87d4b5128c5ce0f84a32a8219fc09b7f1fb08a54dabb6cbc222edf53b75b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 자매 곧 그 아비의 딸이나 어미의 딸과 구합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "612d87d4b5128c5ce0f84a32a8219fc09b7f1fb08a54dabb6cbc222edf53b75b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:23",
+      "sequence": 5609,
+      "chapter_label": "DEU 27",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 23
+        }
+      ],
+      "en": "‘Cursed is he who lies with his mother-in-law.’ All the people shall say, ‘Amen.’",
+      "ko": "장모와 구합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "5666f518d77dc01c1e6a63831b5e2577bd3fceec8e0e2516f879bd071d7ace20",
+      "translation_text_hash": "9eb3125a1e35b7899720d9763696394970a5b22f52c84d683b7fe5cf6e630451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장모와 구합하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "9eb3125a1e35b7899720d9763696394970a5b22f52c84d683b7fe5cf6e630451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:24",
+      "sequence": 5610,
+      "chapter_label": "DEU 27",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 24
+        }
+      ],
+      "en": "‘Cursed is he who secretly kills his neighbor.’ All the people shall say, ‘Amen.’",
+      "ko": "그 이웃을 암살하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "3d00a06fb677781ba12bea7468e0d63cf40eef59ce1881d14fe51a61fa75fec9",
+      "translation_text_hash": "705faf5f2c6134b6834d07266f7f3995d6f6c7123170983d143f3a8c482ecac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이웃을 암살하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "705faf5f2c6134b6834d07266f7f3995d6f6c7123170983d143f3a8c482ecac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:25",
+      "sequence": 5611,
+      "chapter_label": "DEU 27",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 25
+        }
+      ],
+      "en": "‘Cursed is he who takes a bribe to kill an innocent person.’ All the people shall say, ‘Amen.’",
+      "ko": "무죄자를 죽이려고 뇌물을 받는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "a2535a20a5f8ec746c27198ce90c094205b211dc902eeb775992e3bc64438976",
+      "translation_text_hash": "a0927538ea06e190db920697d36b579caf12a062d0730e5777c64c884cf83258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무죄자를 죽이려고 뇌물을 받는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a0927538ea06e190db920697d36b579caf12a062d0730e5777c64c884cf83258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:27:26",
+      "sequence": 5612,
+      "chapter_label": "DEU 27",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 27,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 27,
+          "verse": 26
+        }
+      ],
+      "en": "‘Cursed is he who doesn’t uphold the words of this law by doing them.’ All the people shall say, ‘Amen.’”",
+      "ko": "이 율법의 모든 말씀을 실행치 아니하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라",
+      "source_text_hash": "9f8636459a393449c61fc805be41ff51dd6f98902234d47eaaf0439d61925ece",
+      "translation_text_hash": "631b8014647e6751f12f7f0bad4a7e58d5ef75e9ff3e6ea308f33e34245b4bce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 율법의 모든 말씀을 실행치 아니하는 자는 저주를 받을 것이라 할 것이요 모든 백성은 아멘 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "631b8014647e6751f12f7f0bad4a7e58d5ef75e9ff3e6ea308f33e34245b4bce"
+      ]
+    }
+  ]
+}

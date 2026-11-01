@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:143",
+  "unit_ordinal": 621,
+  "unit_label": "PSA 143",
+  "book_code": "PSA",
+  "chapter_number": 143,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:143:1",
+      "sequence": 16295,
+      "chapter_label": "PSA 143",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 1
+        }
+      ],
+      "en": "Hear my prayer, LORD. Listen to my petitions. In your faithfulness and righteousness, relieve me.",
+      "ko": "여호와여 내 기도를 들으시며 내 간구에 귀를 기울이시고 주의 진실과 의로 내게 응답하소서",
+      "source_text_hash": "b201f14375788e0acc0036dcfe0efc160f268ca2899effa4632548f1826af388",
+      "translation_text_hash": "9463b005c6586326a12fda04c9a3f4330988a603e9a8932088736cefc68534e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 기도를 들으시며 내 간구에 귀를 기울이시고 주의 진실과 의로 내게 응답하소서"
+      ],
+      "raw_text_hashes": [
+        "9463b005c6586326a12fda04c9a3f4330988a603e9a8932088736cefc68534e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:2",
+      "sequence": 16296,
+      "chapter_label": "PSA 143",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 2
+        }
+      ],
+      "en": "Don’t enter into judgment with your servant, for in your sight no man living is righteous.",
+      "ko": "주의 종에게 심판을 행치 마소서 주의 목전에는 의로운 인생이 하나도 없나이다",
+      "source_text_hash": "e69ddcdfda04f26b22570eee53ad6a61cd949b7fc1779ac3653d8a3cf79e2a82",
+      "translation_text_hash": "0e7a0ff38a2d4e0e6add5acfaa022ac1ed3c18500df4381e437525901a3e445c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 종에게 심판을 행치 마소서 주의 목전에는 의로운 인생이 하나도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "0e7a0ff38a2d4e0e6add5acfaa022ac1ed3c18500df4381e437525901a3e445c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:3",
+      "sequence": 16297,
+      "chapter_label": "PSA 143",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 3
+        }
+      ],
+      "en": "For the enemy pursues my soul. He has struck my life down to the ground. He has made me live in dark places, as those who have been long dead.",
+      "ko": "원수가 내 영혼을 핍박하며 내 생명을 땅에 엎어서 나로 죽은지 오랜 자 같이 흑암한 곳에 거하게 하였나이다",
+      "source_text_hash": "e6133237b16f98c03675831abbe58affaba8c9c705e6c46a56999ff2060bb4d0",
+      "translation_text_hash": "c39242cc87876af130bed39c1ddc4b3556ab2f3624707561e9b9b546adfbf459",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원수가 내 영혼을 핍박하며 내 생명을 땅에 엎어서 나로 죽은지 오랜 자 같이 흑암한 곳에 거하게 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "c39242cc87876af130bed39c1ddc4b3556ab2f3624707561e9b9b546adfbf459"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:4",
+      "sequence": 16298,
+      "chapter_label": "PSA 143",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 4
+        }
+      ],
+      "en": "Therefore my spirit is overwhelmed within me. My heart within me is desolate.",
+      "ko": "그러므로 내 심령이 속에서 상하며 내 마음이 속에서 참담하니이다",
+      "source_text_hash": "2534a480afe7d29408b545f8f315e78418b10c317dab92cfff94a731116c01e2",
+      "translation_text_hash": "7cc3d2c85bd57537e9c45594fc38b01a5975cb0803ea72aa9f166d871c7d4f69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내 심령이 속에서 상하며 내 마음이 속에서 참담하니이다"
+      ],
+      "raw_text_hashes": [
+        "7cc3d2c85bd57537e9c45594fc38b01a5975cb0803ea72aa9f166d871c7d4f69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:5",
+      "sequence": 16299,
+      "chapter_label": "PSA 143",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 5
+        }
+      ],
+      "en": "I remember the days of old. I meditate on all your doings. I contemplate the work of your hands.",
+      "ko": "내가 옛날을 기억하고 주의 모든 행하신 것을 묵상하며 주의 손의 행사를 생각하고",
+      "source_text_hash": "f2829051033acebe1c742b4a1241556398c2ec8669f6f290ebd6c48e433e77b8",
+      "translation_text_hash": "4cb5b33574a9b1fe7386127734b4d692cfa7c7a569fe49e6ec6e2fb5c1df04db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 옛날을 기억하고 주의 모든 행하신 것을 묵상하며 주의 손의 행사를 생각하고"
+      ],
+      "raw_text_hashes": [
+        "4cb5b33574a9b1fe7386127734b4d692cfa7c7a569fe49e6ec6e2fb5c1df04db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:6",
+      "sequence": 16300,
+      "chapter_label": "PSA 143",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 6
+        }
+      ],
+      "en": "I spread out my hands to you. My soul thirsts for you, like a parched land. Selah.",
+      "ko": "주를 향하여 손을 펴고 내 영혼이 마른 땅 같이 주를 사모하나이다(셀라)",
+      "source_text_hash": "7cb1992243a9e4a59038d01e810bff7834219f60879d7ae22f9e6f70020cb372",
+      "translation_text_hash": "9a503a1081e56100c390a681b69ffe3b63482f4b85e99f62d8993ba48b3f54f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 향하여 손을 펴고 내 영혼이 마른 땅 같이 주를 사모하나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "9a503a1081e56100c390a681b69ffe3b63482f4b85e99f62d8993ba48b3f54f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:7",
+      "sequence": 16301,
+      "chapter_label": "PSA 143",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 7
+        }
+      ],
+      "en": "Hurry to answer me, LORD. My spirit fails. Don’t hide your face from me, so that I don’t become like those who go down into the pit.",
+      "ko": "여호와여 속히 내게 응답하소서 내 영혼이 피곤하니이다 주의 얼굴을 내게서 숨기지 마소서 내가 무덤에 내려가는 자 같을까 두려워하나이다",
+      "source_text_hash": "1a69db16e83ec8e288c0658b78b624633043091af4030fc08b2293793406eb75",
+      "translation_text_hash": "7cc4396b476e2b2714c82e99124ce63baa649960613920cb3b94e9ef8b0acefd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 속히 내게 응답하소서 내 영혼이 피곤하니이다 주의 얼굴을 내게서 숨기지 마소서 내가 무덤에 내려가는 자 같을까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "7cc4396b476e2b2714c82e99124ce63baa649960613920cb3b94e9ef8b0acefd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:8",
+      "sequence": 16302,
+      "chapter_label": "PSA 143",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 8
+        }
+      ],
+      "en": "Cause me to hear your loving kindness in the morning, for I trust in you. Cause me to know the way in which I should walk, for I lift up my soul to you.",
+      "ko": "아침에 나로 주의 인자한 말씀을 듣게 하소서 내가 주를 의뢰함이니이다 나의 다닐 길을 알게 하소서 내가 내 영혼을 주께 받듦이니이다",
+      "source_text_hash": "573af3376bde5e94fc1475499e3c95dbc86b5cfb97ab149f301f05c4e22681ae",
+      "translation_text_hash": "011e93f6d12ff38eef13cdab3c6880be757949d8d6d44f863d6285b931728735",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 나로 주의 인자한 말씀을 듣게 하소서 내가 주를 의뢰함이니이다 나의 다닐 길을 알게 하소서 내가 내 영혼을 주께 받듦이니이다"
+      ],
+      "raw_text_hashes": [
+        "011e93f6d12ff38eef13cdab3c6880be757949d8d6d44f863d6285b931728735"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:9",
+      "sequence": 16303,
+      "chapter_label": "PSA 143",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 9
+        }
+      ],
+      "en": "Deliver me, LORD, from my enemies. I flee to you to hide me.",
+      "ko": "여호와여 나를 내 원수들에게서 건지소서 내가 주께 피하여 숨었나이다",
+      "source_text_hash": "3caa2ff286c9ca5a58b3d4f14491584aaf1a3dfa5d4b3f1ef8a4e8059981956e",
+      "translation_text_hash": "7c6cab41d698b23b6d8fed969291c358dd179b4b47f888c819a36bdec37ef42e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 내 원수들에게서 건지소서 내가 주께 피하여 숨었나이다"
+      ],
+      "raw_text_hashes": [
+        "7c6cab41d698b23b6d8fed969291c358dd179b4b47f888c819a36bdec37ef42e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:10",
+      "sequence": 16304,
+      "chapter_label": "PSA 143",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 10
+        }
+      ],
+      "en": "Teach me to do your will, for you are my God. Your Spirit is good. Lead me in the land of uprightness.",
+      "ko": "주는 나의 하나님이시니 나를 가르쳐 주의 뜻을 행케 하소서 주의 신이 선하시니 나를 공평한 땅에 인도하소서",
+      "source_text_hash": "313296e55a7f3bfa968db3ee90e807182f56bfb10ec3568cc9ceb42f56863d51",
+      "translation_text_hash": "6e944c8f5e579fe61ff90e01406e4b6c09f1d28f040275f3023d10907c46c588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 하나님이시니 나를 가르쳐 주의 뜻을 행케 하소서 주의 신이 선하시니 나를 공평한 땅에 인도하소서"
+      ],
+      "raw_text_hashes": [
+        "6e944c8f5e579fe61ff90e01406e4b6c09f1d28f040275f3023d10907c46c588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:11",
+      "sequence": 16305,
+      "chapter_label": "PSA 143",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 11
+        }
+      ],
+      "en": "Revive me, LORD, for your name’s sake. In your righteousness, bring my soul out of trouble.",
+      "ko": "여호와여 주의 이름을 인하여 나를 살리시고 주의 의로 내 영혼을 환난에서 끌어내소서",
+      "source_text_hash": "70a3aa9946fb6a0530e49d860958144c922318aaab08b016c634de4034e5c73d",
+      "translation_text_hash": "900f9cc1f7f9abce6fd0314a934bbfca5077202df635a67b7644c83b17ed82d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 이름을 인하여 나를 살리시고 주의 의로 내 영혼을 환난에서 끌어내소서"
+      ],
+      "raw_text_hashes": [
+        "900f9cc1f7f9abce6fd0314a934bbfca5077202df635a67b7644c83b17ed82d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:143:12",
+      "sequence": 16306,
+      "chapter_label": "PSA 143",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 143,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 143,
+          "verse": 12
+        }
+      ],
+      "en": "In your loving kindness, cut off my enemies, and destroy all those who afflict my soul, for I am your servant.",
+      "ko": "주의 인자하심으로 나의 원수들을 끊으시고 내 영혼을 괴롭게 하는 자를 다 멸하소서 나는 주의 종이니이다",
+      "source_text_hash": "fb10b0d4d9f0f5b6da8c0aa37fb4d905e391bdc9e59617db05b064146e5db752",
+      "translation_text_hash": "c850c3953727f2f344f2b200903cb203aeebb353f26daf96b715314a31964d87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 인자하심으로 나의 원수들을 끊으시고 내 영혼을 괴롭게 하는 자를 다 멸하소서 나는 주의 종이니이다"
+      ],
+      "raw_text_hashes": [
+        "c850c3953727f2f344f2b200903cb203aeebb353f26daf96b715314a31964d87"
+      ]
+    }
+  ]
+}

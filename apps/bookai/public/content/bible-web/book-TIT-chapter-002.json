@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:TIT:chapter:002",
+  "unit_ordinal": 1131,
+  "unit_label": "TIT 2",
+  "book_code": "TIT",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:TIT:2:1",
+      "sequence": 29906,
+      "chapter_label": "TIT 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "But say the things which fit sound doctrine,",
+      "ko": "오직 너는 바른 교훈에 합한 것을 말하여",
+      "source_text_hash": "2ca99b2daebb21caaed976a9bbc6e9294511bacdc86ef499e6b539a742660a7c",
+      "translation_text_hash": "2a809d264214cfe027ff4aabf3ebc61ebd5a1af499e4f7e2a60b1a064b7db30a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 바른 교훈에 합한 것을 말하여"
+      ],
+      "raw_text_hashes": [
+        "2a809d264214cfe027ff4aabf3ebc61ebd5a1af499e4f7e2a60b1a064b7db30a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:2",
+      "sequence": 29907,
+      "chapter_label": "TIT 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "that older men should be temperate, sensible, sober minded, sound in faith, in love, and in perseverance,",
+      "ko": "늙은 남자로는 절제하며 경건하며 근신하며 믿음과 사랑과 인내함에 온전케 하고",
+      "source_text_hash": "301a3f81298407ad306ddeb2712f1add76b53b635d222e6abd78453f91060a56",
+      "translation_text_hash": "ba93503b72e8d7ed250aff4d01baec42603ed642bd06679e97da7a4c35e4f75b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 남자로는 절제하며 경건하며 근신하며 믿음과 사랑과 인내함에 온전케 하고"
+      ],
+      "raw_text_hashes": [
+        "ba93503b72e8d7ed250aff4d01baec42603ed642bd06679e97da7a4c35e4f75b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:3",
+      "sequence": 29908,
+      "chapter_label": "TIT 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "and that older women likewise be reverent in behavior, not slanderers nor enslaved to much wine, teachers of that which is good,",
+      "ko": "늙은 여자로는 이와 같이 행실이 거룩하며 참소치 말며 많은 술의 종이 되지 말며 선한 것을 가르치는 자들이 되고",
+      "source_text_hash": "b8ae380119192341e3a5d906f023032687f058e06008ebc2baf44676f884aa78",
+      "translation_text_hash": "3b2605c4331801b2fd6afa8e4f302037948f7e37c263302f3860cf6f3cbe9613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "늙은 여자로는 이와 같이 행실이 거룩하며 참소치 말며 많은 술의 종이 되지 말며 선한 것을 가르치는 자들이 되고"
+      ],
+      "raw_text_hashes": [
+        "3b2605c4331801b2fd6afa8e4f302037948f7e37c263302f3860cf6f3cbe9613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:4",
+      "sequence": 29909,
+      "chapter_label": "TIT 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "that they may train the young wives to love their husbands, to love their children,",
+      "ko": "저들로 젊은 여자들을 교훈하되 그 남편과 자녀를 사랑하며",
+      "source_text_hash": "cd7f5e49d995b3892287a4d75a02c1d190e391fde0079602adda450475682ae3",
+      "translation_text_hash": "947e9e1169c34b67b4922f1091c3cb991e3b879058d747177a8536d849fe20f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저들로 젊은 여자들을 교훈하되 그 남편과 자녀를 사랑하며"
+      ],
+      "raw_text_hashes": [
+        "947e9e1169c34b67b4922f1091c3cb991e3b879058d747177a8536d849fe20f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:5",
+      "sequence": 29910,
+      "chapter_label": "TIT 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "to be sober minded, chaste, workers at home, kind, being in subjection to their own husbands, that God’s word may not be blasphemed.",
+      "ko": "근신하며 순전하며 집안 일을 하며 선하며 자기 남편에게 복종하게 하라 이는 하나님의 말씀이 훼방을 받지 않게 하려 함이니라",
+      "source_text_hash": "d7dafa3cefdbdd6d3210eab18b45a3a2e981e0d99503d9799c79ad95b709dd63",
+      "translation_text_hash": "b5c22dcddeab62cc5f7c0469579aa3bbd541757d8f75a32cb44762764aa4b6a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근신하며 순전하며 집안 일을 하며 선하며 자기 남편에게 복종하게 하라 이는 하나님의 말씀이 훼방을 받지 않게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "b5c22dcddeab62cc5f7c0469579aa3bbd541757d8f75a32cb44762764aa4b6a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:6",
+      "sequence": 29911,
+      "chapter_label": "TIT 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Likewise, exhort the younger men to be sober minded.",
+      "ko": "너는 이와 같이 젊은 남자들을 권면하여 근신하게 하되",
+      "source_text_hash": "78e6601119b4f079a9f80273863bd3fb421c5db0223d40252de6ea4fb61a5e4f",
+      "translation_text_hash": "37d96b9eec0455dc10a5afa8013feee0ee6fb67249af57c0c2bcd723ed199385",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이와 같이 젊은 남자들을 권면하여 근신하게 하되"
+      ],
+      "raw_text_hashes": [
+        "37d96b9eec0455dc10a5afa8013feee0ee6fb67249af57c0c2bcd723ed199385"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:7",
+      "sequence": 29912,
+      "chapter_label": "TIT 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "In all things show yourself an example of good works. In your teaching, show integrity, seriousness, incorruptibility,",
+      "ko": "범사에 네 자신으로 선한 일의 본을 보여 교훈의 부패치 아니함과 경건함과",
+      "source_text_hash": "a2bd8548abc796f74c53ab01b94349717c87053f0a5c34b6bc8f314d3e229893",
+      "translation_text_hash": "2d0b42052bd76b4ec4cef15c0fa2db5da01b4d8220a8f848a587ef35fc7f7eec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 네 자신으로 선한 일의 본을 보여 교훈의 부패치 아니함과 경건함과"
+      ],
+      "raw_text_hashes": [
+        "2d0b42052bd76b4ec4cef15c0fa2db5da01b4d8220a8f848a587ef35fc7f7eec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:8",
+      "sequence": 29913,
+      "chapter_label": "TIT 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "and soundness of speech that can’t be condemned, that he who opposes you may be ashamed, having no evil thing to say about us.",
+      "ko": "책망할 것이 없는 바른 말을 하게 하라 이는 대적하는 자로 하여금 부끄러워 우리를 악하다 할 것이 없게 하려 함이라",
+      "source_text_hash": "be5a2cda6b4897dac59b702db849fca21d003d315b5f63f3d5d79af988535eb7",
+      "translation_text_hash": "deff540ccfe5022981b34f199fa4020e8b74e62e198fa87f3acdc0f6e6c92bbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "책망할 것이 없는 바른 말을 하게 하라 이는 대적하는 자로 하여금 부끄러워 우리를 악하다 할 것이 없게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "deff540ccfe5022981b34f199fa4020e8b74e62e198fa87f3acdc0f6e6c92bbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:9",
+      "sequence": 29914,
+      "chapter_label": "TIT 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Exhort servants to be in subjection to their own masters and to be well-pleasing in all things, not contradicting,",
+      "ko": "종들로는 자기 상전들에게 범사에 순종하여 기쁘게 하고 거스려 말하지 말며",
+      "source_text_hash": "b619c53cebe20b9d59c142708ceaf09fa6bec9aa2c122b153cd849cc9fcd9d28",
+      "translation_text_hash": "316ee94bde757ecf5bed38055eff9b07bd2b2f1e77ae74b040d4ed7b6af8de8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들로는 자기 상전들에게 범사에 순종하여 기쁘게 하고 거스려 말하지 말며"
+      ],
+      "raw_text_hashes": [
+        "316ee94bde757ecf5bed38055eff9b07bd2b2f1e77ae74b040d4ed7b6af8de8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:10",
+      "sequence": 29915,
+      "chapter_label": "TIT 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "not stealing, but showing all good fidelity, that they may adorn the doctrine of God, our Savior, in all things.",
+      "ko": "떼어 먹지 말고 오직 선한 충성을 다하게 하라 이는 범사에 우리 구주 하나님의 교훈을 빛나게 하려 함이라",
+      "source_text_hash": "c30981517e46350e4f4cec07052c323c4f635ca5ccc89cb8b7df4e307cb03d09",
+      "translation_text_hash": "2625d12678b449af2ddb4eb005d7746b9debc2ca3e1016adc10dbf85828a503c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떼어 먹지 말고 오직 선한 충성을 다하게 하라 이는 범사에 우리 구주 하나님의 교훈을 빛나게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "2625d12678b449af2ddb4eb005d7746b9debc2ca3e1016adc10dbf85828a503c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:11",
+      "sequence": 29916,
+      "chapter_label": "TIT 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For the grace of God has appeared, bringing salvation to all men,",
+      "ko": "모든 사람에게 구원을 주시는 하나님의 은혜가 나타나",
+      "source_text_hash": "f9a16b43fe112a6fe6b18d030e718376bdbac643de29a7f6e649a84a725a6e75",
+      "translation_text_hash": "c3d247fbf830244dcbf9ca8d0b08d706576fd49c2319fefec342defc4b22189c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람에게 구원을 주시는 하나님의 은혜가 나타나"
+      ],
+      "raw_text_hashes": [
+        "c3d247fbf830244dcbf9ca8d0b08d706576fd49c2319fefec342defc4b22189c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:12",
+      "sequence": 29917,
+      "chapter_label": "TIT 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "instructing us to the intent that, denying ungodliness and worldly lusts, we would live soberly, righteously, and godly in this present age;",
+      "ko": "우리를 양육하시되 경건치 않은 것과 이 세상 정욕을 다 버리고 근신함과 의로움과 경건함으로 이 세상에 살고",
+      "source_text_hash": "133a633346b9e09a456883253b2eb0d3cfe712bce9fc2927cde3e3e247c16969",
+      "translation_text_hash": "cf67e73de020d700f8afbf6f95337c41353ca64e6a79868d9755e715a83981c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 양육하시되 경건치 않은 것과 이 세상 정욕을 다 버리고 근신함과 의로움과 경건함으로 이 세상에 살고"
+      ],
+      "raw_text_hashes": [
+        "cf67e73de020d700f8afbf6f95337c41353ca64e6a79868d9755e715a83981c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:13",
+      "sequence": 29918,
+      "chapter_label": "TIT 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "looking for the blessed hope and appearing of the glory of our great God and Savior, Jesus Christ,",
+      "ko": "복스러운 소망과 우리의 크신 하나님 구주 예수 그리스도의 영광이 나타나심을 기다리게 하셨으니",
+      "source_text_hash": "015d1ebe35ed5cdf84dc2201ad52aa1b7881669c3b2ae010b5fde3d91d25efec",
+      "translation_text_hash": "4b76b2138a154338ba3cdfc0a3fd50502fffd6daeddd93c54fbadb34736f9a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복스러운 소망과 우리의 크신 하나님 구주 예수 그리스도의 영광이 나타나심을 기다리게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "4b76b2138a154338ba3cdfc0a3fd50502fffd6daeddd93c54fbadb34736f9a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:14",
+      "sequence": 29919,
+      "chapter_label": "TIT 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "who gave himself for us, that he might redeem us from all iniquity and purify for himself a people for his own possession, zealous for good works.",
+      "ko": "그가 우리를 대신하여 자신을 주심은 모든 불법에서 우리를 구속하시고 우리를 깨끗하게 하사 선한 일에 열심하는 친 백성이 되게 하려 하심이니라",
+      "source_text_hash": "998d7f8098868f80b9ecf9be3e9219ff0198da7f9727e785ae5929f95f7397e9",
+      "translation_text_hash": "dcbffceb4d6b88d3302f07887b9ced4142029fc53360bd3cf1264e2a9d978df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 우리를 대신하여 자신을 주심은 모든 불법에서 우리를 구속하시고 우리를 깨끗하게 하사 선한 일에 열심하는 친 백성이 되게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "dcbffceb4d6b88d3302f07887b9ced4142029fc53360bd3cf1264e2a9d978df1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:TIT:2:15",
+      "sequence": 29920,
+      "chapter_label": "TIT 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "TIT",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "TIT",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Say these things and exhort and reprove with all authority. Let no one despise you.",
+      "ko": "너는 이것을 말하고 권면하며 모든 권위로 책망하여 누구에게든지 업신여김을 받지 말라",
+      "source_text_hash": "3d9766c6415d5aa0ba9c15a7bb3a6fc04db3b49d3e80fcf642943d68cbb98054",
+      "translation_text_hash": "62baedc2da8d4b69195822529fb519ccab1c609314bb9550454b157426e0d30c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이것을 말하고 권면하며 모든 권위로 책망하여 누구에게든지 업신여김을 받지 말라"
+      ],
+      "raw_text_hashes": [
+        "62baedc2da8d4b69195822529fb519ccab1c609314bb9550454b157426e0d30c"
+      ]
+    }
+  ]
+}

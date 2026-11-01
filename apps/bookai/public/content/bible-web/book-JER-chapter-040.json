@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:040",
+  "unit_ordinal": 785,
+  "unit_label": "JER 40",
+  "book_code": "JER",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:40:1",
+      "sequence": 19943,
+      "chapter_label": "JER 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "The word which came to Jeremiah from the LORD, after Nebuzaradan the captain of the guard had let him go from Ramah, when he had taken him being bound in chains among all the captives of Jerusalem and Judah who were carried away captive to Babylon.",
+      "ko": "시위대장 느부사라단이 예루살렘과 유다 포로를 바벨론으로 옮기는 중에 예레미야도 잡혀 사슬로 결박되어 가다가 라마에서 해방된 후에 말씀이 여호와께로서 예레미야에게 임하니라",
+      "source_text_hash": "e5bddebbb9a6e6b6bfde73ab41b19f31d85ec99840914400cc16e72d5df03074",
+      "translation_text_hash": "5ea4e4de4cf477c7ce67cf3aad6e0ff7b40e1c03e73335841695f923e7f6b6cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대장 느부사라단이 예루살렘과 유다 포로를 바벨론으로 옮기는 중에 예레미야도 잡혀 사슬로 결박되어 가다가 라마에서 해방된 후에 말씀이 여호와께로서 예레미야에게 임하니라"
+      ],
+      "raw_text_hashes": [
+        "5ea4e4de4cf477c7ce67cf3aad6e0ff7b40e1c03e73335841695f923e7f6b6cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:2",
+      "sequence": 19944,
+      "chapter_label": "JER 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "The captain of the guard took Jeremiah and said to him, “The LORD your God pronounced this evil on this place;",
+      "ko": "시위대장이 예레미야를 불러다가 이르되 네 하나님 여호와께서 이곳에 이 재앙을 선포하시더니",
+      "source_text_hash": "45d6dcbdd270a05e30f039f59fe72f8c72ae685a9d4d8a2cbb2c544db4ee1742",
+      "translation_text_hash": "575fe74cbf1c0b4f474305cfc918f546969cbe7f26cb42126dd1c56481287479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시위대장이 예레미야를 불러다가 이르되 네 하나님 여호와께서 이곳에 이 재앙을 선포하시더니"
+      ],
+      "raw_text_hashes": [
+        "575fe74cbf1c0b4f474305cfc918f546969cbe7f26cb42126dd1c56481287479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:3",
+      "sequence": 19945,
+      "chapter_label": "JER 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "and the LORD has brought it, and done according as he spoke. Because you have sinned against the LORD, and have not obeyed his voice, therefore this thing has come on you.",
+      "ko": "여호와께서 그 말씀하신대로 행하셨으니 이는 너희가 여호와께 범죄하고 그 목소리를 청종치 아니하였으므로 이 일이 너희에게 임한 것이니라",
+      "source_text_hash": "f673fa0b97b8011d603a208ec7e4bfc6f12567700bc04a4b2c4c941a48879667",
+      "translation_text_hash": "707475a2a8890037a8f267f355fb68e24829eae2b7024338c7bce49083549cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 말씀하신대로 행하셨으니 이는 너희가 여호와께 범죄하고 그 목소리를 청종치 아니하였으므로 이 일이 너희에게 임한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "707475a2a8890037a8f267f355fb68e24829eae2b7024338c7bce49083549cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:4",
+      "sequence": 19946,
+      "chapter_label": "JER 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "Now, behold, I release you today from the chains which are on your hand. If it seems good to you to come with me into Babylon, come, and I will take care of you; but if it seems bad to you to come with me into Babylon, don’t. Behold, all the land is before you. Where it seems good and right to you to go, go there.”",
+      "ko": "보라 내가 오늘 네 손의 사슬을 풀어 너를 해방하노니 만일 네가 나와 함께 바벨론으로 가는 것을 선히 여기거든 오라 내가 너를 선대하리라 만일 나와 함께 바벨론으로 가는 것을 좋지 않게 여기거든 그만 두라 보라 온 땅이 네 앞에 있나니 네가 선히 여기는대로 가하게 여기는 곳으로 갈찌니라",
+      "source_text_hash": "2f184b827b5e8865b7896aed942e762f655aa8be8324bfb3baecc1f18b3ff93e",
+      "translation_text_hash": "2a58c1464077a7b554d3efff9a49313fd80443530f95041448639dacdd5da507",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 오늘 네 손의 사슬을 풀어 너를 해방하노니 만일 네가 나와 함께 바벨론으로 가는 것을 선히 여기거든 오라 내가 너를 선대하리라 만일 나와 함께 바벨론으로 가는 것을 좋지 않게 여기거든 그만 두라 보라 온 땅이 네 앞에 있나니 네가 선히 여기는대로 가하게 여기는 곳으로 갈찌니라"
+      ],
+      "raw_text_hashes": [
+        "2a58c1464077a7b554d3efff9a49313fd80443530f95041448639dacdd5da507"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:5",
+      "sequence": 19947,
+      "chapter_label": "JER 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "Now while he had not yet gone back, “Go back then,” he said, “to Gedaliah the son of Ahikam, the son of Shaphan, whom the king of Babylon has made governor over the cities of Judah, and dwell with him among the people; or go wherever it seems right to you to go.” So the captain of the guard gave him food and a present, and let him go.",
+      "ko": "예레미야가 아직 돌이키기 전에 그가 다시 이르되 너는 바벨론 왕이 유다 성읍들의 총독으로 세우신 사반의 손자 아히감의 아들 그다랴에게로 돌아가서 그와 함께 백성 중에 거하거나 너의 가하게 여기는 곳으로 가거나 할찌니라 하고 그 시위대장이 그에게 양식과 선물을 주어 보내매",
+      "source_text_hash": "562524cec9b41cc9878b61bdc6cc475e61078b7edfa88706c6120253b4ec670c",
+      "translation_text_hash": "aefd7ac9d898f30352e1efb5435a2f7b61e445b15b53bc926a9c83e1363293ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 아직 돌이키기 전에 그가 다시 이르되 너는 바벨론 왕이 유다 성읍들의 총독으로 세우신 사반의 손자 아히감의 아들 그다랴에게로 돌아가서 그와 함께 백성 중에 거하거나 너의 가하게 여기는 곳으로 가거나 할찌니라 하고 그 시위대장이 그에게 양식과 선물을 주어 보내매"
+      ],
+      "raw_text_hashes": [
+        "aefd7ac9d898f30352e1efb5435a2f7b61e445b15b53bc926a9c83e1363293ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:6",
+      "sequence": 19948,
+      "chapter_label": "JER 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "Then Jeremiah went to Gedaliah the son of Ahikam to Mizpah, and lived with him among the people who were left in the land.",
+      "ko": "예레미야가 미스바로 가서 아히감의 아들 그다랴에게로 나아가서 그 땅에 남아 있는 백성 중에서 그와 함께 거하니라",
+      "source_text_hash": "16eda00d62f3a91e3013fda5d4214b493ece4c4c606efa8a796ded97b442f978",
+      "translation_text_hash": "b127a6618a01f9b16bf9966362a20f119410836cf7fc46dd83dec664ad681544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 미스바로 가서 아히감의 아들 그다랴에게로 나아가서 그 땅에 남아 있는 백성 중에서 그와 함께 거하니라"
+      ],
+      "raw_text_hashes": [
+        "b127a6618a01f9b16bf9966362a20f119410836cf7fc46dd83dec664ad681544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:7",
+      "sequence": 19949,
+      "chapter_label": "JER 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "Now when all the captains of the forces who were in the fields, even they and their men, heard that the king of Babylon had made Gedaliah the son of Ahikam governor in the land, and had committed to him men, women, children, and of the poorest of the land, of those who were not carried away captive to Babylon,",
+      "ko": "들에 있는 군대장관들과 그들의 사람들이 바벨론 왕이 아히감의 아들 그다랴를 이 땅 총독으로 세우고 남녀와 유아와 바벨론으로 옮기지 아니한 빈민을 그에게 위임하였다 함을 듣고",
+      "source_text_hash": "a9c681aa86826af9a820e7fc1a9ecfc2216322a9cdbe9860fc9bea53d53addc4",
+      "translation_text_hash": "170dbe385ae88e65af566ecfd9161aaf87285a4dd8dfa4cd020c2e622ec79414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들에 있는 군대장관들과 그들의 사람들이 바벨론 왕이 아히감의 아들 그다랴를 이 땅 총독으로 세우고 남녀와 유아와 바벨론으로 옮기지 아니한 빈민을 그에게 위임하였다 함을 듣고"
+      ],
+      "raw_text_hashes": [
+        "170dbe385ae88e65af566ecfd9161aaf87285a4dd8dfa4cd020c2e622ec79414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:8",
+      "sequence": 19950,
+      "chapter_label": "JER 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "then Ishmael the son of Nethaniah, and Johanan and Jonathan the sons of Kareah, and Seraiah the son of Tanhumeth, and the sons of Ephai the Netophathite, and Jezaniah the son of the Maacathite, they and their men came to Gedaliah to Mizpah.",
+      "ko": "그들 곧 느다냐의 아들 이스마엘과 가레아의 두 아들 요하난과 요나단과 단후멧의 아들 스라야와 느도바 사람 에배의 아들들과 마아가 사람의 아들 여사냐와 그들의 사람들이 미스바로 가서 그다랴에게 이르니",
+      "source_text_hash": "16c7c8c001644c5cd17a4ea70246c8ea731cf1ed78c19673355f363e99df1b5a",
+      "translation_text_hash": "b08ac1182c41b48a88e571b67e4aecbe342b7c06ce4618b318ecc039dc1eff15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들 곧 느다냐의 아들 이스마엘과 가레아의 두 아들 요하난과 요나단과 단후멧의 아들 스라야와 느도바 사람 에배의 아들들과 마아가 사람의 아들 여사냐와 그들의 사람들이 미스바로 가서 그다랴에게 이르니"
+      ],
+      "raw_text_hashes": [
+        "b08ac1182c41b48a88e571b67e4aecbe342b7c06ce4618b318ecc039dc1eff15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:9",
+      "sequence": 19951,
+      "chapter_label": "JER 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "Gedaliah the son of Ahikam the son of Shaphan swore to them and to their men, saying, “Don’t be afraid to serve the Chaldeans. Dwell in the land, and serve the king of Babylon, and it will be well with you.",
+      "ko": "사반의 손자 아히감의 아들 그다랴가 그들과 그들의 사람들에게 맹세하며 가로되 너희는 갈대아인 섬기기를 두려워하지 말고 이 땅에 거하여 바벨론 왕을 섬기라 그리하면 너희에게 유익하리라",
+      "source_text_hash": "59999ac2fb87f24627307e20446f22191a06f56b7ef47caa59b2dbbe61bd7b21",
+      "translation_text_hash": "714cfbb3fa0e9e0987e47ddc6850a61291a1cae0255b55d55f7d2c780f2cdc26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사반의 손자 아히감의 아들 그다랴가 그들과 그들의 사람들에게 맹세하며 가로되 너희는 갈대아인 섬기기를 두려워하지 말고 이 땅에 거하여 바벨론 왕을 섬기라 그리하면 너희에게 유익하리라"
+      ],
+      "raw_text_hashes": [
+        "714cfbb3fa0e9e0987e47ddc6850a61291a1cae0255b55d55f7d2c780f2cdc26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:10",
+      "sequence": 19952,
+      "chapter_label": "JER 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "As for me, behold, I will dwell at Mizpah, to stand before the Chaldeans who will come to us; but you, gather wine and summer fruits and oil, and put them in your vessels, and dwell in your cities that you have taken.”",
+      "ko": "나는 미스바에 거하여 우리에게로 오는 갈대아인을 섬기리니 너희는 포도주와 여름 실과와 기름을 모아 그릇에 저축하고 너희의 얻은 성읍들에 거하라 하니라",
+      "source_text_hash": "916c15790185a0663d62227969ee8d6cb001051ce1b5e94e4adb060e1afe1640",
+      "translation_text_hash": "f9b97a04d27fbc8e66ae8f502364b036eb7822ff5428930c575e839c6d3fa0c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 미스바에 거하여 우리에게로 오는 갈대아인을 섬기리니 너희는 포도주와 여름 실과와 기름을 모아 그릇에 저축하고 너희의 얻은 성읍들에 거하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f9b97a04d27fbc8e66ae8f502364b036eb7822ff5428930c575e839c6d3fa0c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:11",
+      "sequence": 19953,
+      "chapter_label": "JER 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "Likewise when all the Jews who were in Moab, and among the children of Ammon, and in Edom, and who were in all the countries, heard that the king of Babylon had left a remnant of Judah, and that he had set over them Gedaliah the son of Ahikam, the son of Shaphan,",
+      "ko": "모압과 암몬 자손 중과 에돔과 모든 지방에 있는 유다인도 바벨론 왕이 유다에 사람을 남겨 둔 것과 사반의 손자 아히감의 아들 그다랴를 그들의 위에 세웠다 함을 듣고",
+      "source_text_hash": "9d4878eb963b6fb6078dcc0d58893c53155e7d2e74049b7176d8ad2e8deadb01",
+      "translation_text_hash": "e31c5fc75396243c044f7010a965cbaac6a545ba682ded1a511a61031144ab36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압과 암몬 자손 중과 에돔과 모든 지방에 있는 유다인도 바벨론 왕이 유다에 사람을 남겨 둔 것과 사반의 손자 아히감의 아들 그다랴를 그들의 위에 세웠다 함을 듣고"
+      ],
+      "raw_text_hashes": [
+        "e31c5fc75396243c044f7010a965cbaac6a545ba682ded1a511a61031144ab36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:12",
+      "sequence": 19954,
+      "chapter_label": "JER 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "then all the Jews returned out of all places where they were driven, and came to the land of Judah, to Gedaliah, to Mizpah, and gathered very much wine and summer fruits.",
+      "ko": "그 모든 유다인이 쫓겨났던 각처에서 돌아와 유다 땅 미스바 그다랴에게 이르러 포도주와 여름 실과를 심히 많이 모으니라",
+      "source_text_hash": "536f41f6fd09927118fb25d30b57046a94a9f7d8f0127697ae8da838ee032840",
+      "translation_text_hash": "bf9f0a36dff25eb099a22017f334a28d2f8be2c2691c4f11c93be9ec0d4b1edc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 유다인이 쫓겨났던 각처에서 돌아와 유다 땅 미스바 그다랴에게 이르러 포도주와 여름 실과를 심히 많이 모으니라"
+      ],
+      "raw_text_hashes": [
+        "bf9f0a36dff25eb099a22017f334a28d2f8be2c2691c4f11c93be9ec0d4b1edc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:13",
+      "sequence": 19955,
+      "chapter_label": "JER 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "Moreover Johanan the son of Kareah, and all the captains of the forces who were in the fields, came to Gedaliah to Mizpah,",
+      "ko": "가레아의 아들 요하난과 들에 있던 군대장관들이 미스바 그다랴에게 이르러",
+      "source_text_hash": "3cdcc34a44a4cea3223fcf98275d4d84e4505a8894b79ad6dd4ae83a62127fdc",
+      "translation_text_hash": "2257f753ab4b2ef9b7ed0026f25589b76f1329284314dafdea17c93dd0811bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가레아의 아들 요하난과 들에 있던 군대장관들이 미스바 그다랴에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "2257f753ab4b2ef9b7ed0026f25589b76f1329284314dafdea17c93dd0811bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:14",
+      "sequence": 19956,
+      "chapter_label": "JER 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "and said to him, “Do you know that Baalis the king of the children of Ammon has sent Ishmael the son of Nethaniah to take your life?” But Gedaliah the son of Ahikam didn’t believe them.",
+      "ko": "그에게 이르되 암몬 자손의 왕 바알리스가 네 생명을 취하려 하여 느다냐의 아들 이스마엘을 보낸줄 네가 아느냐 하되 아히감의 아들 그다랴가 믿지 아니한지라",
+      "source_text_hash": "1f4253fc7934cc6927551da00792c5b3902ad702608f498437f07641aa99e29a",
+      "translation_text_hash": "aa46f6ac60a035f89de2269b4328890075f3241d1bad7a0705543d1308005bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르되 암몬 자손의 왕 바알리스가 네 생명을 취하려 하여 느다냐의 아들 이스마엘을 보낸줄 네가 아느냐 하되 아히감의 아들 그다랴가 믿지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "aa46f6ac60a035f89de2269b4328890075f3241d1bad7a0705543d1308005bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:15",
+      "sequence": 19957,
+      "chapter_label": "JER 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "Then Johanan the son of Kareah spoke to Gedaliah in Mizpah secretly, saying, “Please let me go, and I will kill Ishmael the son of Nethaniah, and no man will know it. Why should he take your life, that all the Jews who are gathered to you should be scattered, and the remnant of Judah perish?”",
+      "ko": "가레아의 아들 요하난이 미스바에서 그다랴에게 비밀히 말하여 가로되 청하노니 나로 가서 사람이 모르게 느다냐의 아들 이스마엘을 죽이게 하라 어찌하여 그로 네 생명을 취케 하여 네게 모인 모든 유다인으로 흩어지며 유다의 남은 자로 멸망을 당케 하랴",
+      "source_text_hash": "999700fb2d9ffea531670992294dcd37aeade0df6f39877d240995b712a4f2fb",
+      "translation_text_hash": "28ff7b74a5aa89189a9b631e1e94a6c5a12aa16eee92ebebcf0076e37f8e999f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가레아의 아들 요하난이 미스바에서 그다랴에게 비밀히 말하여 가로되 청하노니 나로 가서 사람이 모르게 느다냐의 아들 이스마엘을 죽이게 하라 어찌하여 그로 네 생명을 취케 하여 네게 모인 모든 유다인으로 흩어지며 유다의 남은 자로 멸망을 당케 하랴"
+      ],
+      "raw_text_hashes": [
+        "28ff7b74a5aa89189a9b631e1e94a6c5a12aa16eee92ebebcf0076e37f8e999f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:40:16",
+      "sequence": 19958,
+      "chapter_label": "JER 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "But Gedaliah the son of Ahikam said to Johanan the son of Kareah, “You shall not do this thing, for you speak falsely of Ishmael.”",
+      "ko": "그러나 아히감의 아들 그다랴가 가레아의 아들 요하난에게 이르되 네가 이 일을 행치 말 것이니라 너의 이스마엘에 대한 말은 진정이 아니니라 하니라",
+      "source_text_hash": "2806ce90c29535c11998e6e264b8c5b0a38886914a02813e5923229dc764e48f",
+      "translation_text_hash": "3a6c89c9e2832205916d64419e2a2fdfb2150ddf3d802e5df948a2d5060d2643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 아히감의 아들 그다랴가 가레아의 아들 요하난에게 이르되 네가 이 일을 행치 말 것이니라 너의 이스마엘에 대한 말은 진정이 아니니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "3a6c89c9e2832205916d64419e2a2fdfb2150ddf3d802e5df948a2d5060d2643"
+      ]
+    }
+  ]
+}

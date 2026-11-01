@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:010",
+  "unit_ordinal": 488,
+  "unit_label": "PSA 10",
+  "book_code": "PSA",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:10:1",
+      "sequence": 14043,
+      "chapter_label": "PSA 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Why do you stand far off, LORD? Why do you hide yourself in times of trouble?",
+      "ko": "여호와여 어찌하여 멀리 서시며 어찌하여 환난 때에 숨으시나이까",
+      "source_text_hash": "423417f694b9ba4a3f252a2863baefb30336c4e56c9c33646c72bbd117569674",
+      "translation_text_hash": "45fda2b17cd380bb80542f4de466e17e505b53d2449e9617ffd11147ee787542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 어찌하여 멀리 서시며 어찌하여 환난 때에 숨으시나이까"
+      ],
+      "raw_text_hashes": [
+        "45fda2b17cd380bb80542f4de466e17e505b53d2449e9617ffd11147ee787542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:2",
+      "sequence": 14044,
+      "chapter_label": "PSA 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "In arrogance, the wicked hunt down the weak. They are caught in the schemes that they devise.",
+      "ko": "악한 자가 교만하여 가련한 자를 심히 군박하오니 저희로 자기의 베푼 꾀에 빠지게 하소서",
+      "source_text_hash": "94a17fa53b8d8c69c34e00a1efd0010b24f26e3c364e1e40074de278f2bc1887",
+      "translation_text_hash": "700d997ba603c71b04255e03e6bcdb8f26a9dea7bdbb5127926e91f849ec6e94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 자가 교만하여 가련한 자를 심히 군박하오니 저희로 자기의 베푼 꾀에 빠지게 하소서"
+      ],
+      "raw_text_hashes": [
+        "700d997ba603c71b04255e03e6bcdb8f26a9dea7bdbb5127926e91f849ec6e94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:3",
+      "sequence": 14045,
+      "chapter_label": "PSA 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "For the wicked boasts of his heart’s cravings. He blesses the greedy and condemns the LORD.",
+      "ko": "악인은 그 마음의 소욕을 자랑하며 탐리하는 자는 여호와를 배반하여 멸시하나이다",
+      "source_text_hash": "ab6c4c7697ce28d0dee572c6f3a0748fab86fdf1830b87d1ba0eab59c72cbcb7",
+      "translation_text_hash": "0247d3f919be197282ee1295bd6d784b11ef620f5ff1ba8c872705c5ac896691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 그 마음의 소욕을 자랑하며 탐리하는 자는 여호와를 배반하여 멸시하나이다"
+      ],
+      "raw_text_hashes": [
+        "0247d3f919be197282ee1295bd6d784b11ef620f5ff1ba8c872705c5ac896691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:4",
+      "sequence": 14046,
+      "chapter_label": "PSA 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "The wicked, in the pride of his face, has no room in his thoughts for God.",
+      "ko": "악인은 그 교만한 얼굴로 말하기를 여호와께서 이를 감찰치 아니하신다 하며 그 모든 사상에 하나님이 없다 하나이다",
+      "source_text_hash": "2d0e0c9ba5c5b257953f59ab796453da08009ae0f1815168d8aff3da4122a0dd",
+      "translation_text_hash": "758324496ff04c3005c6363b1f6a050050c0a989571a9a99176190e8f5ba364a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 그 교만한 얼굴로 말하기를 여호와께서 이를 감찰치 아니하신다 하며 그 모든 사상에 하나님이 없다 하나이다"
+      ],
+      "raw_text_hashes": [
+        "758324496ff04c3005c6363b1f6a050050c0a989571a9a99176190e8f5ba364a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:5",
+      "sequence": 14047,
+      "chapter_label": "PSA 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "His ways are prosperous at all times. He is arrogant, and your laws are far from his sight. As for all his adversaries, he sneers at them.",
+      "ko": "저의 길은 언제든지 견고하고 주의 심판은 높아서 저의 안력이 미치지 못하오며 저는 그 모든 대적을 멸시하며",
+      "source_text_hash": "97d368ef53038a91fd2d17ec3cffb31b889846f6b5a9beaf6479efc77b65fec1",
+      "translation_text_hash": "34fdc23c3d2c700d6864e05b586056e14c1ed1385aff01da00d85f47ddec3d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 길은 언제든지 견고하고 주의 심판은 높아서 저의 안력이 미치지 못하오며 저는 그 모든 대적을 멸시하며"
+      ],
+      "raw_text_hashes": [
+        "34fdc23c3d2c700d6864e05b586056e14c1ed1385aff01da00d85f47ddec3d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:6",
+      "sequence": 14048,
+      "chapter_label": "PSA 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "He says in his heart, “I shall not be shaken. For generations I shall have no trouble.”",
+      "ko": "그 마음에 이르기를 나는 요동치 아니하며 대대로 환난을 당치 아니하리라 하나이다",
+      "source_text_hash": "0d849b01f347d0f09b5ea4b80ab4a9f0d02762953ea6e9d9c653e532ddf55491",
+      "translation_text_hash": "4590035fd16d473d7613c26b56576f68959dab696f354db19c7588398b4e5592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음에 이르기를 나는 요동치 아니하며 대대로 환난을 당치 아니하리라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "4590035fd16d473d7613c26b56576f68959dab696f354db19c7588398b4e5592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:7",
+      "sequence": 14049,
+      "chapter_label": "PSA 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "His mouth is full of cursing, deceit, and oppression. Under his tongue is mischief and iniquity.",
+      "ko": "그 입에는 저주와 궤휼과 포학이 충만하며 혀 밑에는 잔해와 죄악이 있나이다",
+      "source_text_hash": "e51ba03dbb6b74ce688635054adf63b5ebb6af10c5bdb7b44ed35b284e1d450b",
+      "translation_text_hash": "d9edf70025d2437508fd78c7938aceb9898f0c64e2cb2b78d591d7c030cf6150",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에는 저주와 궤휼과 포학이 충만하며 혀 밑에는 잔해와 죄악이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "d9edf70025d2437508fd78c7938aceb9898f0c64e2cb2b78d591d7c030cf6150"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:8",
+      "sequence": 14050,
+      "chapter_label": "PSA 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "He lies in wait near the villages. From ambushes, he murders the innocent. His eyes are secretly set against the helpless.",
+      "ko": "저가 향촌 유벽한 곳에 앉으며 그 은밀한 곳에서 무죄한 자를 죽이며 그 눈은 외로운 자를 엿보나이다",
+      "source_text_hash": "f8f9db655f1212ccf298c76978af4917088876f7ee36c40e738bf587816a5217",
+      "translation_text_hash": "6f9ef26982cb89c84964af0461439744d84b892fe8a1daff4e8f4f11ae36eaa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 향촌 유벽한 곳에 앉으며 그 은밀한 곳에서 무죄한 자를 죽이며 그 눈은 외로운 자를 엿보나이다"
+      ],
+      "raw_text_hashes": [
+        "6f9ef26982cb89c84964af0461439744d84b892fe8a1daff4e8f4f11ae36eaa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:9",
+      "sequence": 14051,
+      "chapter_label": "PSA 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "He lurks in secret as a lion in his ambush. He lies in wait to catch the helpless. He catches the helpless when he draws him in his net.",
+      "ko": "사자가 그 굴혈에 엎드림 같이 저가 은밀한 곳에 엎드려 가련한 자를 잡으려고 기다리며 자기 그물을 끌어 가련한 자를 잡나이다",
+      "source_text_hash": "b10580be73fdcf59614965f17b354d1a3f278f96b51e7ae0ec6be105fe0bb602",
+      "translation_text_hash": "f5bc3d83f7bff9b4a21b7a9861c6c2de82b1387cb7e7ad408cbf7b10ff82d739",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 그 굴혈에 엎드림 같이 저가 은밀한 곳에 엎드려 가련한 자를 잡으려고 기다리며 자기 그물을 끌어 가련한 자를 잡나이다"
+      ],
+      "raw_text_hashes": [
+        "f5bc3d83f7bff9b4a21b7a9861c6c2de82b1387cb7e7ad408cbf7b10ff82d739"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:10",
+      "sequence": 14052,
+      "chapter_label": "PSA 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The helpless are crushed. They collapse. They fall under his strength.",
+      "ko": "저가 구푸려 엎드리니 그 강포로 인하여 외로운 자가 넘어지나이다",
+      "source_text_hash": "b6d6fc44f8a17b2df406493f342377441abd1c6f47c37f2f3797fee0036df372",
+      "translation_text_hash": "a44486072b116f2641a3298f97477f08c49179365d66f096f51e1edbbdf2e8ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 구푸려 엎드리니 그 강포로 인하여 외로운 자가 넘어지나이다"
+      ],
+      "raw_text_hashes": [
+        "a44486072b116f2641a3298f97477f08c49179365d66f096f51e1edbbdf2e8ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:11",
+      "sequence": 14053,
+      "chapter_label": "PSA 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "He says in his heart, “God has forgotten. He hides his face. He will never see it.”",
+      "ko": "저의 마음에 이르기를 하나님이 잊으셨고 그 얼굴을 가리우셨으니 영원히 보지 아니하시리라 하나이다",
+      "source_text_hash": "0c8808022e192fec46af168f6c74edd7d8200509c26d4c1cb3dd91762054a4a2",
+      "translation_text_hash": "2bfe1f418a11d184bf03c9229d626d579cec5c2430dde937f3c29cb3c7c2648e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 마음에 이르기를 하나님이 잊으셨고 그 얼굴을 가리우셨으니 영원히 보지 아니하시리라 하나이다"
+      ],
+      "raw_text_hashes": [
+        "2bfe1f418a11d184bf03c9229d626d579cec5c2430dde937f3c29cb3c7c2648e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:12",
+      "sequence": 14054,
+      "chapter_label": "PSA 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Arise, LORD! God, lift up your hand! Don’t forget the helpless.",
+      "ko": "여호와여 일어나옵소서 하나님이여 손을 드옵소서 가난한 자를 잊지 마옵소서",
+      "source_text_hash": "22e2e0a6708c4264bd89facdc1b7efe065919fc324d46130a5981598123f19f9",
+      "translation_text_hash": "8eecfdf1861c159786fe09bd35134f260fdd8b4e586e140ab4709f423f52d826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 일어나옵소서 하나님이여 손을 드옵소서 가난한 자를 잊지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "8eecfdf1861c159786fe09bd35134f260fdd8b4e586e140ab4709f423f52d826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:13",
+      "sequence": 14055,
+      "chapter_label": "PSA 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Why does the wicked person condemn God, and say in his heart, “God won’t call me into account”?",
+      "ko": "어찌하여 악인이 하나님을 멸시하여 그 마음에 이르기를 주는 감찰치 아니하리라 하나이까",
+      "source_text_hash": "85c1ceb8aa4a0b43fc15828a4560e5dc460d55e31495af8a19a8e31e31170626",
+      "translation_text_hash": "fa6c2f1c0e0b85343561c5023a82af8c46fca0b997989ef34083e787533d0f79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 악인이 하나님을 멸시하여 그 마음에 이르기를 주는 감찰치 아니하리라 하나이까"
+      ],
+      "raw_text_hashes": [
+        "fa6c2f1c0e0b85343561c5023a82af8c46fca0b997989ef34083e787533d0f79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:14",
+      "sequence": 14056,
+      "chapter_label": "PSA 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "But you do see trouble and grief. You consider it to take it into your hand. You help the victim and the fatherless.",
+      "ko": "주께서는 보셨나이다 잔해와 원한을 감찰하시고 주의 손으로 갚으려 하시오니 외로운 자가 주를 의지하나이다 주는 벌써부터 고아를 도우시는 자니이다",
+      "source_text_hash": "8d78b18b7def0ea96dfa1157156a8afb17da15aa5dfd6437ad2d20c1f648019d",
+      "translation_text_hash": "a9aad7b708b9e440fdad1b1b032c6d1a9d1369518a34ec489aadd2f7e6f1c9d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 보셨나이다 잔해와 원한을 감찰하시고 주의 손으로 갚으려 하시오니 외로운 자가 주를 의지하나이다 주는 벌써부터 고아를 도우시는 자니이다"
+      ],
+      "raw_text_hashes": [
+        "a9aad7b708b9e440fdad1b1b032c6d1a9d1369518a34ec489aadd2f7e6f1c9d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:15",
+      "sequence": 14057,
+      "chapter_label": "PSA 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Break the arm of the wicked. As for the evil man, seek out his wickedness until you find none.",
+      "ko": "악인의 팔을 꺾으소서 악한 자의 악을 없기까지 찾으소서",
+      "source_text_hash": "eba8f67382b4d886571764c07843d15ed835f345c3b4df5e6b53c7caac726fed",
+      "translation_text_hash": "8623ab753710ba12bf82ad6ef60c3b7a6f5f8828c9740357566ddec1e37934af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 팔을 꺾으소서 악한 자의 악을 없기까지 찾으소서"
+      ],
+      "raw_text_hashes": [
+        "8623ab753710ba12bf82ad6ef60c3b7a6f5f8828c9740357566ddec1e37934af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:16",
+      "sequence": 14058,
+      "chapter_label": "PSA 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD is King forever and ever! The nations will perish out of his land.",
+      "ko": "여호와께서는 영원무궁토록 왕이시니 열방이 주의 땅에서 멸망하였나이다",
+      "source_text_hash": "b79da4a62b89370af0e3be8ec3e558dba2f8c8ecafd12f83db7f93d937566fda",
+      "translation_text_hash": "2b5531c31dc22b036f25764e96cee14b13e7989d0202fd0c6e24d7fa6bae22e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 영원무궁토록 왕이시니 열방이 주의 땅에서 멸망하였나이다"
+      ],
+      "raw_text_hashes": [
+        "2b5531c31dc22b036f25764e96cee14b13e7989d0202fd0c6e24d7fa6bae22e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:17",
+      "sequence": 14059,
+      "chapter_label": "PSA 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "LORD, you have heard the desire of the humble. You will prepare their heart. You will cause your ear to hear,",
+      "ko": "여호와여 주는 겸손한 자의 소원을 들으셨으니 저희 마음을 예비하시며 귀를 기울여 들으시고",
+      "source_text_hash": "e7fca65f22e2c8018d0dd0e57465910b4932f146b6b1480e338b97bc62741c3c",
+      "translation_text_hash": "c03570b2f3a2ad848c2622b62df817fe0b2cc01dc10b224d4658070112a167d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주는 겸손한 자의 소원을 들으셨으니 저희 마음을 예비하시며 귀를 기울여 들으시고"
+      ],
+      "raw_text_hashes": [
+        "c03570b2f3a2ad848c2622b62df817fe0b2cc01dc10b224d4658070112a167d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:10:18",
+      "sequence": 14060,
+      "chapter_label": "PSA 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "to judge the fatherless and the oppressed, that man who is of the earth may terrify no more.",
+      "ko": "고아와 압박 당하는 자를 위하여 심판하사 세상에 속한 자로 다시는 위협지 못하게 하시리이다",
+      "source_text_hash": "e869de1d7b912a3010b670b194fcf0674f6c078fb4f5207c369afb0c187eee8e",
+      "translation_text_hash": "532cba88b7cd6d188d9ffd21d07aa01fee29108fc903780b6910c45da7abe35e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고아와 압박 당하는 자를 위하여 심판하사 세상에 속한 자로 다시는 위협지 못하게 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "532cba88b7cd6d188d9ffd21d07aa01fee29108fc903780b6910c45da7abe35e"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:038",
+  "unit_ordinal": 783,
+  "unit_label": "JER 38",
+  "book_code": "JER",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:38:1",
+      "sequence": 19897,
+      "chapter_label": "JER 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "Shephatiah the son of Mattan, Gedaliah the son of Pashhur, Jucal the son of Shelemiah, and Pashhur the son of Malchijah heard the words that Jeremiah spoke to all the people, saying,",
+      "ko": "맛단의 아들 스바댜와 바스훌의 아들 그다랴와 셀레먀의 아들 유갈과 말기야의 아들 바스훌이 예레미야의 모든 백성에게 이르는 말을 들은즉 이르기를",
+      "source_text_hash": "41239e99435e586b13cdf2d98c8c6d9a9136ce709d906439091f0dbb9b11e381",
+      "translation_text_hash": "6af501f976c88b78969064eaf1abbd161d2f9736e66387234a3a383f050e5596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맛단의 아들 스바댜와 바스훌의 아들 그다랴와 셀레먀의 아들 유갈과 말기야의 아들 바스훌이 예레미야의 모든 백성에게 이르는 말을 들은즉 이르기를"
+      ],
+      "raw_text_hashes": [
+        "6af501f976c88b78969064eaf1abbd161d2f9736e66387234a3a383f050e5596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:2",
+      "sequence": 19898,
+      "chapter_label": "JER 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD says, ‘He who remains in this city will die by the sword, by the famine, and by the pestilence, but he who goes out to the Chaldeans will live. He will escape with his life and he will live.’",
+      "ko": "여호와께서 이같이 말씀하시되 이 성에 머무는 자는 칼과 기근과 염병에 죽으리라 그러나 갈대아인에게 항복하는 자는 살리니 그의 생명이 노략물을 얻음 같이 살리라",
+      "source_text_hash": "99a62fab1c757340a261cfc433860d7cfaee4e338f598fa8533715a4b65de44b",
+      "translation_text_hash": "8b4eb9f9a73572ddec6c256d6302ba017ad73112666084d6957c5d665c47700e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 이 성에 머무는 자는 칼과 기근과 염병에 죽으리라 그러나 갈대아인에게 항복하는 자는 살리니 그의 생명이 노략물을 얻음 같이 살리라"
+      ],
+      "raw_text_hashes": [
+        "8b4eb9f9a73572ddec6c256d6302ba017ad73112666084d6957c5d665c47700e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:3",
+      "sequence": 19899,
+      "chapter_label": "JER 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD says, ‘This city will surely be given into the hand of the army of the king of Babylon, and he will take it.’”",
+      "ko": "나 여호와가 이같이 말하노라 이 성이 반드시 바벨론 왕의 군대의 손에 붙이우리니 그가 취하리라 하셨다 하는지라",
+      "source_text_hash": "c953c6f24548fe8dd5c3d9e18d349e57b737dd946bce3b65bf36f74fd8e7a941",
+      "translation_text_hash": "42258eed63c049adfafcb7f0ca65835c9710ee0e8d9d4b727b22f1f87d03c064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 이 성이 반드시 바벨론 왕의 군대의 손에 붙이우리니 그가 취하리라 하셨다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "42258eed63c049adfafcb7f0ca65835c9710ee0e8d9d4b727b22f1f87d03c064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:4",
+      "sequence": 19900,
+      "chapter_label": "JER 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "Then the princes said to the king, “Please let this man be put to death, because he weakens the hands of the men of war who remain in this city, and the hands of all the people, in speaking such words to them; for this man doesn’t seek the welfare of this people, but harm.”",
+      "ko": "이에 그 방백들이 왕께 고하되 이 사람이 백성의 평안을 구치 아니하고 해를 구하오니 청컨대 이 사람을 죽이소서 그가 이같이 말하여 이 성에 남은 군사의 손과 모든 백성의 손을 약하게 하나이다",
+      "source_text_hash": "2d10056da1de7298553fee41b97118fdd1a9c226adc5321a6014e79061838184",
+      "translation_text_hash": "ef917f36af93d222432fbeb85b736d37e8d30c31f4c74051b75e652bee4faca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 방백들이 왕께 고하되 이 사람이 백성의 평안을 구치 아니하고 해를 구하오니 청컨대 이 사람을 죽이소서 그가 이같이 말하여 이 성에 남은 군사의 손과 모든 백성의 손을 약하게 하나이다"
+      ],
+      "raw_text_hashes": [
+        "ef917f36af93d222432fbeb85b736d37e8d30c31f4c74051b75e652bee4faca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:5",
+      "sequence": 19901,
+      "chapter_label": "JER 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "Zedekiah the king said, “Behold, he is in your hand; for the king can’t do anything to oppose you.”",
+      "ko": "시드기야왕이 가로되 보라 그가 너희 손에 있느니라 왕은 조금도 너희를 거스릴 수 없느니라",
+      "source_text_hash": "c664ab7ee57468aed13710a89402f7be44bca467ea0e68419f311c6f0f516525",
+      "translation_text_hash": "6601e380a541fe59a5d6111538de10a3b6479c4013abe2fb426a84539519be0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 가로되 보라 그가 너희 손에 있느니라 왕은 조금도 너희를 거스릴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "6601e380a541fe59a5d6111538de10a3b6479c4013abe2fb426a84539519be0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:6",
+      "sequence": 19902,
+      "chapter_label": "JER 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "Then they took Jeremiah and threw him into the dungeon of Malchijah the king’s son, that was in the court of the guard. They let down Jeremiah with cords. In the dungeon there was no water, but mire; and Jeremiah sank in the mire.",
+      "ko": "그들이 예레미야를 취하여 시위대 뜰에 있는 왕의 아들 말기야의 구덩이에 던져 넣을 때에 예레미야를 줄로 달아내리웠는데 그 구덩이에는 물이 없고 진흙 뿐이므로 예레미야가 진흙 중에 빠졌더라",
+      "source_text_hash": "efe133774deedfb2676540b39e0a705f44a48137e2876ba630e3361880db7489",
+      "translation_text_hash": "5d8f8c5fb21039589117073433491a954a696cdff60fcda2688b47a9b8960828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 예레미야를 취하여 시위대 뜰에 있는 왕의 아들 말기야의 구덩이에 던져 넣을 때에 예레미야를 줄로 달아내리웠는데 그 구덩이에는 물이 없고 진흙 뿐이므로 예레미야가 진흙 중에 빠졌더라"
+      ],
+      "raw_text_hashes": [
+        "5d8f8c5fb21039589117073433491a954a696cdff60fcda2688b47a9b8960828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:7",
+      "sequence": 19903,
+      "chapter_label": "JER 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "Now when Ebedmelech the Ethiopian, a eunuch, who was in the king’s house, heard that they had put Jeremiah in the dungeon (the king was then sitting in Benjamin’s gate),",
+      "ko": "왕궁 환관 구스인 에벳멜렉이 그들의 예레미야를 구덩이에 던져 넣었음을 들으니라 때에 왕이 베냐민 문에 앉았더니",
+      "source_text_hash": "3c6505197847941be11c9e89b8538d91d802ba63625ef0c0e6edfe17eb90e095",
+      "translation_text_hash": "ef1035c2e6dc978d6f7aa0dce89cb87d0df03d6bf412530b36a848ac00687fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕궁 환관 구스인 에벳멜렉이 그들의 예레미야를 구덩이에 던져 넣었음을 들으니라 때에 왕이 베냐민 문에 앉았더니"
+      ],
+      "raw_text_hashes": [
+        "ef1035c2e6dc978d6f7aa0dce89cb87d0df03d6bf412530b36a848ac00687fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:8",
+      "sequence": 19904,
+      "chapter_label": "JER 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "Ebedmelech went out of the king’s house, and spoke to the king, saying,",
+      "ko": "에벳멜렉이 왕궁에서 나와 왕께 고하여 가로되",
+      "source_text_hash": "0340ea51e4457b00842b46238f4334d1efe7a6a728296bdf18d53afed2f1726e",
+      "translation_text_hash": "24944d556a7b2823c4a3c382a7ff40df2d2d182574eb3fd0baac7224ce218eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벳멜렉이 왕궁에서 나와 왕께 고하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "24944d556a7b2823c4a3c382a7ff40df2d2d182574eb3fd0baac7224ce218eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:9",
+      "sequence": 19905,
+      "chapter_label": "JER 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "“My lord the king, these men have done evil in all that they have done to Jeremiah the prophet, whom they have cast into the dungeon. He is likely to die in the place where he is, because of the famine; for there is no more bread in the city.”",
+      "ko": "내 주 왕이여 저 사람들이 선지자 예레미야에게 행한 모든 일은 악하니이다 성 중에 떡이 떨어졌거늘 그들이 그를 구덩이에 던져 넣었으니 그가 거기서 주려 죽으리이다",
+      "source_text_hash": "5dad5622b9c1f9980c85381fae2a9457f23ef2693294b5b45f39de39b6cb3297",
+      "translation_text_hash": "9842c391732407bf3f17f6852153bb9807b5f64616f44d15832a8b1265d7d0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주 왕이여 저 사람들이 선지자 예레미야에게 행한 모든 일은 악하니이다 성 중에 떡이 떨어졌거늘 그들이 그를 구덩이에 던져 넣었으니 그가 거기서 주려 죽으리이다"
+      ],
+      "raw_text_hashes": [
+        "9842c391732407bf3f17f6852153bb9807b5f64616f44d15832a8b1265d7d0e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:10",
+      "sequence": 19906,
+      "chapter_label": "JER 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "Then the king commanded Ebedmelech the Ethiopian, saying, “Take from here thirty men with you, and take up Jeremiah the prophet out of the dungeon, before he dies.”",
+      "ko": "왕이 구스인 에벳멜렉에게 명하여 가로되 너는 여기서 삼십명을 데리고 가서 선지자 예레미야의 죽기 전에 그를 구덩이에서 끌어 내라",
+      "source_text_hash": "185fab07a9c1c7783a731cd95b06e4cc1b32bfaa3956d96048f266c890aecaa3",
+      "translation_text_hash": "5d9a3422b6986bc6c448e5ccb5687e40902e5455a3c9c5cfefd807383a2a6f94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 구스인 에벳멜렉에게 명하여 가로되 너는 여기서 삼십명을 데리고 가서 선지자 예레미야의 죽기 전에 그를 구덩이에서 끌어 내라"
+      ],
+      "raw_text_hashes": [
+        "5d9a3422b6986bc6c448e5ccb5687e40902e5455a3c9c5cfefd807383a2a6f94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:11",
+      "sequence": 19907,
+      "chapter_label": "JER 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "So Ebedmelech took the men with him, and went into the house of the king under the treasury, and took from there rags and worn-out garments, and let them down by cords into the dungeon to Jeremiah.",
+      "ko": "에벳멜렉이 사람들을 데리고 왕궁 곳간 밑 방에 들어가서 거기서 헝겊과 낡은 옷을 취하고 그것을 구덩이에 있는 예레미야에게 줄로 내리우며",
+      "source_text_hash": "c04cd8163e4f1f71eeaf337f42389fcd676f7e3a7038e5f4b9b0ce2f0b2a566e",
+      "translation_text_hash": "175df77442fb2ea392a188a7d19ca2b32e129556b056dc59df597276143c53c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에벳멜렉이 사람들을 데리고 왕궁 곳간 밑 방에 들어가서 거기서 헝겊과 낡은 옷을 취하고 그것을 구덩이에 있는 예레미야에게 줄로 내리우며"
+      ],
+      "raw_text_hashes": [
+        "175df77442fb2ea392a188a7d19ca2b32e129556b056dc59df597276143c53c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:12",
+      "sequence": 19908,
+      "chapter_label": "JER 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "Ebedmelech the Ethiopian said to Jeremiah, “Now put these rags and worn-out garments under your armpits under the cords.” Jeremiah did so.",
+      "ko": "구스인 에벳멜렉이 예레미야에게 이르되 너는 이 헝겊과 낡은 옷을 네 겨드랑이에 대고 줄을 그 아래 대라 예레미야가 그대로 하매",
+      "source_text_hash": "0cb2791bf98efa5bb9d2112750372f68ee17b393a4e24bd5412caa60071c2b1f",
+      "translation_text_hash": "0bbb291b289a030444273d2f11d94a6bca511e3d67044e5db01650d96e59a268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스인 에벳멜렉이 예레미야에게 이르되 너는 이 헝겊과 낡은 옷을 네 겨드랑이에 대고 줄을 그 아래 대라 예레미야가 그대로 하매"
+      ],
+      "raw_text_hashes": [
+        "0bbb291b289a030444273d2f11d94a6bca511e3d67044e5db01650d96e59a268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:13",
+      "sequence": 19909,
+      "chapter_label": "JER 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "So they lifted Jeremiah up with the cords, and took him up out of the dungeon; and Jeremiah remained in the court of the guard.",
+      "ko": "그들이 줄로 예레미야를 구덩이에서 끌어낸지라 예레미야가 시위대 뜰에 머무니라",
+      "source_text_hash": "673e84364231bfc1b4678085a575f270a0833791179517081f742a432abbb74e",
+      "translation_text_hash": "6d42c7f1b75118a04d9462b39e16e7ba1a9096fde61e525c42e8af8df455cf29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 줄로 예레미야를 구덩이에서 끌어낸지라 예레미야가 시위대 뜰에 머무니라"
+      ],
+      "raw_text_hashes": [
+        "6d42c7f1b75118a04d9462b39e16e7ba1a9096fde61e525c42e8af8df455cf29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:14",
+      "sequence": 19910,
+      "chapter_label": "JER 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "Then Zedekiah the king sent and took Jeremiah the prophet to himself into the third entry that is in the LORD’s house. Then the king said to Jeremiah, “I will ask you something. Hide nothing from me.”",
+      "ko": "시드기야왕이 보내어 선지자 예레미야를 여호와의 집 제 삼문으로 데려오게 하고 왕이 예레미야에게 이르되 내가 네게 한 일을 물으리니 일호도 내게 숨기지 말라",
+      "source_text_hash": "fe75058a32b5df4649c1eff8e4d38337d32906d549759b1fecfe16cdb4ed7f65",
+      "translation_text_hash": "1c627f7d6efbe14a97a37391765da89d62541c5aeb556f2cdb18cbc1dd93f82e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 보내어 선지자 예레미야를 여호와의 집 제 삼문으로 데려오게 하고 왕이 예레미야에게 이르되 내가 네게 한 일을 물으리니 일호도 내게 숨기지 말라"
+      ],
+      "raw_text_hashes": [
+        "1c627f7d6efbe14a97a37391765da89d62541c5aeb556f2cdb18cbc1dd93f82e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:15",
+      "sequence": 19911,
+      "chapter_label": "JER 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "Then Jeremiah said to Zedekiah, “If I declare it to you, will you not surely put me to death? If I give you counsel, you will not listen to me.”",
+      "ko": "예레미야가 시드기야에게 이르되 내가 이 일을 왕에게 아시게 하여도 왕이 단정코 나를 죽이지 아니하시리이까 가령 내가 왕을 권한다 할찌라도 왕이 듣지 아니하시리이다",
+      "source_text_hash": "596b2e6acb1344f5376321fddd996cefb9670e314b8ae09c2bbe38a3e3d6bc1a",
+      "translation_text_hash": "0ae7ce48e1eca7ce3b856188b1700c0a0b54cac6296fdbeef06fdc59d46d514c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 시드기야에게 이르되 내가 이 일을 왕에게 아시게 하여도 왕이 단정코 나를 죽이지 아니하시리이까 가령 내가 왕을 권한다 할찌라도 왕이 듣지 아니하시리이다"
+      ],
+      "raw_text_hashes": [
+        "0ae7ce48e1eca7ce3b856188b1700c0a0b54cac6296fdbeef06fdc59d46d514c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:16",
+      "sequence": 19912,
+      "chapter_label": "JER 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "So Zedekiah the king swore secretly to Jeremiah, saying, “As the LORD lives, who made our souls, I will not put you to death, neither will I give you into the hand of these men who seek your life.”",
+      "ko": "시드기야왕이 비밀히 예레미야에게 맹세하여 가로되 우리에게 이 영혼을 지으신 여호와께서 사시거니와 내가 너를 죽이지도 아니하겠고 네 생명을 찾는 그 사람들의 손에 붙이지도 아니하리라",
+      "source_text_hash": "6584f7b1d6e65096aa1aa348055948d5c6b4bc8aee0be5c1337d854ab9f8b0e8",
+      "translation_text_hash": "f55987dea38cd24aa69fbf4c946c42b06fa46cdc987a66b073e624c1538f6c8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 비밀히 예레미야에게 맹세하여 가로되 우리에게 이 영혼을 지으신 여호와께서 사시거니와 내가 너를 죽이지도 아니하겠고 네 생명을 찾는 그 사람들의 손에 붙이지도 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f55987dea38cd24aa69fbf4c946c42b06fa46cdc987a66b073e624c1538f6c8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:17",
+      "sequence": 19913,
+      "chapter_label": "JER 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "Then Jeremiah said to Zedekiah, “The LORD, the God of Armies, the God of Israel, says: ‘If you will go out to the king of Babylon’s princes, then your soul will live, and this city will not be burned with fire. You will live, along with your house.",
+      "ko": "예레미야가 시드기야에게 이르되 만군의 하나님이신 이스라엘의 하나님 여호와께서 이같이 말씀하시되 네가 만일 바벨론 왕의 방백들에게 항복하면 네 생명이 살겠고 이 성이 불사름을 입지 아니하겠고 너와 네 가족이 살려니와",
+      "source_text_hash": "57942fe84e51c3c41fe852632aba2ee4fccdffccbbefcc7ef024898a14c0fe32",
+      "translation_text_hash": "ce03ffb3472f0794670e06296a59307b813c8f654fdaff5eb81b4a3871baea55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 시드기야에게 이르되 만군의 하나님이신 이스라엘의 하나님 여호와께서 이같이 말씀하시되 네가 만일 바벨론 왕의 방백들에게 항복하면 네 생명이 살겠고 이 성이 불사름을 입지 아니하겠고 너와 네 가족이 살려니와"
+      ],
+      "raw_text_hashes": [
+        "ce03ffb3472f0794670e06296a59307b813c8f654fdaff5eb81b4a3871baea55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:18",
+      "sequence": 19914,
+      "chapter_label": "JER 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "But if you will not go out to the king of Babylon’s princes, then this city will be given into the hand of the Chaldeans, and they will burn it with fire, and you won’t escape out of their hand.’”",
+      "ko": "네가 만일 나가서 바벨론 왕의 방백들에게 항복하지 아니하면 이 성이 갈대아인의 손에 붙이우리니 그들이 이 성을 불사를 것이며 너는 그들의 손을 벗어나지 못하리라 하셨나이다",
+      "source_text_hash": "1652ac02c70b00a2fc0bdc47977918f7b0d6afd91408b2a9c6223cf046e76cd7",
+      "translation_text_hash": "6579212fddfe9a4101d86e66decf470efe13c78348a6da7019da7d3ddb24c75a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 나가서 바벨론 왕의 방백들에게 항복하지 아니하면 이 성이 갈대아인의 손에 붙이우리니 그들이 이 성을 불사를 것이며 너는 그들의 손을 벗어나지 못하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "6579212fddfe9a4101d86e66decf470efe13c78348a6da7019da7d3ddb24c75a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:19",
+      "sequence": 19915,
+      "chapter_label": "JER 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "Zedekiah the king said to Jeremiah, “I am afraid of the Jews who have defected to the Chaldeans, lest they deliver me into their hand, and they mock me.”",
+      "ko": "시드기야왕이 예레미야에게 이르되 나는 갈대아인에게 항복한 유다인을 두려워하노라 염려컨대 갈대아인이 나를 그들의 손에 붙이면 그들이 나를 조롱할까 하노라",
+      "source_text_hash": "705322e6755c8d207d39c6a98f323cca741d2711467e42711632d6a794112192",
+      "translation_text_hash": "d8862a4385ccc465ff429c28a2e237d501ef7ffff82738775273ae2ce4a57016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 예레미야에게 이르되 나는 갈대아인에게 항복한 유다인을 두려워하노라 염려컨대 갈대아인이 나를 그들의 손에 붙이면 그들이 나를 조롱할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "d8862a4385ccc465ff429c28a2e237d501ef7ffff82738775273ae2ce4a57016"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:20",
+      "sequence": 19916,
+      "chapter_label": "JER 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "But Jeremiah said, “They won’t deliver you. Obey, I beg you, the LORD’s voice, in that which I speak to you; so it will be well with you, and your soul will live.",
+      "ko": "예레미야가 가로되 그 무리가 왕을 그들에게 붙이지 아니하리이다 원하옵나니 내가 왕에게 고한바 여호와의 목소리를 청종하소서 그리하면 왕이 복을 받아 생명을 보존하시리이다",
+      "source_text_hash": "03f062239f0813d68b544ebb1229671872c93f986edd9e9d3c98ae9e73d57311",
+      "translation_text_hash": "b59d73e0ecff14ceecc166bb9eb5cf1c4e585955d45a2732f6878491ff555bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 가로되 그 무리가 왕을 그들에게 붙이지 아니하리이다 원하옵나니 내가 왕에게 고한바 여호와의 목소리를 청종하소서 그리하면 왕이 복을 받아 생명을 보존하시리이다"
+      ],
+      "raw_text_hashes": [
+        "b59d73e0ecff14ceecc166bb9eb5cf1c4e585955d45a2732f6878491ff555bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:21",
+      "sequence": 19917,
+      "chapter_label": "JER 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "But if you refuse to go out, this is the word that the LORD has shown me:",
+      "ko": "그러나 만일 항복하기를 거절하시면 여호와께서 내게 보이신 말씀대로 되리이다",
+      "source_text_hash": "b6a77620be1aa727fa3c7d1f2f680392311af47dfff54f8652138d16c33dfafd",
+      "translation_text_hash": "978acc423e94f18a24562a1d87fd9b53725300dda669916da50e54affd4edd8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 만일 항복하기를 거절하시면 여호와께서 내게 보이신 말씀대로 되리이다"
+      ],
+      "raw_text_hashes": [
+        "978acc423e94f18a24562a1d87fd9b53725300dda669916da50e54affd4edd8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:22",
+      "sequence": 19918,
+      "chapter_label": "JER 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "‘Behold, all the women who are left in the king of Judah’s house will be brought out to the king of Babylon’s princes, and those women will say, “Your familiar friends have turned on you, and have prevailed over you. Your feet are sunk in the mire, they have turned away from you.”",
+      "ko": "곧 유다 왕궁에 남아 있는 모든 여자가 바벨론 왕의 방백들에게로 끌려갈 것이요 그들은 네게 말하기를 네 친구들이 너를 꾀어 이기고 네 발이 진흙에 빠짐을 보고 물러갔도다 하리라",
+      "source_text_hash": "0d9c81c3a58db0df1164e7dcd8111b4190860d550ffec2df9a20bf9a0ef90257",
+      "translation_text_hash": "e4a15627ecb28a0f3d0c87fc306886bf6fcf38e3b886ca4c24537cd4f8dcb767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 유다 왕궁에 남아 있는 모든 여자가 바벨론 왕의 방백들에게로 끌려갈 것이요 그들은 네게 말하기를 네 친구들이 너를 꾀어 이기고 네 발이 진흙에 빠짐을 보고 물러갔도다 하리라"
+      ],
+      "raw_text_hashes": [
+        "e4a15627ecb28a0f3d0c87fc306886bf6fcf38e3b886ca4c24537cd4f8dcb767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:23",
+      "sequence": 19919,
+      "chapter_label": "JER 38",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 23
+        }
+      ],
+      "en": "They will bring out all your wives and your children to the Chaldeans. You won’t escape out of their hand, but will be taken by the hand of the king of Babylon. You will cause this city to be burned with fire.’”",
+      "ko": "네 아내들과 자녀는 갈대아인에게로 끌어냄을 입겠고 너는 그들의 손에서 벗어나지 못하고 바벨론 왕의 손에 잡히리라 또 네가 이 성으로 불사름을 입게 하리라 하셨나이다",
+      "source_text_hash": "071ffe507b833cb16b4b7ebef78ee49cf1117814fa193ff10820df32171e317e",
+      "translation_text_hash": "abf2dd604423cf82cc266fb6228042f587b59117da0307379aa78f1030458b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 아내들과 자녀는 갈대아인에게로 끌어냄을 입겠고 너는 그들의 손에서 벗어나지 못하고 바벨론 왕의 손에 잡히리라 또 네가 이 성으로 불사름을 입게 하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "abf2dd604423cf82cc266fb6228042f587b59117da0307379aa78f1030458b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:24",
+      "sequence": 19920,
+      "chapter_label": "JER 38",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 24
+        }
+      ],
+      "en": "Then Zedekiah said to Jeremiah, “Let no man know of these words, and you won’t die.",
+      "ko": "시드기야가 예레미야에게 이르되 너는 이 말을 사람으로 알게 하지 말라 그리하면 네가 죽지 아니하리라",
+      "source_text_hash": "1119e1840ac5a2da6620f2bec635263bd54f214dd01f28baeed54e07d7f6616d",
+      "translation_text_hash": "8268d92456da352bd7655b114612d8f3923464992c7e5f73d1a040446dcdf2f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야가 예레미야에게 이르되 너는 이 말을 사람으로 알게 하지 말라 그리하면 네가 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "8268d92456da352bd7655b114612d8f3923464992c7e5f73d1a040446dcdf2f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:25",
+      "sequence": 19921,
+      "chapter_label": "JER 38",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 25
+        }
+      ],
+      "en": "But if the princes hear that I have talked with you, and they come to you, and tell you, ‘Declare to us now what you have said to the king; don’t hide it from us, and we will not put you to death; also tell us what the king said to you;’",
+      "ko": "만일 방백들이 내가 너와 말하였다 함을 듣고 와서 네게 말하기를 네가 왕에게 말씀한 것을 우리에게 고하라 우리에게 숨기지 말라 그리하면 우리가 너를 죽이지 아니하리라 또 왕이 네게 말씀한 것을 고하라 하거든",
+      "source_text_hash": "cb0e4d109f430a3c49dc03e33d031b12b2e1cb9d43573cb1583bbf262e5d074a",
+      "translation_text_hash": "bc70408c85459b6ae0f78eb8b7f7a0cca6132113ff6ec4af628a64dea275ee58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 방백들이 내가 너와 말하였다 함을 듣고 와서 네게 말하기를 네가 왕에게 말씀한 것을 우리에게 고하라 우리에게 숨기지 말라 그리하면 우리가 너를 죽이지 아니하리라 또 왕이 네게 말씀한 것을 고하라 하거든"
+      ],
+      "raw_text_hashes": [
+        "bc70408c85459b6ae0f78eb8b7f7a0cca6132113ff6ec4af628a64dea275ee58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:26",
+      "sequence": 19922,
+      "chapter_label": "JER 38",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 26
+        }
+      ],
+      "en": "then you shall tell them, ‘I presented my supplication before the king, that he would not cause me to return to Jonathan’s house, to die there.’”",
+      "ko": "그들에게 대답하되 내가 왕의 앞에 간구하기를 나를 요나단의 집으로 도로 보내지 말아서 거기서 죽지 않게 하옵소서 하였다 하라 하니라",
+      "source_text_hash": "fcf22b5b8186ac59c6801fce90d58da80b78d4fb54f0693f28ca8dc6ed991bd6",
+      "translation_text_hash": "093c0448fb9b5986a1ec6484afb21fa641e1cee394af646f7d155496cc0b613a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 대답하되 내가 왕의 앞에 간구하기를 나를 요나단의 집으로 도로 보내지 말아서 거기서 죽지 않게 하옵소서 하였다 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "093c0448fb9b5986a1ec6484afb21fa641e1cee394af646f7d155496cc0b613a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:27",
+      "sequence": 19923,
+      "chapter_label": "JER 38",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 27
+        }
+      ],
+      "en": "Then all the princes came to Jeremiah, and asked him; and he told them according to all these words that the king had commanded. So they stopped speaking with him, for the matter was not perceived.",
+      "ko": "모든 방백이 예레미야에게 와서 물으매 그가 왕의 명한 모든 말대로 대답하였으므로 일이 탄로치 아니하였고 그들은 더불어 말하기를 그쳤더라",
+      "source_text_hash": "d8f7e68490d6ca98d8c267ce7ca0c958bcbc13b3d9647a9393d9f2832a370b73",
+      "translation_text_hash": "63aa45985a06c32a7f722ec024cfa2d7fcc16a4793747922df86894e35b04cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 방백이 예레미야에게 와서 물으매 그가 왕의 명한 모든 말대로 대답하였으므로 일이 탄로치 아니하였고 그들은 더불어 말하기를 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "63aa45985a06c32a7f722ec024cfa2d7fcc16a4793747922df86894e35b04cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:38:28",
+      "sequence": 19924,
+      "chapter_label": "JER 38",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 38,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 38,
+          "verse": 28
+        }
+      ],
+      "en": "So Jeremiah stayed in the court of the guard until the day that Jerusalem was taken.",
+      "ko": "예레미야가 예루살렘이 함락되는 날까지 시위대 뜰에 머물렀더라",
+      "source_text_hash": "ef5ccf0b21bab81eecd4e46fefa271f59fe749fa489dbd7e5a9b2d9401da1db8",
+      "translation_text_hash": "037a5c6c8d8d4e83c79bc382e6b57cb15afd31cf71982a8d35c1631a08ba3fbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 예루살렘이 함락되는 날까지 시위대 뜰에 머물렀더라"
+      ],
+      "raw_text_hashes": [
+        "037a5c6c8d8d4e83c79bc382e6b57cb15afd31cf71982a8d35c1631a08ba3fbd"
+      ]
+    }
+  ]
+}

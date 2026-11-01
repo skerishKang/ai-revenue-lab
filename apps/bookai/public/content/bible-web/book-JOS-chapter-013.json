@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:013",
+  "unit_ordinal": 200,
+  "unit_label": "JOS 13",
+  "book_code": "JOS",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:13:1",
+      "sequence": 6156,
+      "chapter_label": "JOS 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Now Joshua was old and well advanced in years. The LORD said to him, “You are old and advanced in years, and there remains yet very much land to be possessed.",
+      "ko": "여호수아가 나이 많아 늙으매 여호와께서 그에게 이르시되 너는 나이 많아 늙었고 얻을 땅의 남은 것은 매우 많도다",
+      "source_text_hash": "75e53ae6737da90428d2d27ada90c9587bdb5b74e9968f771ebd15782d17f75e",
+      "translation_text_hash": "f69243a382ef1ae5922cb2ec700bf65a5a47cc367a2678fb5dde97a89071bc4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 나이 많아 늙으매 여호와께서 그에게 이르시되 너는 나이 많아 늙었고 얻을 땅의 남은 것은 매우 많도다"
+      ],
+      "raw_text_hashes": [
+        "f69243a382ef1ae5922cb2ec700bf65a5a47cc367a2678fb5dde97a89071bc4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:2",
+      "sequence": 6157,
+      "chapter_label": "JOS 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "“This is the land that still remains: all the regions of the Philistines, and all the Geshurites;",
+      "ko": "이 남은 땅은 이러하니 블레셋 사람의 온 지방과 그술 사람의 전경",
+      "source_text_hash": "479d2d675fa4c7689526501a09b816360455db431cda72e77a8e41ef9458b1e6",
+      "translation_text_hash": "7034ea10876dd50621654d85edccc38890a51d0311d1a2e5b2b7d8e104106c07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 남은 땅은 이러하니 블레셋 사람의 온 지방과 그술 사람의 전경"
+      ],
+      "raw_text_hashes": [
+        "7034ea10876dd50621654d85edccc38890a51d0311d1a2e5b2b7d8e104106c07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:3",
+      "sequence": 6158,
+      "chapter_label": "JOS 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "from the Shihor, which is before Egypt, even to the border of Ekron northward, which is counted as Canaanite; the five lords of the Philistines; the Gazites, and the Ashdodites, the Ashkelonites, the Gittites, and the Ekronites; also the Avvim,",
+      "ko": "곧 애굽 앞 시홀 시내에서부터 가나안 사람에게 속한 북방 에그론 지경까지와 블레셋 사람의 다섯 방백의 땅 곧 가사 사람과 아스돗 사람과 아스글론 사람과 가드 사람과 에그론 사람과 또 남방 아위 사람의 땅과",
+      "source_text_hash": "a211f3edf422dee573e8dd456afeec6b9024a6dc807b13e19e42da53a555edea",
+      "translation_text_hash": "6244d12461b79ccecb25eeeccd93f39f1fca6e2294f305b339e5c3e12f1bc5fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 애굽 앞 시홀 시내에서부터 가나안 사람에게 속한 북방 에그론 지경까지와 블레셋 사람의 다섯 방백의 땅 곧 가사 사람과 아스돗 사람과 아스글론 사람과 가드 사람과 에그론 사람과 또 남방 아위 사람의 땅과"
+      ],
+      "raw_text_hashes": [
+        "6244d12461b79ccecb25eeeccd93f39f1fca6e2294f305b339e5c3e12f1bc5fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:4",
+      "sequence": 6159,
+      "chapter_label": "JOS 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "on the south; all the land of the Canaanites, and Mearah that belongs to the Sidonians, to Aphek, to the border of the Amorites;",
+      "ko": "또 가나안 사람의 온 땅과 시돈 사람에게 속한 므아라와 아모리 사람의 지경 아벡까지와",
+      "source_text_hash": "b19205cd0f8517d344036132a3311b001bdc164fc2b674ff1269ab4c5d3219c2",
+      "translation_text_hash": "e026e269c364c91c75073dce9839b0c7a3e44caf296f5cbdca3788ecf77287cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가나안 사람의 온 땅과 시돈 사람에게 속한 므아라와 아모리 사람의 지경 아벡까지와"
+      ],
+      "raw_text_hashes": [
+        "e026e269c364c91c75073dce9839b0c7a3e44caf296f5cbdca3788ecf77287cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:5",
+      "sequence": 6160,
+      "chapter_label": "JOS 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "and the land of the Gebalites, and all Lebanon, toward the sunrise, from Baal Gad under Mount Hermon to the entrance of Hamath;",
+      "ko": "또 그발 사람의 땅과 동편 온 레바논 곧 헤르몬산 아래 바알갓에서부터 하맛에 들어가는 곳까지와",
+      "source_text_hash": "c36c4a79561f33a5de61072810cbc66a2974441b4f2f110b5ff8a84a60fdc14a",
+      "translation_text_hash": "fd8310fefebbbbe75b8237c6a70ea5bd802d204ce56085660f7b767115ff24f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그발 사람의 땅과 동편 온 레바논 곧 헤르몬산 아래 바알갓에서부터 하맛에 들어가는 곳까지와"
+      ],
+      "raw_text_hashes": [
+        "fd8310fefebbbbe75b8237c6a70ea5bd802d204ce56085660f7b767115ff24f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:6",
+      "sequence": 6161,
+      "chapter_label": "JOS 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "all the inhabitants of the hill country from Lebanon to Misrephoth Maim, even all the Sidonians. I will drive them out from before the children of Israel. Just allocate it to Israel for an inheritance, as I have commanded you.",
+      "ko": "또 레바논에서부터 미스르봇마임까지의 산지 모든 거민 곧 모든 시돈 사람의 땅이라 내가 그들을 이스라엘 자손 앞에서 쫓아 내리니 너는 나의 명한대로 그 땅을 이스라엘에게 분배하여 기업이 되게 하되",
+      "source_text_hash": "757173252c92218550bcb56242bc5b7b0bca8378d80fb49030133cca0da6b17f",
+      "translation_text_hash": "f825f94bee6585c44ab8a22032133bb763697d9132fa4180332bd06322bead7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레바논에서부터 미스르봇마임까지의 산지 모든 거민 곧 모든 시돈 사람의 땅이라 내가 그들을 이스라엘 자손 앞에서 쫓아 내리니 너는 나의 명한대로 그 땅을 이스라엘에게 분배하여 기업이 되게 하되"
+      ],
+      "raw_text_hashes": [
+        "f825f94bee6585c44ab8a22032133bb763697d9132fa4180332bd06322bead7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:7",
+      "sequence": 6162,
+      "chapter_label": "JOS 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Now therefore divide this land for an inheritance to the nine tribes and the half-tribe of Manasseh.”",
+      "ko": "너는 이 땅을 아홉 지파와 므낫세 반 지파에게 나누어 기업이 되게 하라 하셨더라",
+      "source_text_hash": "13d817c8550037c4ae078f665426a5808261693ac3cfbd00428f875fe17b0a52",
+      "translation_text_hash": "7426a376c18244e443a84a50885481a450c921733c079934799e8c543a11d1a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이 땅을 아홉 지파와 므낫세 반 지파에게 나누어 기업이 되게 하라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "7426a376c18244e443a84a50885481a450c921733c079934799e8c543a11d1a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:8",
+      "sequence": 6163,
+      "chapter_label": "JOS 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "With him the Reubenites and the Gadites received their inheritance, which Moses gave them, beyond the Jordan eastward, even as Moses the servant of the LORD gave them:",
+      "ko": "므낫세 반 지파와 함께 르우벤 사람과 갓 사람은 요단 동편에서 그 기업을 모세에게 받았는데 여호와의 종 모세가 그들에게 준 것은 이러하니",
+      "source_text_hash": "ef50698e1868bdbaaf52ae5cce675ecbbd7cd35c9ae490f0d91815596f1f663f",
+      "translation_text_hash": "d416d2b7fafc30c2e6736d145cfa705cddb350399768b6cc72bf1ccd9133e46a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 반 지파와 함께 르우벤 사람과 갓 사람은 요단 동편에서 그 기업을 모세에게 받았는데 여호와의 종 모세가 그들에게 준 것은 이러하니"
+      ],
+      "raw_text_hashes": [
+        "d416d2b7fafc30c2e6736d145cfa705cddb350399768b6cc72bf1ccd9133e46a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:9",
+      "sequence": 6164,
+      "chapter_label": "JOS 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "from Aroer, that is on the edge of the valley of the Arnon, and the city that is in the middle of the valley, and all the plain of Medeba to Dibon;",
+      "ko": "곧 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 있는 성읍과 디본까지 이르는 메드바 온 평지와",
+      "source_text_hash": "e4a61fae6c8695e2901d001b586c380f5ffeb174800ff087cec182d8e161fb1e",
+      "translation_text_hash": "98f41dd92d16f021daca654e93389a9f68bd314db5f5376945a7bc97019bccf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 있는 성읍과 디본까지 이르는 메드바 온 평지와"
+      ],
+      "raw_text_hashes": [
+        "98f41dd92d16f021daca654e93389a9f68bd314db5f5376945a7bc97019bccf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:10",
+      "sequence": 6165,
+      "chapter_label": "JOS 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "and all the cities of Sihon king of the Amorites, who reigned in Heshbon, to the border of the children of Ammon;",
+      "ko": "헤스본에 도읍하였던 아모리 사람의 왕 시혼의 모든 성읍 곧 암몬 자손의 지경까지와",
+      "source_text_hash": "cbfec283987b47de4759b2dced58820f8ce28f489a0248b546e498860efb6f2c",
+      "translation_text_hash": "cd82f302796ef15af57d99fc7d6bf5800f18ba823a7989054f2c8bf42f0219db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본에 도읍하였던 아모리 사람의 왕 시혼의 모든 성읍 곧 암몬 자손의 지경까지와"
+      ],
+      "raw_text_hashes": [
+        "cd82f302796ef15af57d99fc7d6bf5800f18ba823a7989054f2c8bf42f0219db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:11",
+      "sequence": 6166,
+      "chapter_label": "JOS 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "and Gilead, and the border of the Geshurites and Maacathites, and all Mount Hermon, and all Bashan to Salecah;",
+      "ko": "길르앗과 및 그술 사람과 마아갓 사람의 지경과 온 헤르몬산과 살르가까지 이른 온 바산",
+      "source_text_hash": "306d368bf3a302ff2b32ba3e6e9a51eefc3e8440b935283ff5db80ba19243f1b",
+      "translation_text_hash": "b35616baad381ce2d9d4d11ff88db6acf09086ae852601f01b9cd94886d80636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗과 및 그술 사람과 마아갓 사람의 지경과 온 헤르몬산과 살르가까지 이른 온 바산"
+      ],
+      "raw_text_hashes": [
+        "b35616baad381ce2d9d4d11ff88db6acf09086ae852601f01b9cd94886d80636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:12",
+      "sequence": 6167,
+      "chapter_label": "JOS 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "all the kingdom of Og in Bashan, who reigned in Ashtaroth and in Edrei (who was left of the remnant of the Rephaim); for Moses attacked these, and drove them out.",
+      "ko": "곧 르바의 남은 족속으로서 아스다롯과 에드레이에 도읍하였던 바산 왕 옥의 온 나라라 모세가 이 땅의 사람들을 쳐서 쫓아내었어도",
+      "source_text_hash": "658cf33a76ad35a662080b738e397cd33b5992da4ebc107311180fe3b0f03d0e",
+      "translation_text_hash": "d5a56bb6dabc3a50a92edcda2b82c7d88147bc466c83086dc6afd1f1900f3dc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 르바의 남은 족속으로서 아스다롯과 에드레이에 도읍하였던 바산 왕 옥의 온 나라라 모세가 이 땅의 사람들을 쳐서 쫓아내었어도"
+      ],
+      "raw_text_hashes": [
+        "d5a56bb6dabc3a50a92edcda2b82c7d88147bc466c83086dc6afd1f1900f3dc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:13",
+      "sequence": 6168,
+      "chapter_label": "JOS 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Nevertheless the children of Israel didn’t drive out the Geshurites, nor the Maacathites: but Geshur and Maacath live within Israel to this day.",
+      "ko": "그술 사람과 마아갓 사람은 이스라엘 자손이 쫓아 내지 아니하였으므로 그술과 마아갓이 오늘날까지 이스라엘 가운데 거하더라",
+      "source_text_hash": "75cf967ed306a7484816b1e6e1f8ea9a9c96887378c96c5bfcafe73690e0116a",
+      "translation_text_hash": "a91e3b39a0bea145cb2ff8fb0126ea412cfa57fe5aa0f0ddfc88cfc709b3656b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그술 사람과 마아갓 사람은 이스라엘 자손이 쫓아 내지 아니하였으므로 그술과 마아갓이 오늘날까지 이스라엘 가운데 거하더라"
+      ],
+      "raw_text_hashes": [
+        "a91e3b39a0bea145cb2ff8fb0126ea412cfa57fe5aa0f0ddfc88cfc709b3656b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:14",
+      "sequence": 6169,
+      "chapter_label": "JOS 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "Only he gave no inheritance to the tribe of Levi. The offerings of the LORD, the God of Israel, made by fire are his inheritance, as he spoke to him.",
+      "ko": "오직 레위 지파에게는 여호수아가 기업으로 준 것이 없었으니 이는 이스라엘 하나님 여호와께 드리는 화제물이 그 기업이 됨이 그에게 이르신 말씀과 같음이었더라",
+      "source_text_hash": "dc074c511a3b787a77e711f6e010a16721d2ffc1c709457b34c523bf48cd0674",
+      "translation_text_hash": "a4e3b0e9668ee91beef8123895222c31120d6b9156876646effba54808078382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 레위 지파에게는 여호수아가 기업으로 준 것이 없었으니 이는 이스라엘 하나님 여호와께 드리는 화제물이 그 기업이 됨이 그에게 이르신 말씀과 같음이었더라"
+      ],
+      "raw_text_hashes": [
+        "a4e3b0e9668ee91beef8123895222c31120d6b9156876646effba54808078382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:15",
+      "sequence": 6170,
+      "chapter_label": "JOS 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Moses gave to the tribe of the children of Reuben according to their families.",
+      "ko": "모세가 르우벤 자손의 지파에게 그 가족을 따라서 주었으니",
+      "source_text_hash": "5489c995ab45a9379e4273928adeaa47718338a9abe56e6b7acade1193f38952",
+      "translation_text_hash": "5096581610b09726e20f4e689242b5635f3531b734c1fe61cdfdc3e8af42bc37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 르우벤 자손의 지파에게 그 가족을 따라서 주었으니"
+      ],
+      "raw_text_hashes": [
+        "5096581610b09726e20f4e689242b5635f3531b734c1fe61cdfdc3e8af42bc37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:16",
+      "sequence": 6171,
+      "chapter_label": "JOS 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Their border was from Aroer, that is on the edge of the valley of the Arnon, and the city that is in the middle of the valley, and all the plain by Medeba;",
+      "ko": "그 지경은 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 있는 성읍과 메드바 곁에 있는 온 평지와",
+      "source_text_hash": "002bcb5e73176f0ee6860a64ba07ad5c83673adb330ac7bb77df1a4bff2d3a18",
+      "translation_text_hash": "3f4795dc7aa25b9ef3783f815787859b7278a4b65969a1314a42d9911815c6eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경은 아르논 골짜기 가에 있는 아로엘에서부터 골짜기 가운데 있는 성읍과 메드바 곁에 있는 온 평지와"
+      ],
+      "raw_text_hashes": [
+        "3f4795dc7aa25b9ef3783f815787859b7278a4b65969a1314a42d9911815c6eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:17",
+      "sequence": 6172,
+      "chapter_label": "JOS 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "Heshbon, and all its cities that are in the plain; Dibon, Bamoth Baal, Beth Baal Meon,",
+      "ko": "헤스본과 그 평지에 있는 모든 성읍 곧 디본과 바못 바알과 벧 바알 므온과",
+      "source_text_hash": "308d8920ffbeaef02cb41bdad3ed3a2534d5a4f1e319b89c58a91e8523557012",
+      "translation_text_hash": "78503aadfe455b2504c49cc7429685af121c27e7fac784e658efe463356e6051",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본과 그 평지에 있는 모든 성읍 곧 디본과 바못 바알과 벧 바알 므온과"
+      ],
+      "raw_text_hashes": [
+        "78503aadfe455b2504c49cc7429685af121c27e7fac784e658efe463356e6051"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:18",
+      "sequence": 6173,
+      "chapter_label": "JOS 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "Jahaz, Kedemoth, Mephaath,",
+      "ko": "야하스와 그데못과 메바앗과",
+      "source_text_hash": "e5abff00e759ba0a231c7d9510c830bb8a7121ff984eb9d03268d156ae9a4146",
+      "translation_text_hash": "e27a7f546016105b8474e25c8160f01bb22f89bf0fa43629b72ec1a28b42eaff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야하스와 그데못과 메바앗과"
+      ],
+      "raw_text_hashes": [
+        "e27a7f546016105b8474e25c8160f01bb22f89bf0fa43629b72ec1a28b42eaff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:19",
+      "sequence": 6174,
+      "chapter_label": "JOS 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Kiriathaim, Sibmah, Zereth Shahar in the mount of the valley,",
+      "ko": "기랴다임과 십마와 골짜기 가운데 산에 있는 세렛 사할과",
+      "source_text_hash": "31e43b396f3e53fcc8e6e1e5bd293bcef44c67019c902fb630965dd218c07926",
+      "translation_text_hash": "a8a8f335e7a0afeb6b4f7689b58a7e836ef87b50462e9af61238a57d7b8fb7cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기랴다임과 십마와 골짜기 가운데 산에 있는 세렛 사할과"
+      ],
+      "raw_text_hashes": [
+        "a8a8f335e7a0afeb6b4f7689b58a7e836ef87b50462e9af61238a57d7b8fb7cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:20",
+      "sequence": 6175,
+      "chapter_label": "JOS 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "Beth Peor, the slopes of Pisgah, Beth Jeshimoth,",
+      "ko": "벧브올과 비스가 산록과 벧여시못과",
+      "source_text_hash": "9bbfeda19c73f027535e9bfa080063f78e77782d4f6ee460e15281859574d7cd",
+      "translation_text_hash": "113f00179f4b889ac538601869ca8e1ba47a3087ddb59b49b443a7c250b57e5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧브올과 비스가 산록과 벧여시못과"
+      ],
+      "raw_text_hashes": [
+        "113f00179f4b889ac538601869ca8e1ba47a3087ddb59b49b443a7c250b57e5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:21",
+      "sequence": 6176,
+      "chapter_label": "JOS 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "all the cities of the plain, and all the kingdom of Sihon king of the Amorites, who reigned in Heshbon, whom Moses struck with the chiefs of Midian, Evi, Rekem, Zur, Hur, and Reba, the princes of Sihon, who lived in the land.",
+      "ko": "평지 모든 성읍과 헤스본에 도읍한 아모리 사람 시혼의 온 나라라 모세가 시혼을 그 땅에 거하는 시혼의 방백 곧 미디안의 귀족 에위와 레겜과 술과 훌과 레바와 함께 죽였으며",
+      "source_text_hash": "a3ef3ef8f69d4c2f0cf5eec804e47f92e0b40d886ddfae6dc81355f419c364c3",
+      "translation_text_hash": "149f9776e36998a43dbec85b2f18deae57948b7cfbfaf3938885dfdc4565f510",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평지 모든 성읍과 헤스본에 도읍한 아모리 사람 시혼의 온 나라라 모세가 시혼을 그 땅에 거하는 시혼의 방백 곧 미디안의 귀족 에위와 레겜과 술과 훌과 레바와 함께 죽였으며"
+      ],
+      "raw_text_hashes": [
+        "149f9776e36998a43dbec85b2f18deae57948b7cfbfaf3938885dfdc4565f510"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:22",
+      "sequence": 6177,
+      "chapter_label": "JOS 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "The children of Israel also killed Balaam the son of Beor, the soothsayer, with the sword, among the rest of their slain.",
+      "ko": "이스라엘 자손이 그들을 도륙하는 중에 브올의 아들 술사 발람도 칼날로 죽였었더라",
+      "source_text_hash": "8c68a39a397ba83288d4f4b5f7e05dcf325008c58f86d08f35f55ffac9068996",
+      "translation_text_hash": "b35a7da1ca919042557262f499c553b7c3416963612793a0887b0baedfaa81b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 그들을 도륙하는 중에 브올의 아들 술사 발람도 칼날로 죽였었더라"
+      ],
+      "raw_text_hashes": [
+        "b35a7da1ca919042557262f499c553b7c3416963612793a0887b0baedfaa81b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:23",
+      "sequence": 6178,
+      "chapter_label": "JOS 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "The border of the children of Reuben was the bank of the Jordan. This was the inheritance of the children of Reuben according to their families, the cities and its villages.",
+      "ko": "르우벤 자손의 서편 경계는 요단과 그 강 가라 이상은 르우벤 자손의 기업으로 그 가족대로 받은 성읍과 촌락이니라",
+      "source_text_hash": "b1955839c47b7aecdf49bc3fd9edef8e0d27dbc218d3d5667fd99db5d0682a08",
+      "translation_text_hash": "deda46d0a0a1f4a15124e322e8c352a79312fd870eaa806bde3847d24738585f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손의 서편 경계는 요단과 그 강 가라 이상은 르우벤 자손의 기업으로 그 가족대로 받은 성읍과 촌락이니라"
+      ],
+      "raw_text_hashes": [
+        "deda46d0a0a1f4a15124e322e8c352a79312fd870eaa806bde3847d24738585f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:24",
+      "sequence": 6179,
+      "chapter_label": "JOS 13",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 24
+        }
+      ],
+      "en": "Moses gave to the tribe of Gad, to the children of Gad, according to their families.",
+      "ko": "모세가 갓 지파 곧 갓 자손에게도 그 가족을 따라서 주었으니",
+      "source_text_hash": "314d189d3c571de24f0b92cd909e8782bd1e2db437a80da1469642df64c2805d",
+      "translation_text_hash": "1c8a4846331c78106f00e96adad533d1b8cc03d837746c0773ef258e46d2fb43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 갓 지파 곧 갓 자손에게도 그 가족을 따라서 주었으니"
+      ],
+      "raw_text_hashes": [
+        "1c8a4846331c78106f00e96adad533d1b8cc03d837746c0773ef258e46d2fb43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:25",
+      "sequence": 6180,
+      "chapter_label": "JOS 13",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 25
+        }
+      ],
+      "en": "Their border was Jazer, and all the cities of Gilead, and half the land of the children of Ammon, to Aroer that is near Rabbah;",
+      "ko": "그 지경은 야셀과 길르앗 모든 성읍과 암몬 자손의 땅 절반 곧 랍바 앞의 아로엘까지와",
+      "source_text_hash": "91753b10f6d44221907b0a5310b56f537263d0308c816519c0c9b139dba0f537",
+      "translation_text_hash": "525fbcca9389d636d612ac47ce7ce969a6fe10b853cc7317be34372636b23f82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경은 야셀과 길르앗 모든 성읍과 암몬 자손의 땅 절반 곧 랍바 앞의 아로엘까지와"
+      ],
+      "raw_text_hashes": [
+        "525fbcca9389d636d612ac47ce7ce969a6fe10b853cc7317be34372636b23f82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:26",
+      "sequence": 6181,
+      "chapter_label": "JOS 13",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 26
+        }
+      ],
+      "en": "and from Heshbon to Ramath Mizpeh, and Betonim; and from Mahanaim to the border of Debir;",
+      "ko": "헤스본에서 라맛 미스베와 브도님까지와 마하나임에서 드빌 지경까지와",
+      "source_text_hash": "97b7351fcd06ac5eae675a83e997f77a2fe0321da1b3c78ea26b7bb8d4572b07",
+      "translation_text_hash": "d650eee7cdfb3d0a30add019dd2f61aae036a852fc08bda2d753a5631ae8016a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본에서 라맛 미스베와 브도님까지와 마하나임에서 드빌 지경까지와"
+      ],
+      "raw_text_hashes": [
+        "d650eee7cdfb3d0a30add019dd2f61aae036a852fc08bda2d753a5631ae8016a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:27",
+      "sequence": 6182,
+      "chapter_label": "JOS 13",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 27
+        }
+      ],
+      "en": "and in the valley, Beth Haram, Beth Nimrah, Succoth, and Zaphon, the rest of the kingdom of Sihon king of Heshbon, the Jordan’s bank, to the uttermost part of the sea of Chinnereth beyond the Jordan eastward.",
+      "ko": "골짜기에 있는 벧 하람과 벧니므라와 숙곳과 사본 곧 헤스본 왕 시혼의 나라의 남은 땅 요단과 그 강 가에서부터 요단 동편 긴네렛 바다의 끝까지라",
+      "source_text_hash": "9438dfe25667f47ff0e5201fc3692299040c4c3fe02a9314405b7aa9fa79b4eb",
+      "translation_text_hash": "cb82fabbac663d7a2ca529eed546d04b4992b500ef83fd15cdb8c7c1ddea0d7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골짜기에 있는 벧 하람과 벧니므라와 숙곳과 사본 곧 헤스본 왕 시혼의 나라의 남은 땅 요단과 그 강 가에서부터 요단 동편 긴네렛 바다의 끝까지라"
+      ],
+      "raw_text_hashes": [
+        "cb82fabbac663d7a2ca529eed546d04b4992b500ef83fd15cdb8c7c1ddea0d7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:28",
+      "sequence": 6183,
+      "chapter_label": "JOS 13",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 28
+        }
+      ],
+      "en": "This is the inheritance of the children of Gad according to their families, the cities and its villages.",
+      "ko": "이는 갓 자손의 기업으로 그 가족대로 받은 성읍과 촌락이니라",
+      "source_text_hash": "85b62a7cee9b7e51cce6cd8ac8fe9bc90dc5b87f7f33e75cd4fca1dbdfa2cfc2",
+      "translation_text_hash": "7d6a047bb983c14b769f83700baf7abeda9a7ebca314e0c4e92b4e424414752e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 갓 자손의 기업으로 그 가족대로 받은 성읍과 촌락이니라"
+      ],
+      "raw_text_hashes": [
+        "7d6a047bb983c14b769f83700baf7abeda9a7ebca314e0c4e92b4e424414752e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:29",
+      "sequence": 6184,
+      "chapter_label": "JOS 13",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 29
+        }
+      ],
+      "en": "Moses gave an inheritance to the half-tribe of Manasseh. It was for the half-tribe of the children of Manasseh according to their families.",
+      "ko": "모세가 므낫세 반 지파에게 주었으되 므낫세 자손의 반 지파에게 그 가족대로 주었으니",
+      "source_text_hash": "08a3e7ccc03c2efa7dcecf24719fd222a72f6bee58b1c5691810c67032ce62b9",
+      "translation_text_hash": "466f648ca1de4521c1f0cbdd9d05afe2b7dac30073981b6611586f6f310f146a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 므낫세 반 지파에게 주었으되 므낫세 자손의 반 지파에게 그 가족대로 주었으니"
+      ],
+      "raw_text_hashes": [
+        "466f648ca1de4521c1f0cbdd9d05afe2b7dac30073981b6611586f6f310f146a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:30",
+      "sequence": 6185,
+      "chapter_label": "JOS 13",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 30
+        }
+      ],
+      "en": "Their border was from Mahanaim, all Bashan, all the kingdom of Og king of Bashan, and all the villages of Jair, which are in Bashan, sixty cities.",
+      "ko": "그 지경은 마하나임에서부터 온 바산 곧 바산 왕 옥의 전국과 바산 경내 야일의 모든 고을 육십 성읍과",
+      "source_text_hash": "6ed5e8f7c0e6ce8f4e7082cbaec3deb3a979738761026dbad5e4dba86c0ae14e",
+      "translation_text_hash": "09c53dc1f096598e6018b776a64b4d7e7adebb06679e03ca512dbf3908651674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경은 마하나임에서부터 온 바산 곧 바산 왕 옥의 전국과 바산 경내 야일의 모든 고을 육십 성읍과"
+      ],
+      "raw_text_hashes": [
+        "09c53dc1f096598e6018b776a64b4d7e7adebb06679e03ca512dbf3908651674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:31",
+      "sequence": 6186,
+      "chapter_label": "JOS 13",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 31
+        }
+      ],
+      "en": "Half Gilead, Ashtaroth, and Edrei, the cities of the kingdom of Og in Bashan, were for the children of Machir the son of Manasseh, even for the half of the children of Machir according to their families.",
+      "ko": "길르앗 절반과 바산 왕 옥의 나라 성읍 아스다롯과 에드레이라 이는 므낫세의 아들 마길의 자손에게 돌린 것이니 곧 마길 자손의 절반이 그 가족대로 받으니라",
+      "source_text_hash": "566164b930237b89833813ea53f7e7a215ac51ddc1683b8b6a0d1f4c59aa2d76",
+      "translation_text_hash": "b03d5d6fce80ed93eca2aef568902c67255049520445bad3f7818f2cf6ee93a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 절반과 바산 왕 옥의 나라 성읍 아스다롯과 에드레이라 이는 므낫세의 아들 마길의 자손에게 돌린 것이니 곧 마길 자손의 절반이 그 가족대로 받으니라"
+      ],
+      "raw_text_hashes": [
+        "b03d5d6fce80ed93eca2aef568902c67255049520445bad3f7818f2cf6ee93a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:32",
+      "sequence": 6187,
+      "chapter_label": "JOS 13",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 32
+        }
+      ],
+      "en": "These are the inheritances which Moses distributed in the plains of Moab, beyond the Jordan at Jericho, eastward.",
+      "ko": "요단 동편 여리고 맞은편 모압 평지에서 모세가 분배한 기업이 이러하여도",
+      "source_text_hash": "241ee76fabdddd7e4756df832596e0728d93178f79f33efa5e255a5e96fc94f0",
+      "translation_text_hash": "fb55148b09b0491e73dc5ae3c86d8c6e7d76763e342672ec2f9fb93164e7c37e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 동편 여리고 맞은편 모압 평지에서 모세가 분배한 기업이 이러하여도"
+      ],
+      "raw_text_hashes": [
+        "fb55148b09b0491e73dc5ae3c86d8c6e7d76763e342672ec2f9fb93164e7c37e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:13:33",
+      "sequence": 6188,
+      "chapter_label": "JOS 13",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 13,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 13,
+          "verse": 33
+        }
+      ],
+      "en": "But Moses gave no inheritance to the tribe of Levi. The LORD, the God of Israel, is their inheritance, as he spoke to them.",
+      "ko": "오직 레위 지파에게는 모세가 기업을 주지 아니하였으니 이는 그들에게 말씀하심 같이 이스라엘 하나님 여호와께서 그 기업이 되심이었더라",
+      "source_text_hash": "fabfc39da3a67b9c94da828d3709981cc2959cfbc0d4d2ca4842e660daf0c578",
+      "translation_text_hash": "7424ef48cfb9e1c82e628b0213045fd0dc1b78c04dc3a6613b7bae905888dee0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 레위 지파에게는 모세가 기업을 주지 아니하였으니 이는 그들에게 말씀하심 같이 이스라엘 하나님 여호와께서 그 기업이 되심이었더라"
+      ],
+      "raw_text_hashes": [
+        "7424ef48cfb9e1c82e628b0213045fd0dc1b78c04dc3a6613b7bae905888dee0"
+      ]
+    }
+  ]
+}

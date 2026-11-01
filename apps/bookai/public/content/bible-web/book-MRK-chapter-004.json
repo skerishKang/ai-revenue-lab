@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:004",
+  "unit_ordinal": 961,
+  "unit_label": "MRK 4",
+  "book_code": "MRK",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:4:1",
+      "sequence": 24325,
+      "chapter_label": "MRK 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Again he began to teach by the seaside. A great multitude was gathered to him, so that he entered into a boat in the sea and sat down. All the multitude were on the land by the sea.",
+      "ko": "예수께서 다시 바닷가에서 가르치시니 큰 무리가 모여 들거늘 예수께서 배에 올라 바다에 떠 앉으시고 온 무리는 바다 곁 육지에 있더라",
+      "source_text_hash": "f98251b5b796873aae5fe6377f00c8083dbabd19242497a09fcd306fb2f5ba9a",
+      "translation_text_hash": "a8877ccf9be72d5ad5165104343018b00cf65dab9a4ffa480163961b1c5a02d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 다시 바닷가에서 가르치시니 큰 무리가 모여 들거늘 예수께서 배에 올라 바다에 떠 앉으시고 온 무리는 바다 곁 육지에 있더라"
+      ],
+      "raw_text_hashes": [
+        "a8877ccf9be72d5ad5165104343018b00cf65dab9a4ffa480163961b1c5a02d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:2",
+      "sequence": 24326,
+      "chapter_label": "MRK 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "He taught them many things in parables, and told them in his teaching,",
+      "ko": "이에 예수께서 여러가지를 비유로 가르치시니 그 가르치시는 중에 저희에게 이르시되",
+      "source_text_hash": "af9820a38f6518ee47c9906bd5d4db38ea09c51edce5c5ab585aedf8b2467b25",
+      "translation_text_hash": "4af47bc3c48ce3be21d6e880f9f358e3c936708bcdbe3e026f7cb435fdaf1c61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 여러가지를 비유로 가르치시니 그 가르치시는 중에 저희에게 이르시되"
+      ],
+      "raw_text_hashes": [
+        "4af47bc3c48ce3be21d6e880f9f358e3c936708bcdbe3e026f7cb435fdaf1c61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:3",
+      "sequence": 24327,
+      "chapter_label": "MRK 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "“Listen! Behold, the farmer went out to sow.",
+      "ko": "들으라 씨를 뿌리는 자가 뿌리러 나가서",
+      "source_text_hash": "a226de6db2948e67cbc4ae901045291e244d4ad875924731c130d1aeb884dd36",
+      "translation_text_hash": "465789c49777d7c9402d3c335e7ecee4737ea7ae77e5a246e94fd7acf8a02a19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들으라 씨를 뿌리는 자가 뿌리러 나가서"
+      ],
+      "raw_text_hashes": [
+        "465789c49777d7c9402d3c335e7ecee4737ea7ae77e5a246e94fd7acf8a02a19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:4",
+      "sequence": 24328,
+      "chapter_label": "MRK 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "As he sowed, some seed fell by the road, and the birdscame and devoured it.",
+      "ko": "뿌릴쌔 더러는 길 가에 떨어지매 새들이 와서 먹어 버렸고",
+      "source_text_hash": "ebc63b333ee6cd93de6ac901b3ae436bc94756a08ab6d91d043aadcaf3b12cbd",
+      "translation_text_hash": "9471d360058a37c73b67b30e8f02aab741d502885cf4202b6acded9956133112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뿌릴쌔 더러는 길 가에 떨어지매 새들이 와서 먹어 버렸고"
+      ],
+      "raw_text_hashes": [
+        "9471d360058a37c73b67b30e8f02aab741d502885cf4202b6acded9956133112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:5",
+      "sequence": 24329,
+      "chapter_label": "MRK 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Others fell on the rocky ground, where it had little soil, and immediately it sprang up, because it had no depth of soil.",
+      "ko": "더러는 흙이 얇은 돌밭에 떨어지매 흙이 깊지 아니하므로 곧 싹이 나오나",
+      "source_text_hash": "7476a6b0ad392549340a69ad398e7aaa64b6e1e31d4d1b1d6a3b7932a15a9dc3",
+      "translation_text_hash": "e4f620e7e23e1a5fc8e6134afc417f3a352433dea8de9080a1227f6f2d15e4d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 흙이 얇은 돌밭에 떨어지매 흙이 깊지 아니하므로 곧 싹이 나오나"
+      ],
+      "raw_text_hashes": [
+        "e4f620e7e23e1a5fc8e6134afc417f3a352433dea8de9080a1227f6f2d15e4d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:6",
+      "sequence": 24330,
+      "chapter_label": "MRK 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "When the sun had risen, it was scorched; and because it had no root, it withered away.",
+      "ko": "해가 돋은 후에 타져서 뿌리가 없으므로 말랐고",
+      "source_text_hash": "93720c40b30b19cc9126baf13f54ca6a65f87e578300caf63c272d9c85d432a2",
+      "translation_text_hash": "b0e25a7d3e8889b2d85ef482a6b1a26547ee35a54a4e192e241524870657d703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돋은 후에 타져서 뿌리가 없으므로 말랐고"
+      ],
+      "raw_text_hashes": [
+        "b0e25a7d3e8889b2d85ef482a6b1a26547ee35a54a4e192e241524870657d703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:7",
+      "sequence": 24331,
+      "chapter_label": "MRK 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Others fell among the thorns, and the thorns grew up and choked it, and it yielded no fruit.",
+      "ko": "더러는 가시떨기에 떨어지매 가시가 자라 기운을 막으므로 결실치 못하였고",
+      "source_text_hash": "edeb7a6c69d112fe255396eb733d6333c896eb912bee197a19175da2387b03d2",
+      "translation_text_hash": "c66183df8701903e361c273e23eec580d2dd01f1a0a44dd319e9b580c072bbab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 가시떨기에 떨어지매 가시가 자라 기운을 막으므로 결실치 못하였고"
+      ],
+      "raw_text_hashes": [
+        "c66183df8701903e361c273e23eec580d2dd01f1a0a44dd319e9b580c072bbab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:8",
+      "sequence": 24332,
+      "chapter_label": "MRK 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Others fell into the good ground and yielded fruit, growing up and increasing. Some produced thirty times, some sixty times, and some one hundred times as much.”",
+      "ko": "더러는 좋은 땅에 떨어지매 자라 무성하여 결실하였으니 삼십배와 육십배와 백배가 되었느니라 하시고",
+      "source_text_hash": "651bd4a000136cc769f5f32ac0f6e8ec853888f596f9e0b164292a609661e12b",
+      "translation_text_hash": "012c5c925d4b68345cdae204c496917d01e4f94c2d860d7d51076faafd37eef5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 좋은 땅에 떨어지매 자라 무성하여 결실하였으니 삼십배와 육십배와 백배가 되었느니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "012c5c925d4b68345cdae204c496917d01e4f94c2d860d7d51076faafd37eef5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:9",
+      "sequence": 24333,
+      "chapter_label": "MRK 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "He said, “Whoever has ears to hear, let him hear.”",
+      "ko": "또 이르시되 들을 귀 있는 자는 들으라 하시니라",
+      "source_text_hash": "fbbb1f7d53237b0bb84716b0e4ba11ab8d544d427bae1f964aeb6d910538540d",
+      "translation_text_hash": "878e90094db5747bf50ae45b03453d037bd79b22652a1bd24ef1838913af1fae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 들을 귀 있는 자는 들으라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "878e90094db5747bf50ae45b03453d037bd79b22652a1bd24ef1838913af1fae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:10",
+      "sequence": 24334,
+      "chapter_label": "MRK 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "When he was alone, those who were around him with the twelve asked him about the parables.",
+      "ko": "예수께서 홀로 계실 때에 함께한 사람들이 열 두 제자로 더불어 그 비유들을 묻자오니",
+      "source_text_hash": "bb10228050c4c6d38f546b7acb05b5d53290a608ffb13e092a27a7138fd97145",
+      "translation_text_hash": "9b7cbfd2165e265ed77d00b3d583d3457aef80167971688aaa0f97d4323e0b9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 홀로 계실 때에 함께한 사람들이 열 두 제자로 더불어 그 비유들을 묻자오니"
+      ],
+      "raw_text_hashes": [
+        "9b7cbfd2165e265ed77d00b3d583d3457aef80167971688aaa0f97d4323e0b9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:11",
+      "sequence": 24335,
+      "chapter_label": "MRK 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "He said to them, “To you is given the mystery of God’s Kingdom, but to those who are outside, all things are done in parables,",
+      "ko": "이르시되 하나님 나라의 비밀을 너희에게는 주었으나 외인에게는 모든 것을 비유로 하나니",
+      "source_text_hash": "c1342379a50bf5d8345c6d09750296098b6992198dfd3b5d8f027aabfab1b2f8",
+      "translation_text_hash": "575645bee54d733e457aee17509bd5d33274693f9bfb29ace35409716bed0159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 하나님 나라의 비밀을 너희에게는 주었으나 외인에게는 모든 것을 비유로 하나니"
+      ],
+      "raw_text_hashes": [
+        "575645bee54d733e457aee17509bd5d33274693f9bfb29ace35409716bed0159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:12",
+      "sequence": 24336,
+      "chapter_label": "MRK 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "that ‘seeing they may see and not perceive, and hearing they may hear and not understand, lest perhaps they should turn again, and their sins should be forgiven them.’”",
+      "ko": "이는 저희로 보기는 보아도 알지 못하며 듣기는 들어도 깨닫지 못하게 하여 돌이켜 죄 사함을 얻지 못하게 하려 함이니라 하시고",
+      "source_text_hash": "6280ee274c88cf8f9858b9188b90bfb05c6faa659c8f88e12e2eef09dd851ae2",
+      "translation_text_hash": "1f86093fa673f461744f622f1d76194fdfd6f719a14c8e4ce668cc81f60948e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희로 보기는 보아도 알지 못하며 듣기는 들어도 깨닫지 못하게 하여 돌이켜 죄 사함을 얻지 못하게 하려 함이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "1f86093fa673f461744f622f1d76194fdfd6f719a14c8e4ce668cc81f60948e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:13",
+      "sequence": 24337,
+      "chapter_label": "MRK 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "He said to them, “Don’t you understand this parable? How will you understand all of the parables?",
+      "ko": "또 가라사대 너희가 이 비유를 알지 못할찐대 어떻게 모든 비유를 알겠느뇨",
+      "source_text_hash": "5f262947c025d96157f21e6d8e45ca79ba52db2ba453d7b69da29471c7db4429",
+      "translation_text_hash": "80b24905f0a6ebb3d6354e05384e3e4ca4ac894804123585fb462b9e9f365b33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 너희가 이 비유를 알지 못할찐대 어떻게 모든 비유를 알겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "80b24905f0a6ebb3d6354e05384e3e4ca4ac894804123585fb462b9e9f365b33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:14",
+      "sequence": 24338,
+      "chapter_label": "MRK 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "The farmer sows the word.",
+      "ko": "뿌리는 자는 말씀을 뿌리는 것이라",
+      "source_text_hash": "33f968b7e71157864a018cae93aed392ee69656c6f5757761564b64c53d2c079",
+      "translation_text_hash": "e213a7bdfd751d431255cb1bdab2e00cad44bc499938db29e838091cf46607e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뿌리는 자는 말씀을 뿌리는 것이라"
+      ],
+      "raw_text_hashes": [
+        "e213a7bdfd751d431255cb1bdab2e00cad44bc499938db29e838091cf46607e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:15",
+      "sequence": 24339,
+      "chapter_label": "MRK 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "The ones by the road are the ones where the word is sown; and when they have heard, immediately Satan comes and takes away the word which has been sown in them.",
+      "ko": "말씀이 길 가에 뿌리웠다는 것은 이들이니 곧 말씀을 들었을 때에 사단이 즉시 와서 저희에게 뿌리운 말씀을 빼앗는 것이요",
+      "source_text_hash": "14472758ed63595101b20993a272ea15611cf7684d0eba081d5869eba8b4223b",
+      "translation_text_hash": "45bfc32dbfc2c12a476c0b4ae408c41654d3a7b05df6cd70bf0c357bf32b3727",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀이 길 가에 뿌리웠다는 것은 이들이니 곧 말씀을 들었을 때에 사단이 즉시 와서 저희에게 뿌리운 말씀을 빼앗는 것이요"
+      ],
+      "raw_text_hashes": [
+        "45bfc32dbfc2c12a476c0b4ae408c41654d3a7b05df6cd70bf0c357bf32b3727"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:16",
+      "sequence": 24340,
+      "chapter_label": "MRK 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "These in the same way are those who are sown on the rocky places, who, when they have heard the word, immediately receive it with joy.",
+      "ko": "또 이와 같이 돌밭에 뿌리웠다는 것은 이들이니 곧 말씀을 들을 때에 즉시 기쁨으로 받으나",
+      "source_text_hash": "b002e9729bab1563ee509b2765d7d93957221f756015244b661d74058bba274c",
+      "translation_text_hash": "045a771e322e744fbfb9e137b91cba21fd5d57097a9f2b8bf1e19c2751293628",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이와 같이 돌밭에 뿌리웠다는 것은 이들이니 곧 말씀을 들을 때에 즉시 기쁨으로 받으나"
+      ],
+      "raw_text_hashes": [
+        "045a771e322e744fbfb9e137b91cba21fd5d57097a9f2b8bf1e19c2751293628"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:17",
+      "sequence": 24341,
+      "chapter_label": "MRK 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "They have no root in themselves, but are short-lived. When oppression or persecution arises because of the word, immediately they stumble.",
+      "ko": "그 속에 뿌리가 없어 잠간 견디다가 말씀을 인하여 환난이나 핍박이 일어나는 때에는 곧 넘어지는 자요",
+      "source_text_hash": "61a8924fa7121b93119148ead088ba08b2fad92935f833619a6660373278e527",
+      "translation_text_hash": "f065bfd3087fdc8651282cb42bd9e84bc75be7930d797eb78821c4c92253f21b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속에 뿌리가 없어 잠간 견디다가 말씀을 인하여 환난이나 핍박이 일어나는 때에는 곧 넘어지는 자요"
+      ],
+      "raw_text_hashes": [
+        "f065bfd3087fdc8651282cb42bd9e84bc75be7930d797eb78821c4c92253f21b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:18",
+      "sequence": 24342,
+      "chapter_label": "MRK 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "Others are those who are sown among the thorns. These are those who have heard the word,",
+      "ko": "또 어떤이는 가시떨기에 뿌리우는 자니 이들은 말씀을 듣되",
+      "source_text_hash": "892d4142dc3ccb006e0f51deee31a59ce9e543ca6086195b2a736cd04420f64a",
+      "translation_text_hash": "473e75689bbfc34797fc7c85b666643d31ec684a3a190bf181ee8016e641d28a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤이는 가시떨기에 뿌리우는 자니 이들은 말씀을 듣되"
+      ],
+      "raw_text_hashes": [
+        "473e75689bbfc34797fc7c85b666643d31ec684a3a190bf181ee8016e641d28a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:19",
+      "sequence": 24343,
+      "chapter_label": "MRK 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "and the cares of this age, and the deceitfulness of riches, and the lusts of other things entering in choke the word, and it becomes unfruitful.",
+      "ko": "세상의 염려와 재리의 유혹과 기타 욕심이 들어와 말씀을 막아 결실치 못하게 되는 자요",
+      "source_text_hash": "fbc76f36c2da5f0cb2306ab602a9d2d70e7d3a3f009f1edf80e3c2b7984bbd9d",
+      "translation_text_hash": "61de92813867a784aab12bb64eb8a159607d0fe6b4b81f3d2dfd1a3f75ec25c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 염려와 재리의 유혹과 기타 욕심이 들어와 말씀을 막아 결실치 못하게 되는 자요"
+      ],
+      "raw_text_hashes": [
+        "61de92813867a784aab12bb64eb8a159607d0fe6b4b81f3d2dfd1a3f75ec25c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:20",
+      "sequence": 24344,
+      "chapter_label": "MRK 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Those which were sown on the good ground are those who hear the word, accept it, and bear fruit, some thirty times, some sixty times, and some one hundred times.”",
+      "ko": "좋은 땅에 뿌리웠다는 것은 곧 말씀을 듣고 받아 삼십배와 육십배와 백배의 결실을 하는 자니라",
+      "source_text_hash": "31cc975494fcc8c18df40ca7705ffab71e97b0a2ade74f6e94d929e65aed83e4",
+      "translation_text_hash": "03b38db2335ba5aa4795eb04c0009617966d6ff397ae2f691d6ba37577c8fb48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 땅에 뿌리웠다는 것은 곧 말씀을 듣고 받아 삼십배와 육십배와 백배의 결실을 하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "03b38db2335ba5aa4795eb04c0009617966d6ff397ae2f691d6ba37577c8fb48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:21",
+      "sequence": 24345,
+      "chapter_label": "MRK 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "He said to them, “Is a lamp brought to be put under a basket or under a bed? Isn’t it put on a stand?",
+      "ko": "또 저희에게 이르시되 사람이 등불을 가져오는 것은 말 아래나 평상 아래나 두려 함이냐 등경 위에 두려 함이 아니냐",
+      "source_text_hash": "063762e80a23749037c9732776192ab2e0347919833e9a7fceeb6e604120cb3a",
+      "translation_text_hash": "1e5247d116c68db46803216da6943c5f2e29189405b377b47e513e7fb0ca11e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희에게 이르시되 사람이 등불을 가져오는 것은 말 아래나 평상 아래나 두려 함이냐 등경 위에 두려 함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "1e5247d116c68db46803216da6943c5f2e29189405b377b47e513e7fb0ca11e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:22",
+      "sequence": 24346,
+      "chapter_label": "MRK 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "For there is nothing hidden except that it should be made known, neither was anything made secret but that it should come to light.",
+      "ko": "드러내려 하지 않고는 숨긴 것이 없고 나타내려 하지 않고는 감추인 것이 없느니라",
+      "source_text_hash": "e8afe3a7f92c1c0f958d2c7f75002350633f55217a3806b6efab63403722a2d3",
+      "translation_text_hash": "ff5feea63158dfc175e28873caac46cb1b7a615b68796e130dbbb609a3633656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드러내려 하지 않고는 숨긴 것이 없고 나타내려 하지 않고는 감추인 것이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "ff5feea63158dfc175e28873caac46cb1b7a615b68796e130dbbb609a3633656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:23",
+      "sequence": 24347,
+      "chapter_label": "MRK 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "If any man has ears to hear, let him hear.”",
+      "ko": "들을 귀 있는 자는 들으라",
+      "source_text_hash": "0bb2397d24d7256a0a51a01cf76fc0d6d90ee609fccbd3433c662ef9bc0d5fd4",
+      "translation_text_hash": "9ecfb41f9534144760fe10dfbb378cf55861391b8cb4ceb20cde5e502ffe060c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들을 귀 있는 자는 들으라"
+      ],
+      "raw_text_hashes": [
+        "9ecfb41f9534144760fe10dfbb378cf55861391b8cb4ceb20cde5e502ffe060c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:24",
+      "sequence": 24348,
+      "chapter_label": "MRK 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "He said to them, “Take heed what you hear. With whatever measure you measure, it will be measured to you; and more will be given to you who hear.",
+      "ko": "또 가라사대 너희가 무엇을 듣는가 스스로 삼가라 너희의 헤아리는 그 헤아림으로 너희가 헤아림을 받을 것이요 또 더 받으리니",
+      "source_text_hash": "4102f8771e75aeb6007aac5b175af2c0e3965aaed6a469d7d655f9dfd29aa84a",
+      "translation_text_hash": "aeaedb48a6d0e69b02b96730db3fb60db404ee4ebe0e4207930fc55ab2015209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 너희가 무엇을 듣는가 스스로 삼가라 너희의 헤아리는 그 헤아림으로 너희가 헤아림을 받을 것이요 또 더 받으리니"
+      ],
+      "raw_text_hashes": [
+        "aeaedb48a6d0e69b02b96730db3fb60db404ee4ebe0e4207930fc55ab2015209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:25",
+      "sequence": 24349,
+      "chapter_label": "MRK 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "For whoever has, to him more will be given; and he who doesn’t have, even that which he has will be taken away from him.”",
+      "ko": "있는 자는 받을 것이요 없는 자는 그 있는 것까지 빼앗기리라",
+      "source_text_hash": "344193c6a390ec92b9dbc045956c0075dd497ab055191d8b64a3e9dcadd0515d",
+      "translation_text_hash": "c8fdbe3f332897cc4d45e16f14f028e31395c27638f76de18cfff7f9727232bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "있는 자는 받을 것이요 없는 자는 그 있는 것까지 빼앗기리라"
+      ],
+      "raw_text_hashes": [
+        "c8fdbe3f332897cc4d45e16f14f028e31395c27638f76de18cfff7f9727232bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:26",
+      "sequence": 24350,
+      "chapter_label": "MRK 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "He said, “God’s Kingdom is as if a man should cast seed on the earth,",
+      "ko": "또 가라사대 하나님의 나라는 사람이 씨를 땅에 뿌림과 같으니",
+      "source_text_hash": "a34a45d9535c88f2d5cfa521ed24d337a6c4869b507512abb5321e76864731db",
+      "translation_text_hash": "0e775eab482addff126b3c738a6a9bd87d0a7e23a20a78e68be345981127c93c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 하나님의 나라는 사람이 씨를 땅에 뿌림과 같으니"
+      ],
+      "raw_text_hashes": [
+        "0e775eab482addff126b3c738a6a9bd87d0a7e23a20a78e68be345981127c93c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:27",
+      "sequence": 24351,
+      "chapter_label": "MRK 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "and should sleep and rise night and day, and the seed should spring up and grow, though he doesn’t know how.",
+      "ko": "저가 밤낮 자고 깨고 하는 중에 씨가 나서 자라되 그 어떻게 된 것을 알지 못하느니라",
+      "source_text_hash": "739e9049f82dcddb06921a1ecb0d203dd9465948ba98db683b24c33452770453",
+      "translation_text_hash": "bd7120cbf5b46366730c5a2c61496ad8991f3a83706fcd30bb1bad2e51cee3c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 밤낮 자고 깨고 하는 중에 씨가 나서 자라되 그 어떻게 된 것을 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "bd7120cbf5b46366730c5a2c61496ad8991f3a83706fcd30bb1bad2e51cee3c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:28",
+      "sequence": 24352,
+      "chapter_label": "MRK 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "For the earth bears fruit by itself: first the blade, then the ear, then the full grain in the ear.",
+      "ko": "땅이 스스로 열매를 맺되 처음에는 싹이요 다음에는 이삭이요 그 다음에는 이삭에 충실한 곡식이라",
+      "source_text_hash": "8282f27de1b4cee594664fb67352490ef6dc29a27c9b175aeb81b6393693fa5e",
+      "translation_text_hash": "2329459003bc911655260b8564a2552d5d5223fc34ef11f4c23bdf74d5a380a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 스스로 열매를 맺되 처음에는 싹이요 다음에는 이삭이요 그 다음에는 이삭에 충실한 곡식이라"
+      ],
+      "raw_text_hashes": [
+        "2329459003bc911655260b8564a2552d5d5223fc34ef11f4c23bdf74d5a380a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:29",
+      "sequence": 24353,
+      "chapter_label": "MRK 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "But when the fruit is ripe, immediately he puts in the sickle, because the harvest has come.”",
+      "ko": "열매가 익으면 곧 낫을 대나니 이는 추수 때가 이르렀음이니라",
+      "source_text_hash": "25787cba7f7ae790c6d4f13b19dae58ea8a22a2aec495c74406d91dd9bd647cd",
+      "translation_text_hash": "4b7920edb95356463dcb5c77515e21ade7efb59880099393a372502567aceb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열매가 익으면 곧 낫을 대나니 이는 추수 때가 이르렀음이니라"
+      ],
+      "raw_text_hashes": [
+        "4b7920edb95356463dcb5c77515e21ade7efb59880099393a372502567aceb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:30",
+      "sequence": 24354,
+      "chapter_label": "MRK 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "He said, “How will we liken God’s Kingdom? Or with what parable will we illustrate it?",
+      "ko": "또 가라사대 우리가 하나님의 나라를 어떻게 비하며 또 무슨 비유로 나타낼꼬",
+      "source_text_hash": "ce85ce5f73daf1efbc5bc1ece5e0e126c873f37eaf908c0200ae374450908125",
+      "translation_text_hash": "8634c62977af3ff4193d8b85457f02a560236fc5b65fa5f4253d764bfa2ce0e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 우리가 하나님의 나라를 어떻게 비하며 또 무슨 비유로 나타낼꼬"
+      ],
+      "raw_text_hashes": [
+        "8634c62977af3ff4193d8b85457f02a560236fc5b65fa5f4253d764bfa2ce0e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:31",
+      "sequence": 24355,
+      "chapter_label": "MRK 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "It’s like a grain of mustard seed, which, when it is sown in the earth, though it is less than all the seeds that are on the earth,",
+      "ko": "겨자씨 한 알과 같으니 땅에 심길 때에는 땅위의 모든 씨보다 작은 것이로되",
+      "source_text_hash": "8dce2115a4e81539ba0c08d0d2f4d327d3e9f8259962068ee0e6b395ad91cc6b",
+      "translation_text_hash": "84dd5e1eecf3f6830d841f93c77b50886ed38e7491a84d53f478d2fae3116b04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겨자씨 한 알과 같으니 땅에 심길 때에는 땅위의 모든 씨보다 작은 것이로되"
+      ],
+      "raw_text_hashes": [
+        "84dd5e1eecf3f6830d841f93c77b50886ed38e7491a84d53f478d2fae3116b04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:32",
+      "sequence": 24356,
+      "chapter_label": "MRK 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "yet when it is sown, grows up and becomes greater than all the herbs, and puts out great branches, so that the birds of the sky can lodge under its shadow.”",
+      "ko": "심긴 후에는 자라서 모든 나물보다 커지며 큰 가지를 내니 공중의 새들이 그 그늘에 깃들일 만큼 되느니라",
+      "source_text_hash": "7b0a4280b7c147837ae24a5fdf5c58a0c6bfa74d0c9ae4199aaba6e500f60629",
+      "translation_text_hash": "5ca86eadf7ba31774b6905f7c7024f1ab148809edb2a9e9de4b64e0c60ce15be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심긴 후에는 자라서 모든 나물보다 커지며 큰 가지를 내니 공중의 새들이 그 그늘에 깃들일 만큼 되느니라"
+      ],
+      "raw_text_hashes": [
+        "5ca86eadf7ba31774b6905f7c7024f1ab148809edb2a9e9de4b64e0c60ce15be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:33",
+      "sequence": 24357,
+      "chapter_label": "MRK 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "With many such parables he spoke the word to them, as they were able to hear it.",
+      "ko": "예수께서 이러한 많은 비유로 저희가 알아 들을 수 있는대로 말씀을 가르치시되",
+      "source_text_hash": "5219d6135fedc80a5416ee0cea233d59ec081a5b4a9c18de85441b31707a44dc",
+      "translation_text_hash": "8f97afcdb16c7bc81e1f9e66c07a2dfacb6f24c3c28f4a7334e72185c3b66092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이러한 많은 비유로 저희가 알아 들을 수 있는대로 말씀을 가르치시되"
+      ],
+      "raw_text_hashes": [
+        "8f97afcdb16c7bc81e1f9e66c07a2dfacb6f24c3c28f4a7334e72185c3b66092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:34",
+      "sequence": 24358,
+      "chapter_label": "MRK 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "Without a parable he didn’t speak to them; but privately to his own disciples he explained everything.",
+      "ko": "비유가 아니면 말씀하지 아니하시고 다만 혼자 계실 때에 그 제자들에게 모든 것을 해석하시더라",
+      "source_text_hash": "8767fbc025ab3b68a68bb89bf78a6c92749d58dac2626122c2cc15cbbb89189b",
+      "translation_text_hash": "91eb7a8eda75933b52dbc4f4c5f2a1421b1affc34c65c3cfd9cd460eb1d6cbfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비유가 아니면 말씀하지 아니하시고 다만 혼자 계실 때에 그 제자들에게 모든 것을 해석하시더라"
+      ],
+      "raw_text_hashes": [
+        "91eb7a8eda75933b52dbc4f4c5f2a1421b1affc34c65c3cfd9cd460eb1d6cbfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:35",
+      "sequence": 24359,
+      "chapter_label": "MRK 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "On that day, when evening had come, he said to them, “Let’s go over to the other side.”",
+      "ko": "그날 저물 때에 제자들에게 이르시되 우리가 저편으로 건너가자 하시니",
+      "source_text_hash": "56ca1f271c8f9774383dcb33e40bb4b87fc9bb1d41b03a6a4814ef7a3a78c8f9",
+      "translation_text_hash": "03c7feb7fa71e43b4edb794dc42f1e6ef49adca8047a73f93f7eb1cc0302c5d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날 저물 때에 제자들에게 이르시되 우리가 저편으로 건너가자 하시니"
+      ],
+      "raw_text_hashes": [
+        "03c7feb7fa71e43b4edb794dc42f1e6ef49adca8047a73f93f7eb1cc0302c5d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:36",
+      "sequence": 24360,
+      "chapter_label": "MRK 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "Leaving the multitude, they took him with them, even as he was, in the boat. Other small boats were also with him.",
+      "ko": "저희가 무리를 떠나 예수를 배에 계신 그대로 모시고 가매 다른 배들도 함께 하더니",
+      "source_text_hash": "f29f511281ed1d71685aebbf365a8ac276375832546186a47caadce1764d0e60",
+      "translation_text_hash": "dc783ef671c238f89741c57c46ecf95f2432b73492036f6178c8c00aaaaeff18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 무리를 떠나 예수를 배에 계신 그대로 모시고 가매 다른 배들도 함께 하더니"
+      ],
+      "raw_text_hashes": [
+        "dc783ef671c238f89741c57c46ecf95f2432b73492036f6178c8c00aaaaeff18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:37",
+      "sequence": 24361,
+      "chapter_label": "MRK 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "A big wind storm arose, and the waves beat into the boat, so much that the boat was already filled.",
+      "ko": "큰 광풍이 일어나며 물결이 부딪혀 배에 들어와 배에 가득하게 되었더라",
+      "source_text_hash": "8acb99c6df5e9a63e5def450a1ef5ca7e53cd03d3f5fec604c437d3a4c3c7777",
+      "translation_text_hash": "0bf020c6dbf9fb28e29980b10d5e4cbec65f75c1c836eafef882d00e8d006b4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 광풍이 일어나며 물결이 부딪혀 배에 들어와 배에 가득하게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "0bf020c6dbf9fb28e29980b10d5e4cbec65f75c1c836eafef882d00e8d006b4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:38",
+      "sequence": 24362,
+      "chapter_label": "MRK 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "He himself was in the stern, asleep on the cushion; and they woke him up and asked him, “Teacher, don’t you care that we are dying?”",
+      "ko": "예수께서는 고물에서 베개를 베시고 주무시더니 제자들이 깨우며 가로되 선생님이여 우리의 죽게 된것을 돌아보지 아니하시나이까 하니",
+      "source_text_hash": "050a53974ce0b158beae79723450f33e1e75d21af3cb3bcbba1a8bd641b2157f",
+      "translation_text_hash": "698fb5715b2038e7ba8485188b256e9150315b1b520764cd190f75fd766adeba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서는 고물에서 베개를 베시고 주무시더니 제자들이 깨우며 가로되 선생님이여 우리의 죽게 된것을 돌아보지 아니하시나이까 하니"
+      ],
+      "raw_text_hashes": [
+        "698fb5715b2038e7ba8485188b256e9150315b1b520764cd190f75fd766adeba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:39",
+      "sequence": 24363,
+      "chapter_label": "MRK 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "He awoke and rebuked the wind, and said to the sea, “Peace! Be still!”The wind ceased and there was a great calm.",
+      "ko": "예수께서 깨어 바람을 꾸짖으시며 바다더러 이르시되 잠잠하라 고요하라 하시니 바람이 그치고 아주 잔잔하여지더라",
+      "source_text_hash": "b68c7489d9406f116f3113945b0c21b6e7b7401bac61ac3b24ab332bdbb27ade",
+      "translation_text_hash": "f43dd85bfbfaef8a5874141f3cec6b208e0a5ca72142815a87af87c2d79ceb75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 깨어 바람을 꾸짖으시며 바다더러 이르시되 잠잠하라 고요하라 하시니 바람이 그치고 아주 잔잔하여지더라"
+      ],
+      "raw_text_hashes": [
+        "f43dd85bfbfaef8a5874141f3cec6b208e0a5ca72142815a87af87c2d79ceb75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:40",
+      "sequence": 24364,
+      "chapter_label": "MRK 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "He said to them, “Why are you so afraid? How is it that you have no faith?”",
+      "ko": "이에 제자들에게 이르시되 어찌하여 이렇게 무서워하느냐 너희가 어찌 믿음이 없느냐 하시니",
+      "source_text_hash": "6657e0806e39815d3e9b5977a30fb711edfecd0e739760800c89a42e2fb80a88",
+      "translation_text_hash": "bf0095762dc982c10f245e87fb2387c5d92c5ccea6c6c184b98321b6f18eabcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 제자들에게 이르시되 어찌하여 이렇게 무서워하느냐 너희가 어찌 믿음이 없느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "bf0095762dc982c10f245e87fb2387c5d92c5ccea6c6c184b98321b6f18eabcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:4:41",
+      "sequence": 24365,
+      "chapter_label": "MRK 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "They were greatly afraid and said to one another, “Who then is this, that even the wind and the sea obey him?”",
+      "ko": "저희가 심히 두려워하여 서로 말하되 저가 뉘기에 바람과 바다라도 순종하는고 하였더라",
+      "source_text_hash": "5133955836040062afc87751f649ade931400234d1a4777cbbd8353008e81a26",
+      "translation_text_hash": "2c185d4fbb633174805914d0fcc8d6776ec3fee8a1b180d50090fc530f52cdae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 심히 두려워하여 서로 말하되 저가 뉘기에 바람과 바다라도 순종하는고 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2c185d4fbb633174805914d0fcc8d6776ec3fee8a1b180d50090fc530f52cdae"
+      ]
+    }
+  ]
+}

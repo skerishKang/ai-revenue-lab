@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:006",
+  "unit_ordinal": 409,
+  "unit_label": "EZR 6",
+  "book_code": "EZR",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:6:1",
+      "sequence": 12153,
+      "chapter_label": "EZR 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Then Darius the king made a decree, and the house of the archives, where the treasures were laid up in Babylon, was searched.",
+      "ko": "이에 다리오왕이 조서를 내려 서적 곳간 곧 바벨론에서 보물을 쌓아둔 곳에서 조사하게 하였더니",
+      "source_text_hash": "4cc01577e1f71fe05d8d0b7288820ed6264a28c84bf9bc2e4192d2858699d37d",
+      "translation_text_hash": "07452ec37c0ae24a990c3c25c55eb0c644aabf28109b766348e56cd5f40c8d89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다리오왕이 조서를 내려 서적 곳간 곧 바벨론에서 보물을 쌓아둔 곳에서 조사하게 하였더니"
+      ],
+      "raw_text_hashes": [
+        "07452ec37c0ae24a990c3c25c55eb0c644aabf28109b766348e56cd5f40c8d89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:2",
+      "sequence": 12154,
+      "chapter_label": "EZR 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "A scroll was found at Achmetha, in the palace that is in the province of Media, and in it this was written for a record: i1",
+      "ko": "메대도 악메다 궁에서 한 두루마리를 얻으니 거기 기록하였으되",
+      "source_text_hash": "b3374d3fdb4fde25db5db81c97455fdd67ec9f5c87ff63536b74c567338ca4d2",
+      "translation_text_hash": "05174b8718f0e24d940c90d4846843095ea84acb0ba342ad519bb9d934a25a23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메대도 악메다 궁에서 한 두루마리를 얻으니 거기 기록하였으되"
+      ],
+      "raw_text_hashes": [
+        "05174b8718f0e24d940c90d4846843095ea84acb0ba342ad519bb9d934a25a23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:3",
+      "sequence": 12155,
+      "chapter_label": "EZR 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "In the first year of Cyrus the king, Cyrus the king made a decree: Concerning God’s house at Jerusalem, let the house be built, the place where they offer sacrifices, and let its foundations be strongly laid, with its height sixty cubits and its width sixty cubits;",
+      "ko": "고레스왕 원년에 조서를 내려 이르기를 예루살렘 하나님의 전에 대하여 이르노니 이 전 곧 제사 드리는 처소를 건축하되 지대를 견고히 쌓고 그 전의 고는 육십 규빗으로, 광도 육십 규빗으로 하고",
+      "source_text_hash": "17806c4aa5076b7663dfc294d11174340a7b84e46305a6d701fa58500ecf8320",
+      "translation_text_hash": "35157394aeb92e0595a0fb6e2e52e9d4b2379166a1ec3debc3961b2649347018",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고레스왕 원년에 조서를 내려 이르기를 예루살렘 하나님의 전에 대하여 이르노니 이 전 곧 제사 드리는 처소를 건축하되 지대를 견고히 쌓고 그 전의 고는 육십 규빗으로, 광도 육십 규빗으로 하고"
+      ],
+      "raw_text_hashes": [
+        "35157394aeb92e0595a0fb6e2e52e9d4b2379166a1ec3debc3961b2649347018"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:4",
+      "sequence": 12156,
+      "chapter_label": "EZR 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "with three courses of great stones and a course of new timber. Let the expenses be given out of the king’s house.",
+      "ko": "큰 돌 세 켜에 새 나무 한 켜를 놓으라 그 경비는 다 왕실에서 내리라",
+      "source_text_hash": "ca5ea153c8eabf86ab4b7427fb588f844d17931a7ed09b1066b6748bd1a82c16",
+      "translation_text_hash": "93741e5686e0b328521727d9bfd4a2879b29783eaba168000978319f0b09ee5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 돌 세 켜에 새 나무 한 켜를 놓으라 그 경비는 다 왕실에서 내리라"
+      ],
+      "raw_text_hashes": [
+        "93741e5686e0b328521727d9bfd4a2879b29783eaba168000978319f0b09ee5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:5",
+      "sequence": 12157,
+      "chapter_label": "EZR 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Also let the gold and silver vessels of God’s house, which Nebuchadnezzar took out of the temple which is at Jerusalem and brought to Babylon, be restored and brought again to the temple which is at Jerusalem, everything to its place. You shall put them in God’s house. i1",
+      "ko": "또 느부갓네살이 예루살렘 전에서 취하여 바벨론으로 옮겼던 하나님의 전 금, 은 기명을 돌려 보내어 예루살렘 전에 가져다가 하나님의 전 안 각기 본처에 둘찌니라 하였더라",
+      "source_text_hash": "e253c22a1fddd21820ec1d8e05e50cb31d926e54d487f00c7a1bcc9674282dcb",
+      "translation_text_hash": "d1e78f3dac6dc806241701740db96911cc6890f6a409c5daca7a8ab00afe3a6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 느부갓네살이 예루살렘 전에서 취하여 바벨론으로 옮겼던 하나님의 전 금, 은 기명을 돌려 보내어 예루살렘 전에 가져다가 하나님의 전 안 각기 본처에 둘찌니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d1e78f3dac6dc806241701740db96911cc6890f6a409c5daca7a8ab00afe3a6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:6",
+      "sequence": 12158,
+      "chapter_label": "EZR 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Now therefore, Tattenai, governor beyond the River, Shetharbozenai, and your companions the Apharsachites, who are beyond the River, you must stay far from there.",
+      "ko": "이제 강 서편 총독 닷드내와 스달보스내와 너희 동료 강 서편 아바삭 사람들은 그곳을 멀리하여",
+      "source_text_hash": "db075dd8b8906e1439e11e1b853e7df786b5990dbcefc4d670cd2126daa74f05",
+      "translation_text_hash": "ba5280885361c6eb030de076380c0805ae7d29c7f581bc4cd0503b83eb8fe225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 강 서편 총독 닷드내와 스달보스내와 너희 동료 강 서편 아바삭 사람들은 그곳을 멀리하여"
+      ],
+      "raw_text_hashes": [
+        "ba5280885361c6eb030de076380c0805ae7d29c7f581bc4cd0503b83eb8fe225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:7",
+      "sequence": 12159,
+      "chapter_label": "EZR 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Leave the work of this house of God alone; let the governor of the Jews and the elders of the Jews build this house of God in its place.",
+      "ko": "하나님의 전 역사를 막지 말고 유다 총독과 장로들로 하나님의 이 전을 본처에 건축하게 하라",
+      "source_text_hash": "4c7e6791b2f04be5a3d0205a4feb6a704cefdb3412fe7dabdf0b2a358043a7da",
+      "translation_text_hash": "08485eab8b4de3ee41200990e9f912aea0d01ac39c89c589503a4682eac73800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 전 역사를 막지 말고 유다 총독과 장로들로 하나님의 이 전을 본처에 건축하게 하라"
+      ],
+      "raw_text_hashes": [
+        "08485eab8b4de3ee41200990e9f912aea0d01ac39c89c589503a4682eac73800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:8",
+      "sequence": 12160,
+      "chapter_label": "EZR 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Moreover I make a decree regarding what you shall do for these elders of the Jews for the building of this house of God: that of the king’s goods, even of the tribute beyond the River, expenses must be given with all diligence to these men, that they not be hindered.",
+      "ko": "내가 또 조서를 내려서 하나님의 이 전을 건축함에 대하여 너희가 유다 사람의 장로들에게 행할 것을 알게 하노니 왕의 재산 곧 강 서편 세금 중에서 그 경비를 이 사람들에게 신속히 주어 저희로 지체치 않게 하라",
+      "source_text_hash": "a289024c00ace7c02118d891170ea273b893259d73c3fd71448f3661d49ddd2f",
+      "translation_text_hash": "ab9337e19c63716f39d2dda7ba0b7d958954585c2243facda18f5c5bc90a8a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 조서를 내려서 하나님의 이 전을 건축함에 대하여 너희가 유다 사람의 장로들에게 행할 것을 알게 하노니 왕의 재산 곧 강 서편 세금 중에서 그 경비를 이 사람들에게 신속히 주어 저희로 지체치 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "ab9337e19c63716f39d2dda7ba0b7d958954585c2243facda18f5c5bc90a8a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:9",
+      "sequence": 12161,
+      "chapter_label": "EZR 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "That which they have need of, including young bulls, rams, and lambs, for burnt offerings to the God of heaven; also wheat, salt, wine, and oil, according to the word of the priests who are at Jerusalem, let it be given them day by day without fail,",
+      "ko": "또 그 수용물 곧 하늘의 하나님께 드릴 번제의 수송아지와 수양과 어린 양과 또 밀과 소금과 포도주와 기름을 예루살렘 제사장의 소청대로 영락 없이 날마다 주어",
+      "source_text_hash": "d5c6e896eac0abbf232b9b8af73540175ff8ed6a7e6a064b99781b3349dd458c",
+      "translation_text_hash": "7ecf1880ae09884e1b0c9f809a691d1d8f7dc8781032e1aa35229e3826a90853",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 수용물 곧 하늘의 하나님께 드릴 번제의 수송아지와 수양과 어린 양과 또 밀과 소금과 포도주와 기름을 예루살렘 제사장의 소청대로 영락 없이 날마다 주어"
+      ],
+      "raw_text_hashes": [
+        "7ecf1880ae09884e1b0c9f809a691d1d8f7dc8781032e1aa35229e3826a90853"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:10",
+      "sequence": 12162,
+      "chapter_label": "EZR 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "that they may offer sacrifices of pleasant aroma to the God of heaven, and pray for the life of the king and of his sons.",
+      "ko": "저희로 하늘의 하나님께 향기로운 제물을 드려 왕과 왕자들의 생명을 위하여 기도하게 하라",
+      "source_text_hash": "596375d46551de80f81d205a18e33d000c1b687eb067447c097bc38d97382f62",
+      "translation_text_hash": "15e408e26a37e41f95cf3a5320266566edd2c32ec3c50c8fcfdd6f2fe539d0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 하늘의 하나님께 향기로운 제물을 드려 왕과 왕자들의 생명을 위하여 기도하게 하라"
+      ],
+      "raw_text_hashes": [
+        "15e408e26a37e41f95cf3a5320266566edd2c32ec3c50c8fcfdd6f2fe539d0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:11",
+      "sequence": 12163,
+      "chapter_label": "EZR 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "I have also made a decree that whoever alters this message, let a beam be pulled out from his house, and let him be lifted up and fastened on it; and let his house be made a dunghill for this.",
+      "ko": "내가 또 조서를 내리노니 무론 누구든지 이 명령을 변개하면 그 집에서 들보를 빼어내고 저를 그 위에 매어달게 하고 그 집은 이로 인하여 거름더미가 되게 하라",
+      "source_text_hash": "930998ae346b0d81e44280795568c004108a2c837a3cc0ec57269e91834dda3f",
+      "translation_text_hash": "e6fe304afe0c69c0cb80963eed7260a656ada9a309bfe8ac027ad56d7aec0627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 조서를 내리노니 무론 누구든지 이 명령을 변개하면 그 집에서 들보를 빼어내고 저를 그 위에 매어달게 하고 그 집은 이로 인하여 거름더미가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "e6fe304afe0c69c0cb80963eed7260a656ada9a309bfe8ac027ad56d7aec0627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:12",
+      "sequence": 12164,
+      "chapter_label": "EZR 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "May the God who has caused his name to dwell there overthrow all kings and peoples who stretch out their hand to alter this, to destroy this house of God which is at Jerusalem. I Darius have made a decree. Let it be done with all diligence.",
+      "ko": "만일 열왕이나 백성이 이 조서를 변개하고 손을 들어 예루살렘 하나님의 전을 헐찐대 그곳에 이름을 두신 하나님이 저희를 멸하시기를 원하노라 나 다리오가 조서를 내렸노니 신속히 행할찌어다 하였더라",
+      "source_text_hash": "bbb9e83a0a8967e7a371912552da9a2136c691492314a176963e48b282cec15c",
+      "translation_text_hash": "1ebf38521889eaa21881135ce5b1c845f5eb6b831c448a3a65af9762650b1331",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 열왕이나 백성이 이 조서를 변개하고 손을 들어 예루살렘 하나님의 전을 헐찐대 그곳에 이름을 두신 하나님이 저희를 멸하시기를 원하노라 나 다리오가 조서를 내렸노니 신속히 행할찌어다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1ebf38521889eaa21881135ce5b1c845f5eb6b831c448a3a65af9762650b1331"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:13",
+      "sequence": 12165,
+      "chapter_label": "EZR 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Then Tattenai, the governor beyond the River, Shetharbozenai, and their companions did accordingly with all diligence, because Darius the king had sent a decree.",
+      "ko": "다리오왕의 조서가 내리매 강 서편 총독 닷드내와 스달보스내와 그 동료들이 신속히 준행한지라",
+      "source_text_hash": "a34fd4f9021af2ae925e0cfd6ff8997ef4775ce21a28f4f54a8c05b34e69b558",
+      "translation_text_hash": "f029d40f9f7f1337a23af2928fa1e4446f7525073f5cb1a55c3e909853aea540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오왕의 조서가 내리매 강 서편 총독 닷드내와 스달보스내와 그 동료들이 신속히 준행한지라"
+      ],
+      "raw_text_hashes": [
+        "f029d40f9f7f1337a23af2928fa1e4446f7525073f5cb1a55c3e909853aea540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:14",
+      "sequence": 12166,
+      "chapter_label": "EZR 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The elders of the Jews built and prospered, through the prophesying of Haggai the prophet and Zechariah the son of Iddo. They built and finished it, according to the commandment of the God of Israel, and according to the decree of Cyrus, Darius, and Artaxerxes king of Persia.",
+      "ko": "유다 사람의 장로들이 선지자 학개와 잇도의 손자 스가랴의 권면함으로 인하여 전 건축할 일이 형통한지라 이스라엘 하나님의 명령과 바사 왕 고레스와 다리오와 아닥사스다의 조서를 좇아 전을 건축하며 필역하되",
+      "source_text_hash": "8e526afcfdfd8adce49796e4adb5cbe5b3e7bbd0102e55c791fb32d771f222df",
+      "translation_text_hash": "3c0980a1cd6a34727f947eb74b808e68775860980c805b5073961b0368dda054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 사람의 장로들이 선지자 학개와 잇도의 손자 스가랴의 권면함으로 인하여 전 건축할 일이 형통한지라 이스라엘 하나님의 명령과 바사 왕 고레스와 다리오와 아닥사스다의 조서를 좇아 전을 건축하며 필역하되"
+      ],
+      "raw_text_hashes": [
+        "3c0980a1cd6a34727f947eb74b808e68775860980c805b5073961b0368dda054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:15",
+      "sequence": 12167,
+      "chapter_label": "EZR 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "This house was finished on the third day of the month Adar, which was in the sixth year of the reign of Darius the king.",
+      "ko": "다리오왕 육년 아달월 삼일에 전을 필역하니라",
+      "source_text_hash": "38baad887386f85c0171294eaf6ee9ee73975511227b90bb9e766ff2a9f329ea",
+      "translation_text_hash": "aa49d5f54c0c58f23613dcd78f258faa53a9b85f0d46b102d1941643cf191fd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오왕 육년 아달월 삼일에 전을 필역하니라"
+      ],
+      "raw_text_hashes": [
+        "aa49d5f54c0c58f23613dcd78f258faa53a9b85f0d46b102d1941643cf191fd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:16",
+      "sequence": 12168,
+      "chapter_label": "EZR 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "The children of Israel, the priests, the Levites, and the rest of the children of the captivity, kept the dedication of this house of God with joy.",
+      "ko": "이스라엘 자손과 제사장들과 레위 사람들과 기타 사로잡혔던 자의 자손이 즐거이 하나님의 전 봉헌식을 행하니",
+      "source_text_hash": "69b714c5e5036586f83b8d64500ff82e37a0b2f879329da61a4c984a92fbd806",
+      "translation_text_hash": "9298fa3fdd78a232c8ace8f78204aa2c8eb5080cb45f10cca77a458a9817a4e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손과 제사장들과 레위 사람들과 기타 사로잡혔던 자의 자손이 즐거이 하나님의 전 봉헌식을 행하니"
+      ],
+      "raw_text_hashes": [
+        "9298fa3fdd78a232c8ace8f78204aa2c8eb5080cb45f10cca77a458a9817a4e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:17",
+      "sequence": 12169,
+      "chapter_label": "EZR 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "They offered at the dedication of this house of God one hundred bulls, two hundred rams, four hundred lambs; and for a sin offering for all Israel, twelve male goats, according to the number of the tribes of Israel.",
+      "ko": "하나님의 전 봉헌식을 행할 때에 수소 일백과 수양 이백과 어린 양 사백을 드리고 또 이스라엘 지파의 수를 따라 수염소 열 둘로 이스라엘 전체를 위하여 속죄제를 드리고",
+      "source_text_hash": "68967fcc60e8afa43b13d63df3c339112ece33433ba891c4649fb203926af283",
+      "translation_text_hash": "d8ac81482ea9a3a5f419929798fae271ee6fcb5bb6c961aae3b75d5044e0af65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 전 봉헌식을 행할 때에 수소 일백과 수양 이백과 어린 양 사백을 드리고 또 이스라엘 지파의 수를 따라 수염소 열 둘로 이스라엘 전체를 위하여 속죄제를 드리고"
+      ],
+      "raw_text_hashes": [
+        "d8ac81482ea9a3a5f419929798fae271ee6fcb5bb6c961aae3b75d5044e0af65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:18",
+      "sequence": 12170,
+      "chapter_label": "EZR 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "They set the priests in their divisions and the Levites in their courses, for the service of God which is at Jerusalem, as it is written in the book of Moses.",
+      "ko": "제사장을 그 분반대로, 레위 사람을 그 반차대로 세워 예루살렘에서 하나님을 섬기게 하되 모세의 책에 기록된대로 하게 하니라",
+      "source_text_hash": "dab32cd5e39f37c85a2f4a31198dbe2580ddb39d79238d5ccaecb58ad39278b6",
+      "translation_text_hash": "77e72e17cffa260be92e6e4821dccf9fbb34017a4dd43d1cc3335cb67775fdc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장을 그 분반대로, 레위 사람을 그 반차대로 세워 예루살렘에서 하나님을 섬기게 하되 모세의 책에 기록된대로 하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "77e72e17cffa260be92e6e4821dccf9fbb34017a4dd43d1cc3335cb67775fdc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:19",
+      "sequence": 12171,
+      "chapter_label": "EZR 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "The children of the captivity kept the Passover on the fourteenth day of the first month.",
+      "ko": "사로잡혔던 자의 자손이 정월 십사일에 유월절을 지키되",
+      "source_text_hash": "7b6241d7814b5bfa9e2e5fae433176a382160eb3c400853b218759d59470631a",
+      "translation_text_hash": "8924ec44e5019290d370d81bba7913775c264d5a97ca3dd9f2ec44437d4a4be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔던 자의 자손이 정월 십사일에 유월절을 지키되"
+      ],
+      "raw_text_hashes": [
+        "8924ec44e5019290d370d81bba7913775c264d5a97ca3dd9f2ec44437d4a4be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:20",
+      "sequence": 12172,
+      "chapter_label": "EZR 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Because the priests and the Levites had purified themselves together, all of them were pure. They killed the Passover for all the children of the captivity, for their brothers the priests, and for themselves.",
+      "ko": "제사장들과 레위 사람들이 일제히 몸을 정결케 하여 다 정결하매 사로잡혔던 자의 모든 자손과 자기 형제 제사장들과 자기를 위하여 유월절 양을 잡으니",
+      "source_text_hash": "511b6be47ab019694eaac7ef2cea1d8e0f629d26fba7694182d8b22210c52ad3",
+      "translation_text_hash": "a60ca5c1dddc071d6cb81f96c587c4302ecb0fad96dd60e19e420988b35fcc1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들과 레위 사람들이 일제히 몸을 정결케 하여 다 정결하매 사로잡혔던 자의 모든 자손과 자기 형제 제사장들과 자기를 위하여 유월절 양을 잡으니"
+      ],
+      "raw_text_hashes": [
+        "a60ca5c1dddc071d6cb81f96c587c4302ecb0fad96dd60e19e420988b35fcc1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:21",
+      "sequence": 12173,
+      "chapter_label": "EZR 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "The children of Israel who had returned out of the captivity, and all who had separated themselves to them from the filthiness of the nations of the land to seek the LORD, the God of Israel, ate,",
+      "ko": "사로잡혔다가 돌아온 이스라엘 자손과 무릇 스스로 구별하여 자기 땅 이방 사람의 더러운 것을 버리고 이스라엘 무리에게 속하여 이스라엘 하나님 여호와를 구하는 자가 다 먹고",
+      "source_text_hash": "088bdef3e907db915be59214a93ba7dfca95b5fea8b2ffea6a2eaaa3b3377fcc",
+      "translation_text_hash": "c599c67e36d8630f6a98a573481e3c1f482625949dbdd9141783b2024184f158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사로잡혔다가 돌아온 이스라엘 자손과 무릇 스스로 구별하여 자기 땅 이방 사람의 더러운 것을 버리고 이스라엘 무리에게 속하여 이스라엘 하나님 여호와를 구하는 자가 다 먹고"
+      ],
+      "raw_text_hashes": [
+        "c599c67e36d8630f6a98a573481e3c1f482625949dbdd9141783b2024184f158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:6:22",
+      "sequence": 12174,
+      "chapter_label": "EZR 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "and kept the feast of unleavened bread seven days with joy; because the LORD had made them joyful, and had turned the heart of the king of Assyria to them, to strengthen their hands in the work of God, the God of Israel’s house.",
+      "ko": "즐거우므로 칠일 동안 무교절을 지켰으니 이는 여호와께서 저희로 즐겁게 하시고 또 앗수르 왕의 마음을 저희에게로 돌이켜 이스라엘의 하나님이신 하나님의 전 역사하는 손을 힘있게 하도록 하셨음이었느니라",
+      "source_text_hash": "3b156efcafea5e7016f405d83f0d69a216cefbe5a9cacddd296ca9e405f7ea89",
+      "translation_text_hash": "8ba9e65bd69162864db9299e3b3dd3f7723961d262986aa2ef1b0d2dc71b69c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "즐거우므로 칠일 동안 무교절을 지켰으니 이는 여호와께서 저희로 즐겁게 하시고 또 앗수르 왕의 마음을 저희에게로 돌이켜 이스라엘의 하나님이신 하나님의 전 역사하는 손을 힘있게 하도록 하셨음이었느니라"
+      ],
+      "raw_text_hashes": [
+        "8ba9e65bd69162864db9299e3b3dd3f7723961d262986aa2ef1b0d2dc71b69c6"
+      ]
+    }
+  ]
+}

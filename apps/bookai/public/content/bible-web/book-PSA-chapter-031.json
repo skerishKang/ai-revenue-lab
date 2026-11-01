@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:031",
+  "unit_ordinal": 509,
+  "unit_label": "PSA 31",
+  "book_code": "PSA",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:31:1",
+      "sequence": 14333,
+      "chapter_label": "PSA 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "In you, LORD, I take refuge. Let me never be disappointed. Deliver me in your righteousness.",
+      "ko": "여호와여 내가 주께 피하오니 나로 영원히 부끄럽게 마시고 주의 의로 나를 건지소서",
+      "source_text_hash": "a404caa249b88f922705c62b85f01aed18e84a595cfabfe2e7cb9e173680649b",
+      "translation_text_hash": "4e53f34f0fb3f0818013e6832d3028daa19a81ffaea1d520999b3b331f478008",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 피하오니 나로 영원히 부끄럽게 마시고 주의 의로 나를 건지소서"
+      ],
+      "raw_text_hashes": [
+        "4e53f34f0fb3f0818013e6832d3028daa19a81ffaea1d520999b3b331f478008"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:2",
+      "sequence": 14334,
+      "chapter_label": "PSA 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "Bow down your ear to me. Deliver me speedily. Be to me a strong rock, a house of defense to save me.",
+      "ko": "내게 귀를 기울여 속히 건지시고 내게 견고한 바위와 구원하는 보장이 되소서",
+      "source_text_hash": "8f08b60d045edd2891f49796e4432c5f7a04bac71c11ce73083d97035d8a00b9",
+      "translation_text_hash": "4fd700f080238e2e8c8b854dc0a0418dbf79881b39fc6a2c2dcd20fac6ffc075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 귀를 기울여 속히 건지시고 내게 견고한 바위와 구원하는 보장이 되소서"
+      ],
+      "raw_text_hashes": [
+        "4fd700f080238e2e8c8b854dc0a0418dbf79881b39fc6a2c2dcd20fac6ffc075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:3",
+      "sequence": 14335,
+      "chapter_label": "PSA 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "For you are my rock and my fortress, therefore for your name’s sake lead me and guide me.",
+      "ko": "주는 나의 반석과 산성이시니 그러므로 주의 이름을 인하여 나를 인도하시고 지도하소서",
+      "source_text_hash": "2bcd2df7b1920c6610d32ab43fdf905317135de61a538298340eb8b2514b6bfb",
+      "translation_text_hash": "559c041940156b9cb06cb817bc2cd6a99fd278e54e9985a15259897d8fbf88a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나의 반석과 산성이시니 그러므로 주의 이름을 인하여 나를 인도하시고 지도하소서"
+      ],
+      "raw_text_hashes": [
+        "559c041940156b9cb06cb817bc2cd6a99fd278e54e9985a15259897d8fbf88a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:4",
+      "sequence": 14336,
+      "chapter_label": "PSA 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "Pluck me out of the net that they have laid secretly for me, for you are my stronghold.",
+      "ko": "저희가 나를 위하여 비밀히 친 그물에서 빼어 내소서 주는 나의 산성이시니이다",
+      "source_text_hash": "4325365cb3659da06ecd1cf2b0839027f5f7401f6d43be0261632802f11f4f81",
+      "translation_text_hash": "4ff8343a4aee1552fdfcb5ef9d83e81ad42bb38b691a559f3ca4aec313e294f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나를 위하여 비밀히 친 그물에서 빼어 내소서 주는 나의 산성이시니이다"
+      ],
+      "raw_text_hashes": [
+        "4ff8343a4aee1552fdfcb5ef9d83e81ad42bb38b691a559f3ca4aec313e294f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:5",
+      "sequence": 14337,
+      "chapter_label": "PSA 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "Into your hand I commend my spirit. You redeem me, LORD, God of truth.",
+      "ko": "내가 나의 영을 주의 손에 부탁하나이다 진리의 하나님 여호와여 나를 구속하셨나이다",
+      "source_text_hash": "2307973d429e4b99eb20244baa5054b25e676eca33f3a02c276ccb94460fd36b",
+      "translation_text_hash": "e3164e060810deb1a31a41cfbe36a22cc930277bc6e0e26f339bc642ad2182be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 영을 주의 손에 부탁하나이다 진리의 하나님 여호와여 나를 구속하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "e3164e060810deb1a31a41cfbe36a22cc930277bc6e0e26f339bc642ad2182be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:6",
+      "sequence": 14338,
+      "chapter_label": "PSA 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "I hate those who regard lying vanities, but I trust in the LORD.",
+      "ko": "내가 허탄한 거짓을 숭상하는 자를 미워하고 여호와를 의지하나이다",
+      "source_text_hash": "6647b674d5d41156a0898119aa53d74db8059b30b23699d0edf4f6de3b18b19a",
+      "translation_text_hash": "d021bb06396297463fea652bfe63c57fde0ac4f0fd60e049165e471e812b0e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 허탄한 거짓을 숭상하는 자를 미워하고 여호와를 의지하나이다"
+      ],
+      "raw_text_hashes": [
+        "d021bb06396297463fea652bfe63c57fde0ac4f0fd60e049165e471e812b0e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:7",
+      "sequence": 14339,
+      "chapter_label": "PSA 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "I will be glad and rejoice in your loving kindness, for you have seen my affliction. You have known my soul in adversities.",
+      "ko": "내가 주의 인자하심을 기뻐하며 즐거워할 것은 주께서 나의 곤란을 감찰하사 환난 중에 있는 내 영혼을 아셨고",
+      "source_text_hash": "fd69db2e33f7e8771806698136fa3926843204496ac00cbb7a657a56a1f1fc33",
+      "translation_text_hash": "4a88c0126d6566afd8eb22b4d739f897c32c0462a5db178c0559533608b13627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 인자하심을 기뻐하며 즐거워할 것은 주께서 나의 곤란을 감찰하사 환난 중에 있는 내 영혼을 아셨고"
+      ],
+      "raw_text_hashes": [
+        "4a88c0126d6566afd8eb22b4d739f897c32c0462a5db178c0559533608b13627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:8",
+      "sequence": 14340,
+      "chapter_label": "PSA 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "You have not shut me up into the hand of the enemy. You have set my feet in a large place.",
+      "ko": "나를 대적의 수중에 금고치 아니하셨고 내 발을 넓은 곳에 세우셨음이니이다",
+      "source_text_hash": "014bb9b1635ff24968a1238d8fb5f9988f1fa453a73d430dc1a35673e55100fa",
+      "translation_text_hash": "d7cf8db03e21b5058105aac3094b5f01c0488e1693b5838c9ce0bfc2103114fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 대적의 수중에 금고치 아니하셨고 내 발을 넓은 곳에 세우셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "d7cf8db03e21b5058105aac3094b5f01c0488e1693b5838c9ce0bfc2103114fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:9",
+      "sequence": 14341,
+      "chapter_label": "PSA 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "Have mercy on me, LORD, for I am in distress. My eye, my soul, and my body waste away with grief.",
+      "ko": "여호와여 내 고통을 인하여 나를 긍휼히 여기소서 내가 근심으로 눈과 혼과 몸이 쇠하였나이다",
+      "source_text_hash": "c623ea2d5dacec2440d11f10f84d5ebd0f5ec8f04ac6909c0cd91843df5d32aa",
+      "translation_text_hash": "4b3afd390c9611dd22e82c9b33a38b63be402902829a70b6ad659ef7fd65133c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내 고통을 인하여 나를 긍휼히 여기소서 내가 근심으로 눈과 혼과 몸이 쇠하였나이다"
+      ],
+      "raw_text_hashes": [
+        "4b3afd390c9611dd22e82c9b33a38b63be402902829a70b6ad659ef7fd65133c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:10",
+      "sequence": 14342,
+      "chapter_label": "PSA 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "For my life is spent with sorrow, my years with sighing. My strength fails because of my iniquity. My bones are wasted away.",
+      "ko": "내 생명은 슬픔으로 보내며 나의 해는 탄식으로 보냄이여 내 기력이 나의 죄악으로 약하며 나의 뼈가 쇠하도소이다",
+      "source_text_hash": "4956b2225c83d63410e084fe6195a146bd4b52801057ba1b67f998fd42d6949d",
+      "translation_text_hash": "b5872aee47f9c68ea7d6199df98268653a904b8d1bb9bb397eecbd5e829bf11e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생명은 슬픔으로 보내며 나의 해는 탄식으로 보냄이여 내 기력이 나의 죄악으로 약하며 나의 뼈가 쇠하도소이다"
+      ],
+      "raw_text_hashes": [
+        "b5872aee47f9c68ea7d6199df98268653a904b8d1bb9bb397eecbd5e829bf11e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:11",
+      "sequence": 14343,
+      "chapter_label": "PSA 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "Because of all my adversaries I have become utterly contemptible to my neighbors, a horror to my acquaintances. Those who saw me on the street fled from me.",
+      "ko": "내가 모든 대적으로 말미암아 욕을 당하고 내 이웃에게서는 심히 당하니 내 친구가 놀라고 길에서 보는 자가 나를 피하였나이다",
+      "source_text_hash": "ef718ebef945725ae8c8da5b01200c82c7d437be31c873f1da89b588a39711e1",
+      "translation_text_hash": "5086cfc96d6959d5409ea831e0ee8203abd99ee26b9d9c24bfed05a8010a0c77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 모든 대적으로 말미암아 욕을 당하고 내 이웃에게서는 심히 당하니 내 친구가 놀라고 길에서 보는 자가 나를 피하였나이다"
+      ],
+      "raw_text_hashes": [
+        "5086cfc96d6959d5409ea831e0ee8203abd99ee26b9d9c24bfed05a8010a0c77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:12",
+      "sequence": 14344,
+      "chapter_label": "PSA 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "I am forgotten from their hearts like a dead man. I am like broken pottery.",
+      "ko": "내가 잊어버린바 됨이 사망한 자를 마음에 두지 아니함 같고 파기와 같으니이다",
+      "source_text_hash": "db98d7659e97d89f481011854aaae1df333010351c57f6381f8e2fec22eab3a5",
+      "translation_text_hash": "63adf81872779e4229c82a9434d35f7e7e23588cc8a485126899c069f5500726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 잊어버린바 됨이 사망한 자를 마음에 두지 아니함 같고 파기와 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "63adf81872779e4229c82a9434d35f7e7e23588cc8a485126899c069f5500726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:13",
+      "sequence": 14345,
+      "chapter_label": "PSA 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "For I have heard the slander of many, terror on every side, while they conspire together against me, they plot to take away my life.",
+      "ko": "내가 무리의 비방을 들으오며 사방에 두려움이 있나이다 저희가 나를 치려 의논할 때에 내 생명을 빼앗기로 꾀하였나이다",
+      "source_text_hash": "4f9f817bfbc1de3fcd1691fc4dd43c72b5658e7105c0142f3e564540ff949d19",
+      "translation_text_hash": "eeb3b63be63c3bb70f9daeafb64bc2b31f94504ec28235a191297cd561c475fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무리의 비방을 들으오며 사방에 두려움이 있나이다 저희가 나를 치려 의논할 때에 내 생명을 빼앗기로 꾀하였나이다"
+      ],
+      "raw_text_hashes": [
+        "eeb3b63be63c3bb70f9daeafb64bc2b31f94504ec28235a191297cd561c475fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:14",
+      "sequence": 14346,
+      "chapter_label": "PSA 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "But I trust in you, LORD. I said, “You are my God.”",
+      "ko": "여호와여 그러하여도 나는 주께 의지하고 말하기를 주는 내 하나님이시라 하였나이다",
+      "source_text_hash": "3fbb3401516272847b3e5ea4aae168a0d76bde29689df78b554837b71c710fb7",
+      "translation_text_hash": "dda1f8bc412e2bb8f0504e52d1996a7c295e664a3ac490331b1cef45a20a75ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 그러하여도 나는 주께 의지하고 말하기를 주는 내 하나님이시라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "dda1f8bc412e2bb8f0504e52d1996a7c295e664a3ac490331b1cef45a20a75ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:15",
+      "sequence": 14347,
+      "chapter_label": "PSA 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "My times are in your hand. Deliver me from the hand of my enemies, and from those who persecute me.",
+      "ko": "내 시대가 주의 손에 있사오니 내 원수와 핍박하는 자의 손에서 나를 건지소서",
+      "source_text_hash": "2211742c94e05978093cdbe98d2d5d33d2000a5894c17a52abc27402baad9505",
+      "translation_text_hash": "c861a0e1406052eacd5a2b5b2aa56b9fcb8c5ec19e55183f170f7eb4092fb2c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 시대가 주의 손에 있사오니 내 원수와 핍박하는 자의 손에서 나를 건지소서"
+      ],
+      "raw_text_hashes": [
+        "c861a0e1406052eacd5a2b5b2aa56b9fcb8c5ec19e55183f170f7eb4092fb2c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:16",
+      "sequence": 14348,
+      "chapter_label": "PSA 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "Make your face to shine on your servant. Save me in your loving kindness.",
+      "ko": "주의 얼굴을 주의 종에게 비취시고 주의 인자하심으로 나를 구원하소서",
+      "source_text_hash": "599134467c863099921002cda8649a3f9ad7aaf03c7cf7c5c3788efe1340307d",
+      "translation_text_hash": "5da324bb3f3cc532561eadbff08d359a3153cbdb7b4a65c07cd9b07c90fb6a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 얼굴을 주의 종에게 비취시고 주의 인자하심으로 나를 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "5da324bb3f3cc532561eadbff08d359a3153cbdb7b4a65c07cd9b07c90fb6a20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:17",
+      "sequence": 14349,
+      "chapter_label": "PSA 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "Let me not be disappointed, LORD, for I have called on you. Let the wicked be disappointed. Let them be silent in Sheol.",
+      "ko": "여호와여 내가 주를 불렀사오니 나로 부끄럽게 마시고 악인을 부끄럽게 하사 음부에서 잠잠케 하소서",
+      "source_text_hash": "fd3d511d31df1359755f9f7378fdb746528aaed47029e90fe109e9632f52ce33",
+      "translation_text_hash": "fa3177339eb05ccf19b0cd3740cba9d15ea5fdc0e5427995d9a4c8ee09524cbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주를 불렀사오니 나로 부끄럽게 마시고 악인을 부끄럽게 하사 음부에서 잠잠케 하소서"
+      ],
+      "raw_text_hashes": [
+        "fa3177339eb05ccf19b0cd3740cba9d15ea5fdc0e5427995d9a4c8ee09524cbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:18",
+      "sequence": 14350,
+      "chapter_label": "PSA 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "Let the lying lips be mute, which speak against the righteous insolently, with pride and contempt.",
+      "ko": "교만하고 완악한 말로 무례히 의인을 치는 거짓 입술로 벙어리 되게 하소서",
+      "source_text_hash": "57c11f4a6ef9d8a0a4f319a1bff398bc7acca39add3c928fa51e6bf34506747e",
+      "translation_text_hash": "5036023da64fe143acb98eb03d56a8179049f204b4ff8a8784c69ec4a19cd024",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "교만하고 완악한 말로 무례히 의인을 치는 거짓 입술로 벙어리 되게 하소서"
+      ],
+      "raw_text_hashes": [
+        "5036023da64fe143acb98eb03d56a8179049f204b4ff8a8784c69ec4a19cd024"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:19",
+      "sequence": 14351,
+      "chapter_label": "PSA 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "Oh how great is your goodness, which you have laid up for those who fear you, which you have worked for those who take refuge in you, before the sons of men!",
+      "ko": "주를 두려워하는 자를 위하여 쌓아 두신 은혜 곧 인생 앞에서 주께 피하는 자를 위하여 베푸신 은혜가 어찌 그리 큰지요",
+      "source_text_hash": "e0f3edcfc001c3bf60b3ba930f4467aa26ff55a052b0e87ff4476171e58842b6",
+      "translation_text_hash": "57d3b7029a168c947aa448abceb3d3a01d894d5667909b1b50a1b39527bca565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주를 두려워하는 자를 위하여 쌓아 두신 은혜 곧 인생 앞에서 주께 피하는 자를 위하여 베푸신 은혜가 어찌 그리 큰지요"
+      ],
+      "raw_text_hashes": [
+        "57d3b7029a168c947aa448abceb3d3a01d894d5667909b1b50a1b39527bca565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:20",
+      "sequence": 14352,
+      "chapter_label": "PSA 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "In the shelter of your presence you will hide them from the plotting of man. You will keep them secretly in a dwelling away from the strife of tongues.",
+      "ko": "주께서 저희를 주의 은밀한 곳에 숨기사 사람의 꾀에서 벗어나게 하시고 비밀히 장막에 감추사 구설의 다툼에서 면하게 하시리이다",
+      "source_text_hash": "28dde524a5f3bbef20b549a7a2afdf31d9fd7f66af8dc4c5b86d569f0f7e0db9",
+      "translation_text_hash": "498b24f633ac23614d2f5af0e58b5f6fdb285d6d9f9d229d928059ff1e842758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 저희를 주의 은밀한 곳에 숨기사 사람의 꾀에서 벗어나게 하시고 비밀히 장막에 감추사 구설의 다툼에서 면하게 하시리이다"
+      ],
+      "raw_text_hashes": [
+        "498b24f633ac23614d2f5af0e58b5f6fdb285d6d9f9d229d928059ff1e842758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:21",
+      "sequence": 14353,
+      "chapter_label": "PSA 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "Praise be to the LORD, for he has shown me his marvelous loving kindness in a strong city.",
+      "ko": "여호와를 찬송할지어다 견고한 성에서 그 기이한 인자를 내게 보이셨음이로다",
+      "source_text_hash": "f6e93b89b4e89c884f54885c8ea55be6026f48fb02d1ec67f85cc45852d2d90f",
+      "translation_text_hash": "2b850d4b228041f60473e9ce4341d1461f1f2b3abe0978963e4df9501c3a36ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 찬송할지어다 견고한 성에서 그 기이한 인자를 내게 보이셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "2b850d4b228041f60473e9ce4341d1461f1f2b3abe0978963e4df9501c3a36ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:22",
+      "sequence": 14354,
+      "chapter_label": "PSA 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "As for me, I said in my haste, “I am cut off from before your eyes.” Nevertheless you heard the voice of my petitions when I cried to you.",
+      "ko": "내가 경겁한 중에 말하기를 주의 목전에서 끊어졌다 하였사오나 내가 주께 부르짖을 때에 주께서 나의 간구하는 소리를 들으셨나이다",
+      "source_text_hash": "bfc4b0b2fe7a15b21e25d028f0838de49cf9247ec152cae1c100812c82030358",
+      "translation_text_hash": "2b07d3a5f9b45bda9f0725725a7edf5df8c50fee268001311cff7843b6c9eef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 경겁한 중에 말하기를 주의 목전에서 끊어졌다 하였사오나 내가 주께 부르짖을 때에 주께서 나의 간구하는 소리를 들으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "2b07d3a5f9b45bda9f0725725a7edf5df8c50fee268001311cff7843b6c9eef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:23",
+      "sequence": 14355,
+      "chapter_label": "PSA 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "Oh love the LORD, all you his saints! The LORD preserves the faithful, and fully recompenses him who behaves arrogantly.",
+      "ko": "너희 모든 성도들아 여호와를 사랑하라 여호와께서 성실한 자를 보호하시고 교만히 행하는 자에게 엄중히 갚으시느니라",
+      "source_text_hash": "2536739e5032ee582090d386830d819730ce0b8aea9803cb3e0f5fd21d629279",
+      "translation_text_hash": "730b9497f1588c941f379a1559bb84f0c36dfd5162b7ba9133a9d3af00f613a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 모든 성도들아 여호와를 사랑하라 여호와께서 성실한 자를 보호하시고 교만히 행하는 자에게 엄중히 갚으시느니라"
+      ],
+      "raw_text_hashes": [
+        "730b9497f1588c941f379a1559bb84f0c36dfd5162b7ba9133a9d3af00f613a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:31:24",
+      "sequence": 14356,
+      "chapter_label": "PSA 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "Be strong, and let your heart take courage, all you who hope in the LORD.",
+      "ko": "강하고 담대하라 여호와를 바라는 너희들아",
+      "source_text_hash": "49fd3be3e03f52352851c9dd9663008410d324156e5ab7f3184f3f2e82449243",
+      "translation_text_hash": "4372590c43c5f471f8b3503209e847116c686def22e81994c14faad4b8a1387b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강하고 담대하라 여호와를 바라는 너희들아"
+      ],
+      "raw_text_hashes": [
+        "4372590c43c5f471f8b3503209e847116c686def22e81994c14faad4b8a1387b"
+      ]
+    }
+  ]
+}

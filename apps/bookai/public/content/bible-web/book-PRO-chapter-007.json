@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:007",
+  "unit_ordinal": 635,
+  "unit_label": "PRO 7",
+  "book_code": "PRO",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:7:1",
+      "sequence": 16577,
+      "chapter_label": "PRO 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "My son, keep my words. Lay up my commandments within you.",
+      "ko": "내 아들아 내 말을 지키며 내 명령을 네게 간직하라",
+      "source_text_hash": "5966c94a0acc1706e468004695765edab713dd8e5a832b0d5f399a2a5eedad7f",
+      "translation_text_hash": "88cee545487624885a124263e09e6abb458d56f4b916b7886bc46916af8dfb1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 내 말을 지키며 내 명령을 네게 간직하라"
+      ],
+      "raw_text_hashes": [
+        "88cee545487624885a124263e09e6abb458d56f4b916b7886bc46916af8dfb1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:2",
+      "sequence": 16578,
+      "chapter_label": "PRO 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Keep my commandments and live! Guard my teaching as the apple of your eye.",
+      "ko": "내 명령을 지켜서 살며 내 법을 네 눈동자처럼 지키라",
+      "source_text_hash": "a96af8e2874c29779dab0255213e0d160adb6f644f8f3d37444fb5620ffe8c0e",
+      "translation_text_hash": "ba4ca034d88d3bf3b5e10d23c46afd30e2f4e97fb6f92cfa4824239ec4206b6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 명령을 지켜서 살며 내 법을 네 눈동자처럼 지키라"
+      ],
+      "raw_text_hashes": [
+        "ba4ca034d88d3bf3b5e10d23c46afd30e2f4e97fb6f92cfa4824239ec4206b6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:3",
+      "sequence": 16579,
+      "chapter_label": "PRO 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Bind them on your fingers. Write them on the tablet of your heart.",
+      "ko": "이것을 네 손가락에 매며 이것을 네 마음판에 새기라",
+      "source_text_hash": "c1d67214cd04a26fc8f77083f3f9dfe23256d2b6cc2d4274aff78b34c50ffb9a",
+      "translation_text_hash": "252af2990667952f75ffae480ae2a797402a43eb29893fc61328da66e6e57269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 네 손가락에 매며 이것을 네 마음판에 새기라"
+      ],
+      "raw_text_hashes": [
+        "252af2990667952f75ffae480ae2a797402a43eb29893fc61328da66e6e57269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:4",
+      "sequence": 16580,
+      "chapter_label": "PRO 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Tell wisdom, “You are my sister.” Call understanding your relative,",
+      "ko": "지혜에게 너는 내 누이라 하며 명철에게 너는 내 친족이라 하라",
+      "source_text_hash": "c4d15923b48b108ee89704c0a02d56ccbadab1a0aab73cd92a90516819c759a1",
+      "translation_text_hash": "cdaf625578f32c76b7a16f12cfca82a1236d668038abfb3bb68bfa0f38063bda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜에게 너는 내 누이라 하며 명철에게 너는 내 친족이라 하라"
+      ],
+      "raw_text_hashes": [
+        "cdaf625578f32c76b7a16f12cfca82a1236d668038abfb3bb68bfa0f38063bda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:5",
+      "sequence": 16581,
+      "chapter_label": "PRO 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "that they may keep you from the strange woman, from the foreigner who flatters with her words.",
+      "ko": "그리하면 이것이 너를 지켜서 음녀에게, 말로 호리는 이방 계집에게 빠지지 않게 하리라",
+      "source_text_hash": "ec5342b80f7f0c7c289f7e2a3b5d0fcd166b73337c853308780a76a131fe734f",
+      "translation_text_hash": "32d4ae24e5865f5f8e9c983fb729e6b7e0468ac9c1bfc418ea93de85ee159546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 이것이 너를 지켜서 음녀에게, 말로 호리는 이방 계집에게 빠지지 않게 하리라"
+      ],
+      "raw_text_hashes": [
+        "32d4ae24e5865f5f8e9c983fb729e6b7e0468ac9c1bfc418ea93de85ee159546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:6",
+      "sequence": 16582,
+      "chapter_label": "PRO 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "For at the window of my house, I looked out through my lattice.",
+      "ko": "내가 내 집 들창으로, 살창으로 내어다보다가",
+      "source_text_hash": "4dcec8c0e1c435719f7ebce693c67d0c269dd4b5164c44028e76ec3050bd5144",
+      "translation_text_hash": "728956a470c3c26d38e5e2f4195cf1c73c5c09cffcbe5a62af2047a867aabf7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 집 들창으로, 살창으로 내어다보다가"
+      ],
+      "raw_text_hashes": [
+        "728956a470c3c26d38e5e2f4195cf1c73c5c09cffcbe5a62af2047a867aabf7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:7",
+      "sequence": 16583,
+      "chapter_label": "PRO 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "I saw among the simple ones. I discerned among the youths a young man void of understanding,",
+      "ko": "어리석은 자 중에, 소년 중에 한 지혜 없는 자를 보았노라",
+      "source_text_hash": "c0f52ac0f25ecc981b0446a1129cf3521bd2144792444c30defa7554fa67f968",
+      "translation_text_hash": "2e7f763643369ddb6bc32c4a72a8a27717d365714d1931fa2275c4aacb5d4ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어리석은 자 중에, 소년 중에 한 지혜 없는 자를 보았노라"
+      ],
+      "raw_text_hashes": [
+        "2e7f763643369ddb6bc32c4a72a8a27717d365714d1931fa2275c4aacb5d4ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:8",
+      "sequence": 16584,
+      "chapter_label": "PRO 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "passing through the street near her corner, he went the way to her house,",
+      "ko": "그가 거리를 지나 음녀의 골목 모퉁이로 가까이 하여 그 집으로 들어가는데",
+      "source_text_hash": "8bb18b57ebcc64d810a61206a1cc999c9138510956298fbf14c8de66b160ccc6",
+      "translation_text_hash": "f3c15e3877c813ac13a2de9dfa47c988f3924e926bab64f4274e465f36b5ae85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 거리를 지나 음녀의 골목 모퉁이로 가까이 하여 그 집으로 들어가는데"
+      ],
+      "raw_text_hashes": [
+        "f3c15e3877c813ac13a2de9dfa47c988f3924e926bab64f4274e465f36b5ae85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:9",
+      "sequence": 16585,
+      "chapter_label": "PRO 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "in the twilight, in the evening of the day, in the middle of the night and in the darkness.",
+      "ko": "저물 때, 황혼 때, 깊은 밤 흑암 중에라",
+      "source_text_hash": "a7186c2f164576b5e876c205e98428f7882e38b8b467fa8f87403cfff79cd798",
+      "translation_text_hash": "81c47a0b8b3d270437e41103f8f150919af95b1301f2831c3897181e163e0b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물 때, 황혼 때, 깊은 밤 흑암 중에라"
+      ],
+      "raw_text_hashes": [
+        "81c47a0b8b3d270437e41103f8f150919af95b1301f2831c3897181e163e0b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:10",
+      "sequence": 16586,
+      "chapter_label": "PRO 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, there a woman met him with the attire of a prostitute, and with crafty intent.",
+      "ko": "그 때에 기생의 옷을 입은 간교한 계집이 그를 맞으니",
+      "source_text_hash": "a46cb7a31f77b7392369720313e324ca99160df310efcd3403b5d3eb5613695e",
+      "translation_text_hash": "dd8d2a4118fed3351546385f8b1e66154874f998af502fbb0254922fadfbe0e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 기생의 옷을 입은 간교한 계집이 그를 맞으니"
+      ],
+      "raw_text_hashes": [
+        "dd8d2a4118fed3351546385f8b1e66154874f998af502fbb0254922fadfbe0e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:11",
+      "sequence": 16587,
+      "chapter_label": "PRO 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "She is loud and defiant. Her feet don’t stay in her house.",
+      "ko": "이 계집은 떠들며 완패하며 그 발이 집에 머물지 아니하여",
+      "source_text_hash": "13f7976d53a16c78f60e62c5edb31ce61aab2ea5f4848fcde248cc6a9981e2b7",
+      "translation_text_hash": "4eee4f30e11b088fe48ea7bf35e3b590981ce83d051d7744c93de0b6b2df097f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 계집은 떠들며 완패하며 그 발이 집에 머물지 아니하여"
+      ],
+      "raw_text_hashes": [
+        "4eee4f30e11b088fe48ea7bf35e3b590981ce83d051d7744c93de0b6b2df097f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:12",
+      "sequence": 16588,
+      "chapter_label": "PRO 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Now she is in the streets, now in the squares, and lurking at every corner.",
+      "ko": "어떤 때에는 거리, 어떤 때에는 광장 모퉁이, 모퉁이에 서서 사람을 기다리는 자라",
+      "source_text_hash": "d68980135afd06d055744919979018842cefbd93955d56edb1fb53d7b6609003",
+      "translation_text_hash": "81162b9569bc862b536ed101321d5a0f7a0e1a4784da91c6cdbf187dce8f91ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 때에는 거리, 어떤 때에는 광장 모퉁이, 모퉁이에 서서 사람을 기다리는 자라"
+      ],
+      "raw_text_hashes": [
+        "81162b9569bc862b536ed101321d5a0f7a0e1a4784da91c6cdbf187dce8f91ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:13",
+      "sequence": 16589,
+      "chapter_label": "PRO 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "So she caught him, and kissed him. With an impudent face she said to him:",
+      "ko": "그 계집이 그를 붙잡고 입을 맞추며 부끄러움을 모르는 얼굴로 말하되",
+      "source_text_hash": "8c39666e4fa7807df201beb3eb77b8ba76e51153dc3d2edfe5c1b2aac7d51a87",
+      "translation_text_hash": "23ebbc3c6159161fddbc9a0380965257b60f9045420f1d7f0723daed320e502c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 계집이 그를 붙잡고 입을 맞추며 부끄러움을 모르는 얼굴로 말하되"
+      ],
+      "raw_text_hashes": [
+        "23ebbc3c6159161fddbc9a0380965257b60f9045420f1d7f0723daed320e502c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:14",
+      "sequence": 16590,
+      "chapter_label": "PRO 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "“Sacrifices of peace offerings are with me. Today I have paid my vows.",
+      "ko": "내가 화목제를 드려서 서원한 것을 오늘날 갚았노라",
+      "source_text_hash": "f19221efda9f8f84dc61019da57bff5f7f9df06a51da02eb4dc855f1d1301a0d",
+      "translation_text_hash": "bdfb9fceb0b00f0ac5e969f74a35ac86ddcb082f8c49727cfdaf583d7ec1fec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 화목제를 드려서 서원한 것을 오늘날 갚았노라"
+      ],
+      "raw_text_hashes": [
+        "bdfb9fceb0b00f0ac5e969f74a35ac86ddcb082f8c49727cfdaf583d7ec1fec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:15",
+      "sequence": 16591,
+      "chapter_label": "PRO 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore I came out to meet you, to diligently seek your face, and I have found you.",
+      "ko": "이러므로 내가 너를 맞으려고 나와서 네 얼굴을 찾다가 너를 만났도다",
+      "source_text_hash": "a2f262d0103b15ba5e06f433282601091be795a092e7e26c6570d966aee0f20a",
+      "translation_text_hash": "5cc09f94bdcf9aef769249e4b088201b2454ccb8c3c2239baaf7ae530d9bd303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 너를 맞으려고 나와서 네 얼굴을 찾다가 너를 만났도다"
+      ],
+      "raw_text_hashes": [
+        "5cc09f94bdcf9aef769249e4b088201b2454ccb8c3c2239baaf7ae530d9bd303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:16",
+      "sequence": 16592,
+      "chapter_label": "PRO 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "I have spread my couch with carpets of tapestry, with striped cloths of the yarn of Egypt.",
+      "ko": "내 침상에는 화문 요와 애굽의 문채 있는 이불을 폈고",
+      "source_text_hash": "5ee1a8e08078b39872fb7e2047025eb6ac25415399aedc4893785ffd57fc96bb",
+      "translation_text_hash": "a33e1217ce0c3fb2efcdcc67953a62e5bbfb71c438272ee344402aef7f16091b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 침상에는 화문 요와 애굽의 문채 있는 이불을 폈고"
+      ],
+      "raw_text_hashes": [
+        "a33e1217ce0c3fb2efcdcc67953a62e5bbfb71c438272ee344402aef7f16091b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:17",
+      "sequence": 16593,
+      "chapter_label": "PRO 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "I have perfumed my bed with myrrh, aloes, and cinnamon.",
+      "ko": "몰약과 침향과 계피를 뿌렸노라",
+      "source_text_hash": "b90b4c5dc98458b5e95258f7d2e8efe862576c66b37f99663efa74e2813ff543",
+      "translation_text_hash": "0dea99c3d4a2012e6092d15d5b5bae69f55f263c5c05b30f5ba8a2dd2c2923a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몰약과 침향과 계피를 뿌렸노라"
+      ],
+      "raw_text_hashes": [
+        "0dea99c3d4a2012e6092d15d5b5bae69f55f263c5c05b30f5ba8a2dd2c2923a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:18",
+      "sequence": 16594,
+      "chapter_label": "PRO 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "Come, let’s take our fill of loving until the morning. Let’s solace ourselves with loving.",
+      "ko": "오라 우리가 아침까지 흡족하게 서로 사랑하며 사랑함으로 희락하자",
+      "source_text_hash": "a0105a1f3f412f9a51253d11f367afa5bcc40a99d0605937fdc40bbe622c40fe",
+      "translation_text_hash": "1df39bdfb4ef3f9a4940e0777de2a8d3da3d3df6a21a0b898f82f6a05426cfab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오라 우리가 아침까지 흡족하게 서로 사랑하며 사랑함으로 희락하자"
+      ],
+      "raw_text_hashes": [
+        "1df39bdfb4ef3f9a4940e0777de2a8d3da3d3df6a21a0b898f82f6a05426cfab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:19",
+      "sequence": 16595,
+      "chapter_label": "PRO 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "For my husband isn’t at home. He has gone on a long journey.",
+      "ko": "남편은 집을 떠나 먼 길을 갔는데",
+      "source_text_hash": "607c0f50b514ebbeb9f5bb85c32f0360757dae68d1ed6749711bac1263201283",
+      "translation_text_hash": "4181a59590c0d0bb58c6d5fc45ed582abd03b45600ee080ef9853dbb64ee812d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편은 집을 떠나 먼 길을 갔는데"
+      ],
+      "raw_text_hashes": [
+        "4181a59590c0d0bb58c6d5fc45ed582abd03b45600ee080ef9853dbb64ee812d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:20",
+      "sequence": 16596,
+      "chapter_label": "PRO 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "He has taken a bag of money with him. He will come home at the full moon.”",
+      "ko": "은 주머니를 가졌은즉 보름에나 집에 돌아오리라 하여",
+      "source_text_hash": "d3a01c234cc40c43d6461abc39eaf5dc13b4cbdfa4005a4a2d7e6ae294f610ee",
+      "translation_text_hash": "eedff906bf8219ba33749a0c699e1839e0e44d3119046b2a7ca36aac44c46fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은 주머니를 가졌은즉 보름에나 집에 돌아오리라 하여"
+      ],
+      "raw_text_hashes": [
+        "eedff906bf8219ba33749a0c699e1839e0e44d3119046b2a7ca36aac44c46fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:21",
+      "sequence": 16597,
+      "chapter_label": "PRO 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "With persuasive words, she led him astray. With the flattering of her lips, she seduced him.",
+      "ko": "여러가지 고운 말로 혹하게 하며 입술의 호리는 말로 꾀므로",
+      "source_text_hash": "882e7b780faba4277f7daa6023e8fdb57b7df24dc6421440d09e34277e6ec2cc",
+      "translation_text_hash": "38708e0c0e922c9567154428cd5e9da2f366e97b22613544d6b199d40ef0efec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러가지 고운 말로 혹하게 하며 입술의 호리는 말로 꾀므로"
+      ],
+      "raw_text_hashes": [
+        "38708e0c0e922c9567154428cd5e9da2f366e97b22613544d6b199d40ef0efec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:22",
+      "sequence": 16598,
+      "chapter_label": "PRO 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "He followed her immediately, as an ox goes to the slaughter, as a fool stepping into a noose.",
+      "ko": "소년이 곧 그를 따랐으니 소가 푸주로 가는 것 같고 미련한 자가 벌을 받으려고 쇠사슬에 매이러 가는 것과 일반이라",
+      "source_text_hash": "854a9f67a3bdcc245001ed386fc9ec1d514dae153675f8db27aac16cbc3d6fde",
+      "translation_text_hash": "c0f091a29d1c7295cb21571dea9cf9b80f1d7deb8281178f6b87c755c837144d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년이 곧 그를 따랐으니 소가 푸주로 가는 것 같고 미련한 자가 벌을 받으려고 쇠사슬에 매이러 가는 것과 일반이라"
+      ],
+      "raw_text_hashes": [
+        "c0f091a29d1c7295cb21571dea9cf9b80f1d7deb8281178f6b87c755c837144d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:23",
+      "sequence": 16599,
+      "chapter_label": "PRO 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Until an arrow strikes through his liver, as a bird hurries to the snare, and doesn’t know that it will cost his life.",
+      "ko": "필경은 살이 그 간을 뚫기까지에 이를 것이라 새가 빨리 그물로 들어가되 그 생명을 잃어버릴줄을 알지 못함과 일반이니라",
+      "source_text_hash": "454c7b0c8a8450f53ab9217c808692e71f5cf3e9ba6cb4352fb206641c7ca23e",
+      "translation_text_hash": "6c6c1c8f05a431f2adde304ba2fac53ccaf55969d7e8ca6fe4d764509cf8701e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "필경은 살이 그 간을 뚫기까지에 이를 것이라 새가 빨리 그물로 들어가되 그 생명을 잃어버릴줄을 알지 못함과 일반이니라"
+      ],
+      "raw_text_hashes": [
+        "6c6c1c8f05a431f2adde304ba2fac53ccaf55969d7e8ca6fe4d764509cf8701e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:24",
+      "sequence": 16600,
+      "chapter_label": "PRO 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Now therefore, sons, listen to me. Pay attention to the words of my mouth.",
+      "ko": "아들들아 나를 듣고 내 입의 말에 주의하라",
+      "source_text_hash": "1486678aada8ba48f52e9fd39c547fc9b3a43f5ebbee90124311b8fa1a59731d",
+      "translation_text_hash": "a7658e0d0af5956113596fdee2dfeaa9dce5d48b1df3595918e660ccc2502231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들들아 나를 듣고 내 입의 말에 주의하라"
+      ],
+      "raw_text_hashes": [
+        "a7658e0d0af5956113596fdee2dfeaa9dce5d48b1df3595918e660ccc2502231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:25",
+      "sequence": 16601,
+      "chapter_label": "PRO 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Don’t let your heart turn to her ways. Don’t go astray in her paths,",
+      "ko": "네 마음이 음녀의 길로 치우치지 말며 그 길에 미혹지 말찌어다",
+      "source_text_hash": "9de3d1870dd73ac7b9883723bd0be8b1eebd0b040e361b59e341b0a7adf05bc1",
+      "translation_text_hash": "be53c8f8ac5fbc982f303050080fd470c31c93774505ad450a6dab3e120479f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음이 음녀의 길로 치우치지 말며 그 길에 미혹지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "be53c8f8ac5fbc982f303050080fd470c31c93774505ad450a6dab3e120479f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:26",
+      "sequence": 16602,
+      "chapter_label": "PRO 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "for she has thrown down many wounded. Yes, all her slain are a mighty army.",
+      "ko": "대저 그가 많은 사람을 상하여 엎드러지게 하였나니 그에게 죽은 자가 허다하니라",
+      "source_text_hash": "a69f2c14bfead50b122bc930ab244aba426b6fce1cf7208b82fec6437bcab18e",
+      "translation_text_hash": "b26e9afbf159a13541832e0fdde53a282d1330b4b1ac59a10f25b7b36344e609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 그가 많은 사람을 상하여 엎드러지게 하였나니 그에게 죽은 자가 허다하니라"
+      ],
+      "raw_text_hashes": [
+        "b26e9afbf159a13541832e0fdde53a282d1330b4b1ac59a10f25b7b36344e609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:7:27",
+      "sequence": 16603,
+      "chapter_label": "PRO 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "Her house is the way to Sheol, going down to the rooms of death.",
+      "ko": "그 집은 음부의 길이라 사망의 방으로 내려가느니라",
+      "source_text_hash": "98870a7272bffcc4d9dbf132eae3be546ebbc5086450df5c72743610225e1780",
+      "translation_text_hash": "ae4b2e688200adfd3593a4ec1657d4d119de5011d01eba9a779d6aea8fef6e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집은 음부의 길이라 사망의 방으로 내려가느니라"
+      ],
+      "raw_text_hashes": [
+        "ae4b2e688200adfd3593a4ec1657d4d119de5011d01eba9a779d6aea8fef6e1f"
+      ]
+    }
+  ]
+}

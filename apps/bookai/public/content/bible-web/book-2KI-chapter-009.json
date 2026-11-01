@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:009",
+  "unit_ordinal": 322,
+  "unit_label": "2KI 9",
+  "book_code": "2KI",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:9:1",
+      "sequence": 9758,
+      "chapter_label": "2KI 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "Elisha the prophet called one of the sons of the prophets, and said to him, “Put your belt on your waist, take this vial of oil in your hand, and go to Ramoth Gilead.",
+      "ko": "선지자 엘리사가 선지자의 생도 중 하나를 불러 이르되 너는 허리를 동이고 이 기름병을 손에 가지고 길르앗 라못으로 가라",
+      "source_text_hash": "b1849eb5c63b776fea9cef2c601dd9f78258feb4383be97285ef558890207a88",
+      "translation_text_hash": "a7d70a258ccd35c29ce405e4d0f2178710d2a126806b4102fd784e311f618304",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 엘리사가 선지자의 생도 중 하나를 불러 이르되 너는 허리를 동이고 이 기름병을 손에 가지고 길르앗 라못으로 가라"
+      ],
+      "raw_text_hashes": [
+        "a7d70a258ccd35c29ce405e4d0f2178710d2a126806b4102fd784e311f618304"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:2",
+      "sequence": 9759,
+      "chapter_label": "2KI 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "When you come there, find Jehu the son of Jehoshaphat the son of Nimshi, and go in and make him rise up from among his brothers, and take him to an inner room.",
+      "ko": "거기 이르거든 님시의 손자 여호사밧의 아들 예후를 찾아 들어가서 그 형제 중에서 일어나게 하고 데리고 골방으로 들어가서",
+      "source_text_hash": "209a53cdd482f8fe85aefe0bf97bc05db7389e56f528acb0470ded57be3b161f",
+      "translation_text_hash": "df787a6ff71249ef5cbec1a4745a1b58dec9f1d821055573781701b55518f11f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 이르거든 님시의 손자 여호사밧의 아들 예후를 찾아 들어가서 그 형제 중에서 일어나게 하고 데리고 골방으로 들어가서"
+      ],
+      "raw_text_hashes": [
+        "df787a6ff71249ef5cbec1a4745a1b58dec9f1d821055573781701b55518f11f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:3",
+      "sequence": 9760,
+      "chapter_label": "2KI 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "Then take the vial of oil, and pour it on his head, and say, ‘The LORD says, “I have anointed you king over Israel.”’ Then open the door, flee, and don’t wait.”",
+      "ko": "기름병을 가지고 그 머리에 부으며 이르기를 여호와의 말씀이 내가 네게 기름을 부어 이스라엘 왕을 삼노라 하셨느니라 하고 곧 문을 열고 도망하되 지체치 말찌니라",
+      "source_text_hash": "2801135f88d5cbfd034715305fcbe2b385fe7a0e7abd7783b525ab1b974ce79e",
+      "translation_text_hash": "8592290213c6fd543b252afa0079d2ee2f1ec961d035018065f6b1d2147915a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기름병을 가지고 그 머리에 부으며 이르기를 여호와의 말씀이 내가 네게 기름을 부어 이스라엘 왕을 삼노라 하셨느니라 하고 곧 문을 열고 도망하되 지체치 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "8592290213c6fd543b252afa0079d2ee2f1ec961d035018065f6b1d2147915a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:4",
+      "sequence": 9761,
+      "chapter_label": "2KI 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "So the young man, the young prophet, went to Ramoth Gilead.",
+      "ko": "그 소년 곧 소년 선지자가 드디어 길르앗 라못으로 가니라",
+      "source_text_hash": "add868f8694aa29b30f8ffe52a52742d1122f5404f344b6a7c8e76e5a2dcc68a",
+      "translation_text_hash": "46184ec8976f18bf3ad883ac67b014a2e2cdc2175c1050fb9fa47880438009f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소년 곧 소년 선지자가 드디어 길르앗 라못으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "46184ec8976f18bf3ad883ac67b014a2e2cdc2175c1050fb9fa47880438009f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:5",
+      "sequence": 9762,
+      "chapter_label": "2KI 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "When he came, behold, the captains of the army were sitting. Then he said, “I have a message for you, captain.” Jehu said, “To which one of us?” He said, “To you, O captain.”",
+      "ko": "저가 이르러 보니 군대 장관들이 앉았는지라 소년이 가로되 장관이여 내가 당신에게 할 말씀이 있나이다 예후가 가로되 우리 모든 사람 중에 뉘게 하려느냐 가로되 장관이여 당신에게니이다",
+      "source_text_hash": "3ff25c66cac1b5ef40858e94d965521a25e12f3183ffe84814aff3172a4e10f2",
+      "translation_text_hash": "a08790141cd9395fcd5f7f0d464a36b66a3a2b05dd7e6a98fb1acd183ced03bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이르러 보니 군대 장관들이 앉았는지라 소년이 가로되 장관이여 내가 당신에게 할 말씀이 있나이다 예후가 가로되 우리 모든 사람 중에 뉘게 하려느냐 가로되 장관이여 당신에게니이다"
+      ],
+      "raw_text_hashes": [
+        "a08790141cd9395fcd5f7f0d464a36b66a3a2b05dd7e6a98fb1acd183ced03bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:6",
+      "sequence": 9763,
+      "chapter_label": "2KI 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "He arose, and went into the house. Then he poured the oil on his head, and said to him, “The LORD, the God of Israel, says, ‘I have anointed you king over the people of the LORD, even over Israel.",
+      "ko": "예후가 일어나 집으로 들어가니 소년이 그 머리에 기름을 부으며 이르되 이스라엘 하나님 여호와의 말씀이 내가 네게 기름을 부어 여호와의 백성 곧 이스라엘의 왕을 삼노니",
+      "source_text_hash": "3d108d07708cbbd6bc9f394f9bb94eebbdf57404b015bca6d51d01e1a4fdf903",
+      "translation_text_hash": "630a1986c10728957ab598702968e48043ca84113d49555df0bd952f325277e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 일어나 집으로 들어가니 소년이 그 머리에 기름을 부으며 이르되 이스라엘 하나님 여호와의 말씀이 내가 네게 기름을 부어 여호와의 백성 곧 이스라엘의 왕을 삼노니"
+      ],
+      "raw_text_hashes": [
+        "630a1986c10728957ab598702968e48043ca84113d49555df0bd952f325277e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:7",
+      "sequence": 9764,
+      "chapter_label": "2KI 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "You must strike your master Ahab’s house, that I may avenge the blood of my servants the prophets, and the blood of all the servants of the LORD, at the hand of Jezebel.",
+      "ko": "너는 네 주 아합의 집을 치라 내가 나의 종 곧 선지자들의 피와 여호와의 종들의 피를 이세벨에게 갚아주리라",
+      "source_text_hash": "75e7ff4e184f75f5b9402d32414c3a9f92e89646b3cc4cc125d8e1be9110975c",
+      "translation_text_hash": "7f8b8520713330adeca9b587119c05f63a85ffb4630e1d49989c61f7f348cdc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 주 아합의 집을 치라 내가 나의 종 곧 선지자들의 피와 여호와의 종들의 피를 이세벨에게 갚아주리라"
+      ],
+      "raw_text_hashes": [
+        "7f8b8520713330adeca9b587119c05f63a85ffb4630e1d49989c61f7f348cdc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:8",
+      "sequence": 9765,
+      "chapter_label": "2KI 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "For the whole house of Ahab will perish. I will cut off from Ahab everyone who urinates against a wall, both him who is shut up and him who is left at large in Israel.",
+      "ko": "아합의 온 집이 멸망하리니 이스라엘 중에 매인 자나 놓인 자나 아합에게 속한 모든 남자는 내가 다 멸절하되",
+      "source_text_hash": "bcf7a77aa49fef6c460340702d840d4d9ce59685c2c40908b5da5736d8ec510d",
+      "translation_text_hash": "975e3160b79de209a3d2df59ac089cadd98ca18fe88ffff49a741822ba81133a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합의 온 집이 멸망하리니 이스라엘 중에 매인 자나 놓인 자나 아합에게 속한 모든 남자는 내가 다 멸절하되"
+      ],
+      "raw_text_hashes": [
+        "975e3160b79de209a3d2df59ac089cadd98ca18fe88ffff49a741822ba81133a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:9",
+      "sequence": 9766,
+      "chapter_label": "2KI 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "I will make Ahab’s house like the house of Jeroboam the son of Nebat, and like the house of Baasha the son of Ahijah.",
+      "ko": "아합의 집을 느밧의 아들 여로보암의 집과 같게 하며 또 아히야의 아들 바아사의 집과 같게 할찌라",
+      "source_text_hash": "3e6fc3457623dd01b09005e80e5a9af751c81031ba72a626b6feeb8f40cf806a",
+      "translation_text_hash": "3db1c032e977515408aa8cf0526fbd46b4b348e7c355971341a628f1bf86bd56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합의 집을 느밧의 아들 여로보암의 집과 같게 하며 또 아히야의 아들 바아사의 집과 같게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "3db1c032e977515408aa8cf0526fbd46b4b348e7c355971341a628f1bf86bd56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:10",
+      "sequence": 9767,
+      "chapter_label": "2KI 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "The dogs will eat Jezebel on the plot of ground of Jezreel, and there shall be no one to bury her.’” Then he opened the door and fled.",
+      "ko": "이스르엘 지방에서 개들이 이세벨을 먹으리니 저를 장사할 사람이 없으리라 하셨느니라 하고 곧 문을 열고 도망하니라",
+      "source_text_hash": "0cd8a04d74c626c13f3067851486336402647583f5a27200d2f668b6774832df",
+      "translation_text_hash": "3278444e2daa778765bcbf9e39030a4fdc0c3499454ae89eda17bec67cd4981d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스르엘 지방에서 개들이 이세벨을 먹으리니 저를 장사할 사람이 없으리라 하셨느니라 하고 곧 문을 열고 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "3278444e2daa778765bcbf9e39030a4fdc0c3499454ae89eda17bec67cd4981d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:11",
+      "sequence": 9768,
+      "chapter_label": "2KI 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "When Jehu came out to the servants of his lord and one said to him, “Is all well? Why did this madman come to you?” He said to them, “You know the man and how he talks.”",
+      "ko": "예후가 나와서 그 주의 신복들에게 이르니 한 사람이 묻되 평안이뇨 그 미친 자가 무슨 까닭으로 그대에게 왔더뇨 대답하되 그대들이 그 사람과 그 말한 것을 알리라",
+      "source_text_hash": "03df0a7cdd70e13ab100a8e35f74f520eacc8e24b3115cc67139d4ede708aa8c",
+      "translation_text_hash": "366841e5ee9085f8dc31766d2217d2aabd5c402fa9751edd9662f89806ecdae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 나와서 그 주의 신복들에게 이르니 한 사람이 묻되 평안이뇨 그 미친 자가 무슨 까닭으로 그대에게 왔더뇨 대답하되 그대들이 그 사람과 그 말한 것을 알리라"
+      ],
+      "raw_text_hashes": [
+        "366841e5ee9085f8dc31766d2217d2aabd5c402fa9751edd9662f89806ecdae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:12",
+      "sequence": 9769,
+      "chapter_label": "2KI 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "They said, “That is a lie. Tell us now.” He said, “He said to me, ‘The LORD says, I have anointed you king over Israel.’”",
+      "ko": "무리가 가로되 당치 않은 말이라 그대는 우리에게 이르라 대답하되 저가 이리 이리 내게 말하여 이르기를 여호와의 말씀이 내가 네게 기름을 부어 이스라엘 왕을 삼는다 하셨다 하더라",
+      "source_text_hash": "abd67db34067087f280755247fa629bf19f428d63a6aaf873612f47afa977d2f",
+      "translation_text_hash": "2bb69b0722e9d6e0cbb84accdae678f630d63d0ffc97102a11bc3d7e40c8f3ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 가로되 당치 않은 말이라 그대는 우리에게 이르라 대답하되 저가 이리 이리 내게 말하여 이르기를 여호와의 말씀이 내가 네게 기름을 부어 이스라엘 왕을 삼는다 하셨다 하더라"
+      ],
+      "raw_text_hashes": [
+        "2bb69b0722e9d6e0cbb84accdae678f630d63d0ffc97102a11bc3d7e40c8f3ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:13",
+      "sequence": 9770,
+      "chapter_label": "2KI 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "Then they hurried, and each man took his cloak, and put it under him on the top of the stairs, and blew the trumpet, saying, “Jehu is king.”",
+      "ko": "무리가 각각 자기의 옷을 급히 취하여 섬돌 위 곧 예후의 밑에 깔고 나팔을 불며 가로되 예후는 왕이라 하니라",
+      "source_text_hash": "04b844df18d4f477bf4875a3bb9c70f43d927328f49698dc153612e15942a2ec",
+      "translation_text_hash": "89235d358c4173e035b22f55a9fd0044222805d96e7032b2d0cb8c9ad2ee0eb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 각각 자기의 옷을 급히 취하여 섬돌 위 곧 예후의 밑에 깔고 나팔을 불며 가로되 예후는 왕이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "89235d358c4173e035b22f55a9fd0044222805d96e7032b2d0cb8c9ad2ee0eb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:14",
+      "sequence": 9771,
+      "chapter_label": "2KI 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "So Jehu the son of Jehoshaphat the son of Nimshi conspired against Joram. (Now Joram was defending Ramoth Gilead, he and all Israel, because of Hazael king of Syria;",
+      "ko": "이에 님시의 손자 여호사밧의 아들 예후가 요람을 배반하였으니 곧 요람이 온 이스라엘로 더불어 아람 왕 하사엘을 인하여 길르앗 라못을 지키다가",
+      "source_text_hash": "f55cde75ec8828bf88f2838b9f8681108450978adec63c31da51c5a00aedf472",
+      "translation_text_hash": "454de13f31bf536474b49e76915b008dc978afaff13a53a09ed18b713b09f1e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 님시의 손자 여호사밧의 아들 예후가 요람을 배반하였으니 곧 요람이 온 이스라엘로 더불어 아람 왕 하사엘을 인하여 길르앗 라못을 지키다가"
+      ],
+      "raw_text_hashes": [
+        "454de13f31bf536474b49e76915b008dc978afaff13a53a09ed18b713b09f1e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:15",
+      "sequence": 9772,
+      "chapter_label": "2KI 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "but King Joram had returned to be healed in Jezreel of the wounds which the Syrians had given him when he fought with Hazael king of Syria.) Jehu said, “If this is your thinking, then let no one escape and go out of the city to go to tell it in Jezreel.”",
+      "ko": "아람 왕 하사엘로 더불어 싸울 때에 아람 사람에게 상한 것을 치료하려 하여 이스르엘로 돌아왔던 때라 예후가 이르되 너희 뜻에 합당하거든 한 사람이라도 이 성에서 도망하여 이스르엘에 전하러 가지 못하게 하라 하니라",
+      "source_text_hash": "fc65dc880c2fe70daaaf1bb76e8321cad67a0e1becc8e3130865716e65492e35",
+      "translation_text_hash": "ea4c6ab6284da4c43cdb5bde9f8a0d42a8ee64c78ea2094ad5b2bfe6f818673f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람 왕 하사엘로 더불어 싸울 때에 아람 사람에게 상한 것을 치료하려 하여 이스르엘로 돌아왔던 때라 예후가 이르되 너희 뜻에 합당하거든 한 사람이라도 이 성에서 도망하여 이스르엘에 전하러 가지 못하게 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "ea4c6ab6284da4c43cdb5bde9f8a0d42a8ee64c78ea2094ad5b2bfe6f818673f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:16",
+      "sequence": 9773,
+      "chapter_label": "2KI 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "So Jehu rode in a chariot and went to Jezreel, for Joram lay there. Ahaziah king of Judah had come down to see Joram.",
+      "ko": "예후가 병거를 타고 이스르엘로 가니 요람이 거기 누웠음이라 유다 왕 아하시야는 요람을 보러 내려왔더라",
+      "source_text_hash": "2b1e89da3a44ac46616e38ea90b8ec337a9106466319db63aee17cd28414971a",
+      "translation_text_hash": "8a9cde2a7ed186695c18c74b9b3bac25e34bbe87ee0a913d6fc8182bbca2298c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 병거를 타고 이스르엘로 가니 요람이 거기 누웠음이라 유다 왕 아하시야는 요람을 보러 내려왔더라"
+      ],
+      "raw_text_hashes": [
+        "8a9cde2a7ed186695c18c74b9b3bac25e34bbe87ee0a913d6fc8182bbca2298c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:17",
+      "sequence": 9774,
+      "chapter_label": "2KI 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Now the watchman was standing on the tower in Jezreel, and he spied the company of Jehu as he came, and said, “I see a company.” Joram said, “Take a horseman, and send to meet them, and let him say, ‘Is it peace?’”",
+      "ko": "이스르엘 망대에 파숫군 하나가 섰더니 예후의 무리의 오는 것을 보고 가로되 내가 한 무리를 보나이다 요람이 가로되 한 사람을 말을 태워 보내어 맞아 평안이냐 묻게 하라",
+      "source_text_hash": "91f931783d252e67746f2ed23f0e0d5e37ef4806f01a0537d08c8e7eb19afe46",
+      "translation_text_hash": "99324884a732687cd14b3299bf43c563fb00c789579a728f3a3aa27dc5d24b5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스르엘 망대에 파숫군 하나가 섰더니 예후의 무리의 오는 것을 보고 가로되 내가 한 무리를 보나이다 요람이 가로되 한 사람을 말을 태워 보내어 맞아 평안이냐 묻게 하라"
+      ],
+      "raw_text_hashes": [
+        "99324884a732687cd14b3299bf43c563fb00c789579a728f3a3aa27dc5d24b5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:18",
+      "sequence": 9775,
+      "chapter_label": "2KI 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "So one went on horseback to meet him, and said, “the king says, ‘Is it peace?’” Jehu said, “What do you have to do with peace? Fall in behind me!” The watchman said, “The messenger came to them, but he isn’t coming back.”",
+      "ko": "한 사람이 말을 타고 가서 만나 가로되 왕의 말씀이 평안이냐 하시더이다 하매 예후가 가로되 평안이 네게 상관이 있느냐 내 뒤로 돌이키라 하니라 파숫군이 고하여 가로되 사자가 저희에게 갔으나 돌아오지 아니하나이다 하는지라",
+      "source_text_hash": "f88074262e35a44bfac3274f57a7be708d3627813f3c9a5e00a50360fdec54e2",
+      "translation_text_hash": "863d760569825c8827edb9aa8e69f49c58be78fda5b52b37bb76de3a548cff0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 말을 타고 가서 만나 가로되 왕의 말씀이 평안이냐 하시더이다 하매 예후가 가로되 평안이 네게 상관이 있느냐 내 뒤로 돌이키라 하니라 파숫군이 고하여 가로되 사자가 저희에게 갔으나 돌아오지 아니하나이다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "863d760569825c8827edb9aa8e69f49c58be78fda5b52b37bb76de3a548cff0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:19",
+      "sequence": 9776,
+      "chapter_label": "2KI 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Then he sent out a second on horseback, who came to them and said, “The king says, ‘Is it peace?’” Jehu answered, “What do you have to do with peace? Fall in behind me!”",
+      "ko": "다시 한 사람을 말을 태워 보내었더니 저희에게 가서 가로되 왕의 말씀이 평안이냐 하시더이다 하매 예후가 가로되 평안이 네게 상관이 있느냐 내 뒤로 돌이키라 하니라",
+      "source_text_hash": "62d0fa3cfe1b17589811081e0c088e3eecec57fe00d9b200b954b1703ac575ee",
+      "translation_text_hash": "76585755ada7e35012ac07afc2efc35faf6fe618aad32ee2f37f76477e53bebe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 한 사람을 말을 태워 보내었더니 저희에게 가서 가로되 왕의 말씀이 평안이냐 하시더이다 하매 예후가 가로되 평안이 네게 상관이 있느냐 내 뒤로 돌이키라 하니라"
+      ],
+      "raw_text_hashes": [
+        "76585755ada7e35012ac07afc2efc35faf6fe618aad32ee2f37f76477e53bebe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:20",
+      "sequence": 9777,
+      "chapter_label": "2KI 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "The watchman said, “He came to them, and isn’t coming back. The driving is like the driving of Jehu the son of Nimshi, for he drives furiously.”",
+      "ko": "파숫군이 또 고하여 가로되 저도 저희에게까지 갔으나 돌아오지 아니하고 그 병거 모는 것이 님시의 손자 예후의 모는 것 같이 미치게 모나이다",
+      "source_text_hash": "2e9c23107701d318cc0d07af530344de4518e26e73a8dbb8c17419209975fb57",
+      "translation_text_hash": "814a67a4130e1f51a98189ee9c5ab665e66f9e93454b59f54ed8c2075ed109c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 또 고하여 가로되 저도 저희에게까지 갔으나 돌아오지 아니하고 그 병거 모는 것이 님시의 손자 예후의 모는 것 같이 미치게 모나이다"
+      ],
+      "raw_text_hashes": [
+        "814a67a4130e1f51a98189ee9c5ab665e66f9e93454b59f54ed8c2075ed109c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:21",
+      "sequence": 9778,
+      "chapter_label": "2KI 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Joram said, “Get ready!” They got his chariot ready. Then Joram king of Israel and Ahaziah king of Judah went out, each in his chariot; and they went out to meet Jehu, and found him on Naboth the Jezreelite’s land.",
+      "ko": "요람이 가로되 메우라 하매 그 병거를 메운지라 이스라엘 왕 요람과 유다 왕 아하시야가 각각 그 병거를 타고 가서 예후를 맞을쌔 이스르엘 사람 나봇의 토지에서 만나매",
+      "source_text_hash": "9ab69a9213517145d17d25165d04dc9c8325d36d6aa27f2c72bfd35ca0f65c47",
+      "translation_text_hash": "8b6594542dfaadbecbb5be1b1562446dd4013a4b85f1466c858b92234036b512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요람이 가로되 메우라 하매 그 병거를 메운지라 이스라엘 왕 요람과 유다 왕 아하시야가 각각 그 병거를 타고 가서 예후를 맞을쌔 이스르엘 사람 나봇의 토지에서 만나매"
+      ],
+      "raw_text_hashes": [
+        "8b6594542dfaadbecbb5be1b1562446dd4013a4b85f1466c858b92234036b512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:22",
+      "sequence": 9779,
+      "chapter_label": "2KI 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "When Joram saw Jehu, he said, “Is it peace, Jehu?” He answered, “What peace, so long as the prostitution of your mother Jezebel and her witchcraft abound?”",
+      "ko": "요람이 예후를 보고 가로되 예후야 평안이냐 대답하되 네 어미 이세벨의 음행과 술수가 이렇게 많으니 어찌 평안이 있으랴",
+      "source_text_hash": "e0acbd7674bd5f3db6853cd3c31b83bd6ba7b268d6c923b615b71f7b452df913",
+      "translation_text_hash": "970153cac42188a3546cb91c8d1f370998883dba07238673cd50e325030fa622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요람이 예후를 보고 가로되 예후야 평안이냐 대답하되 네 어미 이세벨의 음행과 술수가 이렇게 많으니 어찌 평안이 있으랴"
+      ],
+      "raw_text_hashes": [
+        "970153cac42188a3546cb91c8d1f370998883dba07238673cd50e325030fa622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:23",
+      "sequence": 9780,
+      "chapter_label": "2KI 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "Joram turned his hands and fled, and said to Ahaziah, “This is treason, Ahaziah!”",
+      "ko": "요람이 곧 손을 돌이켜 도망하며 아하시야에게 이르되 아하시야여 반역이로다",
+      "source_text_hash": "283b9fca751f9a25c6601988f5752e39fd400cd6d0cb7cdf3b2e77c2aaeab86f",
+      "translation_text_hash": "92b69e78426b3f72bfa28db0a1adde4ea4b1d2abe3feeb76bccc5eaa96f1be60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요람이 곧 손을 돌이켜 도망하며 아하시야에게 이르되 아하시야여 반역이로다"
+      ],
+      "raw_text_hashes": [
+        "92b69e78426b3f72bfa28db0a1adde4ea4b1d2abe3feeb76bccc5eaa96f1be60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:24",
+      "sequence": 9781,
+      "chapter_label": "2KI 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "Jehu drew his bow with his full strength, and struck Joram between his arms; and the arrow went out at his heart, and he sunk down in his chariot.",
+      "ko": "예후가 힘을 다하여 활을 당기어 요람의 두 팔 사이를 쏘니 살이 그 염통을 꿰뚫고 나오매 저가 병거 가운데 엎드러진지라",
+      "source_text_hash": "467a51a9d0b8b11dc3801d9c0735344ab19394c41b5240bae29a6e1fd5ae6615",
+      "translation_text_hash": "5d7afa5db5c931acdfb33847f937bf36d21e5f0ec6ade495cfbcca439865119e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 힘을 다하여 활을 당기어 요람의 두 팔 사이를 쏘니 살이 그 염통을 꿰뚫고 나오매 저가 병거 가운데 엎드러진지라"
+      ],
+      "raw_text_hashes": [
+        "5d7afa5db5c931acdfb33847f937bf36d21e5f0ec6ade495cfbcca439865119e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:25",
+      "sequence": 9782,
+      "chapter_label": "2KI 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "Then Jehu said to Bidkar his captain, “Pick him up, and throw him in the plot of the field of Naboth the Jezreelite; for remember how, when you and I rode together after Ahab his father, the LORD laid this burden on him:",
+      "ko": "예후가 그 장관 빗갈에게 이르되 그 시체를 취하여 이스르엘 사람 나봇의 밭에 던지라 네가 기억하려니와 이전에 너와 내가 함께 타고 그 아비 아합을 좇았을 때에 여호와께서 이 아래 같이 저의 일을 예언하셨느니라",
+      "source_text_hash": "823590e5e61386210ee14672e34d36497ef780d400aa80864497264ccbc172b8",
+      "translation_text_hash": "11beb673d36a23579bc33e3074cb5c43366a63627d70952fd4fa50cf5914165e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 그 장관 빗갈에게 이르되 그 시체를 취하여 이스르엘 사람 나봇의 밭에 던지라 네가 기억하려니와 이전에 너와 내가 함께 타고 그 아비 아합을 좇았을 때에 여호와께서 이 아래 같이 저의 일을 예언하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "11beb673d36a23579bc33e3074cb5c43366a63627d70952fd4fa50cf5914165e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:26",
+      "sequence": 9783,
+      "chapter_label": "2KI 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "‘Surely I have seen yesterday the blood of Naboth, and the blood of his sons,’ says the LORD; ‘and I will repay you in this plot of ground,’ says the LORD. Now therefore take and cast him onto the plot of ground, according to the LORD’s word.”",
+      "ko": "여호와께서 말씀하시기를 내가 어젯날에 나봇의 피와 그 아들들의 피를 분명히 보았노라 또 말씀하시기를 이 토지에서 네게 갚으리라 하셨으니 그런즉 여호와의 말씀대로 그 시체를 취하여 이 밭에 던질찌니라",
+      "source_text_hash": "a08c0c27dcc4d2796fab207a8ae0ca0638d4b33b234a2536fb1b86c81b977702",
+      "translation_text_hash": "f38fcccd6147f7b0648c2b22c34276b2ab862c2f3485a5e0b091102b72e84687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시기를 내가 어젯날에 나봇의 피와 그 아들들의 피를 분명히 보았노라 또 말씀하시기를 이 토지에서 네게 갚으리라 하셨으니 그런즉 여호와의 말씀대로 그 시체를 취하여 이 밭에 던질찌니라"
+      ],
+      "raw_text_hashes": [
+        "f38fcccd6147f7b0648c2b22c34276b2ab862c2f3485a5e0b091102b72e84687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:27",
+      "sequence": 9784,
+      "chapter_label": "2KI 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "But when Ahaziah the king of Judah saw this, he fled by the way of the garden house. Jehu followed after him, and said, “Strike him also in the chariot!” They struck him at the ascent of Gur, which is by Ibleam. He fled to Megiddo, and died there.",
+      "ko": "유다 왕 아하시야가 이를 보고 동산 정자 길로 도망하니 예후가 쫓아가며 이르되 저도 병거 가운데서 죽이라 하매 이블르암 가까운 구르 비탈에서 치니 저가 므깃도까지 도망하여 거기서 죽은지라",
+      "source_text_hash": "515158f70f0c1a273e7a4b73a5e549e5c1fc3f73c9f99b92ff25ef3887f36ba5",
+      "translation_text_hash": "94c6f9964cf5668a799e3f11eed3c6641dfe1b00a0dec9f8f0ea055b7199ce7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아하시야가 이를 보고 동산 정자 길로 도망하니 예후가 쫓아가며 이르되 저도 병거 가운데서 죽이라 하매 이블르암 가까운 구르 비탈에서 치니 저가 므깃도까지 도망하여 거기서 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "94c6f9964cf5668a799e3f11eed3c6641dfe1b00a0dec9f8f0ea055b7199ce7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:28",
+      "sequence": 9785,
+      "chapter_label": "2KI 9",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 28
+        }
+      ],
+      "en": "His servants carried him in a chariot to Jerusalem, and buried him in his tomb with his fathers in David’s city.",
+      "ko": "그 신복들이 저를 병거에 싣고 예루살렘에 이르러 다윗성에서 그 열조와 함께 그 묘실에 장사하니라",
+      "source_text_hash": "11f18439eb6fbf16948f47606c9f7814eafa4e664635163cfd851f67b04528a2",
+      "translation_text_hash": "f41ccce7d7e457b49a5654e9077de45a77671a255555f1a55be392a47aaec56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복들이 저를 병거에 싣고 예루살렘에 이르러 다윗성에서 그 열조와 함께 그 묘실에 장사하니라"
+      ],
+      "raw_text_hashes": [
+        "f41ccce7d7e457b49a5654e9077de45a77671a255555f1a55be392a47aaec56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:29",
+      "sequence": 9786,
+      "chapter_label": "2KI 9",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 29
+        }
+      ],
+      "en": "In the eleventh year of Joram the son of Ahab, Ahaziah began to reign over Judah.",
+      "ko": "아합의 아들 요람의 십 일년에 아하시야가 유다 왕이 되었었더라",
+      "source_text_hash": "bee444c3c77b4290a773034afb823f1a19e833496251b3a8c451bc6d2a1ed15f",
+      "translation_text_hash": "5167d552c708dcf112816afca0f4a8a50a78056c9a76da4112ba5dc39d1ec982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합의 아들 요람의 십 일년에 아하시야가 유다 왕이 되었었더라"
+      ],
+      "raw_text_hashes": [
+        "5167d552c708dcf112816afca0f4a8a50a78056c9a76da4112ba5dc39d1ec982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:30",
+      "sequence": 9787,
+      "chapter_label": "2KI 9",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 30
+        }
+      ],
+      "en": "When Jehu had come to Jezreel, Jezebel heard of it; and she painted her eyes, and adorned her head, and looked out at the window.",
+      "ko": "예후가 이스르엘에 이르니 이세벨이 듣고 눈을 그리고 머리를 꾸미고 창에서 바라보다가",
+      "source_text_hash": "d5be5d0aa91e32ed9294d068f66ce1f2b4f8dffc186b96d7db72372b968ffa3d",
+      "translation_text_hash": "d4c23065d835731b8a70621ac6a7c164e71072e3a4a21d5718ffe22f48dfe416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 이스르엘에 이르니 이세벨이 듣고 눈을 그리고 머리를 꾸미고 창에서 바라보다가"
+      ],
+      "raw_text_hashes": [
+        "d4c23065d835731b8a70621ac6a7c164e71072e3a4a21d5718ffe22f48dfe416"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:31",
+      "sequence": 9788,
+      "chapter_label": "2KI 9",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 31
+        }
+      ],
+      "en": "As Jehu entered in at the gate, she said, “Do you come in peace, Zimri, you murderer of your master?”",
+      "ko": "예후가 문에 들어오매 가로되 주인을 죽인 너 시므리여 평안하냐",
+      "source_text_hash": "3bfa2fee8a9d1295dbe5821bc1a9652311a1ae3a4866ae79200f91cd33019f6d",
+      "translation_text_hash": "6503a46d7d23e2b3bc46394a631d53fd3184d0341fc36b88c34d0c4364b53c60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 문에 들어오매 가로되 주인을 죽인 너 시므리여 평안하냐"
+      ],
+      "raw_text_hashes": [
+        "6503a46d7d23e2b3bc46394a631d53fd3184d0341fc36b88c34d0c4364b53c60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:32",
+      "sequence": 9789,
+      "chapter_label": "2KI 9",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 32
+        }
+      ],
+      "en": "He lifted up his face to the window, and said, “Who is on my side? Who?” Two or three eunuchs looked out at him.",
+      "ko": "예후가 얼굴을 들어 창을 향하고 가로되 내 편이 될 자가 누구냐 누구냐 하니 두어 내시가 예후를 내다보는지라",
+      "source_text_hash": "987fe2d779358a4ae5da1fcdad866b2d210064fe3c0df31ef7ae09ca27107be2",
+      "translation_text_hash": "67d656786b234bb98b06c7c0f9e4bdc834641ac507960cc734cb8c86b415047f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 얼굴을 들어 창을 향하고 가로되 내 편이 될 자가 누구냐 누구냐 하니 두어 내시가 예후를 내다보는지라"
+      ],
+      "raw_text_hashes": [
+        "67d656786b234bb98b06c7c0f9e4bdc834641ac507960cc734cb8c86b415047f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:33",
+      "sequence": 9790,
+      "chapter_label": "2KI 9",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 33
+        }
+      ],
+      "en": "He said, “Throw her down!” So they threw her down; and some of her blood was sprinkled on the wall, and on the horses. Then he trampled her under foot.",
+      "ko": "가로되 저를 내려던지라 하니 내려던지매 그 피가 담과 말에게 뛰더라 예후가 그 시체를 밟으니라",
+      "source_text_hash": "8719041116a4b4fc95f04f32d4cc135caf756f55bfbe2ccdbea025d47350b14b",
+      "translation_text_hash": "bbf31b275425ec48f5d3209e8ba85e0060b43c072fe7d9b2c32a664ec778dcc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 저를 내려던지라 하니 내려던지매 그 피가 담과 말에게 뛰더라 예후가 그 시체를 밟으니라"
+      ],
+      "raw_text_hashes": [
+        "bbf31b275425ec48f5d3209e8ba85e0060b43c072fe7d9b2c32a664ec778dcc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:34",
+      "sequence": 9791,
+      "chapter_label": "2KI 9",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 34
+        }
+      ],
+      "en": "When he had come in, he ate and drank. Then he said, “See now to this cursed woman, and bury her; for she is a king’s daughter.”",
+      "ko": "예후가 들어가서 먹고 마시고 가로되 가서 이 저주 받은 계집을 찾아 장사하라 저는 왕의 딸이니라 하매",
+      "source_text_hash": "482efb2ed559c589e536f955074f7cc0cce05263cd35d8229589afa845062342",
+      "translation_text_hash": "257831ae2b276a79c794a1df9c29b53085f06d01a9055385ff53de76c5209bed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 들어가서 먹고 마시고 가로되 가서 이 저주 받은 계집을 찾아 장사하라 저는 왕의 딸이니라 하매"
+      ],
+      "raw_text_hashes": [
+        "257831ae2b276a79c794a1df9c29b53085f06d01a9055385ff53de76c5209bed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:35",
+      "sequence": 9792,
+      "chapter_label": "2KI 9",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 35
+        }
+      ],
+      "en": "They went to bury her, but they found no more of her than the skull, the feet, and the palms of her hands.",
+      "ko": "가서 장사하려 한즉 그 두골과 발과 손바닥 외에는 찾지 못한지라",
+      "source_text_hash": "716ade9bc1c5f0c5993da9f7d6d8690cecd5ed3be1f981db141870b12450b80d",
+      "translation_text_hash": "ddaa8c1e8c62016ca211aa1be52e27e951165432957f96a72f0b11ffab8f8f80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 장사하려 한즉 그 두골과 발과 손바닥 외에는 찾지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "ddaa8c1e8c62016ca211aa1be52e27e951165432957f96a72f0b11ffab8f8f80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:36",
+      "sequence": 9793,
+      "chapter_label": "2KI 9",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 36
+        }
+      ],
+      "en": "Therefore they came back, and told him. He said, “This is the LORD’s word, which he spoke by his servant Elijah the Tishbite, saying, ‘The dogs will eat the flesh of Jezebel on the plot of Jezreel,",
+      "ko": "돌아와서 고한대 예후가 가로되 이는 여호와께서 그 종 디셉 사람 엘리야로 말씀하신바라 이르시기를 이스르엘 토지에서 개들이 이세벨의 고기를 먹을찌라",
+      "source_text_hash": "a1d8e1c344703916f0a8f2d39ee06e5e0f485bc5a4bb3ea862738b5324809685",
+      "translation_text_hash": "2e2c219fe1e35bd1aec129ceb65546020aa09ff9c6b20ce5ddd9027b26c12f60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌아와서 고한대 예후가 가로되 이는 여호와께서 그 종 디셉 사람 엘리야로 말씀하신바라 이르시기를 이스르엘 토지에서 개들이 이세벨의 고기를 먹을찌라"
+      ],
+      "raw_text_hashes": [
+        "2e2c219fe1e35bd1aec129ceb65546020aa09ff9c6b20ce5ddd9027b26c12f60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:9:37",
+      "sequence": 9794,
+      "chapter_label": "2KI 9",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 9,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 9,
+          "verse": 37
+        }
+      ],
+      "en": "and the body of Jezebel will be as dung on the surface of the field on Jezreel’s land, so that they won’t say, “This is Jezebel.”’”",
+      "ko": "그 시체가 이스르엘 토지에서 거름 같이 밭 면에 있으리니 이것이 이세벨이라고 가리켜 말하지 못하게 되리라 하셨느니라",
+      "source_text_hash": "93edb3606534158a2567d0938167b8965b34560ee5d99b5d0307438b0bcea48a",
+      "translation_text_hash": "6173e9edbf06f0ec7b768e1975a57fbc40efb9c8867e039e0b635c94dca967e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시체가 이스르엘 토지에서 거름 같이 밭 면에 있으리니 이것이 이세벨이라고 가리켜 말하지 못하게 되리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "6173e9edbf06f0ec7b768e1975a57fbc40efb9c8867e039e0b635c94dca967e8"
+      ]
+    }
+  ]
+}

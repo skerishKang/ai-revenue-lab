@@ -80,6 +80,37 @@ def ticket_headers(secret, user_id, maximum):
             "X-Padiem-File-Proof": proof["X-Padiem-B14-Proof"]}, expires
 
 
+class _LaneRawStream:
+    """One streamed lane response; iterating never materializes the whole file."""
+
+    def __init__(self, url, *, headers, transport):
+        self._url = url
+        self._headers = headers
+        self._transport = transport
+        self._client = None
+        self._context = None
+
+    async def __aenter__(self):
+        self._client = httpx.AsyncClient(
+            transport=self._transport, timeout=None,
+            follow_redirects=False, trust_env=False,
+        )
+        self._context = self._client.stream("GET", self._url, headers=self._headers)
+        try:
+            return await self._context.__aenter__()
+        except Exception:
+            await self.__aexit__(None, None, None)
+            raise AttachmentValidationError("파일 서버에서 원본을 가져오지 못했습니다.") from None
+
+    async def __aexit__(self, *exc_info):
+        try:
+            if self._context is not None:
+                await self._context.__aexit__(*exc_info)
+        finally:
+            if self._client is not None:
+                await self._client.aclose()
+
+
 class FileLaneClient:
     def __init__(self, origin, secret, *, transport=None):
         self.origin = _normalize_base_url(origin, https_only=True, root_only=True) if origin else None
@@ -108,18 +139,17 @@ class FileLaneClient:
             raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
         return ticket_headers(self._secret, user_id, 1)
 
-    async def resolve(self, user_id, item):
-        if (not isinstance(item, dict) or set(item) != {"type", "file_id"}
-                or item.get("type") != "file" or not isinstance(item.get("file_id"), str)
-                or not FILE_ID.fullmatch(item["file_id"])):
+    async def meta(self, user_id, file_id):
+        """Small metadata for one uploaded file; never the file body."""
+        if (not isinstance(file_id, str) or not FILE_ID.fullmatch(file_id)):
             raise AttachmentValidationError("첨부 파일 참조 형식이 올바르지 않습니다.")
         if not self.ready:
             raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
         headers, _ = self.read_ticket(user_id)
-        url = self.origin + "/files/" + item["file_id"]
+        url = self.origin + "/files/" + file_id + "/meta"
         try:
             async with httpx.AsyncClient(transport=self._transport, timeout=None, follow_redirects=False, trust_env=False) as client:
-                async with client.stream("GET", url + "/meta", headers=headers) as response:
+                async with client.stream("GET", url, headers=headers) as response:
                     if response.status_code != 200:
                         raise AttachmentValidationError("첨부 파일을 찾을 수 없거나 읽을 권한이 없습니다.")
                     raw = bytearray()
@@ -128,11 +158,43 @@ class FileLaneClient:
                         if len(raw) > 16 * 1024:  # Metadata only; never a file/text ceiling.
                             raise ValueError("invalid metadata")
                     meta = json.loads(raw)
-                if (not isinstance(meta, dict) or meta.get("file_id") != item["file_id"]
-                        or meta.get("kind") not in KINDS or type(meta.get("size_bytes")) is not int
-                        or meta["size_bytes"] <= 0 or not isinstance(meta.get("sha256"), str)
-                        or not re.fullmatch(r"[a-f0-9]{64}", meta["sha256"])):
-                    raise ValueError("invalid metadata")
+        except AttachmentValidationError:
+            raise
+        except Exception:
+            raise AttachmentValidationError("첨부 문서를 현재 읽을 수 없습니다.") from None
+        if (not isinstance(meta, dict) or meta.get("file_id") != file_id
+                or meta.get("kind") not in KINDS or type(meta.get("size_bytes")) is not int
+                or meta["size_bytes"] <= 0 or not isinstance(meta.get("sha256"), str)
+                or not re.fullmatch(r"[a-f0-9]{64}", meta["sha256"])):
+            raise AttachmentValidationError("첨부 문서를 현재 읽을 수 없습니다.")
+        return meta
+
+    def open_raw(self, user_id, file_id):
+        """One streamed original; the caller iterates, this module never buffers.
+
+        Returns an async context manager whose ``__aenter__`` is the lane's
+        response so the caller can answer a lane refusal before streaming.
+        """
+        if not isinstance(file_id, str) or not FILE_ID.fullmatch(file_id):
+            raise AttachmentValidationError("첨부 파일 참조 형식이 올바르지 않습니다.")
+        if not self.ready:
+            raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
+        headers, _ = self.read_ticket(user_id)
+        return _LaneRawStream(self.origin + "/files/" + file_id + "/raw",
+                              headers=headers, transport=self._transport)
+
+    async def resolve(self, user_id, item):
+        if (not isinstance(item, dict) or set(item) != {"type", "file_id"}
+                or item.get("type") != "file" or not isinstance(item.get("file_id"), str)
+                or not FILE_ID.fullmatch(item["file_id"])):
+            raise AttachmentValidationError("첨부 파일 참조 형식이 올바르지 않습니다.")
+        if not self.ready:
+            raise AttachmentValidationError("파일 서버가 아직 연결되지 않았습니다.")
+        meta = await self.meta(user_id, item["file_id"])
+        headers, _ = self.read_ticket(user_id)
+        url = self.origin + "/files/" + item["file_id"]
+        try:
+            async with httpx.AsyncClient(transport=self._transport, timeout=None, follow_redirects=False, trust_env=False) as client:
                 name = _safe_name(meta.get("name"))
                 async with client.stream("GET", url + "/text", headers=headers) as response:
                     if response.status_code != 200:

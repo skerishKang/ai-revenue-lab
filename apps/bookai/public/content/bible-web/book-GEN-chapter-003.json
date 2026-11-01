@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:003",
+  "unit_ordinal": 3,
+  "unit_label": "GEN 3",
+  "book_code": "GEN",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:3:1",
+      "sequence": 57,
+      "chapter_label": "GEN 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now the serpent was more subtle than any animal of the field which the LORD God had made. He said to the woman, “Has God really said, ‘You shall not eat of any tree of the garden’?”",
+      "ko": "여호와 하나님의 지으신 들짐승 중에 뱀이 가장 간교하더라 뱀이 여자에게 물어 가로되 하나님이 참으로 너희더러 동산 모든 나무의 실과를 먹지 말라 하시더냐",
+      "source_text_hash": "17bd680ff8525bb9e3e0b40d935cf6c861e0bbc90c870d81ecbcfa2ae2b107b6",
+      "translation_text_hash": "0718003cd22593b224f4cfca6bbe65d89f794b6985b42ed082d51904334fb7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님의 지으신 들짐승 중에 뱀이 가장 간교하더라 뱀이 여자에게 물어 가로되 하나님이 참으로 너희더러 동산 모든 나무의 실과를 먹지 말라 하시더냐"
+      ],
+      "raw_text_hashes": [
+        "0718003cd22593b224f4cfca6bbe65d89f794b6985b42ed082d51904334fb7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:2",
+      "sequence": 58,
+      "chapter_label": "GEN 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The woman said to the serpent, “We may eat fruit from the trees of the garden,",
+      "ko": "여자가 뱀에게 말하되 동산 나무의 실과를 우리가 먹을 수 있으나",
+      "source_text_hash": "bab4981878ffea5d89b6444689a5c1930d28e558216d5db62e33cc1079001cce",
+      "translation_text_hash": "63c1649d0815a2b24a2ae9260cf5ac5fe62a24b878dccd97cea0e65c96df0197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 뱀에게 말하되 동산 나무의 실과를 우리가 먹을 수 있으나"
+      ],
+      "raw_text_hashes": [
+        "63c1649d0815a2b24a2ae9260cf5ac5fe62a24b878dccd97cea0e65c96df0197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:3",
+      "sequence": 59,
+      "chapter_label": "GEN 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "but not the fruit of the tree which is in the middle of the garden. God has said, ‘You shall not eat of it. You shall not touch it, lest you die.’”",
+      "ko": "동산 중앙에 있는 나무의 실과는 하나님의 말씀에 너희는 먹지도 말고 만지지도 말라 너희가 죽을까 하노라 하셨느니라",
+      "source_text_hash": "92b7d17b1e4f15901f29c4a5a30a2cdcdf5c53077bc1e92db9ef7b6fbc9e9037",
+      "translation_text_hash": "89468707f9b9f7ae02500174e5e9cf4c7a199d7eb9f74d66ea49b5a8e5a1a1f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동산 중앙에 있는 나무의 실과는 하나님의 말씀에 너희는 먹지도 말고 만지지도 말라 너희가 죽을까 하노라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "89468707f9b9f7ae02500174e5e9cf4c7a199d7eb9f74d66ea49b5a8e5a1a1f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:4",
+      "sequence": 60,
+      "chapter_label": "GEN 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "The serpent said to the woman, “You won’t really die,",
+      "ko": "뱀이 여자에게 이르되 너희가 결코 죽지 아니하리라",
+      "source_text_hash": "2bcba43ed96a5eac2bb852adcb1e5d07af90c7b21956c9b21663d33d15e9242d",
+      "translation_text_hash": "7550766f4b6feed86e554870bda8fd0fb4bbe82bd0e82c8471cf13ca147ac813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뱀이 여자에게 이르되 너희가 결코 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "7550766f4b6feed86e554870bda8fd0fb4bbe82bd0e82c8471cf13ca147ac813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:5",
+      "sequence": 61,
+      "chapter_label": "GEN 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "for God knows that in the day you eat it, your eyes will be opened, and you will be like God, knowing good and evil.”",
+      "ko": "너희가 그것을 먹는 날에는 너희 눈이 밝아 하나님과 같이 되어 선악을 알줄을 하나님이 아심이니라",
+      "source_text_hash": "d1de210568893c3864c444cf6f14099a177ea42d0275b6f4a3556fa38e3fe206",
+      "translation_text_hash": "c1ca6457cb59cd19787c011cf791af4e310ca785d704ab062b913ec8001527bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그것을 먹는 날에는 너희 눈이 밝아 하나님과 같이 되어 선악을 알줄을 하나님이 아심이니라"
+      ],
+      "raw_text_hashes": [
+        "c1ca6457cb59cd19787c011cf791af4e310ca785d704ab062b913ec8001527bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:6",
+      "sequence": 62,
+      "chapter_label": "GEN 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "When the woman saw that the tree was good for food, and that it was a delight to the eyes, and that the tree was to be desired to make one wise, she took some of its fruit, and ate. Then she gave some to her husband with her, and he ate it, too.",
+      "ko": "여자가 그 나무를 본즉 먹음직도 하고 보암직도 하고 지혜롭게 할만큼 탐스럽기도 한 나무인지라 여자가 그 실과를 따먹고 자기와 함께한 남편에게도 주매 그도 먹은지라",
+      "source_text_hash": "8b79be02d905fb1b87ac52eec3c83b36d9309400f6ead8e98ab89e007505134c",
+      "translation_text_hash": "9e78dbed8fe2496fac05dbc67160307bf3858010b0625f2a04ba22f059e35912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 그 나무를 본즉 먹음직도 하고 보암직도 하고 지혜롭게 할만큼 탐스럽기도 한 나무인지라 여자가 그 실과를 따먹고 자기와 함께한 남편에게도 주매 그도 먹은지라"
+      ],
+      "raw_text_hashes": [
+        "9e78dbed8fe2496fac05dbc67160307bf3858010b0625f2a04ba22f059e35912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:7",
+      "sequence": 63,
+      "chapter_label": "GEN 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Their eyes were opened, and they both knew that they were naked. They sewed fig leaves together, and made coverings for themselves.",
+      "ko": "이에 그들의 눈이 밝아 자기들의 몸이 벗은 줄을 알고 무화과나무 잎을 엮어 치마를 하였더라",
+      "source_text_hash": "874cba5019430fb12e79394d5ad0099f8d79ef0ffebdb13234950c8c0742208a",
+      "translation_text_hash": "354a1f4c6c8f178d5925b3400aae265d5fbee87ed448c1dff54108facb7f04d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들의 눈이 밝아 자기들의 몸이 벗은 줄을 알고 무화과나무 잎을 엮어 치마를 하였더라"
+      ],
+      "raw_text_hashes": [
+        "354a1f4c6c8f178d5925b3400aae265d5fbee87ed448c1dff54108facb7f04d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:8",
+      "sequence": 64,
+      "chapter_label": "GEN 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "They heard the LORD God’s voice walking in the garden in the cool of the day, and the man and his wife hid themselves from the presence of the LORD God among the trees of the garden.",
+      "ko": "그들이 날이 서늘할 때에 동산에 거니시는 여호와 하나님의 음성을 듣고 아담과 그 아내가 여호와 하나님의 낯을 피하여 동산 나무 사이에 숨은지라",
+      "source_text_hash": "d3ada5f385718eac26704c652f96a3e48ef2ad929e8d10633d2ebd3c0907aec4",
+      "translation_text_hash": "b3ea08fc32dff97b889c3b927c96983d80b6e582b75a3693fde37f809b71fb6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 날이 서늘할 때에 동산에 거니시는 여호와 하나님의 음성을 듣고 아담과 그 아내가 여호와 하나님의 낯을 피하여 동산 나무 사이에 숨은지라"
+      ],
+      "raw_text_hashes": [
+        "b3ea08fc32dff97b889c3b927c96983d80b6e582b75a3693fde37f809b71fb6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:9",
+      "sequence": 65,
+      "chapter_label": "GEN 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD God called to the man, and said to him, “Where are you?”",
+      "ko": "여호와 하나님이 아담을 부르시며 그에게 이르시되 네가 어디 있느냐",
+      "source_text_hash": "6c1abdae7f769a431ff1944bc0da671af58674c249b894d35010747309f1a4cf",
+      "translation_text_hash": "1014cc533651618df065dd06c2baf33db9ecb018d302693f41f96fb4441a7642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 아담을 부르시며 그에게 이르시되 네가 어디 있느냐"
+      ],
+      "raw_text_hashes": [
+        "1014cc533651618df065dd06c2baf33db9ecb018d302693f41f96fb4441a7642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:10",
+      "sequence": 66,
+      "chapter_label": "GEN 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "The man said, “I heard your voice in the garden, and I was afraid, because I was naked; so I hid myself.”",
+      "ko": "가로되 내가 동산에서 하나님의 소리를 듣고 내가 벗었으므로 두려워하여 숨었나이다",
+      "source_text_hash": "25d9e9a99b8dea6168c5ea9f31bec753c81bd6dbff87a9eb2badf411a81508f0",
+      "translation_text_hash": "2d3631e2572af82d7e48c6df9c0e37a4fda05ae36620c1a1b2c04466dfbe1f55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 내가 동산에서 하나님의 소리를 듣고 내가 벗었으므로 두려워하여 숨었나이다"
+      ],
+      "raw_text_hashes": [
+        "2d3631e2572af82d7e48c6df9c0e37a4fda05ae36620c1a1b2c04466dfbe1f55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:11",
+      "sequence": 67,
+      "chapter_label": "GEN 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "God said, “Who told you that you were naked? Have you eaten from the tree that I commanded you not to eat from?”",
+      "ko": "가라사대 누가 너의 벗었음을 네게 고하였느냐 내가 너더러 먹지 말라 명한 그 나무 실과를 네가 먹었느냐",
+      "source_text_hash": "63bcfb1188922c6766695e891e814e9241032003dbe78702d74a36b337290f4b",
+      "translation_text_hash": "64baba5806bf57760117b2203941e68b62d0d508b83c7afce3b39c554c582386",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 누가 너의 벗었음을 네게 고하였느냐 내가 너더러 먹지 말라 명한 그 나무 실과를 네가 먹었느냐"
+      ],
+      "raw_text_hashes": [
+        "64baba5806bf57760117b2203941e68b62d0d508b83c7afce3b39c554c582386"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:12",
+      "sequence": 68,
+      "chapter_label": "GEN 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "The man said, “The woman whom you gave to be with me, she gave me fruit from the tree, and I ate it.”",
+      "ko": "아담이 가로되 하나님이 주셔서 나와 함께하게 하신 여자 그가 그 나무 실과를 내게 주므로 내가 먹었나이다",
+      "source_text_hash": "84036a626c6d3583f287bde3cbfff0c7a585c9331fde99aa576666770663fcc8",
+      "translation_text_hash": "61cdcc2f770fc6ec1d52cd33874418d1edddf9b922ea465fdcdbaa741b25b551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 가로되 하나님이 주셔서 나와 함께하게 하신 여자 그가 그 나무 실과를 내게 주므로 내가 먹었나이다"
+      ],
+      "raw_text_hashes": [
+        "61cdcc2f770fc6ec1d52cd33874418d1edddf9b922ea465fdcdbaa741b25b551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:13",
+      "sequence": 69,
+      "chapter_label": "GEN 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD God said to the woman, “What have you done?” The woman said, “The serpent deceived me, and I ate.”",
+      "ko": "여호와 하나님이 여자에게 이르시되 네가 어찌하여 이렇게 하였느냐 여자가 가로되 뱀이 나를 꾀므로 내가 먹었나이다",
+      "source_text_hash": "e92bb6ba58cd7882193559d9e8e1a99754c2a25795c67b2a090b21bf19e39b52",
+      "translation_text_hash": "d87a161b587f4aeebab93ba40ddf7754b1781c54a1b7ac3fe39c32e06e5caae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 여자에게 이르시되 네가 어찌하여 이렇게 하였느냐 여자가 가로되 뱀이 나를 꾀므로 내가 먹었나이다"
+      ],
+      "raw_text_hashes": [
+        "d87a161b587f4aeebab93ba40ddf7754b1781c54a1b7ac3fe39c32e06e5caae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:14",
+      "sequence": 70,
+      "chapter_label": "GEN 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD God said to the serpent, “Because you have done this, you are cursed above all livestock, and above every animal of the field. You shall go on your belly and you shall eat dust all the days of your life.",
+      "ko": "여호와 하나님이 뱀에게 이르시되 네가 이렇게 하였으니 네가 모든 육축과 들의 모든 짐승보다 더욱 저주를 받아 배로 다니고 종신토록 흙을 먹을지니라",
+      "source_text_hash": "2f39f314c19d50b187b1f66234925c51a26c7beb604cbfc75de252d0b4e76600",
+      "translation_text_hash": "51ff234085fce004d241ba048c56a38424eead1bd14466349403f4e35a08b322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 뱀에게 이르시되 네가 이렇게 하였으니 네가 모든 육축과 들의 모든 짐승보다 더욱 저주를 받아 배로 다니고 종신토록 흙을 먹을지니라"
+      ],
+      "raw_text_hashes": [
+        "51ff234085fce004d241ba048c56a38424eead1bd14466349403f4e35a08b322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:15",
+      "sequence": 71,
+      "chapter_label": "GEN 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "I will put hostility between you and the woman, and between your offspring and her offspring. He will bruise your head, and you will bruise his heel.”",
+      "ko": "내가 너로 여자와 원수가 되게하고 너의 후손도 여자의 후손과 원수가 되게 하리니 여자의 후손은 네 머리를 상하게 할 것이요 너는 그의 발꿈치를 상하게 할 것이니라 하시고",
+      "source_text_hash": "3dfda93676375b25d033fce6a431dfdd575c29bbf8283f89be072dc1d4bb59ba",
+      "translation_text_hash": "ac2fd1c910addb5721d3712ed473de63c5021a4eaf739416809f839ed88d68e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 여자와 원수가 되게하고 너의 후손도 여자의 후손과 원수가 되게 하리니 여자의 후손은 네 머리를 상하게 할 것이요 너는 그의 발꿈치를 상하게 할 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "ac2fd1c910addb5721d3712ed473de63c5021a4eaf739416809f839ed88d68e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:16",
+      "sequence": 72,
+      "chapter_label": "GEN 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "To the woman he said, “I will greatly multiply your pain in childbirth. You will bear children in pain. Your desire will be for your husband, and he will rule over you.”",
+      "ko": "또 여자에게 이르시되 내가 네게 잉태하는 고통을 크게 더하리니 네가 수고하고 자식을 낳을 것이며 너는 남편을 사모하고 남편은 너를 다스릴 것이니라 하시고",
+      "source_text_hash": "124e9f1b3ee6d762195d01f2e0a09c3a2261c5b40a295d932dddb6926e031ead",
+      "translation_text_hash": "af31920e29eeda3dd6a15b9da13e777d43a7d85936a1e245751347e7435402e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여자에게 이르시되 내가 네게 잉태하는 고통을 크게 더하리니 네가 수고하고 자식을 낳을 것이며 너는 남편을 사모하고 남편은 너를 다스릴 것이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "af31920e29eeda3dd6a15b9da13e777d43a7d85936a1e245751347e7435402e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:17",
+      "sequence": 73,
+      "chapter_label": "GEN 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "To Adam he said, “Because you have listened to your wife’s voice, and have eaten from the tree, about which I commanded you, saying, ‘You shall not eat of it,’ the ground is cursed for your sake. You will eat from it with much labor all the days of your life.",
+      "ko": "아담에게 이르시되 네가 네 아내의 말을 듣고 내가 너더러 먹지 말라한 나무 실과를 먹었은즉 땅은 너로 인하여 저주를 받고 너는 종신토록 수고하여야 그 소산을 먹으리라",
+      "source_text_hash": "4d772325646743bb33dfe8ccf2116c93c71eda51229de34e9328d210ed69b3fe",
+      "translation_text_hash": "e265dbcea6fc4ee1e80b70a9d3dfb8d7d0c41970215eef7a5b86d9c3703036f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담에게 이르시되 네가 네 아내의 말을 듣고 내가 너더러 먹지 말라한 나무 실과를 먹었은즉 땅은 너로 인하여 저주를 받고 너는 종신토록 수고하여야 그 소산을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "e265dbcea6fc4ee1e80b70a9d3dfb8d7d0c41970215eef7a5b86d9c3703036f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:18",
+      "sequence": 74,
+      "chapter_label": "GEN 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "It will yield thorns and thistles to you; and you will eat the herb of the field.",
+      "ko": "땅이 네게 가시덤불과 엉겅퀴를 낼 것이라 너의 먹을 것은 밭의 채소인즉",
+      "source_text_hash": "16a9b67795baf8133b7520040ef7cf6c58dbf3cc28ea1fc37db24fb32ea27c21",
+      "translation_text_hash": "9740fd7d79c55d023dffdd29165492606fbc58b0fd6c79c7ba516d55dd428e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 네게 가시덤불과 엉겅퀴를 낼 것이라 너의 먹을 것은 밭의 채소인즉"
+      ],
+      "raw_text_hashes": [
+        "9740fd7d79c55d023dffdd29165492606fbc58b0fd6c79c7ba516d55dd428e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:19",
+      "sequence": 75,
+      "chapter_label": "GEN 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "You will eat bread by the sweat of your face until you return to the ground, for you were taken out of it. For you are dust, and you shall return to dust.”",
+      "ko": "네가 얼굴에 땀이 흘러야 식물을 먹고 필경은 흙으로 돌아 가리니 그 속에서 네가 취함을 입었음이라 너는 흙이니 흙으로 돌아갈 것이니라 하시니라",
+      "source_text_hash": "b8426873124efadd821f15c7f0de7329fadef54dcb64852daa60ad646d146daf",
+      "translation_text_hash": "bdfbb09dc104c63ef074361b05994f3f879a93ad154a721a71e6f18075302531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 얼굴에 땀이 흘러야 식물을 먹고 필경은 흙으로 돌아 가리니 그 속에서 네가 취함을 입었음이라 너는 흙이니 흙으로 돌아갈 것이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "bdfbb09dc104c63ef074361b05994f3f879a93ad154a721a71e6f18075302531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:20",
+      "sequence": 76,
+      "chapter_label": "GEN 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "The man called his wife Eve because she would be the mother of all the living.",
+      "ko": "아담이 그 아내를 하와라 이름하였으니 그는 모든 산 자의 어미가 됨이더라",
+      "source_text_hash": "3ff8f39e745eff3dc74f7fc7fecc8e18d4e082affeafffd73f2798ac80a4a63e",
+      "translation_text_hash": "449bcc6fe7ef38dab4fd41dacba8b10e6774907e35317b512c64e9d9ed686da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 그 아내를 하와라 이름하였으니 그는 모든 산 자의 어미가 됨이더라"
+      ],
+      "raw_text_hashes": [
+        "449bcc6fe7ef38dab4fd41dacba8b10e6774907e35317b512c64e9d9ed686da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:21",
+      "sequence": 77,
+      "chapter_label": "GEN 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD God made garments of animal skins for Adam and for his wife, and clothed them.",
+      "ko": "여호와 하나님이 아담과 그 아내를 위하여 가죽옷을 지어 입히시니라",
+      "source_text_hash": "a2018a574b234ac30dbde63be1b1fecad27bdc63cd4ae082b3ddadb392f020c7",
+      "translation_text_hash": "0dcd79a7f9132b4c876874532dd628b51967548f3256174d6d7adccdf8337bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 아담과 그 아내를 위하여 가죽옷을 지어 입히시니라"
+      ],
+      "raw_text_hashes": [
+        "0dcd79a7f9132b4c876874532dd628b51967548f3256174d6d7adccdf8337bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:22",
+      "sequence": 78,
+      "chapter_label": "GEN 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD God said, “Behold, the man has become like one of us, knowing good and evil. Now, lest he reach out his hand, and also take of the tree of life, and eat, and live forever—”",
+      "ko": "여호와 하나님이 가라사대 보라 이 사람이 선악을 아는 일에 우리 중 하나 같이 되었으니 그가 그 손을 들어 생명나무 실과도 따먹고 영생할까 하노라 하시고",
+      "source_text_hash": "f598c266c45d7529fd2894101699c83629b6ba0081335e2b583bd88624588ff7",
+      "translation_text_hash": "f13db9df9e0f41e0d113e290198a79e33d98080194ac1e63ea2b1b33a42b92b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 가라사대 보라 이 사람이 선악을 아는 일에 우리 중 하나 같이 되었으니 그가 그 손을 들어 생명나무 실과도 따먹고 영생할까 하노라 하시고"
+      ],
+      "raw_text_hashes": [
+        "f13db9df9e0f41e0d113e290198a79e33d98080194ac1e63ea2b1b33a42b92b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:23",
+      "sequence": 79,
+      "chapter_label": "GEN 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore the LORD God sent him out from the garden of Eden, to till the ground from which he was taken.",
+      "ko": "여호와 하나님이 에덴동산에서 그 사람을 내어 보내어 그의 근본된 토지를 갈게 하시니라",
+      "source_text_hash": "de2a829c9f637344d6f826df088c06c762bbe232307bf33c370733a2da22732d",
+      "translation_text_hash": "ffb9ecf85d6c366138c30fe2fcb5d4a10922100290783e9831cda7c35153dce5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 하나님이 에덴동산에서 그 사람을 내어 보내어 그의 근본된 토지를 갈게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ffb9ecf85d6c366138c30fe2fcb5d4a10922100290783e9831cda7c35153dce5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:3:24",
+      "sequence": 80,
+      "chapter_label": "GEN 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "So he drove out the man; and he placed cherubim at the east of the garden of Eden, and a flaming sword which turned every way, to guard the way to the tree of life.",
+      "ko": "이같이 하나님이 그 사람을 쫓아 내시고 에덴동산 동편에 그룹들과 두루 도는 화염검을 두어 생명나무의 길을 지키게 하시니라",
+      "source_text_hash": "2a3b3764020af6d6e1171f74f350bf012e60a61df72763d368cd1019ac7c6493",
+      "translation_text_hash": "c907d7fed478a6ad3bc06ea3f2bc1a796e96c2c48796874347bccee859b2313a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 하나님이 그 사람을 쫓아 내시고 에덴동산 동편에 그룹들과 두루 도는 화염검을 두어 생명나무의 길을 지키게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "c907d7fed478a6ad3bc06ea3f2bc1a796e96c2c48796874347bccee859b2313a"
+      ]
+    }
+  ]
+}

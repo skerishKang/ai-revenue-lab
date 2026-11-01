@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:023",
+  "unit_ordinal": 361,
+  "unit_label": "1CH 23",
+  "book_code": "1CH",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:23:1",
+      "sequence": 10985,
+      "chapter_label": "1CH 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Now David was old and full of days; and he made Solomon his son king over Israel.",
+      "ko": "다윗이 나이 많아 늙으매 아들 솔로몬으로 이스라엘 왕을 삼고",
+      "source_text_hash": "e09c005310b18183302f110e040e73ff697cf74a39f5738d1a9b920e783a7d43",
+      "translation_text_hash": "d4698b85ebd7edf9d4d3aa380d410d58808e55d1c227dbf646ced751e88b7d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 나이 많아 늙으매 아들 솔로몬으로 이스라엘 왕을 삼고"
+      ],
+      "raw_text_hashes": [
+        "d4698b85ebd7edf9d4d3aa380d410d58808e55d1c227dbf646ced751e88b7d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:2",
+      "sequence": 10986,
+      "chapter_label": "1CH 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "He gathered together all the princes of Israel, with the priests and the Levites.",
+      "ko": "이스라엘 모든 방백과 제사장과 레위 사람을 모았더라",
+      "source_text_hash": "369c2c27e46321107d7a9d51c28b5fb7c0c5df1aefefb4579cafeb79185d44b2",
+      "translation_text_hash": "39ce6e2463f98306481b116e64f1811ed7ffda62d14f705077d11e3afe1aeb0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 방백과 제사장과 레위 사람을 모았더라"
+      ],
+      "raw_text_hashes": [
+        "39ce6e2463f98306481b116e64f1811ed7ffda62d14f705077d11e3afe1aeb0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:3",
+      "sequence": 10987,
+      "chapter_label": "1CH 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "The Levites were counted from thirty years old and upward; and their number by their polls, man by man, was thirty-eight thousand.",
+      "ko": "레위 사람은 삼십세 이상으로 계수하였으니 모든 남자의 명수가 삼만 팔천인데",
+      "source_text_hash": "a64f1330ad3a8c6679348a599549fd264171b18e0e1df962a99b9f4b8b477c05",
+      "translation_text_hash": "fd5b6fcdfc3bd383932c182443fee2733f6accf0e45aafce283502d2c1aaea4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람은 삼십세 이상으로 계수하였으니 모든 남자의 명수가 삼만 팔천인데"
+      ],
+      "raw_text_hashes": [
+        "fd5b6fcdfc3bd383932c182443fee2733f6accf0e45aafce283502d2c1aaea4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:4",
+      "sequence": 10988,
+      "chapter_label": "1CH 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "David said, “Of these, twenty-four thousand were to oversee the work of the LORD’s house, six thousand were officers and judges,",
+      "ko": "그 중에 이만 사천은 여호와의 전 사무를 보살피는 자요 육천은 유사와 재판관이요",
+      "source_text_hash": "363ec00bb6cbce97ab3f17b3b7cbc681fdd0d71ec8527aecf8b669923ee4c27b",
+      "translation_text_hash": "044f1892bf21fc6337ac0b67a41cd724a0f7d7b5a9f56320bfddfa46a280285d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중에 이만 사천은 여호와의 전 사무를 보살피는 자요 육천은 유사와 재판관이요"
+      ],
+      "raw_text_hashes": [
+        "044f1892bf21fc6337ac0b67a41cd724a0f7d7b5a9f56320bfddfa46a280285d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:5",
+      "sequence": 10989,
+      "chapter_label": "1CH 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "four thousand were doorkeepers, and four thousand praised the LORD with the instruments which I made for giving praise.”",
+      "ko": "사천은 문지기요 사천은 다윗의 찬송하기 위하여 지은 악기로 여호와를 찬송하는 자라",
+      "source_text_hash": "5c21f7aa8d47ca9d3f0ed75613cc9fbc56c32065da5d63d0d168037335208519",
+      "translation_text_hash": "5d4f97e3c2dcab0c79232afcc2d21ca745e718485ebc3d9fd44e0c9f64771cb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사천은 문지기요 사천은 다윗의 찬송하기 위하여 지은 악기로 여호와를 찬송하는 자라"
+      ],
+      "raw_text_hashes": [
+        "5d4f97e3c2dcab0c79232afcc2d21ca745e718485ebc3d9fd44e0c9f64771cb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:6",
+      "sequence": 10990,
+      "chapter_label": "1CH 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "David divided them into divisions according to the sons of Levi: Gershon, Kohath, and Merari.",
+      "ko": "다윗이 레위의 아들 게르손과 그핫과 므라리의 각 족속을 따라 그 반열을 나누었더라",
+      "source_text_hash": "c45dd3bc7468ee034dcaf5d0742c041befb7c57247ffb0e91350d81f18e52f3d",
+      "translation_text_hash": "c08981a824305a312caf9cc7aaabe9bb0efb144282948f8e2d87fc45f1c791df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 레위의 아들 게르손과 그핫과 므라리의 각 족속을 따라 그 반열을 나누었더라"
+      ],
+      "raw_text_hashes": [
+        "c08981a824305a312caf9cc7aaabe9bb0efb144282948f8e2d87fc45f1c791df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:7",
+      "sequence": 10991,
+      "chapter_label": "1CH 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "Of the Gershonites: Ladan and Shimei.",
+      "ko": "게르손 자손은 라단과 시므이라",
+      "source_text_hash": "11014d9cd0af4b72a01fe37d53ec1b1251096bfa6b455e11fc82ad77329ca3f9",
+      "translation_text_hash": "9e82f49479dd25064cc6867cd03eb0b0e7f22106bbb49e7cc5c78bd2f5a09ca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손은 라단과 시므이라"
+      ],
+      "raw_text_hashes": [
+        "9e82f49479dd25064cc6867cd03eb0b0e7f22106bbb49e7cc5c78bd2f5a09ca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:8",
+      "sequence": 10992,
+      "chapter_label": "1CH 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "The sons of Ladan: Jehiel the chief, Zetham, and Joel, three.",
+      "ko": "라단의 아들들은 족장 여히엘과 또 세담과 요엘 세 사람이요",
+      "source_text_hash": "18399b2135a2bbf41a109941ec5aa47b8dee71148f8bb79d20ec308c826daa2d",
+      "translation_text_hash": "7885350bd1bf77c15f65da33e2cd122c158102d61f604d40c833e19b5a36b3e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라단의 아들들은 족장 여히엘과 또 세담과 요엘 세 사람이요"
+      ],
+      "raw_text_hashes": [
+        "7885350bd1bf77c15f65da33e2cd122c158102d61f604d40c833e19b5a36b3e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:9",
+      "sequence": 10993,
+      "chapter_label": "1CH 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "The sons of Shimei: Shelomoth, Haziel, and Haran, three. These were the heads of the fathers’ households of Ladan.",
+      "ko": "시므이의 아들들은 슬로밋과 하시엘과 하란 세 사람이니 이는 라단의 족장들이며",
+      "source_text_hash": "82cce21d1b4ecd4063ccf6c7c03d0920f158487aafcf8d7922f5da83fe89daa0",
+      "translation_text_hash": "e37b2a23d6c006e59d2c76389ed48c10bdd4fbb0bc7c47725f753b17a8e51a61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이의 아들들은 슬로밋과 하시엘과 하란 세 사람이니 이는 라단의 족장들이며"
+      ],
+      "raw_text_hashes": [
+        "e37b2a23d6c006e59d2c76389ed48c10bdd4fbb0bc7c47725f753b17a8e51a61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:10",
+      "sequence": 10994,
+      "chapter_label": "1CH 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "The sons of Shimei: Jahath, Zina, Jeush, and Beriah. These four were the sons of Shimei.",
+      "ko": "또 시므이의 아들들은 야핫과 시나와 여우스와 브리아니 이 네 사람도 시므이의 아들이라",
+      "source_text_hash": "30545b377969823c8f40d09deacfbbb7ea15f38a31dc33773eec623f38a5aa54",
+      "translation_text_hash": "d590ac1226788df0775566edd44752d7de7247da6057ae607fa7ee8675a2e6e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 시므이의 아들들은 야핫과 시나와 여우스와 브리아니 이 네 사람도 시므이의 아들이라"
+      ],
+      "raw_text_hashes": [
+        "d590ac1226788df0775566edd44752d7de7247da6057ae607fa7ee8675a2e6e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:11",
+      "sequence": 10995,
+      "chapter_label": "1CH 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "Jahath was the chief, and Zizah the second; but Jeush and Beriah didn’t have many sons; therefore they became a fathers’ house in one reckoning.",
+      "ko": "그 족장은 야핫이요 그 다음은 시사며 여우스와 브리아는 아들이 많지 아니하므로 저희와 한 족속으로 계수되었더라",
+      "source_text_hash": "312a08ac63c4f66c4c9d6f5ae69100a0fbbe209840d1c2e1f01c8937030d18bf",
+      "translation_text_hash": "b9534923845a0a36a4d872a9795c3a6098bd9a0c0d590492ce30e21940af1932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 족장은 야핫이요 그 다음은 시사며 여우스와 브리아는 아들이 많지 아니하므로 저희와 한 족속으로 계수되었더라"
+      ],
+      "raw_text_hashes": [
+        "b9534923845a0a36a4d872a9795c3a6098bd9a0c0d590492ce30e21940af1932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:12",
+      "sequence": 10996,
+      "chapter_label": "1CH 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "The sons of Kohath: Amram, Izhar, Hebron, and Uzziel, four.",
+      "ko": "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘 네 사람이라",
+      "source_text_hash": "c5f2a5f91f792b21651cc512382d9f4d58d9ca9802052377b6fa60767de6eed7",
+      "translation_text_hash": "0f99b2b6e0e282b192b1f643ac742441bdf589c8a81062a64eafb59fa1f8e264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘 네 사람이라"
+      ],
+      "raw_text_hashes": [
+        "0f99b2b6e0e282b192b1f643ac742441bdf589c8a81062a64eafb59fa1f8e264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:13",
+      "sequence": 10997,
+      "chapter_label": "1CH 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "The sons of Amram: Aaron and Moses; and Aaron was separated that he should sanctify the most holy things, he and his sons forever, to burn incense before the LORD, to minister to him, and to bless in his name forever.",
+      "ko": "아므람의 아들들은 아론과 모세니 아론은 그 자손들과 함께 구별되어 몸을 성결케 하여 영원토록 지극히 거룩한 자가 되어 여호와 앞에 분향하며 섬기며 영원토록 그 이름을 받들어 축복하게 되었으며",
+      "source_text_hash": "1079b37c165b4fc581391b85912d57f636f0346bf427fcd7957b2766687c185d",
+      "translation_text_hash": "0068a02c36222299d0e909d12f3459479f4cb969d82cc8eceab1f365ceecb33f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아므람의 아들들은 아론과 모세니 아론은 그 자손들과 함께 구별되어 몸을 성결케 하여 영원토록 지극히 거룩한 자가 되어 여호와 앞에 분향하며 섬기며 영원토록 그 이름을 받들어 축복하게 되었으며"
+      ],
+      "raw_text_hashes": [
+        "0068a02c36222299d0e909d12f3459479f4cb969d82cc8eceab1f365ceecb33f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:14",
+      "sequence": 10998,
+      "chapter_label": "1CH 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "But as for Moses the man of God, his sons were named among the tribe of Levi.",
+      "ko": "하나님의 사람 모세의 아들들은 레위 지파 중에 기록되었으니",
+      "source_text_hash": "4a9a1357fc42580c95662c062c060b5373ed38142d21379eef448bade792dc04",
+      "translation_text_hash": "172e316d878b67ac48f6e24dc135f5be97e22c50b5d06d81babcee9c6012a2d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람 모세의 아들들은 레위 지파 중에 기록되었으니"
+      ],
+      "raw_text_hashes": [
+        "172e316d878b67ac48f6e24dc135f5be97e22c50b5d06d81babcee9c6012a2d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:15",
+      "sequence": 10999,
+      "chapter_label": "1CH 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "The sons of Moses: Gershom and Eliezer.",
+      "ko": "모세의 아들은 게르솜과 엘리에셀이라",
+      "source_text_hash": "7f03b19f2d8c036c09c23d10f019e390c13b50dac11a2a10c72db260b7299855",
+      "translation_text_hash": "27caf0bd859c81366be9a31a34709fa252f3d2d4dd9d749a236079129b369a1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 아들은 게르솜과 엘리에셀이라"
+      ],
+      "raw_text_hashes": [
+        "27caf0bd859c81366be9a31a34709fa252f3d2d4dd9d749a236079129b369a1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:16",
+      "sequence": 11000,
+      "chapter_label": "1CH 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "The sons of Gershom: Shebuel the chief.",
+      "ko": "게르솜의 아들 중에 스브엘이 족장이 되었고",
+      "source_text_hash": "e2a8032f9d483712649545c7959b5b2f0766574bef914167625ad5cf0a3a5402",
+      "translation_text_hash": "bc7cbf6eb59339ef5e02571f13d08909875c1e9c812b69fdc0595f79bd3f1fc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르솜의 아들 중에 스브엘이 족장이 되었고"
+      ],
+      "raw_text_hashes": [
+        "bc7cbf6eb59339ef5e02571f13d08909875c1e9c812b69fdc0595f79bd3f1fc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:17",
+      "sequence": 11001,
+      "chapter_label": "1CH 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "The son of Eliezer was Rehabiah the chief; and Eliezer had no other sons, but the sons of Rehabiah were very many.",
+      "ko": "엘리에셀의 아들은 족장 르하뱌라 엘리에셀이 이 외에는 다른 아들이 없고 르하뱌의 아들은 심히 많았으며",
+      "source_text_hash": "7f3413289460c72f0008d588b8fddddbd421a2453be73e3f46d5053f73a2ef46",
+      "translation_text_hash": "f7fb235169827cbcb2181fb77db0a9a838bc98b5584f87a8133b30fbf9af1a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리에셀의 아들은 족장 르하뱌라 엘리에셀이 이 외에는 다른 아들이 없고 르하뱌의 아들은 심히 많았으며"
+      ],
+      "raw_text_hashes": [
+        "f7fb235169827cbcb2181fb77db0a9a838bc98b5584f87a8133b30fbf9af1a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:18",
+      "sequence": 11002,
+      "chapter_label": "1CH 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "The son of Izhar: Shelomith the chief.",
+      "ko": "이스할의 아들은 족장 슬로밋이요",
+      "source_text_hash": "6cd197f7f48765a3020d8699f8060d8d95e47979186aca070506c67f36f0406d",
+      "translation_text_hash": "9b24f169cce8c27a74c925f731acd24553272eb229937ec996862903f0dc2546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스할의 아들은 족장 슬로밋이요"
+      ],
+      "raw_text_hashes": [
+        "9b24f169cce8c27a74c925f731acd24553272eb229937ec996862903f0dc2546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:19",
+      "sequence": 11003,
+      "chapter_label": "1CH 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Hebron: Jeriah the chief, Amariah the second, Jahaziel the third, and Jekameam the fourth.",
+      "ko": "헤브론의 아들들은 족장 여리야와 둘째 아마랴와 세째 야하시엘과 네째 여가므암이며",
+      "source_text_hash": "d469dd9998d252fa936d2df20c3674e7d8d062a62b1c7ddd71fbbb262abf254f",
+      "translation_text_hash": "24fe6eb1d1d01a6aa4b7d33074917fc49229774fb0912def60b145c73853e4d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론의 아들들은 족장 여리야와 둘째 아마랴와 세째 야하시엘과 네째 여가므암이며"
+      ],
+      "raw_text_hashes": [
+        "24fe6eb1d1d01a6aa4b7d33074917fc49229774fb0912def60b145c73853e4d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:20",
+      "sequence": 11004,
+      "chapter_label": "1CH 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "The sons of Uzziel: Micah the chief, and Isshiah the second.",
+      "ko": "웃시엘의 아들은 족장 미가와 그 다음 잇시야더라",
+      "source_text_hash": "85bd3369876503756d9add7452757ea269542fdfbe8a948395c74f2d04ca1c60",
+      "translation_text_hash": "f3c6d9f99282bce9b63e14a1b01f26dc3870f6287d08e1aa134a4e8b7696fb32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시엘의 아들은 족장 미가와 그 다음 잇시야더라"
+      ],
+      "raw_text_hashes": [
+        "f3c6d9f99282bce9b63e14a1b01f26dc3870f6287d08e1aa134a4e8b7696fb32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:21",
+      "sequence": 11005,
+      "chapter_label": "1CH 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Merari: Mahli and Mushi. The sons of Mahli: Eleazar and Kish.",
+      "ko": "므라리의 아들들은 마흘리와 무시요 마흘리의 아들들은 엘르아살과 기스라",
+      "source_text_hash": "d241c314155236f60288594d69f176635ec3ff1ea4923cf1bce48ba1b6767a6d",
+      "translation_text_hash": "7eb3cfc73efd16f020fb80e83fba81fa12beb39e994756a7ea7c07ef9bbf2dc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 아들들은 마흘리와 무시요 마흘리의 아들들은 엘르아살과 기스라"
+      ],
+      "raw_text_hashes": [
+        "7eb3cfc73efd16f020fb80e83fba81fa12beb39e994756a7ea7c07ef9bbf2dc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:22",
+      "sequence": 11006,
+      "chapter_label": "1CH 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "Eleazar died, and had no sons, but daughters only; and their relatives, the sons of Kish, took them as wives.",
+      "ko": "엘르아살이 아들이 없이 죽고 딸만 있더니 그 형제 기스의 아들이 저에게 장가 들었으며",
+      "source_text_hash": "10e86f21bf990cccbbf1c11f906259aac153adc191584950fbfc2d20b33ed7ae",
+      "translation_text_hash": "6e361c4ab3515507ea18ec1766b2a10182734ec5937097f491183ab10b5630a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘르아살이 아들이 없이 죽고 딸만 있더니 그 형제 기스의 아들이 저에게 장가 들었으며"
+      ],
+      "raw_text_hashes": [
+        "6e361c4ab3515507ea18ec1766b2a10182734ec5937097f491183ab10b5630a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:23",
+      "sequence": 11007,
+      "chapter_label": "1CH 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Mushi: Mahli, Eder, and Jeremoth, three.",
+      "ko": "무시의 아들들은 마흘리와 에델과 여레못 세 사람이더라",
+      "source_text_hash": "275c3d725218d8c6354cabc48a065d650d5144f7d74370f32bba9b25d7eaf911",
+      "translation_text_hash": "0889edb59d094e5da49e670c25e22d0968d121e72f662e382bbe32e0facbb0e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무시의 아들들은 마흘리와 에델과 여레못 세 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "0889edb59d094e5da49e670c25e22d0968d121e72f662e382bbe32e0facbb0e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:24",
+      "sequence": 11008,
+      "chapter_label": "1CH 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "These were the sons of Levi after their fathers’ houses, even the heads of the fathers’ houses of those who were counted individually, in the number of names by their polls, who did the work for the service of the LORD’s house, from twenty years old and upward.",
+      "ko": "이는 다 레위 자손이니 그 종가를 따라 계수함을 입어 이름이 기록되고 여호와의 전에서 섬기는 일을 하는 이십세 이상 된 족장들이라",
+      "source_text_hash": "1ece862939c31a33e095edd98dc862d81162453a4be6211677cc0f236fcf5a55",
+      "translation_text_hash": "0dd0cc02ee65554782c9bd6ef1b6dc9d9b15d8a937bf85390b0ac1fc2a057b71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 레위 자손이니 그 종가를 따라 계수함을 입어 이름이 기록되고 여호와의 전에서 섬기는 일을 하는 이십세 이상 된 족장들이라"
+      ],
+      "raw_text_hashes": [
+        "0dd0cc02ee65554782c9bd6ef1b6dc9d9b15d8a937bf85390b0ac1fc2a057b71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:25",
+      "sequence": 11009,
+      "chapter_label": "1CH 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "For David said, “The LORD, the God of Israel, has given rest to his people; and he dwells in Jerusalem forever.",
+      "ko": "다윗이 이르기를 이스라엘 하나님 여호와께서 평강을 그 백성에게 주시고 예루살렘에 영원히 거하시나니",
+      "source_text_hash": "c21742e7a4b201f31cdb06dba40f57bf946cd36b33887a819fb127731670cb7d",
+      "translation_text_hash": "3ca4c53910b6566282f1770800f155ac30e27dda1889dbe28f070361360a4e5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이르기를 이스라엘 하나님 여호와께서 평강을 그 백성에게 주시고 예루살렘에 영원히 거하시나니"
+      ],
+      "raw_text_hashes": [
+        "3ca4c53910b6566282f1770800f155ac30e27dda1889dbe28f070361360a4e5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:26",
+      "sequence": 11010,
+      "chapter_label": "1CH 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "Also the Levites will no longer need to carry the tabernacle and all its vessels for its service.”",
+      "ko": "레위 사람이 다시는 성막과 그 가운데서 쓰는 모든 기구를 멜 것이 없다 한지라",
+      "source_text_hash": "e85b7fd02507ec510ab36d316c17749652f8abe2ad156f38136174db354c6941",
+      "translation_text_hash": "0ac863755f08664961cbd88d43f787e8b243edc0a326be21aa2c6ff4126f56ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람이 다시는 성막과 그 가운데서 쓰는 모든 기구를 멜 것이 없다 한지라"
+      ],
+      "raw_text_hashes": [
+        "0ac863755f08664961cbd88d43f787e8b243edc0a326be21aa2c6ff4126f56ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:27",
+      "sequence": 11011,
+      "chapter_label": "1CH 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "For by the last words of David the sons of Levi were counted, from twenty years old and upward.",
+      "ko": "다윗의 유언대로 레위 자손이 이십세 이상으로 계수되었으니",
+      "source_text_hash": "934889bb213ab7156f765692110c0e62f970136b8ecda2a14e4b90a7c4be696c",
+      "translation_text_hash": "a29a02d145676169cae591fb4ae90c119348f30f2af703af4c128fdeaaf112b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 유언대로 레위 자손이 이십세 이상으로 계수되었으니"
+      ],
+      "raw_text_hashes": [
+        "a29a02d145676169cae591fb4ae90c119348f30f2af703af4c128fdeaaf112b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:28",
+      "sequence": 11012,
+      "chapter_label": "1CH 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "For their duty was to wait on the sons of Aaron for the service of the LORD’s house—in the courts, in the rooms, and in the purifying of all holy things, even the work of the service of God’s house;",
+      "ko": "그 직분은 아론의 자손에게 수종들어 여호와의 전과 뜰과 골방에서 섬기고 또 모든 성물을 정결케 하는 일 곧 하나님의 전에서 섬기는 일과",
+      "source_text_hash": "2261973dd7c21aaa837cd0e67f2dfc95066f2c99e4192f62c461006cc6d91b07",
+      "translation_text_hash": "ea48adb6197956842d4b7ad098964fa13e24e6aadc6dfcf3012c4d3f647a75ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 직분은 아론의 자손에게 수종들어 여호와의 전과 뜰과 골방에서 섬기고 또 모든 성물을 정결케 하는 일 곧 하나님의 전에서 섬기는 일과"
+      ],
+      "raw_text_hashes": [
+        "ea48adb6197956842d4b7ad098964fa13e24e6aadc6dfcf3012c4d3f647a75ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:29",
+      "sequence": 11013,
+      "chapter_label": "1CH 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "for the show bread also, and for the fine flour for a meal offering, whether of unleavened wafers, or of that which is baked in the pan, or of that which is soaked, and for all measurements of quantity and size;",
+      "ko": "또 진설병과 고운 가루의 소제물 곧 무교전병이나 남비에 지지는 것이나 반죽하는 것이나 또 모든 저울과 자를 맡고",
+      "source_text_hash": "3910ba5c599be702216c5b5ee8b5986e3031817125dc53169d96370583900595",
+      "translation_text_hash": "5b2886dc006fec6599aef8b1a404321942e25087d6c93ae7a8e215c6b6d7818c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 진설병과 고운 가루의 소제물 곧 무교전병이나 남비에 지지는 것이나 반죽하는 것이나 또 모든 저울과 자를 맡고"
+      ],
+      "raw_text_hashes": [
+        "5b2886dc006fec6599aef8b1a404321942e25087d6c93ae7a8e215c6b6d7818c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:30",
+      "sequence": 11014,
+      "chapter_label": "1CH 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "and to stand every morning to thank and praise the LORD, and likewise in the evening;",
+      "ko": "새벽과 저녁마다 서서 여호와께 축사하며 찬송하며",
+      "source_text_hash": "48f18adb76ba3ea49c34b4b230aa53e8d1eacbcf7d90975486f96e3c5d81b4ff",
+      "translation_text_hash": "2fee57a61e07298d919491c39111ebbeab24484416ae1fef2762e10e36a67056",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새벽과 저녁마다 서서 여호와께 축사하며 찬송하며"
+      ],
+      "raw_text_hashes": [
+        "2fee57a61e07298d919491c39111ebbeab24484416ae1fef2762e10e36a67056"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:31",
+      "sequence": 11015,
+      "chapter_label": "1CH 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "and to offer all burnt offerings to the LORD on the Sabbaths, on the new moons, and on the set feasts, in number according to the ordinance concerning them, continually before the LORD;",
+      "ko": "또 안식일과 초하루와 절기에 모든 번제를 여호와께 드리되 그 명하신 규례의 정한 수효대로 항상 여호와 앞에 드리며",
+      "source_text_hash": "007dd1cf1dafc09917986a1f92d9ef4a9aa61b4d59717e3492581431d95d9189",
+      "translation_text_hash": "6dea35a6aacfeed1df2896d4939510ed9a376245737aeb91cb78567480737e39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 안식일과 초하루와 절기에 모든 번제를 여호와께 드리되 그 명하신 규례의 정한 수효대로 항상 여호와 앞에 드리며"
+      ],
+      "raw_text_hashes": [
+        "6dea35a6aacfeed1df2896d4939510ed9a376245737aeb91cb78567480737e39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:23:32",
+      "sequence": 11016,
+      "chapter_label": "1CH 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "and that they should keep the duty of the Tent of Meeting, the duty of the holy place, and the duty of the sons of Aaron their brothers for the service of the LORD’s house.",
+      "ko": "또 회막의 직무와 성소의 직무와 그 형제 아론 자손의 직무를 지켜 여호와의 전에서 수종드는 것이더라",
+      "source_text_hash": "d03f101528af274fae5c52857e65d325889f7345d560c2452c38c0b7fb71778d",
+      "translation_text_hash": "799d090d22df3b09e0da314c7a54c5a7ba6854af7f7596357f0611a9e0711c6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 회막의 직무와 성소의 직무와 그 형제 아론 자손의 직무를 지켜 여호와의 전에서 수종드는 것이더라"
+      ],
+      "raw_text_hashes": [
+        "799d090d22df3b09e0da314c7a54c5a7ba6854af7f7596357f0611a9e0711c6c"
+      ]
+    }
+  ]
+}

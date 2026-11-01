@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:012",
+  "unit_ordinal": 941,
+  "unit_label": "MAT 12",
+  "book_code": "MAT",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:12:1",
+      "sequence": 23491,
+      "chapter_label": "MAT 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "At that time, Jesus went on the Sabbath day through the grain fields. His disciples were hungry and began to pluck heads of grain and to eat.",
+      "ko": "그 때에 예수께서 안식일에 밀밭 사이로 가실쌔 제자들이 시장하여 이삭을 잘라 먹으니",
+      "source_text_hash": "d6ed247468deadf5d974a8ffa4952ee3dc9b5a05e4eef668f6a7ef767a28cc0c",
+      "translation_text_hash": "b9abc9892dcc50512f5ab30d74740a7ea05c6558e2799914002596b841f070e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예수께서 안식일에 밀밭 사이로 가실쌔 제자들이 시장하여 이삭을 잘라 먹으니"
+      ],
+      "raw_text_hashes": [
+        "b9abc9892dcc50512f5ab30d74740a7ea05c6558e2799914002596b841f070e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:2",
+      "sequence": 23492,
+      "chapter_label": "MAT 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "But the Pharisees, when they saw it, said to him, “Behold, your disciples do what is not lawful to do on the Sabbath.”",
+      "ko": "바리새인들이 보고 예수께 고하되 보시오 당신의 제자들이 안식일에 하지 못할 일을 하나이다",
+      "source_text_hash": "5a8b2e6d2aed409b74313d2a8ff649ed746dc156fa8b1bb4cd640df5089c9208",
+      "translation_text_hash": "0ad747eaa1b08017e86c412a1a6dd14c173a3eee1623e19b1c6d90b8192eae93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 보고 예수께 고하되 보시오 당신의 제자들이 안식일에 하지 못할 일을 하나이다"
+      ],
+      "raw_text_hashes": [
+        "0ad747eaa1b08017e86c412a1a6dd14c173a3eee1623e19b1c6d90b8192eae93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:3",
+      "sequence": 23493,
+      "chapter_label": "MAT 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "But he said to them, “Haven’t you read what David did when he was hungry, and those who were with him:",
+      "ko": "예수께서 가라사대 다윗이 자기와 그 함께한 자들이 시장할 때에 한 일을 읽지 못하였느냐",
+      "source_text_hash": "4a15071d2fea65fb0b8040fe89302cd2a670b62d9d6fb55d18617bba4227bb9c",
+      "translation_text_hash": "29f8c9616a62181dc4084a3c6eba81cdb4deb5ecad220edc8e3703565f216176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 다윗이 자기와 그 함께한 자들이 시장할 때에 한 일을 읽지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "29f8c9616a62181dc4084a3c6eba81cdb4deb5ecad220edc8e3703565f216176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:4",
+      "sequence": 23494,
+      "chapter_label": "MAT 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "how he entered into God’s house and ate the show bread, which was not lawful for him to eat, nor for those who were with him, but only for the priests?",
+      "ko": "그가 하나님의 전에 들어가서 제사장 외에는 자기나 그 함께한 자들이 먹지 못하는 진설병을 먹지 아니하였느냐",
+      "source_text_hash": "ffeefc602c5359abfdd8a32accc9ad49c21411774afa91cd7275c2155c2a3307",
+      "translation_text_hash": "d16728b5b03434a53b38f02153b6856f166fae02530e485419df01d508bd3200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 하나님의 전에 들어가서 제사장 외에는 자기나 그 함께한 자들이 먹지 못하는 진설병을 먹지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "d16728b5b03434a53b38f02153b6856f166fae02530e485419df01d508bd3200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:5",
+      "sequence": 23495,
+      "chapter_label": "MAT 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Or have you not read in the law that on the Sabbath day the priests in the temple profane the Sabbath and are guiltless?",
+      "ko": "또 안식일에 제사장들이 성전 안에서 안식을 범하여도 죄가 없음을 너희가 율법에서 읽지 못하였느냐",
+      "source_text_hash": "72941d337c33938fce86667b7729a3fb555e5b494426a9a267260cf146343bc6",
+      "translation_text_hash": "75c368d3c684742fb9ee02dbad901cdd6a389a95d998249757ea6dca655bd6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 안식일에 제사장들이 성전 안에서 안식을 범하여도 죄가 없음을 너희가 율법에서 읽지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "75c368d3c684742fb9ee02dbad901cdd6a389a95d998249757ea6dca655bd6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:6",
+      "sequence": 23496,
+      "chapter_label": "MAT 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "But I tell you that one greater than the temple is here.",
+      "ko": "내가 너희에게 이르노니 성전보다 더 큰이가 여기 있느니라",
+      "source_text_hash": "6e2d0d2b29b1641f9cece2ee4fa78b0b95a81b5e57036f884e2836ab8e1aa51c",
+      "translation_text_hash": "2b6ecd29c63c05150f715c3a94916760d211697d479dc92c4d8e9df0769757ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 성전보다 더 큰이가 여기 있느니라"
+      ],
+      "raw_text_hashes": [
+        "2b6ecd29c63c05150f715c3a94916760d211697d479dc92c4d8e9df0769757ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:7",
+      "sequence": 23497,
+      "chapter_label": "MAT 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "But if you had known what this means, ‘I desire mercy, and not sacrifice,’you wouldn’t have condemned the guiltless.",
+      "ko": "나는 자비를 원하고 제사를 원치 아니하노라 하신 뜻을 너희가 알았더면 무죄한 자를 죄로 정치 아니하였으리라",
+      "source_text_hash": "45f6cd5afbe42650ab74d6452700189af9ca2476e77ea5adf6327434fa21fb62",
+      "translation_text_hash": "a5d78fd3b65e04cca659c1e984c9aeca5426018af9ff55d3e15d9846e8de2a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 자비를 원하고 제사를 원치 아니하노라 하신 뜻을 너희가 알았더면 무죄한 자를 죄로 정치 아니하였으리라"
+      ],
+      "raw_text_hashes": [
+        "a5d78fd3b65e04cca659c1e984c9aeca5426018af9ff55d3e15d9846e8de2a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:8",
+      "sequence": 23498,
+      "chapter_label": "MAT 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "For the Son of Man is Lord of the Sabbath.”",
+      "ko": "인자는 안식일의 주인이니라 하시니라",
+      "source_text_hash": "38520ce3f0fe947b5803c5fd01d41aa66fa4f26c51447fd141adda1823a2eeae",
+      "translation_text_hash": "1f6fc4d53de59cc87d7ffd1a270ec24a02c58e778d11a8a88c3e2bc59c3b0c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 안식일의 주인이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "1f6fc4d53de59cc87d7ffd1a270ec24a02c58e778d11a8a88c3e2bc59c3b0c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:9",
+      "sequence": 23499,
+      "chapter_label": "MAT 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "He departed from there and went into their synagogue.",
+      "ko": "거기를 떠나 저희 회당에 들어가시니",
+      "source_text_hash": "176a5240c372c7fc5d42c4f2340993e633e5fcc15d7609a30ea679d7de4b0b93",
+      "translation_text_hash": "99b9a08ab94c3190a720201c47e54f37fa56b23c476e340975600ad01e480e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기를 떠나 저희 회당에 들어가시니"
+      ],
+      "raw_text_hashes": [
+        "99b9a08ab94c3190a720201c47e54f37fa56b23c476e340975600ad01e480e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:10",
+      "sequence": 23500,
+      "chapter_label": "MAT 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "And behold, there was a man with a withered hand. They asked him, “Is it lawful to heal on the Sabbath day?” so that they might accuse him.",
+      "ko": "한편 손 마른 사람이 있는지라 사람들이 예수를 송사하려 하여 물어 가로되 안식일에 병 고치는 것이 옳으니이까",
+      "source_text_hash": "35900b4d673e6e5b8a54e01f4bd147514e211709b1996d9f55d63622099776c9",
+      "translation_text_hash": "c3a1abaffc4b2a833599d141574b257fd5d569603e8c9eba423490d0b22f0e42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한편 손 마른 사람이 있는지라 사람들이 예수를 송사하려 하여 물어 가로되 안식일에 병 고치는 것이 옳으니이까"
+      ],
+      "raw_text_hashes": [
+        "c3a1abaffc4b2a833599d141574b257fd5d569603e8c9eba423490d0b22f0e42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:11",
+      "sequence": 23501,
+      "chapter_label": "MAT 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "He said to them, “What man is there among you who has one sheep, and if this one falls into a pit on the Sabbath day, won’t he grab on to it and lift it out?",
+      "ko": "예수께서 가라사대 너희 중에 어느 사람이 양 한 마리가 있어 안식일에 구덩이에 빠졌으면 붙잡아 내지 않겠느냐",
+      "source_text_hash": "1dac726d48c3dcb43ad05fe33b06c18826fcd49dc8cd5ba417844f804c33fc30",
+      "translation_text_hash": "f26556e81ae51ed19072bd296f0d735ec3b6193fc2cd6c0392e4a29433f35d99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희 중에 어느 사람이 양 한 마리가 있어 안식일에 구덩이에 빠졌으면 붙잡아 내지 않겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f26556e81ae51ed19072bd296f0d735ec3b6193fc2cd6c0392e4a29433f35d99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:12",
+      "sequence": 23502,
+      "chapter_label": "MAT 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Of how much more value then is a man than a sheep! Therefore it is lawful to do good on the Sabbath day.”",
+      "ko": "사람이 양보다 얼마나 더 귀하냐 그러므로 안식일에 선을 행하는 것이 옳으니라 하시고",
+      "source_text_hash": "1562f40d552da0d49d78f794de7d4bd51782e7c636e98694a11dd6801f9777e3",
+      "translation_text_hash": "b7df89753e7098800793509c336fa6da7ddc29837c6376df7d6c37476f8f2685",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 양보다 얼마나 더 귀하냐 그러므로 안식일에 선을 행하는 것이 옳으니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "b7df89753e7098800793509c336fa6da7ddc29837c6376df7d6c37476f8f2685"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:13",
+      "sequence": 23503,
+      "chapter_label": "MAT 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Then he told the man, “Stretch out your hand.”He stretched it out; and it was restored whole, just like the other.",
+      "ko": "이에 그 사람에게 이르시되 손을 내밀라 하시니 저가 내밀매 다른 손과 같이 회복되어 성하더라",
+      "source_text_hash": "228f421dadec392f6f2e0dabaee3b3731dbdfca5e512b0b5cc90deca73de0a0f",
+      "translation_text_hash": "a8c7aa0d0d753b7544d8db84e7bc80a87225062ba9575ee54dcb07d64a481d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 사람에게 이르시되 손을 내밀라 하시니 저가 내밀매 다른 손과 같이 회복되어 성하더라"
+      ],
+      "raw_text_hashes": [
+        "a8c7aa0d0d753b7544d8db84e7bc80a87225062ba9575ee54dcb07d64a481d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:14",
+      "sequence": 23504,
+      "chapter_label": "MAT 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "But the Pharisees went out and conspired against him, how they might destroy him.",
+      "ko": "바리새인들이 나가서 어떻게 하여 예수를 죽일꼬 의논하거늘",
+      "source_text_hash": "34804ec4376582cc2a87b9214372accec58fc64a5bc1a48de206977ef963a511",
+      "translation_text_hash": "a769c4583af610f53df9b1f117e08fb8a0a068ea1c7f720155226ae062c28d07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 나가서 어떻게 하여 예수를 죽일꼬 의논하거늘"
+      ],
+      "raw_text_hashes": [
+        "a769c4583af610f53df9b1f117e08fb8a0a068ea1c7f720155226ae062c28d07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:15",
+      "sequence": 23505,
+      "chapter_label": "MAT 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Jesus, perceiving that, withdrew from there. Great multitudes followed him; and he healed them all,",
+      "ko": "예수께서 아시고 거기를 떠나가시니 사람이 많이 좇는지라 예수께서 저희 병을 다 고치시고",
+      "source_text_hash": "faf650c020d85e25c805d2b62f3791792b5ea1b4a4288b02fa339850268af031",
+      "translation_text_hash": "55b8c8a39b74b2a1a1397efe36713284cb26e992e34d60cdcf098832cb5bdf31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 아시고 거기를 떠나가시니 사람이 많이 좇는지라 예수께서 저희 병을 다 고치시고"
+      ],
+      "raw_text_hashes": [
+        "55b8c8a39b74b2a1a1397efe36713284cb26e992e34d60cdcf098832cb5bdf31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:16",
+      "sequence": 23506,
+      "chapter_label": "MAT 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "and commanded them that they should not make him known,",
+      "ko": "자기를 나타내지 말라 경계하셨으니",
+      "source_text_hash": "330c89f2d42934e2a97e720c0115c45f542ca19ae9c14339aa5ca3ed3a6a6800",
+      "translation_text_hash": "23377ecd0a6a08378702b353c3979133d45c7a9136367aa953b6b5f1d65a9184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 나타내지 말라 경계하셨으니"
+      ],
+      "raw_text_hashes": [
+        "23377ecd0a6a08378702b353c3979133d45c7a9136367aa953b6b5f1d65a9184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:17",
+      "sequence": 23507,
+      "chapter_label": "MAT 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "that it might be fulfilled which was spoken through Isaiah the prophet, saying,",
+      "ko": "이는 선지자 이사야로 말씀하신바",
+      "source_text_hash": "b8eec41addacaa0077310c8c825aab7828c753b0abd33ec6814f8361f962a8ea",
+      "translation_text_hash": "846b2a21274ff57954a32289315da8144357e76da5406ec37247068109fba017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자 이사야로 말씀하신바"
+      ],
+      "raw_text_hashes": [
+        "846b2a21274ff57954a32289315da8144357e76da5406ec37247068109fba017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:18",
+      "sequence": 23508,
+      "chapter_label": "MAT 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "“Behold, my servant whom I have chosen, my beloved in whom my soul is well pleased. I will put my Spirit on him. He will proclaim justice to the nations.",
+      "ko": "보라 나의 택한 종 곧 내 마음에 기뻐하는바 나의 사랑하는 자로다 내가 내 성령을 줄터이니 그가 심판을 이방에 알게 하리라",
+      "source_text_hash": "918b6ae3e07fee3cb39757fcd162bf7423a5b47647b7f46873e52fe10a240593",
+      "translation_text_hash": "1b338e482c872eb05110fc17e5f42c708517b35c487cfc82f5f8a4ba332f5047",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나의 택한 종 곧 내 마음에 기뻐하는바 나의 사랑하는 자로다 내가 내 성령을 줄터이니 그가 심판을 이방에 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "1b338e482c872eb05110fc17e5f42c708517b35c487cfc82f5f8a4ba332f5047"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:19",
+      "sequence": 23509,
+      "chapter_label": "MAT 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "He will not strive, nor shout, neither will anyone hear his voice in the streets.",
+      "ko": "그가 다투지도 아니하며 들레지도 아니하리니 아무도 길에서 그 소리를 듣지 못하리라",
+      "source_text_hash": "0df616105b054cd111545965f5c96d4ab6a24f8ccea6319070fe960efb3c69b2",
+      "translation_text_hash": "45309b1dc2703b7bb6a29a3d99c2c611d929fd136b15c919c8048d398f8edcf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 다투지도 아니하며 들레지도 아니하리니 아무도 길에서 그 소리를 듣지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "45309b1dc2703b7bb6a29a3d99c2c611d929fd136b15c919c8048d398f8edcf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:20",
+      "sequence": 23510,
+      "chapter_label": "MAT 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "He won’t break a bruised reed. He won’t quench a smoking flax, until he leads justice to victory.",
+      "ko": "상한 갈대를 꺾지 아니하며 꺼져가는 심지를 끄지 아니하기를 심판하여 이길 때까지 하리니",
+      "source_text_hash": "8bf42b5855b7d85e154214004762e6c8e41aeeacddd114a69feda01c81e260a9",
+      "translation_text_hash": "9098ce310cc7671b1fc4e85e8266cd2be02d2c5eceff05d1a837412cbb57c50e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상한 갈대를 꺾지 아니하며 꺼져가는 심지를 끄지 아니하기를 심판하여 이길 때까지 하리니"
+      ],
+      "raw_text_hashes": [
+        "9098ce310cc7671b1fc4e85e8266cd2be02d2c5eceff05d1a837412cbb57c50e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:21",
+      "sequence": 23511,
+      "chapter_label": "MAT 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "In his name, the nations will hope.”",
+      "ko": "또한 이방들이 그 이름을 바라리라 함을 이루려 하심이니라",
+      "source_text_hash": "640b56fb53c1dfa69156f67eb4126459024ea38b07f4ab1062206c29881938fb",
+      "translation_text_hash": "a1b8da24e4530f8d7dfca8db9db96d37c591af6ac408f36dae2c929ac6d5f114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 이방들이 그 이름을 바라리라 함을 이루려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "a1b8da24e4530f8d7dfca8db9db96d37c591af6ac408f36dae2c929ac6d5f114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:22",
+      "sequence": 23512,
+      "chapter_label": "MAT 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "Then one possessed by a demon, blind and mute, was brought to him; and he healed him, so that the blind and mute man both spoke and saw.",
+      "ko": "그 때에 귀신들려 눈 멀고 벙어리 된 자를 데리고 왔거늘 예수께서 고쳐 주시매 그 벙어리가 말하며 보게 된지라",
+      "source_text_hash": "527a0a60a0970548ccba2469b9927cd0d7f34fd1806bf5bd4ac7d08ab440179a",
+      "translation_text_hash": "ab682489bf6a1f0c0e040c54e48ffbb67a992774559773619552487ed1fd5a16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 귀신들려 눈 멀고 벙어리 된 자를 데리고 왔거늘 예수께서 고쳐 주시매 그 벙어리가 말하며 보게 된지라"
+      ],
+      "raw_text_hashes": [
+        "ab682489bf6a1f0c0e040c54e48ffbb67a992774559773619552487ed1fd5a16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:23",
+      "sequence": 23513,
+      "chapter_label": "MAT 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "All the multitudes were amazed, and said, “Can this be the son of David?”",
+      "ko": "무리가 다 놀라 가로되 이는 다윗의 자손이 아니냐 하니",
+      "source_text_hash": "38a234d76bd6ddd18b98d411cc2345a2a3f4e051a5a5451430fef63486eaebae",
+      "translation_text_hash": "ed17b7698201f3f7b32c55e037c5aeddf85f3231a2be87af076d142c8db2d57e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 다 놀라 가로되 이는 다윗의 자손이 아니냐 하니"
+      ],
+      "raw_text_hashes": [
+        "ed17b7698201f3f7b32c55e037c5aeddf85f3231a2be87af076d142c8db2d57e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:24",
+      "sequence": 23514,
+      "chapter_label": "MAT 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "But when the Pharisees heard it, they said, “This man does not cast out demons except by Beelzebul, the prince of the demons.”",
+      "ko": "바리새인들은 듣고 가로되 이가 귀신의 왕 바알세불을 힘입지 않고는 귀신을 쫓아내지 못하느니라 하거늘",
+      "source_text_hash": "a450535ce37ff49ae2dea22f83da6f4d15635b4e4ca4315b8176cde5636186be",
+      "translation_text_hash": "6bee97cbf0428bcaceeb18ab762740827d6cba59ab22e1b6390f40a5f735f639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들은 듣고 가로되 이가 귀신의 왕 바알세불을 힘입지 않고는 귀신을 쫓아내지 못하느니라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "6bee97cbf0428bcaceeb18ab762740827d6cba59ab22e1b6390f40a5f735f639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:25",
+      "sequence": 23515,
+      "chapter_label": "MAT 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "Knowing their thoughts, Jesus said to them, “Every kingdom divided against itself is brought to desolation, and every city or house divided against itself will not stand.",
+      "ko": "예수께서 저희생각을 아시고 가라사대 스스로 분쟁하는 나라마다 황폐하여질 것이요 스스로 분쟁하는 동네나 집마다 서지 못하리라",
+      "source_text_hash": "20c3ce489f1681e1bfd9c828a9cd72160d537aba70348d4e27bb0f771a90aa1d",
+      "translation_text_hash": "d1529c237e52a6b1273fa186d50882a27ce368d95515558054e7905aa057155d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희생각을 아시고 가라사대 스스로 분쟁하는 나라마다 황폐하여질 것이요 스스로 분쟁하는 동네나 집마다 서지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "d1529c237e52a6b1273fa186d50882a27ce368d95515558054e7905aa057155d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:26",
+      "sequence": 23516,
+      "chapter_label": "MAT 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "If Satan casts out Satan, he is divided against himself. How then will his kingdom stand?",
+      "ko": "사단이 만일 사단을 쫓아내면 스스로 분쟁하는 것이니 그리하고야 저의 나라가 어떻게 서겠느냐",
+      "source_text_hash": "12a75915bc145f79f66a855ec1ad6cf6fdb3535cb60c30c4be007abb77365465",
+      "translation_text_hash": "f58586415f5d565fee836ff0ec20ea1362b872dbd42870d0791a96bb17d83512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사단이 만일 사단을 쫓아내면 스스로 분쟁하는 것이니 그리하고야 저의 나라가 어떻게 서겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f58586415f5d565fee836ff0ec20ea1362b872dbd42870d0791a96bb17d83512"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:27",
+      "sequence": 23517,
+      "chapter_label": "MAT 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "If I by Beelzebul cast out demons, by whom do your children cast them out? Therefore they will be your judges.",
+      "ko": "또 내가 바알세불을 힘입어 귀신을 쫓아내면 너희 아들들은 누구를 힘입어 쫓아내느냐 그러므로 저희가 너희 재판관이 되리라",
+      "source_text_hash": "26bb6fdd1182b3a63830b92ae7befe46709160c5a3e372e8d997d9dad47f8c0e",
+      "translation_text_hash": "0d80cb91e6bcfa70d2e3052e1db7e9c9b8d9c962f4035416472d08745090ba78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 바알세불을 힘입어 귀신을 쫓아내면 너희 아들들은 누구를 힘입어 쫓아내느냐 그러므로 저희가 너희 재판관이 되리라"
+      ],
+      "raw_text_hashes": [
+        "0d80cb91e6bcfa70d2e3052e1db7e9c9b8d9c962f4035416472d08745090ba78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:28",
+      "sequence": 23518,
+      "chapter_label": "MAT 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "But if I by the Spirit of God cast out demons, then God’s Kingdom has come upon you.",
+      "ko": "그러나 내가 하나님의 성령을 힘입어 귀신을 쫓아내는 것이면 하나님의 나라가 이미 너희에게 임하였느니라",
+      "source_text_hash": "331930fbe5fecc6558dc3870038753a4aa3b95f3d2af9cc9b436dbab155adfbc",
+      "translation_text_hash": "28d880bdf982aa5d17bc6d6c867f7ec8ab45ed4629ef31561228e308a54c8954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 하나님의 성령을 힘입어 귀신을 쫓아내는 것이면 하나님의 나라가 이미 너희에게 임하였느니라"
+      ],
+      "raw_text_hashes": [
+        "28d880bdf982aa5d17bc6d6c867f7ec8ab45ed4629ef31561228e308a54c8954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:29",
+      "sequence": 23519,
+      "chapter_label": "MAT 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "Or how can one enter into the house of the strong man and plunder his goods, unless he first bind the strong man? Then he will plunder his house.",
+      "ko": "사람이 먼저 강한 자를 결박하지 않고야 어떻게 그 강한 자의 집에 들어가 그 세간을 늑탈하겠느냐 결박한 후에야 그 집을 늑탈하리라",
+      "source_text_hash": "8ce28517904b91dddcc27c47772ba0535b6a48f2ed06dfc61fc604c34a7b1e24",
+      "translation_text_hash": "75404f6bd54a9600c55a249e2956fa07bedcd9c644dbd9a7106b617ad25380fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 먼저 강한 자를 결박하지 않고야 어떻게 그 강한 자의 집에 들어가 그 세간을 늑탈하겠느냐 결박한 후에야 그 집을 늑탈하리라"
+      ],
+      "raw_text_hashes": [
+        "75404f6bd54a9600c55a249e2956fa07bedcd9c644dbd9a7106b617ad25380fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:30",
+      "sequence": 23520,
+      "chapter_label": "MAT 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "“He who is not with me is against me, and he who doesn’t gather with me, scatters.",
+      "ko": "나와 함께 아니하는 자는 나를 반대하는 자요 나와 함께 모으지 아니하는 자는 헤치는 자니라",
+      "source_text_hash": "87215123969f94a1711a6b03d15944c28ecb91c0a1949f2f2a9b9496d0c8be26",
+      "translation_text_hash": "1ab0aadaabba6633138ed269eb5d60bb0bbc58eedd91a88c5a39ca7d5bd459dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 아니하는 자는 나를 반대하는 자요 나와 함께 모으지 아니하는 자는 헤치는 자니라"
+      ],
+      "raw_text_hashes": [
+        "1ab0aadaabba6633138ed269eb5d60bb0bbc58eedd91a88c5a39ca7d5bd459dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:31",
+      "sequence": 23521,
+      "chapter_label": "MAT 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore I tell you, every sin and blasphemy will be forgiven men, but the blasphemy against the Spirit will not be forgiven men.",
+      "ko": "그러므로 내가 너희에게 이르노니 사람의 모든 죄와 훼방은 사하심을 얻되 성령을 훼방하는 것은 사하심을 얻지 못하겠고",
+      "source_text_hash": "280f7670569646f7ec9ac2d1a1c8b72cce4e67e937c3dabd98c510394f3d9f84",
+      "translation_text_hash": "469dec6a4d8cb697d865f5afe04a85a2e33eff6d322c703fec1cf0d17df600eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 이르노니 사람의 모든 죄와 훼방은 사하심을 얻되 성령을 훼방하는 것은 사하심을 얻지 못하겠고"
+      ],
+      "raw_text_hashes": [
+        "469dec6a4d8cb697d865f5afe04a85a2e33eff6d322c703fec1cf0d17df600eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:32",
+      "sequence": 23522,
+      "chapter_label": "MAT 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "Whoever speaks a word against the Son of Man, it will be forgiven him; but whoever speaks against the Holy Spirit, it will not be forgiven him, either in this age, or in that which is to come.",
+      "ko": "또 누구든지 말로 인자를 거역하면 사하심을 얻되 누구든지 말로 성령을 거역하면 이 세상과 오는 세상에도 사하심을 얻지 못하리라",
+      "source_text_hash": "f248908c712912348406fb1952501caaed04c666dfdd8ec60d0adf0d23d2865a",
+      "translation_text_hash": "a7c97ab3bbb85a74b5e044a5ae3b6464e37096a83bd416afd4abde4a92a599c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 누구든지 말로 인자를 거역하면 사하심을 얻되 누구든지 말로 성령을 거역하면 이 세상과 오는 세상에도 사하심을 얻지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "a7c97ab3bbb85a74b5e044a5ae3b6464e37096a83bd416afd4abde4a92a599c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:33",
+      "sequence": 23523,
+      "chapter_label": "MAT 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "“Either make the tree good and its fruit good, or make the tree corrupt and its fruit corrupt; for the tree is known by its fruit.",
+      "ko": "나무도 좋고 실과도 좋다 하든지 나무도 좋지 않고 실과도 좋지 않다 하든지 하라 그 실과로 나무를 아느니라",
+      "source_text_hash": "6f015489e8a76d19ee64cffca1799bc09b42b6e649a04c456503379f127035c7",
+      "translation_text_hash": "6d80236927247e4a0e3f8f28aaeb4a231dec5fc9d4a5791317380b4699ad5a2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무도 좋고 실과도 좋다 하든지 나무도 좋지 않고 실과도 좋지 않다 하든지 하라 그 실과로 나무를 아느니라"
+      ],
+      "raw_text_hashes": [
+        "6d80236927247e4a0e3f8f28aaeb4a231dec5fc9d4a5791317380b4699ad5a2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:34",
+      "sequence": 23524,
+      "chapter_label": "MAT 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "You offspring of vipers, how can you, being evil, speak good things? For out of the abundance of the heart, the mouth speaks.",
+      "ko": "독사의 자식들아 너희는 악하니 어떻게 선한 말을 할 수 있느냐 이는 마음에 가득한 것을 입으로 말함이라",
+      "source_text_hash": "354de147748fbb03a310640d8c64055958355bf8d31d9674adcd01999d102c0a",
+      "translation_text_hash": "9d464f24c3cc6bf9bb7cdcc4eb5876c37adba9b675fb8edf199bf3ff6572b2a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "독사의 자식들아 너희는 악하니 어떻게 선한 말을 할 수 있느냐 이는 마음에 가득한 것을 입으로 말함이라"
+      ],
+      "raw_text_hashes": [
+        "9d464f24c3cc6bf9bb7cdcc4eb5876c37adba9b675fb8edf199bf3ff6572b2a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:35",
+      "sequence": 23525,
+      "chapter_label": "MAT 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "The good man out of his good treasurebrings out good things, and the evil man out of his evil treasure brings out evil things.",
+      "ko": "선한 사람은 그 쌓은 선에서 선한 것을 내고 악한 사람은 그 쌓은 악에서 악한 것을 내느니라",
+      "source_text_hash": "b9656f96a049523d2ef72a124c4b22b5a49ef25007aad3d34ac0b455a11527d4",
+      "translation_text_hash": "7c2bff1f257b7298696d2cb69370beafa6406f2a860acad1e32773c800479f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 사람은 그 쌓은 선에서 선한 것을 내고 악한 사람은 그 쌓은 악에서 악한 것을 내느니라"
+      ],
+      "raw_text_hashes": [
+        "7c2bff1f257b7298696d2cb69370beafa6406f2a860acad1e32773c800479f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:36",
+      "sequence": 23526,
+      "chapter_label": "MAT 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "I tell you that every idle word that men speak, they will give account of it in the day of judgment.",
+      "ko": "내가 너희에게 이르노니 사람이 무슨 무익한 말을 하든지 심판날에 이에 대하여 심문을 받으리니",
+      "source_text_hash": "5bbddd40300003530da196cad24063313a0dcd6e3e88ef6ab3d3a5fc5d96a9bd",
+      "translation_text_hash": "51f8f8fdb3b71bfad25a49824565f92caabbd1ebe2d3dca1ef11dcc0b4cab3ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 사람이 무슨 무익한 말을 하든지 심판날에 이에 대하여 심문을 받으리니"
+      ],
+      "raw_text_hashes": [
+        "51f8f8fdb3b71bfad25a49824565f92caabbd1ebe2d3dca1ef11dcc0b4cab3ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:37",
+      "sequence": 23527,
+      "chapter_label": "MAT 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "For by your words you will be justified, and by your words you will be condemned.”",
+      "ko": "네 말로 의롭다 함을 받고 네 말로 정죄함을 받으리라",
+      "source_text_hash": "2f562ec9005d870f55c47392868003741f69432ae7e33a3acac091085446eec0",
+      "translation_text_hash": "ad20be503422e632948e34585c549350cb2a68ab4a6736179a13e83c801f5d48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 말로 의롭다 함을 받고 네 말로 정죄함을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "ad20be503422e632948e34585c549350cb2a68ab4a6736179a13e83c801f5d48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:38",
+      "sequence": 23528,
+      "chapter_label": "MAT 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "Then certain of the scribes and Pharisees answered, “Teacher, we want to see a sign from you.”",
+      "ko": "그 때에 서기관과 바리새인 중 몇 사람이 말하되 선생님이여 우리에게 표적 보여주시기를 원하나이다",
+      "source_text_hash": "86fadc9dba604f4b87b2f01f3d2ce17538a815fd6d772fdc5219a8ab35dbad13",
+      "translation_text_hash": "1b32c6cf7756870383d4b3091201c41a326cd3397918c006a16f22eb1c7be957",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 서기관과 바리새인 중 몇 사람이 말하되 선생님이여 우리에게 표적 보여주시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "1b32c6cf7756870383d4b3091201c41a326cd3397918c006a16f22eb1c7be957"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:39",
+      "sequence": 23529,
+      "chapter_label": "MAT 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "But he answered them, “An evil and adulterous generation seeks after a sign, but no sign will be given to it but the sign of Jonah the prophet.",
+      "ko": "예수께서 대답하여 가라사대 악하고 음란한 세대가 표적을 구하나 선지자 요나의 표적 밖에는 보일 표적이 없느니라",
+      "source_text_hash": "89fec49228a5d0fbad63fd8bdf653ee0fab736cd62c3d0125c8e00fcdde42d87",
+      "translation_text_hash": "4bafab14ff5f82e4fbe352e78b994ad9fb9b64bb3441f36a808c069df8ec2e04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 악하고 음란한 세대가 표적을 구하나 선지자 요나의 표적 밖에는 보일 표적이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "4bafab14ff5f82e4fbe352e78b994ad9fb9b64bb3441f36a808c069df8ec2e04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:40",
+      "sequence": 23530,
+      "chapter_label": "MAT 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "For as Jonah was three days and three nights in the belly of the huge fish, so will the Son of Man be three days and three nights in the heart of the earth.",
+      "ko": "요나가 밤낮 사흘을 큰 물고기 뱃속에 있었던것 같이 인자도 밤낮 사흘을 땅속에 있으리라",
+      "source_text_hash": "cd9a20d7de387f27baae34049b3597a27795a4f2ecd197c7ddb1bd2b9f422064",
+      "translation_text_hash": "597db8cb6222d7593ab4af43b2251fffdbfe7d3bf4aac8f96915751808851d15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 밤낮 사흘을 큰 물고기 뱃속에 있었던것 같이 인자도 밤낮 사흘을 땅속에 있으리라"
+      ],
+      "raw_text_hashes": [
+        "597db8cb6222d7593ab4af43b2251fffdbfe7d3bf4aac8f96915751808851d15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:41",
+      "sequence": 23531,
+      "chapter_label": "MAT 12",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 41
+        }
+      ],
+      "en": "The men of Nineveh will stand up in the judgment with this generation and will condemn it, for they repented at the preaching of Jonah; and behold, someone greater than Jonah is here.",
+      "ko": "심판 때에 니느웨 사람들이 일어나 이 세대 사람을 정죄하리니 이는 그들이 요나의 전도를 듣고 회개하였음이어니와 요나보다 더 큰이가 여기 있으며",
+      "source_text_hash": "d37409930d5b39a211244b00c80455582fe932e09cf27fec4610e7e15ec90b90",
+      "translation_text_hash": "a7daf683d0c4090f8c4a32b5f793063a321d061ff9035d2250aec0eeb69672bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 때에 니느웨 사람들이 일어나 이 세대 사람을 정죄하리니 이는 그들이 요나의 전도를 듣고 회개하였음이어니와 요나보다 더 큰이가 여기 있으며"
+      ],
+      "raw_text_hashes": [
+        "a7daf683d0c4090f8c4a32b5f793063a321d061ff9035d2250aec0eeb69672bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:42",
+      "sequence": 23532,
+      "chapter_label": "MAT 12",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 42
+        }
+      ],
+      "en": "The Queen of the South will rise up in the judgment with this generation and will condemn it, for she came from the ends of the earth to hear the wisdom of Solomon; and behold, someone greater than Solomon is here.",
+      "ko": "심판 때에 남방 여왕이 일어나 이 세대 사람을 정죄하리니 이는 그가 솔로몬의 지혜로운 말을 들으려고 땅 끝에서 왔음이어니와 솔로몬보다 더 큰이가 여기 있느니라",
+      "source_text_hash": "ff109624a0ac837d21619f06a51e253e751849a90747aa69150760edfb27fec3",
+      "translation_text_hash": "9263c25d18355c9bb87d206492eb25cd625463e5d426078d23d3b9199ffc8393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 때에 남방 여왕이 일어나 이 세대 사람을 정죄하리니 이는 그가 솔로몬의 지혜로운 말을 들으려고 땅 끝에서 왔음이어니와 솔로몬보다 더 큰이가 여기 있느니라"
+      ],
+      "raw_text_hashes": [
+        "9263c25d18355c9bb87d206492eb25cd625463e5d426078d23d3b9199ffc8393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:43",
+      "sequence": 23533,
+      "chapter_label": "MAT 12",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 43
+        }
+      ],
+      "en": "“When an unclean spirit has gone out of a man, he passes through waterless places seeking rest, and doesn’t find it.",
+      "ko": "더러운 귀신이 사람에게서 나갔을 때에 물 없는 곳으로 다니며 쉬기를 구하되 얻지 못하고",
+      "source_text_hash": "452df3036508b6a1dde041c1f0ae3bcb9fda304f1687d70c77544fed02058847",
+      "translation_text_hash": "83c32df0f71b00c340aae3b07fea89dbf63b00653bec1045bc963ef2fbac027f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러운 귀신이 사람에게서 나갔을 때에 물 없는 곳으로 다니며 쉬기를 구하되 얻지 못하고"
+      ],
+      "raw_text_hashes": [
+        "83c32df0f71b00c340aae3b07fea89dbf63b00653bec1045bc963ef2fbac027f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:44",
+      "sequence": 23534,
+      "chapter_label": "MAT 12",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 44
+        }
+      ],
+      "en": "Then he says, ‘I will return into my house from which I came;’ and when he has come back, he finds it empty, swept, and put in order.",
+      "ko": "이에 가로되 내가 나온 내 집으로 돌아가리라 하고 와 보니 그 집이 비고 소제되고 수리되었거늘",
+      "source_text_hash": "dd8d90d259fcecbb83034613fb21cb03cd532c45fc66e160ba4b3c1c4c18a583",
+      "translation_text_hash": "bb71999b308961a984fb27ba27ab18a52d62f8d2aeb6aeb85d1cfe6dd882cbc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가로되 내가 나온 내 집으로 돌아가리라 하고 와 보니 그 집이 비고 소제되고 수리되었거늘"
+      ],
+      "raw_text_hashes": [
+        "bb71999b308961a984fb27ba27ab18a52d62f8d2aeb6aeb85d1cfe6dd882cbc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:45",
+      "sequence": 23535,
+      "chapter_label": "MAT 12",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 45
+        }
+      ],
+      "en": "Then he goes and takes with himself seven other spirits more evil than he is, and they enter in and dwell there. The last state of that man becomes worse than the first. Even so will it be also to this evil generation.”",
+      "ko": "이에 가서 저보다 더 악한 귀신 일곱을 데리고 들어가서 거하니 그 사람의 나중 형편이 전보다 더욱 심하게 되느니라 이 악한 세대가 또한 이렇게 되리라",
+      "source_text_hash": "e82f50bdd3397a2d757fda7a440b5fa60c41897f0b4aff33a9a5518ae9fffb7d",
+      "translation_text_hash": "3dab5dc993071abbe54e34d3581243f60d349d58a1d19a5d654249a78f675402",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가서 저보다 더 악한 귀신 일곱을 데리고 들어가서 거하니 그 사람의 나중 형편이 전보다 더욱 심하게 되느니라 이 악한 세대가 또한 이렇게 되리라"
+      ],
+      "raw_text_hashes": [
+        "3dab5dc993071abbe54e34d3581243f60d349d58a1d19a5d654249a78f675402"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:46",
+      "sequence": 23536,
+      "chapter_label": "MAT 12",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 46
+        }
+      ],
+      "en": "While he was yet speaking to the multitudes, behold, his mother and his brothers stood outside, seeking to speak to him.",
+      "ko": "예수께서 무리에게 말씀하실 때에 그 모친과 동생들이 예수께 말하려고 밖에 섰더니",
+      "source_text_hash": "0d0cb0ec92ed3885c3aad0e26ce8857ac3456298f594d5fb415f25d77957fd50",
+      "translation_text_hash": "886fdd84808cfb6b18b6b0c5db00617c83cbd8d4610d9e1d89fa19fafa14c506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리에게 말씀하실 때에 그 모친과 동생들이 예수께 말하려고 밖에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "886fdd84808cfb6b18b6b0c5db00617c83cbd8d4610d9e1d89fa19fafa14c506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:47",
+      "sequence": 23537,
+      "chapter_label": "MAT 12",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 47
+        }
+      ],
+      "en": "One said to him, “Behold, your mother and your brothers stand outside, seeking to speak to you.”",
+      "ko": "한 사람이 예수께 여짜오되 보소서 당신의 모친과 동생들이 당신께 말하려고 밖에 섰나이다 하니",
+      "source_text_hash": "d04b5412105ed3f0e1849786e056eed83d86125ca441b940c321f8b025500f40",
+      "translation_text_hash": "267ff81a8d0b1afce91cb5cd4735506cc6d44fbf798ddf24074e7beb2e7c0fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 예수께 여짜오되 보소서 당신의 모친과 동생들이 당신께 말하려고 밖에 섰나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "267ff81a8d0b1afce91cb5cd4735506cc6d44fbf798ddf24074e7beb2e7c0fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:48",
+      "sequence": 23538,
+      "chapter_label": "MAT 12",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 48
+        }
+      ],
+      "en": "But he answered him who spoke to him, “Who is my mother? Who are my brothers?”",
+      "ko": "말하던 사람에게 대답하여 가라사대 누가 내 모친이며 내 동생들이냐 하시고",
+      "source_text_hash": "c820a9779bfbc0f882f7e3e435005652a3b2e103f640c9e0c7a45e38fadf6f0b",
+      "translation_text_hash": "018f3109262bb36d9634f2e8e7e2a540aa2582ef153169ed3096c7e49ac2bbc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하던 사람에게 대답하여 가라사대 누가 내 모친이며 내 동생들이냐 하시고"
+      ],
+      "raw_text_hashes": [
+        "018f3109262bb36d9634f2e8e7e2a540aa2582ef153169ed3096c7e49ac2bbc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:49",
+      "sequence": 23539,
+      "chapter_label": "MAT 12",
+      "verse_label": "49",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 49
+        }
+      ],
+      "en": "He stretched out his hand toward his disciples, and said, “Behold, my mother and my brothers!",
+      "ko": "손을 내밀어 제자들을 가리켜 가라사대 나의 모친과 나의 동생들을 보라",
+      "source_text_hash": "44452bdbe3b8bc59e4a7d1ab470288c8384d96b55115f270de1b1f048d7b7777",
+      "translation_text_hash": "9ade8724d39595fc92e7ea73c40620ee617f3e05ae9ca20678db05c6df37e0e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 내밀어 제자들을 가리켜 가라사대 나의 모친과 나의 동생들을 보라"
+      ],
+      "raw_text_hashes": [
+        "9ade8724d39595fc92e7ea73c40620ee617f3e05ae9ca20678db05c6df37e0e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:12:50",
+      "sequence": 23540,
+      "chapter_label": "MAT 12",
+      "verse_label": "50",
+      "locator": {
+        "book": "MAT",
+        "chapter": 12,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 12,
+          "verse": 50
+        }
+      ],
+      "en": "For whoever does the will of my Father who is in heaven, he is my brother, and sister, and mother.”",
+      "ko": "누구든지 하늘에 계신 내 아버지의 뜻대로 하는 자가 내 형제요 자매요 모친이니라 하시더라",
+      "source_text_hash": "a8153876fb8620d721ad6e5b29930dd0592ca2ccb0cb1e5dfe906ccb889829e4",
+      "translation_text_hash": "08e26a83fa50ab6ebf369859d1bb8a5fb845af7e9df95c91214d44d7451da7e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 하늘에 계신 내 아버지의 뜻대로 하는 자가 내 형제요 자매요 모친이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "08e26a83fa50ab6ebf369859d1bb8a5fb845af7e9df95c91214d44d7451da7e1"
+      ]
+    }
+  ]
+}

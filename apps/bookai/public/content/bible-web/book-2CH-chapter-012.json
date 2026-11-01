@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:012",
+  "unit_ordinal": 379,
+  "unit_label": "2CH 12",
+  "book_code": "2CH",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:12:1",
+      "sequence": 11439,
+      "chapter_label": "2CH 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "When the kingdom of Rehoboam was established and he was strong, he abandoned the LORD’s law, and all Israel with him.",
+      "ko": "르호보암이 나라가 견고하고 세력이 강하매 여호와의 율법을 버리니 온 이스라엘이 본받은지라",
+      "source_text_hash": "3144c02f95939e4d3b1b30b82b4b6261220add7ccfaf7a5bc43c61c7477e249d",
+      "translation_text_hash": "b923ac1a9af45e87dff650a59eff1df6f13424762ee085be9d986ff7df797c92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 나라가 견고하고 세력이 강하매 여호와의 율법을 버리니 온 이스라엘이 본받은지라"
+      ],
+      "raw_text_hashes": [
+        "b923ac1a9af45e87dff650a59eff1df6f13424762ee085be9d986ff7df797c92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:2",
+      "sequence": 11440,
+      "chapter_label": "2CH 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "In the fifth year of King Rehoboam, Shishak king of Egypt came up against Jerusalem, because they had trespassed against the LORD,",
+      "ko": "저희가 여호와께 범죄하였으므로 르호보암왕 오년에 애굽 왕 시삭이 예루살렘을 치러 올라오니",
+      "source_text_hash": "bf2f50894abcafd02bb133fa6285969a03a4773792e8435dcd1bc92cf557d9da",
+      "translation_text_hash": "bb075a19d05cfd80f801aa269b980de191dd39453d6cc8a1f9c882b5477d7e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여호와께 범죄하였으므로 르호보암왕 오년에 애굽 왕 시삭이 예루살렘을 치러 올라오니"
+      ],
+      "raw_text_hashes": [
+        "bb075a19d05cfd80f801aa269b980de191dd39453d6cc8a1f9c882b5477d7e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:3",
+      "sequence": 11441,
+      "chapter_label": "2CH 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "with twelve hundred chariots and sixty thousand horsemen. The people were without number who came with him out of Egypt: the Lubim, the Sukkiim, and the Ethiopians.",
+      "ko": "저에게 병거가 일천 이백승이요 마병이 육만이며 애굽에서 좇아나온 무리 곧 훕과 숩과 구스 사람이 불가승수라",
+      "source_text_hash": "9692603ff51abf6c0b292b9d0d9fd6ab32487b557846322cc6a1724ec41896ed",
+      "translation_text_hash": "ee6fd91981d4381d9cbaa573575bbd77f7e80b65de0c1dd56d9c3fee84b2b037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 병거가 일천 이백승이요 마병이 육만이며 애굽에서 좇아나온 무리 곧 훕과 숩과 구스 사람이 불가승수라"
+      ],
+      "raw_text_hashes": [
+        "ee6fd91981d4381d9cbaa573575bbd77f7e80b65de0c1dd56d9c3fee84b2b037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:4",
+      "sequence": 11442,
+      "chapter_label": "2CH 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "He took the fortified cities which belonged to Judah, and came to Jerusalem.",
+      "ko": "시삭이 유다의 견고한 성읍을 취하고 예루살렘에 이르니",
+      "source_text_hash": "9a18b2d7cb9688c9e50be9cb540adc2482c91da02187f4de1e43d626c664c1ea",
+      "translation_text_hash": "0dddcc68a413ae76c169d0562f739393990dc3ac1ea4545aec442b2199eec075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시삭이 유다의 견고한 성읍을 취하고 예루살렘에 이르니"
+      ],
+      "raw_text_hashes": [
+        "0dddcc68a413ae76c169d0562f739393990dc3ac1ea4545aec442b2199eec075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:5",
+      "sequence": 11443,
+      "chapter_label": "2CH 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Now Shemaiah the prophet came to Rehoboam and to the princes of Judah, who were gathered together to Jerusalem because of Shishak, and said to them, “The LORD says, ‘You have forsaken me, therefore I have also left you in the hand of Shishak.’”",
+      "ko": "때에 유다 방백들이 시삭을 인하여 예루살렘에 모였는지라 선지자 스마야가 르호보암과 방백들에게 나아와 가로되 여호와의 말씀이 너희가 나를 버렸으므로 나도 너희를 버려 시삭의 손에 붙였노라 하셨다 한지라",
+      "source_text_hash": "2b1c644d1063c02eed97dd31bf806b44ca00aaa1dbf4b46cafdef54d9acee294",
+      "translation_text_hash": "ac812ca73f5b0061f52cdd04ecb9c53eeeff453790fcf7bf235b29da24053be2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 유다 방백들이 시삭을 인하여 예루살렘에 모였는지라 선지자 스마야가 르호보암과 방백들에게 나아와 가로되 여호와의 말씀이 너희가 나를 버렸으므로 나도 너희를 버려 시삭의 손에 붙였노라 하셨다 한지라"
+      ],
+      "raw_text_hashes": [
+        "ac812ca73f5b0061f52cdd04ecb9c53eeeff453790fcf7bf235b29da24053be2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:6",
+      "sequence": 11444,
+      "chapter_label": "2CH 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Then the princes of Israel and the king humbled themselves; and they said, “The LORD is righteous.”",
+      "ko": "이에 이스라엘 방백들과 왕이 스스로 겸비하여 가로되 여호와는 의로우시다 하매",
+      "source_text_hash": "c793290f24d583052ca0912959c9ed09bbd41942bcdbec485d3a01dce6aa8cdf",
+      "translation_text_hash": "6a9cd5a50aa67a9b6b6107159c58e9e3bd22f703dd43cf607ee04295acaebff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 방백들과 왕이 스스로 겸비하여 가로되 여호와는 의로우시다 하매"
+      ],
+      "raw_text_hashes": [
+        "6a9cd5a50aa67a9b6b6107159c58e9e3bd22f703dd43cf607ee04295acaebff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:7",
+      "sequence": 11445,
+      "chapter_label": "2CH 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "When the LORD saw that they humbled themselves, the LORD’s word came to Shemaiah, saying, “They have humbled themselves. I will not destroy them, but I will grant them some deliverance, and my wrath won’t be poured out on Jerusalem by the hand of Shishak.",
+      "ko": "여호와께서 저희의 스스로 겸비함을 보신지라 여호와의 말씀이 스마야에게 임하여 가라사대 저희가 스스로 겸비하였으니 내가 멸하지 아니하고 대강 구원하여 나의 노를 시삭의 손으로 예루살렘에 쏟지 아니하리라",
+      "source_text_hash": "5c1e11fde71b70d2931010588b19cbb1a831544ac262020b260325cfff58b658",
+      "translation_text_hash": "2467c9982756352fc18a55953d3a24c1035c33e210ce59eedb6089ca8be1d244",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 저희의 스스로 겸비함을 보신지라 여호와의 말씀이 스마야에게 임하여 가라사대 저희가 스스로 겸비하였으니 내가 멸하지 아니하고 대강 구원하여 나의 노를 시삭의 손으로 예루살렘에 쏟지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "2467c9982756352fc18a55953d3a24c1035c33e210ce59eedb6089ca8be1d244"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:8",
+      "sequence": 11446,
+      "chapter_label": "2CH 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "Nevertheless they will be his servants, that they may know my service, and the service of the kingdoms of the countries.”",
+      "ko": "그러나 저희가 시삭의 종이 되어 나를 섬기는 것과 열국을 섬기는 것이 어떠한지 알게 되리라 하셨더라",
+      "source_text_hash": "e9a6946c5ea24dbc9df262fb52ed0ef7f5f3741ed7bb5742a49c47aa47a0e800",
+      "translation_text_hash": "31e1b2f2e6ba3c464abb909a1639e39c6cc5bd1aab54400ffd00e0ac68e1f530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저희가 시삭의 종이 되어 나를 섬기는 것과 열국을 섬기는 것이 어떠한지 알게 되리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "31e1b2f2e6ba3c464abb909a1639e39c6cc5bd1aab54400ffd00e0ac68e1f530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:9",
+      "sequence": 11447,
+      "chapter_label": "2CH 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "So Shishak king of Egypt came up against Jerusalem and took away the treasures of the LORD’s house and the treasures of the king’s house. He took it all away. He also took away the shields of gold which Solomon had made.",
+      "ko": "애굽 왕 시삭이 올라와서 예루살렘을 치고 여호와의 전 보물과 왕궁의 보물을 몰수히 빼앗고 솔로몬의 만든 금방패도 빼앗은지라",
+      "source_text_hash": "7b352bba608a86f296bdec8286f5753592fa7d7d2cb8016aea034b6d3efbcdf6",
+      "translation_text_hash": "fdf8bc917f502d68e10197c184c2bbaf9f6d6edc60c8a011045c91b17b9d410f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕 시삭이 올라와서 예루살렘을 치고 여호와의 전 보물과 왕궁의 보물을 몰수히 빼앗고 솔로몬의 만든 금방패도 빼앗은지라"
+      ],
+      "raw_text_hashes": [
+        "fdf8bc917f502d68e10197c184c2bbaf9f6d6edc60c8a011045c91b17b9d410f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:10",
+      "sequence": 11448,
+      "chapter_label": "2CH 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "King Rehoboam made shields of bronze in their place, and committed them to the hands of the captains of the guard, who kept the door of the king’s house.",
+      "ko": "르호보암왕이 그 대신에 놋으로 방패를 만들어 궁문을 지키는 시위대 장관들의 손에 맡기매",
+      "source_text_hash": "40dc329afa0bedf706bc9506e0927193bb4aa7ae0bd92e9b1c049157d37500c2",
+      "translation_text_hash": "e4bf5cb92803d5b51bbe835362ad5ccae2d143e73b2b1315f429bb45deead081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕이 그 대신에 놋으로 방패를 만들어 궁문을 지키는 시위대 장관들의 손에 맡기매"
+      ],
+      "raw_text_hashes": [
+        "e4bf5cb92803d5b51bbe835362ad5ccae2d143e73b2b1315f429bb45deead081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:11",
+      "sequence": 11449,
+      "chapter_label": "2CH 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "As often as the king entered into the LORD’s house, the guard came and bore them, then brought them back into the guard room.",
+      "ko": "왕이 여호와의 전에 들어갈 때마다 시위하는 자가 그 방패를 들고 갔다가 시위소로 도로 가져갔더라",
+      "source_text_hash": "c2d6c905748c8eae88c963985778426a5673e0bf028eeb16969d2fabfb1a3e53",
+      "translation_text_hash": "5a39f55231d2681117b21fced5f350dd81d88822a13e0a698f900e7a58c3945f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 여호와의 전에 들어갈 때마다 시위하는 자가 그 방패를 들고 갔다가 시위소로 도로 가져갔더라"
+      ],
+      "raw_text_hashes": [
+        "5a39f55231d2681117b21fced5f350dd81d88822a13e0a698f900e7a58c3945f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:12",
+      "sequence": 11450,
+      "chapter_label": "2CH 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "When he humbled himself, the LORD’s wrath turned from him, so as not to destroy him altogether. Moreover, there were good things found in Judah.",
+      "ko": "르호보암이 스스로 겸비하였고 유다에 선한 일도 있으므로 여호와께서 노를 돌이키사 다 멸하지 아니하셨더라",
+      "source_text_hash": "a09d501bb3bfc8a21de79658046d7fed2f513eb6a410b1060aa037184d59a26b",
+      "translation_text_hash": "3ef4e0d56b665e44ae9357493a0154bbf2f11c87dc5871f1727872557067e196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 스스로 겸비하였고 유다에 선한 일도 있으므로 여호와께서 노를 돌이키사 다 멸하지 아니하셨더라"
+      ],
+      "raw_text_hashes": [
+        "3ef4e0d56b665e44ae9357493a0154bbf2f11c87dc5871f1727872557067e196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:13",
+      "sequence": 11451,
+      "chapter_label": "2CH 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "So King Rehoboam strengthened himself in Jerusalem and reigned; for Rehoboam was forty-one years old when he began to reign, and he reigned seventeen years in Jerusalem, the city which the LORD had chosen out of all the tribes of Israel to put his name there. His mother’s name was Naamah the Ammonitess.",
+      "ko": "르호보암왕이 예루살렘에서 스스로 강하게 하여 치리하니라 르호보암이 위에 나아갈 때에 나이 사십 일세라 예루살렘 곧 여호와께서 이스라엘 모든 지파 중에서 택하여 그 이름을 두신 성에서 십 칠년을 치리하니라 르호보암의 모친의 이름은 나아마라 암몬 여인이더라",
+      "source_text_hash": "a0977e3c1649fad2093b74a636e6db16027a51096a7da1b1e3a2a41e92a9917b",
+      "translation_text_hash": "82f837c8a17003c3ff98c52dcf72983d7239c235193c2d9994d01144623a2ac4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕이 예루살렘에서 스스로 강하게 하여 치리하니라 르호보암이 위에 나아갈 때에 나이 사십 일세라 예루살렘 곧 여호와께서 이스라엘 모든 지파 중에서 택하여 그 이름을 두신 성에서 십 칠년을 치리하니라 르호보암의 모친의 이름은 나아마라 암몬 여인이더라"
+      ],
+      "raw_text_hashes": [
+        "82f837c8a17003c3ff98c52dcf72983d7239c235193c2d9994d01144623a2ac4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:14",
+      "sequence": 11452,
+      "chapter_label": "2CH 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "He did that which was evil, because he didn’t set his heart to seek the LORD.",
+      "ko": "르호보암이 마음을 오로지하여 여호와를 구하지 아니함으로 악을 행하였더라",
+      "source_text_hash": "2c1240555a836ed1bcb47acdd490183d3a6f19908d814e5f2ab9a32f45d3f8df",
+      "translation_text_hash": "b8356993d1a0d9fae3370f26928aa774809b4f315f9f334cd2a69a8c6aaf860e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 마음을 오로지하여 여호와를 구하지 아니함으로 악을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "b8356993d1a0d9fae3370f26928aa774809b4f315f9f334cd2a69a8c6aaf860e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:15",
+      "sequence": 11453,
+      "chapter_label": "2CH 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Now the acts of Rehoboam, first and last, aren’t they written in the histories of Shemaiah the prophet and of Iddo the seer, in the genealogies? There were wars between Rehoboam and Jeroboam continually.",
+      "ko": "르호보암의 시종 행적은 선지자 스마야와 선견자 잇도의 족보책에 기록되지 아니하였느냐 르호보암과 여로보암 사이에 항상 전쟁이 있으니라",
+      "source_text_hash": "9a3d6d38f634ff9707a6d351f6330abb3305c13edf54da1c099bb50da44d4732",
+      "translation_text_hash": "5702cb6902c6c2f33198e8df58bc02cd91de6908971e94fbb8ec11a6f08c3ce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암의 시종 행적은 선지자 스마야와 선견자 잇도의 족보책에 기록되지 아니하였느냐 르호보암과 여로보암 사이에 항상 전쟁이 있으니라"
+      ],
+      "raw_text_hashes": [
+        "5702cb6902c6c2f33198e8df58bc02cd91de6908971e94fbb8ec11a6f08c3ce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:12:16",
+      "sequence": 11454,
+      "chapter_label": "2CH 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "Rehoboam slept with his fathers, and was buried in David’s city; and Abijah his son reigned in his place.",
+      "ko": "르호보암이 그 열조와 함께 자매 다윗성에 장사되고 그 아들 아비야가 대신하여 왕이 되니라",
+      "source_text_hash": "bcc296fabce3ef62a2d0e634fbe8aee5e3515937afd1eec929509dc5b18d0106",
+      "translation_text_hash": "daa1d2c0407cf90ac67412ec9b8db07d0f4b8065ef2ce3ead9a5fceb1c40695d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 그 열조와 함께 자매 다윗성에 장사되고 그 아들 아비야가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "daa1d2c0407cf90ac67412ec9b8db07d0f4b8065ef2ce3ead9a5fceb1c40695d"
+      ]
+    }
+  ]
+}

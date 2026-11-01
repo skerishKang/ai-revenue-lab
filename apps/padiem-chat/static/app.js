@@ -1056,11 +1056,32 @@
     }
   }
 
+  // Only messages constructed by our own mapping may be shown to the user.
+  function mappedUiError(message, data) {
+    const error = new Error(message);
+    error.uiMessageSafe = true;
+    const code = data?.error?.code;
+    if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) error.code = code;
+    return error;
+  }
+  function safeLocalUiMessage(error, fallback) {
+    if (error?.uiMessageSafe) return error.message;
+    const localFileErrors = [attachmentCopy().unsupportedFormat, uiT("empty-document"),
+      uiT("document-read-failed"), uiT("binary-document")];
+    return error instanceof Error && localFileErrors.includes(error.message) ? error.message : fallback;
+  }
+  function showProjectError(error, fallback) {
+    projectFormError.textContent = safeLocalUiMessage(error, fallback);
+    const note = failureCodeNote(error?.code, "");
+    if (note) projectFormError.appendChild(note);
+    projectFormError.hidden = false;
+  }
+
   async function fetchProjectFiles(projectId) {
     if (!authState.authenticated || !authState.project_files_ready || !projectId) return [];
     const response = await fetch(`/api/projects/${encodeURIComponent(projectId)}/files`, { headers: { "Accept": "application/json" }, cache: "no-store" });
     const data = await response.json().catch(() => null);
-    if (!response.ok || !data || !Array.isArray(data.files)) throw new Error(uiT("project-files-load-failed"));
+    if (!response.ok || !data || !Array.isArray(data.files)) throw mappedUiError(uiT("project-files-load-failed"), data);
     return data.files.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
   }
   async function refreshActiveProjectFileCount() {
@@ -1119,8 +1140,7 @@
         renderProjectState();
       }
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-files-load-failed");
-      projectFormError.hidden = false;
+      showProjectError(error, uiT("project-files-load-failed"));
     }
   }
   function projectBinaryMediaType(file) {
@@ -1172,13 +1192,11 @@
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files`, requestOptions);
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.file) {
-        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-file-save-failed");
-        throw new Error(message);
+        throw mappedUiError(uiT("project-file-save-failed"), data);
       }
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-file-save-failed");
-      projectFormError.hidden = false;
+      showProjectError(error, uiT("project-file-save-failed"));
     } finally {
       setProjectFileBusy(false);
     }
@@ -1194,11 +1212,10 @@
     if (!confirmed) return;
     try {
       const response = await fetch(`/api/projects/${encodeURIComponent(editingProjectId)}/files/${encodeURIComponent(fileId)}`, { method: "DELETE" });
-      if (!response.ok) throw new Error(uiT("project-file-delete-failed"));
+      if (!response.ok) throw mappedUiError(uiT("project-file-delete-failed"), await response.json().catch(() => null));
       await loadProjectFilesForDialog(editingProjectId);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-file-delete-failed");
-      projectFormError.hidden = false;
+      showProjectError(error, uiT("project-file-delete-failed"));
     }
   }
 
@@ -1332,8 +1349,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.project) {
-        const message = data && data.error && typeof data.error.message === "string" ? data.error.message : uiT("project-save-failed");
-        throw new Error(message);
+        throw mappedUiError(uiT("project-save-failed"), data);
       }
       const saved = data.project;
       const index = projects.findIndex((item) => item.id === saved.id);
@@ -1344,8 +1360,7 @@
       closeProjectDialog();
       if (!editing) selectProject(saved);
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-save-failed");
-      projectFormError.hidden = false;
+      showProjectError(error, uiT("project-save-failed"));
       projectSaveButton.disabled = false;
     }
   }
@@ -1374,10 +1389,7 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.deleted !== true || data.project_id !== deletingId) {
-        const message = data && data.error && typeof data.error.message === "string"
-          ? data.error.message
-          : uiT("project-delete-failed");
-        throw new Error(message);
+        throw mappedUiError(uiT("project-delete-failed"), data);
       }
       projects = projects.filter((item) => item.id !== deletingId);
       if (deletingActiveProject) {
@@ -1394,8 +1406,7 @@
       }
       input.focus();
     } catch (error) {
-      projectFormError.textContent = error instanceof Error ? error.message : uiT("project-delete-failed");
-      projectFormError.hidden = false;
+      showProjectError(error, uiT("project-delete-failed"));
       projectDeleteButton.disabled = false;
       projectSaveButton.disabled = false;
     }
@@ -6095,7 +6106,7 @@
         // present its result to the new (or signed-out) session.
         if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         if (!response.ok || !data || data.ok !== true || !data.result || typeof data.result.run_id !== "string") {
-          throw new Error(approvalDecisionErrorMessage(data, response));
+          throw mappedUiError(approvalDecisionErrorMessage(data, response), data);
         }
         status.hidden = true;
         status.removeAttribute("data-state");
@@ -6104,7 +6115,9 @@
         if (decisionEpoch !== clawApprovalEpoch || authState.authenticated !== true) return;
         status.hidden = false;
         status.dataset.state = "error";
-        status.textContent = error instanceof Error ? error.message : clawT("claw-approval-error");
+        status.textContent = safeLocalUiMessage(error, clawT("claw-approval-error"));
+        const reference = failureCodeNote(error?.code, "");
+        if (reference) status.appendChild(reference);
       } finally {
         // A stale decision must not release the busy state of a newer
         // session's controls; the invalidation path already reset the shared
@@ -6444,7 +6457,7 @@
 
   let approvedMemoryInFlight = false;
 
-  function setApprovedMemoryStatus(message, state) {
+  function setApprovedMemoryStatus(message, state, code = "") {
     if (!clawApprovedError) return;
     if (!message) {
       clawApprovedError.hidden = true;
@@ -6454,6 +6467,8 @@
     }
     clawApprovedError.hidden = false;
     clawApprovedError.textContent = message;
+    const reference = failureCodeNote(code, "");
+    if (reference) clawApprovedError.appendChild(reference);
     if (state) clawApprovedError.dataset.state = state;
     else clawApprovedError.removeAttribute("data-state");
   }
@@ -6537,11 +6552,11 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true || !data.memory) {
-        throw new Error(approvedMemoryErrorMessage(data, response));
+        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
       }
       await fetchApprovedMemoryList();
     } catch (error) {
-      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
+      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
     } finally {
       approvedMemoryInFlight = false;
     }
@@ -6560,11 +6575,11 @@
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || data.ok !== true || data.persisted !== false) {
-        throw new Error(approvedMemoryErrorMessage(data, response));
+        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
       }
       await fetchApprovedMemoryList();
     } catch (error) {
-      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
+      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
     } finally {
       approvedMemoryInFlight = false;
     }
@@ -6660,7 +6675,7 @@
       const response = await fetch("/api/claw/memory", { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !Array.isArray(data.memories)) {
-        throw new Error(approvedMemoryErrorMessage(data, response));
+        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
       }
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
@@ -6674,7 +6689,7 @@
       });
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
+      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
     }
   }
 
@@ -6699,7 +6714,7 @@
       const response = await fetch(`/api/claw/memory/${encodeURIComponent(memoryId)}`, { headers: { "Accept": "application/json" }, cache: "no-store" });
       const data = await response.json().catch(() => null);
       if (!response.ok || !data || !data.memory) {
-        throw new Error(approvedMemoryErrorMessage(data, response));
+        throw mappedUiError(approvedMemoryErrorMessage(data, response), data);
       }
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       if (clawApprovedList) clawApprovedList.hidden = false;
@@ -6709,7 +6724,7 @@
       if (clawApprovedDisclosure) clawApprovedDisclosure.open = true;
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
-      setApprovedMemoryStatus(error instanceof Error ? error.message : clawT("claw-memory-error-generic"), "error");
+      setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
     } finally {
       approvedMemoryInFlight = false;
     }
@@ -6758,7 +6773,7 @@
     clawRunHistoryPdfControllers.clear();
   }
 
-  function setClawRunHistoryStatus(message) {
+  function setClawRunHistoryStatus(message, code = "") {
     if (!clawRunHistoryError) return;
     if (!message) {
       clawRunHistoryError.hidden = true;
@@ -6768,6 +6783,8 @@
     }
     clawRunHistoryError.hidden = false;
     clawRunHistoryError.textContent = message;
+    const reference = failureCodeNote(code, "");
+    if (reference) clawRunHistoryError.appendChild(reference);
     clawRunHistoryError.dataset.state = "error";
   }
 
@@ -6994,7 +7011,7 @@
       if (visibilityEpoch !== clawRunHistoryVisibilityEpoch ||
           authState.authenticated !== true || clawRunHistory.hidden) return;
       if (!response.ok || !data || data.ok !== true || !Array.isArray(data.runs)) {
-        throw new Error(clawRunHistoryErrorMessage(data, response));
+        throw mappedUiError(clawRunHistoryErrorMessage(data, response), data);
       }
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
       if (data.runs.length === 0) {
@@ -7026,7 +7043,7 @@
           authState.authenticated !== true || clawRunHistory.hidden) return;
       if (clawRunHistoryLoading) clawRunHistoryLoading.hidden = true;
       if (clawRunHistoryExpand) clawRunHistoryExpand.hidden = true;
-      setClawRunHistoryStatus(error instanceof Error ? error.message : clawT("claw-runs-error"));
+      setClawRunHistoryStatus(safeLocalUiMessage(error, clawT("claw-runs-error")), error?.code);
     }
   }
 

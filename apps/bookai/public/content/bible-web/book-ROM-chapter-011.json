@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:011",
+  "unit_ordinal": 1057,
+  "unit_label": "ROM 11",
+  "book_code": "ROM",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:11:1",
+      "sequence": 28207,
+      "chapter_label": "ROM 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "I ask then, did God reject his people? May it never be! For I also am an Israelite, a descendant of Abraham, of the tribe of Benjamin.",
+      "ko": "그러므로 내가 말하노니 하나님이 자기 백성을 버리셨느뇨 그럴 수 없느니라 나도 이스라엘인이요 아브라함의 씨에서 난 자요 베냐민 지파라",
+      "source_text_hash": "6d3f17e65717e7a0b399c1c0c5521f02be1655fd13a96402552cd412ddc32d8f",
+      "translation_text_hash": "a3b023f58a565bf1f69657593d77f66a0687c5a24063b316dae7f0a5a2bea249",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 말하노니 하나님이 자기 백성을 버리셨느뇨 그럴 수 없느니라 나도 이스라엘인이요 아브라함의 씨에서 난 자요 베냐민 지파라"
+      ],
+      "raw_text_hashes": [
+        "a3b023f58a565bf1f69657593d77f66a0687c5a24063b316dae7f0a5a2bea249"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:2",
+      "sequence": 28208,
+      "chapter_label": "ROM 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "God didn’t reject his people, whom he foreknew. Or don’t you know what the Scripture says about Elijah? How he pleads with God against Israel:",
+      "ko": "하나님이 그 미리 아신 자기 백성을 버리지 아니하셨나니 너희가 성경이 엘리야를 가리켜 말한 것을 알지 못하느냐 저가 이스라엘을 하나님께 송사하되",
+      "source_text_hash": "143536096a93bf9ed70e018cd17e6742ead694db9f6102f14fe77f3efea11341",
+      "translation_text_hash": "1214d869e9d23d55f6aea63d67382c9c4bbd91be062699f8faf24da3e2c2b09c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 미리 아신 자기 백성을 버리지 아니하셨나니 너희가 성경이 엘리야를 가리켜 말한 것을 알지 못하느냐 저가 이스라엘을 하나님께 송사하되"
+      ],
+      "raw_text_hashes": [
+        "1214d869e9d23d55f6aea63d67382c9c4bbd91be062699f8faf24da3e2c2b09c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:3",
+      "sequence": 28209,
+      "chapter_label": "ROM 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "“Lord, they have killed your prophets. They have broken down your altars. I am left alone, and they seek my life.”",
+      "ko": "주여 저희가 주의 선지자들을 죽였으며 주의 제단들을 헐어버렸고 나만 남았는데 내 목숨도 찾나이다 하니",
+      "source_text_hash": "2b8d4e5b87606000061cdd8399f3526c0bb54f0f18cafe8f61d10c6ceafb3cfe",
+      "translation_text_hash": "d9c83a9b22c4762dc501e8a1b67d3d383d9cf0b2108cfa667887d68c862004fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 저희가 주의 선지자들을 죽였으며 주의 제단들을 헐어버렸고 나만 남았는데 내 목숨도 찾나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "d9c83a9b22c4762dc501e8a1b67d3d383d9cf0b2108cfa667887d68c862004fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:4",
+      "sequence": 28210,
+      "chapter_label": "ROM 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "But how does God answer him? “I have reserved for myself seven thousand men who have not bowed the knee to Baal.”",
+      "ko": "저에게 하신 대답이 무엇이뇨 내가 나를 위하여 바알에게 무릎을 꿇지 아니한 사람 칠천을 남겨 두었다 하셨으니",
+      "source_text_hash": "a91cf7aac8b42cee3c88527af9eb265fe56b07fbebde25449693ed4fcdad1d7b",
+      "translation_text_hash": "d4e71a1057f0a469d1325248855a9afda96acfacc8778601f48150b386754228",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에게 하신 대답이 무엇이뇨 내가 나를 위하여 바알에게 무릎을 꿇지 아니한 사람 칠천을 남겨 두었다 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "d4e71a1057f0a469d1325248855a9afda96acfacc8778601f48150b386754228"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:5",
+      "sequence": 28211,
+      "chapter_label": "ROM 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Even so too at this present time also there is a remnant according to the election of grace.",
+      "ko": "그런즉 이와 같이 이제도 은혜로 택하심을 따라 남은 자가 있느니라",
+      "source_text_hash": "40830d3d88b9e0237c33661d4c6ed0f8ad26b7120896d7f683be46ec8c1f82fe",
+      "translation_text_hash": "fbfe4d2002dd466440c8f784e4a29eb54628e6d235367495e4ea0cae3880bf6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이와 같이 이제도 은혜로 택하심을 따라 남은 자가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "fbfe4d2002dd466440c8f784e4a29eb54628e6d235367495e4ea0cae3880bf6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:6",
+      "sequence": 28212,
+      "chapter_label": "ROM 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "And if by grace, then it is no longer of works; otherwise grace is no longer grace. But if it is of works, it is no longer grace; otherwise work is no longer work.",
+      "ko": "만일 은혜로 된것이면 행위로 말미암지 않음이니 그렇지 않으면 은혜가 은혜되지 못하느니라",
+      "source_text_hash": "37b959f2e5a450dcaa18dc5f781aa3804eaf2647ece044b8d2ce9722f5b50b11",
+      "translation_text_hash": "8dde8be7093633d1ce47829bca2106c868c2b52266a60128e72ccbaec0b8bf2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 은혜로 된것이면 행위로 말미암지 않음이니 그렇지 않으면 은혜가 은혜되지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "8dde8be7093633d1ce47829bca2106c868c2b52266a60128e72ccbaec0b8bf2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:7",
+      "sequence": 28213,
+      "chapter_label": "ROM 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "What then? That which Israel seeks for, that he didn’t obtain, but the chosen ones obtained it, and the rest were hardened.",
+      "ko": "그런즉 어떠하뇨 이스라엘이 구하는 그것을 얻지 못하고 오직 택하심을 입은 자가 얻었고 그 남은 자들은 완악하여졌느니라",
+      "source_text_hash": "609ed1ade722fc341fd5295138b19411776df8fc49856737c6e79400d366be2d",
+      "translation_text_hash": "9fa020266c41c6000f565e55c907c56a941d9bcf5f4404daf7b13e443d8df457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 어떠하뇨 이스라엘이 구하는 그것을 얻지 못하고 오직 택하심을 입은 자가 얻었고 그 남은 자들은 완악하여졌느니라"
+      ],
+      "raw_text_hashes": [
+        "9fa020266c41c6000f565e55c907c56a941d9bcf5f4404daf7b13e443d8df457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:8",
+      "sequence": 28214,
+      "chapter_label": "ROM 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "According as it is written, “God gave them a spirit of stupor, eyes that they should not see, and ears that they should not hear, to this very day.”",
+      "ko": "기록된바 하나님이 오늘날까지 저희에게 혼미한 심령과 보지 못할 눈과 듣지 못할 귀를 주셨다 함과 같으니라",
+      "source_text_hash": "f08417464678dcab349c979638d7296c8f951345497cae2e559d980397d2e6fe",
+      "translation_text_hash": "6812838d07432293622c9cf14b471322499242875720b3c003844c9ad1fc69c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 하나님이 오늘날까지 저희에게 혼미한 심령과 보지 못할 눈과 듣지 못할 귀를 주셨다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "6812838d07432293622c9cf14b471322499242875720b3c003844c9ad1fc69c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:9",
+      "sequence": 28215,
+      "chapter_label": "ROM 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "David says, “Let their table be made a snare, a trap, a stumbling block, and a retribution to them.",
+      "ko": "또 다윗이 가로되 저희 밥상이 올무와 덫과 거치는 것과 보응이 되게 하옵시고",
+      "source_text_hash": "7f7d88adca86eb3c230451bdf653393f41bb716ec13fe5d6b0063d428c874d00",
+      "translation_text_hash": "c50187f48392801a60061be36a41105d14966f811fc2efe4855857754abac2d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다윗이 가로되 저희 밥상이 올무와 덫과 거치는 것과 보응이 되게 하옵시고"
+      ],
+      "raw_text_hashes": [
+        "c50187f48392801a60061be36a41105d14966f811fc2efe4855857754abac2d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:10",
+      "sequence": 28216,
+      "chapter_label": "ROM 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Let their eyes be darkened, that they may not see. Always keep their backs bent.”",
+      "ko": "저희 눈은 흐려 보지 못하고 저희 등은 항상 굽게 하옵소서 하였느니라",
+      "source_text_hash": "ab1c5f7e6b024b1a46a7515f5bdd2b443f15298723794941f3ae1d268760a7fe",
+      "translation_text_hash": "fb2c5e338209446bfce55f8f0f17f6dc8b05c004f83b70f6f6a17df3a0fe56db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 눈은 흐려 보지 못하고 저희 등은 항상 굽게 하옵소서 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "fb2c5e338209446bfce55f8f0f17f6dc8b05c004f83b70f6f6a17df3a0fe56db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:11",
+      "sequence": 28217,
+      "chapter_label": "ROM 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "I ask then, did they stumble that they might fall? May it never be! But by their fall salvation has come to the Gentiles, to provoke them to jealousy.",
+      "ko": "그러므로 내가 말하노니 저희가 넘어지기까지 실족하였느뇨 그럴 수 없느니라 저희의 넘어짐으로 구원이 이방인에게 이르러 이스라엘로 시기나게 함이니라",
+      "source_text_hash": "5a09ca0327e41d6370ba0023d0577567d61397ac3c170af66fa2691f217d578f",
+      "translation_text_hash": "d08c350f98138a4769db3ed1cfcfdb1f74d18d7349db6924e24d2c6c7147ce3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 말하노니 저희가 넘어지기까지 실족하였느뇨 그럴 수 없느니라 저희의 넘어짐으로 구원이 이방인에게 이르러 이스라엘로 시기나게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "d08c350f98138a4769db3ed1cfcfdb1f74d18d7349db6924e24d2c6c7147ce3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:12",
+      "sequence": 28218,
+      "chapter_label": "ROM 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Now if their fall is the riches of the world, and their loss the riches of the Gentiles, how much more their fullness!",
+      "ko": "저희의 넘어짐이 세상의 부요함이 되며 저희의 실패가 이방인의 부요함이 되거든 하물며 저희의 충만함이리요",
+      "source_text_hash": "cd326933503319cad8c062952eca1ed9a79cdf16e67135285b04abc3544079be",
+      "translation_text_hash": "43dca584ba888e7c0e789ab7f895b39141411dd13a7a7cd6811fb1fa70918785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 넘어짐이 세상의 부요함이 되며 저희의 실패가 이방인의 부요함이 되거든 하물며 저희의 충만함이리요"
+      ],
+      "raw_text_hashes": [
+        "43dca584ba888e7c0e789ab7f895b39141411dd13a7a7cd6811fb1fa70918785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:13",
+      "sequence": 28219,
+      "chapter_label": "ROM 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "For I speak to you who are Gentiles. Since then as I am an apostle to Gentiles, I glorify my ministry,",
+      "ko": "내가 이방인인 너희에게 말하노라 내가 이방인의 사도인만큼 내 직분을 영광스럽게 여기노니",
+      "source_text_hash": "79c87daebff35fbfb25093c8ab6d5e99405efba077af3795c8a68955deeeac5e",
+      "translation_text_hash": "48375b2621c4bce8c3978d088c50d4f550b409a4fab96b3915889ac8e29dfa85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이방인인 너희에게 말하노라 내가 이방인의 사도인만큼 내 직분을 영광스럽게 여기노니"
+      ],
+      "raw_text_hashes": [
+        "48375b2621c4bce8c3978d088c50d4f550b409a4fab96b3915889ac8e29dfa85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:14",
+      "sequence": 28220,
+      "chapter_label": "ROM 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "if by any means I may provoke to jealousy those who are my flesh, and may save some of them.",
+      "ko": "이는 곧 내 골육을 아무쪼록 시기케 하여 저희 중에서 얼마를 구원하려 함이라",
+      "source_text_hash": "a99968ccd7036562a8fc40b65108a8ee931e6b6eef73e21ed7bc2e7a1bfa1847",
+      "translation_text_hash": "4da051e61e0e2a74295249ca2b846b82e4265c90a8278381786a666adf53b838",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 곧 내 골육을 아무쪼록 시기케 하여 저희 중에서 얼마를 구원하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "4da051e61e0e2a74295249ca2b846b82e4265c90a8278381786a666adf53b838"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:15",
+      "sequence": 28221,
+      "chapter_label": "ROM 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "For if the rejection of them is the reconciling of the world, what would their acceptance be, but life from the dead?",
+      "ko": "저희를 버리는 것이 세상의 화목이 되거든 그 받아들이는 것이 죽은 자 가운데서 사는 것이 아니면 무엇이리요",
+      "source_text_hash": "9fc5205602bf86af0eb5675d6cafb04e83218629cf6904f4f24e1f7173f56dfc",
+      "translation_text_hash": "c21ead988d771b20d09d5033a4b7e2fe723fe4a3f4e17b2fcec34b1b7a9738a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 버리는 것이 세상의 화목이 되거든 그 받아들이는 것이 죽은 자 가운데서 사는 것이 아니면 무엇이리요"
+      ],
+      "raw_text_hashes": [
+        "c21ead988d771b20d09d5033a4b7e2fe723fe4a3f4e17b2fcec34b1b7a9738a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:16",
+      "sequence": 28222,
+      "chapter_label": "ROM 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "If the first fruit is holy, so is the lump. If the root is holy, so are the branches.",
+      "ko": "제사하는 처음 익은 곡식 가루가 거룩한즉 떡덩이도 그러하고 뿌리가 거룩한즉 가지도 그러하니라",
+      "source_text_hash": "e033fc1b291796a1e58a783b06cb1607fb08cfc8ce2ac0e9ff28201e529df386",
+      "translation_text_hash": "e091edd0081ee8336790dd5459cf6beb9df1f7541a858ce4e16d076f3929c1bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사하는 처음 익은 곡식 가루가 거룩한즉 떡덩이도 그러하고 뿌리가 거룩한즉 가지도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "e091edd0081ee8336790dd5459cf6beb9df1f7541a858ce4e16d076f3929c1bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:17",
+      "sequence": 28223,
+      "chapter_label": "ROM 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "But if some of the branches were broken off, and you, being a wild olive, were grafted in among them and became partaker with them of the root and of the richness of the olive tree,",
+      "ko": "또한 가지 얼마가 꺾여졌는데 돌감람나무인 네가 그들 중에 접붙임이 되어 참감람나무 뿌리의 진액을 함께 받는 자 되었은즉",
+      "source_text_hash": "a176cc0525f40aa6934ab01490cb4ab509f1f87b5972876359fbb1cd3fd00290",
+      "translation_text_hash": "c2b3ceaa358d3202b88ef8f26db99f520b606dfac9200bd1a2bf35eafbdd9353",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 가지 얼마가 꺾여졌는데 돌감람나무인 네가 그들 중에 접붙임이 되어 참감람나무 뿌리의 진액을 함께 받는 자 되었은즉"
+      ],
+      "raw_text_hashes": [
+        "c2b3ceaa358d3202b88ef8f26db99f520b606dfac9200bd1a2bf35eafbdd9353"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:18",
+      "sequence": 28224,
+      "chapter_label": "ROM 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "don’t boast over the branches. But if you boast, remember that it is not you who support the root, but the root supports you.",
+      "ko": "그 가지들을 향하여 자긍하지 말라 자긍할찌라도 네가 뿌리를 보전하는 것이 아니요 뿌리가 너를 보전하는 것이니라",
+      "source_text_hash": "69288806316c20b9312b69fb6eed8ebbd208cab998400b32d17a19b4236111ff",
+      "translation_text_hash": "3eca36902eaa7ffe1c13c7be77c107e600d6d33d8383f62342f0ffc1c040f883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가지들을 향하여 자긍하지 말라 자긍할찌라도 네가 뿌리를 보전하는 것이 아니요 뿌리가 너를 보전하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3eca36902eaa7ffe1c13c7be77c107e600d6d33d8383f62342f0ffc1c040f883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:19",
+      "sequence": 28225,
+      "chapter_label": "ROM 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "You will say then, “Branches were broken off, that I might be grafted in.”",
+      "ko": "그러면 네 말이 가지들이 꺾이운 것은 나로 접붙임을 받게 하려 함이라 하리니",
+      "source_text_hash": "4f02117f19eb4504be2cdbe3ce450444886543f682a8b833af72e7fade03452c",
+      "translation_text_hash": "9f7ea125b90df3b8dc42436f97a3534ecbe6aa473fa06aceb2edd47f90f74790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 네 말이 가지들이 꺾이운 것은 나로 접붙임을 받게 하려 함이라 하리니"
+      ],
+      "raw_text_hashes": [
+        "9f7ea125b90df3b8dc42436f97a3534ecbe6aa473fa06aceb2edd47f90f74790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:20",
+      "sequence": 28226,
+      "chapter_label": "ROM 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "True; by their unbelief they were broken off, and you stand by your faith. Don’t be conceited, but fear;",
+      "ko": "옳도다 저희는 믿지 아니하므로 꺾이우고 너는 믿으므로 섰느니라 높은 마음을 품지 말고 도리어 두려워하라",
+      "source_text_hash": "59cff138d9d275e9ed83ee207bf280911b1c101e506b4163137cc65914468a1c",
+      "translation_text_hash": "30b243f932ffdd587d5946d7ad0533051143d8484cf5ee20c4598da09ab5a06f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옳도다 저희는 믿지 아니하므로 꺾이우고 너는 믿으므로 섰느니라 높은 마음을 품지 말고 도리어 두려워하라"
+      ],
+      "raw_text_hashes": [
+        "30b243f932ffdd587d5946d7ad0533051143d8484cf5ee20c4598da09ab5a06f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:21",
+      "sequence": 28227,
+      "chapter_label": "ROM 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "for if God didn’t spare the natural branches, neither will he spare you.",
+      "ko": "하나님이 원 가지들도 아끼지 아니하셨은즉 너도 아끼지 아니하시리라",
+      "source_text_hash": "958d3d275ca7c70b8c2b914319aa74e0e98aeb8d2e2074b13f60206f07d8c93a",
+      "translation_text_hash": "c748a0d8da44b709d2a3fc95d251782f5015b7b6aec221a7de8eee6311040009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 원 가지들도 아끼지 아니하셨은즉 너도 아끼지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "c748a0d8da44b709d2a3fc95d251782f5015b7b6aec221a7de8eee6311040009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:22",
+      "sequence": 28228,
+      "chapter_label": "ROM 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "See then the goodness and severity of God. Toward those who fell, severity; but toward you, goodness, if you continue in his goodness; otherwise you also will be cut off.",
+      "ko": "그러므로 하나님의 인자와 엄위를 보라 넘어지는 자들에게는 엄위가 있으니 너희가 만일 하나님의 인자에 거하면 그 인자가 너희에게 있으리라 그렇지 않으면 너도 찍히는바 되리라",
+      "source_text_hash": "14cd197f4889b4996e3db3ef2ea7d2c33396d64e46994b36d73febee1bb1cdca",
+      "translation_text_hash": "13b60ffe84a72f14f9d9d0f7684e4b201768039e698d90f020ccc96dec3608a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하나님의 인자와 엄위를 보라 넘어지는 자들에게는 엄위가 있으니 너희가 만일 하나님의 인자에 거하면 그 인자가 너희에게 있으리라 그렇지 않으면 너도 찍히는바 되리라"
+      ],
+      "raw_text_hashes": [
+        "13b60ffe84a72f14f9d9d0f7684e4b201768039e698d90f020ccc96dec3608a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:23",
+      "sequence": 28229,
+      "chapter_label": "ROM 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "They also, if they don’t continue in their unbelief, will be grafted in, for God is able to graft them in again.",
+      "ko": "저희도 믿지 아니하는데 거하지 아니하면 접붙임을 얻으리니 이는 저희를 접붙이실 능력이 하나님께 있음이라",
+      "source_text_hash": "7ca090a6944be73d0a96b25b3183fbffccb7fe2ec39d8410ce4e6bf01dfa2a01",
+      "translation_text_hash": "b2f63dc5f94c290657d6a293a440445351d1030587fb8f017f4bb3251a8d682e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희도 믿지 아니하는데 거하지 아니하면 접붙임을 얻으리니 이는 저희를 접붙이실 능력이 하나님께 있음이라"
+      ],
+      "raw_text_hashes": [
+        "b2f63dc5f94c290657d6a293a440445351d1030587fb8f017f4bb3251a8d682e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:24",
+      "sequence": 28230,
+      "chapter_label": "ROM 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "For if you were cut out of that which is by nature a wild olive tree, and were grafted contrary to nature into a good olive tree, how much more will these, which are the natural branches, be grafted into their own olive tree?",
+      "ko": "네가 원 돌감람나무에서 찍힘을 받고 본성을 거스려 좋은 감람나무에 접붙임을 얻었은즉 원 가지인 이 사람들이야 얼마나 더 자기 감람나무에 접붙이심을 얻으랴",
+      "source_text_hash": "ab9e150d6382f25de829e4330a2ca667de4c8abb7ef9a74da07ad6dd164fead8",
+      "translation_text_hash": "d150d9d8da7bd1f797723aae3d4da3c87be3cba9ba0c3fc8acb9dfe383217672",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 원 돌감람나무에서 찍힘을 받고 본성을 거스려 좋은 감람나무에 접붙임을 얻었은즉 원 가지인 이 사람들이야 얼마나 더 자기 감람나무에 접붙이심을 얻으랴"
+      ],
+      "raw_text_hashes": [
+        "d150d9d8da7bd1f797723aae3d4da3c87be3cba9ba0c3fc8acb9dfe383217672"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:25",
+      "sequence": 28231,
+      "chapter_label": "ROM 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "For I don’t desire you to be ignorant, brothers, of this mystery, so that you won’t be wise in your own conceits, that a partial hardening has happened to Israel, until the fullness of the Gentiles has come in,",
+      "ko": "형제들아 너희가 스스로 지혜 있다 함을 면키 위하여 이 비밀을 너희가 모르기를 내가 원치 아니하노니 이 비밀은 이방인의 충만한 수가 들어오기까지 이스라엘의 더러는 완악하게 된 것이라",
+      "source_text_hash": "e34af5167b284a2551691c18b2305242ae09b46394ad8f973a19c4fec68bf88f",
+      "translation_text_hash": "c1a213f2e686630e22fd48d698d83b049550c32b18f5cc00903425a9f88fd9fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 스스로 지혜 있다 함을 면키 위하여 이 비밀을 너희가 모르기를 내가 원치 아니하노니 이 비밀은 이방인의 충만한 수가 들어오기까지 이스라엘의 더러는 완악하게 된 것이라"
+      ],
+      "raw_text_hashes": [
+        "c1a213f2e686630e22fd48d698d83b049550c32b18f5cc00903425a9f88fd9fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:26",
+      "sequence": 28232,
+      "chapter_label": "ROM 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "and so all Israel will be saved. Even as it is written, “There will come out of Zion the Deliverer, and he will turn away ungodliness from Jacob.",
+      "ko": "그리하여 온 이스라엘이 구원을 얻으리라 기록된바 구원자가 시온에서 오사 야곱에게서 경건치 않은 것을 돌이키시겠고",
+      "source_text_hash": "f35b44968e2e53a5a13e9571f233031ef8d1ff468dcea8d2f5b6ef85dcd8c87f",
+      "translation_text_hash": "1eb77f3d710e68eb1febd3333b3e9343b9ac91c349555ecd9ac70cf2be528f8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하여 온 이스라엘이 구원을 얻으리라 기록된바 구원자가 시온에서 오사 야곱에게서 경건치 않은 것을 돌이키시겠고"
+      ],
+      "raw_text_hashes": [
+        "1eb77f3d710e68eb1febd3333b3e9343b9ac91c349555ecd9ac70cf2be528f8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:27",
+      "sequence": 28233,
+      "chapter_label": "ROM 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "This is my covenant with them, when I will take away their sins.”",
+      "ko": "내가 저희 죄를 없이 할 때에 저희에게 이루어질 내 언약이 이것이라 함과 같으니라",
+      "source_text_hash": "794e2f1112371ef4e1acd7626217d9846c6b9ed6d86db957300aa491a5120a63",
+      "translation_text_hash": "54eef0e79fbac861cffce4af3864428134236defbe068e7418c094fa3b50bcc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희 죄를 없이 할 때에 저희에게 이루어질 내 언약이 이것이라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "54eef0e79fbac861cffce4af3864428134236defbe068e7418c094fa3b50bcc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:28",
+      "sequence": 28234,
+      "chapter_label": "ROM 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "Concerning the Good News, they are enemies for your sake. But concerning the election, they are beloved for the fathers’ sake.",
+      "ko": "복음으로 하면 저희가 너희를 인하여 원수 된 자요 택하심으로 하면 조상들을 인하여 사랑을 입은 자라",
+      "source_text_hash": "1ad981ee02e0c765ba2391990a25213988337e126e751163e2ac9e71f4d0b264",
+      "translation_text_hash": "87ef3a0cac6d4711bd4947810e1e9c1f64a2b4aa7d2689316d872e8e3a2dfff7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복음으로 하면 저희가 너희를 인하여 원수 된 자요 택하심으로 하면 조상들을 인하여 사랑을 입은 자라"
+      ],
+      "raw_text_hashes": [
+        "87ef3a0cac6d4711bd4947810e1e9c1f64a2b4aa7d2689316d872e8e3a2dfff7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:29",
+      "sequence": 28235,
+      "chapter_label": "ROM 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "For the gifts and the calling of God are irrevocable.",
+      "ko": "하나님의 은사와 부르심에는 후회하심이 없느니라",
+      "source_text_hash": "0a79ecbec5e158d378e3d74e39b46fa1244c84be03f011d7b508f550e32719d3",
+      "translation_text_hash": "6db5b47dc1217944b89df293cb4a348a3100c7865d5755a1417ed0a6330c06fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 은사와 부르심에는 후회하심이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "6db5b47dc1217944b89df293cb4a348a3100c7865d5755a1417ed0a6330c06fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:30",
+      "sequence": 28236,
+      "chapter_label": "ROM 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "For as you in time past were disobedient to God, but now have obtained mercy by their disobedience,",
+      "ko": "너희가 전에 하나님께 순종치 아니하더니 이스라엘에 순종치 아니함으로 이제 긍휼을 입었는지라",
+      "source_text_hash": "0b98a24dbcd4e1cbfd53c2f4b2b9028233d7377eaf14ebca3034b53282303adf",
+      "translation_text_hash": "55883ae82a72f6a194f3cb742d43565303c92d16a1efe09039e5ed885ef48c2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 전에 하나님께 순종치 아니하더니 이스라엘에 순종치 아니함으로 이제 긍휼을 입었는지라"
+      ],
+      "raw_text_hashes": [
+        "55883ae82a72f6a194f3cb742d43565303c92d16a1efe09039e5ed885ef48c2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:31",
+      "sequence": 28237,
+      "chapter_label": "ROM 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "even so these also have now been disobedient, that by the mercy shown to you they may also obtain mercy.",
+      "ko": "이와 같이 이 사람들이 순종치 아니하니 이는 너희에게 베푸시는 긍휼로 이제 저희도 긍휼을 얻게 하려 하심이니라",
+      "source_text_hash": "8c92f39b9586f0c9f1ca8f896ab3b634d3e2d7fde6089702ac20a6779a57ca5d",
+      "translation_text_hash": "2c235770d84326b396d39374ed2f2831ace6517576cb373b29f610e8b083cdb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 이 사람들이 순종치 아니하니 이는 너희에게 베푸시는 긍휼로 이제 저희도 긍휼을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "2c235770d84326b396d39374ed2f2831ace6517576cb373b29f610e8b083cdb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:32",
+      "sequence": 28238,
+      "chapter_label": "ROM 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "For God has bound all to disobedience, that he might have mercy on all.",
+      "ko": "하나님이 모든 사람을 순종치 아니하는 가운데 가두어 두심은 모든 사람에게 긍휼을 베풀려 하심이로다",
+      "source_text_hash": "d899b3aedbe85367d2f1a9616ac279ae577e0e55f102115a868f563c32f99fde",
+      "translation_text_hash": "cd84ce61208d83dfb5075b39bdbbba68cad9b6aea5d3d813bbe2158b79d5c7e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 모든 사람을 순종치 아니하는 가운데 가두어 두심은 모든 사람에게 긍휼을 베풀려 하심이로다"
+      ],
+      "raw_text_hashes": [
+        "cd84ce61208d83dfb5075b39bdbbba68cad9b6aea5d3d813bbe2158b79d5c7e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:33",
+      "sequence": 28239,
+      "chapter_label": "ROM 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "Oh the depth of the riches both of the wisdom and the knowledge of God! How unsearchable are his judgments, and his ways past tracing out!",
+      "ko": "깊도다 하나님의 지혜와 지식의 부요함이여, 그의 판단은 측량치 못할것이며 그의 길은 찾지 못할 것이로다",
+      "source_text_hash": "35be50964cb89fa3c326b3cce1038e63853972b99990f0772e5934929805b3e7",
+      "translation_text_hash": "0ad02a3a15a57ad4609ade73faca746e474e75f1079b49791104f47b462cf06b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깊도다 하나님의 지혜와 지식의 부요함이여, 그의 판단은 측량치 못할것이며 그의 길은 찾지 못할 것이로다"
+      ],
+      "raw_text_hashes": [
+        "0ad02a3a15a57ad4609ade73faca746e474e75f1079b49791104f47b462cf06b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:34",
+      "sequence": 28240,
+      "chapter_label": "ROM 11",
+      "verse_label": "34",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 34
+        }
+      ],
+      "en": "“For who has known the mind of the Lord? Or who has been his counselor?”",
+      "ko": "누가 주의 마음을 알았느뇨 누가 그의 모사가 되었느뇨",
+      "source_text_hash": "e7d93e22a30e1a66544538c097d81e8830b7e3dbeab7415455bcdef7b2af663b",
+      "translation_text_hash": "7a4536f75ec2917591609838693425420c92d50bcaea59468e17619d374e166e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 주의 마음을 알았느뇨 누가 그의 모사가 되었느뇨"
+      ],
+      "raw_text_hashes": [
+        "7a4536f75ec2917591609838693425420c92d50bcaea59468e17619d374e166e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:35",
+      "sequence": 28241,
+      "chapter_label": "ROM 11",
+      "verse_label": "35",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 35
+        }
+      ],
+      "en": "“Or who has first given to him, and it will be repaid to him again?”",
+      "ko": "누가 주께 먼저 드려서 갚으심을 받겠느뇨",
+      "source_text_hash": "8f7282c28dd2b67a7d69a83e23cab861c4e953c1e78655e25e17a2ee933a4eea",
+      "translation_text_hash": "0fe45d2ff1efff162fb242503497c234c71a8b4aab140fe9d4224386b0afc90c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 주께 먼저 드려서 갚으심을 받겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "0fe45d2ff1efff162fb242503497c234c71a8b4aab140fe9d4224386b0afc90c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:11:36",
+      "sequence": 28242,
+      "chapter_label": "ROM 11",
+      "verse_label": "36",
+      "locator": {
+        "book": "ROM",
+        "chapter": 11,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 11,
+          "verse": 36
+        }
+      ],
+      "en": "For of him and through him and to him are all things. To him be the glory for ever! Amen.",
+      "ko": "이는 만물이 주에게서 나오고 주로 말미암고 주에게로 돌아감이라 영광이 그에게 세세에 있으리로다 아멘",
+      "source_text_hash": "e758b33f61a1152ac189e1c3e3ad19a715075820f9f4eaf3e1ebebca61075b24",
+      "translation_text_hash": "69e41ff127efc337b3636b3d6c3b79c3b29bb6f8eba55794b98ae2049ddf0c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 만물이 주에게서 나오고 주로 말미암고 주에게로 돌아감이라 영광이 그에게 세세에 있으리로다 아멘"
+      ],
+      "raw_text_hashes": [
+        "69e41ff127efc337b3636b3d6c3b79c3b29bb6f8eba55794b98ae2049ddf0c8c"
+      ]
+    }
+  ]
+}

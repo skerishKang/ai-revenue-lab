@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:003",
+  "unit_ordinal": 214,
+  "unit_label": "JDG 3",
+  "book_code": "JDG",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:3:1",
+      "sequence": 6570,
+      "chapter_label": "JDG 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now these are the nations which the LORD left, to test Israel by them, even as many as had not known all the wars of Canaan;",
+      "ko": "여호와께서 가나안 전쟁을 알지 못한 이스라엘을 시험하려 하시며",
+      "source_text_hash": "b5a2d30aae29cfc3b173cdb6f859681def4f03e0d942dfcf92fb5ddab1005b3c",
+      "translation_text_hash": "a7f198f7b0d52d7ecec0ccca4fa71a0652a4735df1c50f8669ff518f2b6dbf15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가나안 전쟁을 알지 못한 이스라엘을 시험하려 하시며"
+      ],
+      "raw_text_hashes": [
+        "a7f198f7b0d52d7ecec0ccca4fa71a0652a4735df1c50f8669ff518f2b6dbf15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:2",
+      "sequence": 6571,
+      "chapter_label": "JDG 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "only that the generations of the children of Israel might know, to teach them war, at least those who knew nothing of it before:",
+      "ko": "이스라엘 자손의 세대 중에 아직 전쟁을 알지 못하는 자에게 그것을 가르쳐 알게 하려 하사 남겨두신 열국은",
+      "source_text_hash": "fdd944eb82418e7fb68e3fa207a3f8e3bce294fd931f4937eb7b4d5cf4db5b61",
+      "translation_text_hash": "b71d0fa7134b40080ba80e0da1d1c072af364756b58b90593d2b6ec28679c1aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 세대 중에 아직 전쟁을 알지 못하는 자에게 그것을 가르쳐 알게 하려 하사 남겨두신 열국은"
+      ],
+      "raw_text_hashes": [
+        "b71d0fa7134b40080ba80e0da1d1c072af364756b58b90593d2b6ec28679c1aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:3",
+      "sequence": 6572,
+      "chapter_label": "JDG 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "the five lords of the Philistines, all the Canaanites, the Sidonians, and the Hivites who lived on Mount Lebanon, from Mount Baal Hermon to the entrance of Hamath.",
+      "ko": "블레셋 다섯 방백과 가나안 모든 사람과 시돈 사람과 바알 헤르몬산에서부터 하맛 어구까지 레바논산에 거하는 히위 사람이라",
+      "source_text_hash": "b21059fd8d35d27ab5c3061b5c7d032f8e1eb682074151c6eda3cf6bbec31caf",
+      "translation_text_hash": "af101ecb5fa1e5cef7b3b7b192e02cc2ae23e2ae3a645f424492a03f6282201a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 다섯 방백과 가나안 모든 사람과 시돈 사람과 바알 헤르몬산에서부터 하맛 어구까지 레바논산에 거하는 히위 사람이라"
+      ],
+      "raw_text_hashes": [
+        "af101ecb5fa1e5cef7b3b7b192e02cc2ae23e2ae3a645f424492a03f6282201a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:4",
+      "sequence": 6573,
+      "chapter_label": "JDG 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "They were left to test Israel by them, to know whether they would listen to the LORD’s commandments, which he commanded their fathers by Moses.",
+      "ko": "남겨두신 이 열국으로 이스라엘을 시험하사 여호와께서 모세로 그들의 열조에게 명하신 명령들을 청종하나 알고자 하셨더라",
+      "source_text_hash": "a79ff9e5adcb4463363ddf712eacb1286d2f69af5616d7dc36940387df8b2e6c",
+      "translation_text_hash": "50a473cc7f781aec6e41cc8f10f6d17ab427a8af7aa18e2575bbdd41098e6078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남겨두신 이 열국으로 이스라엘을 시험하사 여호와께서 모세로 그들의 열조에게 명하신 명령들을 청종하나 알고자 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "50a473cc7f781aec6e41cc8f10f6d17ab427a8af7aa18e2575bbdd41098e6078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:5",
+      "sequence": 6574,
+      "chapter_label": "JDG 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Israel lived among the Canaanites, the Hittites, the Amorites, the Perizzites, the Hivites, and the Jebusites.",
+      "ko": "이스라엘 자손은 마침내 가나안 사람과 헷 사람과 아모리 사람과 브리스 사람과 히위 사람과 여부스 사람 사이에 거하여",
+      "source_text_hash": "c86f58fbcba734cdd938f33cb19a00d4748cfcc44040c72c33c7793ac8c7f888",
+      "translation_text_hash": "3e49c36f2f3123b7e9a87b2a5226158ad94b5e0c37e1b674dfa2a80798aea56c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손은 마침내 가나안 사람과 헷 사람과 아모리 사람과 브리스 사람과 히위 사람과 여부스 사람 사이에 거하여"
+      ],
+      "raw_text_hashes": [
+        "3e49c36f2f3123b7e9a87b2a5226158ad94b5e0c37e1b674dfa2a80798aea56c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:6",
+      "sequence": 6575,
+      "chapter_label": "JDG 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "They took their daughters to be their wives, and gave their own daughters to their sons and served their gods.",
+      "ko": "그들의 딸들을 취하여 아내를 삼으며 자기 딸들을 그들의 아들에게 주며 또 그들의 신들을 섬겼더라",
+      "source_text_hash": "3536e0b74228837eb275a970af6fde10cfc3e551d2acc5342a635b1c16e92bbe",
+      "translation_text_hash": "3d086093ccf8538bf14e805c69b0a8fdfc2c645c3acc501587ffd5aec58cf95d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 딸들을 취하여 아내를 삼으며 자기 딸들을 그들의 아들에게 주며 또 그들의 신들을 섬겼더라"
+      ],
+      "raw_text_hashes": [
+        "3d086093ccf8538bf14e805c69b0a8fdfc2c645c3acc501587ffd5aec58cf95d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:7",
+      "sequence": 6576,
+      "chapter_label": "JDG 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "The children of Israel did that which was evil in the LORD’s sight, and forgot the LORD their God, and served the Baals and the Asheroth.",
+      "ko": "이스라엘 자손이 여호와 목전에 악을 행하여 자기들의 하나님 여호와를 잊어버리고 바알들과 아세라들을 섬긴지라",
+      "source_text_hash": "70f3038664fa40fee6437770ff81aa0249f8dee23c3ff99f777d1902e7b3df56",
+      "translation_text_hash": "db3eb0bec5914412dbdf2d766cd01efcfdc59193869bcbc971e7ac9b1574775f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와 목전에 악을 행하여 자기들의 하나님 여호와를 잊어버리고 바알들과 아세라들을 섬긴지라"
+      ],
+      "raw_text_hashes": [
+        "db3eb0bec5914412dbdf2d766cd01efcfdc59193869bcbc971e7ac9b1574775f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:8",
+      "sequence": 6577,
+      "chapter_label": "JDG 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore the LORD’s anger burned against Israel, and he sold them into the hand of Cushan Rishathaim king of Mesopotamia; and the children of Israel served Cushan Rishathaim eight years.",
+      "ko": "여호와께서 이스라엘에게 진노하사 그들을 메소보다미아 왕 구산 리사다임의 손에 파셨으므로 이스라엘 자손이 구산 리사다임을 팔년을 섬겼더니",
+      "source_text_hash": "67fe312541d263c5be07939e6141e3f91bb526d982ac703845b093a6aef8f791",
+      "translation_text_hash": "8ee7911a545a15673aa405884cf4ba6ece1d4dfc0aa5e2e9afe5a6ffb95ca4f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘에게 진노하사 그들을 메소보다미아 왕 구산 리사다임의 손에 파셨으므로 이스라엘 자손이 구산 리사다임을 팔년을 섬겼더니"
+      ],
+      "raw_text_hashes": [
+        "8ee7911a545a15673aa405884cf4ba6ece1d4dfc0aa5e2e9afe5a6ffb95ca4f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:9",
+      "sequence": 6578,
+      "chapter_label": "JDG 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "When the children of Israel cried to the LORD, the LORD raised up a savior to the children of Israel, who saved them, even Othniel the son of Kenaz, Caleb’s younger brother.",
+      "ko": "이스라엘 자손이 여호와께 부르짖으매 여호와께서 그들을 위하여 한 구원자를 세워 구원하게 하시니 그는 곧 갈렙의 아우 그나스의 아들 옷니엘이라",
+      "source_text_hash": "b3e28430ee9866605850f331e1bcd7b2ed475b2c87be142f0f921f9b9c6f1f62",
+      "translation_text_hash": "f1b0ff9866bd6f34f3b7003787c377eae3f49832e6fe97ee5fc85f1b0963f758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 부르짖으매 여호와께서 그들을 위하여 한 구원자를 세워 구원하게 하시니 그는 곧 갈렙의 아우 그나스의 아들 옷니엘이라"
+      ],
+      "raw_text_hashes": [
+        "f1b0ff9866bd6f34f3b7003787c377eae3f49832e6fe97ee5fc85f1b0963f758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:10",
+      "sequence": 6579,
+      "chapter_label": "JDG 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD’s Spirit came on him, and he judged Israel; and he went out to war, and the LORD delivered Cushan Rishathaim king of Mesopotamia into his hand. His hand prevailed against Cushan Rishathaim.",
+      "ko": "여호와의 신이 그에게 임하셨으므로 그가 이스라엘 사사가 되어 나가서 싸울 때에 여호와께서 메소보다미아 왕 구산 리사다임을 그 손에 붙이시매 옷니엘의 손이 구산 리사다임을 이기니라",
+      "source_text_hash": "a060ab49e2c7511167ed5b623ed057a31ebe80bc1587406e37e62de93e407a94",
+      "translation_text_hash": "f4ff505397d2a69c3795159ee67546666cd11fe5f1d5a4cfabb92000c7878fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 그에게 임하셨으므로 그가 이스라엘 사사가 되어 나가서 싸울 때에 여호와께서 메소보다미아 왕 구산 리사다임을 그 손에 붙이시매 옷니엘의 손이 구산 리사다임을 이기니라"
+      ],
+      "raw_text_hashes": [
+        "f4ff505397d2a69c3795159ee67546666cd11fe5f1d5a4cfabb92000c7878fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:11",
+      "sequence": 6580,
+      "chapter_label": "JDG 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The land had rest forty years, then Othniel the son of Kenaz died.",
+      "ko": "그 땅이 태평한지 사십년에 그나스의 아들 옷니엘이 죽었더라",
+      "source_text_hash": "4042e8a6bcf47d61cd1e0352c1437228ae46bd42d43c7e9aad6ea67dae79e386",
+      "translation_text_hash": "a48f9763169bdbbfea8ee12dee9f4565e430563778bc925ca0ef50c0d7895bd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅이 태평한지 사십년에 그나스의 아들 옷니엘이 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "a48f9763169bdbbfea8ee12dee9f4565e430563778bc925ca0ef50c0d7895bd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:12",
+      "sequence": 6581,
+      "chapter_label": "JDG 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "The children of Israel again did that which was evil in the LORD’s sight, and the LORD strengthened Eglon the king of Moab against Israel, because they had done that which was evil in the LORD’s sight.",
+      "ko": "이스라엘 자손이 또 여호와의 목전에 악을 행하니라 이스라엘 자손이 여호와의 목전에 악을 행하므로 여호와께서 모압 왕 에글론을 강성케 하사 그들을 대적하게 하시매",
+      "source_text_hash": "7d7b45e8742c211cf5216f4c07d77f63370c73f3a87c3b2b1e77a1a947518bf8",
+      "translation_text_hash": "031a9aebc6ba7325e9b62d65f8a4de27be81351c7e250a315011050d596b12aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 또 여호와의 목전에 악을 행하니라 이스라엘 자손이 여호와의 목전에 악을 행하므로 여호와께서 모압 왕 에글론을 강성케 하사 그들을 대적하게 하시매"
+      ],
+      "raw_text_hashes": [
+        "031a9aebc6ba7325e9b62d65f8a4de27be81351c7e250a315011050d596b12aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:13",
+      "sequence": 6582,
+      "chapter_label": "JDG 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "He gathered the children of Ammon and Amalek to himself; and he went and struck Israel, and they possessed the city of palm trees.",
+      "ko": "에글론이 암몬과 아말렉 자손들을 모아가지고 와서 이스라엘을 쳐서 종려나무 성읍을 점령한지라",
+      "source_text_hash": "e5fa07228d4f2d0526e8094fc282ea47d14e5636a4c0aec25bae2fe912a7c137",
+      "translation_text_hash": "80a4947f185e8fdbed4c31fa2e5d1bbc61d1a4c61d8b427526ba19b396687c75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에글론이 암몬과 아말렉 자손들을 모아가지고 와서 이스라엘을 쳐서 종려나무 성읍을 점령한지라"
+      ],
+      "raw_text_hashes": [
+        "80a4947f185e8fdbed4c31fa2e5d1bbc61d1a4c61d8b427526ba19b396687c75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:14",
+      "sequence": 6583,
+      "chapter_label": "JDG 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "The children of Israel served Eglon the king of Moab eighteen years.",
+      "ko": "이에 이스라엘 자손이 모압 왕 에글론을 십 팔년을 섬기니라",
+      "source_text_hash": "b49a4a406947e69b2a6a99966f1d394bbd269c8f8bcbb7b23aaba55819f8625f",
+      "translation_text_hash": "4168e3426591369d39b5c9796d2266b21da7cd5cca3bca386ec222cd2ca9ee26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 자손이 모압 왕 에글론을 십 팔년을 섬기니라"
+      ],
+      "raw_text_hashes": [
+        "4168e3426591369d39b5c9796d2266b21da7cd5cca3bca386ec222cd2ca9ee26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:15",
+      "sequence": 6584,
+      "chapter_label": "JDG 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "But when the children of Israel cried to the LORD, the LORD raised up a savior for them: Ehud the son of Gera, the Benjamite, a left-handed man. The children of Israel sent tribute by him to Eglon the king of Moab.",
+      "ko": "이스라엘 자손이 여호와께 부르짖으매 여호와께서 그들을 위하여 한 구원자를 세우셨으니 그는 곧 베냐민 사람 게라의 아들 왼손잡이 에훗이라 이스라엘 자손이 그를 의탁하여 모압 왕 에글론에게 공물을 바칠 때에",
+      "source_text_hash": "ce8b089f175df77d974f161f750c78b1c8a93b4cf785ea9c06c64d386c4e929b",
+      "translation_text_hash": "06dad50932e339cd25b7565a745533115e0ec4f589b78971196a4b6c8f74fb6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 부르짖으매 여호와께서 그들을 위하여 한 구원자를 세우셨으니 그는 곧 베냐민 사람 게라의 아들 왼손잡이 에훗이라 이스라엘 자손이 그를 의탁하여 모압 왕 에글론에게 공물을 바칠 때에"
+      ],
+      "raw_text_hashes": [
+        "06dad50932e339cd25b7565a745533115e0ec4f589b78971196a4b6c8f74fb6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:16",
+      "sequence": 6585,
+      "chapter_label": "JDG 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Ehud made himself a sword which had two edges, a cubit in length; and he wore it under his clothing on his right thigh.",
+      "ko": "에훗이 장이 한 규빗 되는 좌우에 날선 칼을 만들어 우편 다리 옷 속에 차고",
+      "source_text_hash": "6b38fd1bbfd19fe6222d125a9fa9b18907e36c9388674d64ae787acfab49dcf2",
+      "translation_text_hash": "bc01cf6b610731ef0c0ce49036c4b6d38efad5ee71b237071929bcc56871a79a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 장이 한 규빗 되는 좌우에 날선 칼을 만들어 우편 다리 옷 속에 차고"
+      ],
+      "raw_text_hashes": [
+        "bc01cf6b610731ef0c0ce49036c4b6d38efad5ee71b237071929bcc56871a79a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:17",
+      "sequence": 6586,
+      "chapter_label": "JDG 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "He offered the tribute to Eglon king of Moab. Now Eglon was a very fat man.",
+      "ko": "공물을 모압 왕 에글론에게 바쳤는데 에글론은 심히 비둔한 자이었더라",
+      "source_text_hash": "3e9ccf277323425e18b6613479ce369a0db8b0b5525db414bb06a7662140e49c",
+      "translation_text_hash": "e444fcb9dcf0d6d0f9d893e2f3031956d8422f5f9044bf3a42e42ba4a49ef558",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공물을 모압 왕 에글론에게 바쳤는데 에글론은 심히 비둔한 자이었더라"
+      ],
+      "raw_text_hashes": [
+        "e444fcb9dcf0d6d0f9d893e2f3031956d8422f5f9044bf3a42e42ba4a49ef558"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:18",
+      "sequence": 6587,
+      "chapter_label": "JDG 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "When Ehud had finished offering the tribute, he sent away the people who carried the tribute.",
+      "ko": "에훗이 공물 바치기를 마친 후에 공물을 메고 온 자들을 보내고",
+      "source_text_hash": "12c340d1e2654436ddeddfb77d1057c7c8a5d16b956c059d791cb0b5aee1907a",
+      "translation_text_hash": "20be300dd5c11957874a62b25bc28b891bdf3bdd835a56d6ea1054f50c9801e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 공물 바치기를 마친 후에 공물을 메고 온 자들을 보내고"
+      ],
+      "raw_text_hashes": [
+        "20be300dd5c11957874a62b25bc28b891bdf3bdd835a56d6ea1054f50c9801e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:19",
+      "sequence": 6588,
+      "chapter_label": "JDG 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "But he himself turned back from the stone idols that were by Gilgal, and said, “I have a secret message for you, O king.” The king said, “Keep silence!” All who stood by him left him.",
+      "ko": "자기는 길갈 근처 돌 뜨는 곳에서부터 돌아와서 가로되 왕이여 내가 은밀한 일을 왕에게 고하려 하나이다 왕이 명하여 종용케 하라 하매 모셔 선 자들이 다 물러간지라",
+      "source_text_hash": "4724b452de57ef0ebae4107d168afa86f2f673da81887d1853550e346d17e69a",
+      "translation_text_hash": "623956960f5a3daa793e2f53aa7386853420734f9b8f52e9d85afe8f9ced179d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기는 길갈 근처 돌 뜨는 곳에서부터 돌아와서 가로되 왕이여 내가 은밀한 일을 왕에게 고하려 하나이다 왕이 명하여 종용케 하라 하매 모셔 선 자들이 다 물러간지라"
+      ],
+      "raw_text_hashes": [
+        "623956960f5a3daa793e2f53aa7386853420734f9b8f52e9d85afe8f9ced179d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:20",
+      "sequence": 6589,
+      "chapter_label": "JDG 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Ehud came to him; and he was sitting by himself alone in the cool upper room. Ehud said, “I have a message from God to you.” He arose out of his seat.",
+      "ko": "에훗이 왕의 앞으로 나아가니 왕은 서늘한 다락방에 홀로 앉아 있는 중이라 에훗이 가로되 내가 하나님의 명을 받들어 왕에게 고할 일이 있나이다 하매 왕이 그 좌석에서 일어나니",
+      "source_text_hash": "ffb6141839d58a76728ac3ee91810f60344fa78aec67235ec301974b9293b66d",
+      "translation_text_hash": "a68c9aeb77f8b2c15b176ecd554576b455c5736e3c3da851469b8b689f805d8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 왕의 앞으로 나아가니 왕은 서늘한 다락방에 홀로 앉아 있는 중이라 에훗이 가로되 내가 하나님의 명을 받들어 왕에게 고할 일이 있나이다 하매 왕이 그 좌석에서 일어나니"
+      ],
+      "raw_text_hashes": [
+        "a68c9aeb77f8b2c15b176ecd554576b455c5736e3c3da851469b8b689f805d8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:21",
+      "sequence": 6590,
+      "chapter_label": "JDG 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Ehud put out his left hand, and took the sword from his right thigh, and thrust it into his body.",
+      "ko": "에훗이 왼손으로 우편 다리에서 칼을 빼어 왕의 몸을 찌르매",
+      "source_text_hash": "afa64fcb1cbd0b14008a3857a19cfee0b709f154ef28b230143585ac93412f97",
+      "translation_text_hash": "94877087cfb5bae2e5f242ab9b96022e749c7d857a65e740842b209daa91d059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 왼손으로 우편 다리에서 칼을 빼어 왕의 몸을 찌르매"
+      ],
+      "raw_text_hashes": [
+        "94877087cfb5bae2e5f242ab9b96022e749c7d857a65e740842b209daa91d059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:22",
+      "sequence": 6591,
+      "chapter_label": "JDG 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "The handle also went in after the blade; and the fat closed on the blade, for he didn’t draw the sword out of his body; and it came out behind.",
+      "ko": "칼자루도 날을 따라 들어가서 그 끝이 등뒤까지 나갔고 그가 칼을 그 몸에서 빼어내지 아니하였으므로 기름이 칼날에 엉기었더라",
+      "source_text_hash": "2ce1f973e1335a744fd00b0eb031e1f2970e28d58fc4eee2553b834d1b678bf0",
+      "translation_text_hash": "fa5e4a4270353d7573a0120840082a9ff7404c4972af85ddc7b17e2e4571ab8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼자루도 날을 따라 들어가서 그 끝이 등뒤까지 나갔고 그가 칼을 그 몸에서 빼어내지 아니하였으므로 기름이 칼날에 엉기었더라"
+      ],
+      "raw_text_hashes": [
+        "fa5e4a4270353d7573a0120840082a9ff7404c4972af85ddc7b17e2e4571ab8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:23",
+      "sequence": 6592,
+      "chapter_label": "JDG 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Then Ehud went out onto the porch, and shut the doors of the upper room on him, and locked them.",
+      "ko": "에훗이 현관에 나와서 다락문들을 닫아 잠그니라",
+      "source_text_hash": "faca3cec30274eeb3419f8eb64ff9edf7efcdff7053973727e61a7ff9231c60a",
+      "translation_text_hash": "1527e8934390be3fa4a106889f072e334979b1b63610e7de3652304f773e70b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 현관에 나와서 다락문들을 닫아 잠그니라"
+      ],
+      "raw_text_hashes": [
+        "1527e8934390be3fa4a106889f072e334979b1b63610e7de3652304f773e70b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:24",
+      "sequence": 6593,
+      "chapter_label": "JDG 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "After he had gone, his servants came and saw that the doors of the upper room were locked. They said, “Surely he is covering his feet in the upper room.”",
+      "ko": "에훗이 나간 후에 왕의 신하들이 와서 다락문이 잠겼음을 보고 가로되 왕이 필연 다락방에서 발을 가리우신다 하고",
+      "source_text_hash": "1829116ae3313e047e51560d0acc1e9399eb8d53c1be639ae3b97bff580dd056",
+      "translation_text_hash": "324d1574c3a3725f26a33e73b74aee9e96211db518da0e0721ba00c30a6bbf80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗이 나간 후에 왕의 신하들이 와서 다락문이 잠겼음을 보고 가로되 왕이 필연 다락방에서 발을 가리우신다 하고"
+      ],
+      "raw_text_hashes": [
+        "324d1574c3a3725f26a33e73b74aee9e96211db518da0e0721ba00c30a6bbf80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:25",
+      "sequence": 6594,
+      "chapter_label": "JDG 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "They waited until they were ashamed; and behold, he didn’t open the doors of the upper room. Therefore they took the key and opened them, and behold, their lord had fallen down dead on the floor.",
+      "ko": "그들이 오래 기다려도 왕이 다락문을 열지 아니하는지라 열쇠를 취하여 열고 본즉 자기 주가 이미 죽어 땅에 엎드러졌더라",
+      "source_text_hash": "91c7075433b0548759119c76b951134d782f292cd94df8c2dea13a16dfc5d56a",
+      "translation_text_hash": "621962ded18d2de1a6d2b2a8b08afe2fb6722dd2602d8a27fbe9f9899d6f92a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 오래 기다려도 왕이 다락문을 열지 아니하는지라 열쇠를 취하여 열고 본즉 자기 주가 이미 죽어 땅에 엎드러졌더라"
+      ],
+      "raw_text_hashes": [
+        "621962ded18d2de1a6d2b2a8b08afe2fb6722dd2602d8a27fbe9f9899d6f92a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:26",
+      "sequence": 6595,
+      "chapter_label": "JDG 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "Ehud escaped while they waited, passed beyond the stone idols, and escaped to Seirah.",
+      "ko": "그들의 기다리는 동안에 에훗이 피하여 돌 뜨는 곳을 지나 스이라로 도망하니라",
+      "source_text_hash": "b75a2831154dd52b78019dc00c8194f7143b8fe7712c6995c268a7008258dd63",
+      "translation_text_hash": "543e9c6a0ab593dbea38195b19174cd1c185685eadfdb4fa3d9673ea158d42dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 기다리는 동안에 에훗이 피하여 돌 뜨는 곳을 지나 스이라로 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "543e9c6a0ab593dbea38195b19174cd1c185685eadfdb4fa3d9673ea158d42dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:27",
+      "sequence": 6596,
+      "chapter_label": "JDG 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "When he had come, he blew a trumpet in the hill country of Ephraim; and the children of Israel went down with him from the hill country, and he led them.",
+      "ko": "그가 이르러서는 에브라임 산지에서 나팔을 불매 이스라엘 자손이 산지에서 그를 따라 내려오니 에훗이 앞서 가며",
+      "source_text_hash": "007f801aebd42fc7fb97860e33475ae67240741a9c16f956ac4e3466dd5e37df",
+      "translation_text_hash": "f4f09b4ded98a4979c537ef9e9aeb4a8d5af05e9d5e87f81765b4a9921291028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이르러서는 에브라임 산지에서 나팔을 불매 이스라엘 자손이 산지에서 그를 따라 내려오니 에훗이 앞서 가며"
+      ],
+      "raw_text_hashes": [
+        "f4f09b4ded98a4979c537ef9e9aeb4a8d5af05e9d5e87f81765b4a9921291028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:28",
+      "sequence": 6597,
+      "chapter_label": "JDG 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "He said to them, “Follow me; for the LORD has delivered your enemies the Moabites into your hand.” They followed him, and took the fords of the Jordan against the Moabites, and didn’t allow any man to pass over.",
+      "ko": "무리에게 이르되 나를 따르라 여호와께서 너희 대적 모압 사람을 너희의 손에 붙이셨느니라 하매 무리가 에훗을 따라 내려가서 모압 맞은편 요단강 나루를 잡아 지켜 한 사람도 건너지 못하게 하였고",
+      "source_text_hash": "6738ce1e8c13682a91e3e0d96ca5071a9296d554e48bef4c488058b369dd8f56",
+      "translation_text_hash": "ecda2c3c7d4357b8880215f6074c5eeb369a3d1398f20dc9f70ffb16efbd70d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리에게 이르되 나를 따르라 여호와께서 너희 대적 모압 사람을 너희의 손에 붙이셨느니라 하매 무리가 에훗을 따라 내려가서 모압 맞은편 요단강 나루를 잡아 지켜 한 사람도 건너지 못하게 하였고"
+      ],
+      "raw_text_hashes": [
+        "ecda2c3c7d4357b8880215f6074c5eeb369a3d1398f20dc9f70ffb16efbd70d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:29",
+      "sequence": 6598,
+      "chapter_label": "JDG 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "They struck at that time about ten thousand men of Moab, every strong man and every man of valor. No man escaped.",
+      "ko": "그 때에 모압 사람 일만명 가량을 죽였으니 다 역사요 용사라 한 사람도 피하지 못하였더라",
+      "source_text_hash": "36334d208befe9c87eb67aca37aeaadc61882dd0ec9c359eb67a78f5d4ca5515",
+      "translation_text_hash": "f29908f682ba1dd219327ef1c44700484208af28389a9b57ed36d88f779cbd33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 모압 사람 일만명 가량을 죽였으니 다 역사요 용사라 한 사람도 피하지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "f29908f682ba1dd219327ef1c44700484208af28389a9b57ed36d88f779cbd33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:30",
+      "sequence": 6599,
+      "chapter_label": "JDG 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "So Moab was subdued that day under the hand of Israel. Then the land had rest eighty years.",
+      "ko": "그 날에 모압 사람이 이스라엘의 수하에 항복하매 그 땅이 팔십년 동안 태평하였더라",
+      "source_text_hash": "461d5d1be3c168cbda21beda97cc4c53aa638a4eeff88a87cb5388a488a7fe0a",
+      "translation_text_hash": "11546a20bf4483f533b0881eb8a6cbffaf0b2dc284015847a66a8ff4297e99ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 모압 사람이 이스라엘의 수하에 항복하매 그 땅이 팔십년 동안 태평하였더라"
+      ],
+      "raw_text_hashes": [
+        "11546a20bf4483f533b0881eb8a6cbffaf0b2dc284015847a66a8ff4297e99ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:3:31",
+      "sequence": 6600,
+      "chapter_label": "JDG 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "JDG",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "After him was Shamgar the son of Anath, who struck six hundred men of the Philistines with an ox goad. He also saved Israel.",
+      "ko": "에훗의 후에 아낫의 아들 삼갈이 사사로 있어 소 모는 막대기로 블레셋 사람 육백명을 죽였고 그도 이스라엘을 구원하였더라",
+      "source_text_hash": "d611f6fa2242db49a4c8886b6022bdcc6dd920fb2df7658461c7b0892a4fb69a",
+      "translation_text_hash": "5c9949dee46a9b1c4a0282a63fa7fc348ef5e5829ad9e21a037d13adcc316e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에훗의 후에 아낫의 아들 삼갈이 사사로 있어 소 모는 막대기로 블레셋 사람 육백명을 죽였고 그도 이스라엘을 구원하였더라"
+      ],
+      "raw_text_hashes": [
+        "5c9949dee46a9b1c4a0282a63fa7fc348ef5e5829ad9e21a037d13adcc316e23"
+      ]
+    }
+  ]
+}

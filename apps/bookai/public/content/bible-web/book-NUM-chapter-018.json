@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:018",
+  "unit_ordinal": 135,
+  "unit_label": "NUM 18",
+  "book_code": "NUM",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:18:1",
+      "sequence": 4259,
+      "chapter_label": "NUM 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD said to Aaron, “You and your sons and your fathers’ house with you shall bear the iniquity of the sanctuary; and you and your sons with you shall bear the iniquity of your priesthood.",
+      "ko": "여호와께서 아론에게 이르시되 너와 네 아들들과 네 종족은 성소에 대한 죄를 함께 담당할 것이요 너와 네 아들들은 너희가 그 제사장 직분에 대한 죄를 함께 담당할 것이니라",
+      "source_text_hash": "db8e2675cb578b6229a760f83adf1b6624df6e109cb3b04c8f26c08bf2f0dbb0",
+      "translation_text_hash": "dfd4234e7cd170111d08c457fb3b9d6dcb31487b9a5a61059493ab31ee5d2c85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아론에게 이르시되 너와 네 아들들과 네 종족은 성소에 대한 죄를 함께 담당할 것이요 너와 네 아들들은 너희가 그 제사장 직분에 대한 죄를 함께 담당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "dfd4234e7cd170111d08c457fb3b9d6dcb31487b9a5a61059493ab31ee5d2c85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:2",
+      "sequence": 4260,
+      "chapter_label": "NUM 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "Bring your brothers also, the tribe of Levi, the tribe of your father, near with you, that they may be joined to you, and minister to you; but you and your sons with you shall be before the Tent of the Testimony.",
+      "ko": "너는 네 형제 레위 지파 곧 네 조상의 지파를 데려다가 너와 합동시켜 너를 섬기게 하고 너와 네 아들들은 증거의 장막 앞에 있을 것이니라",
+      "source_text_hash": "2ab0da8ad9640b29590b9fd21a71fa549e644eeed3d0c70a157af073127e51f3",
+      "translation_text_hash": "53fd7ed893f139d0c92fb39fa0b9180045020e7525283d94ac3ce1f627689a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 형제 레위 지파 곧 네 조상의 지파를 데려다가 너와 합동시켜 너를 섬기게 하고 너와 네 아들들은 증거의 장막 앞에 있을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "53fd7ed893f139d0c92fb39fa0b9180045020e7525283d94ac3ce1f627689a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:3",
+      "sequence": 4261,
+      "chapter_label": "NUM 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "They shall keep your commands and the duty of the whole Tent; only they shall not come near to the vessels of the sanctuary and to the altar, that they not die, neither they nor you.",
+      "ko": "레위인은 네 직무와 장막의 모든 직무를 지키려니와 성소의 기구와 단에는 가까이 못하리니 두렵건대 그들과 너희가 죽을까 하노라",
+      "source_text_hash": "539e71e7eb29d173345ded265cc88eb97a44377f32c1857ef371af1010ca5bcc",
+      "translation_text_hash": "4ffd8da96a394e08836ff32aa5f49b67fae5844aa743a36da6ebb55e3101567e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 네 직무와 장막의 모든 직무를 지키려니와 성소의 기구와 단에는 가까이 못하리니 두렵건대 그들과 너희가 죽을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "4ffd8da96a394e08836ff32aa5f49b67fae5844aa743a36da6ebb55e3101567e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:4",
+      "sequence": 4262,
+      "chapter_label": "NUM 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "They shall be joined to you and keep the responsibility of the Tent of Meeting, for all the service of the Tent. A stranger shall not come near to you.",
+      "ko": "레위인은 너와 합동하여 장막의 모든 일과 회막의 직무를 지킬 것이요 외인은 너희에게 가까이 못할 것이니라",
+      "source_text_hash": "71572140d3a55197c6b1416f041f157aed53a24d2bc5a436e31364b5c0e70bd9",
+      "translation_text_hash": "9c7832dc7263e6fa8c88df641e8c6607ad32d7d21a4f81038e573b85a005435f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 너와 합동하여 장막의 모든 일과 회막의 직무를 지킬 것이요 외인은 너희에게 가까이 못할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "9c7832dc7263e6fa8c88df641e8c6607ad32d7d21a4f81038e573b85a005435f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:5",
+      "sequence": 4263,
+      "chapter_label": "NUM 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "“You shall perform the duty of the sanctuary and the duty of the altar, that there be no more wrath on the children of Israel.",
+      "ko": "이와 같이 너희는 성소의 직무와 단의 직무를 지키라 그리하면 여호와의 진노가 다시는 이스라엘 자손에게 미치지 아니하리라",
+      "source_text_hash": "becb385e6b31b046874e76c8c9e0661570373e3d24343e1813ea5c712f4b0fa7",
+      "translation_text_hash": "306b779df95e9f8b43511cf90cae29670e7107e43f6fd863e4fd4ee6d284fa26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희는 성소의 직무와 단의 직무를 지키라 그리하면 여호와의 진노가 다시는 이스라엘 자손에게 미치지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "306b779df95e9f8b43511cf90cae29670e7107e43f6fd863e4fd4ee6d284fa26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:6",
+      "sequence": 4264,
+      "chapter_label": "NUM 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, I myself have taken your brothers the Levites from among the children of Israel. They are a gift to you, dedicated to the LORD, to do the service of the Tent of Meeting.",
+      "ko": "보라 내가 이스라엘 자손 중에서 너희 형제 레위인을 취하여 내게 돌리고 너희에게 선물로 주어 회막의 일을 하게 하였나니",
+      "source_text_hash": "8e651df70d7efb3610b9c1d157b6067069236b7957ad1fb350277c39f2eebb5e",
+      "translation_text_hash": "5a6b7a3e4d8fcd153a0e3456ae72b558bfa8cac9b117171499e40d9020061b4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 이스라엘 자손 중에서 너희 형제 레위인을 취하여 내게 돌리고 너희에게 선물로 주어 회막의 일을 하게 하였나니"
+      ],
+      "raw_text_hashes": [
+        "5a6b7a3e4d8fcd153a0e3456ae72b558bfa8cac9b117171499e40d9020061b4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:7",
+      "sequence": 4265,
+      "chapter_label": "NUM 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "You and your sons with you shall keep your priesthood for everything of the altar, and for that within the veil. You shall serve. I give you the service of the priesthood as a gift. The stranger who comes near shall be put to death.”",
+      "ko": "너와 네 아들들은 단과 장안의 모든 일에 대하여 제사장의 직분을 지켜 섬기라 내가 제사장의 직분을 너희에게 선물로 주었은즉 거기 가까이 하는 외인은 죽이울찌니라",
+      "source_text_hash": "da5f64d718b3e077770225a3c13c7429d53f9f5feee6477a566b3fcefd005d40",
+      "translation_text_hash": "eeb2fadc793cc09794b755be7d374f5a226860cd480bec9fc48569f211a36509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 아들들은 단과 장안의 모든 일에 대하여 제사장의 직분을 지켜 섬기라 내가 제사장의 직분을 너희에게 선물로 주었은즉 거기 가까이 하는 외인은 죽이울찌니라"
+      ],
+      "raw_text_hashes": [
+        "eeb2fadc793cc09794b755be7d374f5a226860cd480bec9fc48569f211a36509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:8",
+      "sequence": 4266,
+      "chapter_label": "NUM 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD spoke to Aaron, “Behold, I myself have given you the command of my wave offerings, even all the holy things of the children of Israel. I have given them to you by reason of the anointing, and to your sons, as a portion forever.",
+      "ko": "여호와께서 또 아론에게 이르시되 보라 내가 내 거제물 곧 이스라엘 자손의 거룩하게 한 모든 예물을 너로 주관하게 하고 네가 기름 부음을 받았음을 인하여 그것을 너와 네 아들들에게 영영한 응식으로 주노라",
+      "source_text_hash": "1a8bf35f3a212fb4f5526e1ba2f6957dcca8b5494f335e9fe1418d46317a6856",
+      "translation_text_hash": "680b2bb50d7487be31a8340d47564fab9d7c1f01e579b5115572e6c334988b96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 아론에게 이르시되 보라 내가 내 거제물 곧 이스라엘 자손의 거룩하게 한 모든 예물을 너로 주관하게 하고 네가 기름 부음을 받았음을 인하여 그것을 너와 네 아들들에게 영영한 응식으로 주노라"
+      ],
+      "raw_text_hashes": [
+        "680b2bb50d7487be31a8340d47564fab9d7c1f01e579b5115572e6c334988b96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:9",
+      "sequence": 4267,
+      "chapter_label": "NUM 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "This shall be yours of the most holy things from the fire: every offering of theirs, even every meal offering of theirs, and every sin offering of theirs, and every trespass offering of theirs, which they shall give to me, shall be most holy for you and for your sons.",
+      "ko": "지성물 중에 불사르지 않은 것은 네 것이라 그들이 내게 드리는 모든 예물의 모든 소제와 속죄제와 속건제물은 다 지극히 거룩한즉 너와 네 아들들에게 돌리리니",
+      "source_text_hash": "b1150e55fbdbcf785c2235d48744838b081b442ed4403ddb86cc61e91ad4eaf6",
+      "translation_text_hash": "37d83615a2b510c5b88259f394611b53aa4a30a6380d7cb5dd2ac77fa8d1ee4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지성물 중에 불사르지 않은 것은 네 것이라 그들이 내게 드리는 모든 예물의 모든 소제와 속죄제와 속건제물은 다 지극히 거룩한즉 너와 네 아들들에게 돌리리니"
+      ],
+      "raw_text_hashes": [
+        "37d83615a2b510c5b88259f394611b53aa4a30a6380d7cb5dd2ac77fa8d1ee4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:10",
+      "sequence": 4268,
+      "chapter_label": "NUM 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "You shall eat of it like the most holy things. Every male shall eat of it. It shall be holy to you.",
+      "ko": "지극히 거룩하게 여김으로 먹으라 이는 네게 성물인즉 남자들이 다 먹을찌니라",
+      "source_text_hash": "3092048d1d828523fad81631a3f13908e206b7c9d92bfe417a5bc1c109e31b54",
+      "translation_text_hash": "7a43d49fecdcd81c7dc193d8d9780194875069531ce403445ff9634cbe98725b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 거룩하게 여김으로 먹으라 이는 네게 성물인즉 남자들이 다 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "7a43d49fecdcd81c7dc193d8d9780194875069531ce403445ff9634cbe98725b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:11",
+      "sequence": 4269,
+      "chapter_label": "NUM 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "“This is yours, too: the wave offering of their gift, even all the wave offerings of the children of Israel. I have given them to you, and to your sons and to your daughters with you, as a portion forever. Everyone who is clean in your house shall eat of it.",
+      "ko": "내게 돌릴 것이 이것이니 곧 이스라엘 자손의 드리는 거제물과 모든 요제물이라 내가 그것을 너와 네 자녀에게 영영한 응식으로 주었은즉 네 집의 정결한 자마다 먹을 것이니라",
+      "source_text_hash": "a315a5af76c49284f3c8210b22ff2521a062f0784677d6cada6d14827c3e5146",
+      "translation_text_hash": "baaa07a26453757558b35b281729f71e3446c9fb2b15645d775005ce1542ace1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 돌릴 것이 이것이니 곧 이스라엘 자손의 드리는 거제물과 모든 요제물이라 내가 그것을 너와 네 자녀에게 영영한 응식으로 주었은즉 네 집의 정결한 자마다 먹을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "baaa07a26453757558b35b281729f71e3446c9fb2b15645d775005ce1542ace1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:12",
+      "sequence": 4270,
+      "chapter_label": "NUM 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "“I have given to you all the best of the oil, all the best of the vintage, and of the grain, the first fruits of them which they give to the LORD.",
+      "ko": "그들이 여호와께 드리는 첫 소산 곧 제일 좋은 기름과 제일 좋은 포도주와 곡식을 네게 주었은즉",
+      "source_text_hash": "c0b8e601c5f503d5c3fe2dfd474814a8e1137fb7a432283485ef1b11102a7057",
+      "translation_text_hash": "90039fa5a7549886ececd81306c08d0d11d00052799e589e00dd9e1c6c440bf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와께 드리는 첫 소산 곧 제일 좋은 기름과 제일 좋은 포도주와 곡식을 네게 주었은즉"
+      ],
+      "raw_text_hashes": [
+        "90039fa5a7549886ececd81306c08d0d11d00052799e589e00dd9e1c6c440bf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:13",
+      "sequence": 4271,
+      "chapter_label": "NUM 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "The first-ripe fruits of all that is in their land, which they bring to the LORD, shall be yours. Everyone who is clean in your house shall eat of it.",
+      "ko": "그들이 여호와께 드리는 그 땅 처음 익은 모든 열매는 네 것이니 네 집에 정결한 자마다 먹을 것이라",
+      "source_text_hash": "f2a43838190b4323d3395ee505b7267cd95dc08d12acf89e67a154d5834a8a95",
+      "translation_text_hash": "d3f30351dc0cd34c78d1a8ec93ff4c78f04c9bfb6ded0f095227555fd9aedf66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 여호와께 드리는 그 땅 처음 익은 모든 열매는 네 것이니 네 집에 정결한 자마다 먹을 것이라"
+      ],
+      "raw_text_hashes": [
+        "d3f30351dc0cd34c78d1a8ec93ff4c78f04c9bfb6ded0f095227555fd9aedf66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:14",
+      "sequence": 4272,
+      "chapter_label": "NUM 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "“Everything devoted in Israel shall be yours.",
+      "ko": "이스라엘 중에서 특별히 드린 모든 것은 네 것이 되리라",
+      "source_text_hash": "cd9f6766c6f654fa6f5116d4afa53e6f1b4ec0aaf48e60c9363071419be36ce9",
+      "translation_text_hash": "b999b5c5e7e3b350ccc7cb19f6e177d1ae2ae17debb643b5a5f47f06341e5017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 중에서 특별히 드린 모든 것은 네 것이 되리라"
+      ],
+      "raw_text_hashes": [
+        "b999b5c5e7e3b350ccc7cb19f6e177d1ae2ae17debb643b5a5f47f06341e5017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:15",
+      "sequence": 4273,
+      "chapter_label": "NUM 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Everything that opens the womb, of all flesh which they offer to the LORD, both of man and animal, shall be yours. Nevertheless, you shall surely redeem the firstborn of man, and you shall redeem the firstborn of unclean animals.",
+      "ko": "여호와께 드리는 모든 생물의 처음 나는 것은 사람이나 짐승이나 다 네 것이로되 사람의 처음 난 것은 반드시 대속할 것이요 부정한 짐승의 처음 난 것도 대속할 것이며",
+      "source_text_hash": "8c8a6c97fd274fd966551b0329859cde8771ef877aacc3749111ede3f08dbe89",
+      "translation_text_hash": "c6d06b114ac22fab64344260f2321e235efd362eca4e51847117d39cec388aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 드리는 모든 생물의 처음 나는 것은 사람이나 짐승이나 다 네 것이로되 사람의 처음 난 것은 반드시 대속할 것이요 부정한 짐승의 처음 난 것도 대속할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c6d06b114ac22fab64344260f2321e235efd362eca4e51847117d39cec388aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:16",
+      "sequence": 4274,
+      "chapter_label": "NUM 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "You shall redeem those who are to be redeemed of them from a month old, according to your estimation, for five shekels of money, according to the shekel of the sanctuary, which weighs twenty gerahs.",
+      "ko": "그 사람을 속할 때에는 난지 일개월 이후에 네가 정한대로 성소의 세겔을 따라 은 다섯 세겔로 속하라 한 세겔은 이십 게라니라",
+      "source_text_hash": "693337f5cb734ff1b90ae714d2116ba749474e552b76db0df8c9a7a52e5069d5",
+      "translation_text_hash": "d50fefd2571f60a5f3e1cde9bd06cee44827231bf96e26896ab74d504715e234",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람을 속할 때에는 난지 일개월 이후에 네가 정한대로 성소의 세겔을 따라 은 다섯 세겔로 속하라 한 세겔은 이십 게라니라"
+      ],
+      "raw_text_hashes": [
+        "d50fefd2571f60a5f3e1cde9bd06cee44827231bf96e26896ab74d504715e234"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:17",
+      "sequence": 4275,
+      "chapter_label": "NUM 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "“But you shall not redeem the firstborn of a cow, or the firstborn of a sheep, or the firstborn of a goat. They are holy. You shall sprinkle their blood on the altar, and shall burn their fat for an offering made by fire, for a pleasant aroma to the LORD.",
+      "ko": "오직 소의 처음 난 것이나 양의 처음 난 것이나 염소의 처음 난 것은 속하지 말찌니 그것들은 거룩한즉 그 피는 단에 뿌리고 그 기름은 불살라 여호와께 향기로운 화제로 드릴 것이며",
+      "source_text_hash": "46a57d711eb79da9e73659f2b4f7bae4c1a88af408fe55c714ed131469b36bbb",
+      "translation_text_hash": "b3e1f3d7c5bc7d878be8af46b4c42544c7e83cc68f7f8b04ae8d6407516a7e4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 소의 처음 난 것이나 양의 처음 난 것이나 염소의 처음 난 것은 속하지 말찌니 그것들은 거룩한즉 그 피는 단에 뿌리고 그 기름은 불살라 여호와께 향기로운 화제로 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "b3e1f3d7c5bc7d878be8af46b4c42544c7e83cc68f7f8b04ae8d6407516a7e4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:18",
+      "sequence": 4276,
+      "chapter_label": "NUM 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "Their meat shall be yours, as the wave offering breast and as the right thigh, it shall be yours.",
+      "ko": "그 고기는 네게 돌릴찌니 흔든 가슴과 우편 넓적다리 같이 네게 돌릴 것이니라",
+      "source_text_hash": "24fe8c6fa26930eb10a553c54b6355d305b6f783821f6ed05983ae153206262f",
+      "translation_text_hash": "90841a84efcdd3c7cdaa05d4405af3cacfb107639d2aec7d85c1f6a955d72ed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고기는 네게 돌릴찌니 흔든 가슴과 우편 넓적다리 같이 네게 돌릴 것이니라"
+      ],
+      "raw_text_hashes": [
+        "90841a84efcdd3c7cdaa05d4405af3cacfb107639d2aec7d85c1f6a955d72ed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:19",
+      "sequence": 4277,
+      "chapter_label": "NUM 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "All the wave offerings of the holy things which the children of Israel offer to the LORD, I have given you and your sons and your daughters with you, as a portion forever. It is a covenant of salt forever before the LORD to you and to your offspring with you.”",
+      "ko": "이스라엘 자손이 여호와께 거제로 드리는 모든 성물은 내가 영영한 응식으로 너와 네 자녀에게 주노니 이는 여호와 앞에 너와 네 후손에게 변하지 않는 소금 언약이니라",
+      "source_text_hash": "a3740de3c30c4cd369c7c9ab21ab5d6b647dc32e20cafbb03f9f7295b4acf9c1",
+      "translation_text_hash": "c7877aeb055b2077e279994622abbac104bb366fb4ea0845ee4da1142b703640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 거제로 드리는 모든 성물은 내가 영영한 응식으로 너와 네 자녀에게 주노니 이는 여호와 앞에 너와 네 후손에게 변하지 않는 소금 언약이니라"
+      ],
+      "raw_text_hashes": [
+        "c7877aeb055b2077e279994622abbac104bb366fb4ea0845ee4da1142b703640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:20",
+      "sequence": 4278,
+      "chapter_label": "NUM 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD said to Aaron, “You shall have no inheritance in their land, neither shall you have any portion among them. I am your portion and your inheritance among the children of Israel.",
+      "ko": "여호와께서 또 아론에게 이르시되 너는 이스라엘 자손의 땅의 기업도 없겠고 그들 중에 아무 분깃도 없을 것이나 나는 이스라엘 자손 중에 네 분깃이요 네 기업이니라",
+      "source_text_hash": "3563dd092a53b8d0e26f6fb3767b3b002c3fb5ead43ebd38eeb6ee2ee4c4c6c7",
+      "translation_text_hash": "02ce45745039cce6461876dda9d84d072c0d9ee67e666f7311d91a199d52039c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 아론에게 이르시되 너는 이스라엘 자손의 땅의 기업도 없겠고 그들 중에 아무 분깃도 없을 것이나 나는 이스라엘 자손 중에 네 분깃이요 네 기업이니라"
+      ],
+      "raw_text_hashes": [
+        "02ce45745039cce6461876dda9d84d072c0d9ee67e666f7311d91a199d52039c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:21",
+      "sequence": 4279,
+      "chapter_label": "NUM 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "“To the children of Levi, behold, I have given all the tithe in Israel for an inheritance, in return for their service which they serve, even the service of the Tent of Meeting.",
+      "ko": "내가 이스라엘의 십일조를 레위 자손에게 기업으로 다 주어서 그들의 하는 일 곧 회막에서 하는 일을 갚나니",
+      "source_text_hash": "4a719c76298e096eb031e0cfe08d56524d976db62a7ae37e6501cf2de57ba220",
+      "translation_text_hash": "c2d7ac0c3f2faef91bb5fa32fe542006d65a37c478399a9a6061e6ee9fd335bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘의 십일조를 레위 자손에게 기업으로 다 주어서 그들의 하는 일 곧 회막에서 하는 일을 갚나니"
+      ],
+      "raw_text_hashes": [
+        "c2d7ac0c3f2faef91bb5fa32fe542006d65a37c478399a9a6061e6ee9fd335bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:22",
+      "sequence": 4280,
+      "chapter_label": "NUM 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "Henceforth the children of Israel shall not come near the Tent of Meeting, lest they bear sin, and die.",
+      "ko": "이 후로는 이스라엘 자손이 회막에 가까이 말 것이라 죄를 당하여 죽을까 하노라",
+      "source_text_hash": "560a5b36e40c766cd2f499eb514f3bc0ff9d9b9b9c5385793dc4c8201c79137e",
+      "translation_text_hash": "ffb9de8d03a03690c26bc704b2dc8a7778de39c430df14fb41a95876d5d32fc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후로는 이스라엘 자손이 회막에 가까이 말 것이라 죄를 당하여 죽을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "ffb9de8d03a03690c26bc704b2dc8a7778de39c430df14fb41a95876d5d32fc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:23",
+      "sequence": 4281,
+      "chapter_label": "NUM 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "But the Levites shall do the service of the Tent of Meeting, and they shall bear their iniquity. It shall be a statute forever throughout your generations. Among the children of Israel, they shall have no inheritance.",
+      "ko": "오직 레위인은 회막에서 봉사하며 자기들의 죄를 담당할 것이요 이스라엘 자손 중에는 기업이 없을 것이니 이는 너희의 대대에 영원한 율례라",
+      "source_text_hash": "da2a67d7dea15bcded56b3a952b09e28087ef2a545037ee2b5c05ecd27aa5f32",
+      "translation_text_hash": "ff50704791fc53cf98f35e2ab8476a7aebcb9aa0571dab81cf4af7e877cfaa94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 레위인은 회막에서 봉사하며 자기들의 죄를 담당할 것이요 이스라엘 자손 중에는 기업이 없을 것이니 이는 너희의 대대에 영원한 율례라"
+      ],
+      "raw_text_hashes": [
+        "ff50704791fc53cf98f35e2ab8476a7aebcb9aa0571dab81cf4af7e877cfaa94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:24",
+      "sequence": 4282,
+      "chapter_label": "NUM 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "For the tithe of the children of Israel, which they offer as a wave offering to the LORD, I have given to the Levites for an inheritance. Therefore I have said to them, ‘Among the children of Israel they shall have no inheritance.’”",
+      "ko": "이스라엘 자손이 여호와께 거제로 드리는 십일조를 레위인에게 기업으로 준 고로 내가 그들에 대하여 말하기를 이스라엘 자손 중에 기업이 없을 것이라 하였노라",
+      "source_text_hash": "584f23c930f4192b1e00c6a48cb1eb280c1005432da09ae317b0b0333ff74e42",
+      "translation_text_hash": "e8c95d8ddceb2c2f8925d21f24889318dfbd7f6d5a0df0d41f42ded46c550a32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와께 거제로 드리는 십일조를 레위인에게 기업으로 준 고로 내가 그들에 대하여 말하기를 이스라엘 자손 중에 기업이 없을 것이라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "e8c95d8ddceb2c2f8925d21f24889318dfbd7f6d5a0df0d41f42ded46c550a32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:25",
+      "sequence": 4283,
+      "chapter_label": "NUM 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:26",
+      "sequence": 4284,
+      "chapter_label": "NUM 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "“Moreover you shall speak to the Levites, and tell them, ‘When you take of the children of Israel the tithe which I have given you from them for your inheritance, then you shall offer up a wave offering of it for the LORD, a tithe of the tithe.",
+      "ko": "너는 레위인에게 고하여 그에게 이르라 내가 이스라엘 자손에게 취하여 너희에게 기업으로 준 십일조를 너희가 그들에게서 취할 때에 그 십일조의 십일조를 거제로 여호와께 드릴 것이라",
+      "source_text_hash": "b76d9adc3ec413fef27837a37f6a1c9baee6eb7044d025b6a5799e575c0b040a",
+      "translation_text_hash": "8513c8a8ac0c3f05cfc0c437bd69d7ed7851cfb35b1f2d17c3cd4e21dcc88cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 레위인에게 고하여 그에게 이르라 내가 이스라엘 자손에게 취하여 너희에게 기업으로 준 십일조를 너희가 그들에게서 취할 때에 그 십일조의 십일조를 거제로 여호와께 드릴 것이라"
+      ],
+      "raw_text_hashes": [
+        "8513c8a8ac0c3f05cfc0c437bd69d7ed7851cfb35b1f2d17c3cd4e21dcc88cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:27",
+      "sequence": 4285,
+      "chapter_label": "NUM 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Your wave offering shall be credited to you, as though it were the grain of the threshing floor, and as the fullness of the wine press.",
+      "ko": "내가 너희의 거제물을 타작 마당에서 받드는 곡물과 포도즙 틀에서 받드는 즙 같이 여기리니",
+      "source_text_hash": "21f9fb733929750aefc272151dc4a67906cb765a340026ab311f56eacf2d5f60",
+      "translation_text_hash": "7a94b3ecfe2f40f936d5e8e7906ea3aa0a56dee9045566e95d72e9bff4a8fe24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 거제물을 타작 마당에서 받드는 곡물과 포도즙 틀에서 받드는 즙 같이 여기리니"
+      ],
+      "raw_text_hashes": [
+        "7a94b3ecfe2f40f936d5e8e7906ea3aa0a56dee9045566e95d72e9bff4a8fe24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:28",
+      "sequence": 4286,
+      "chapter_label": "NUM 18",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 28
+        }
+      ],
+      "en": "Thus you also shall offer a wave offering to the LORD of all your tithes, which you receive of the children of Israel; and of it you shall give the LORD’s wave offering to Aaron the priest.",
+      "ko": "너희는 이스라엘 자손에게서 받는 모든 것의 십일조 중에서 여호와께 거제로 드리고 여호와께 드린 그 거제물은 제사장 아론에게로 돌리되",
+      "source_text_hash": "542c82976a6c4c24d08e87a592851f274e18769023f15ebeab24d4343a2a3c43",
+      "translation_text_hash": "f75a9123f6d8f4bbbbb8ce3d4355faa426597982d06a5969637651b9e71bda06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이스라엘 자손에게서 받는 모든 것의 십일조 중에서 여호와께 거제로 드리고 여호와께 드린 그 거제물은 제사장 아론에게로 돌리되"
+      ],
+      "raw_text_hashes": [
+        "f75a9123f6d8f4bbbbb8ce3d4355faa426597982d06a5969637651b9e71bda06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:29",
+      "sequence": 4287,
+      "chapter_label": "NUM 18",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 29
+        }
+      ],
+      "en": "Out of all your gifts, you shall offer every wave offering to the LORD, of all its best parts, even the holy part of it.’",
+      "ko": "너희의 받은 모든 예물 중에서 너희는 그 아름다운 것 곧 거룩하게 한 부분을 취하여 여호와께 거제로 드릴찌니라",
+      "source_text_hash": "ffe0758010a9b78edda756619a396a6817eb45269ee9f71b2cae3229466a515c",
+      "translation_text_hash": "4dbc6d50dedfd1869d796590747c279099607295fc9a30d338243b96f0199d1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 받은 모든 예물 중에서 너희는 그 아름다운 것 곧 거룩하게 한 부분을 취하여 여호와께 거제로 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "4dbc6d50dedfd1869d796590747c279099607295fc9a30d338243b96f0199d1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:30",
+      "sequence": 4288,
+      "chapter_label": "NUM 18",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore you shall tell them, ‘When you heave its best from it, then it shall be credited to the Levites as the increase of the threshing floor, and as the increase of the wine press.",
+      "ko": "이러므로 너는 그들에게 이르라 너희가 그 중에서 아름다운 것을 취하여 드리고 남은 것은 너희 레위인에게는 타작 마당의 소출과 포도즙 틀의 소출 같이 되리니",
+      "source_text_hash": "829ba042e847fb0ce1310f20aa3e0a88a115a80954a76494a352110bae9b3356",
+      "translation_text_hash": "b0acad6eb3802dfb6a2597178ba26087b6c7f1efe97dbf10bf255b50db4fbd5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너는 그들에게 이르라 너희가 그 중에서 아름다운 것을 취하여 드리고 남은 것은 너희 레위인에게는 타작 마당의 소출과 포도즙 틀의 소출 같이 되리니"
+      ],
+      "raw_text_hashes": [
+        "b0acad6eb3802dfb6a2597178ba26087b6c7f1efe97dbf10bf255b50db4fbd5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:31",
+      "sequence": 4289,
+      "chapter_label": "NUM 18",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 31
+        }
+      ],
+      "en": "You may eat it anywhere, you and your households, for it is your reward in return for your service in the Tent of Meeting.",
+      "ko": "너희와 너희 권속이 어디서든지 이것을 먹을 수 있음은 이는 회막에서 일한 너희의 보수임이니라",
+      "source_text_hash": "3b23153675efc4caebefbfef393c9fb38c54328a73259de24dce08a74d95f52b",
+      "translation_text_hash": "b778c5c2e8a73074df20acca8e8a70011d5de42d2c02dc01c7eaa9641b4ec049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희와 너희 권속이 어디서든지 이것을 먹을 수 있음은 이는 회막에서 일한 너희의 보수임이니라"
+      ],
+      "raw_text_hashes": [
+        "b778c5c2e8a73074df20acca8e8a70011d5de42d2c02dc01c7eaa9641b4ec049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:18:32",
+      "sequence": 4290,
+      "chapter_label": "NUM 18",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 18,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 18,
+          "verse": 32
+        }
+      ],
+      "en": "You shall bear no sin by reason of it, when you have heaved from it its best. You shall not profane the holy things of the children of Israel, that you not die.’”",
+      "ko": "너희가 그중 아름다운 것을 받들어 드린즉 이로 인하여 죄를 지지 아니할 것이라 너희는 이스라엘 자손의 성물을 더럽히지 말라 그리하면 죽지 아니하리라",
+      "source_text_hash": "8908594f5c20e65eabb9b43ac293e615b27e55f21991badeab2ce6564ee3739b",
+      "translation_text_hash": "63673ac3d5e4da02aa9cca39b594ae5e186c52caa8dc461b73a2f33284000783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그중 아름다운 것을 받들어 드린즉 이로 인하여 죄를 지지 아니할 것이라 너희는 이스라엘 자손의 성물을 더럽히지 말라 그리하면 죽지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "63673ac3d5e4da02aa9cca39b594ae5e186c52caa8dc461b73a2f33284000783"
+      ]
+    }
+  ]
+}

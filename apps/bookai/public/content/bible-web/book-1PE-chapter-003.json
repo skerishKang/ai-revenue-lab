@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1PE:chapter:003",
+  "unit_ordinal": 1154,
+  "unit_label": "1PE 3",
+  "book_code": "1PE",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1PE:3:1",
+      "sequence": 30422,
+      "chapter_label": "1PE 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "In the same way, wives, be in subjection to your own husbands, so that, even if any don’t obey the Word, they may be won by the behavior of their wives without a word,",
+      "ko": "아내 된 자들아 이와 같이 자기 남편에게 순복하라 이는 혹 도를 순종치 않는 자라도 말로 말미암지 않고 그 아내의 행위로 말미암아 구원을 얻게 하려 함이니",
+      "source_text_hash": "c1362e21f3887261ef415dddef48133e74d8d81cc8ad0f10e716686b92481da7",
+      "translation_text_hash": "8f81f0f851f60ab446a33280c7f611cd1dcd89afeac0213dd626f432d88c4d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아내 된 자들아 이와 같이 자기 남편에게 순복하라 이는 혹 도를 순종치 않는 자라도 말로 말미암지 않고 그 아내의 행위로 말미암아 구원을 얻게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "8f81f0f851f60ab446a33280c7f611cd1dcd89afeac0213dd626f432d88c4d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:2",
+      "sequence": 30423,
+      "chapter_label": "1PE 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "seeing your pure behavior in fear.",
+      "ko": "너희의 두려워하며 정결한 행위를 봄이라",
+      "source_text_hash": "5dbf8e73cbf222e9c8865962c24e06c3871e879df8d1e1af88071b882b4d78ca",
+      "translation_text_hash": "55279cb9043a5121ee91b6393ed221647b0b54399e128947dac6322751d50998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 두려워하며 정결한 행위를 봄이라"
+      ],
+      "raw_text_hashes": [
+        "55279cb9043a5121ee91b6393ed221647b0b54399e128947dac6322751d50998"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:3",
+      "sequence": 30424,
+      "chapter_label": "1PE 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Let your beauty come not from the outward adorning of braiding your hair, and of wearing gold ornaments or of putting on fine clothing,",
+      "ko": "너희 단장은 머리를 꾸미고 금을 차고 아름다운 옷을 입는 외모로 하지 말고",
+      "source_text_hash": "f9f0d6a432972c0e242856cfbcd41c15573c5bdc3649d8e2bed49d0a771752f8",
+      "translation_text_hash": "3842c14b427796a6c084d8fdef5e941e8f25211a6d1bc2edd7aaccd4503cd823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 단장은 머리를 꾸미고 금을 차고 아름다운 옷을 입는 외모로 하지 말고"
+      ],
+      "raw_text_hashes": [
+        "3842c14b427796a6c084d8fdef5e941e8f25211a6d1bc2edd7aaccd4503cd823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:4",
+      "sequence": 30425,
+      "chapter_label": "1PE 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "but from the hidden person of the heart, in the incorruptible adornment of a gentle and quiet spirit, which is very precious in God’s sight.",
+      "ko": "오직 마음에 숨은 사람을 온유하고 안정한 심령의 썩지 아니할 것으로 하라 이는 하나님 앞에 값진 것이니라",
+      "source_text_hash": "06483c84c0db8aa128a63a1c81a95739aaaca71d673e035558c77f35470e52ec",
+      "translation_text_hash": "d96cf9547050225a522ab1db8d522dffb8f6b0509ee67919cfca4d4d5748917f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 마음에 숨은 사람을 온유하고 안정한 심령의 썩지 아니할 것으로 하라 이는 하나님 앞에 값진 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d96cf9547050225a522ab1db8d522dffb8f6b0509ee67919cfca4d4d5748917f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:5",
+      "sequence": 30426,
+      "chapter_label": "1PE 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "For this is how in the past the holy women who hoped in God also adorned themselves, being in subjection to their own husbands.",
+      "ko": "전에 하나님께 소망을 두었던 거룩한 부녀들도 이와 같이 자기 남편에게 순복함으로 자기를 단장하였나니",
+      "source_text_hash": "e5cfe07c4640232ba7f0985ce8578f1c0c83e45f8a866dee8d50515c406c869b",
+      "translation_text_hash": "fe7febca853e700fd98d856517f4604df1597f778b34367073b2183016c3207a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 하나님께 소망을 두었던 거룩한 부녀들도 이와 같이 자기 남편에게 순복함으로 자기를 단장하였나니"
+      ],
+      "raw_text_hashes": [
+        "fe7febca853e700fd98d856517f4604df1597f778b34367073b2183016c3207a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:6",
+      "sequence": 30427,
+      "chapter_label": "1PE 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "So Sarah obeyed Abraham, calling him lord, whose children you now are if you do well and are not put in fear by any terror.",
+      "ko": "사라가 아브라함을 주라 칭하여 복종한 것 같이 너희가 선을 행하고 아무 두려운 일에도 놀라지 아니함으로 그의 딸이 되었느니라",
+      "source_text_hash": "6b6756d048a681e67ac2b7024f72fd22f7504db1f177d605b967cd57a7dd67bf",
+      "translation_text_hash": "73d9545cc1cbe7868b8f4d56565c20ccb8fbdaa16f8afe5a4d8942f8eb1a83dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 아브라함을 주라 칭하여 복종한 것 같이 너희가 선을 행하고 아무 두려운 일에도 놀라지 아니함으로 그의 딸이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "73d9545cc1cbe7868b8f4d56565c20ccb8fbdaa16f8afe5a4d8942f8eb1a83dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:7",
+      "sequence": 30428,
+      "chapter_label": "1PE 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "You husbands, in the same way, live with your wives according to knowledge, giving honor to the woman as to the weaker vessel, as also being joint heirs of the grace of life, that your prayers may not be hindered.",
+      "ko": "남편 된 자들아 이와 같이 지식을 따라 너희 아내와 동거하고 저는 더 연약한 그릇이요 또 생명의 은혜를 유업으로 함께 받을 자로 알아 귀히 여기라 이는 너희 기도가 막히지 아니하게 하려 함이라",
+      "source_text_hash": "910dee300496f145b5e73914b6d3b8387fb9d1940ad2a090b35c0c083e135a8f",
+      "translation_text_hash": "e88f1176aa999e10a6e1c847721bbc3dbc52c5944786fd8e52cb35f95a862672",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편 된 자들아 이와 같이 지식을 따라 너희 아내와 동거하고 저는 더 연약한 그릇이요 또 생명의 은혜를 유업으로 함께 받을 자로 알아 귀히 여기라 이는 너희 기도가 막히지 아니하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "e88f1176aa999e10a6e1c847721bbc3dbc52c5944786fd8e52cb35f95a862672"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:8",
+      "sequence": 30429,
+      "chapter_label": "1PE 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Finally, all of you be like-minded, compassionate, loving as brothers, tenderhearted, courteous,",
+      "ko": "마지막으로 말하노니 너희가 다 마음을 같이 하여 체휼하며 형제를 사랑하며 불쌍히 여기며 겸손하며",
+      "source_text_hash": "c5b6642cb6c59ad73891481f30cbf16d8881e8d5dbc6e211c6d956ee613fa605",
+      "translation_text_hash": "772b307a95c684a6341d79161311c6681b102b3f9372eebd4801bdd46cafc1fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마지막으로 말하노니 너희가 다 마음을 같이 하여 체휼하며 형제를 사랑하며 불쌍히 여기며 겸손하며"
+      ],
+      "raw_text_hashes": [
+        "772b307a95c684a6341d79161311c6681b102b3f9372eebd4801bdd46cafc1fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:9",
+      "sequence": 30430,
+      "chapter_label": "1PE 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "not rendering evil for evil or insult for insult; but instead blessing, knowing that you were called to this, that you may inherit a blessing.",
+      "ko": "악을 악으로, 욕을 욕으로 갚지 말고 도리어 복을 빌라 이를 위하여 너희가 부르심을 입었으니 이는 복을 유업으로 받게 하려 하심이라",
+      "source_text_hash": "fba63abac37eae5b58ddfbac5203a3ccd3bc491ef7c7c32750841264108ddf3a",
+      "translation_text_hash": "7c1be77e83c54acc17a01d0226aed114c326b6deb81b1408dbe823bd6137ef0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 악으로, 욕을 욕으로 갚지 말고 도리어 복을 빌라 이를 위하여 너희가 부르심을 입었으니 이는 복을 유업으로 받게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "7c1be77e83c54acc17a01d0226aed114c326b6deb81b1408dbe823bd6137ef0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:10",
+      "sequence": 30431,
+      "chapter_label": "1PE 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "For, “He who would love life and see good days, let him keep his tongue from evil and his lips from speaking deceit.",
+      "ko": "그러므로 생명을 사랑하고 좋은 날 보기를 원하는 자는 혀를 금하여 악한 말을 그치며 그 입술로 궤휼을 말하지 말고",
+      "source_text_hash": "6887084dfbab0f902525c3a2d4416abb33b71252a1bc605dda3dad671711b46b",
+      "translation_text_hash": "bfacc32a844867692bb2b84ec9f028ea7e37c9d20d4c742b4b4f4b2741a19052",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 생명을 사랑하고 좋은 날 보기를 원하는 자는 혀를 금하여 악한 말을 그치며 그 입술로 궤휼을 말하지 말고"
+      ],
+      "raw_text_hashes": [
+        "bfacc32a844867692bb2b84ec9f028ea7e37c9d20d4c742b4b4f4b2741a19052"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:11",
+      "sequence": 30432,
+      "chapter_label": "1PE 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Let him turn away from evil and do good. Let him seek peace and pursue it.",
+      "ko": "악에서 떠나 선을 행하고 화평을 구하여 이를 좇으라",
+      "source_text_hash": "d9d635dedd07b57b6dbdd401c4abce7b091c6e121bc3e7e0fda3d1baecefc3ce",
+      "translation_text_hash": "d7f4f38a18b23abf6ec37cf0a9c8aa9ecd3772f38907934aafb40353a2143cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악에서 떠나 선을 행하고 화평을 구하여 이를 좇으라"
+      ],
+      "raw_text_hashes": [
+        "d7f4f38a18b23abf6ec37cf0a9c8aa9ecd3772f38907934aafb40353a2143cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:12",
+      "sequence": 30433,
+      "chapter_label": "1PE 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "For the eyes of the Lord are on the righteous, and his ears open to their prayer; but the face of the Lord is against those who do evil.”",
+      "ko": "주의 눈은 의인을 향하시고 그의 귀는 저의 간구에 기울이시되 주의 낯은 악행하는 자들을 향하시느니라 하였느니라",
+      "source_text_hash": "403e976cf02664131bb15c0e4b4c2ea477cc0400457628d555f603e60e88c266",
+      "translation_text_hash": "f53f14d3d86f4f89f51303903ecfe18b13032c2c3c1c4509c59ba78a7ed38a0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 눈은 의인을 향하시고 그의 귀는 저의 간구에 기울이시되 주의 낯은 악행하는 자들을 향하시느니라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "f53f14d3d86f4f89f51303903ecfe18b13032c2c3c1c4509c59ba78a7ed38a0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:13",
+      "sequence": 30434,
+      "chapter_label": "1PE 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Now who will harm you if you become imitators of that which is good?",
+      "ko": "또 너희가 열심으로 선을 행하면 누가 너희를 해하리요",
+      "source_text_hash": "2ba43dc181a8b4920a60e813af5e0cdab744348fc14d1e664241f9c5c2072091",
+      "translation_text_hash": "9605fd25f19df8bd1fb8d9e67be7ea1659932a2fc1502dbf7c5816c1579936be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 열심으로 선을 행하면 누가 너희를 해하리요"
+      ],
+      "raw_text_hashes": [
+        "9605fd25f19df8bd1fb8d9e67be7ea1659932a2fc1502dbf7c5816c1579936be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:14",
+      "sequence": 30435,
+      "chapter_label": "1PE 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "But even if you should suffer for righteousness’ sake, you are blessed. “Don’t fear what they fear, neither be troubled.”",
+      "ko": "그러나 의를 위하여 고난을 받으면 복 있는 자니 저희의 두려워함을 두려워 말며 소동치 말고",
+      "source_text_hash": "2d7c03292f4244dc2f49f610e23ed062e33ab551549a56118bca61efd15cbb53",
+      "translation_text_hash": "ce96e8c38fc700f615c75cdd2d26e4bfddabdf3574ccb933a8c36c3141f69043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 의를 위하여 고난을 받으면 복 있는 자니 저희의 두려워함을 두려워 말며 소동치 말고"
+      ],
+      "raw_text_hashes": [
+        "ce96e8c38fc700f615c75cdd2d26e4bfddabdf3574ccb933a8c36c3141f69043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:15",
+      "sequence": 30436,
+      "chapter_label": "1PE 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "But sanctify the Lord God in your hearts. Always be ready to give an answer to everyone who asks you a reason concerning the hope that is in you, with humility and fear,",
+      "ko": "너희 마음에 그리스도를 주로 삼아 거룩하게 하고 너희 속에 있는 소망에 관한 이유를 묻는 자에게는 대답할 것을 항상 예비하되 온유와 두려움으로 하고",
+      "source_text_hash": "760af8e26931aedac1306d4c790a99463b841cced5f25811caeebac07afbad5c",
+      "translation_text_hash": "522d8a8b51d63fee8d9c9d0dad7ea71810e251b6f5691c832d0706d7ccc9959c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음에 그리스도를 주로 삼아 거룩하게 하고 너희 속에 있는 소망에 관한 이유를 묻는 자에게는 대답할 것을 항상 예비하되 온유와 두려움으로 하고"
+      ],
+      "raw_text_hashes": [
+        "522d8a8b51d63fee8d9c9d0dad7ea71810e251b6f5691c832d0706d7ccc9959c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:16",
+      "sequence": 30437,
+      "chapter_label": "1PE 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "having a good conscience. Thus, while you are spoken against as evildoers, they may be disappointed who curse your good way of life in Christ.",
+      "ko": "선한 양심을 가지라 이는 그리스도 안에 있는 너희의 선행을 욕하는 자들로 그 비방하는 일에 부끄러움을 당하게 하려 함이라",
+      "source_text_hash": "3b0158896d00bc88d83e3fb9badfb3c6cec8de986ab062ae7356184f40efb622",
+      "translation_text_hash": "b386706dee83d85c17446597a099d358f9c3cdad8dea848be735b56f9a661eb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 양심을 가지라 이는 그리스도 안에 있는 너희의 선행을 욕하는 자들로 그 비방하는 일에 부끄러움을 당하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "b386706dee83d85c17446597a099d358f9c3cdad8dea848be735b56f9a661eb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:17",
+      "sequence": 30438,
+      "chapter_label": "1PE 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "For it is better, if it is God’s will, that you suffer for doing what is right than for doing evil.",
+      "ko": "선을 행함으로 고난 받는 것이 하나님의 뜻일찐대 악을 행함으로 고난 받는 것보다 나으니라",
+      "source_text_hash": "c00e6b4782c90a3a55cad5da3395456fe4b86b84fc6fbe1e5b0edb2db0418225",
+      "translation_text_hash": "4b09d28d1b7deb6edfde74a0a268139c7b3fed00175a42635f6785eaf7dad552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선을 행함으로 고난 받는 것이 하나님의 뜻일찐대 악을 행함으로 고난 받는 것보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "4b09d28d1b7deb6edfde74a0a268139c7b3fed00175a42635f6785eaf7dad552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:18",
+      "sequence": 30439,
+      "chapter_label": "1PE 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Because Christ also suffered for sins once, the righteous for the unrighteous, that he might bring you to God, being put to death in the flesh, but made alive in the Spirit,",
+      "ko": "그리스도께서도 한번 죄를 위하여 죽으사 의인으로서 불의한 자를 대신하셨으니 이는 우리를 하나님 앞으로 인도하려 하심이라 육체로는 죽임을 당하시고 영으로는 살리심을 받으셨으니",
+      "source_text_hash": "3193b60c6c0534f644636bc384eba7bc724d55914c62d7424077da4310d78126",
+      "translation_text_hash": "f42a66c9d08ff03f0213d390e4ce606a3b0bce59ac7bbacaae6714d11ec3201c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서도 한번 죄를 위하여 죽으사 의인으로서 불의한 자를 대신하셨으니 이는 우리를 하나님 앞으로 인도하려 하심이라 육체로는 죽임을 당하시고 영으로는 살리심을 받으셨으니"
+      ],
+      "raw_text_hashes": [
+        "f42a66c9d08ff03f0213d390e4ce606a3b0bce59ac7bbacaae6714d11ec3201c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:19",
+      "sequence": 30440,
+      "chapter_label": "1PE 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "in whom he also went and preached to the spirits in prison,",
+      "ko": "저가 또한 영으로 옥에 있는 영들에게 전파하시니라",
+      "source_text_hash": "d6d5012ec6a1c1b31804a9e34a3e6bbee01dd36911e131ea949774fe5681eaca",
+      "translation_text_hash": "99de8146363589cbdb7f261064e218a1a9d5771db098ff5e22e5ce5b50c6b154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또한 영으로 옥에 있는 영들에게 전파하시니라"
+      ],
+      "raw_text_hashes": [
+        "99de8146363589cbdb7f261064e218a1a9d5771db098ff5e22e5ce5b50c6b154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:20",
+      "sequence": 30441,
+      "chapter_label": "1PE 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "who before were disobedient when God waited patiently in the days of Noah while the ship was being built. In it, few, that is, eight souls, were saved through water.",
+      "ko": "그들은 전에 노아의 날 방주 예비할 동안 하나님이 오래 참고 기다리실 때에 순종치 아니하던 자들이라 방주에서 물로 말미암아 구원을 얻은 자가 몇명 뿐이니 겨우 여덟 명이라",
+      "source_text_hash": "1161990c9b6c7c55303312f260743d5841cd2f06cb68cd34420c0a9608f3c865",
+      "translation_text_hash": "730dcb5d1c9891178025dfdaf44e9c23f558206e3fdea853af6541cf07fd16f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 전에 노아의 날 방주 예비할 동안 하나님이 오래 참고 기다리실 때에 순종치 아니하던 자들이라 방주에서 물로 말미암아 구원을 얻은 자가 몇명 뿐이니 겨우 여덟 명이라"
+      ],
+      "raw_text_hashes": [
+        "730dcb5d1c9891178025dfdaf44e9c23f558206e3fdea853af6541cf07fd16f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:21",
+      "sequence": 30442,
+      "chapter_label": "1PE 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "This is a symbol of baptism, which now saves you—not the putting away of the filth of the flesh, but the answer of a good conscience toward God—through the resurrection of Jesus Christ,",
+      "ko": "물은 예수 그리스도의 부활하심으로 말미암아 이제 너희를 구원하는 표니 곧 세례라 육체의 더러운 것을 제하여 버림이 아니요 오직 선한 양심이 하나님을 향하여 찾아가는 것이라",
+      "source_text_hash": "d8bf6ba12aa2334ec1f76ebe86a9df98c96bf165505f855c6dd03fba45210fa4",
+      "translation_text_hash": "6cacdc4bd664a142424b8243ed41cdc63280706dfaa92f79f0ab7fe3062be828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물은 예수 그리스도의 부활하심으로 말미암아 이제 너희를 구원하는 표니 곧 세례라 육체의 더러운 것을 제하여 버림이 아니요 오직 선한 양심이 하나님을 향하여 찾아가는 것이라"
+      ],
+      "raw_text_hashes": [
+        "6cacdc4bd664a142424b8243ed41cdc63280706dfaa92f79f0ab7fe3062be828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1PE:3:22",
+      "sequence": 30443,
+      "chapter_label": "1PE 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "1PE",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1PE",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "who is at the right hand of God, having gone into heaven, angels and authorities and powers being made subject to him.",
+      "ko": "저는 하늘에 오르사 하나님 우편에 계시니 천사들과 권세들과 능력들이 저에게 순복하느니라",
+      "source_text_hash": "14412d5f37d80074aec641f9b746b4f15b1733e0ec22464a9731c91b20adb33c",
+      "translation_text_hash": "791320519eb694717be66627b73f5eed9b7fc9217732d4afdf9e1907762983c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 하늘에 오르사 하나님 우편에 계시니 천사들과 권세들과 능력들이 저에게 순복하느니라"
+      ],
+      "raw_text_hashes": [
+        "791320519eb694717be66627b73f5eed9b7fc9217732d4afdf9e1907762983c3"
+      ]
+    }
+  ]
+}

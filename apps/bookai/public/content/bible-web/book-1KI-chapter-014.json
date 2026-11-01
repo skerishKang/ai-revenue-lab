@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:014",
+  "unit_ordinal": 305,
+  "unit_label": "1KI 14",
+  "book_code": "1KI",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:14:1",
+      "sequence": 9220,
+      "chapter_label": "1KI 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "At that time Abijah the son of Jeroboam became sick.",
+      "ko": "그 때에 여로보암의 아들 아비야가 병든지라",
+      "source_text_hash": "7e1281b5834ae468e64fa634d26701dd6948d75bc01b707f26f4e27b2903309c",
+      "translation_text_hash": "a473fa3ad6a41c5a4b03865134662f3ab818ef5b01240930e7b47fad44ac777b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여로보암의 아들 아비야가 병든지라"
+      ],
+      "raw_text_hashes": [
+        "a473fa3ad6a41c5a4b03865134662f3ab818ef5b01240930e7b47fad44ac777b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:2",
+      "sequence": 9221,
+      "chapter_label": "1KI 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "Jeroboam said to his wife, “Please get up and disguise yourself, so that you won’t be recognized as Jeroboam’s wife. Go to Shiloh. Behold, Ahijah the prophet is there, who said that I would be king over this people.",
+      "ko": "여로보암이 그 아내에게 이르되 청컨대 일어나 변장하여 사람으로 그대가 여로보암의 아내임을 알지 못하게 하고 실로로 가라 거기 선지자 아히야가 있나니 저는 이전에 내가 이 백성의 왕이 될 것을 내게 고한 사람이니라",
+      "source_text_hash": "9abbd59f4caf36cf706e138f10e59f56031a2f76db4d32996c0b3c270dcc6b73",
+      "translation_text_hash": "248eb85add8b27a31cd7b63fa849b4118845f3ca71c32dad02ab8134a11591e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 그 아내에게 이르되 청컨대 일어나 변장하여 사람으로 그대가 여로보암의 아내임을 알지 못하게 하고 실로로 가라 거기 선지자 아히야가 있나니 저는 이전에 내가 이 백성의 왕이 될 것을 내게 고한 사람이니라"
+      ],
+      "raw_text_hashes": [
+        "248eb85add8b27a31cd7b63fa849b4118845f3ca71c32dad02ab8134a11591e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:3",
+      "sequence": 9222,
+      "chapter_label": "1KI 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Take with you ten loaves of bread, some cakes, and a jar of honey, and go to him. He will tell you what will become of the child.”",
+      "ko": "그대의 손에 떡 열과 과자와 꿀 한 병을 가지고 그에게로 가라 저가 그대에게 이 아이의 어떻게 될 것을 알게 하리라",
+      "source_text_hash": "28b4be6219e1c79e994d9129d7617aa9756f72d700ff8c55371a65cf88d5acf6",
+      "translation_text_hash": "aa2b662d107e48f0e89a9fc3a528e834b0675a44e2c7ae27120f9915966ea452",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대의 손에 떡 열과 과자와 꿀 한 병을 가지고 그에게로 가라 저가 그대에게 이 아이의 어떻게 될 것을 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "aa2b662d107e48f0e89a9fc3a528e834b0675a44e2c7ae27120f9915966ea452"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:4",
+      "sequence": 9223,
+      "chapter_label": "1KI 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Jeroboam’s wife did so, and arose and went to Shiloh, and came to Ahijah’s house. Now Ahijah could not see, for his eyes were set by reason of his age.",
+      "ko": "여로보암의 아내가 그대로 하여 일어나 실로로 가서 아히야의 집에 이르니 아히야는 나이로 인하여 눈이 어두워 보지 못하더라",
+      "source_text_hash": "323b70b30d959589d8ddf66fb385d0eee51f7fd029ac06ad0b2c1b2da9a699a5",
+      "translation_text_hash": "3b7cac6a484667ded5ac38c6a932f496535741cff011b71b5935d1e769e3fac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암의 아내가 그대로 하여 일어나 실로로 가서 아히야의 집에 이르니 아히야는 나이로 인하여 눈이 어두워 보지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "3b7cac6a484667ded5ac38c6a932f496535741cff011b71b5935d1e769e3fac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:5",
+      "sequence": 9224,
+      "chapter_label": "1KI 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD said to Ahijah, “Behold, Jeroboam’s wife is coming to inquire of you concerning her son, for he is sick. Tell her such and such; for it will be, when she comes in, that she will pretend to be another woman.”",
+      "ko": "여호와께서 아히야에게 이르시되 여로보암의 아내가 그 아들이 병듦을 인하여 네게 물으러 오나니 너는 이리이리 대답하라 저가 들어올 때에 다른 사람인체 함이니라",
+      "source_text_hash": "7e83a5a9d11829c5cedf8fdbaf33bf1038ff962c0e9b7d1fb7806a3378a6ad99",
+      "translation_text_hash": "2a0a3a7d6e83c52df4818127443e99f81796cf4ee2e7cc719b679b985d263b3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아히야에게 이르시되 여로보암의 아내가 그 아들이 병듦을 인하여 네게 물으러 오나니 너는 이리이리 대답하라 저가 들어올 때에 다른 사람인체 함이니라"
+      ],
+      "raw_text_hashes": [
+        "2a0a3a7d6e83c52df4818127443e99f81796cf4ee2e7cc719b679b985d263b3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:6",
+      "sequence": 9225,
+      "chapter_label": "1KI 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "So when Ahijah heard the sound of her feet as she came in at the door, he said, “Come in, Jeroboam’s wife! Why do you pretend to be another? For I am sent to you with heavy news.",
+      "ko": "저가 문으로 들어올 때에 아히야가 그 발소리를 듣고 말하되 여로보암의 처여 들어오라 네가 어찌하여 다른 사람인체 하느뇨 내가 명령을 받아 흉한 일로 네게 고하리니",
+      "source_text_hash": "4f4e2db49e857c7d80aa8bde8838814b4cc1f8742f2e931b6b4d065aee4b4094",
+      "translation_text_hash": "ca827fe73e4795f16141c9f4e8b2e4e1759f8b3e61e1ba8b5298e8b57ec025e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 문으로 들어올 때에 아히야가 그 발소리를 듣고 말하되 여로보암의 처여 들어오라 네가 어찌하여 다른 사람인체 하느뇨 내가 명령을 받아 흉한 일로 네게 고하리니"
+      ],
+      "raw_text_hashes": [
+        "ca827fe73e4795f16141c9f4e8b2e4e1759f8b3e61e1ba8b5298e8b57ec025e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:7",
+      "sequence": 9226,
+      "chapter_label": "1KI 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Go, tell Jeroboam, ‘The LORD, the God of Israel, says: “Because I exalted you from among the people, and made you prince over my people Israel,",
+      "ko": "가서 여로보암에게 고하라 이스라엘 하나님 여호와의 말씀이 내가 너를 백성 중에서 들어 내 백성 이스라엘의 주권자가 되게 하고",
+      "source_text_hash": "bfb49cf23d10af2c4e8a5a4b0bac67726a849bdbe141b514638769ed74f44f17",
+      "translation_text_hash": "f5645bc2ca4f61dd501cb4c9e60a45f470e572892d5cb81a1121f1fada568db3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 여로보암에게 고하라 이스라엘 하나님 여호와의 말씀이 내가 너를 백성 중에서 들어 내 백성 이스라엘의 주권자가 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "f5645bc2ca4f61dd501cb4c9e60a45f470e572892d5cb81a1121f1fada568db3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:8",
+      "sequence": 9227,
+      "chapter_label": "1KI 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "and tore the kingdom away from David’s house, and gave it to you; and yet you have not been as my servant David, who kept my commandments, and who followed me with all his heart, to do that only which was right in my eyes,",
+      "ko": "나라를 다윗의 집에서 찢어 내어 네게 주었거늘 너는 내 종 다윗이 나의 명령을 지켜 전심으로 나를 좇으며 나 보기에 정직한 일만 행하였음과 같지 아니하고",
+      "source_text_hash": "f0915830a7b6c6d54428c781ff3c2475385b430d57899130355d4cf42e2d08b9",
+      "translation_text_hash": "6ba048342e422049764cd98423134246a665f5e7faac1f54204d8a194434557e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라를 다윗의 집에서 찢어 내어 네게 주었거늘 너는 내 종 다윗이 나의 명령을 지켜 전심으로 나를 좇으며 나 보기에 정직한 일만 행하였음과 같지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "6ba048342e422049764cd98423134246a665f5e7faac1f54204d8a194434557e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:9",
+      "sequence": 9228,
+      "chapter_label": "1KI 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "but have done evil above all who were before you, and have gone and made for yourself other gods, molten images, to provoke me to anger, and have cast me behind your back,",
+      "ko": "너의 이전 사람들보다도 악을 행하고 가서 너를 위하여 다른 신을 만들며 우상을 부어만들어 나의 노를 격발하고 나를 네 등 뒤에 버렸도다",
+      "source_text_hash": "c309711e2b434440dbcda787b17946b0faaf9941cadf6ce384c33a5c99f5bbf2",
+      "translation_text_hash": "24d09e0354e15efa5f766a2b9fe47baa9958c39f0cdbdaa4731ea1b2eeb5d41a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 이전 사람들보다도 악을 행하고 가서 너를 위하여 다른 신을 만들며 우상을 부어만들어 나의 노를 격발하고 나를 네 등 뒤에 버렸도다"
+      ],
+      "raw_text_hashes": [
+        "24d09e0354e15efa5f766a2b9fe47baa9958c39f0cdbdaa4731ea1b2eeb5d41a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:10",
+      "sequence": 9229,
+      "chapter_label": "1KI 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "therefore, behold, I will bring evil on the house of Jeroboam, and will cut off from Jeroboam everyone who urinates on a wall, he who is shut up and he who is left at large in Israel, and will utterly sweep away the house of Jeroboam, as a man sweeps away dung until it is all gone.",
+      "ko": "그러므로 내가 여로보암의 집에 재앙을 내려 여로보암에게 속한 사내는 이스라엘 가운데 매인 자나 놓인 자나 다 끊어 버리되 거름을 쓸어 버림 같이 여로보암의 집을 말갛게 쓸어 버릴찌라",
+      "source_text_hash": "5c5cc6c9b9d36ca192de98ec2035331923c532f6a6320dd951681618e10755a8",
+      "translation_text_hash": "1413a3ccf8b5d3c4d7e48fa8e42974465e0c3e5e088d5e5a9f77cfe3d82d6629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 여로보암의 집에 재앙을 내려 여로보암에게 속한 사내는 이스라엘 가운데 매인 자나 놓인 자나 다 끊어 버리되 거름을 쓸어 버림 같이 여로보암의 집을 말갛게 쓸어 버릴찌라"
+      ],
+      "raw_text_hashes": [
+        "1413a3ccf8b5d3c4d7e48fa8e42974465e0c3e5e088d5e5a9f77cfe3d82d6629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:11",
+      "sequence": 9230,
+      "chapter_label": "1KI 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "The dogs will eat whoever belongs to Jeroboam who dies in the city; and the birds of the sky will eat whoever dies in the field, for the LORD has spoken it.”’",
+      "ko": "여로보암에게 속한 자가 성에서 죽은즉 개가 먹고 들에서 죽은즉 공중의 새가 먹으리니 이는 여호와가 말하였음이니라 하셨나니",
+      "source_text_hash": "c002870618e1a97eb36323816c6cccafbe6dd654366d63bacf491e8f2d4f33c7",
+      "translation_text_hash": "6ee21f87e59813b8263eb9cfabcefbc0834b88a20a6f20ee2d89bd180f647210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암에게 속한 자가 성에서 죽은즉 개가 먹고 들에서 죽은즉 공중의 새가 먹으리니 이는 여호와가 말하였음이니라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "6ee21f87e59813b8263eb9cfabcefbc0834b88a20a6f20ee2d89bd180f647210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:12",
+      "sequence": 9231,
+      "chapter_label": "1KI 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Arise therefore, and go to your house. When your feet enter into the city, the child will die.",
+      "ko": "너는 일어나 네 집으로 가라 네 발이 성에 들어갈 때에 그 아이가 죽을찌라",
+      "source_text_hash": "9c4643fc04303ddb981b8e311db24b707721d2da6ea01c9964187fc045bc5ca2",
+      "translation_text_hash": "0c0d9e4237966a0e2c4a8dd45221356a20c1e68772da444545848cdd46bca5a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나 네 집으로 가라 네 발이 성에 들어갈 때에 그 아이가 죽을찌라"
+      ],
+      "raw_text_hashes": [
+        "0c0d9e4237966a0e2c4a8dd45221356a20c1e68772da444545848cdd46bca5a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:13",
+      "sequence": 9232,
+      "chapter_label": "1KI 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "All Israel will mourn for him and bury him; for he only of Jeroboam will come to the grave, because in him there is found some good thing toward the LORD, the God of Israel, in the house of Jeroboam.",
+      "ko": "온 이스라엘이 저를 위하여 슬퍼하며 장사하려니와 여로보암에게 속한 자는 오직 이 아이만 묘실에 들어가리니 이는 여로보암의 집 가운데서 저가 이스라엘 하나님 여호와를 향하여 선한 뜻을 품었음이니라",
+      "source_text_hash": "5b9534af4ab685ac27f03b6d4525b33f84bfb144171b25c1cb56a2c3b0aad951",
+      "translation_text_hash": "fd92d8258d1c896818d0eb3a3205db2da6094e0905d5b2682e6fb3de5126f544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 저를 위하여 슬퍼하며 장사하려니와 여로보암에게 속한 자는 오직 이 아이만 묘실에 들어가리니 이는 여로보암의 집 가운데서 저가 이스라엘 하나님 여호와를 향하여 선한 뜻을 품었음이니라"
+      ],
+      "raw_text_hashes": [
+        "fd92d8258d1c896818d0eb3a3205db2da6094e0905d5b2682e6fb3de5126f544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:14",
+      "sequence": 9233,
+      "chapter_label": "1KI 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "Moreover the LORD will raise up a king for himself over Israel who will cut off the house of Jeroboam. This is the day! What? Even now.",
+      "ko": "여호와께서 이스라엘의 위에 한 왕을 일으키신즉 저가 그 날에 여로보암의 집을 끊어 버리리라 어느 때냐 곧 이제라",
+      "source_text_hash": "bbbc44bd1aaff0ac280ccf8d2de729ecc5e7d340c6e15442b2d006ffb85c4d6f",
+      "translation_text_hash": "5388bf06c2ea6644eab7517661c47b4906d0b32265ac1706451475a6083ee13e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘의 위에 한 왕을 일으키신즉 저가 그 날에 여로보암의 집을 끊어 버리리라 어느 때냐 곧 이제라"
+      ],
+      "raw_text_hashes": [
+        "5388bf06c2ea6644eab7517661c47b4906d0b32265ac1706451475a6083ee13e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:15",
+      "sequence": 9234,
+      "chapter_label": "1KI 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "For the LORD will strike Israel, as a reed is shaken in the water; and he will root up Israel out of this good land which he gave to their fathers, and will scatter them beyond the River, because they have made their Asherah poles, provoking the LORD to anger.",
+      "ko": "여호와께서 이스라엘을 쳐서 물에서 흔들리는 갈대 같이 되게 하시고 이스라엘을 그 열조에게 주신 이 좋은 땅에서 뽑아 저희를 하수 밖으로 흩으시리니 저희가 아세라 목상을 만들어 여호와를 진노케 하였음이니라",
+      "source_text_hash": "23019b85d61e3ab67f5a321bd57ea54bb74f6d175a1468991a25c7ff53d60322",
+      "translation_text_hash": "35ca120fe21512c5d956edf3c999e409e0cd02bd8a790403ddd7623ff32bc810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘을 쳐서 물에서 흔들리는 갈대 같이 되게 하시고 이스라엘을 그 열조에게 주신 이 좋은 땅에서 뽑아 저희를 하수 밖으로 흩으시리니 저희가 아세라 목상을 만들어 여호와를 진노케 하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "35ca120fe21512c5d956edf3c999e409e0cd02bd8a790403ddd7623ff32bc810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:16",
+      "sequence": 9235,
+      "chapter_label": "1KI 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "He will give Israel up because of the sins of Jeroboam, which he has sinned, and with which he has made Israel to sin.”",
+      "ko": "여호와께서 여로보암의 죄로 인하여 이스라엘을 버리시리니 이는 저도 범죄하고 이스라엘로 범죄케 하였음이니라 하니라",
+      "source_text_hash": "b56504794d1a39b2642ca6d0f9b473aa81c334d7a7b108a4e43ecd44bc166058",
+      "translation_text_hash": "21dfa813c4e048fdc4cd388557cf23c998f8267775f73dee593c5f34b1eae275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여로보암의 죄로 인하여 이스라엘을 버리시리니 이는 저도 범죄하고 이스라엘로 범죄케 하였음이니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "21dfa813c4e048fdc4cd388557cf23c998f8267775f73dee593c5f34b1eae275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:17",
+      "sequence": 9236,
+      "chapter_label": "1KI 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Jeroboam’s wife arose and departed, and came to Tirzah. As she came to the threshold of the house, the child died.",
+      "ko": "여로보암의 처가 일어나 디르사로 돌아가서 집 문지방에 이를 때에 아이가 죽은지라",
+      "source_text_hash": "65f86073947fd9eaab1bdb0a45f4a9237c2fac7744ce1043a19cf11be012b31f",
+      "translation_text_hash": "57581a5baa1f18022fba33093f915972116ff6ffc58a5dfe73b039ed0f481923",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암의 처가 일어나 디르사로 돌아가서 집 문지방에 이를 때에 아이가 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "57581a5baa1f18022fba33093f915972116ff6ffc58a5dfe73b039ed0f481923"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:18",
+      "sequence": 9237,
+      "chapter_label": "1KI 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "All Israel buried him and mourned for him, according to the LORD’s word, which he spoke by his servant Ahijah the prophet.",
+      "ko": "온 이스라엘이 저를 장사하고 저를 위하여 슬퍼하니 여호와께서 그 종 선지자 아히야로 하신 말씀과 같이 되었더라",
+      "source_text_hash": "cfbbac23eab137acddd8c93d57a32b45536e68add25bd8198fcb8bb1fac5f834",
+      "translation_text_hash": "35b837b75b693cd83188c851f6ef846ef77b585e3acbf03ccaafbadf0d863746",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 저를 장사하고 저를 위하여 슬퍼하니 여호와께서 그 종 선지자 아히야로 하신 말씀과 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "35b837b75b693cd83188c851f6ef846ef77b585e3acbf03ccaafbadf0d863746"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:19",
+      "sequence": 9238,
+      "chapter_label": "1KI 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "The rest of the acts of Jeroboam, how he fought and how he reigned, behold, they are written in the book of the chronicles of the kings of Israel.",
+      "ko": "여로보암의 그 남은 행적 곧 저가 어떻게 싸운 것과 어떻게 다스린 것은 이스라엘 왕 역대지략에 기록되니라",
+      "source_text_hash": "de6dd79995208e641c74255b11b0a07b1173ee82535b19419cd6e58bfb83c600",
+      "translation_text_hash": "c9dd852a1b0c7040dbb38ce1e53721d7fb55652721f50b9ce713a58a79330bb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암의 그 남은 행적 곧 저가 어떻게 싸운 것과 어떻게 다스린 것은 이스라엘 왕 역대지략에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "c9dd852a1b0c7040dbb38ce1e53721d7fb55652721f50b9ce713a58a79330bb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:20",
+      "sequence": 9239,
+      "chapter_label": "1KI 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "The days which Jeroboam reigned were twenty two years; then he slept with his fathers, and Nadab his son reigned in his place.",
+      "ko": "여로보암이 왕이 된지 이십이년이라 저가 그 열조와 함께 자매 그 아들 나답이 대신하여 왕이 되니라",
+      "source_text_hash": "51de6281a75ecc5c163423999e74fb3c3934f4ee84dc24bf2d2874ea95fc645f",
+      "translation_text_hash": "2e7c6e06799192878b5e1212e989880db7c702b3cc590f94c8de6204f1464383",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 왕이 된지 이십이년이라 저가 그 열조와 함께 자매 그 아들 나답이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "2e7c6e06799192878b5e1212e989880db7c702b3cc590f94c8de6204f1464383"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:21",
+      "sequence": 9240,
+      "chapter_label": "1KI 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "Rehoboam the son of Solomon reigned in Judah. Rehoboam was forty-one years old when he began to reign, and he reigned seventeen years in Jerusalem, the city which the LORD had chosen out of all the tribes of Israel, to put his name there. His mother’s name was Naamah the Ammonitess.",
+      "ko": "솔로몬의 아들 르호보암은 유다 왕이 되었으니 르호보암이 위에 나아갈 때에 나이 사십일세라 여호와께서 자기 이름을 두시려고 이스라엘 모든 지파 가운데서 빼신 성 예루살렘에서 십 칠년을 치리하니라 그 모친의 이름은 나아마라 암몬 사람이더라",
+      "source_text_hash": "45ab11b97b1bad20ebcf06b2b7fd35d525d55f189beb6e6e2487fc45aef16d30",
+      "translation_text_hash": "e356cdef996379a3b4476163c0574e8d1e04025781e93a015a2870dcf596a050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 아들 르호보암은 유다 왕이 되었으니 르호보암이 위에 나아갈 때에 나이 사십일세라 여호와께서 자기 이름을 두시려고 이스라엘 모든 지파 가운데서 빼신 성 예루살렘에서 십 칠년을 치리하니라 그 모친의 이름은 나아마라 암몬 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "e356cdef996379a3b4476163c0574e8d1e04025781e93a015a2870dcf596a050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:22",
+      "sequence": 9241,
+      "chapter_label": "1KI 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Judah did that which was evil in the LORD’s sight, and they provoked him to jealousy with their sins which they committed, above all that their fathers had done.",
+      "ko": "유다가 여호와 보시기에 악을 행하되 그 열조의 행한 모든 일보다 뛰어나게 하여 그 범한 죄로 여호와의 노를 격발하였으니",
+      "source_text_hash": "f215d1b66f90d456918ebce4abf19cdcd9ee5d3d28700f00e664b540aa4c2c27",
+      "translation_text_hash": "085d3e9eff7b2054a90f08be0e858b9945c0be2856975861f9559dadcefe553b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다가 여호와 보시기에 악을 행하되 그 열조의 행한 모든 일보다 뛰어나게 하여 그 범한 죄로 여호와의 노를 격발하였으니"
+      ],
+      "raw_text_hashes": [
+        "085d3e9eff7b2054a90f08be0e858b9945c0be2856975861f9559dadcefe553b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:23",
+      "sequence": 9242,
+      "chapter_label": "1KI 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "For they also built for themselves high places, sacred pillars, and Asherah poles on every high hill and under every green tree.",
+      "ko": "이는 저희도 산 위에와 모든 푸른 나무 아래 산당과 우상과 아세라 목상을 세웠음이라",
+      "source_text_hash": "4bf6d98aedec63ac922bc1daa560523ece85ca986f3825a805fe12df1211e044",
+      "translation_text_hash": "a6b243cefcc9950f91f46ef135ae8b1c4a43d2a0c24832dbd4ffe7caa1875f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저희도 산 위에와 모든 푸른 나무 아래 산당과 우상과 아세라 목상을 세웠음이라"
+      ],
+      "raw_text_hashes": [
+        "a6b243cefcc9950f91f46ef135ae8b1c4a43d2a0c24832dbd4ffe7caa1875f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:24",
+      "sequence": 9243,
+      "chapter_label": "1KI 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "There were also sodomites in the land. They did according to all the abominations of the nations which the LORD drove out before the children of Israel.",
+      "ko": "그 땅에 또 남색하는 자가 있었고 여호와께서 이스라엘 자손 앞에서 쫓아내신 국민의 모든 가증한 일을 무리가 본받아 행하였더라",
+      "source_text_hash": "80faa5a4ef6e3b26f2114caa0b08d5e6aebf21b0b58543130b86b3703a7991d7",
+      "translation_text_hash": "6958222731eae1351537261fd88e76a13204ee4e2fe257d811685962eba11531",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅에 또 남색하는 자가 있었고 여호와께서 이스라엘 자손 앞에서 쫓아내신 국민의 모든 가증한 일을 무리가 본받아 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "6958222731eae1351537261fd88e76a13204ee4e2fe257d811685962eba11531"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:25",
+      "sequence": 9244,
+      "chapter_label": "1KI 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "In the fifth year of King Rehoboam, Shishak king of Egypt came up against Jerusalem;",
+      "ko": "르호보암왕 제 오년에 애굽 왕 시삭이 올라와서 예루살렘을 치고",
+      "source_text_hash": "fc4edccc60d9ed6e3cc8854ef149c92a937764f9e68729ca06cfa3c003c66fba",
+      "translation_text_hash": "649a46e5d90482ec087b9682efdc4cc4ecdf346b365d749a122ed9955823e902",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕 제 오년에 애굽 왕 시삭이 올라와서 예루살렘을 치고"
+      ],
+      "raw_text_hashes": [
+        "649a46e5d90482ec087b9682efdc4cc4ecdf346b365d749a122ed9955823e902"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:26",
+      "sequence": 9245,
+      "chapter_label": "1KI 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "and he took away the treasures of the LORD’s house and the treasures of the king’s house. He even took away all of it, including all the gold shields which Solomon had made.",
+      "ko": "여호와의 전의 보물과 왕궁의 보물을 몰수히 빼앗고 또 솔로몬의 만든 금방패를 다 빼앗은지라",
+      "source_text_hash": "dce4effd2f70b37eda8b37125d9f3956800653a1cfc4a9c7d6dd8f6a6aeb883c",
+      "translation_text_hash": "2a0965cce37b677053a5a45ec3d0782e3766009620ead7f4009405e607bf3063",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 전의 보물과 왕궁의 보물을 몰수히 빼앗고 또 솔로몬의 만든 금방패를 다 빼앗은지라"
+      ],
+      "raw_text_hashes": [
+        "2a0965cce37b677053a5a45ec3d0782e3766009620ead7f4009405e607bf3063"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:27",
+      "sequence": 9246,
+      "chapter_label": "1KI 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "King Rehoboam made shields of bronze in their place, and committed them to the hands of the captains of the guard, who guarded the door of the king’s house.",
+      "ko": "르호보암왕이 그 대신 놋으로 방패를 만들어 왕궁 문을 지키는 시위대 장관의 손에 맡기매",
+      "source_text_hash": "5603314d676bd935921852e7fce53971cb50baa9e5a825017fd22edef9af2d5c",
+      "translation_text_hash": "1d499cae8afcfd0dac4bb496786b1f193301bf2f141220879e154cdc724b6139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암왕이 그 대신 놋으로 방패를 만들어 왕궁 문을 지키는 시위대 장관의 손에 맡기매"
+      ],
+      "raw_text_hashes": [
+        "1d499cae8afcfd0dac4bb496786b1f193301bf2f141220879e154cdc724b6139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:28",
+      "sequence": 9247,
+      "chapter_label": "1KI 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "It was so, that as often as the king went into the LORD’s house, the guard bore them, and brought them back into the guard room.",
+      "ko": "왕이 여호와의 전에 들어갈 때마다 시위하는 자가 그 방패를 들고 갔다가 시위소로 도로 가져갔더라",
+      "source_text_hash": "f88d5d8031a49325fc439ee6265c7a0b1faf07dd56d0343b0bbc093627e72eed",
+      "translation_text_hash": "5a39f55231d2681117b21fced5f350dd81d88822a13e0a698f900e7a58c3945f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 여호와의 전에 들어갈 때마다 시위하는 자가 그 방패를 들고 갔다가 시위소로 도로 가져갔더라"
+      ],
+      "raw_text_hashes": [
+        "5a39f55231d2681117b21fced5f350dd81d88822a13e0a698f900e7a58c3945f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:29",
+      "sequence": 9248,
+      "chapter_label": "1KI 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Now the rest of the acts of Rehoboam, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "르호보암의 남은 사적과 무릇 그 행한 일이 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "584be9235cd0f31bbdf8b12b4c37225c65de7f5e837ec00f4ce9e526a6a2a112",
+      "translation_text_hash": "1c2ec59b323eb8a8bdf5851423a7bec7e60fb79e94749480567286ae97f2fd07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암의 남은 사적과 무릇 그 행한 일이 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "1c2ec59b323eb8a8bdf5851423a7bec7e60fb79e94749480567286ae97f2fd07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:30",
+      "sequence": 9249,
+      "chapter_label": "1KI 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "There was war between Rehoboam and Jeroboam continually.",
+      "ko": "르호보암과 여로보암 사이에 항상 전쟁이 있으니라",
+      "source_text_hash": "eebfa24b3dda778baecb18d91426f5f936e9916e15e32e8ec0f8d4c5dea15a61",
+      "translation_text_hash": "d178734ec89a9a9559deab311228d6004b927a0c94e82e75598d2dc51ef248d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암과 여로보암 사이에 항상 전쟁이 있으니라"
+      ],
+      "raw_text_hashes": [
+        "d178734ec89a9a9559deab311228d6004b927a0c94e82e75598d2dc51ef248d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:14:31",
+      "sequence": 9250,
+      "chapter_label": "1KI 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "Rehoboam slept with his fathers, and was buried with his fathers in David’s city. His mother’s name was Naamah the Ammonitess. Abijam his son reigned in his place.",
+      "ko": "르호보암이 그 열조와 함께 자니 그 열조와 함께 다윗성에 장사되니라 그 모친의 이름은 나아마라 암몬 사람이더라 그 아들 아비얌이 대신하여 왕이 되니라",
+      "source_text_hash": "af59b4ae423dc3950c26e99054e3b56aa362af04648cf711a5c27b0508dd999f",
+      "translation_text_hash": "db9c16385b41b1419e4e1b56276e2aaa2b8b6e64b15a14c2c8519bce5701f1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 그 열조와 함께 자니 그 열조와 함께 다윗성에 장사되니라 그 모친의 이름은 나아마라 암몬 사람이더라 그 아들 아비얌이 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "db9c16385b41b1419e4e1b56276e2aaa2b8b6e64b15a14c2c8519bce5701f1b4"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:024",
+  "unit_ordinal": 460,
+  "unit_label": "JOB 24",
+  "book_code": "JOB",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:24:1",
+      "sequence": 13438,
+      "chapter_label": "JOB 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "“Why aren’t times laid up by the Almighty? Why don’t those who know him see his days?",
+      "ko": "어찌하여 전능자가 시기를 정하지 아니하셨는고 어찌하여 그를 아는 자들이 그의 날을 보지 못하는고",
+      "source_text_hash": "7e1a47622bdb9e39007f7b3ef4d2a14ebee0fe15d407961b8ec4370e90249c6a",
+      "translation_text_hash": "54952014f381c9720dc16ed4817d739797f602b433d18eab31945ba135a9bd34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 전능자가 시기를 정하지 아니하셨는고 어찌하여 그를 아는 자들이 그의 날을 보지 못하는고"
+      ],
+      "raw_text_hashes": [
+        "54952014f381c9720dc16ed4817d739797f602b433d18eab31945ba135a9bd34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:2",
+      "sequence": 13439,
+      "chapter_label": "JOB 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "There are people who remove the landmarks. They violently take away flocks, and feed them.",
+      "ko": "어떤 사람은 지계표를 옮기며 양떼를 빼앗아 기르며",
+      "source_text_hash": "ea28b006258d504f6df0b4573e7fe7389b276b10b577fcc85b56dbdccca744d6",
+      "translation_text_hash": "82f4b54185fc49917ca67ea17f60ab8bd475a52c34dd9a43654de6a6eae87851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 지계표를 옮기며 양떼를 빼앗아 기르며"
+      ],
+      "raw_text_hashes": [
+        "82f4b54185fc49917ca67ea17f60ab8bd475a52c34dd9a43654de6a6eae87851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:3",
+      "sequence": 13440,
+      "chapter_label": "JOB 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "They drive away the donkey of the fatherless, and they take the widow’s ox for a pledge.",
+      "ko": "고아의 나귀를 몰아 가며 과부의 소를 볼모 잡으며",
+      "source_text_hash": "31a05bc22696127fe6aac1aab90402d8b7e24154b0f9abe9fcaba75a0a461298",
+      "translation_text_hash": "c582cbbd9763824b4e0fb6ae11354ff7e4456b0f1329f4b02c581c95b3b81820",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고아의 나귀를 몰아 가며 과부의 소를 볼모 잡으며"
+      ],
+      "raw_text_hashes": [
+        "c582cbbd9763824b4e0fb6ae11354ff7e4456b0f1329f4b02c581c95b3b81820"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:4",
+      "sequence": 13441,
+      "chapter_label": "JOB 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "They turn the needy out of the way. The poor of the earth all hide themselves.",
+      "ko": "빈궁한 자를 길에서 몰아 내나니 세상에 가난한 자가 다 스스로 숨는구나",
+      "source_text_hash": "cb3e40b79bb62b9fca9aa1ebf3bbb89d84f0765ae7224a188d36aa8ed7e399b6",
+      "translation_text_hash": "32c84f98d090c20802ddec9a930a546e559c1885ffd0043c6cdee4270b2f4a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빈궁한 자를 길에서 몰아 내나니 세상에 가난한 자가 다 스스로 숨는구나"
+      ],
+      "raw_text_hashes": [
+        "32c84f98d090c20802ddec9a930a546e559c1885ffd0043c6cdee4270b2f4a97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:5",
+      "sequence": 13442,
+      "chapter_label": "JOB 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, as wild donkeys in the desert, they go out to their work, seeking diligently for food. The wilderness yields them bread for their children.",
+      "ko": "그들은 거친 땅의 들 나귀 같아서 나가서 일하며 먹을 것을 부지런히 구하니 광야가 그 자식을 위하여 그에게 식물을 내는구나",
+      "source_text_hash": "2ff3482476967631b23878471138bb13f57f8aaa9e98245cd80d619fec46a6eb",
+      "translation_text_hash": "9394e1c886fedd2297cbf77abf9999b7e790cc0aec0949389c4469d25dfea01a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 거친 땅의 들 나귀 같아서 나가서 일하며 먹을 것을 부지런히 구하니 광야가 그 자식을 위하여 그에게 식물을 내는구나"
+      ],
+      "raw_text_hashes": [
+        "9394e1c886fedd2297cbf77abf9999b7e790cc0aec0949389c4469d25dfea01a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:6",
+      "sequence": 13443,
+      "chapter_label": "JOB 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "They cut their food in the field. They glean the vineyard of the wicked.",
+      "ko": "밭에서 남의 곡식을 베며 악인의 남겨 둔 포도를 따며",
+      "source_text_hash": "cb846c104ab5e8fca59b72acf83f4c31a959fd596fa04a9e1062421c7aa600d0",
+      "translation_text_hash": "8532340fe8300e7186377381e1734a23a6520eb9157c2d31014656444bef80cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭에서 남의 곡식을 베며 악인의 남겨 둔 포도를 따며"
+      ],
+      "raw_text_hashes": [
+        "8532340fe8300e7186377381e1734a23a6520eb9157c2d31014656444bef80cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:7",
+      "sequence": 13444,
+      "chapter_label": "JOB 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "They lie all night naked without clothing, and have no covering in the cold.",
+      "ko": "의복이 없어 벗은 몸으로 밤을 지내며 추위에 덮을 것이 없으며",
+      "source_text_hash": "7a22ea42ac0f8a98d24b2c3845ccf620b5bbe8f5b645456cb2d9f365db59d238",
+      "translation_text_hash": "aefb42aa9fae089678576704d9852a73429e2fb8167ff26a34c05181103cda5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의복이 없어 벗은 몸으로 밤을 지내며 추위에 덮을 것이 없으며"
+      ],
+      "raw_text_hashes": [
+        "aefb42aa9fae089678576704d9852a73429e2fb8167ff26a34c05181103cda5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:8",
+      "sequence": 13445,
+      "chapter_label": "JOB 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "They are wet with the showers of the mountains, and embrace the rock for lack of a shelter.",
+      "ko": "산중 소나기에 젖으며 가리울 것이 없어 바위를 안고 있느니라",
+      "source_text_hash": "592874a3410f5b23a72a6c5186dbb6d600a43202e88fe9fd3c0a982e27c237e8",
+      "translation_text_hash": "7d418df8d009f9b3fc009231f3a36d010b3f5e33fa6dc0cacbd65a9dd1e890a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산중 소나기에 젖으며 가리울 것이 없어 바위를 안고 있느니라"
+      ],
+      "raw_text_hashes": [
+        "7d418df8d009f9b3fc009231f3a36d010b3f5e33fa6dc0cacbd65a9dd1e890a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:9",
+      "sequence": 13446,
+      "chapter_label": "JOB 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "There are those who pluck the fatherless from the breast, and take a pledge of the poor,",
+      "ko": "어떤 사람은 고아를 어미 품에서 빼앗으며 가난한 자의 옷을 볼모 잡으므로",
+      "source_text_hash": "0b9f5ea9ad3df7f55c0a7f6ca344e49cdf4a339d5d8ea4732d9da292b5fdb010",
+      "translation_text_hash": "4d05a98b60cf3271549932d59e1cfe9b282c52fc75ecad7f9b7d5eeb43b471be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 고아를 어미 품에서 빼앗으며 가난한 자의 옷을 볼모 잡으므로"
+      ],
+      "raw_text_hashes": [
+        "4d05a98b60cf3271549932d59e1cfe9b282c52fc75ecad7f9b7d5eeb43b471be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:10",
+      "sequence": 13447,
+      "chapter_label": "JOB 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "so that they go around naked without clothing. Being hungry, they carry the sheaves.",
+      "ko": "그들이 옷이 없어 벌거벗고 다니며 주리면서 곡식단을 메며",
+      "source_text_hash": "29bae9b589e928a9eb55238a8654265662032c40187dbc3d762c8e1e6b0094be",
+      "translation_text_hash": "c5845d0c564e24628c31b508ca4c01daf29b97ac9ef81c18c0fa93c369be5ce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 옷이 없어 벌거벗고 다니며 주리면서 곡식단을 메며"
+      ],
+      "raw_text_hashes": [
+        "c5845d0c564e24628c31b508ca4c01daf29b97ac9ef81c18c0fa93c369be5ce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:11",
+      "sequence": 13448,
+      "chapter_label": "JOB 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "They make oil within the walls of these men. They tread wine presses, and suffer thirst.",
+      "ko": "그 사람의 담 안에서 기름을 짜며 목말라하면서 술 틀을 밟느니라",
+      "source_text_hash": "afb2334e8f827e25daa00b4d1f8b59736458fcd794a6508a4b54c4b4444a9209",
+      "translation_text_hash": "20344bf314912f606f61ecdbaa4ee9c384a37b8cfcf2b315a7b6f4aaeac2b57f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람의 담 안에서 기름을 짜며 목말라하면서 술 틀을 밟느니라"
+      ],
+      "raw_text_hashes": [
+        "20344bf314912f606f61ecdbaa4ee9c384a37b8cfcf2b315a7b6f4aaeac2b57f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:12",
+      "sequence": 13449,
+      "chapter_label": "JOB 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "From out of the populous city, men groan. The soul of the wounded cries out, yet God doesn’t regard the folly.",
+      "ko": "인구 많은 성중에서 사람들이 신음하며 상한 자가 부르짖으나 하나님이 그 불의를 보지 아니하시느니라",
+      "source_text_hash": "274f2aed4e9c444f2618fcb3a37b8746cae7f3f2d097be7aae185dc1534cf437",
+      "translation_text_hash": "1dc614e7eba2fd4194216a4c5c23711c8a5c88a2881cc0a4977e744ac8d9d13c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인구 많은 성중에서 사람들이 신음하며 상한 자가 부르짖으나 하나님이 그 불의를 보지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "1dc614e7eba2fd4194216a4c5c23711c8a5c88a2881cc0a4977e744ac8d9d13c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:13",
+      "sequence": 13450,
+      "chapter_label": "JOB 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "“These are of those who rebel against the light. They don’t know its ways, nor stay in its paths.",
+      "ko": "또 광명을 배반하는 사람들은 이러하니 그들은 광명의 길을 알지 못하며 그 첩경에 머물지 아니하는 자라",
+      "source_text_hash": "b57669523b77d6cf222e240bf88affc295094d3420119537f53f00f32518648c",
+      "translation_text_hash": "ef58280f8339030d02d2c2136798a36115b7db94876d0df778a303165d296e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 광명을 배반하는 사람들은 이러하니 그들은 광명의 길을 알지 못하며 그 첩경에 머물지 아니하는 자라"
+      ],
+      "raw_text_hashes": [
+        "ef58280f8339030d02d2c2136798a36115b7db94876d0df778a303165d296e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:14",
+      "sequence": 13451,
+      "chapter_label": "JOB 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "The murderer rises with the light. He kills the poor and needy. In the night he is like a thief.",
+      "ko": "사람을 죽이는 자는 새벽에 일어나서 가난한 자나 빈궁한 자를 죽이고 밤에는 도적 같이 되며",
+      "source_text_hash": "a68a9bc755133a44f75fb00f9ec900bf98c37d55fa5aa232af0148ec811850d7",
+      "translation_text_hash": "e2134cb8464b4082654e6132f21ba402fdfe89c2a40e16fe12d40b417a57db1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 죽이는 자는 새벽에 일어나서 가난한 자나 빈궁한 자를 죽이고 밤에는 도적 같이 되며"
+      ],
+      "raw_text_hashes": [
+        "e2134cb8464b4082654e6132f21ba402fdfe89c2a40e16fe12d40b417a57db1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:15",
+      "sequence": 13452,
+      "chapter_label": "JOB 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "The eye also of the adulterer waits for the twilight, saying, ‘No eye will see me.’ He disguises his face.",
+      "ko": "간음하는 자의 눈은 저물기를 바라며 아무 눈도 나를 보지못하리라 하고 얼굴을 변장하며",
+      "source_text_hash": "766c1eae0387e71c8097d9c8bda171cf5f494f9809c3aeb7367b285dedd1295c",
+      "translation_text_hash": "8b979583da94c0e3564412d252855f3ade0f60382f279f8dda30fb75f433316c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하는 자의 눈은 저물기를 바라며 아무 눈도 나를 보지못하리라 하고 얼굴을 변장하며"
+      ],
+      "raw_text_hashes": [
+        "8b979583da94c0e3564412d252855f3ade0f60382f279f8dda30fb75f433316c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:16",
+      "sequence": 13453,
+      "chapter_label": "JOB 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "In the dark they dig through houses. They shut themselves up in the daytime. They don’t know the light.",
+      "ko": "밤에 집을 뚫는 자는 낮에는 문을 닫고 있은즉 광명을 알지못하나니",
+      "source_text_hash": "96bf6b0dae4b34dd8aafafc03dc4b1f27954554d27449b10dbcfd20a1c7e91d5",
+      "translation_text_hash": "6ea6b425d51fce1a079c3d8969aa0ee6415d2476ce18bd43db79723e1b541849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 집을 뚫는 자는 낮에는 문을 닫고 있은즉 광명을 알지못하나니"
+      ],
+      "raw_text_hashes": [
+        "6ea6b425d51fce1a079c3d8969aa0ee6415d2476ce18bd43db79723e1b541849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:17",
+      "sequence": 13454,
+      "chapter_label": "JOB 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "For the morning is to all of them like thick darkness, for they know the terrors of the thick darkness.",
+      "ko": "그들은 다 아침을 흑암 같이 여기니 흑암의 두려움을 앎이니라",
+      "source_text_hash": "a4ecc4e8f201074524750094c40a608f9582d2d2c7c141292c1d242ac60b55a3",
+      "translation_text_hash": "3c98fd11280c58cdd0e92640eab504e7fd470efff93ef50baf4f1b28e0dd9ea7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다 아침을 흑암 같이 여기니 흑암의 두려움을 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "3c98fd11280c58cdd0e92640eab504e7fd470efff93ef50baf4f1b28e0dd9ea7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:18",
+      "sequence": 13455,
+      "chapter_label": "JOB 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "“They are foam on the surface of the waters. Their portion is cursed on the earth. They don’t turn into the way of the vineyards.",
+      "ko": "그들은 물 위에 빨리 흘러가고 그 산업은 세상에서 저주를 받나니 그들이 다시는 포도원 길로 행치 못할 것이라",
+      "source_text_hash": "668cef187f211ea531bedb41645292499c9417ca73918c7f56ebc3c749d6f067",
+      "translation_text_hash": "6d493b9ebe770515550ac8f054c7bcf5df186b065730cd91f5555cfa6d5399fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 물 위에 빨리 흘러가고 그 산업은 세상에서 저주를 받나니 그들이 다시는 포도원 길로 행치 못할 것이라"
+      ],
+      "raw_text_hashes": [
+        "6d493b9ebe770515550ac8f054c7bcf5df186b065730cd91f5555cfa6d5399fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:19",
+      "sequence": 13456,
+      "chapter_label": "JOB 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "Drought and heat consume the snow waters, so does Sheol those who have sinned.",
+      "ko": "가뭄과 더위가 눈 녹은 물을 곧 말리나니 음부가 범죄자에게도 그와 같은 것인즉",
+      "source_text_hash": "fd4452f659650151607e7ba303ea4038abec441d6d2053fd0414d9e40907e73f",
+      "translation_text_hash": "660c795d4ac561426d4845f847537e3089541f0d5fe3748a77b676ce66d1a7dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가뭄과 더위가 눈 녹은 물을 곧 말리나니 음부가 범죄자에게도 그와 같은 것인즉"
+      ],
+      "raw_text_hashes": [
+        "660c795d4ac561426d4845f847537e3089541f0d5fe3748a77b676ce66d1a7dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:20",
+      "sequence": 13457,
+      "chapter_label": "JOB 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "The womb will forget him. The worm will feed sweetly on him. He will be no more remembered. Unrighteousness will be broken as a tree.",
+      "ko": "태가 그를 잊어버리고 구더기가 그를 달게 먹을 것이라 그는 기억함을 다시 얻지 못하나니 불의가 나무처럼 꺾이리라",
+      "source_text_hash": "7945995703e4bf6f4a52714374e78297052d18bfbf287e3ddb944b3b38b916dd",
+      "translation_text_hash": "4e35a832ecb5b83f28e5690271beab78ce03dc10e7593a026d2623f4eba3efa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태가 그를 잊어버리고 구더기가 그를 달게 먹을 것이라 그는 기억함을 다시 얻지 못하나니 불의가 나무처럼 꺾이리라"
+      ],
+      "raw_text_hashes": [
+        "4e35a832ecb5b83f28e5690271beab78ce03dc10e7593a026d2623f4eba3efa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:21",
+      "sequence": 13458,
+      "chapter_label": "JOB 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "He devours the barren who don’t bear. He shows no kindness to the widow.",
+      "ko": "그는 잉태치 못하므로 해산치 못한 여인을 학대하며 과부를 선대치 아니하는 자니라",
+      "source_text_hash": "22cb272b4741f83dc7d65730caa468871f588fcc3629623b581d034db5d682c6",
+      "translation_text_hash": "4fed0f7d8b8507b3a132c7292fa7c8224dfc09e6933d48df7e0cf4e360b61645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 잉태치 못하므로 해산치 못한 여인을 학대하며 과부를 선대치 아니하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "4fed0f7d8b8507b3a132c7292fa7c8224dfc09e6933d48df7e0cf4e360b61645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:22",
+      "sequence": 13459,
+      "chapter_label": "JOB 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Yet God preserves the mighty by his power. He rises up who has no assurance of life.",
+      "ko": "그러나 하나님이 그 권능으로 강한 자들을 보존시키시니 살기를 바라지 못할 자도 일어나는구나",
+      "source_text_hash": "3a320764bdc37ece4755dc7a486cbaa21feb4c146abd8493a14c4e464b2fd44c",
+      "translation_text_hash": "b327f3618fa0199fdf304aa311a27370714cb0f77dfb3582c84b714f614d0d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 하나님이 그 권능으로 강한 자들을 보존시키시니 살기를 바라지 못할 자도 일어나는구나"
+      ],
+      "raw_text_hashes": [
+        "b327f3618fa0199fdf304aa311a27370714cb0f77dfb3582c84b714f614d0d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:23",
+      "sequence": 13460,
+      "chapter_label": "JOB 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "God gives them security, and they rest in it. His eyes are on their ways.",
+      "ko": "하나님이 그들을 호위하사 평안케 하시나 그 눈은 그들의 길에 있구나",
+      "source_text_hash": "ae198213b515266292ce95f5f844e8d9efce224c46410d6a8f0b458b2e7e3a89",
+      "translation_text_hash": "ca92688e916bdf35b5c8b90033324e3ab3c2b655fab8cb3f96cf6465498a085e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그들을 호위하사 평안케 하시나 그 눈은 그들의 길에 있구나"
+      ],
+      "raw_text_hashes": [
+        "ca92688e916bdf35b5c8b90033324e3ab3c2b655fab8cb3f96cf6465498a085e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:24",
+      "sequence": 13461,
+      "chapter_label": "JOB 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "They are exalted; yet a little while, and they are gone. Yes, they are brought low, they are taken out of the way as all others, and are cut off as the tops of the ears of grain.",
+      "ko": "그들은 높아져도 잠시간에 없어지나니 낮아져서 범인처럼 제함을 당하고 곡식 이삭 같이 베임을 입느니라",
+      "source_text_hash": "a660b33120e35855a6f14bede152c2f559b29f1c1d7e4e34a49e8546e37f2282",
+      "translation_text_hash": "baef29de6c1b01fec3879ff852b48e03df660708651dc60996bde3ceb5a7c0bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 높아져도 잠시간에 없어지나니 낮아져서 범인처럼 제함을 당하고 곡식 이삭 같이 베임을 입느니라"
+      ],
+      "raw_text_hashes": [
+        "baef29de6c1b01fec3879ff852b48e03df660708651dc60996bde3ceb5a7c0bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:24:25",
+      "sequence": 13462,
+      "chapter_label": "JOB 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "If it isn’t so now, who will prove me a liar, and make my speech worth nothing?”",
+      "ko": "가령 그렇지 않을찌라도 능히 내 말을 거짓되다 지적하거나 내 말이 헛되다 변박할 자 누구랴",
+      "source_text_hash": "b42878a25957ba9e2158bd5eafd6ed946048e9cf8b70dbff688f789f30440a90",
+      "translation_text_hash": "40866989ba9aa0dc878bc587f493b31752ba3c8d784a40a69709916ed2358160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 그렇지 않을찌라도 능히 내 말을 거짓되다 지적하거나 내 말이 헛되다 변박할 자 누구랴"
+      ],
+      "raw_text_hashes": [
+        "40866989ba9aa0dc878bc587f493b31752ba3c8d784a40a69709916ed2358160"
+      ]
+    }
+  ]
+}

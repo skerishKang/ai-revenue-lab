@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:002",
+  "unit_ordinal": 480,
+  "unit_label": "PSA 2",
+  "book_code": "PSA",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:2:1",
+      "sequence": 13947,
+      "chapter_label": "PSA 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Why do the nations rage, and the peoples plot a vain thing?",
+      "ko": "어찌하여 열방이 분노하며 민족들이 허사를 경영하는고",
+      "source_text_hash": "1ae3f88f3b9779a0f93adf3101e70eb1d92711c1c2bb8f801e7e4942e79c1685",
+      "translation_text_hash": "a005adf8cf8d731e0dcb827ebf85eafa5a4e3b0dd34deb0ca2621b65ac45e146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 열방이 분노하며 민족들이 허사를 경영하는고"
+      ],
+      "raw_text_hashes": [
+        "a005adf8cf8d731e0dcb827ebf85eafa5a4e3b0dd34deb0ca2621b65ac45e146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:2",
+      "sequence": 13948,
+      "chapter_label": "PSA 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The kings of the earth take a stand, and the rulers take counsel together, against the LORD, and against his Anointed, saying,",
+      "ko": "세상의 군왕들이 나서며 관원들이 서로 꾀하여 여호와와 그 기름 받은 자를 대적하며",
+      "source_text_hash": "72d1b8ae66808b18dc98e049463e1d4a8722a89d441d0157b78a5e2b9b58f5bb",
+      "translation_text_hash": "b82aeed4ce194530754fbcc14a5567fd8459308df5f52de0350b37bd96e36d88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상의 군왕들이 나서며 관원들이 서로 꾀하여 여호와와 그 기름 받은 자를 대적하며"
+      ],
+      "raw_text_hashes": [
+        "b82aeed4ce194530754fbcc14a5567fd8459308df5f52de0350b37bd96e36d88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:3",
+      "sequence": 13949,
+      "chapter_label": "PSA 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "“Let’s break their bonds apart, and cast their cords from us.”",
+      "ko": "우리가 그 맨 것을 끊고 그 결박을 벗어 버리자 하도다",
+      "source_text_hash": "cdcfc6e04ed1669a8e1f87b907f39fd3154ed8d91a615de89a743063e3696afb",
+      "translation_text_hash": "7be4bcf334e0fe8cfb4df379683ea2a8a6e5f747fd098dee631c1771d63b980d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 그 맨 것을 끊고 그 결박을 벗어 버리자 하도다"
+      ],
+      "raw_text_hashes": [
+        "7be4bcf334e0fe8cfb4df379683ea2a8a6e5f747fd098dee631c1771d63b980d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:4",
+      "sequence": 13950,
+      "chapter_label": "PSA 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "He who sits in the heavens will laugh. The Lord will have them in derision.",
+      "ko": "하늘에 계신 자가 웃으심이여 주께서 저희를 비웃으시리로다",
+      "source_text_hash": "e36314623a9212fa77e5341212fea7ed7f7b365d7ea6ff186405cec2b1a332d8",
+      "translation_text_hash": "af282c3b3cda8454b0d23df0be814041d101420808d21cff275589df7a13197c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 계신 자가 웃으심이여 주께서 저희를 비웃으시리로다"
+      ],
+      "raw_text_hashes": [
+        "af282c3b3cda8454b0d23df0be814041d101420808d21cff275589df7a13197c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:5",
+      "sequence": 13951,
+      "chapter_label": "PSA 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Then he will speak to them in his anger, and terrify them in his wrath:",
+      "ko": "그 때에 분을 발하며 진노하사 저희를 놀래어 이르시기를",
+      "source_text_hash": "ef0cba666a211736dac13d2d89baac742bf030431411cd6f704845a9eb45d6a0",
+      "translation_text_hash": "fc43114cf414ba11c4bed86e896f5ab3ad4326906ff29d32299052c21f661025",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 분을 발하며 진노하사 저희를 놀래어 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "fc43114cf414ba11c4bed86e896f5ab3ad4326906ff29d32299052c21f661025"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:6",
+      "sequence": 13952,
+      "chapter_label": "PSA 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "“Yet I have set my King on my holy hill of Zion.”",
+      "ko": "내가 나의 왕을 내 거룩한 산 시온에 세웠다 하시리로다",
+      "source_text_hash": "c4173ea32af939a5e784f458b2149be6b0e45d9ec36b91bcf97cdf99411b139e",
+      "translation_text_hash": "2597b68041f97b8b911f9e98ee6adab2a55420aeb83c910fece11872da4431f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 왕을 내 거룩한 산 시온에 세웠다 하시리로다"
+      ],
+      "raw_text_hashes": [
+        "2597b68041f97b8b911f9e98ee6adab2a55420aeb83c910fece11872da4431f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:7",
+      "sequence": 13953,
+      "chapter_label": "PSA 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "I will tell of the decree: The LORD said to me, “You are my son. Today I have become your father.",
+      "ko": "내가 영을 전하노라 여호와께서 내게 이르시되 너는 내 아들이라 오늘날 내가 너를 낳았도다",
+      "source_text_hash": "8cd6666fc803bc5973233427a5c12afec6ea771d3bbc9de61be3ed2bfd0f63e3",
+      "translation_text_hash": "8bae49ee423c72604cb8bda2398b6e20144ac6f5af99e5877c847c003d6e865b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 영을 전하노라 여호와께서 내게 이르시되 너는 내 아들이라 오늘날 내가 너를 낳았도다"
+      ],
+      "raw_text_hashes": [
+        "8bae49ee423c72604cb8bda2398b6e20144ac6f5af99e5877c847c003d6e865b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:8",
+      "sequence": 13954,
+      "chapter_label": "PSA 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Ask of me, and I will give the nations for your inheritance, the uttermost parts of the earth for your possession.",
+      "ko": "내게 구하라 내가 열방을 유업으로 주리니 네 소유가 땅 끝까지 이르리로다",
+      "source_text_hash": "b074164ddecfc7010d18e86232121a89d934c33e7e92a74eb8648d38669228bd",
+      "translation_text_hash": "a4677e9ac625ea3490310f9593d98573fa8c336d53995dc3161fa3c3c51b1392",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 구하라 내가 열방을 유업으로 주리니 네 소유가 땅 끝까지 이르리로다"
+      ],
+      "raw_text_hashes": [
+        "a4677e9ac625ea3490310f9593d98573fa8c336d53995dc3161fa3c3c51b1392"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:9",
+      "sequence": 13955,
+      "chapter_label": "PSA 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "You shall break them with a rod of iron. You shall dash them in pieces like a potter’s vessel.”",
+      "ko": "네가 철장으로 저희를 깨뜨림이여 질그릇 같이 부수리라 하시도다",
+      "source_text_hash": "0b9b68bf062a11faa705441e7d77032c2201bee33beee4644fc2a0d4ce685fc1",
+      "translation_text_hash": "c201d9f3df462987631eaeee5bb12378358191164f2d9ff9662c737716694eb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 철장으로 저희를 깨뜨림이여 질그릇 같이 부수리라 하시도다"
+      ],
+      "raw_text_hashes": [
+        "c201d9f3df462987631eaeee5bb12378358191164f2d9ff9662c737716694eb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:10",
+      "sequence": 13956,
+      "chapter_label": "PSA 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Now therefore be wise, you kings. Be instructed, you judges of the earth.",
+      "ko": "그런즉 군왕들아 너희는 지혜를 얻으며 세상의 관원들아 교훈을 받을지어다",
+      "source_text_hash": "129feec5bf35bdf21ac45e68e633b98cc625ce5f0efe958879b34df074a2b530",
+      "translation_text_hash": "e0029754a0d46c99c5bc9b0dbef9e64ed961df01f5385f2665c908b6b821e065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 군왕들아 너희는 지혜를 얻으며 세상의 관원들아 교훈을 받을지어다"
+      ],
+      "raw_text_hashes": [
+        "e0029754a0d46c99c5bc9b0dbef9e64ed961df01f5385f2665c908b6b821e065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:11",
+      "sequence": 13957,
+      "chapter_label": "PSA 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Serve the LORD with fear, and rejoice with trembling.",
+      "ko": "여호와를 경외함으로 섬기고 떨며 즐거워할지어다",
+      "source_text_hash": "cd1732858cf3130bee2b2ee5544a83c1a8430aacf9dc2999b2c95da48ddf45e0",
+      "translation_text_hash": "7af15decb9f88e9a28f4d28666cd05e2ffdb8d96bb65f7fbc2a9f2edd897541e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외함으로 섬기고 떨며 즐거워할지어다"
+      ],
+      "raw_text_hashes": [
+        "7af15decb9f88e9a28f4d28666cd05e2ffdb8d96bb65f7fbc2a9f2edd897541e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:2:12",
+      "sequence": 13958,
+      "chapter_label": "PSA 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Give sincere homage to the Son, lest he be angry, and you perish on the way, for his wrath will soon be kindled. Blessed are all those who take refuge in him.",
+      "ko": "그 아들에게 입맞추라 그렇지 아니하면 진노하심으로 너희가 길에서 망하리니 그 진노가 급하심이라 여호와를 의지하는 자는 다 복이 있도다",
+      "source_text_hash": "914c3e4360edcd3d4e09cbd4ddadf070e82dfd9ca58ebb527140ab66b65a1a29",
+      "translation_text_hash": "3eafa0a69751ad0aab6e2a83658d3c929b6877e483c05720308f5f8a29c2ec64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들에게 입맞추라 그렇지 아니하면 진노하심으로 너희가 길에서 망하리니 그 진노가 급하심이라 여호와를 의지하는 자는 다 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "3eafa0a69751ad0aab6e2a83658d3c929b6877e483c05720308f5f8a29c2ec64"
+      ]
+    }
+  ]
+}

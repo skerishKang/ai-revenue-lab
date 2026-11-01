@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:002",
+  "unit_ordinal": 428,
+  "unit_label": "EST 2",
+  "book_code": "EST",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:2:1",
+      "sequence": 12726,
+      "chapter_label": "EST 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, when the wrath of King Ahasuerus was pacified, he remembered Vashti, and what she had done, and what was decreed against her.",
+      "ko": "그 후에 아하수에로왕의 노가 그치매 와스디와 그의 행한 일과 그에 대하여 내린 조서를 생각하거늘",
+      "source_text_hash": "c0a6c031d6c65a97d35d4fd6738be3754bf19d5414955d59b159708743929263",
+      "translation_text_hash": "5e09c3b8afd745c2126422526803d9d97b27f08878d19833b795ac926eab1c95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 아하수에로왕의 노가 그치매 와스디와 그의 행한 일과 그에 대하여 내린 조서를 생각하거늘"
+      ],
+      "raw_text_hashes": [
+        "5e09c3b8afd745c2126422526803d9d97b27f08878d19833b795ac926eab1c95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:2",
+      "sequence": 12727,
+      "chapter_label": "EST 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Then the king’s servants who served him said, “Let beautiful young virgins be sought for the king.",
+      "ko": "왕의 시신이 아뢰되 왕은 왕을 위하여 아리따운 처녀들을 구하게 하시되",
+      "source_text_hash": "93738dd6ca65c512fd9ff54f6c90dfec402b34dede358a3a53fd2502a72c8c5f",
+      "translation_text_hash": "b6a3a76c923bfda253b45b890f8c824937c248644738235c2f0886233c344d5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 시신이 아뢰되 왕은 왕을 위하여 아리따운 처녀들을 구하게 하시되"
+      ],
+      "raw_text_hashes": [
+        "b6a3a76c923bfda253b45b890f8c824937c248644738235c2f0886233c344d5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:3",
+      "sequence": 12728,
+      "chapter_label": "EST 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Let the king appoint officers in all the provinces of his kingdom, that they may gather together all the beautiful young virgins to the citadel of Susa, to the women’s house, to the custody of Hegai the king’s eunuch, keeper of the women. Let cosmetics be given them;",
+      "ko": "전국 각 도에 관리를 명령하여 아리따운 처녀를 다 도성 수산으로 모아 후궁으로 들여 궁녀를 주관하는 내시 헤개의 손에 붙여 그 몸을 정결케 하는 물품을 주게 하시고",
+      "source_text_hash": "08804e638dd6643a9d197214e00b19c8838f892194d4a24894777d668d4730e4",
+      "translation_text_hash": "f569c3ad4eb35e5f154d3b011775fbcf61fe9acca5a9733c8015fc6ff54bb93d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전국 각 도에 관리를 명령하여 아리따운 처녀를 다 도성 수산으로 모아 후궁으로 들여 궁녀를 주관하는 내시 헤개의 손에 붙여 그 몸을 정결케 하는 물품을 주게 하시고"
+      ],
+      "raw_text_hashes": [
+        "f569c3ad4eb35e5f154d3b011775fbcf61fe9acca5a9733c8015fc6ff54bb93d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:4",
+      "sequence": 12729,
+      "chapter_label": "EST 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "and let the maiden who pleases the king be queen instead of Vashti.” The thing pleased the king, and he did so.",
+      "ko": "왕의 눈에 아름다운 처녀로 와스디를 대신하여 왕후를 삼으소서 왕이 그 말을 선히 여겨 그대로 행하니라",
+      "source_text_hash": "b3585736beb22305da068517bdf368460e3d07c6bf9760bea8b6a6ee11bbad4a",
+      "translation_text_hash": "092e4fa42d365970f4631f9f61b08e70be19d2cfa53b0b1ab69bf9a322b05c29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 눈에 아름다운 처녀로 와스디를 대신하여 왕후를 삼으소서 왕이 그 말을 선히 여겨 그대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "092e4fa42d365970f4631f9f61b08e70be19d2cfa53b0b1ab69bf9a322b05c29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:5",
+      "sequence": 12730,
+      "chapter_label": "EST 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "There was a certain Jew in the citadel of Susa whose name was Mordecai, the son of Jair, the son of Shimei, the son of Kish, a Benjamite,",
+      "ko": "도성 수산에 한 유다인이 있으니 이름은 모르드개라 저는 베냐민 자손이니 기스의 증손이요 시므이의 손자요 야일의 아들이라",
+      "source_text_hash": "87a956c603752e59f0f5529a615889468140c0e6973c292a273d1fbe3e22c2e8",
+      "translation_text_hash": "333d2e8cdb5a1c64ae0a0eb37867c4d2774ce4f10abfb84a5c27fd2e0ea5688c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도성 수산에 한 유다인이 있으니 이름은 모르드개라 저는 베냐민 자손이니 기스의 증손이요 시므이의 손자요 야일의 아들이라"
+      ],
+      "raw_text_hashes": [
+        "333d2e8cdb5a1c64ae0a0eb37867c4d2774ce4f10abfb84a5c27fd2e0ea5688c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:6",
+      "sequence": 12731,
+      "chapter_label": "EST 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "who had been carried away from Jerusalem with the captives who had been carried away with Jeconiah king of Judah, whom Nebuchadnezzar the king of Babylon had carried away.",
+      "ko": "전에 바벨론 왕 느부갓네살이 예루살렘에서 유다 왕 여고냐와 백성을 사로잡아 갈 때에 모르드개도 함께 사로잡혔더라",
+      "source_text_hash": "6b4e2c77feaad70deb4d9519e6f99bdfaa4619388fd96486c29dd8be5411180f",
+      "translation_text_hash": "ee6829caeef510c93d9228ea0a48040d474ba9c8135cff2bbb8e145ed1b6b027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 바벨론 왕 느부갓네살이 예루살렘에서 유다 왕 여고냐와 백성을 사로잡아 갈 때에 모르드개도 함께 사로잡혔더라"
+      ],
+      "raw_text_hashes": [
+        "ee6829caeef510c93d9228ea0a48040d474ba9c8135cff2bbb8e145ed1b6b027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:7",
+      "sequence": 12732,
+      "chapter_label": "EST 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "He brought up Hadassah, that is, Esther, his uncle’s daughter; for she had neither father nor mother. The maiden was fair and beautiful; and when her father and mother were dead, Mordecai took her for his own daughter.",
+      "ko": "저의 삼촌의 딸 하닷사 곧 에스더는 부모가 없고 용모가 곱고 아리따운 처녀라 그 부모가 죽은 후에 모르드개가 자기 딸 같이 양육하더라",
+      "source_text_hash": "c5bba3d479411fc17c58851ad1ffc1403b621e25ae701cb64539719768457ece",
+      "translation_text_hash": "d98309c895aba87eb34b0a4a41975d14f3039fc056452bafaeb27090a3d8d7df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저의 삼촌의 딸 하닷사 곧 에스더는 부모가 없고 용모가 곱고 아리따운 처녀라 그 부모가 죽은 후에 모르드개가 자기 딸 같이 양육하더라"
+      ],
+      "raw_text_hashes": [
+        "d98309c895aba87eb34b0a4a41975d14f3039fc056452bafaeb27090a3d8d7df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:8",
+      "sequence": 12733,
+      "chapter_label": "EST 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "So, when the king’s commandment and his decree was heard, and when many maidens were gathered together to the citadel of Susa, to the custody of Hegai, Esther was taken into the king’s house, to the custody of Hegai, keeper of the women.",
+      "ko": "왕의 조명이 반포되매 처녀들이 도성 수산에 많이 모여 헤개의 수하에 나아갈 때에 에스더도 왕궁으로 이끌려 가서 궁녀를 주관하는 헤개의 수하에 속하니",
+      "source_text_hash": "8ec4b1bb830dc81ff7e7cbb3f5a3b596ac4394e184b4ea02714ef61f075dec85",
+      "translation_text_hash": "c3b4b85a1d186bd3db69d0c030c7dfe2d2e9a8ce543a679395cc04fab3ec6aca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 조명이 반포되매 처녀들이 도성 수산에 많이 모여 헤개의 수하에 나아갈 때에 에스더도 왕궁으로 이끌려 가서 궁녀를 주관하는 헤개의 수하에 속하니"
+      ],
+      "raw_text_hashes": [
+        "c3b4b85a1d186bd3db69d0c030c7dfe2d2e9a8ce543a679395cc04fab3ec6aca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:9",
+      "sequence": 12734,
+      "chapter_label": "EST 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "The maiden pleased him, and she obtained kindness from him. He quickly gave her cosmetics and her portions of food, and the seven choice maidens who were to be given her out of the king’s house. He moved her and her maidens to the best place in the women’s house.",
+      "ko": "헤개가 이 처녀를 기뻐하여 은혜를 베풀어 몸을 정결케 할 물품과 일용품을 곧 주며 또 왕궁에서 의례히 주는 일곱 궁녀를 주고 에스더와 그 궁녀들을 후궁 아름다운 처소로 옮기더라",
+      "source_text_hash": "f39f9fd8cb59e7ba3c38b77033ed6fbc39160a42905b80a60205413136ec84a6",
+      "translation_text_hash": "ad3603eb2a1974c3b0a57e6f17a85c9c2f6818d596f7060909e98c2ececcbe1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤개가 이 처녀를 기뻐하여 은혜를 베풀어 몸을 정결케 할 물품과 일용품을 곧 주며 또 왕궁에서 의례히 주는 일곱 궁녀를 주고 에스더와 그 궁녀들을 후궁 아름다운 처소로 옮기더라"
+      ],
+      "raw_text_hashes": [
+        "ad3603eb2a1974c3b0a57e6f17a85c9c2f6818d596f7060909e98c2ececcbe1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:10",
+      "sequence": 12735,
+      "chapter_label": "EST 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Esther had not made known her people nor her relatives, because Mordecai had instructed her that she should not make it known.",
+      "ko": "에스더가 자기의 민족과 종족을 고하지 아니하니 이는 모르드개가 명하여 고하지 말라 하였음이라",
+      "source_text_hash": "d5e7ce10491b7b4a0881341d84aae996dfbf8f623bce5c8255175074d8b6d7f0",
+      "translation_text_hash": "accc8e6cccdbd769142bce14eb00c391ca51fca76f2cdd27855fa88fca3b6602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 자기의 민족과 종족을 고하지 아니하니 이는 모르드개가 명하여 고하지 말라 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "accc8e6cccdbd769142bce14eb00c391ca51fca76f2cdd27855fa88fca3b6602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:11",
+      "sequence": 12736,
+      "chapter_label": "EST 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Mordecai walked every day in front of the court of the women’s house, to find out how Esther was doing, and what would become of her.",
+      "ko": "모르드개가 날마다 후궁 뜰 앞으로 왕래하며 에스더의 안부와 어떻게 될 것을 알고자 하더라",
+      "source_text_hash": "a4a9cb9c733c2a951c1a60232d8e773a1e542b5ba03c8adc02a73728b7940cf5",
+      "translation_text_hash": "791a66881be1214d1aff476f9dc536420bee6af9b4b93ef1703d5ab7f28639d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 날마다 후궁 뜰 앞으로 왕래하며 에스더의 안부와 어떻게 될 것을 알고자 하더라"
+      ],
+      "raw_text_hashes": [
+        "791a66881be1214d1aff476f9dc536420bee6af9b4b93ef1703d5ab7f28639d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:12",
+      "sequence": 12737,
+      "chapter_label": "EST 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Each young woman’s turn came to go in to King Ahasuerus after her purification for twelve months (for so were the days of their purification accomplished, six months with oil of myrrh, and six months with sweet fragrances and with preparations for beautifying women).",
+      "ko": "처녀마다 차례대로 아하수에로왕에게 나아가기 전에 여자에 대하여 정한 규례대로 열 두달 동안을 행하되 여섯달은 몰약 기름을 쓰고 여섯달은 향품과 여자에게 쓰는 다른 물품을 써서 몸을 정결케 하는 기한을 마치며",
+      "source_text_hash": "89ac16e50ccadb4e5d5c5b61b26f1f060140c6a74c03d16e8b5c2eee1b91defe",
+      "translation_text_hash": "1fcc464dc34284cbbc2ed263bdac7fd44c3a60ae143799429ff1bb2dde2c03e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀마다 차례대로 아하수에로왕에게 나아가기 전에 여자에 대하여 정한 규례대로 열 두달 동안을 행하되 여섯달은 몰약 기름을 쓰고 여섯달은 향품과 여자에게 쓰는 다른 물품을 써서 몸을 정결케 하는 기한을 마치며"
+      ],
+      "raw_text_hashes": [
+        "1fcc464dc34284cbbc2ed263bdac7fd44c3a60ae143799429ff1bb2dde2c03e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:13",
+      "sequence": 12738,
+      "chapter_label": "EST 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The young woman then came to the king like this: whatever she desired was given her to go with her out of the women’s house to the king’s house.",
+      "ko": "처녀가 왕에게 나아갈 때에는 그 구하는 것을 다 주어 후궁에서 왕궁으로 가지고 가게 하고",
+      "source_text_hash": "15c6b55c235d8338829d90266f1544546857f2715b69d91f67783d0e40d9e245",
+      "translation_text_hash": "d3d928d0daac885cb7e11ea91404167fd48f3b127f6245ff0536f17e781ddde9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀가 왕에게 나아갈 때에는 그 구하는 것을 다 주어 후궁에서 왕궁으로 가지고 가게 하고"
+      ],
+      "raw_text_hashes": [
+        "d3d928d0daac885cb7e11ea91404167fd48f3b127f6245ff0536f17e781ddde9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:14",
+      "sequence": 12739,
+      "chapter_label": "EST 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "In the evening she went, and on the next day she returned into the second women’s house, to the custody of Shaashgaz, the king’s eunuch, who kept the concubines. She came in to the king no more, unless the king delighted in her, and she was called by name.",
+      "ko": "저녁이면 갔다가 아침에는 둘째 후궁으로 돌아와서 비빈을 주관하는 내시 사아스가스의 수하에 속하고 왕이 저를 기뻐하여 그 이름을 부르지 아니하면 다시 왕에게 나아가지 못하더라",
+      "source_text_hash": "99d53591a34679aca3d80fca9070a120533428009ae9151c670cf96aca4014e5",
+      "translation_text_hash": "e0b0d5e7ab69286d39e358a4f720c65f85c472521c8e008cf5a2afb66ab8f5b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁이면 갔다가 아침에는 둘째 후궁으로 돌아와서 비빈을 주관하는 내시 사아스가스의 수하에 속하고 왕이 저를 기뻐하여 그 이름을 부르지 아니하면 다시 왕에게 나아가지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "e0b0d5e7ab69286d39e358a4f720c65f85c472521c8e008cf5a2afb66ab8f5b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:15",
+      "sequence": 12740,
+      "chapter_label": "EST 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Now when the turn of Esther, the daughter of Abihail the uncle of Mordecai, who had taken her for his daughter, came to go in to the king, she required nothing but what Hegai the king’s eunuch, the keeper of the women, advised. Esther obtained favor in the sight of all those who looked at her.",
+      "ko": "모르드개의 삼촌 아비하일의 딸 곧 모르드개가 자기의 딸 같이 양육하는 에스더가 차례대로 왕에게 나아갈 때에 궁녀를 주관하는 내시 헤개의 정한 것 외에는 다른것을 구하지 아니하였으나 모든 보는 자에게 굄을 얻더라",
+      "source_text_hash": "d4281eedf1434982e67019886c614b77ef9987dc67ebaeb4e8123cde24b8c876",
+      "translation_text_hash": "f4f04caca36227799cdfe21fb480fca45feb3a40430243f2a3a6b00a078b5a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개의 삼촌 아비하일의 딸 곧 모르드개가 자기의 딸 같이 양육하는 에스더가 차례대로 왕에게 나아갈 때에 궁녀를 주관하는 내시 헤개의 정한 것 외에는 다른것을 구하지 아니하였으나 모든 보는 자에게 굄을 얻더라"
+      ],
+      "raw_text_hashes": [
+        "f4f04caca36227799cdfe21fb480fca45feb3a40430243f2a3a6b00a078b5a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:16",
+      "sequence": 12741,
+      "chapter_label": "EST 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "So Esther was taken to King Ahasuerus into his royal house in the tenth month, which is the month Tebeth, in the seventh year of his reign.",
+      "ko": "아하수에로왕의 칠년 시월 곧 데벳월에 에스더가 이끌려 왕궁에 들어가서 왕의 앞에 나아가니",
+      "source_text_hash": "6dbaefc870ff8aacf887103d70beaf8c7769af05cba40074c94ea6d55f8e77c5",
+      "translation_text_hash": "b276603bc7c1859764424669994191423a6b0384e128703ff212897f98f17b4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하수에로왕의 칠년 시월 곧 데벳월에 에스더가 이끌려 왕궁에 들어가서 왕의 앞에 나아가니"
+      ],
+      "raw_text_hashes": [
+        "b276603bc7c1859764424669994191423a6b0384e128703ff212897f98f17b4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:17",
+      "sequence": 12742,
+      "chapter_label": "EST 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The king loved Esther more than all the women, and she obtained favor and kindness in his sight more than all the virgins; so that he set the royal crown on her head, and made her queen instead of Vashti.",
+      "ko": "왕이 모든 여자보다 에스더를 더욱 사랑하므로 저가 모든 처녀보다 왕의 앞에 더욱 은총을 얻은지라 왕이 그 머리에 면류관을 씌우고 와스디를 대신하여 왕후를 삼은 후에",
+      "source_text_hash": "c83924ec6116765c03537ae3ce625fa3675b0953eac2812c83e2997fef84397f",
+      "translation_text_hash": "9e7fba461f772a11705a38e7ead4776bf8ff2c69a98a8241b898a4cbe12deeb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 모든 여자보다 에스더를 더욱 사랑하므로 저가 모든 처녀보다 왕의 앞에 더욱 은총을 얻은지라 왕이 그 머리에 면류관을 씌우고 와스디를 대신하여 왕후를 삼은 후에"
+      ],
+      "raw_text_hashes": [
+        "9e7fba461f772a11705a38e7ead4776bf8ff2c69a98a8241b898a4cbe12deeb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:18",
+      "sequence": 12743,
+      "chapter_label": "EST 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Then the king made a great feast for all his princes and his servants, even Esther’s feast; and he proclaimed a holiday in the provinces, and gave gifts according to the king’s bounty.",
+      "ko": "왕이 크게 잔치를 베푸니 이는 에스더를 위한 잔치라 모든 방백과 신복을 향응하고 또 각 도의 세금을 면제하고 왕의 풍부함을 따라 크게 상 주니라",
+      "source_text_hash": "53fc889603eb45a0ce9cf2fdc010d40e50f6c5604e973c57894b1d31eaec2274",
+      "translation_text_hash": "72ac670e2456a0ab9a30f270d1af64ba0f3a5b1c7131c78b242ad1f4d128db95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 크게 잔치를 베푸니 이는 에스더를 위한 잔치라 모든 방백과 신복을 향응하고 또 각 도의 세금을 면제하고 왕의 풍부함을 따라 크게 상 주니라"
+      ],
+      "raw_text_hashes": [
+        "72ac670e2456a0ab9a30f270d1af64ba0f3a5b1c7131c78b242ad1f4d128db95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:19",
+      "sequence": 12744,
+      "chapter_label": "EST 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "When the virgins were gathered together the second time, Mordecai was sitting in the king’s gate.",
+      "ko": "처녀들을 다시 모을 때에는 모르드개가 대궐 문에 앉았더라",
+      "source_text_hash": "158016047ad19428c66708d8d055f9f961ac29363d728d93ac0a954a42f94e5a",
+      "translation_text_hash": "c38d34609c90bb32193a58272acc5c00d8d1997cd90acfe0c28f09e2a3ccfc6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀들을 다시 모을 때에는 모르드개가 대궐 문에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "c38d34609c90bb32193a58272acc5c00d8d1997cd90acfe0c28f09e2a3ccfc6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:20",
+      "sequence": 12745,
+      "chapter_label": "EST 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Esther had not yet made known her relatives nor her people, as Mordecai had commanded her; for Esther obeyed Mordecai, like she did when she was brought up by him.",
+      "ko": "에스더가 모르드개의 명한대로 그 종족과 민족을 고하지 아니 하니 저가 모르드개의 명을 양육 받을 때와 같이 좇음이더라",
+      "source_text_hash": "0d4d35ad0d7130fbb691197871efd5b91d9d7aca65b7b122cbea2dfa18ec9aad",
+      "translation_text_hash": "67fd178e232311ab3a8f104947dd3b08e00a00b4f546e4abe9c6c669e57f7012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 모르드개의 명한대로 그 종족과 민족을 고하지 아니 하니 저가 모르드개의 명을 양육 받을 때와 같이 좇음이더라"
+      ],
+      "raw_text_hashes": [
+        "67fd178e232311ab3a8f104947dd3b08e00a00b4f546e4abe9c6c669e57f7012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:21",
+      "sequence": 12746,
+      "chapter_label": "EST 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "In those days, while Mordecai was sitting in the king’s gate, two of the king’s eunuchs, Bigthan and Teresh, who were doorkeepers, were angry, and sought to lay hands on the King Ahasuerus.",
+      "ko": "모르드개가 대궐 문에 앉았을 때에 문 지킨 왕의 내시 빅단과 데레스 두 사람이 아하수에로왕을 원한하여 모살하려 하거늘",
+      "source_text_hash": "4c4835319a1ca0085ad894b4e7e00bd5ec8e4632be94a77e40023c53b7f28d5d",
+      "translation_text_hash": "1ab21213d6bfb2330f0394e14a2e389ea498f715ba97bdef4c53b6281eb9329d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 대궐 문에 앉았을 때에 문 지킨 왕의 내시 빅단과 데레스 두 사람이 아하수에로왕을 원한하여 모살하려 하거늘"
+      ],
+      "raw_text_hashes": [
+        "1ab21213d6bfb2330f0394e14a2e389ea498f715ba97bdef4c53b6281eb9329d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:22",
+      "sequence": 12747,
+      "chapter_label": "EST 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "This thing became known to Mordecai, who informed Esther the queen; and Esther informed the king in Mordecai’s name.",
+      "ko": "모르드개가 알고 왕후 에스더에게 고하니 에스더가 모르드개의 이름으로 왕에게 고한지라",
+      "source_text_hash": "07f833b5fd949343c406df818675978867cb8cfe5adcc528b992abdb1d662e48",
+      "translation_text_hash": "75e0d14788c2145e542fcacd84e29a2d6b824d6684ccea046b151fd9241d0695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개가 알고 왕후 에스더에게 고하니 에스더가 모르드개의 이름으로 왕에게 고한지라"
+      ],
+      "raw_text_hashes": [
+        "75e0d14788c2145e542fcacd84e29a2d6b824d6684ccea046b151fd9241d0695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:2:23",
+      "sequence": 12748,
+      "chapter_label": "EST 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "EST",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "When this matter was investigated, and it was found to be so, they were both hanged on a gallows; and it was written in the book of the chronicles in the king’s presence.",
+      "ko": "사실하여 실정을 얻었으므로 두 사람을 나무에 달고 그 일을 왕의 앞에서 궁중 일기에 기록하니라",
+      "source_text_hash": "618fb3a8a9b4c37cbfd109c576e52f07ea942942aea01151a4c70618e7875de7",
+      "translation_text_hash": "a8071caa9f3fb60c7bfc29f8f70d7dfc4b9030f6f2afb250aa3c6d727fb90d84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사실하여 실정을 얻었으므로 두 사람을 나무에 달고 그 일을 왕의 앞에서 궁중 일기에 기록하니라"
+      ],
+      "raw_text_hashes": [
+        "a8071caa9f3fb60c7bfc29f8f70d7dfc4b9030f6f2afb250aa3c6d727fb90d84"
+      ]
+    }
+  ]
+}

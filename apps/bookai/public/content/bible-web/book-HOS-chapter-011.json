@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:011",
+  "unit_ordinal": 873,
+  "unit_label": "HOS 11",
+  "book_code": "HOS",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:11:1",
+      "sequence": 22242,
+      "chapter_label": "HOS 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "“When Israel was a child, then I loved him, and called my son out of Egypt.",
+      "ko": "이스라엘의 어렸을 때에 내가 사랑하여 내 아들을 애굽에서 불러 내었거늘",
+      "source_text_hash": "8eb1fab27fcf33ba4b4f63c82a110beb573202adf711fc42c27dbbb98b1dcea8",
+      "translation_text_hash": "912bfb3cb916e178d5814efa02e3cf7bf678663b5e9333c85c86e3fbc24a972f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 어렸을 때에 내가 사랑하여 내 아들을 애굽에서 불러 내었거늘"
+      ],
+      "raw_text_hashes": [
+        "912bfb3cb916e178d5814efa02e3cf7bf678663b5e9333c85c86e3fbc24a972f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:2",
+      "sequence": 22243,
+      "chapter_label": "HOS 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "They called to them, so they went from them. They sacrificed to the Baals, and burned incense to engraved images.",
+      "ko": "선지자들이 저희를 부를수록 저희가 점점 멀리하고 바알들에게 제사하며 아로새긴 우상 앞에서 분향하였느니라",
+      "source_text_hash": "a51f299415b0f4ccb4f2b60919c8e6e31938ed5801ee62c1b9f999c526bba5fe",
+      "translation_text_hash": "2dfe1ca7bbce9ab432c31041b7de906ef3cb2f8ec58eaa6aea1ad4c5e1bdc36a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들이 저희를 부를수록 저희가 점점 멀리하고 바알들에게 제사하며 아로새긴 우상 앞에서 분향하였느니라"
+      ],
+      "raw_text_hashes": [
+        "2dfe1ca7bbce9ab432c31041b7de906ef3cb2f8ec58eaa6aea1ad4c5e1bdc36a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:3",
+      "sequence": 22244,
+      "chapter_label": "HOS 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "Yet I taught Ephraim to walk. I took them by their arms, but they didn’t know that I healed them.",
+      "ko": "그러나 내가 에브라임에게 걸음을 가르치고 내 팔로 안을찌라도 내가 저희를 고치는 줄을 저희가 알지 못하였도다",
+      "source_text_hash": "15697134c9376a8c6e57c3a763725d87227069a1d89eb40b610b1dae6a98161f",
+      "translation_text_hash": "7d5a9da6035b31a972a9af9610a1a88a9a01cdd57681ac8b9310da6f3e7d6e09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 에브라임에게 걸음을 가르치고 내 팔로 안을찌라도 내가 저희를 고치는 줄을 저희가 알지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "7d5a9da6035b31a972a9af9610a1a88a9a01cdd57681ac8b9310da6f3e7d6e09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:4",
+      "sequence": 22245,
+      "chapter_label": "HOS 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "I drew them with cords of a man, with ties of love; and I was to them like those who lift up the yoke on their necks; and I bent down to him and I fed him.",
+      "ko": "내가 사람의 줄 곧 사랑의 줄로 저희를 이끌었고 저희에게 대하여 그 목에서 멍에를 벗기는 자 같이 되었으며 저희 앞에 먹을 것을 두었었노라",
+      "source_text_hash": "7187c7a7675d9a32c811ce0d47324dc0e7ed9f06a8561c085ca9384e767d21a0",
+      "translation_text_hash": "ad7184efde05ca56dc1f4536e2ab912790291a67a3f8dabb97deb4097439b7ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사람의 줄 곧 사랑의 줄로 저희를 이끌었고 저희에게 대하여 그 목에서 멍에를 벗기는 자 같이 되었으며 저희 앞에 먹을 것을 두었었노라"
+      ],
+      "raw_text_hashes": [
+        "ad7184efde05ca56dc1f4536e2ab912790291a67a3f8dabb97deb4097439b7ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:5",
+      "sequence": 22246,
+      "chapter_label": "HOS 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "“They won’t return into the land of Egypt; but the Assyrian will be their king, because they refused to repent.",
+      "ko": "저희가 애굽 땅으로 다시 가지 못하겠거늘 내게 돌아 오기를 싫어하니 앗수르 사람이 그 임금이 될 것이라",
+      "source_text_hash": "8d7af78541cfc64697a3407cb4f121aa13ffa380073670c52837f9dd7a428ad2",
+      "translation_text_hash": "e34f5a1721c45d07b86fedf61df5315a28bd675362986bd559633e77d77ab323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 애굽 땅으로 다시 가지 못하겠거늘 내게 돌아 오기를 싫어하니 앗수르 사람이 그 임금이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "e34f5a1721c45d07b86fedf61df5315a28bd675362986bd559633e77d77ab323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:6",
+      "sequence": 22247,
+      "chapter_label": "HOS 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "The sword will fall on their cities, and will destroy the bars of their gates, and will put an end to their plans.",
+      "ko": "칼이 저희의 성읍들을 치며 빗장을 깨뜨려 없이 하리니 이는 저희의 계책을 인함이니라",
+      "source_text_hash": "53fce5e6694742a459505a3be94fd839c2065a1b5ca76555a20b69eda313ad66",
+      "translation_text_hash": "b1c91c08e33006c2f4b6047e92db61b97c52a7bfadfa8b3afba507838f19ff72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칼이 저희의 성읍들을 치며 빗장을 깨뜨려 없이 하리니 이는 저희의 계책을 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "b1c91c08e33006c2f4b6047e92db61b97c52a7bfadfa8b3afba507838f19ff72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:7",
+      "sequence": 22248,
+      "chapter_label": "HOS 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "My people are determined to turn from me. Though they call to the Most High, he certainly won’t exalt them.",
+      "ko": "내 백성이 결심하고 내게서 물러가나니 비록 저희를 불러 위에 계신 자에게로 돌아오라 할찌라도 일어나는 자가 하나도 없도다",
+      "source_text_hash": "6b3cceb554db5a1d1a99d6f1dc547e093868536d53ae118fb32adb4e5c0f6e8f",
+      "translation_text_hash": "539cd3b13337123d745d006397e23bffbabc62c118851cbccfae6bc5f1638b01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 결심하고 내게서 물러가나니 비록 저희를 불러 위에 계신 자에게로 돌아오라 할찌라도 일어나는 자가 하나도 없도다"
+      ],
+      "raw_text_hashes": [
+        "539cd3b13337123d745d006397e23bffbabc62c118851cbccfae6bc5f1638b01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:8",
+      "sequence": 22249,
+      "chapter_label": "HOS 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "“How can I give you up, Ephraim? How can I hand you over, Israel? How can I make you like Admah? How can I make you like Zeboiim? My heart is turned within me, my compassion is aroused.",
+      "ko": "에브라임이여 내가 어찌 너를 놓겠느냐 이스라엘이여 내가 어찌 너를 버리겠느냐 내가 어찌 너를 아드마 같이 놓겠느냐 어찌 너를 스보임 같이 두겠느냐 내 마음이 내 속에서 돌아서 나의 긍휼이 온전히 불붙듯 하도다",
+      "source_text_hash": "c43607cb625ec80dcf910b097f416581e1555757c0244ec032785067bf39b287",
+      "translation_text_hash": "05aaa8989aebebf9f1dcb5e2980fc633c1f9283d89b213cd4d33158243a20d59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이여 내가 어찌 너를 놓겠느냐 이스라엘이여 내가 어찌 너를 버리겠느냐 내가 어찌 너를 아드마 같이 놓겠느냐 어찌 너를 스보임 같이 두겠느냐 내 마음이 내 속에서 돌아서 나의 긍휼이 온전히 불붙듯 하도다"
+      ],
+      "raw_text_hashes": [
+        "05aaa8989aebebf9f1dcb5e2980fc633c1f9283d89b213cd4d33158243a20d59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:9",
+      "sequence": 22250,
+      "chapter_label": "HOS 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "I will not execute the fierceness of my anger. I will not return to destroy Ephraim, for I am God, and not man—the Holy One among you. I will not come in wrath.",
+      "ko": "내가 나의 맹렬한 진노를 발하지 아니하며 내가 다시는 에브라임을 멸하지 아니하리니 이는 내가 사람이 아니요 하나님임이라 나는 네 가운데 거하는 거룩한 자니 진노함으로 네게 임하지 아니하리라",
+      "source_text_hash": "71418678b57e5fe25072c94bedbb07766f60fa57fe50fd67b7b4a36b759d8281",
+      "translation_text_hash": "c69514f4e1eb7d4b9741ca47db745528f571c40f1d5d8a6c57edb5f04c979883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 맹렬한 진노를 발하지 아니하며 내가 다시는 에브라임을 멸하지 아니하리니 이는 내가 사람이 아니요 하나님임이라 나는 네 가운데 거하는 거룩한 자니 진노함으로 네게 임하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "c69514f4e1eb7d4b9741ca47db745528f571c40f1d5d8a6c57edb5f04c979883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:10",
+      "sequence": 22251,
+      "chapter_label": "HOS 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "They will walk after the LORD, who will roar like a lion; for he will roar, and the children will come trembling from the west.",
+      "ko": "저희가 사자처럼 소리를 발하시는 여호와를 좇을 것이라 여호와께서 소리를 발하시면 자손들이 서편에서부터 떨며 오되",
+      "source_text_hash": "ada5eade9caff500f474267f200970d5e99909b3f22179f7bdcd2de29ed181d0",
+      "translation_text_hash": "08d9b1f79cb4450af56e25ef9ecd2db919f8e3129b08ca2641a6e2c95bf61994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 사자처럼 소리를 발하시는 여호와를 좇을 것이라 여호와께서 소리를 발하시면 자손들이 서편에서부터 떨며 오되"
+      ],
+      "raw_text_hashes": [
+        "08d9b1f79cb4450af56e25ef9ecd2db919f8e3129b08ca2641a6e2c95bf61994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:11",
+      "sequence": 22252,
+      "chapter_label": "HOS 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "They will come trembling like a bird out of Egypt, and like a dove out of the land of Assyria; and I will settle them in their houses,” says the LORD.",
+      "ko": "저희가 애굽에서부터 새 같이, 앗수르에서부터 비둘기 같이 떨며 오리니 내가 저희로 각 집에 머물게 하리라 나 여호와의 말이니라",
+      "source_text_hash": "f6d3a7c16b8434f656fdfdc092ec8a6027de7f97253f5b4f47d254f3208dd3b4",
+      "translation_text_hash": "d916538d4d1f16716e5bbcefefa5b0705c17ebceba547757ce87e4e30bdc2639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 애굽에서부터 새 같이, 앗수르에서부터 비둘기 같이 떨며 오리니 내가 저희로 각 집에 머물게 하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "d916538d4d1f16716e5bbcefefa5b0705c17ebceba547757ce87e4e30bdc2639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:11:12",
+      "sequence": 22253,
+      "chapter_label": "HOS 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "Ephraim surrounds me with falsehood, and the house of Israel with deceit. Judah still strays from God, and is unfaithful to the Holy One.",
+      "ko": "에브라임은 거짓으로, 이스라엘 족속은 궤휼로 나를 에워쌌고 유다는 하나님 곧 신실하시고 거룩하신 자에게 대하여 정함이 없도다",
+      "source_text_hash": "93f53c9404d66756ba910a976d04e784a6660ae75c0ef8a892689672a5b01054",
+      "translation_text_hash": "708746e6a4a0325ae5b127a5e5a583a452d2b6796f45241357adc4692c09895e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 거짓으로, 이스라엘 족속은 궤휼로 나를 에워쌌고 유다는 하나님 곧 신실하시고 거룩하신 자에게 대하여 정함이 없도다"
+      ],
+      "raw_text_hashes": [
+        "708746e6a4a0325ae5b127a5e5a583a452d2b6796f45241357adc4692c09895e"
+      ]
+    }
+  ]
+}

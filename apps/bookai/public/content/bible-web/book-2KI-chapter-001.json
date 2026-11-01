@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:001",
+  "unit_ordinal": 314,
+  "unit_label": "2KI 1",
+  "book_code": "2KI",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:1:1",
+      "sequence": 9535,
+      "chapter_label": "2KI 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Moab rebelled against Israel after the death of Ahab.",
+      "ko": "아합이 죽은 후에 모압이 이스라엘을 배반하였더라",
+      "source_text_hash": "be05f30086a78999412f7934339ae6c6d4d38c6010ef157d6b35ec91d35cfd3f",
+      "translation_text_hash": "41ec128fe0969ac168dcdafac3d03b085653a8edd248d4e498f859e821f1d835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 죽은 후에 모압이 이스라엘을 배반하였더라"
+      ],
+      "raw_text_hashes": [
+        "41ec128fe0969ac168dcdafac3d03b085653a8edd248d4e498f859e821f1d835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:2",
+      "sequence": 9536,
+      "chapter_label": "2KI 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Ahaziah fell down through the lattice in his upper room that was in Samaria, and was sick. So he sent messengers, and said to them, “Go, inquire of Baal Zebub, the god of Ekron, whether I will recover from this sickness.”",
+      "ko": "아하시야가 사마리아에 있는 그 다락 난간에서 떨어져 병들매 사자를 보내며 저희더러 이르되 가서 에그론의 신 바알세붑에게 이 병이 낫겠나 물어 보라 하니라",
+      "source_text_hash": "892a6d64c0c1d8bf68c0dbbdb6dbc1bc8a370c3c6fb175556ba08a755bd07eff",
+      "translation_text_hash": "f887c00d6d41ca264f45fbb4879ac858ff6e008595bf0fb260fe18be03c5b302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하시야가 사마리아에 있는 그 다락 난간에서 떨어져 병들매 사자를 보내며 저희더러 이르되 가서 에그론의 신 바알세붑에게 이 병이 낫겠나 물어 보라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f887c00d6d41ca264f45fbb4879ac858ff6e008595bf0fb260fe18be03c5b302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:3",
+      "sequence": 9537,
+      "chapter_label": "2KI 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "But the LORD’s angel said to Elijah the Tishbite, “Arise, go up to meet the messengers of the king of Samaria, and tell them, ‘Is it because there is no God in Israel that you go to inquire of Baal Zebub, the god of Ekron?",
+      "ko": "여호와의 사자가 디셉 사람 엘리야에게 이르시되 너는 일어나 올라가서 사마리아 왕의 사자를 만나서 저에게 이르기를 이스라엘에 하나님이 없어서 너희가 에그론의 신 바알세붑에게 물으러 가느냐",
+      "source_text_hash": "6c08bf22c56ec1b4a2da9c8f641cc7ea98a67e39e6d12615d62e2cd13227cfea",
+      "translation_text_hash": "a0a8034312b323c2879480f7624af31c6558acf1780044fe8d5bf304b37cc225",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 디셉 사람 엘리야에게 이르시되 너는 일어나 올라가서 사마리아 왕의 사자를 만나서 저에게 이르기를 이스라엘에 하나님이 없어서 너희가 에그론의 신 바알세붑에게 물으러 가느냐"
+      ],
+      "raw_text_hashes": [
+        "a0a8034312b323c2879480f7624af31c6558acf1780044fe8d5bf304b37cc225"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:4",
+      "sequence": 9538,
+      "chapter_label": "2KI 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Now therefore the LORD says, “You will not come down from the bed where you have gone up, but you will surely die.”’” Then Elijah departed.",
+      "ko": "그러므로 여호와의 말씀이 네가 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하라 엘리야가 이에 가니라",
+      "source_text_hash": "8f6e806a697f56a5a11e54047c3b76e3feba41eb2a701db2533b07b312b6f589",
+      "translation_text_hash": "f57bf2637449b2dc320bb1c00f6b05c220f0fc6b8c54de4ace1d6a9b38dc2596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와의 말씀이 네가 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하라 엘리야가 이에 가니라"
+      ],
+      "raw_text_hashes": [
+        "f57bf2637449b2dc320bb1c00f6b05c220f0fc6b8c54de4ace1d6a9b38dc2596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:5",
+      "sequence": 9539,
+      "chapter_label": "2KI 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "The messengers returned to him, and he said to them, “Why is it that you have returned?”",
+      "ko": "사자들이 왕에게 돌아오니 왕이 이르되 너희는 어찌하여 돌아왔느냐",
+      "source_text_hash": "9837aab76945326e7e05c265b1dfee24b2353bf06e5796d101e95da21b46dd45",
+      "translation_text_hash": "59621bd3f56e529ca34fd52a4602287f820a7c54fae2773e90d9cc65bfa31c2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들이 왕에게 돌아오니 왕이 이르되 너희는 어찌하여 돌아왔느냐"
+      ],
+      "raw_text_hashes": [
+        "59621bd3f56e529ca34fd52a4602287f820a7c54fae2773e90d9cc65bfa31c2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:6",
+      "sequence": 9540,
+      "chapter_label": "2KI 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "They said to him, “A man came up to meet us, and said to us, ‘Go, return to the king who sent you, and tell him, “The LORD says, ‘Is it because there is no God in Israel that you send to inquire of Baal Zebub, the god of Ekron? Therefore you will not come down from the bed where you have gone up, but you will surely die.’”’”",
+      "ko": "저희가 고하되 한 사람이 올라와서 우리를 만나 이르되 너희는 너희를 보낸 왕에게로 돌아가서 저에게 고하기를 여호와의 말씀이 이스라엘에 하나님이 없어서 네가 에그론의 신 바알세붑에게 물으려고 보내느냐 그러므로 네가 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하라 하더이다",
+      "source_text_hash": "cfc7b17ed55a11b7dcc35a5096bfbb5b31b7e42c4f04ef070e930b55f9820215",
+      "translation_text_hash": "325e9e01dd918526093544eb7d5f2a439e36372accf5d4dee539e3ef43117dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 고하되 한 사람이 올라와서 우리를 만나 이르되 너희는 너희를 보낸 왕에게로 돌아가서 저에게 고하기를 여호와의 말씀이 이스라엘에 하나님이 없어서 네가 에그론의 신 바알세붑에게 물으려고 보내느냐 그러므로 네가 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "325e9e01dd918526093544eb7d5f2a439e36372accf5d4dee539e3ef43117dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:7",
+      "sequence": 9541,
+      "chapter_label": "2KI 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "He said to them, “What kind of man was he who came up to meet you and told you these words?”",
+      "ko": "왕이 저희에게 이르되 올라와서 너희를 만나 이 말을 너희에게 고한 그 사람의 모양이 어떠하더냐",
+      "source_text_hash": "12e49c72235d94725a8f1a554b8bdbbfaadb7a6f18a2ef65bca0547de2bf44b8",
+      "translation_text_hash": "a72a42c59daa95cada15699b55246fb3750f84b6ca52901b78003d0a83ee6d23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저희에게 이르되 올라와서 너희를 만나 이 말을 너희에게 고한 그 사람의 모양이 어떠하더냐"
+      ],
+      "raw_text_hashes": [
+        "a72a42c59daa95cada15699b55246fb3750f84b6ca52901b78003d0a83ee6d23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:8",
+      "sequence": 9542,
+      "chapter_label": "2KI 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "They answered him, “He was a hairy man, and wearing a leather belt around his waist.” He said, “It’s Elijah the Tishbite.”",
+      "ko": "저희가 대답하되 그는 털이 많은 사람인데 허리에 가죽 띠를 띠었더이다 왕이 가로되 그는 디셉 사람 엘리야로다",
+      "source_text_hash": "ed258e23228506460b3f5a927937ddc41cca6512a9d3c36b5ae578e101993a32",
+      "translation_text_hash": "cea315d7aa2deacd6ed2707c7b61f92ebc6aed681dedc8c7cda854ef9c2ab8e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하되 그는 털이 많은 사람인데 허리에 가죽 띠를 띠었더이다 왕이 가로되 그는 디셉 사람 엘리야로다"
+      ],
+      "raw_text_hashes": [
+        "cea315d7aa2deacd6ed2707c7b61f92ebc6aed681dedc8c7cda854ef9c2ab8e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:9",
+      "sequence": 9543,
+      "chapter_label": "2KI 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Then the king sent a captain of fifty with his fifty to him. He went up to him; and behold, he was sitting on the top of the hill. He said to him, “Man of God, the king has said, ‘Come down!’”",
+      "ko": "이에 오십부장과 그 오십인을 엘리야에게로 보내매 저가 엘리야에게로 올라가서 본즉 산 꼭대기에 앉았는지라 저가 엘리야에게 이르되 하나님의 사람이여 왕의 말씀이 내려오라 하셨나이다",
+      "source_text_hash": "62e117009a549faa5f126373ab6874989d0c44f97e2ff6c6ba9458b39a78cccf",
+      "translation_text_hash": "3a7883dae504130edc903e321ff983ff88e21149b450f44771ac380b8f3b7d05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 오십부장과 그 오십인을 엘리야에게로 보내매 저가 엘리야에게로 올라가서 본즉 산 꼭대기에 앉았는지라 저가 엘리야에게 이르되 하나님의 사람이여 왕의 말씀이 내려오라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "3a7883dae504130edc903e321ff983ff88e21149b450f44771ac380b8f3b7d05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:10",
+      "sequence": 9544,
+      "chapter_label": "2KI 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Elijah answered to the captain of fifty, “If I am a man of God, then let fire come down from the sky and consume you and your fifty!” Then fire came down from the sky, and consumed him and his fifty.",
+      "ko": "엘리야가 오십부장에게 대답하여 가로되 내가 만일 하나님의 사람이면 불이 하늘에서 내려와서 너와 너의 오십인을 사를찌로다 하매 불이 곧 하늘에서 내려와서 저와 그 오십인을 살랐더라",
+      "source_text_hash": "0ba17eb7e8fe6d5f267b65beced6b1734bd1f873f84769a184fc9d3288c75805",
+      "translation_text_hash": "12e026c243b28c2b72f46760f16261e994ed47a4e3ae418b613454da1edbe2d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 오십부장에게 대답하여 가로되 내가 만일 하나님의 사람이면 불이 하늘에서 내려와서 너와 너의 오십인을 사를찌로다 하매 불이 곧 하늘에서 내려와서 저와 그 오십인을 살랐더라"
+      ],
+      "raw_text_hashes": [
+        "12e026c243b28c2b72f46760f16261e994ed47a4e3ae418b613454da1edbe2d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:11",
+      "sequence": 9545,
+      "chapter_label": "2KI 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Again he sent to him another captain of fifty with his fifty. He answered him, “Man of God, the king has said, ‘Come down quickly!’”",
+      "ko": "왕이 다시 다른 오십부장과 그 오십인을 엘리야에게로 보내니 저가 엘리야에게 일러 가로되 하나님의 사람이여 왕의 말씀이 속히 내려오라 하셨나이다",
+      "source_text_hash": "32be0af52b048d28ba62030717343f1d4f708f6d355017d64a142c88a74ce5f4",
+      "translation_text_hash": "32106cf6ed1b43e682533456a62d4775ea96f23767fe4a5fc7efb92e05e3b5e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 다시 다른 오십부장과 그 오십인을 엘리야에게로 보내니 저가 엘리야에게 일러 가로되 하나님의 사람이여 왕의 말씀이 속히 내려오라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "32106cf6ed1b43e682533456a62d4775ea96f23767fe4a5fc7efb92e05e3b5e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:12",
+      "sequence": 9546,
+      "chapter_label": "2KI 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Elijah answered them, “If I am a man of God, then let fire come down from the sky and consume you and your fifty!” Then God’s fire came down from the sky, and consumed him and his fifty.",
+      "ko": "엘리야가 저희에게 대답하여 가로되 내가 만일 하나님의 사람이면 불이 하늘에서 내려와서 너와 너의 오십인을 사를찌로다 하매 하나님의 불이 곧 하늘에서 내려와서 저와 그 오십인을 살랐더라",
+      "source_text_hash": "432ce160396aa49bdb9a537e908f61b96f39c02efa98b739c8e61c916deb4bcc",
+      "translation_text_hash": "fe698d05f371b4597b043b2fdfce57d620adcda7cd6b9c02ea19ce0b427aafeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 저희에게 대답하여 가로되 내가 만일 하나님의 사람이면 불이 하늘에서 내려와서 너와 너의 오십인을 사를찌로다 하매 하나님의 불이 곧 하늘에서 내려와서 저와 그 오십인을 살랐더라"
+      ],
+      "raw_text_hashes": [
+        "fe698d05f371b4597b043b2fdfce57d620adcda7cd6b9c02ea19ce0b427aafeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:13",
+      "sequence": 9547,
+      "chapter_label": "2KI 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Again he sent the captain of a third fifty with his fifty. The third captain of fifty went up, and came and fell on his knees before Elijah, and begged him, and said to him, “Man of God, please let my life and the life of these fifty of your servants be precious in your sight.",
+      "ko": "왕이 세번째 오십부장과 그 오십인을 보낸지라 세째 오십부장이 올라가서 엘리야의 앞에 이르러 꿇어 엎드려 간구하여 가로되 하나님의 사람이여 원컨대 나의 생명과 당신의 종인 이 오십인의 생명을 당신은 귀히 보소서",
+      "source_text_hash": "9f69cfa877fd815e4191d74e0d7789f70b2b3582c43424ee737ce8af41c95075",
+      "translation_text_hash": "704e32806badc2fade82ce87dc414cda06171d8fc7b4e811fef912a484582b17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 세번째 오십부장과 그 오십인을 보낸지라 세째 오십부장이 올라가서 엘리야의 앞에 이르러 꿇어 엎드려 간구하여 가로되 하나님의 사람이여 원컨대 나의 생명과 당신의 종인 이 오십인의 생명을 당신은 귀히 보소서"
+      ],
+      "raw_text_hashes": [
+        "704e32806badc2fade82ce87dc414cda06171d8fc7b4e811fef912a484582b17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:14",
+      "sequence": 9548,
+      "chapter_label": "2KI 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, fire came down from the sky and consumed the last two captains of fifty with their fifties. But now let my life be precious in your sight.”",
+      "ko": "불이 하늘에서 내려와서 전번의 오십부장 둘과 그 오십인들을 살랐거니와 나의 생명을 당신은 귀히 보소서 하매",
+      "source_text_hash": "396f4679d2b6c1d49f213d8d9fccf7ba1fcdf65c522483859f54fc7ea453b2e4",
+      "translation_text_hash": "581144e0dfaef6da781ca06f67e78505b0e0dc707cf67a75afb48ca1d0a5ca3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 하늘에서 내려와서 전번의 오십부장 둘과 그 오십인들을 살랐거니와 나의 생명을 당신은 귀히 보소서 하매"
+      ],
+      "raw_text_hashes": [
+        "581144e0dfaef6da781ca06f67e78505b0e0dc707cf67a75afb48ca1d0a5ca3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:15",
+      "sequence": 9549,
+      "chapter_label": "2KI 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD’s angel said to Elijah, “Go down with him. Don’t be afraid of him.” Then he arose and went down with him to the king.",
+      "ko": "여호와의 사자가 엘리야에게 이르되 너는 저를 두려워 말고 함께 내려가라 하신지라 엘리야가 곧 일어나 저와 함께 내려와서 왕에게 이르러",
+      "source_text_hash": "3a411942c6409637469999c7781c2cb338217102244cade6e59dce3dc790239e",
+      "translation_text_hash": "8ec62ae8dbcc6f962c558167fdf1dabcfce3c551d52125b5c9adf25376d645a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 엘리야에게 이르되 너는 저를 두려워 말고 함께 내려가라 하신지라 엘리야가 곧 일어나 저와 함께 내려와서 왕에게 이르러"
+      ],
+      "raw_text_hashes": [
+        "8ec62ae8dbcc6f962c558167fdf1dabcfce3c551d52125b5c9adf25376d645a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:16",
+      "sequence": 9550,
+      "chapter_label": "2KI 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "He said to him, “The LORD says, ‘Because you have sent messengers to inquire of Baal Zebub, the god of Ekron, is it because there is no God in Israel to inquire of his word? Therefore you will not come down from the bed where you have gone up, but you will surely die.’”",
+      "ko": "고하되 여호와의 말씀이 네가 사자를 보내어 에그론의 신 바알세붑에게 물으려하니 이스라엘에 그 말을 물을만한 하나님이 없음이냐 그러므로 네가 그 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하니라",
+      "source_text_hash": "8109cfe70615bb31a4a3eb41917977219d2da80db780ce71723dafe695e681d3",
+      "translation_text_hash": "d4453b12e738cf1a1e1bc42659aaa4cb711ae2c7e08111ee5db8973914375d09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고하되 여호와의 말씀이 네가 사자를 보내어 에그론의 신 바알세붑에게 물으려하니 이스라엘에 그 말을 물을만한 하나님이 없음이냐 그러므로 네가 그 올라간 침상에서 내려오지 못할찌라 네가 반드시 죽으리라 하셨다 하니라"
+      ],
+      "raw_text_hashes": [
+        "d4453b12e738cf1a1e1bc42659aaa4cb711ae2c7e08111ee5db8973914375d09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:17",
+      "sequence": 9551,
+      "chapter_label": "2KI 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "So he died according to the LORD’s word which Elijah had spoken. Jehoram began to reign in his place in the second year of Jehoram the son of Jehoshaphat king of Judah, because he had no son.",
+      "ko": "왕이 엘리야의 전한 여호와의 말씀대로 죽고 저가 아들이 없으므로 여호람이 대신하여 왕이 되니 유다 왕 여호사밧의 아들 여호람의 제 이년이었더라",
+      "source_text_hash": "83d665b65f4f8f7dcbc4c90494acab0d8c543bc4f3418a26b782ac04a1a7a9d4",
+      "translation_text_hash": "ebe3b13e4317f7d0f99b1568d507a0561f3eb4254bc51709074f22792355da11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 엘리야의 전한 여호와의 말씀대로 죽고 저가 아들이 없으므로 여호람이 대신하여 왕이 되니 유다 왕 여호사밧의 아들 여호람의 제 이년이었더라"
+      ],
+      "raw_text_hashes": [
+        "ebe3b13e4317f7d0f99b1568d507a0561f3eb4254bc51709074f22792355da11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:1:18",
+      "sequence": 9552,
+      "chapter_label": "2KI 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Now the rest of the acts of Ahaziah which he did, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "아하시야의 남은 사적은 모두 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "c1c494719d34ddf2bcec71aeda3dda48e2d9f0b3586e2d1696a27838e6a3bd4a",
+      "translation_text_hash": "ba70812c10e521d4ad6514f2fafb9ff859a8029b073c8f0a8775fd7ad43c2e0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하시야의 남은 사적은 모두 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "ba70812c10e521d4ad6514f2fafb9ff859a8029b073c8f0a8775fd7ad43c2e0d"
+      ]
+    }
+  ]
+}

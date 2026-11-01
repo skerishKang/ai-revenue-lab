@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:020",
+  "unit_ordinal": 1038,
+  "unit_label": "ACT 20",
+  "book_code": "ACT",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:20:1",
+      "sequence": 27625,
+      "chapter_label": "ACT 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "After the uproar had ceased, Paul sent for the disciples, took leave of them, and departed to go into Macedonia.",
+      "ko": "소요가 그치매 바울이 제자들을 불러 권한 후에 작별하고 떠나 마게도냐로 가니라",
+      "source_text_hash": "c9cb7e8a01e4c55e5aeeb79219f378644002ecdd4041daf763f7e98fa3f68e17",
+      "translation_text_hash": "5ce3e064b6f20eaaba990815e48782b53516558683453d730458c31aae708508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소요가 그치매 바울이 제자들을 불러 권한 후에 작별하고 떠나 마게도냐로 가니라"
+      ],
+      "raw_text_hashes": [
+        "5ce3e064b6f20eaaba990815e48782b53516558683453d730458c31aae708508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:2",
+      "sequence": 27626,
+      "chapter_label": "ACT 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "When he had gone through those parts and had encouraged them with many words, he came into Greece.",
+      "ko": "그 지경으로 다녀가며 여러 말로 제자들에게 권하고 헬라에 이르러",
+      "source_text_hash": "883fe74821b8c1c40c69bf93def5bbe2f7be74db1dc8c549ecdb11d046a937b4",
+      "translation_text_hash": "7e1fd8bb55ecab689ae33af49a7b36931f3c2b15b06dc348a07caddf6e98a62a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경으로 다녀가며 여러 말로 제자들에게 권하고 헬라에 이르러"
+      ],
+      "raw_text_hashes": [
+        "7e1fd8bb55ecab689ae33af49a7b36931f3c2b15b06dc348a07caddf6e98a62a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:3",
+      "sequence": 27627,
+      "chapter_label": "ACT 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "When he had spent three months there, and a plot was made against him by Jews as he was about to set sail for Syria, he determined to return through Macedonia.",
+      "ko": "거기 석 달을 있다가 배 타고 수리아로 가고자 할 그 때에 유대인들이 자기를 해하려고 공모하므로 마게도냐로 다녀 돌아가기를 작정하니",
+      "source_text_hash": "60bb7f8fedcee7d2874e596f385d97841f087f3aa9914068973a4978c418dbcf",
+      "translation_text_hash": "fdcd44178b0fbda7d85e4c35ebc1860c489f33ee82689f01438a4d7ab279285f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 석 달을 있다가 배 타고 수리아로 가고자 할 그 때에 유대인들이 자기를 해하려고 공모하므로 마게도냐로 다녀 돌아가기를 작정하니"
+      ],
+      "raw_text_hashes": [
+        "fdcd44178b0fbda7d85e4c35ebc1860c489f33ee82689f01438a4d7ab279285f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:4",
+      "sequence": 27628,
+      "chapter_label": "ACT 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "These accompanied him as far as Asia: Sopater of Beroea, Aristarchus and Secundus of the Thessalonians, Gaius of Derbe, Timothy, and Tychicus and Trophimus of Asia.",
+      "ko": "아시아까지 함께 가는 자는 베뢰아 사람 부로의 아들 소바더와 데살로니가 사람 아리스다고와 세군도와 더베 사람 가이오와 및 디모데와 아시아 사람 두기고와 드로비모라",
+      "source_text_hash": "cf1a722219e9979e1b8b9d1781d304e3c55dbe9b2fe54c04701822af24db0f59",
+      "translation_text_hash": "85c6ae8ed63ee64a1a9f12b9f8cca9470bfa9d8a15406f930d6148ffeff4c9e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아시아까지 함께 가는 자는 베뢰아 사람 부로의 아들 소바더와 데살로니가 사람 아리스다고와 세군도와 더베 사람 가이오와 및 디모데와 아시아 사람 두기고와 드로비모라"
+      ],
+      "raw_text_hashes": [
+        "85c6ae8ed63ee64a1a9f12b9f8cca9470bfa9d8a15406f930d6148ffeff4c9e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:5",
+      "sequence": 27629,
+      "chapter_label": "ACT 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "But these had gone ahead, and were waiting for us at Troas.",
+      "ko": "그들은 먼저 가서 드로아에서 우리를 기다리더라",
+      "source_text_hash": "79783442295203a21486f319a168e50842c0090edefba74dcd19c46ee6119ee4",
+      "translation_text_hash": "27c5d3747398163222c28623b2148d721b31338483e462d050a70c84da4b2a04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 먼저 가서 드로아에서 우리를 기다리더라"
+      ],
+      "raw_text_hashes": [
+        "27c5d3747398163222c28623b2148d721b31338483e462d050a70c84da4b2a04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:6",
+      "sequence": 27630,
+      "chapter_label": "ACT 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "We sailed away from Philippi after the days of Unleavened Bread, and came to them at Troas in five days, where we stayed seven days.",
+      "ko": "우리는 무교절 후에 빌립보에서 배로 떠나 닷새만에 드로아에 있는 그들에게 가서 이레를 머무니라",
+      "source_text_hash": "0ce23bcd5ef16406b849028f52dd609b21cc5af01f83955ca62cdd86d14069c5",
+      "translation_text_hash": "43e0b001ef264f46f2987dd9e048e061ea655215286d3c8a44d55328241e5ba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 무교절 후에 빌립보에서 배로 떠나 닷새만에 드로아에 있는 그들에게 가서 이레를 머무니라"
+      ],
+      "raw_text_hashes": [
+        "43e0b001ef264f46f2987dd9e048e061ea655215286d3c8a44d55328241e5ba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:7",
+      "sequence": 27631,
+      "chapter_label": "ACT 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "On the first day of the week, when the disciples were gathered together to break bread, Paul talked with them, intending to depart on the next day; and continued his speech until midnight.",
+      "ko": "안식 후 첫날에 우리가 떡을 떼려 하여 모였더니 바울이 이튿날 떠나고자 하여 저희에게 강론할쌔 말을 밤중까지 계속하매",
+      "source_text_hash": "29b626b26bf799ed76eb0b737628bdab2e85b0748b2ed6a651fe78017af4c15e",
+      "translation_text_hash": "7f3310093f1df3bbdbafba58a58b24975b806e4a6a340b8535e061ccf22c87f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식 후 첫날에 우리가 떡을 떼려 하여 모였더니 바울이 이튿날 떠나고자 하여 저희에게 강론할쌔 말을 밤중까지 계속하매"
+      ],
+      "raw_text_hashes": [
+        "7f3310093f1df3bbdbafba58a58b24975b806e4a6a340b8535e061ccf22c87f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:8",
+      "sequence": 27632,
+      "chapter_label": "ACT 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "There were many lights in the upper room where we were gathered together.",
+      "ko": "우리의 모인 윗다락에 등불을 많이 켰는데",
+      "source_text_hash": "5d6daba6754a733542ea052644c556b9a5344d3fa0bea6fb5c9ff543e8c76020",
+      "translation_text_hash": "31a283dbdbf140b3963b08289cc3292b6f2efbe3e43f14b14e70d4326d7fa744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 모인 윗다락에 등불을 많이 켰는데"
+      ],
+      "raw_text_hashes": [
+        "31a283dbdbf140b3963b08289cc3292b6f2efbe3e43f14b14e70d4326d7fa744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:9",
+      "sequence": 27633,
+      "chapter_label": "ACT 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "A certain young man named Eutychus sat in the window, weighed down with deep sleep. As Paul spoke still longer, being weighed down by his sleep, he fell down from the third floor and was taken up dead.",
+      "ko": "유두고라 하는 청년이 창에 걸터 앉았다가 깊이 졸더니 바울이 강론하기를 더 오래 하매 졸음을 이기지 못하여 삼 층 누에서 떨어지거늘 일으켜 보니 죽었는지라",
+      "source_text_hash": "56d19ccd2828d90334119b522167e54e0f6c990d9a7cb708f6c2fa28f517368b",
+      "translation_text_hash": "c26dde0e579d13b548d88f84b7560c37c0c684ada9238616b256ae9ded6c23d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유두고라 하는 청년이 창에 걸터 앉았다가 깊이 졸더니 바울이 강론하기를 더 오래 하매 졸음을 이기지 못하여 삼 층 누에서 떨어지거늘 일으켜 보니 죽었는지라"
+      ],
+      "raw_text_hashes": [
+        "c26dde0e579d13b548d88f84b7560c37c0c684ada9238616b256ae9ded6c23d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:10",
+      "sequence": 27634,
+      "chapter_label": "ACT 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Paul went down and fell upon him, and embracing him said, “Don’t be troubled, for his life is in him.”",
+      "ko": "바울이 내려가서 그 위에 엎드려 그 몸을 안고 말하되 떠들지 말라 생명이 저에게 있다 하고",
+      "source_text_hash": "a1ed519729a6cc17b5bb468c63b7394ba8dcab32808c95eb358c813808d8c915",
+      "translation_text_hash": "05d1317d05613ecc6e33283765747d15721247fc73c529e8a89d8b4360299f6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 내려가서 그 위에 엎드려 그 몸을 안고 말하되 떠들지 말라 생명이 저에게 있다 하고"
+      ],
+      "raw_text_hashes": [
+        "05d1317d05613ecc6e33283765747d15721247fc73c529e8a89d8b4360299f6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:11",
+      "sequence": 27635,
+      "chapter_label": "ACT 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "When he had gone up, had broken bread and eaten, and had talked with them a long while, even until break of day, he departed.",
+      "ko": "올라가 떡을 떼어 먹고 오래 동안 곧 날이 새기까지 이야기하고 떠나니라",
+      "source_text_hash": "135c9f619da79d4cd6d8f5a4c2bc5822d076bdcfb5d9d7098575031d923cc592",
+      "translation_text_hash": "0293236bee8885dd23ae4dd5d3abc811471cddd7d254c9e3d747d9f9930b2e9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올라가 떡을 떼어 먹고 오래 동안 곧 날이 새기까지 이야기하고 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "0293236bee8885dd23ae4dd5d3abc811471cddd7d254c9e3d747d9f9930b2e9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:12",
+      "sequence": 27636,
+      "chapter_label": "ACT 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "They brought the boy in alive, and were greatly comforted.",
+      "ko": "사람들이 살아난 아이를 데리고 와서 위로를 적지 않게 받았더라",
+      "source_text_hash": "9eefbc159396152965dc0e1927a675f508d2ed3ade55a36af6a4a25b85641cb3",
+      "translation_text_hash": "efa45f89d07a04d823df3affc40cb616b4cf1b07d2d607766500a96b750ecf60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 살아난 아이를 데리고 와서 위로를 적지 않게 받았더라"
+      ],
+      "raw_text_hashes": [
+        "efa45f89d07a04d823df3affc40cb616b4cf1b07d2d607766500a96b750ecf60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:13",
+      "sequence": 27637,
+      "chapter_label": "ACT 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "But we, going ahead to the ship, set sail for Assos, intending to take Paul aboard there; for he had so arranged, intending himself to go by land.",
+      "ko": "우리는 앞서 배를 타고 앗소에서 바울을 태우려고 그리로 행선하니 이는 자기가 도보로 가고자 하여 이렇게 정하여 준 것이라",
+      "source_text_hash": "f71e14d66dd9447e5ba1ed3d3a45e562f1eaffe0a34e4fea8cacfc6e8b4805c3",
+      "translation_text_hash": "b2b869d76114da025e29cb8e6369084ffafe1a510799a4a0e3c7917c88a6637f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 앞서 배를 타고 앗소에서 바울을 태우려고 그리로 행선하니 이는 자기가 도보로 가고자 하여 이렇게 정하여 준 것이라"
+      ],
+      "raw_text_hashes": [
+        "b2b869d76114da025e29cb8e6369084ffafe1a510799a4a0e3c7917c88a6637f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:14",
+      "sequence": 27638,
+      "chapter_label": "ACT 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "When he met us at Assos, we took him aboard and came to Mitylene.",
+      "ko": "바울이 앗소에서 우리를 만나니 우리가 배에 올리고 미둘레네에 가서",
+      "source_text_hash": "036e0dd42c6291472674d84fb68cc439109c5d66440fb3c03a4f12d5c4cdcd3c",
+      "translation_text_hash": "170a42437c5d31b4cd571899a88568e62e7c89df8745a9728b149137884c2310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 앗소에서 우리를 만나니 우리가 배에 올리고 미둘레네에 가서"
+      ],
+      "raw_text_hashes": [
+        "170a42437c5d31b4cd571899a88568e62e7c89df8745a9728b149137884c2310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:15",
+      "sequence": 27639,
+      "chapter_label": "ACT 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Sailing from there, we came the following day opposite Chios. The next day we touched at Samos and stayed at Trogyllium, and the day after we came to Miletus.",
+      "ko": "거기서 떠나 이튿날 기오 앞에 오고 그 이튿날 사모에 들리고 또 그 다음날 밀레도에 이르니라",
+      "source_text_hash": "0052bb7780e761fa9c942c8b218f1fbd7036a29ca57763e7a602d3196bbd8f46",
+      "translation_text_hash": "dd4676b0e1d2380c3c48c7b3553aedecf16228e222813ab7b58bc480b45a4079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 떠나 이튿날 기오 앞에 오고 그 이튿날 사모에 들리고 또 그 다음날 밀레도에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "dd4676b0e1d2380c3c48c7b3553aedecf16228e222813ab7b58bc480b45a4079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:16",
+      "sequence": 27640,
+      "chapter_label": "ACT 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "For Paul had determined to sail past Ephesus, that he might not have to spend time in Asia; for he was hastening, if it were possible for him, to be in Jerusalem on the day of Pentecost.",
+      "ko": "바울이 아시아에서 지체치 않기 위하여 에베소를 지나 행선하기로 작정하였으니 이는 될수 있는대로 오순절 안에 예루살렘에 이르려고 급히 감이러라",
+      "source_text_hash": "9736bef44255993745775967bd748ea9ffd572c9425ecd9e773f95131120fe37",
+      "translation_text_hash": "edccf5b24ade585919f060314a595045cf177ee51782ed941f94eb534ede6267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 아시아에서 지체치 않기 위하여 에베소를 지나 행선하기로 작정하였으니 이는 될수 있는대로 오순절 안에 예루살렘에 이르려고 급히 감이러라"
+      ],
+      "raw_text_hashes": [
+        "edccf5b24ade585919f060314a595045cf177ee51782ed941f94eb534ede6267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:17",
+      "sequence": 27641,
+      "chapter_label": "ACT 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "From Miletus he sent to Ephesus and called to himself the elders of the assembly.",
+      "ko": "바울이 밀레도에서 사람을 에베소로 보내어 교회 장로들을 청하니",
+      "source_text_hash": "8c7b3654bb00cacefd943eaf90f1cee1b242879019853db73ee7a422b18d667b",
+      "translation_text_hash": "88c075a082fd9ce982c9f8250a18de38b215b8626981a0c79d32a39879b08333",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 밀레도에서 사람을 에베소로 보내어 교회 장로들을 청하니"
+      ],
+      "raw_text_hashes": [
+        "88c075a082fd9ce982c9f8250a18de38b215b8626981a0c79d32a39879b08333"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:18",
+      "sequence": 27642,
+      "chapter_label": "ACT 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "When they had come to him, he said to them, “You yourselves know, from the first day that I set foot in Asia, how I was with you all the time,",
+      "ko": "오매 저희에게 말하되 아시아에 들어온 첫날부터 지금까지 내가 항상 너희 가운데서 어떻게 행한 것을 너희도 아는바니",
+      "source_text_hash": "caa36907c030eda679db25c770b2aad3ab4868c902d300955864416fca7d9094",
+      "translation_text_hash": "484b53bb652e571b60d8178a7f1d1f243bb9e4c1616dfd0e223bcbc7e029b49d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오매 저희에게 말하되 아시아에 들어온 첫날부터 지금까지 내가 항상 너희 가운데서 어떻게 행한 것을 너희도 아는바니"
+      ],
+      "raw_text_hashes": [
+        "484b53bb652e571b60d8178a7f1d1f243bb9e4c1616dfd0e223bcbc7e029b49d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:19",
+      "sequence": 27643,
+      "chapter_label": "ACT 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "serving the Lord with all humility, with many tears, and with trials which happened to me by the plots of the Jews;",
+      "ko": "곧 모든 겸손과 눈물이며 유대인의 간계를 인하여 당한 시험을 참고 주를 섬긴 것과",
+      "source_text_hash": "6db5b076f58e088d155788d482502eddcdde5bddc6db1b479d4bdd197d58f985",
+      "translation_text_hash": "1eadf823d0b2308e79bfc9252d4ab4e4a6f032f6c8f336bdf4f9277044f17f45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 모든 겸손과 눈물이며 유대인의 간계를 인하여 당한 시험을 참고 주를 섬긴 것과"
+      ],
+      "raw_text_hashes": [
+        "1eadf823d0b2308e79bfc9252d4ab4e4a6f032f6c8f336bdf4f9277044f17f45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:20",
+      "sequence": 27644,
+      "chapter_label": "ACT 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "how I didn’t shrink from declaring to you anything that was profitable, teaching you publicly and from house to house,",
+      "ko": "유익한 것은 무엇이든지 공중 앞에서나 각 집에서나 꺼림이 없이 너희에게 전하여 가르치고",
+      "source_text_hash": "237f1c7bfd647aeb5ad0008ee8f559628194752eebcc5599ffeb4007238e55a8",
+      "translation_text_hash": "5c07eb82b4b70fe22eef7c153d5db857ae0e4abbe32f07f55c3d33eafff156f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유익한 것은 무엇이든지 공중 앞에서나 각 집에서나 꺼림이 없이 너희에게 전하여 가르치고"
+      ],
+      "raw_text_hashes": [
+        "5c07eb82b4b70fe22eef7c153d5db857ae0e4abbe32f07f55c3d33eafff156f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:21",
+      "sequence": 27645,
+      "chapter_label": "ACT 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "testifying both to Jews and to Greeks repentance toward God and faith toward our Lord Jesus.",
+      "ko": "유대인과 헬라인들에게 하나님께 대한 회개와 우리 주 예수 그리스도께 대한 믿음을 증거한 것이라",
+      "source_text_hash": "ba757e9b5b573b2d3c40e773ceaed367d52cbc4acbe632d227007432370cee07",
+      "translation_text_hash": "2290f7c18baf2c61539280de471d134ac95072f05a505021fd3ec51c66cdfca4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인과 헬라인들에게 하나님께 대한 회개와 우리 주 예수 그리스도께 대한 믿음을 증거한 것이라"
+      ],
+      "raw_text_hashes": [
+        "2290f7c18baf2c61539280de471d134ac95072f05a505021fd3ec51c66cdfca4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:22",
+      "sequence": 27646,
+      "chapter_label": "ACT 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "Now, behold, I go bound by the Spirit to Jerusalem, not knowing what will happen to me there;",
+      "ko": "보라 이제 나는 심령에 매임을 받아 예루살렘으로 가는데 저기서 무슨 일을 만날는지 알지 못하노라",
+      "source_text_hash": "95c23081c8dc1e4179242e44b6ee119be80a964b1dcf7c96f6e0299675d7627f",
+      "translation_text_hash": "a6ef425968271ffe77aef02f54b9335eb091425a44f1fd2f8ebc421f0ca15e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이제 나는 심령에 매임을 받아 예루살렘으로 가는데 저기서 무슨 일을 만날는지 알지 못하노라"
+      ],
+      "raw_text_hashes": [
+        "a6ef425968271ffe77aef02f54b9335eb091425a44f1fd2f8ebc421f0ca15e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:23",
+      "sequence": 27647,
+      "chapter_label": "ACT 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "except that the Holy Spirit testifies in every city, saying that bonds and afflictions wait for me.",
+      "ko": "오직 성령이 각 성에서 내게 증거하여 결박과 환난이 나를 기다린다 하시나",
+      "source_text_hash": "e5ee8935c50f909b15878316229cbf0fa5875deb2708334023f8ea2726803cd9",
+      "translation_text_hash": "0ffa7211488511da180383c50f52cfd1db4e5e1588f3238239b4c24071ebeafa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 성령이 각 성에서 내게 증거하여 결박과 환난이 나를 기다린다 하시나"
+      ],
+      "raw_text_hashes": [
+        "0ffa7211488511da180383c50f52cfd1db4e5e1588f3238239b4c24071ebeafa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:24",
+      "sequence": 27648,
+      "chapter_label": "ACT 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "But these things don’t count; nor do I hold my life dear to myself, so that I may finish my race with joy, and the ministry which I received from the Lord Jesus, to fully testify to the Good News of the grace of God.",
+      "ko": "나의 달려갈 길과 주 예수께 받은 사명 곧 하나님의 은혜의 복음 증거하는 일을 마치려 함에는 나의 생명을 조금도 귀한 것으로 여기지 아니하노라",
+      "source_text_hash": "1ac845f3caa75e27a24bab437b859077b98f2e631c4b787992b437eeea19d5a1",
+      "translation_text_hash": "846430e744caae44854b98a0eb9abe904e21a7f88a7791887549752fa553c6bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 달려갈 길과 주 예수께 받은 사명 곧 하나님의 은혜의 복음 증거하는 일을 마치려 함에는 나의 생명을 조금도 귀한 것으로 여기지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "846430e744caae44854b98a0eb9abe904e21a7f88a7791887549752fa553c6bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:25",
+      "sequence": 27649,
+      "chapter_label": "ACT 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "“Now, behold, I know that you all, among whom I went about preaching God’s Kingdom, will see my face no more.",
+      "ko": "보라 내가 너희 중에 왕래하며 하나님 나라를 전파하였으나 지금은 너희가 다 내 얼굴을 다시 보지 못할줄 아노라",
+      "source_text_hash": "27b997bedebacc23c37c0ee6100d4779ce0bb7c418e87db102ffb7cf3bbf05a9",
+      "translation_text_hash": "8a754cecf678e3d3c34f87800bc307eaa9cadac58f286a6dbc5c57b4d7da20fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너희 중에 왕래하며 하나님 나라를 전파하였으나 지금은 너희가 다 내 얼굴을 다시 보지 못할줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "8a754cecf678e3d3c34f87800bc307eaa9cadac58f286a6dbc5c57b4d7da20fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:26",
+      "sequence": 27650,
+      "chapter_label": "ACT 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore I testify to you today that I am clean from the blood of all men,",
+      "ko": "그러므로 오늘 너희에게 증거하노니 모든 사람의 피에 대하여 내가 깨끗하니",
+      "source_text_hash": "d4782f22e31542f13a54de024cbd6c2ffc0d4a2d3c97dd9a34bc7f540765eeaa",
+      "translation_text_hash": "ce702aa9bd25cd646425c15aadf18855181cc06f7772a6f3076742bd52e70ac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 오늘 너희에게 증거하노니 모든 사람의 피에 대하여 내가 깨끗하니"
+      ],
+      "raw_text_hashes": [
+        "ce702aa9bd25cd646425c15aadf18855181cc06f7772a6f3076742bd52e70ac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:27",
+      "sequence": 27651,
+      "chapter_label": "ACT 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "for I didn’t shrink from declaring to you the whole counsel of God.",
+      "ko": "이는 내가 꺼리지 않고 하나님의 뜻을 다 너희에게 전하였음이라",
+      "source_text_hash": "bc98bfaf5244d7b426fbaaf74e0dd04363e8820e987f32ae98434c8cfda02aff",
+      "translation_text_hash": "31a6016e8b05f3ab6c7d5b6b098ed43dfa3e580840357e313c97419827e426e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 꺼리지 않고 하나님의 뜻을 다 너희에게 전하였음이라"
+      ],
+      "raw_text_hashes": [
+        "31a6016e8b05f3ab6c7d5b6b098ed43dfa3e580840357e313c97419827e426e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:28",
+      "sequence": 27652,
+      "chapter_label": "ACT 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "Take heed, therefore, to yourselves and to all the flock, in which the Holy Spirit has made you overseers, to shepherd the assembly of the Lord and God which he purchased with his own blood.",
+      "ko": "너희는 자기를 위하여 또는 온 양떼를 위하여 삼가라 성령이 저들 가운데 너희로 감독자를 삼고 하나님이 자기 피로 사신 교회를 치게 하셨느니라",
+      "source_text_hash": "91ac14c77f401f38fd5a30eeb9a81250367886f02d41df4a22c8c6bafed7df3c",
+      "translation_text_hash": "c15911893303169dfdcf693670aedd9a7107850e5d58672bf6bb5e8616fa905e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 자기를 위하여 또는 온 양떼를 위하여 삼가라 성령이 저들 가운데 너희로 감독자를 삼고 하나님이 자기 피로 사신 교회를 치게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c15911893303169dfdcf693670aedd9a7107850e5d58672bf6bb5e8616fa905e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:29",
+      "sequence": 27653,
+      "chapter_label": "ACT 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "For I know that after my departure, vicious wolves will enter in among you, not sparing the flock.",
+      "ko": "내가 떠난 후에 흉악한 이리가 너희에게 들어와서 그 양떼를 아끼지 아니하며",
+      "source_text_hash": "6f145a7e822db2b9495af5066cc1f35e5414dcdaa6d3a3053ba603a989ca7ce0",
+      "translation_text_hash": "fead8c95c6bf741733c70b91ae6d88d030b4f23852cde013e2386887a6825bb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 떠난 후에 흉악한 이리가 너희에게 들어와서 그 양떼를 아끼지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "fead8c95c6bf741733c70b91ae6d88d030b4f23852cde013e2386887a6825bb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:30",
+      "sequence": 27654,
+      "chapter_label": "ACT 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "Men will arise from among your own selves, speaking perverse things, to draw away the disciples after them.",
+      "ko": "또한 너희 중에서도 제자들을 끌어 자기를 좇게 하려고 어그러진 말을 하는 사람들이 일어날 줄을 내가 아노니",
+      "source_text_hash": "94fae8a9f062a5c63a4a95feba6c207a9b4da7de07d296a2033e0bda4c5dcd0e",
+      "translation_text_hash": "310f76d8d901b51da7e9697968f09770cacb99fc0dc0de57829f9f0d1198a651",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 너희 중에서도 제자들을 끌어 자기를 좇게 하려고 어그러진 말을 하는 사람들이 일어날 줄을 내가 아노니"
+      ],
+      "raw_text_hashes": [
+        "310f76d8d901b51da7e9697968f09770cacb99fc0dc0de57829f9f0d1198a651"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:31",
+      "sequence": 27655,
+      "chapter_label": "ACT 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore watch, remembering that for a period of three years I didn’t cease to admonish everyone night and day with tears.",
+      "ko": "그러므로 너희가 일깨어 내가 삼년이나 밤낮 쉬지 않고 눈물로 각 사람을 훈계하던 것을 기억하라",
+      "source_text_hash": "92691ef94c0b9a24b152bbc8f6f3708b92b3411d4643fd554ca5aa57d3343389",
+      "translation_text_hash": "1b12d3cd72ff8f0e083dd3a54b5f24290ff9c33c72ea877442f3c31b2ea0a9b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 일깨어 내가 삼년이나 밤낮 쉬지 않고 눈물로 각 사람을 훈계하던 것을 기억하라"
+      ],
+      "raw_text_hashes": [
+        "1b12d3cd72ff8f0e083dd3a54b5f24290ff9c33c72ea877442f3c31b2ea0a9b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:32",
+      "sequence": 27656,
+      "chapter_label": "ACT 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "Now, brothers, I entrust you to God and to the word of his grace, which is able to build up and to give you the inheritance among all those who are sanctified.",
+      "ko": "지금 내가 너희를 주와 및 그 은혜의 말씀께 부탁하노니 그 말씀이 너희를 능히 든든히 세우사 거룩케 하심을 입은 모든 자 가운데 기업이 있게 하시리라",
+      "source_text_hash": "1191d1bc6c1a30eea5058c793fc520f64b3ecb55121a6ee992ff695282a620b9",
+      "translation_text_hash": "439535bdb3933d4574a3e091144e262e9cd8ff275df5fe618256eb07703f58aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 내가 너희를 주와 및 그 은혜의 말씀께 부탁하노니 그 말씀이 너희를 능히 든든히 세우사 거룩케 하심을 입은 모든 자 가운데 기업이 있게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "439535bdb3933d4574a3e091144e262e9cd8ff275df5fe618256eb07703f58aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:33",
+      "sequence": 27657,
+      "chapter_label": "ACT 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "I coveted no one’s silver, gold, or clothing.",
+      "ko": "내가 아무의 은이나 금이나 의복을 탐하지 아니하였고",
+      "source_text_hash": "e6b64a74d11bbbdf906da9dbbb8a7fe8ec09d69a5f024b1918cd2d5604a997ae",
+      "translation_text_hash": "91aa81609b0df200af89cccdbda9999b1c7777067ae03a5cabc05808675a13e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아무의 은이나 금이나 의복을 탐하지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "91aa81609b0df200af89cccdbda9999b1c7777067ae03a5cabc05808675a13e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:34",
+      "sequence": 27658,
+      "chapter_label": "ACT 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "You yourselves know that these hands served my necessities, and those who were with me.",
+      "ko": "너희 아는 바에 이 손으로 나와 내 동행들의 쓰는 것을 당하여",
+      "source_text_hash": "f9bcdd3452e9a4ddc5ebd6612c8b57cd6c703750006136f7f4866a73bd0568ac",
+      "translation_text_hash": "dde6a2c586b76369151150d2575524ec48e5147349b11f8d7638ff724259931b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 아는 바에 이 손으로 나와 내 동행들의 쓰는 것을 당하여"
+      ],
+      "raw_text_hashes": [
+        "dde6a2c586b76369151150d2575524ec48e5147349b11f8d7638ff724259931b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:35",
+      "sequence": 27659,
+      "chapter_label": "ACT 20",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 35
+        }
+      ],
+      "en": "In all things I gave you an example, that so laboring you ought to help the weak, and to remember the words of the Lord Jesus, that he himself said, ‘It is more blessed to give than to receive.’”",
+      "ko": "범사에 너희에게 모본을 보였노니 곧 이같이 수고하여 약한 사람들을 돕고 또 주 예수의 친히 말씀하신바 주는 것이 받는 것보다 복이 있다 하심을 기억하여야 할찌니라",
+      "source_text_hash": "395f0cb8a3fb4fa30b8199b47e7a3b2f315d29f02c227d041401fda083e37780",
+      "translation_text_hash": "7faf92427cec312f5879b1053e959784baae9f847b415179b79bd68e55a3a640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 너희에게 모본을 보였노니 곧 이같이 수고하여 약한 사람들을 돕고 또 주 예수의 친히 말씀하신바 주는 것이 받는 것보다 복이 있다 하심을 기억하여야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "7faf92427cec312f5879b1053e959784baae9f847b415179b79bd68e55a3a640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:36",
+      "sequence": 27660,
+      "chapter_label": "ACT 20",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 36
+        }
+      ],
+      "en": "When he had spoken these things, he knelt down and prayed with them all.",
+      "ko": "이 말을 한 후 무릎을 꿇고 저희 모든 사람과 함께 기도하니",
+      "source_text_hash": "7c17a6b9fa928acd696c5b23e621d065f154eb4b3ab0f4b3f173c5d07b2d3036",
+      "translation_text_hash": "42984f283de8f3356934f9526f78b91b69d7815b77f3bc1de4b9299a2385689f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말을 한 후 무릎을 꿇고 저희 모든 사람과 함께 기도하니"
+      ],
+      "raw_text_hashes": [
+        "42984f283de8f3356934f9526f78b91b69d7815b77f3bc1de4b9299a2385689f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:37",
+      "sequence": 27661,
+      "chapter_label": "ACT 20",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 37
+        }
+      ],
+      "en": "They all wept freely, and fell on Paul’s neck and kissed him,",
+      "ko": "다 크게 울며 바울의 목을 안고 입을 맞추고",
+      "source_text_hash": "a63d9f45727497370833cf82cb0c065af83bd5b4482b5416d00d3cc05c40e4b9",
+      "translation_text_hash": "acbbb3e517cc85920de135baa6321795ea4b0ea06abf8aff233a1d04f9c80a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 크게 울며 바울의 목을 안고 입을 맞추고"
+      ],
+      "raw_text_hashes": [
+        "acbbb3e517cc85920de135baa6321795ea4b0ea06abf8aff233a1d04f9c80a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:20:38",
+      "sequence": 27662,
+      "chapter_label": "ACT 20",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 20,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 20,
+          "verse": 38
+        }
+      ],
+      "en": "sorrowing most of all because of the word which he had spoken, that they should see his face no more. Then they accompanied him to the ship.",
+      "ko": "다시 그 얼굴을 보지 못하리라 한 말을 인하여 더욱 근심하고 배에까지 그를 전송하니라",
+      "source_text_hash": "ea566d7ef5b5effb039f0cdf0a9de506a147242050348c124b33ae4bc4450c72",
+      "translation_text_hash": "e2a6c37e575b9282388b4bd425c9e962f0f1ccaa75929164d6d6129d85acd06f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 그 얼굴을 보지 못하리라 한 말을 인하여 더욱 근심하고 배에까지 그를 전송하니라"
+      ],
+      "raw_text_hashes": [
+        "e2a6c37e575b9282388b4bd425c9e962f0f1ccaa75929164d6d6129d85acd06f"
+      ]
+    }
+  ]
+}

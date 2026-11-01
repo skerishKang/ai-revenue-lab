@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:006",
+  "unit_ordinal": 885,
+  "unit_label": "AMO 6",
+  "book_code": "AMO",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:6:1",
+      "sequence": 22452,
+      "chapter_label": "AMO 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Woe to those who are at ease in Zion, and to those who are secure on the mountain of Samaria, the notable men of the chief of the nations, to whom the house of Israel come!",
+      "ko": "화 있을찐저 시온에서 안일한 자와 사마리아 산에서 마음이 든든한 자 곧 열국 중 우승하여 유명하므로 이스라엘 족속이 따르는 자들이여",
+      "source_text_hash": "e6b3b03e14e0e63ecc61ba64c995b4cd0b9ac93100668ef9c22bd16d80f3b51e",
+      "translation_text_hash": "590f01c00fbb251c9cc77198e7bcf885654a14feb10dc826e11c5cc16a04d726",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 시온에서 안일한 자와 사마리아 산에서 마음이 든든한 자 곧 열국 중 우승하여 유명하므로 이스라엘 족속이 따르는 자들이여"
+      ],
+      "raw_text_hashes": [
+        "590f01c00fbb251c9cc77198e7bcf885654a14feb10dc826e11c5cc16a04d726"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:2",
+      "sequence": 22453,
+      "chapter_label": "AMO 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Go to Calneh, and see. From there go to Hamath the great. Then go down to Gath of the Philistines. Are they better than these kingdoms? Is their border greater than your border?",
+      "ko": "너희는 갈레에 건너가고 거기서 대 하맛으로 가고 또 블레셋 사람의 가드로 내려가 보라 그곳들이 이 나라들보다 나으냐 그 토지가 너희 토지보다 넓으냐",
+      "source_text_hash": "1258e8c96247ce4444c0015bc5f9ec13e6b4f23d3ca785d4d3c6aae6dd68e4a6",
+      "translation_text_hash": "d7c30d80692a22264690d7a4205d326ced6977216401eb68c131ae2660709d76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 갈레에 건너가고 거기서 대 하맛으로 가고 또 블레셋 사람의 가드로 내려가 보라 그곳들이 이 나라들보다 나으냐 그 토지가 너희 토지보다 넓으냐"
+      ],
+      "raw_text_hashes": [
+        "d7c30d80692a22264690d7a4205d326ced6977216401eb68c131ae2660709d76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:3",
+      "sequence": 22454,
+      "chapter_label": "AMO 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Alas for you who put far away the evil day, and cause the seat of violence to come near,",
+      "ko": "너희는 흉한 날이 멀다 하여 강포한 자리로 가까와지게 하고",
+      "source_text_hash": "27976abaf149180b84819ef40a845d18603174cbc0942045e612e628360c1a00",
+      "translation_text_hash": "b46c7dedef9821771712e1126e0dc8acac84a9e31701318436dcef5bd6ee8627",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 흉한 날이 멀다 하여 강포한 자리로 가까와지게 하고"
+      ],
+      "raw_text_hashes": [
+        "b46c7dedef9821771712e1126e0dc8acac84a9e31701318436dcef5bd6ee8627"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:4",
+      "sequence": 22455,
+      "chapter_label": "AMO 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "who lie on beds of ivory, and stretch themselves on their couches, and eat the lambs out of the flock, and the calves out of the middle of the stall,",
+      "ko": "상아 상에 누우며 침상에서 기지개 켜며 양떼에서 어린 양과 우리에서 송아지를 취하여 먹고",
+      "source_text_hash": "fcebe40302d81f7a4dd6d29a6458bdd3cef80fb0a404ce43bd260b0fdf5b4584",
+      "translation_text_hash": "879b3a73e923fff53da108429d2d10493075c7f68e41ff019eb8149a71d96930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상아 상에 누우며 침상에서 기지개 켜며 양떼에서 어린 양과 우리에서 송아지를 취하여 먹고"
+      ],
+      "raw_text_hashes": [
+        "879b3a73e923fff53da108429d2d10493075c7f68e41ff019eb8149a71d96930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:5",
+      "sequence": 22456,
+      "chapter_label": "AMO 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "who strum on the strings of a harp, who invent for themselves instruments of music, like David;",
+      "ko": "비파에 맞추어 헛된 노래를 지절거리며 다윗처럼 자기를 위하여 악기를 제조하며",
+      "source_text_hash": "0b5b3d35c7aa118d18dc1028f30d26e2b23c208caac1f9ae301e79e20256141d",
+      "translation_text_hash": "bb059fa0f3d71e092fc7d04598f2253eece34a9dc38834ae7b7d78eafef68e47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비파에 맞추어 헛된 노래를 지절거리며 다윗처럼 자기를 위하여 악기를 제조하며"
+      ],
+      "raw_text_hashes": [
+        "bb059fa0f3d71e092fc7d04598f2253eece34a9dc38834ae7b7d78eafef68e47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:6",
+      "sequence": 22457,
+      "chapter_label": "AMO 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "who drink wine in bowls, and anoint themselves with the best oils, but they are not grieved for the affliction of Joseph.",
+      "ko": "대접으로 포도주를 마시며 귀한 기름을 몸에 바르면서 요셉의 환난을 인하여는 근심치 아니하는 자로다",
+      "source_text_hash": "52387a223b8857c1ee5b10ec786ee391db713a090c5f0b975fe318a68e471507",
+      "translation_text_hash": "0973aab18ccd1d7f5bcee780e407fbe0ec97692b2404c5e15fe93b8fdc24868e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대접으로 포도주를 마시며 귀한 기름을 몸에 바르면서 요셉의 환난을 인하여는 근심치 아니하는 자로다"
+      ],
+      "raw_text_hashes": [
+        "0973aab18ccd1d7f5bcee780e407fbe0ec97692b2404c5e15fe93b8fdc24868e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:7",
+      "sequence": 22458,
+      "chapter_label": "AMO 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore they will now go captive with the first who go captive. The feasting and lounging will end.",
+      "ko": "그러므로 저희가 이제는 사로잡히는 자 중에 앞서 사로잡히리니 기지개 켜는 자의 떠드는 소리가 그치리라",
+      "source_text_hash": "0f440e3b5fdf40527ee4f924ad01413732198737110fc73ca18141af2622bfed",
+      "translation_text_hash": "603a6ea80faf39226014ceb1d95a07af10adc19e28c441b35d23a75b7accadee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저희가 이제는 사로잡히는 자 중에 앞서 사로잡히리니 기지개 켜는 자의 떠드는 소리가 그치리라"
+      ],
+      "raw_text_hashes": [
+        "603a6ea80faf39226014ceb1d95a07af10adc19e28c441b35d23a75b7accadee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:8",
+      "sequence": 22459,
+      "chapter_label": "AMO 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "“The Lord GOD has sworn by himself,” says the LORD, the God of Armies: “I abhor the pride of Jacob, and detest his fortresses. Therefore I will deliver up the city with all that is in it.",
+      "ko": "만군의 하나님 여호와께서 가라사대 주 여호와가 자기를 가리켜 맹세하였노라 내가 야곱의 영광을 싫어하며 그 궁궐들을 미워하므로 이 성읍과 거기 가득한 것을 대적에게 붙이리라 하셨느니라",
+      "source_text_hash": "9f1134b30598ac206a1ae9837965a6003098fcdf08773231ebbb0aacaf538f8f",
+      "translation_text_hash": "f1f9b56a0e7dfef22e6efb1ee0f9c09d9f706af23c2f369ad4f85b7119032a41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 하나님 여호와께서 가라사대 주 여호와가 자기를 가리켜 맹세하였노라 내가 야곱의 영광을 싫어하며 그 궁궐들을 미워하므로 이 성읍과 거기 가득한 것을 대적에게 붙이리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f1f9b56a0e7dfef22e6efb1ee0f9c09d9f706af23c2f369ad4f85b7119032a41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:9",
+      "sequence": 22460,
+      "chapter_label": "AMO 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "It will happen that if ten men remain in one house, they will die.",
+      "ko": "한 집에 열 사람이 남는다 하여도 다 죽을 것이라",
+      "source_text_hash": "97ff35c0bec367f77730b9bef05eacb141d0543826679eb40e42a0d482abbc24",
+      "translation_text_hash": "7c176ecb7ba53f6d35948ed3038865d3d6d2c434df6017a3da36f27dac96f290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 집에 열 사람이 남는다 하여도 다 죽을 것이라"
+      ],
+      "raw_text_hashes": [
+        "7c176ecb7ba53f6d35948ed3038865d3d6d2c434df6017a3da36f27dac96f290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:10",
+      "sequence": 22461,
+      "chapter_label": "AMO 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "“When a man’s relative carries him, even he who burns him, to bring bodies out of the house, and asks him who is in the innermost parts of the house, ‘Is there yet any with you?’ And he says, ‘No;’ then he will say, ‘Hush! Indeed we must not mention the LORD’s name.’",
+      "ko": "죽은 사람의 친척 곧 그 시체를 불사를 자가 그 뼈를 집 밖으로 가져갈 때에 그 집 내실에 있는 자에게 묻기를 아직 너와 함께한 자가 있느냐 하여 대답하기를 아주 없다 하면 저가 또 말하기를 잠잠하라 우리가 여호와의 이름을 일컫지 못할 것이라 하리라",
+      "source_text_hash": "6ec8bca0b4540884f8d2ff08a7f1d0f99df9e923f526c557b30a6fc5f193cc21",
+      "translation_text_hash": "9f32e813b213726cd4d92ae62eedce18c89a2f03fb5662c28a2affb9231b4a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 사람의 친척 곧 그 시체를 불사를 자가 그 뼈를 집 밖으로 가져갈 때에 그 집 내실에 있는 자에게 묻기를 아직 너와 함께한 자가 있느냐 하여 대답하기를 아주 없다 하면 저가 또 말하기를 잠잠하라 우리가 여호와의 이름을 일컫지 못할 것이라 하리라"
+      ],
+      "raw_text_hashes": [
+        "9f32e813b213726cd4d92ae62eedce18c89a2f03fb5662c28a2affb9231b4a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:11",
+      "sequence": 22462,
+      "chapter_label": "AMO 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "“For, behold, the LORD commands, and the great house will be smashed to pieces, and the little house into bits.",
+      "ko": "보라 여호와께서 명하시므로 큰 집이 침을 받아 갈라지며 작은 집이 침을 받아 터지리라",
+      "source_text_hash": "a157674b3416303e8e584c3e0cb1613360c5195296e933ba3764f4fe8251a163",
+      "translation_text_hash": "37c4b8cf0b0f0f9ed7ffb269fde3ab594e89b2c4f980a9ea4c9cda8adafe89af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여호와께서 명하시므로 큰 집이 침을 받아 갈라지며 작은 집이 침을 받아 터지리라"
+      ],
+      "raw_text_hashes": [
+        "37c4b8cf0b0f0f9ed7ffb269fde3ab594e89b2c4f980a9ea4c9cda8adafe89af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:12",
+      "sequence": 22463,
+      "chapter_label": "AMO 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Do horses run on the rocky crags? Does one plow there with oxen? But you have turned justice into poison, and the fruit of righteousness into bitterness,",
+      "ko": "말들이 어찌 바위 위에서 달리겠으며 소가 어찌 거기 밭 갈겠느냐 그런데 너희는 공법을 쓸개로 변하며 정의의 열매를 인진으로 변하며",
+      "source_text_hash": "64fe175ea1887917373c63d679549e3c44eadff3acf57d10da6e5bc3c5efcb9a",
+      "translation_text_hash": "0034739acdec791f5c415add200684a4315a53755747d7b36040161534915b06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말들이 어찌 바위 위에서 달리겠으며 소가 어찌 거기 밭 갈겠느냐 그런데 너희는 공법을 쓸개로 변하며 정의의 열매를 인진으로 변하며"
+      ],
+      "raw_text_hashes": [
+        "0034739acdec791f5c415add200684a4315a53755747d7b36040161534915b06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:13",
+      "sequence": 22464,
+      "chapter_label": "AMO 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "you who rejoice in a thing of nothing, who say, ‘Haven’t we taken for ourselves horns by our own strength?’",
+      "ko": "허무한 것을 기뻐하며 이르기를 우리의 뿔은 우리 힘으로 취하지 아니하였느냐 하는 자로다",
+      "source_text_hash": "f0accf826190ac4395c000f520701fad06be43eb5eeb0c9f8877c1b22a9a45eb",
+      "translation_text_hash": "34844f8d420da0a5d83af8f8308a4a95dab223d9ea802f17363fcb336f6d1af5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허무한 것을 기뻐하며 이르기를 우리의 뿔은 우리 힘으로 취하지 아니하였느냐 하는 자로다"
+      ],
+      "raw_text_hashes": [
+        "34844f8d420da0a5d83af8f8308a4a95dab223d9ea802f17363fcb336f6d1af5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:6:14",
+      "sequence": 22465,
+      "chapter_label": "AMO 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "For, behold, I will raise up against you a nation, house of Israel,” says the LORD, the God of Armies; “and they will afflict you from the entrance of Hamath to the brook of the Arabah.”",
+      "ko": "만군의 하나님 여호와께서 가라사대 이스라엘 족속아 내가 한 나라를 일으켜 너희를 치리니 저희가 하맛 어귀에서부터 아라바 시내까지 너희를 학대하리라 하셨느니라",
+      "source_text_hash": "89bd649317b61deb914535683c770eca049d1367ce3b0e9bfcb0b922163ebac5",
+      "translation_text_hash": "f262fbff896dfbbfe692b4deb6bb54ecfe6aeb685074eff3c273e0b0f29d4fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 하나님 여호와께서 가라사대 이스라엘 족속아 내가 한 나라를 일으켜 너희를 치리니 저희가 하맛 어귀에서부터 아라바 시내까지 너희를 학대하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f262fbff896dfbbfe692b4deb6bb54ecfe6aeb685074eff3c273e0b0f29d4fd7"
+      ]
+    }
+  ]
+}

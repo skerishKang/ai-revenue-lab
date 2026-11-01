@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ECC:chapter:010",
+  "unit_ordinal": 669,
+  "unit_label": "ECC 10",
+  "book_code": "ECC",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ECC:10:1",
+      "sequence": 17495,
+      "chapter_label": "ECC 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Dead flies cause the oil of the perfumer to produce an evil odor; so does a little folly outweigh wisdom and honor.",
+      "ko": "죽은 파리가 향기름으로 악취가 나게 하는 것 같이 적은 우매가 지혜와 존귀로 패하게 하느니라",
+      "source_text_hash": "edab4a5672dde2b68626fab6f91e478fda1685d6405e5821bab4febe395194c6",
+      "translation_text_hash": "bd7c43d53349274cf18a738a5797e83523c7bd96972aec4916eb9f2a32ebd43d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 파리가 향기름으로 악취가 나게 하는 것 같이 적은 우매가 지혜와 존귀로 패하게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "bd7c43d53349274cf18a738a5797e83523c7bd96972aec4916eb9f2a32ebd43d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:2",
+      "sequence": 17496,
+      "chapter_label": "ECC 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "A wise man’s heart is at his right hand, but a fool’s heart at his left.",
+      "ko": "지혜자의 마음은 오른 편에 있고 우매자의 마음은 왼편에 있느니라",
+      "source_text_hash": "cfae684dffef74eb0808ac3a1f7e777d7664993d49cd8d70ccca49f3be2bf6e5",
+      "translation_text_hash": "01b46ee99651ce79de898e8b45e103e64fcf8d31f5c83659659b469d7d2d064a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자의 마음은 오른 편에 있고 우매자의 마음은 왼편에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "01b46ee99651ce79de898e8b45e103e64fcf8d31f5c83659659b469d7d2d064a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:3",
+      "sequence": 17497,
+      "chapter_label": "ECC 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Yes also when the fool walks by the way, his understanding fails him, and he says to everyone that he is a fool.",
+      "ko": "우매자는 길에 행할 때에도 지혜가 결핍하여 각 사람에게 자기의 우매한 것을 말하느니라",
+      "source_text_hash": "8ce832c1b629ece27709d61c16b782916062e5d931fff6f94867a6fc7a8ea905",
+      "translation_text_hash": "7ae923cc380d02e546cfa8b60fa87ab855a675d5e0062d6c51d9082c16aad269",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자는 길에 행할 때에도 지혜가 결핍하여 각 사람에게 자기의 우매한 것을 말하느니라"
+      ],
+      "raw_text_hashes": [
+        "7ae923cc380d02e546cfa8b60fa87ab855a675d5e0062d6c51d9082c16aad269"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:4",
+      "sequence": 17498,
+      "chapter_label": "ECC 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "If the spirit of the ruler rises up against you, don’t leave your place; for gentleness lays great offenses to rest.",
+      "ko": "주권자가 네게 분을 일으키거든 너는 네 자리를 떠나지 말라 공순이 큰 허물을 경하게 하느니라",
+      "source_text_hash": "5e23e061f8e43b4e4b993618e03d0a5422c56b87266bb419f53d449673932c71",
+      "translation_text_hash": "1269389521c9ef6398d909ab5533313530ccc562a0b26b7ce4f786d26504fcf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주권자가 네게 분을 일으키거든 너는 네 자리를 떠나지 말라 공순이 큰 허물을 경하게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "1269389521c9ef6398d909ab5533313530ccc562a0b26b7ce4f786d26504fcf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:5",
+      "sequence": 17499,
+      "chapter_label": "ECC 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "There is an evil which I have seen under the sun, the sort of error which proceeds from the ruler.",
+      "ko": "내가 해 아래서 한가지 폐단 곧 주권자에게서 나는 허물인듯한 것을 보았노니",
+      "source_text_hash": "53397d1eac5534063c788ca4fa2bf7926e32194a7a7c45af3983f6527f49370e",
+      "translation_text_hash": "1a2279a837a9c95e3f4748574d0388da844e75f66cdab5fd043f045ed4d3222a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 해 아래서 한가지 폐단 곧 주권자에게서 나는 허물인듯한 것을 보았노니"
+      ],
+      "raw_text_hashes": [
+        "1a2279a837a9c95e3f4748574d0388da844e75f66cdab5fd043f045ed4d3222a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:6",
+      "sequence": 17500,
+      "chapter_label": "ECC 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Folly is set in great dignity, and the rich sit in a low place.",
+      "ko": "우매자가 크게 높은 지위를 얻고 부자가 낮은 지위에 앉는도다",
+      "source_text_hash": "42fcbfd45889763bfbc6e36d60dca8a59cb69c15e6c76665d7383ad0d873bf9b",
+      "translation_text_hash": "ef2a0f3a5a0b36831bf4f98d7f272cbf99484587972d95435851a519baef7f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자가 크게 높은 지위를 얻고 부자가 낮은 지위에 앉는도다"
+      ],
+      "raw_text_hashes": [
+        "ef2a0f3a5a0b36831bf4f98d7f272cbf99484587972d95435851a519baef7f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:7",
+      "sequence": 17501,
+      "chapter_label": "ECC 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "I have seen servants on horses, and princes walking like servants on the earth.",
+      "ko": "또 보았노니 종들은 말을 타고 방백들은 종처럼 땅에 걸어 다니는도다",
+      "source_text_hash": "0463fbef1d089dd5773a1182dfe4d1a9b85470aff2d794ff677f13b699fbae0c",
+      "translation_text_hash": "020b6b6c8a6fecd6792ac513b42197980df79bff13f339746d669711a3e37db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보았노니 종들은 말을 타고 방백들은 종처럼 땅에 걸어 다니는도다"
+      ],
+      "raw_text_hashes": [
+        "020b6b6c8a6fecd6792ac513b42197980df79bff13f339746d669711a3e37db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:8",
+      "sequence": 17502,
+      "chapter_label": "ECC 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "He who digs a pit may fall into it; and whoever breaks through a wall may be bitten by a snake.",
+      "ko": "함정을 파는 자는 거기 빠질 것이요 담을 허는 자는 뱀에게 물리리라",
+      "source_text_hash": "442cabd0fda23fe4bb11d0228e6a1d8f06c1d4f8d1cb6a7e18166ac7659e7d63",
+      "translation_text_hash": "a9ae5c3b717aa87c33f7950040318e75b95d2a191f387da22647b0d1c67670bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함정을 파는 자는 거기 빠질 것이요 담을 허는 자는 뱀에게 물리리라"
+      ],
+      "raw_text_hashes": [
+        "a9ae5c3b717aa87c33f7950040318e75b95d2a191f387da22647b0d1c67670bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:9",
+      "sequence": 17503,
+      "chapter_label": "ECC 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Whoever carves out stones may be injured by them. Whoever splits wood may be endangered by it.",
+      "ko": "돌을 떠내는 자는 그로 인하여 상할 것이요 나무를 쪼개는 자는 그로 인하여 위험을 당하리라",
+      "source_text_hash": "d839365a09d990e28db7ea46e5b43e50d3c4fc4e302a69b2d2ebd14700a471d7",
+      "translation_text_hash": "5edc1ea268b3b7f2615b0132f971f2ed76d5541f926b352c492665b04f463384",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돌을 떠내는 자는 그로 인하여 상할 것이요 나무를 쪼개는 자는 그로 인하여 위험을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "5edc1ea268b3b7f2615b0132f971f2ed76d5541f926b352c492665b04f463384"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:10",
+      "sequence": 17504,
+      "chapter_label": "ECC 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "If the ax is blunt, and one doesn’t sharpen the edge, then he must use more strength; but skill brings success.",
+      "ko": "무딘 철 연장 날을 갈지 아니하면 힘이 더 드느니라 오직 지혜는 성공하기에 유익하니라",
+      "source_text_hash": "0aa78f8cfd1e8c2393530a2fb6c78f92e76d7a14a6e4b9c550905f90bac9c19e",
+      "translation_text_hash": "119ce145f320822f7e322ff1ce00d761f9005ee9002b5f39beb25e0afe915bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무딘 철 연장 날을 갈지 아니하면 힘이 더 드느니라 오직 지혜는 성공하기에 유익하니라"
+      ],
+      "raw_text_hashes": [
+        "119ce145f320822f7e322ff1ce00d761f9005ee9002b5f39beb25e0afe915bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:11",
+      "sequence": 17505,
+      "chapter_label": "ECC 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "If the snake bites before it is charmed, then is there no profit for the charmer’s tongue.",
+      "ko": "방술을 베풀기 전에 뱀에게 물렸으면 술객은 무용하니라",
+      "source_text_hash": "16fc1dccede211872098bce1e247080ef5cb38ac4927e7cf6da250fce109c4a3",
+      "translation_text_hash": "c0fa243f5e17aa70279b9d959a9e6d607b5ceae8e28e519fc1781029e9335284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방술을 베풀기 전에 뱀에게 물렸으면 술객은 무용하니라"
+      ],
+      "raw_text_hashes": [
+        "c0fa243f5e17aa70279b9d959a9e6d607b5ceae8e28e519fc1781029e9335284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:12",
+      "sequence": 17506,
+      "chapter_label": "ECC 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "The words of a wise man’s mouth are gracious; but a fool is swallowed by his own lips.",
+      "ko": "지혜자의 입의 말은 은혜로우나 우매자의 입술은 자기를 삼키나니",
+      "source_text_hash": "6ce3295a2fbbcdf759d6a9e683d4f00cada02876f931513137b0a0e978949398",
+      "translation_text_hash": "62883592b2c88ce66d17f718b21699e5a696f8bbd5a09846d3e5aa4ac5cadc38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜자의 입의 말은 은혜로우나 우매자의 입술은 자기를 삼키나니"
+      ],
+      "raw_text_hashes": [
+        "62883592b2c88ce66d17f718b21699e5a696f8bbd5a09846d3e5aa4ac5cadc38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:13",
+      "sequence": 17507,
+      "chapter_label": "ECC 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "The beginning of the words of his mouth is foolishness; and the end of his talk is mischievous madness.",
+      "ko": "그 입의 말의 시작은 우매요 끝은 광패니라",
+      "source_text_hash": "f8b5c3d9c9adb54eddeb8459ea050b86d04bc2405c042c4ffa80b03385e08e74",
+      "translation_text_hash": "e3ca562a2d76a9a58e3c3aa95eba07a76d14fe0e7984f055e7b19874f63ed6f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입의 말의 시작은 우매요 끝은 광패니라"
+      ],
+      "raw_text_hashes": [
+        "e3ca562a2d76a9a58e3c3aa95eba07a76d14fe0e7984f055e7b19874f63ed6f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:14",
+      "sequence": 17508,
+      "chapter_label": "ECC 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "A fool also multiplies words. Man doesn’t know what will be; and that which will be after him, who can tell him?",
+      "ko": "우매자는 말을 많이 하거니와 사람이 장래 일을 알지 못하나니 신후사를 알게 할 자가 누구이냐",
+      "source_text_hash": "49a9fba3915fbb897f0b95378c117e61512a60ab0b27e17d205bde0bc1bb4c78",
+      "translation_text_hash": "a21a253b34b8fec7f4ce6aeff79a5c2f2813725af745c30a46d4a6724b6abfad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자는 말을 많이 하거니와 사람이 장래 일을 알지 못하나니 신후사를 알게 할 자가 누구이냐"
+      ],
+      "raw_text_hashes": [
+        "a21a253b34b8fec7f4ce6aeff79a5c2f2813725af745c30a46d4a6724b6abfad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:15",
+      "sequence": 17509,
+      "chapter_label": "ECC 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "The labor of fools wearies every one of them; for he doesn’t know how to go to the city.",
+      "ko": "우매자들의 수고는 제각기 곤하게 할 뿐이라 저희는 성읍에 들어갈 줄도 알지 못함이니라",
+      "source_text_hash": "1a779813a9d84383928b10fdfefbde2010067887435b0443552e04a19c9b04a8",
+      "translation_text_hash": "ce0028b261955567d31bafb7447aaa1aa97df7c75a75a3b01488371beeb79df2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우매자들의 수고는 제각기 곤하게 할 뿐이라 저희는 성읍에 들어갈 줄도 알지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "ce0028b261955567d31bafb7447aaa1aa97df7c75a75a3b01488371beeb79df2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:16",
+      "sequence": 17510,
+      "chapter_label": "ECC 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Woe to you, land, when your king is a child, and your princes eat in the morning!",
+      "ko": "왕은 어리고 대신들은 아침에 연락하는 이 나라여 화가 있도다",
+      "source_text_hash": "14a4018eef5bc2a340cb675e6dcd80cee531c615c100291b457c362900bf0e2e",
+      "translation_text_hash": "39e3e86d16e55c7d19c3665dd26dac53af405013c7f7cfee40a08a8dea497be6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 어리고 대신들은 아침에 연락하는 이 나라여 화가 있도다"
+      ],
+      "raw_text_hashes": [
+        "39e3e86d16e55c7d19c3665dd26dac53af405013c7f7cfee40a08a8dea497be6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:17",
+      "sequence": 17511,
+      "chapter_label": "ECC 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Happy are you, land, when your king is the son of nobles, and your princes eat in due season, for strength, and not for drunkenness!",
+      "ko": "왕은 귀족의 아들이요 대신들은 취하려함이 아니라 기력을 보하려고 마땅한 때에 먹는 이 나라여 복이 있도다",
+      "source_text_hash": "4f4d359201ef1de328d43d220670f9591378d94e6bfeef9655c2d7c8737631da",
+      "translation_text_hash": "2ca2be099b337f1b1aab5818dbd88e27df953510c2dec423035bcc49b6e32e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 귀족의 아들이요 대신들은 취하려함이 아니라 기력을 보하려고 마땅한 때에 먹는 이 나라여 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "2ca2be099b337f1b1aab5818dbd88e27df953510c2dec423035bcc49b6e32e8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:18",
+      "sequence": 17512,
+      "chapter_label": "ECC 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "By slothfulness the roof sinks in; and through idleness of the hands the house leaks.",
+      "ko": "게으른즉 석가래가 퇴락하고 손이 풀어진즉 집이 새느니라",
+      "source_text_hash": "eccf105408d7015b8e2a5f180ad7bf18695860f16ac327b2482c14795466f97f",
+      "translation_text_hash": "7786a6cce4df08956df243b8b4235a2a473471ea03a9557692249ca092058e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른즉 석가래가 퇴락하고 손이 풀어진즉 집이 새느니라"
+      ],
+      "raw_text_hashes": [
+        "7786a6cce4df08956df243b8b4235a2a473471ea03a9557692249ca092058e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:19",
+      "sequence": 17513,
+      "chapter_label": "ECC 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "A feast is made for laughter, and wine makes the life glad; and money is the answer for all things.",
+      "ko": "잔치는 희락을 위하여 베푸는 것이요 포도주는 생명을 기쁘게 하는 것이나 돈은 범사에 응용되느니라",
+      "source_text_hash": "9b8a904b338c511a0fb99e82ac7ee566da88e9fe7e8194e8cefd532d326c5de0",
+      "translation_text_hash": "4b9622b565393ac30bfe8d09c8e05c4ba6435ca80cbb539fc7cde391dad072bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잔치는 희락을 위하여 베푸는 것이요 포도주는 생명을 기쁘게 하는 것이나 돈은 범사에 응용되느니라"
+      ],
+      "raw_text_hashes": [
+        "4b9622b565393ac30bfe8d09c8e05c4ba6435ca80cbb539fc7cde391dad072bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ECC:10:20",
+      "sequence": 17514,
+      "chapter_label": "ECC 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "ECC",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ECC",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t curse the king, no, not in your thoughts; and don’t curse the rich in your bedroom, for a bird of the sky may carry your voice, and that which has wings may tell the matter.",
+      "ko": "심중에라도 왕을 저주하지 말며 침방에서라도 부자를 저주하지 말라 공중의 새가 그 소리를 전하고 날짐승이 그 일을 전파할 것임이니라",
+      "source_text_hash": "c5f193f9d0eefbf0fac6b5ec5cdc06971d5644705743c8535b4b114bc5c1b8fe",
+      "translation_text_hash": "bdf6bd0f795e5bfc481d596ccc7fcf6ce807f73757b55f5c7610116b2ff1217c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심중에라도 왕을 저주하지 말며 침방에서라도 부자를 저주하지 말라 공중의 새가 그 소리를 전하고 날짐승이 그 일을 전파할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "bdf6bd0f795e5bfc481d596ccc7fcf6ce807f73757b55f5c7610116b2ff1217c"
+      ]
+    }
+  ]
+}

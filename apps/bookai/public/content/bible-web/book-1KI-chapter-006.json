@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:006",
+  "unit_ordinal": 297,
+  "unit_label": "1KI 6",
+  "book_code": "1KI",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:6:1",
+      "sequence": 8898,
+      "chapter_label": "1KI 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "In the four hundred and eightieth year after the children of Israel had come out of the land of Egypt, in the fourth year of Solomon’s reign over Israel, in the month Ziv, which is the second month, he began to build the LORD’s house.",
+      "ko": "이스라엘 자손이 애굽 땅에서 나온지 사백 팔십년이요 솔로몬이 이스라엘 왕이 된지 사년 시브월 곧 이월에 솔로몬이 여호와를 위하여 전 건축하기를 시작하였더라",
+      "source_text_hash": "067193cc5e9187c0ad3011037a7832319ed30634a5685d9c5e2a1439a3316b39",
+      "translation_text_hash": "c919c53d3bcb29fb3b13284ac52e5ce098b33d9fb9054020481b135c4ca08ce3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽 땅에서 나온지 사백 팔십년이요 솔로몬이 이스라엘 왕이 된지 사년 시브월 곧 이월에 솔로몬이 여호와를 위하여 전 건축하기를 시작하였더라"
+      ],
+      "raw_text_hashes": [
+        "c919c53d3bcb29fb3b13284ac52e5ce098b33d9fb9054020481b135c4ca08ce3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:2",
+      "sequence": 8899,
+      "chapter_label": "1KI 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The house which King Solomon built for the LORD had a length of sixty cubits, and its width twenty, and its height thirty cubits.",
+      "ko": "솔로몬왕이 여호와를 위하여 건축한 전은 장이 육십 규빗이요 광이 이십 규빗이요 고가 삼십 규빗이며",
+      "source_text_hash": "884a0b5de00d4da5e4d649e540149a6dff09af2bd931ba089abcad6262561cb3",
+      "translation_text_hash": "cde4457f8b0d4b74e4548ada3a292056385a947a82f759bf027a2828c96888ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬왕이 여호와를 위하여 건축한 전은 장이 육십 규빗이요 광이 이십 규빗이요 고가 삼십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "cde4457f8b0d4b74e4548ada3a292056385a947a82f759bf027a2828c96888ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:3",
+      "sequence": 8900,
+      "chapter_label": "1KI 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "The porch in front of the temple of the house had a length of twenty cubits, which was along the width of the house. Ten cubits was its width in front of the house.",
+      "ko": "전의 성소 앞 낭실의 장은 전의 광과 같이 이십 규빗이요 그 광은 전 앞에서부터 십 규빗이며",
+      "source_text_hash": "73208b6e000e6887e9242bd1e1c5a9a16125119bc77314620499a7326502cd57",
+      "translation_text_hash": "8a93b05bbac6d06571641b755362f79c97488fe2ba4400bf99dfb15987b51691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전의 성소 앞 낭실의 장은 전의 광과 같이 이십 규빗이요 그 광은 전 앞에서부터 십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "8a93b05bbac6d06571641b755362f79c97488fe2ba4400bf99dfb15987b51691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:4",
+      "sequence": 8901,
+      "chapter_label": "1KI 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "He made windows of fixed lattice work for the house.",
+      "ko": "전을 위하여 붙박이 교창을 내고",
+      "source_text_hash": "389f223179a19d2c9700a78c298c210e6e108809692f1c23e2106915e64f0e68",
+      "translation_text_hash": "16ceee4ffdbdd88b27d7e52c847e69f5cafe97f86d877a6cc3f4c901cce2b474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전을 위하여 붙박이 교창을 내고"
+      ],
+      "raw_text_hashes": [
+        "16ceee4ffdbdd88b27d7e52c847e69f5cafe97f86d877a6cc3f4c901cce2b474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:5",
+      "sequence": 8902,
+      "chapter_label": "1KI 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Against the wall of the house, he built floors all around, against the walls of the house all around, both of the temple and of the inner sanctuary; and he made side rooms all around.",
+      "ko": "또 전의 벽 곧 성소와 지성소의 벽에 연접하여 돌아가며 다락들을 건축하되 다락마다 돌아가며 골방들을 만들었으니",
+      "source_text_hash": "9b21f4961bf47a39c0384544b2fd451c4da7f0df09cd8e7802825b2e40fd533b",
+      "translation_text_hash": "09b14c4da720e9c77fd72d895825202ef9ca2719167c4dd45bfa12e4c1fa694c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 전의 벽 곧 성소와 지성소의 벽에 연접하여 돌아가며 다락들을 건축하되 다락마다 돌아가며 골방들을 만들었으니"
+      ],
+      "raw_text_hashes": [
+        "09b14c4da720e9c77fd72d895825202ef9ca2719167c4dd45bfa12e4c1fa694c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:6",
+      "sequence": 8903,
+      "chapter_label": "1KI 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "The lowest floor was five cubits wide, and the middle was six cubits wide, and the third was seven cubits wide; for on the outside he made offsets in the wall of the house all around, that the beams should not be inserted into the walls of the house.",
+      "ko": "하층 다락의 광은 다섯 규빗이요 중층 다락의 광은 여섯 규빗이요 제 삼층 다락의 광은 일곱 규빗이라 전의 벽 바깥으로 돌아가며 턱을 내어 골방 들보들로 전의 벽에 박히지 않게 하였으며",
+      "source_text_hash": "b3e590c628e37684291452cf622b826e94c49d689d3cf40de19b0f93100adcdc",
+      "translation_text_hash": "3ae985f31fde005f95ce0798148226019894c88e90f48d6d2bf1907a9cb519b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하층 다락의 광은 다섯 규빗이요 중층 다락의 광은 여섯 규빗이요 제 삼층 다락의 광은 일곱 규빗이라 전의 벽 바깥으로 돌아가며 턱을 내어 골방 들보들로 전의 벽에 박히지 않게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "3ae985f31fde005f95ce0798148226019894c88e90f48d6d2bf1907a9cb519b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:7",
+      "sequence": 8904,
+      "chapter_label": "1KI 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The house, when it was under construction, was built of stone prepared at the quarry; and no hammer or ax or any tool of iron was heard in the house while it was under construction.",
+      "ko": "이 전은 건축할 때에 돌을 뜨는 곳에서 치석하고 가져다가 건축하였으므로 건축하는 동안에 전 속에서는 방망이나 도끼나 모든 철 연장 소리가 들리지 아니하였으며",
+      "source_text_hash": "870638709a4766142a948900e1432f8919f622c82effba850f3bef80cd9b6441",
+      "translation_text_hash": "389bea6e0fd6a9250843a78d6945ed864857aa6b9914ad07b36550fb125f0e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 전은 건축할 때에 돌을 뜨는 곳에서 치석하고 가져다가 건축하였으므로 건축하는 동안에 전 속에서는 방망이나 도끼나 모든 철 연장 소리가 들리지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "389bea6e0fd6a9250843a78d6945ed864857aa6b9914ad07b36550fb125f0e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:8",
+      "sequence": 8905,
+      "chapter_label": "1KI 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "The door for the middle side rooms was in the right side of the house. They went up by winding stairs into the middle floor, and out of the middle into the third.",
+      "ko": "중층 골방의 문은 전 오른편에 있는데 나사모양 사닥다리로 말미암아 하층에서 중층에 오르고 중층에서 제 삼층에 오르게 하였더라",
+      "source_text_hash": "6fefc261ad60fc0c46c6b29a11a4497d5c1bd63484af23c9ed3fad222af829e3",
+      "translation_text_hash": "7fb332069e6127c036e6fa074f193c09cb25f4bd0a5dfef0137d924d7e37749a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중층 골방의 문은 전 오른편에 있는데 나사모양 사닥다리로 말미암아 하층에서 중층에 오르고 중층에서 제 삼층에 오르게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "7fb332069e6127c036e6fa074f193c09cb25f4bd0a5dfef0137d924d7e37749a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:9",
+      "sequence": 8906,
+      "chapter_label": "1KI 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "So he built the house and finished it; and he covered the house with beams and planks of cedar.",
+      "ko": "전의 건축이 마치니라 그 전은 백향목 서까래와 널판으로 덮었고",
+      "source_text_hash": "4c027f81983ad075da89c39b6dc447a3544806b9b917d3841c470956d6030a67",
+      "translation_text_hash": "04c928a5afb30da7efaa3eb8f7634dd87e225f8acdf38184b129eb015cfb7c67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전의 건축이 마치니라 그 전은 백향목 서까래와 널판으로 덮었고"
+      ],
+      "raw_text_hashes": [
+        "04c928a5afb30da7efaa3eb8f7634dd87e225f8acdf38184b129eb015cfb7c67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:10",
+      "sequence": 8907,
+      "chapter_label": "1KI 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "He built the floors all along the house, each five cubits high; and they rested on the house with timbers of cedar.",
+      "ko": "또 온 전으로 돌아가며 고가 다섯 규빗 되는 다락방을 건축하되 백향목 들보로 전에 연접하게 하였더라",
+      "source_text_hash": "8d45b58f96320b91529e42abba83f89e774ec8ac5d36c5164cdc3cc96cd4a927",
+      "translation_text_hash": "3f4ea0fd51b0d6ddfedb08eb7a411f25d5453d10e42cf39e59d92a9a1cc06012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 온 전으로 돌아가며 고가 다섯 규빗 되는 다락방을 건축하되 백향목 들보로 전에 연접하게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "3f4ea0fd51b0d6ddfedb08eb7a411f25d5453d10e42cf39e59d92a9a1cc06012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:11",
+      "sequence": 8908,
+      "chapter_label": "1KI 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD’s word came to Solomon, saying,",
+      "ko": "여호와의 말씀이 솔로몬에게 임하여 가라사대",
+      "source_text_hash": "850f65009a4fedca785028d0c46c5afa32484e112af8d0368df83db3f442d5dc",
+      "translation_text_hash": "2c8038708d0a62b6b14feb4fae097c781a3f69dcb583b7a6525beced83f9fa21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 솔로몬에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2c8038708d0a62b6b14feb4fae097c781a3f69dcb583b7a6525beced83f9fa21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:12",
+      "sequence": 8909,
+      "chapter_label": "1KI 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "“Concerning this house which you are building, if you will walk in my statutes, and execute my ordinances, and keep all my commandments to walk in them, then I will establish my word with you, which I spoke to David your father.",
+      "ko": "네가 이제 이 전을 건축하니 네가 만일 내 법도를 따르며 내 율례를 행하며 나의 모든 계명을 지켜 그대로 행하면 내가 네 아비 다윗에게 한 말을 네게 확실히 이룰 것이요",
+      "source_text_hash": "710bb721917a1c283ac794468e2de780aed6a6f6f60f186578776a970189e18a",
+      "translation_text_hash": "0bda65b5c01da62c5ad9bb0aa35c9603d05ba67549f39fe5414660492b03b539",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이제 이 전을 건축하니 네가 만일 내 법도를 따르며 내 율례를 행하며 나의 모든 계명을 지켜 그대로 행하면 내가 네 아비 다윗에게 한 말을 네게 확실히 이룰 것이요"
+      ],
+      "raw_text_hashes": [
+        "0bda65b5c01da62c5ad9bb0aa35c9603d05ba67549f39fe5414660492b03b539"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:13",
+      "sequence": 8910,
+      "chapter_label": "1KI 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "I will dwell among the children of Israel, and will not forsake my people Israel.”",
+      "ko": "내가 또한 이스라엘 자손 가운데 거하며 내 백성 이스라엘을 버리지 아니하리라 하셨더라",
+      "source_text_hash": "813e69d6f6819fc793351fbd8975ab12f9463b99aa2f9e1f6f9bfcf40b9132d6",
+      "translation_text_hash": "68ca282b6d3d19b9dbdb97b5122ea733c9785d5b3e0ecf2abdc1a341fda17af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또한 이스라엘 자손 가운데 거하며 내 백성 이스라엘을 버리지 아니하리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "68ca282b6d3d19b9dbdb97b5122ea733c9785d5b3e0ecf2abdc1a341fda17af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:14",
+      "sequence": 8911,
+      "chapter_label": "1KI 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "So Solomon built the house and finished it.",
+      "ko": "솔로몬이 전 건축하기를 마치고",
+      "source_text_hash": "c2499adb7bdf16a975b1742a087964102a58929d77b9c8e51656c3c23c24cba0",
+      "translation_text_hash": "89ac64c1008006c72353076e4957e584a3684f11f375b7c4be9ed46ac088ce82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 전 건축하기를 마치고"
+      ],
+      "raw_text_hashes": [
+        "89ac64c1008006c72353076e4957e584a3684f11f375b7c4be9ed46ac088ce82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:15",
+      "sequence": 8912,
+      "chapter_label": "1KI 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "He built the walls of the house within with boards of cedar; from the floor of the house to the walls of the ceiling, he covered them on the inside with wood. He covered the floor of the house with cypress boards.",
+      "ko": "백향목 널판으로 전의 안벽 곧 전 마루에서 천장까지의 벽에 입히고 또 잣나무 널판으로 전 마루를 놓고",
+      "source_text_hash": "f31080b16cba7bc79cfbc61deb22b94d937a259c981db9cf07baa91d93282d9a",
+      "translation_text_hash": "e2af4fe74c7ef63f91c1a41fe96610605b650edeb9f469327a5b0a4539ef365b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백향목 널판으로 전의 안벽 곧 전 마루에서 천장까지의 벽에 입히고 또 잣나무 널판으로 전 마루를 놓고"
+      ],
+      "raw_text_hashes": [
+        "e2af4fe74c7ef63f91c1a41fe96610605b650edeb9f469327a5b0a4539ef365b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:16",
+      "sequence": 8913,
+      "chapter_label": "1KI 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "He built twenty cubits of the back part of the house with boards of cedar from the floor to the ceiling. He built this within, for an inner sanctuary, even for the most holy place.",
+      "ko": "또 전 뒤편에서부터 이십 규빗 되는 곳에 마루에서 천장까지 백향목 널판으로 가로막아 전의 내소 곧 지성소를 만들었으며",
+      "source_text_hash": "4abefba9dde85ce1c14ab2dc0fb82e7b7d3b9d8002807586374d8b5d944454d1",
+      "translation_text_hash": "618ea7f8f0e6b71c87270d31924ae42167012a5dc25c44994aacd810cb1b1efa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 전 뒤편에서부터 이십 규빗 되는 곳에 마루에서 천장까지 백향목 널판으로 가로막아 전의 내소 곧 지성소를 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "618ea7f8f0e6b71c87270d31924ae42167012a5dc25c44994aacd810cb1b1efa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:17",
+      "sequence": 8914,
+      "chapter_label": "1KI 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "In front of the temple sanctuary was forty cubits long.",
+      "ko": "내소 앞에 있는 외소 곧 성소의 장이 사십 규빗이며",
+      "source_text_hash": "f8acf04b4196550e0a0e76ba05538274500433503568f766fa0b256d1e9987ad",
+      "translation_text_hash": "d1414db7e4292afe0614f9176a19c9d097a9eb69269622e252e966c84133c0e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내소 앞에 있는 외소 곧 성소의 장이 사십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "d1414db7e4292afe0614f9176a19c9d097a9eb69269622e252e966c84133c0e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:18",
+      "sequence": 8915,
+      "chapter_label": "1KI 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "There was cedar on the house within, carved with buds and open flowers. All was cedar. No stone was visible.",
+      "ko": "전 안에 입힌 백향목에는 박과 핀 꽃을 아로새겼고 모두 백향목이라 돌이 보이지 아니하며",
+      "source_text_hash": "963d6516bced42eb926d06ea370657a7bba133732581859c2dad9f55f8dd4936",
+      "translation_text_hash": "5547c7beac2a13a44ae8f685b28cef6d71ab675f9175003c8dc8791d65024339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전 안에 입힌 백향목에는 박과 핀 꽃을 아로새겼고 모두 백향목이라 돌이 보이지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "5547c7beac2a13a44ae8f685b28cef6d71ab675f9175003c8dc8791d65024339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:19",
+      "sequence": 8916,
+      "chapter_label": "1KI 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "He prepared an inner sanctuary in the middle of the house within, to set the ark of the LORD’s covenant there.",
+      "ko": "여호와의 언약궤를 두기 위하여 전 안에 내소를 예비하였는데",
+      "source_text_hash": "0260fcb6c7d552ed8eb3c7e5051c26c675260a6c8b6a676e77cb79f03a94d1c3",
+      "translation_text_hash": "9787a7e82133997bf7b716324e8703e938fa90649f8d7af3df35a8398222220d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤를 두기 위하여 전 안에 내소를 예비하였는데"
+      ],
+      "raw_text_hashes": [
+        "9787a7e82133997bf7b716324e8703e938fa90649f8d7af3df35a8398222220d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:20",
+      "sequence": 8917,
+      "chapter_label": "1KI 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Within the inner sanctuary was twenty cubits in length, and twenty cubits in width, and twenty cubits in its height. He overlaid it with pure gold. He covered the altar with cedar.",
+      "ko": "그 내소의 속이 장이 이십 규빗이요 광이 이십 규빗이요 고가 이십 규빗이라 정금으로 입혔고 백향목 단에도 입혔더라",
+      "source_text_hash": "b704109842070cc509d6a72b2ee9ca40762c12bf5048549ceeebe8814938f6ad",
+      "translation_text_hash": "cb802a38fa0d64d371a717d8799d4de67702d8ae4f679c275bc5eed9b360b10d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 내소의 속이 장이 이십 규빗이요 광이 이십 규빗이요 고가 이십 규빗이라 정금으로 입혔고 백향목 단에도 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "cb802a38fa0d64d371a717d8799d4de67702d8ae4f679c275bc5eed9b360b10d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:21",
+      "sequence": 8918,
+      "chapter_label": "1KI 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "So Solomon overlaid the house within with pure gold. He drew chains of gold across before the inner sanctuary, and he overlaid it with gold.",
+      "ko": "솔로몬이 정금으로 외소 안에 입히고 내소 앞에 금사슬로 건너지르고 내소를 금으로 입히고",
+      "source_text_hash": "df74836f947b1b26e386245953857c935d9dec397b77ca78788113802dd62261",
+      "translation_text_hash": "a1747affb1a16b37164c08b41e6ad2fcb6adee0449e506feecb32c344cde975a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 정금으로 외소 안에 입히고 내소 앞에 금사슬로 건너지르고 내소를 금으로 입히고"
+      ],
+      "raw_text_hashes": [
+        "a1747affb1a16b37164c08b41e6ad2fcb6adee0449e506feecb32c344cde975a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:22",
+      "sequence": 8919,
+      "chapter_label": "1KI 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "He overlaid the whole house with gold, until all the house was finished. He also overlaid the whole altar that belonged to the inner sanctuary with gold.",
+      "ko": "온 전을 금으로 입히기를 마치고 내소에 속한 단의 전부를 금으로 입혔더라",
+      "source_text_hash": "fdcd983a019a13ae7f12cd76cb22430e365cf0bda5b04c9b590fbf61b607d5b7",
+      "translation_text_hash": "a2b7068f03e2d4a0c23adc95075953387c97b82c8e0fae7b23748ed9d29fe1fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 전을 금으로 입히기를 마치고 내소에 속한 단의 전부를 금으로 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "a2b7068f03e2d4a0c23adc95075953387c97b82c8e0fae7b23748ed9d29fe1fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:23",
+      "sequence": 8920,
+      "chapter_label": "1KI 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "In the inner sanctuary he made two cherubim of olive wood, each ten cubits high.",
+      "ko": "내소 안에 감람목으로 두 그룹을 만들었는데 그 고가 각각 십 규빗이라",
+      "source_text_hash": "ed36c4cfd578bc178511d17d646e5a6bc8e2d2ba204f381dcc3afc7708e3e839",
+      "translation_text_hash": "88c89b895df3f04d25a442a4948d2aac7d75a409f774059dbe73e6078e4d3938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내소 안에 감람목으로 두 그룹을 만들었는데 그 고가 각각 십 규빗이라"
+      ],
+      "raw_text_hashes": [
+        "88c89b895df3f04d25a442a4948d2aac7d75a409f774059dbe73e6078e4d3938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:24",
+      "sequence": 8921,
+      "chapter_label": "1KI 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "Five cubits was the length of one wing of the cherub, and five cubits was the length of the other wing of the cherub. From the tip of one wing to the tip of the other was ten cubits.",
+      "ko": "한 그룹의 이 날개는 다섯 규빗이요 저 날개도 다섯 규빗이니 이 날개 끝으로부터 저 날개 끝까지 십 규빗이며",
+      "source_text_hash": "9c0a2840c229ac658fb975a6872d96844d405dfd7c06e93a7a33a896fa0c6324",
+      "translation_text_hash": "46bb211081c8683cd46f46b7e4e41aedb2004197aae2a1eda1029d7acfb9edca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 그룹의 이 날개는 다섯 규빗이요 저 날개도 다섯 규빗이니 이 날개 끝으로부터 저 날개 끝까지 십 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "46bb211081c8683cd46f46b7e4e41aedb2004197aae2a1eda1029d7acfb9edca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:25",
+      "sequence": 8922,
+      "chapter_label": "1KI 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "The other cherub was ten cubits. Both the cherubim were of one measure and one form.",
+      "ko": "다른 그룹도 십 규빗이니 그 두 그룹은 한 척수, 한 모양이요",
+      "source_text_hash": "cd3fd33a3c903969c9959eb2d0a62c141c2376248e05d7954b180af1fefddb4f",
+      "translation_text_hash": "3d5310275866e1ab7b189d3a083a2251fb7a3bba4569ac9955f2777bde42bb4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 그룹도 십 규빗이니 그 두 그룹은 한 척수, 한 모양이요"
+      ],
+      "raw_text_hashes": [
+        "3d5310275866e1ab7b189d3a083a2251fb7a3bba4569ac9955f2777bde42bb4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:26",
+      "sequence": 8923,
+      "chapter_label": "1KI 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "One cherub was ten cubits high, and so was the other cherub.",
+      "ko": "이 그룹의 고가 십 규빗이요 저 그룹도 일반이라",
+      "source_text_hash": "8efc55fd57c790b4d51756ccf520d93373b40eacefb7da6612d155c3e75c2dae",
+      "translation_text_hash": "70565dd6b1bfe9ae43f7a9e89b764b1e057700a4d4a92f31beac55459044fefc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 그룹의 고가 십 규빗이요 저 그룹도 일반이라"
+      ],
+      "raw_text_hashes": [
+        "70565dd6b1bfe9ae43f7a9e89b764b1e057700a4d4a92f31beac55459044fefc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:27",
+      "sequence": 8924,
+      "chapter_label": "1KI 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "He set the cherubim within the inner house. The wings of the cherubim were stretched out, so that the wing of the one touched the one wall and the wing of the other cherub touched the other wall; and their wings touched one another in the middle of the house.",
+      "ko": "솔로몬이 내소 가운데 그룹을 두었으니 그룹들의 날개가 폐었는데 이 그룹의 날개는 이 벽에 닿았고 저 그룹의 날개는 저 벽에 닿았으며 두 날개는 전의 중앙에서 서로 닿았더라",
+      "source_text_hash": "a0fd8245c3d3436f8100647a464b01e513a82f1d1f4b47c9d9b0a9ea81f38c76",
+      "translation_text_hash": "1457bd7b64998f7e9d6a8c5b5722cd3a1992722129086bf0c88b0e4a4f74d68a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 내소 가운데 그룹을 두었으니 그룹들의 날개가 폐었는데 이 그룹의 날개는 이 벽에 닿았고 저 그룹의 날개는 저 벽에 닿았으며 두 날개는 전의 중앙에서 서로 닿았더라"
+      ],
+      "raw_text_hashes": [
+        "1457bd7b64998f7e9d6a8c5b5722cd3a1992722129086bf0c88b0e4a4f74d68a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:28",
+      "sequence": 8925,
+      "chapter_label": "1KI 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "He overlaid the cherubim with gold.",
+      "ko": "저가 금으로 그룹에 입혔더라",
+      "source_text_hash": "2bbf9ab0e77212eeb3e11001d07be3db3ab77bf0ef842385d812a0cb5b0d9696",
+      "translation_text_hash": "49e5da8fac0ccaff2f61b2969499c9952bce6ede0b6e1e867f83803f212caecd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 금으로 그룹에 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "49e5da8fac0ccaff2f61b2969499c9952bce6ede0b6e1e867f83803f212caecd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:29",
+      "sequence": 8926,
+      "chapter_label": "1KI 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "He carved all the walls of the house around with carved figures of cherubim, palm trees, and open flowers, inside and outside.",
+      "ko": "내외소 사면 벽에는 모두 그룹들과 종려와 핀 꽃 형상을 아로새겼고",
+      "source_text_hash": "38e8199861a09bd9aa8c9a5783119bf357cd9026a0c04ddc6230898c19145221",
+      "translation_text_hash": "fa9bfc9d65bf1517943e20918da79f16353083e142c6ce854d8961ed1605ed73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내외소 사면 벽에는 모두 그룹들과 종려와 핀 꽃 형상을 아로새겼고"
+      ],
+      "raw_text_hashes": [
+        "fa9bfc9d65bf1517943e20918da79f16353083e142c6ce854d8961ed1605ed73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:30",
+      "sequence": 8927,
+      "chapter_label": "1KI 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "He overlaid the floor of the house with gold, inside and outside.",
+      "ko": "내외 전 마루에는 금으로 입혔으며",
+      "source_text_hash": "889b9d4c37914ce65b591f44f242793ff9e987d927fd3885cec50534660386ad",
+      "translation_text_hash": "74785595a76d02fcd148807edcb2cf646c7be09cac2d52c6447cabe425705fad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내외 전 마루에는 금으로 입혔으며"
+      ],
+      "raw_text_hashes": [
+        "74785595a76d02fcd148807edcb2cf646c7be09cac2d52c6447cabe425705fad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:31",
+      "sequence": 8928,
+      "chapter_label": "1KI 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "For the entrance of the inner sanctuary, he made doors of olive wood. The lintel and door posts were a fifth part of the wall.",
+      "ko": "내소에 들어가는 곳에는 감람목으로 문을 만들었는데 그 문 인방과 문설주는 벽의 오분지 일이요",
+      "source_text_hash": "e00ea4979a2d16863c75f594f43080aebffbc32957ba9dfb9bfb3d192ca0dce4",
+      "translation_text_hash": "bcc0db35d496715d77675a1270092572c32a3cda2e96bef1013dd83eb79ed928",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내소에 들어가는 곳에는 감람목으로 문을 만들었는데 그 문 인방과 문설주는 벽의 오분지 일이요"
+      ],
+      "raw_text_hashes": [
+        "bcc0db35d496715d77675a1270092572c32a3cda2e96bef1013dd83eb79ed928"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:32",
+      "sequence": 8929,
+      "chapter_label": "1KI 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "So he made two doors of olive wood; and he carved on them carvings of cherubim, palm trees, and open flowers, and overlaid them with gold. He spread the gold on the cherubim and on the palm trees.",
+      "ko": "감람목으로 만든 그 두 문짝에 그룹과 종려와 핀 꽃을 아로새기고 금으로 입히되 곧 그룹들과 종려에 금으로 입혔더라",
+      "source_text_hash": "208f413d827b7509c59e51581b1a73713ae71ad984ce3dcc9c8fd5949b94616b",
+      "translation_text_hash": "01a91d7fa2f442094b38cc181cd4389b5753bdd79be08d8f975604d96fd366cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감람목으로 만든 그 두 문짝에 그룹과 종려와 핀 꽃을 아로새기고 금으로 입히되 곧 그룹들과 종려에 금으로 입혔더라"
+      ],
+      "raw_text_hashes": [
+        "01a91d7fa2f442094b38cc181cd4389b5753bdd79be08d8f975604d96fd366cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:33",
+      "sequence": 8930,
+      "chapter_label": "1KI 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "He also made the entrance of the temple door posts of olive wood, out of a fourth part of the wall,",
+      "ko": "또 외소의 문을 위하여 감람목으로 문설주를 만들었으니 곧 벽의 사분지 일이며",
+      "source_text_hash": "95aebb90176cd83be2966abd73124af2af130d8196c9e039de30145f283dbed6",
+      "translation_text_hash": "f0e8d67b45cffb0d734046ad726e411adf7d2340cb2f1ce5509b1090d6c2a9ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 외소의 문을 위하여 감람목으로 문설주를 만들었으니 곧 벽의 사분지 일이며"
+      ],
+      "raw_text_hashes": [
+        "f0e8d67b45cffb0d734046ad726e411adf7d2340cb2f1ce5509b1090d6c2a9ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:34",
+      "sequence": 8931,
+      "chapter_label": "1KI 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "and two doors of cypress wood. The two leaves of the one door were folding, and the two leaves of the other door were folding.",
+      "ko": "그 두 문짝은 잣나무라 이 문짝도 두 짝으로 접게 되었고 저 문짝도 두 짝으로 접게 되었으며",
+      "source_text_hash": "6cfaa17bf23485492280881282bef516b85caf25f2823a2f9e200b480f419fae",
+      "translation_text_hash": "fadf96f363486f0672e717c26edbd7f45f538e2797173dca1ab1b9b8ac59b943",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 문짝은 잣나무라 이 문짝도 두 짝으로 접게 되었고 저 문짝도 두 짝으로 접게 되었으며"
+      ],
+      "raw_text_hashes": [
+        "fadf96f363486f0672e717c26edbd7f45f538e2797173dca1ab1b9b8ac59b943"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:35",
+      "sequence": 8932,
+      "chapter_label": "1KI 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "He carved cherubim, palm trees, and open flowers; and he overlaid them with gold fitted on the engraved work.",
+      "ko": "그 문짝에 그룹들과 종려와 핀 꽃을 아로새기고 금으로 입히되 그 새긴데 맞게 하였고",
+      "source_text_hash": "4b1ebfe12f43acdfb33b10b7e7a7b3f72ca50d895c394f3733aaeab8aaefabeb",
+      "translation_text_hash": "e4016a60953a28da628b14d5f6eda5d52c420d7580f192116f3bbb54cc56d348",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 문짝에 그룹들과 종려와 핀 꽃을 아로새기고 금으로 입히되 그 새긴데 맞게 하였고"
+      ],
+      "raw_text_hashes": [
+        "e4016a60953a28da628b14d5f6eda5d52c420d7580f192116f3bbb54cc56d348"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:36",
+      "sequence": 8933,
+      "chapter_label": "1KI 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "He built the inner court with three courses of cut stone and a course of cedar beams.",
+      "ko": "또 다듬은 돌 세켜와 백향목 두꺼운 판자 한 켜로 둘러 안뜰을 만들었더라",
+      "source_text_hash": "ce74398815d4ebc7e5dd0558d987829b0368942f2465715dafddcc6662faf644",
+      "translation_text_hash": "e02e47451865b1b33fa850e9e37369168ef60faa628daf6014ed0d44a3f4db2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다듬은 돌 세켜와 백향목 두꺼운 판자 한 켜로 둘러 안뜰을 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "e02e47451865b1b33fa850e9e37369168ef60faa628daf6014ed0d44a3f4db2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:37",
+      "sequence": 8934,
+      "chapter_label": "1KI 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "The foundation of the LORD’s house was laid in the fourth year, in the month Ziv.",
+      "ko": "제 사년 시브월에 여호와의 전 기초를 쌓았고",
+      "source_text_hash": "34f8dcf67ae33d5f9adc520f2d03a2f543061c9d044a301e5f5b2d2ac2a79cf6",
+      "translation_text_hash": "eadd79801891b024e67482a9b158be0e8652a6204e5ca4fb5762d49bc7a2810b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 사년 시브월에 여호와의 전 기초를 쌓았고"
+      ],
+      "raw_text_hashes": [
+        "eadd79801891b024e67482a9b158be0e8652a6204e5ca4fb5762d49bc7a2810b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:6:38",
+      "sequence": 8935,
+      "chapter_label": "1KI 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "1KI",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "In the eleventh year, in the month Bul, which is the eighth month, the house was finished throughout all its parts and according to all its specifications. So he spent seven years building it.",
+      "ko": "제 십일년 불월 곧 팔월에 그 설계와 식양대로 전이 다 필역되었으니 솔로몬이 전을 건축한 동안이 칠년이었더라",
+      "source_text_hash": "069880dd2054686eebd5f6e6928ccf613db947ebfa23dc2773123858a312194e",
+      "translation_text_hash": "91d4917d2e9a113a1963245d253ab3c8be82c1e6432b173f1d702ac58c15dabd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십일년 불월 곧 팔월에 그 설계와 식양대로 전이 다 필역되었으니 솔로몬이 전을 건축한 동안이 칠년이었더라"
+      ],
+      "raw_text_hashes": [
+        "91d4917d2e9a113a1963245d253ab3c8be82c1e6432b173f1d702ac58c15dabd"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:023",
+  "unit_ordinal": 73,
+  "unit_label": "EXO 23",
+  "book_code": "EXO",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:23:1",
+      "sequence": 2146,
+      "chapter_label": "EXO 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "“You shall not spread a false report. Don’t join your hand with the wicked to be a malicious witness.",
+      "ko": "너는 허망한 풍설을 전파하지 말며 악인과 연합하여 무함하는 증인이 되지 말며",
+      "source_text_hash": "b2575c668f258d591a4bc3f55172f444f2610404ec8cd387aedc99414ece0828",
+      "translation_text_hash": "3bc41ec369d121a9fb7a074f45bf91e875f3c90791668aaf7410ad07b0d95538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 허망한 풍설을 전파하지 말며 악인과 연합하여 무함하는 증인이 되지 말며"
+      ],
+      "raw_text_hashes": [
+        "3bc41ec369d121a9fb7a074f45bf91e875f3c90791668aaf7410ad07b0d95538"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:2",
+      "sequence": 2147,
+      "chapter_label": "EXO 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "“You shall not follow a crowd to do evil. You shall not testify in court to side with a multitude to pervert justice.",
+      "ko": "다수를 따라 악을 행하지 말며 송사에 다수를 따라 부정당한 증거를 하지 말며",
+      "source_text_hash": "55e9b56b3552268930626fbe745d215d4338e18f81708f3195697f4a3b75f1a1",
+      "translation_text_hash": "f4ceb666b0b03722d940dc880e6702dc699dd6173d309e870f29d8401b6f40b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다수를 따라 악을 행하지 말며 송사에 다수를 따라 부정당한 증거를 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "f4ceb666b0b03722d940dc880e6702dc699dd6173d309e870f29d8401b6f40b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:3",
+      "sequence": 2148,
+      "chapter_label": "EXO 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "You shall not favor a poor man in his cause.",
+      "ko": "가난한 자의 송사라고 편벽되이 두호하지 말찌니라",
+      "source_text_hash": "4405adb64923543de1e227b2106448403fadfd9135ecbe3d14552ec0df95cb4e",
+      "translation_text_hash": "068f240011fcb6d0c00043a8fd11aa35875a2a57e8ccf417b130b43cd0af66cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자의 송사라고 편벽되이 두호하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "068f240011fcb6d0c00043a8fd11aa35875a2a57e8ccf417b130b43cd0af66cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:4",
+      "sequence": 2149,
+      "chapter_label": "EXO 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "“If you meet your enemy’s ox or his donkey going astray, you shall surely bring it back to him again.",
+      "ko": "네가 만일 네 원수의 길 잃은 소나 나귀를 만나거든 반드시 그 사람에게로 돌릴찌며",
+      "source_text_hash": "687cb7377b63f06a39e56ddf9a903258b25429b6a317f61eb1ad3051d5dd9ec2",
+      "translation_text_hash": "50f61ec03e0347c5fd8a221641a70fc28505be0ab43e3753cccd284cce6bce53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 원수의 길 잃은 소나 나귀를 만나거든 반드시 그 사람에게로 돌릴찌며"
+      ],
+      "raw_text_hashes": [
+        "50f61ec03e0347c5fd8a221641a70fc28505be0ab43e3753cccd284cce6bce53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:5",
+      "sequence": 2150,
+      "chapter_label": "EXO 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "If you see the donkey of him who hates you fallen down under his burden, don’t leave him. You shall surely help him with it.",
+      "ko": "네가 만일 너를 미워하는 자의 나귀가 짐을 싣고 엎드러짐을 보거든 삼가 버려두지 말고 그를 도와 그 짐을 부리울찌니라",
+      "source_text_hash": "57552ad9e8bb668e637f92341f2f13e6e13c58bb89be0ad6e167288208a0b2ac",
+      "translation_text_hash": "b8413712373559fdc00705595b7179c0e14f941b93b6e2918d6daf0ea486d532",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 너를 미워하는 자의 나귀가 짐을 싣고 엎드러짐을 보거든 삼가 버려두지 말고 그를 도와 그 짐을 부리울찌니라"
+      ],
+      "raw_text_hashes": [
+        "b8413712373559fdc00705595b7179c0e14f941b93b6e2918d6daf0ea486d532"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:6",
+      "sequence": 2151,
+      "chapter_label": "EXO 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "“You shall not deny justice to your poor people in their lawsuits.",
+      "ko": "너는 가난한 자의 송사라고 공평치 않게 하지 말며",
+      "source_text_hash": "502e202c812e436a9eb34cc5ccb89ab0098b52957d7484dea82130b6ebb9b429",
+      "translation_text_hash": "d956c1036a661a7ae5c907b74f0cb3576afb0b4a433ea02dac8ad3b477e44821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가난한 자의 송사라고 공평치 않게 하지 말며"
+      ],
+      "raw_text_hashes": [
+        "d956c1036a661a7ae5c907b74f0cb3576afb0b4a433ea02dac8ad3b477e44821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:7",
+      "sequence": 2152,
+      "chapter_label": "EXO 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "“Keep far from a false charge, and don’t kill the innocent and righteous; for I will not justify the wicked.",
+      "ko": "거짓 일을 멀리하며 무죄한 자와 의로운 자를 죽이지 말라 나는 악인을 의롭다 하지 아니하겠노라",
+      "source_text_hash": "883a9200dbc4298c112faa61e184dc5ca8a84c84eed710f443572b712e5d8b23",
+      "translation_text_hash": "cbea2ee3d6812738e39d4cd30a142b8f30f33a4179aef198f9936bc1d4ea8cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 일을 멀리하며 무죄한 자와 의로운 자를 죽이지 말라 나는 악인을 의롭다 하지 아니하겠노라"
+      ],
+      "raw_text_hashes": [
+        "cbea2ee3d6812738e39d4cd30a142b8f30f33a4179aef198f9936bc1d4ea8cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:8",
+      "sequence": 2153,
+      "chapter_label": "EXO 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "“You shall take no bribe, for a bribe blinds those who have sight and perverts the words of the righteous.",
+      "ko": "너는 뇌물을 받지 말라 뇌물은 밝은 자의 눈을 어둡게 하고 의로운 자의 말을 굽게 하느니라",
+      "source_text_hash": "7b3f19e5dc24048487f2961662122aee3aeda8d976c2c5b021b3b49a791c0ace",
+      "translation_text_hash": "948e8484fe6b9695f4e6852441634350126f7435f2449a0a646291ab06cd3ea8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 뇌물을 받지 말라 뇌물은 밝은 자의 눈을 어둡게 하고 의로운 자의 말을 굽게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "948e8484fe6b9695f4e6852441634350126f7435f2449a0a646291ab06cd3ea8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:9",
+      "sequence": 2154,
+      "chapter_label": "EXO 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "“You shall not oppress an alien, for you know the heart of an alien, since you were aliens in the land of Egypt.",
+      "ko": "너는 이방 나그네를 압제하지 말라 너희가 애굽 땅에서 나그네 되었었은즉 나그네의 정경을 아느니라",
+      "source_text_hash": "b4269dbe60ceb77418378cb81c091b0be459b7bbf35b5916d738db80a85cf4d9",
+      "translation_text_hash": "843c9543103c504a143c4ae1a3b1b994d9563b74fca9a2f053318e01cae8642f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이방 나그네를 압제하지 말라 너희가 애굽 땅에서 나그네 되었었은즉 나그네의 정경을 아느니라"
+      ],
+      "raw_text_hashes": [
+        "843c9543103c504a143c4ae1a3b1b994d9563b74fca9a2f053318e01cae8642f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:10",
+      "sequence": 2155,
+      "chapter_label": "EXO 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "“For six years you shall sow your land, and shall gather in its increase,",
+      "ko": "너는 육년 동안은 너의 땅에 파종하여 그 소산을 거두고",
+      "source_text_hash": "5a62f124eaeed56196cbb1da2f9a01e3a86ae2e3ee51ccf36bbf33bfd562ed36",
+      "translation_text_hash": "d1b3084deb97ae59ba21489bae632d299b78667a55e53791696323eb79abadbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 육년 동안은 너의 땅에 파종하여 그 소산을 거두고"
+      ],
+      "raw_text_hashes": [
+        "d1b3084deb97ae59ba21489bae632d299b78667a55e53791696323eb79abadbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:11",
+      "sequence": 2156,
+      "chapter_label": "EXO 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "but the seventh year you shall let it rest and lie fallow, that the poor of your people may eat; and what they leave the animal of the field shall eat. In the same way, you shall deal with your vineyard and with your olive grove.",
+      "ko": "제 칠년에는 갈지 말고 묵여 두어서 네 백성의 가난한 자로 먹게 하라 그 남은 것은 들짐승이 먹으리라 너의 포도원과 감람원도 그리할찌니라",
+      "source_text_hash": "386a75d8d05b5b6394b9b70babd500b64bdf8f0227478ee12d976696aa8fb22e",
+      "translation_text_hash": "fdd1131c157d8c48b107fa29681ed8eb0f9acf8aa892a369cfb3a965568678f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠년에는 갈지 말고 묵여 두어서 네 백성의 가난한 자로 먹게 하라 그 남은 것은 들짐승이 먹으리라 너의 포도원과 감람원도 그리할찌니라"
+      ],
+      "raw_text_hashes": [
+        "fdd1131c157d8c48b107fa29681ed8eb0f9acf8aa892a369cfb3a965568678f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:12",
+      "sequence": 2157,
+      "chapter_label": "EXO 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "“Six days you shall do your work, and on the seventh day you shall rest, that your ox and your donkey may have rest, and the son of your servant, and the alien may be refreshed.",
+      "ko": "너는 육일 동안에 네 일을 하고 제 칠일에는 쉬라 네 소와 나귀가 쉴 것이며 네 계집 종의 자식과 나그네가 숨을 돌리리라",
+      "source_text_hash": "1a7fe8b2739b1bd6e0ad87cd66f41e2667e05a9bab41ae0f8959cdfa362abd04",
+      "translation_text_hash": "8ef302f9c18f6bab38760bdcb87e0d140697a7327b1116b698981a050489a748",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 육일 동안에 네 일을 하고 제 칠일에는 쉬라 네 소와 나귀가 쉴 것이며 네 계집 종의 자식과 나그네가 숨을 돌리리라"
+      ],
+      "raw_text_hashes": [
+        "8ef302f9c18f6bab38760bdcb87e0d140697a7327b1116b698981a050489a748"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:13",
+      "sequence": 2158,
+      "chapter_label": "EXO 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "“Be careful to do all things that I have said to you; and don’t invoke the name of other gods or even let them be heard out of your mouth.",
+      "ko": "내가 네게 이른 모든 일을 삼가 지키고 다른 신들의 이름은 부르지도 말며 네 입에서 들리게도 말찌니라",
+      "source_text_hash": "ad0bfab8b8f3fe7cb46f37e4226cd1bccdefeae7667b89f126caa855f9e9225d",
+      "translation_text_hash": "166d5d673f7409810155931db5b800720408171519dd3cf545216ea90c2146d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 이른 모든 일을 삼가 지키고 다른 신들의 이름은 부르지도 말며 네 입에서 들리게도 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "166d5d673f7409810155931db5b800720408171519dd3cf545216ea90c2146d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:14",
+      "sequence": 2159,
+      "chapter_label": "EXO 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "“You shall observe a feast to me three times a year.",
+      "ko": "너는 매년 삼차 내게 절기를 지킬찌니라",
+      "source_text_hash": "74b99708ae23fba7e571c4e12885566590bf3cf5924e1c4027755d506f00aa3e",
+      "translation_text_hash": "0e4a517e2ebc925e8f1db69d92a7dec16dfafb3a6fa4b3887ef01aa1a2a2fff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 매년 삼차 내게 절기를 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "0e4a517e2ebc925e8f1db69d92a7dec16dfafb3a6fa4b3887ef01aa1a2a2fff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:15",
+      "sequence": 2160,
+      "chapter_label": "EXO 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "You shall observe the feast of unleavened bread. Seven days you shall eat unleavened bread, as I commanded you, at the time appointed in the month Abib (for in it you came out of Egypt), and no one shall appear before me empty.",
+      "ko": "너는 무교병의 절기를 지키라 내가 네게 명한대로 아빕월의 정한 때에 칠일 동안 무교병을 먹을찌니 이는 그 달에 네가 애굽에서 나왔음이라 빈 손으로 내게 보이지 말찌니라",
+      "source_text_hash": "f03153d1a4a7db38dc06ed13630858b769934083fdd033ed9bfa9fd0e400650d",
+      "translation_text_hash": "a45dfbae180898a8054e91caf98828221f5fd01e0257ccbb0dee1f5cd324ec3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 무교병의 절기를 지키라 내가 네게 명한대로 아빕월의 정한 때에 칠일 동안 무교병을 먹을찌니 이는 그 달에 네가 애굽에서 나왔음이라 빈 손으로 내게 보이지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "a45dfbae180898a8054e91caf98828221f5fd01e0257ccbb0dee1f5cd324ec3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:16",
+      "sequence": 2161,
+      "chapter_label": "EXO 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "And the feast of harvest, the first fruits of your labors, which you sow in the field; and the feast of ingathering, at the end of the year, when you gather in your labors out of the field.",
+      "ko": "맥추절을 지키라 이는 네가 수고하여 밭에 뿌린 것의 첫 열매를 거둠이니라 수장절을 지키라 이는 네가 수고하여 이룬 것을 연종에 밭에서부터 거두어 저장함이니라",
+      "source_text_hash": "c2e20b6dddebcb0730bdf340830deef68dfe513c81e5bc0049bea8a557921e4a",
+      "translation_text_hash": "c6e8caa8149dddcf1757420278ab96e6911a1fe81822b1f01b034437bf0393e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맥추절을 지키라 이는 네가 수고하여 밭에 뿌린 것의 첫 열매를 거둠이니라 수장절을 지키라 이는 네가 수고하여 이룬 것을 연종에 밭에서부터 거두어 저장함이니라"
+      ],
+      "raw_text_hashes": [
+        "c6e8caa8149dddcf1757420278ab96e6911a1fe81822b1f01b034437bf0393e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:17",
+      "sequence": 2162,
+      "chapter_label": "EXO 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Three times in the year all your males shall appear before the Lord GOD.",
+      "ko": "너의 모든 남자는 매년 세번씩 주 여호와께 보일찌니라",
+      "source_text_hash": "4efbf126569e2e48542fa24de981dd9c693f009dbf446e2c3b9c92544d4eb62c",
+      "translation_text_hash": "dc6de0c3392c8e95b83c3d906a9f1cf74a9965409cdfab76d3e911b6206be55c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 모든 남자는 매년 세번씩 주 여호와께 보일찌니라"
+      ],
+      "raw_text_hashes": [
+        "dc6de0c3392c8e95b83c3d906a9f1cf74a9965409cdfab76d3e911b6206be55c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:18",
+      "sequence": 2163,
+      "chapter_label": "EXO 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "“You shall not offer the blood of my sacrifice with leavened bread. The fat of my feast shall not remain all night until the morning.",
+      "ko": "너는 내 희생의 피를 유교병과 함께 드리지 말며 내 절기 희생의 기름을 아침까지 남겨 두지 말찌니라",
+      "source_text_hash": "adae71652a0c1a7c8a30af8e0c140ef36c172b4571a00bd930f6a3532f075a85",
+      "translation_text_hash": "0144c7f0ed82aa15e156047a5cb41a9abdedfa8781d666883522bcca39e33be2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내 희생의 피를 유교병과 함께 드리지 말며 내 절기 희생의 기름을 아침까지 남겨 두지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "0144c7f0ed82aa15e156047a5cb41a9abdedfa8781d666883522bcca39e33be2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:19",
+      "sequence": 2164,
+      "chapter_label": "EXO 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "You shall bring the first of the first fruits of your ground into the house of the LORD your God. “You shall not boil a young goat in its mother’s milk.",
+      "ko": "너의 토지에서 처음 익은 열매의 첫것을 가져다가 너의 하나님 여호와의 전에 드릴찌니라 너는 염소 새끼를 그 어미의 젖으로 삶지 말찌니라",
+      "source_text_hash": "79f19ae68ca06f9976c4f0f57b3c82c82f3649516288baefdde2cb558734904c",
+      "translation_text_hash": "7c07312560838ac81abb1913cfff3d6a2c1db1ec32e5ce462b5122070351830d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 토지에서 처음 익은 열매의 첫것을 가져다가 너의 하나님 여호와의 전에 드릴찌니라 너는 염소 새끼를 그 어미의 젖으로 삶지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "7c07312560838ac81abb1913cfff3d6a2c1db1ec32e5ce462b5122070351830d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:20",
+      "sequence": 2165,
+      "chapter_label": "EXO 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "“Behold, I send an angel before you, to keep you by the way, and to bring you into the place which I have prepared.",
+      "ko": "내가 사자를 네 앞서 보내어 길에서 너를 보호하여 너로 내가 예비한 곳에 이르게 하리니",
+      "source_text_hash": "74fcf1d8479865d31d867128c379c4fc30cf8bde683f830babd92a7117f5e8d7",
+      "translation_text_hash": "b4506d6cdd796ac4b4e4a60e3b29504598ebee1ff35add9db14983fd34bdf595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사자를 네 앞서 보내어 길에서 너를 보호하여 너로 내가 예비한 곳에 이르게 하리니"
+      ],
+      "raw_text_hashes": [
+        "b4506d6cdd796ac4b4e4a60e3b29504598ebee1ff35add9db14983fd34bdf595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:21",
+      "sequence": 2166,
+      "chapter_label": "EXO 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "Pay attention to him, and listen to his voice. Don’t provoke him, for he will not pardon your disobedience, for my name is in him.",
+      "ko": "너희는 삼가 그 목소리를 청종하고 그를 노엽게 하지 말라 그가 너희 허물을 사하지 아니할 것은 내 이름이 그에게 있음이니라",
+      "source_text_hash": "9a45458fd2ede0212c51f05a50a7c4befd1ce553c7dca465757634de953cfe09",
+      "translation_text_hash": "9d6179c5d2cf12f93c6f4c55dfe2774ad5374016e3c2f110abac8b871fd622d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 삼가 그 목소리를 청종하고 그를 노엽게 하지 말라 그가 너희 허물을 사하지 아니할 것은 내 이름이 그에게 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "9d6179c5d2cf12f93c6f4c55dfe2774ad5374016e3c2f110abac8b871fd622d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:22",
+      "sequence": 2167,
+      "chapter_label": "EXO 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "But if you indeed listen to his voice, and do all that I speak, then I will be an enemy to your enemies, and an adversary to your adversaries.",
+      "ko": "네가 그 목소리를 잘 청종하고 나의 모든 말대로 행하면 내가 네 원수에게 원수가 되고 네 대적에게 대적이 될찌라",
+      "source_text_hash": "22c404ea6301e07369b99c531a96c1ec8401566f82f01b2cd39d2caa3bd150da",
+      "translation_text_hash": "571dd5e4f72acb90c65b863637b9b62561cf0bb38229a4b85c9cf07cfb19489a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그 목소리를 잘 청종하고 나의 모든 말대로 행하면 내가 네 원수에게 원수가 되고 네 대적에게 대적이 될찌라"
+      ],
+      "raw_text_hashes": [
+        "571dd5e4f72acb90c65b863637b9b62561cf0bb38229a4b85c9cf07cfb19489a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:23",
+      "sequence": 2168,
+      "chapter_label": "EXO 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "For my angel shall go before you, and bring you in to the Amorite, the Hittite, the Perizzite, the Canaanite, the Hivite, and the Jebusite; and I will cut them off.",
+      "ko": "나의 사자가 네 앞서 가서 너를 아모리 사람과 헷 사람과 브리스 사람과 가나안 사람과 히위 사람과 여부스 사람에게로 인도하고 나는 그들을 끊으리니",
+      "source_text_hash": "097ff45c9f511aadf00e21ee56f209f6246247f379894f9f98dced19c002f535",
+      "translation_text_hash": "c53c8ef32b4f8d8d6606e9c52d68dcae07fc75a5561fd7fc14b7d80975d9a772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사자가 네 앞서 가서 너를 아모리 사람과 헷 사람과 브리스 사람과 가나안 사람과 히위 사람과 여부스 사람에게로 인도하고 나는 그들을 끊으리니"
+      ],
+      "raw_text_hashes": [
+        "c53c8ef32b4f8d8d6606e9c52d68dcae07fc75a5561fd7fc14b7d80975d9a772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:24",
+      "sequence": 2169,
+      "chapter_label": "EXO 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "You shall not bow down to their gods, nor serve them, nor follow their practices, but you shall utterly overthrow them and demolish their pillars.",
+      "ko": "너는 그들의 신을 숭배하지 말며 섬기지 말며 그들의 소위를 본받지 말고 그것들을 다 훼파하며 그 주상을 타파하고",
+      "source_text_hash": "8e80121cdacff5be496e49192d160934cdcfe9609c8a8e88fa576021efd330c3",
+      "translation_text_hash": "145025f0578fc41447727fff014b30af21c53d31c367d892d951746ef7c8674c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들의 신을 숭배하지 말며 섬기지 말며 그들의 소위를 본받지 말고 그것들을 다 훼파하며 그 주상을 타파하고"
+      ],
+      "raw_text_hashes": [
+        "145025f0578fc41447727fff014b30af21c53d31c367d892d951746ef7c8674c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:25",
+      "sequence": 2170,
+      "chapter_label": "EXO 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "You shall serve the LORD your God, and he will bless your bread and your water, and I will take sickness away from among you.",
+      "ko": "너의 하나님 여호와를 섬기라 그리하면 여호와가 너희의 양식과 물에 복을 내리고 너희 중에 병을 제하리니",
+      "source_text_hash": "94e4b1a7a8a2d81885c0cac5782bd89b2f01525d59401ffee55a2adac7c4188c",
+      "translation_text_hash": "99c47b74e35cebf1f3597555484410946a4090dbeb04bbaacea96954d54490e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 하나님 여호와를 섬기라 그리하면 여호와가 너희의 양식과 물에 복을 내리고 너희 중에 병을 제하리니"
+      ],
+      "raw_text_hashes": [
+        "99c47b74e35cebf1f3597555484410946a4090dbeb04bbaacea96954d54490e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:26",
+      "sequence": 2171,
+      "chapter_label": "EXO 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "No one will miscarry or be barren in your land. I will fulfill the number of your days.",
+      "ko": "네 나라에 낙태하는 자가 없고 잉태치 못하는 자가 없을 것이라 내가 너의 날 수를 채우리라",
+      "source_text_hash": "ecc3edae8ba7dbdcc3038b8bc3aca16a064b7c423da16cd363055099c1960e12",
+      "translation_text_hash": "88b9687adc9ba0508f06f2078946d6e621ece1d7af70e498e3e1659ed6604435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 나라에 낙태하는 자가 없고 잉태치 못하는 자가 없을 것이라 내가 너의 날 수를 채우리라"
+      ],
+      "raw_text_hashes": [
+        "88b9687adc9ba0508f06f2078946d6e621ece1d7af70e498e3e1659ed6604435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:27",
+      "sequence": 2172,
+      "chapter_label": "EXO 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "I will send my terror before you, and will confuse all the people to whom you come, and I will make all your enemies turn their backs to you.",
+      "ko": "내가 내 위엄을 네 앞서 보내어 너의 이를 곳의 모든 백성을 파하고 너의 모든 원수로 너를 등지게 할 것이며",
+      "source_text_hash": "2778fea9fc934a452f9f1d2f02cdfb18af66bdbf3346dbfa217412d265e5bbed",
+      "translation_text_hash": "c780024a3c207f9007e4759d181c87b411a82b25d2d5cb794617374556dd2e42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 위엄을 네 앞서 보내어 너의 이를 곳의 모든 백성을 파하고 너의 모든 원수로 너를 등지게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "c780024a3c207f9007e4759d181c87b411a82b25d2d5cb794617374556dd2e42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:28",
+      "sequence": 2173,
+      "chapter_label": "EXO 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "I will send the hornet before you, which will drive out the Hivite, the Canaanite, and the Hittite, from before you.",
+      "ko": "내가 왕벌을 네 앞에 보내리니 그 벌이 히위 족속과 가나안 족속과 헷 족속을 네 앞에서 쫓아내리라",
+      "source_text_hash": "6834303b7ecb92059d1963ba1ec2e786c4ec987a1693cf2c276ecf927f5224ce",
+      "translation_text_hash": "0e4c4dc408e1ac5d8928ea8bcd3364cf9fb036567758038467e3a018fd578632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 왕벌을 네 앞에 보내리니 그 벌이 히위 족속과 가나안 족속과 헷 족속을 네 앞에서 쫓아내리라"
+      ],
+      "raw_text_hashes": [
+        "0e4c4dc408e1ac5d8928ea8bcd3364cf9fb036567758038467e3a018fd578632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:29",
+      "sequence": 2174,
+      "chapter_label": "EXO 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "I will not drive them out from before you in one year, lest the land become desolate, and the animals of the field multiply against you.",
+      "ko": "그러나 그 땅이 황무하게 되어 들짐승이 번성하여 너희를 해할까 하여 일 년 안에는 그들을 네 앞에서 쫓아내지 아니하고",
+      "source_text_hash": "b5dbc30abf321b33f472ae40390247444bafee4e60bb3805122aac04f7eb16a4",
+      "translation_text_hash": "8c74672fb7e575acf087f53887c4a23bcc722d6ae6cd1ea46c89f8acbe071794",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 땅이 황무하게 되어 들짐승이 번성하여 너희를 해할까 하여 일 년 안에는 그들을 네 앞에서 쫓아내지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "8c74672fb7e575acf087f53887c4a23bcc722d6ae6cd1ea46c89f8acbe071794"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:30",
+      "sequence": 2175,
+      "chapter_label": "EXO 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Little by little I will drive them out from before you, until you have increased and inherit the land.",
+      "ko": "네가 번성하여 그 땅을 기업으로 얻을 때까지 내가 그들을 네 앞에서 조금씩 쫓아내리라",
+      "source_text_hash": "6280633f1fda14e224ba72438404d7a1032b685c6f0b39b234b48a01fed640d3",
+      "translation_text_hash": "72e3592c9350dc7f467dbe443fe620c1c837a632c970c4e962bf3654bfda1d43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 번성하여 그 땅을 기업으로 얻을 때까지 내가 그들을 네 앞에서 조금씩 쫓아내리라"
+      ],
+      "raw_text_hashes": [
+        "72e3592c9350dc7f467dbe443fe620c1c837a632c970c4e962bf3654bfda1d43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:31",
+      "sequence": 2176,
+      "chapter_label": "EXO 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "I will set your border from the Red Sea even to the sea of the Philistines, and from the wilderness to the River; for I will deliver the inhabitants of the land into your hand, and you shall drive them out before you.",
+      "ko": "내가 너의 지경을 홍해에서부터 블레셋 바다까지, 광야에서부터 하수까지 정하고 그 땅의 거민을 네 손에 붙이리니 네가 그들을 네 앞에서 쫓아낼찌라",
+      "source_text_hash": "8772250d79ade17be4861131f5745c2cddfa3f12da45178113a0f0b5475bcb99",
+      "translation_text_hash": "1f83cc1a901848098090dcc80f9d49939753e1e6464d594042a872fde3e4f800",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너의 지경을 홍해에서부터 블레셋 바다까지, 광야에서부터 하수까지 정하고 그 땅의 거민을 네 손에 붙이리니 네가 그들을 네 앞에서 쫓아낼찌라"
+      ],
+      "raw_text_hashes": [
+        "1f83cc1a901848098090dcc80f9d49939753e1e6464d594042a872fde3e4f800"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:32",
+      "sequence": 2177,
+      "chapter_label": "EXO 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "You shall make no covenant with them, nor with their gods.",
+      "ko": "너는 그들과 그들의 신과 언약하지 말라",
+      "source_text_hash": "3439129c5897c4354a08cfffd667178e023647efca7a318b79e230c9032fead2",
+      "translation_text_hash": "e9ca386b3939222e76799066e69d66d23a0c5c6a6d09f66c90de9b0e1a60b4e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들과 그들의 신과 언약하지 말라"
+      ],
+      "raw_text_hashes": [
+        "e9ca386b3939222e76799066e69d66d23a0c5c6a6d09f66c90de9b0e1a60b4e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:23:33",
+      "sequence": 2178,
+      "chapter_label": "EXO 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "They shall not dwell in your land, lest they make you sin against me, for if you serve their gods, it will surely be a snare to you.”",
+      "ko": "그들이 네 땅에 머무르지 못할것은 그들이 너로 내게 범죄케 할까 두려움이라 네가 그 신을 섬기면 그것이 너의 올무가 되리라",
+      "source_text_hash": "e87af87ef74193d2130ad0ba0ad012e388f6928c3940dccf5712b6832217d8c4",
+      "translation_text_hash": "9d481edb7d14a740ce43ef48f7c45cbf4e933dbf6a0bede0cfa5c3cf3e7ab56d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네 땅에 머무르지 못할것은 그들이 너로 내게 범죄케 할까 두려움이라 네가 그 신을 섬기면 그것이 너의 올무가 되리라"
+      ],
+      "raw_text_hashes": [
+        "9d481edb7d14a740ce43ef48f7c45cbf4e933dbf6a0bede0cfa5c3cf3e7ab56d"
+      ]
+    }
+  ]
+}

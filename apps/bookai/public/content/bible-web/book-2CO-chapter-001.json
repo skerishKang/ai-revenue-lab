@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:001",
+  "unit_ordinal": 1079,
+  "unit_label": "2CO 1",
+  "book_code": "2CO",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:1:1",
+      "sequence": 28798,
+      "chapter_label": "2CO 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, an apostle of Christ Jesus through the will of God, and Timothy our brother, to the assembly of God which is at Corinth, with all the saints who are in the whole of Achaia:",
+      "ko": "하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울과 및 형제 디모데는 고린도에 있는 하나님의 교회와 또 온 아가야에 있는 모든 성도에게",
+      "source_text_hash": "aaba947e05d26cb8261a72c140732681bb1caa8b1229656dab54181ec7cda0ea",
+      "translation_text_hash": "a2bd18b7fd394bf6733a4345d8ac34761efce06cf5bef3f476df0c545502299e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 뜻으로 말미암아 그리스도 예수의 사도 된 바울과 및 형제 디모데는 고린도에 있는 하나님의 교회와 또 온 아가야에 있는 모든 성도에게"
+      ],
+      "raw_text_hashes": [
+        "a2bd18b7fd394bf6733a4345d8ac34761efce06cf5bef3f476df0c545502299e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:2",
+      "sequence": 28799,
+      "chapter_label": "2CO 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라",
+      "source_text_hash": "4b0c50bd93c1ece92cdc3eb0ce96aa9db845690c46dccfc6611823b4dce05733",
+      "translation_text_hash": "a3e36146b61318d5062b691ba22e48330d04304695ea25cafe4543c226588885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 있기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "a3e36146b61318d5062b691ba22e48330d04304695ea25cafe4543c226588885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:3",
+      "sequence": 28800,
+      "chapter_label": "2CO 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Blessed be the God and Father of our Lord Jesus Christ, the Father of mercies and God of all comfort,",
+      "ko": "찬송하리로다 그는 우리 주 예수 그리스도의 하나님이시요 자비의 아버지시요 모든 위로의 하나님이시며",
+      "source_text_hash": "b27fb3aaf6debd294ac23aa6b55db57005e0aa25c3f2a32dcb9bae4897aa2af1",
+      "translation_text_hash": "2cdb4e9a9b63f6ec025844b45940ceb63ca96601cd1702578f611df60a575968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송하리로다 그는 우리 주 예수 그리스도의 하나님이시요 자비의 아버지시요 모든 위로의 하나님이시며"
+      ],
+      "raw_text_hashes": [
+        "2cdb4e9a9b63f6ec025844b45940ceb63ca96601cd1702578f611df60a575968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:4",
+      "sequence": 28801,
+      "chapter_label": "2CO 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "who comforts us in all our affliction, that we may be able to comfort those who are in any affliction, through the comfort with which we ourselves are comforted by God.",
+      "ko": "우리의 모든 환난 중에서 우리를 위로하사 우리로 하여금 하나님께 받는 위로로써 모든 환난 중에 있는 자들을 능히 위로하게 하시는 이시로다",
+      "source_text_hash": "92275ae60744967b52651829c1803286d6de8551bbf3d75a7800398ff71d93bc",
+      "translation_text_hash": "67354cb80c3f7e155ba0dfce9f5eebc63192956abc03678c0b53602ec5e64e5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 모든 환난 중에서 우리를 위로하사 우리로 하여금 하나님께 받는 위로로써 모든 환난 중에 있는 자들을 능히 위로하게 하시는 이시로다"
+      ],
+      "raw_text_hashes": [
+        "67354cb80c3f7e155ba0dfce9f5eebc63192956abc03678c0b53602ec5e64e5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:5",
+      "sequence": 28802,
+      "chapter_label": "2CO 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "For as the sufferings of Christ abound to us, even so our comfort also abounds through Christ.",
+      "ko": "그리스도의 고난이 우리에게 넘친것 같이 우리의 위로도 그리스도로 말미암아 넘치는도다",
+      "source_text_hash": "3b4d083d5c5d1d1b54020ad45ef3723ef63b249818ee0e9246ceb14867c54cd5",
+      "translation_text_hash": "8ad4e743fd76dac1da7ef42b7baf2c0c54a86a265277eb3002f6d6c27bfc3552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도의 고난이 우리에게 넘친것 같이 우리의 위로도 그리스도로 말미암아 넘치는도다"
+      ],
+      "raw_text_hashes": [
+        "8ad4e743fd76dac1da7ef42b7baf2c0c54a86a265277eb3002f6d6c27bfc3552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:6",
+      "sequence": 28803,
+      "chapter_label": "2CO 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "But if we are afflicted, it is for your comfort and salvation. If we are comforted, it is for your comfort, which produces in you the patient enduring of the same sufferings which we also suffer.",
+      "ko": "우리가 환난 받는 것도 너희의 위로와 구원을 위함이요 혹 위로 받는 것도 너희의 위로를 위함이니 이 위로가 너희 속에 역사하여 우리가 받는것 같은 고난을 너희도 견디게 하느니라",
+      "source_text_hash": "b0ba6377ba1daeb367f2b7880bd1b51c0b37c5f2e85f79eedf41c9a85b4ae942",
+      "translation_text_hash": "112bd11d641224511cbc0547727669514172081dddaf44e57717b2f5391664f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 환난 받는 것도 너희의 위로와 구원을 위함이요 혹 위로 받는 것도 너희의 위로를 위함이니 이 위로가 너희 속에 역사하여 우리가 받는것 같은 고난을 너희도 견디게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "112bd11d641224511cbc0547727669514172081dddaf44e57717b2f5391664f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:7",
+      "sequence": 28804,
+      "chapter_label": "2CO 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Our hope for you is steadfast, knowing that, since you are partakers of the sufferings, so you are also of the comfort.",
+      "ko": "너희를 위한 우리의 소망이 견고함은 너희가 고난에 참예하는 자가 된것 같이 위로에도 그러할 줄을 앎이라",
+      "source_text_hash": "11a0f672f2f16eef9b7f3fe66c1f447b43a450c7e72be7a3b5c86a039d8e3a05",
+      "translation_text_hash": "6adacb1b344631930a3cf31c9ec2a06c3510f58aaeb3a128055cb4ade0a6b52f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 위한 우리의 소망이 견고함은 너희가 고난에 참예하는 자가 된것 같이 위로에도 그러할 줄을 앎이라"
+      ],
+      "raw_text_hashes": [
+        "6adacb1b344631930a3cf31c9ec2a06c3510f58aaeb3a128055cb4ade0a6b52f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:8",
+      "sequence": 28805,
+      "chapter_label": "2CO 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "For we don’t desire to have you uninformed, brothers, concerning our affliction which happened to us in Asia: that we were weighed down exceedingly, beyond our power, so much that we despaired even of life.",
+      "ko": "형제들아 우리가 아시아에서 당한 환난을 너희가 알지 못하기를 원치 아니하노니 힘에 지나도록 심한 고생을 받아 살 소망까지 끊어지고",
+      "source_text_hash": "b3a5568d64367f68700dbbcdd00c5eea61c7eea30a72ff51bc8c557b47f90809",
+      "translation_text_hash": "db413fea6dcd72d9ebe56715fef2b4e4c9490d8be545c0ce2b382d123bfb3e62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 아시아에서 당한 환난을 너희가 알지 못하기를 원치 아니하노니 힘에 지나도록 심한 고생을 받아 살 소망까지 끊어지고"
+      ],
+      "raw_text_hashes": [
+        "db413fea6dcd72d9ebe56715fef2b4e4c9490d8be545c0ce2b382d123bfb3e62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:9",
+      "sequence": 28806,
+      "chapter_label": "2CO 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Yes, we ourselves have had the sentence of death within ourselves, that we should not trust in ourselves, but in God who raises the dead,",
+      "ko": "우리 마음에 사형 선고를 받은 줄 알았으니 이는 우리로 자기를 의뢰하지 말고 오직 죽은 자를 다시 살리시는 하나님만 의뢰하게 하심이라",
+      "source_text_hash": "f877f8b130e189b4a98c8fd1dc234cd1423d88f004d368b9a6c581a16e1a1349",
+      "translation_text_hash": "a16a44a170f603a700f6630a78506f2c5ac7ddef2f81e6bad4d79a91bd2d20df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 마음에 사형 선고를 받은 줄 알았으니 이는 우리로 자기를 의뢰하지 말고 오직 죽은 자를 다시 살리시는 하나님만 의뢰하게 하심이라"
+      ],
+      "raw_text_hashes": [
+        "a16a44a170f603a700f6630a78506f2c5ac7ddef2f81e6bad4d79a91bd2d20df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:10",
+      "sequence": 28807,
+      "chapter_label": "2CO 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "who delivered us out of so great a death, and does deliver, on whom we have set our hope that he will also still deliver us,",
+      "ko": "그가 이같이 큰 사망에서 우리를 건지셨고 또 건지시리라 또한 이후에라도 건지시기를 그를 의지하여 바라노라",
+      "source_text_hash": "bd55f012e3a85273b4928d05cc962e0ed64b64e7a81ab04a65041ea8b68e620b",
+      "translation_text_hash": "2826306fa1e0e0de7f2270472fc0447625d31b28adeaa02997ba6c9025d35cc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이같이 큰 사망에서 우리를 건지셨고 또 건지시리라 또한 이후에라도 건지시기를 그를 의지하여 바라노라"
+      ],
+      "raw_text_hashes": [
+        "2826306fa1e0e0de7f2270472fc0447625d31b28adeaa02997ba6c9025d35cc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:11",
+      "sequence": 28808,
+      "chapter_label": "2CO 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "you also helping together on our behalf by your supplication; that, for the gift given to us by means of many, thanks may be given by many persons on your behalf.",
+      "ko": "너희도 우리를 위하여 간구함으로 도우라 이는 우리가 많은 사람의 기도로 얻은 은사를 인하여 많은 사람도 우리를 위하여 감사하게 하려 함이라",
+      "source_text_hash": "a69bc659dbaf24c0a30ae257da3b9730f7d64e0e85fb68afa4f1825d5dd01bd8",
+      "translation_text_hash": "992e02939906e6a1121f9efa5779c64779a69c821a1565a2cbe36100e0dbf07c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 우리를 위하여 간구함으로 도우라 이는 우리가 많은 사람의 기도로 얻은 은사를 인하여 많은 사람도 우리를 위하여 감사하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "992e02939906e6a1121f9efa5779c64779a69c821a1565a2cbe36100e0dbf07c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:12",
+      "sequence": 28809,
+      "chapter_label": "2CO 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "For our boasting is this: the testimony of our conscience that in holiness and sincerity of God, not in fleshly wisdom but in the grace of God, we behaved ourselves in the world, and more abundantly toward you.",
+      "ko": "우리가 세상에서 특별히 너희에게 대하여 하나님의 거룩함과 진실함으로써 하되 육체의 지혜로 하지 아니하고 하나님의 은혜로 행함은 우리 양심의 증거하는 바니 이것이 우리의 자랑이라",
+      "source_text_hash": "f9741e6f0a7509a44cf4f4ef7fb0c53f3f29f31725bb951c1afca948a8e5c7a7",
+      "translation_text_hash": "00fb158a062635b54772f57675f3717a923629efc96cc460150eac8423f00671",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 세상에서 특별히 너희에게 대하여 하나님의 거룩함과 진실함으로써 하되 육체의 지혜로 하지 아니하고 하나님의 은혜로 행함은 우리 양심의 증거하는 바니 이것이 우리의 자랑이라"
+      ],
+      "raw_text_hashes": [
+        "00fb158a062635b54772f57675f3717a923629efc96cc460150eac8423f00671"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:13",
+      "sequence": 28810,
+      "chapter_label": "2CO 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "For we write no other things to you than what you read or even acknowledge, and I hope you will acknowledge to the end—",
+      "ko": "오직 너희가 읽고 아는 것 외에 우리가 다른 것을 쓰지 아니하노니 너희가 끝까지 알기를 내가 바라는 것은",
+      "source_text_hash": "53bf69c3c1a4c1ef1f906cc7f1d9af25a0366bdf02f5b9dc72f9be3a859b3265",
+      "translation_text_hash": "4e7437a08fac4d7b0bdaede749259a7f855da4ec6392f6a2fa10c341a3d641b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희가 읽고 아는 것 외에 우리가 다른 것을 쓰지 아니하노니 너희가 끝까지 알기를 내가 바라는 것은"
+      ],
+      "raw_text_hashes": [
+        "4e7437a08fac4d7b0bdaede749259a7f855da4ec6392f6a2fa10c341a3d641b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:14",
+      "sequence": 28811,
+      "chapter_label": "2CO 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "as also you acknowledged us in part—that we are your boasting, even as you also are ours, in the day of our Lord Jesus.",
+      "ko": "너희가 대강 우리를 아는 것 같이 우리 주 예수의 날에 너희가 우리의 자랑이 되고 우리가 너희의 자랑이 되는 것이라",
+      "source_text_hash": "05a02e3580d2cc5ed9ed086e56d62bb992f3a4e9b0f4c05b2d4800bbfc267384",
+      "translation_text_hash": "dc74eb1cd2c3a808a088a8386cb7a653dd0c7efdba0e65d0708cd15a8282649b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 대강 우리를 아는 것 같이 우리 주 예수의 날에 너희가 우리의 자랑이 되고 우리가 너희의 자랑이 되는 것이라"
+      ],
+      "raw_text_hashes": [
+        "dc74eb1cd2c3a808a088a8386cb7a653dd0c7efdba0e65d0708cd15a8282649b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:15",
+      "sequence": 28812,
+      "chapter_label": "2CO 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "In this confidence, I was determined to come first to you, that you might have a second benefit,",
+      "ko": "내가 이 확신을 가지고 너희로 두번 은혜를 얻게 하기 위하여 먼저 너희에게 이르렀다가",
+      "source_text_hash": "b360e2b18e2019ed5b066ab1f1e4ccca05886f3225f22e2f14af3fc169319f65",
+      "translation_text_hash": "046c0726c4611f37ec0e5902bc2661d209f97b2bfd8e4580dc1a325e947b7310",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 확신을 가지고 너희로 두번 은혜를 얻게 하기 위하여 먼저 너희에게 이르렀다가"
+      ],
+      "raw_text_hashes": [
+        "046c0726c4611f37ec0e5902bc2661d209f97b2bfd8e4580dc1a325e947b7310"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:16",
+      "sequence": 28813,
+      "chapter_label": "2CO 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "and by you to pass into Macedonia, and again from Macedonia to come to you, and to be sent forward by you on my journey to Judea.",
+      "ko": "너희를 지나 마게도냐에 갔다가 다시 마게도냐에서 너희에게 가서 너희가 보내줌으로 유대로 가기를 경영하였으니",
+      "source_text_hash": "b2b9054a2c20e74793d15f54b2276485e1e0166e7a0e3c74db77a2e48d3f9b8b",
+      "translation_text_hash": "ae63864b79a8d5177dfef4f193d846623bb5930a2c1f59534a620c6e90803b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 지나 마게도냐에 갔다가 다시 마게도냐에서 너희에게 가서 너희가 보내줌으로 유대로 가기를 경영하였으니"
+      ],
+      "raw_text_hashes": [
+        "ae63864b79a8d5177dfef4f193d846623bb5930a2c1f59534a620c6e90803b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:17",
+      "sequence": 28814,
+      "chapter_label": "2CO 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "When I therefore planned this, did I show fickleness? Or the things that I plan, do I plan according to the flesh, that with me there should be the “Yes, yes” and the “No, no?”",
+      "ko": "이렇게 경영할 때에 어찌 경홀히 하였으리요 혹 경영하기를 육체를 좇아 경영하여 예 예하고 아니 아니라 하는 일이 내게 있었겠느냐",
+      "source_text_hash": "80a06405568f6c85ceeebc4122462ca42078c74d3a8ae8e79d04a645839e8942",
+      "translation_text_hash": "3eede0d496150ad99e1b881b0b04722cf18b340996ac70eb3e0de7eef3a2954b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 경영할 때에 어찌 경홀히 하였으리요 혹 경영하기를 육체를 좇아 경영하여 예 예하고 아니 아니라 하는 일이 내게 있었겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3eede0d496150ad99e1b881b0b04722cf18b340996ac70eb3e0de7eef3a2954b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:18",
+      "sequence": 28815,
+      "chapter_label": "2CO 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "But as God is faithful, our word toward you was not “Yes and no.”",
+      "ko": "하나님은 미쁘시니라 우리가 너희에게 한 말은 예 하고 아니라 함이 없노라",
+      "source_text_hash": "c4f362efddffbdc1b4e67ccfd4c302f3f4d563ec061f9013bd039c90e51c8aa3",
+      "translation_text_hash": "269fc847e0830671cb8cbca7f075223c32f184157627019119cdfd8a3940c916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 미쁘시니라 우리가 너희에게 한 말은 예 하고 아니라 함이 없노라"
+      ],
+      "raw_text_hashes": [
+        "269fc847e0830671cb8cbca7f075223c32f184157627019119cdfd8a3940c916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:19",
+      "sequence": 28816,
+      "chapter_label": "2CO 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "For the Son of God, Jesus Christ, who was preached among you by us—by me, Silvanus, and Timothy—was not “Yes and no,” but in him is “Yes.”",
+      "ko": "우리 곧 나와 실루아노와 디모데로 말미암아 너희 가운데 전파된 하나님의 아들 예수 그리스도는 예 하고 아니라 함이 되지 아니하였으니 저에게는 예만 되었느니라",
+      "source_text_hash": "b0db341d3eeb6a2352d288be939be64e502f3e9bd8855978ff2d733051d716fd",
+      "translation_text_hash": "4d06b884e2a8dfb6bcc1a539f7b5d37193471d2e85b8fa217d7f2f0e24ef805f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 곧 나와 실루아노와 디모데로 말미암아 너희 가운데 전파된 하나님의 아들 예수 그리스도는 예 하고 아니라 함이 되지 아니하였으니 저에게는 예만 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "4d06b884e2a8dfb6bcc1a539f7b5d37193471d2e85b8fa217d7f2f0e24ef805f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:20",
+      "sequence": 28817,
+      "chapter_label": "2CO 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "For however many are the promises of God, in him is the “Yes.” Therefore also through him is the “Amen”, to the glory of God through us.",
+      "ko": "하나님의 약속은 얼마든지 그리스도 안에서 예가 되니 그런즉 그로 말미암아 우리가 아멘 하여 하나님께 영광을 돌리게 되느니라",
+      "source_text_hash": "ae337533c8cea091800d3dcd8d1379a4a69d683a2bd05a909ef7b8760a8bea11",
+      "translation_text_hash": "1f0de3d2e4aae74d86c9bbd90c2fd40b1106078fff27e8635056d44ce0cdb3d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 약속은 얼마든지 그리스도 안에서 예가 되니 그런즉 그로 말미암아 우리가 아멘 하여 하나님께 영광을 돌리게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "1f0de3d2e4aae74d86c9bbd90c2fd40b1106078fff27e8635056d44ce0cdb3d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:21",
+      "sequence": 28818,
+      "chapter_label": "2CO 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Now he who establishes us with you in Christ and anointed us is God,",
+      "ko": "우리를 너희와 함께 그리스도 안에서 견고케 하시고 우리에게 기름을 부으신 이는 하나님이시니",
+      "source_text_hash": "0342d5fe5b896f9987e14a11bc7fe1e58f880f714721bcc5a2ac3ceba3c58ffb",
+      "translation_text_hash": "19d39e142a2ed930fe46cf2b796718192e68b8f687c922cbf5476c9da6208e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 너희와 함께 그리스도 안에서 견고케 하시고 우리에게 기름을 부으신 이는 하나님이시니"
+      ],
+      "raw_text_hashes": [
+        "19d39e142a2ed930fe46cf2b796718192e68b8f687c922cbf5476c9da6208e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:22",
+      "sequence": 28819,
+      "chapter_label": "2CO 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "who also sealed us and gave us the down payment of the Spirit in our hearts.",
+      "ko": "저가 또한 우리에게 인치시고 보증으로 성령을 우리 마음에 주셨느니라",
+      "source_text_hash": "88be50650375a066f574a01c7b3a627353e2a728afeea33c9be21f4af3ac56dc",
+      "translation_text_hash": "9a552fd5a04c7899db793c12a16afde1ff53fc659dd08ee75bf6e61faea9335f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또한 우리에게 인치시고 보증으로 성령을 우리 마음에 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9a552fd5a04c7899db793c12a16afde1ff53fc659dd08ee75bf6e61faea9335f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:23",
+      "sequence": 28820,
+      "chapter_label": "2CO 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "But I call God for a witness to my soul, that to spare you, I didn’t come to Corinth.",
+      "ko": "내가 내 영혼을 두고 하나님을 불러 증거하시게 하노니 다시 고린도에 가지 아니한 것은 너희를 아끼려 함이라",
+      "source_text_hash": "506bbcfbbe51cf7a9d743cc62231cd8968bd48faca382360b93f6427fd140fb7",
+      "translation_text_hash": "d72f9d410c40152b9ec24589e56acbb8d28c6dac674277b64762a3af805f22cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 영혼을 두고 하나님을 불러 증거하시게 하노니 다시 고린도에 가지 아니한 것은 너희를 아끼려 함이라"
+      ],
+      "raw_text_hashes": [
+        "d72f9d410c40152b9ec24589e56acbb8d28c6dac674277b64762a3af805f22cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:1:24",
+      "sequence": 28821,
+      "chapter_label": "2CO 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CO",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "We don’t control your faith, but are fellow workers with you for your joy. For you stand firm in faith.",
+      "ko": "우리가 너희 믿음을 주관하려는 것이 아니요 오직 너희 기쁨을 돕는 자가 되려 함이니 이는 너희가 믿음에 섰음이라",
+      "source_text_hash": "09ebaedfd9784fc4a68ea6ed64bbba85aff11c334de1d436131e29a181f2fd6a",
+      "translation_text_hash": "ece24fc2852b666c35c4cbb331e66d7efbaf350caaad03f50189e1a70c6bcb32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너희 믿음을 주관하려는 것이 아니요 오직 너희 기쁨을 돕는 자가 되려 함이니 이는 너희가 믿음에 섰음이라"
+      ],
+      "raw_text_hashes": [
+        "ece24fc2852b666c35c4cbb331e66d7efbaf350caaad03f50189e1a70c6bcb32"
+      ]
+    }
+  ]
+}

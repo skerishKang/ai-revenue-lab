@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:027",
+  "unit_ordinal": 77,
+  "unit_label": "EXO 27",
+  "book_code": "EXO",
+  "chapter_number": 27,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:27:1",
+      "sequence": 2274,
+      "chapter_label": "EXO 27",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 1
+        }
+      ],
+      "en": "“You shall make the altar of acacia wood, five cubits long, and five cubits wide. The altar shall be square. Its height shall be three cubits.",
+      "ko": "너는 조각목으로 장이 오 규빗, 광이 오 규빗의 단을 만들되 네모 반듯하게 하며 고는 삼 규빗으로 하고",
+      "source_text_hash": "4cd2a939a3e5799d35dd27dae003aa9e94ec1414d5ae7fed0d46b8db32049dd9",
+      "translation_text_hash": "8a075aa514e54da138881da1e93a9c84389bcc724de37dba481dc6ad77066173",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 조각목으로 장이 오 규빗, 광이 오 규빗의 단을 만들되 네모 반듯하게 하며 고는 삼 규빗으로 하고"
+      ],
+      "raw_text_hashes": [
+        "8a075aa514e54da138881da1e93a9c84389bcc724de37dba481dc6ad77066173"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:2",
+      "sequence": 2275,
+      "chapter_label": "EXO 27",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 2
+        }
+      ],
+      "en": "You shall make its horns on its four corners. Its horns shall be of one piece with it. You shall overlay it with bronze.",
+      "ko": "그 네 모퉁이 위에 뿔을 만들되 그 뿔이 그것에 연하게 하고 그 단을 놋으로 쌀찌며",
+      "source_text_hash": "da4bec03e36efb00a59a5586258d7ed7119eb19174032b4ac47c1ab741ad11b0",
+      "translation_text_hash": "98f6189845e0d0fb00b631348ae00e6aa9018837d9ee65b3d1e52014ae370939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 네 모퉁이 위에 뿔을 만들되 그 뿔이 그것에 연하게 하고 그 단을 놋으로 쌀찌며"
+      ],
+      "raw_text_hashes": [
+        "98f6189845e0d0fb00b631348ae00e6aa9018837d9ee65b3d1e52014ae370939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:3",
+      "sequence": 2276,
+      "chapter_label": "EXO 27",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 3
+        }
+      ],
+      "en": "You shall make its pots to take away its ashes; and its shovels, its basins, its meat hooks, and its fire pans. You shall make all its vessels of bronze.",
+      "ko": "재를 담는 통과 부삽과 대야와 고기 갈고리와 불 옮기는 그릇을 만들되 단의 그릇을 다 놋으로 만들찌며",
+      "source_text_hash": "1103511b1634bb3b8c3e435578b243b4387caf7cb1663803be9b1ebeeb966ee9",
+      "translation_text_hash": "c66d1b3cccfdc0c6c94a0f5cbb92f39476bb0e470fb376cd6ed5a2576fd6f550",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "재를 담는 통과 부삽과 대야와 고기 갈고리와 불 옮기는 그릇을 만들되 단의 그릇을 다 놋으로 만들찌며"
+      ],
+      "raw_text_hashes": [
+        "c66d1b3cccfdc0c6c94a0f5cbb92f39476bb0e470fb376cd6ed5a2576fd6f550"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:4",
+      "sequence": 2277,
+      "chapter_label": "EXO 27",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 4
+        }
+      ],
+      "en": "You shall make a grating for it of network of bronze. On the net you shall make four bronze rings in its four corners.",
+      "ko": "단을 위하여 놋으로 그물을 만들고 그 위 네 모퉁이에 놋고리 넷을 만들고",
+      "source_text_hash": "e95e80b6fbd45531c96537f7909f6dd4a9010084cc6692584571c79f10dce871",
+      "translation_text_hash": "8e15736d51b749662599761190803615acf46e5020f91eeb374365214c791c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단을 위하여 놋으로 그물을 만들고 그 위 네 모퉁이에 놋고리 넷을 만들고"
+      ],
+      "raw_text_hashes": [
+        "8e15736d51b749662599761190803615acf46e5020f91eeb374365214c791c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:5",
+      "sequence": 2278,
+      "chapter_label": "EXO 27",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 5
+        }
+      ],
+      "en": "You shall put it under the ledge around the altar beneath, that the net may reach halfway up the altar.",
+      "ko": "그물은 단 사면 가장자리 아래 곧 단 절반에 오르게 할찌며",
+      "source_text_hash": "bfcc2321dc7c8c4ce611725a5593f8f2d28e95cb5c5adb7c3e40b5617360ca6c",
+      "translation_text_hash": "da8a76e19a7ec10b60254a07bd25e824b1e2db38d70c29907917a709ad6614db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그물은 단 사면 가장자리 아래 곧 단 절반에 오르게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "da8a76e19a7ec10b60254a07bd25e824b1e2db38d70c29907917a709ad6614db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:6",
+      "sequence": 2279,
+      "chapter_label": "EXO 27",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 6
+        }
+      ],
+      "en": "You shall make poles for the altar, poles of acacia wood, and overlay them with bronze.",
+      "ko": "또 그 단을 위하여 채를 만들되 조각목으로 만들고 놋으로 쌀찌며",
+      "source_text_hash": "6cc443660bf820c84c1667839460ed1701755edb2bb41090958f6ddcdada5dac",
+      "translation_text_hash": "54ca14a06b5d3705899f51a98cb1d9b876c73ebec39605a606d8073f8a9f8425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 단을 위하여 채를 만들되 조각목으로 만들고 놋으로 쌀찌며"
+      ],
+      "raw_text_hashes": [
+        "54ca14a06b5d3705899f51a98cb1d9b876c73ebec39605a606d8073f8a9f8425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:7",
+      "sequence": 2280,
+      "chapter_label": "EXO 27",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 7
+        }
+      ],
+      "en": "Its poles shall be put into the rings, and the poles shall be on the two sides of the altar when carrying it.",
+      "ko": "단 양편 고리에 그 채를 꿰어 단을 메게 할찌며",
+      "source_text_hash": "d070fab5099024d72572ba5460329742f96c16ff0c5503935fa9318f3c905927",
+      "translation_text_hash": "5f2ab05c4b4113b1170e45a8bf40fa13ed5b8c9d6bc29037d8e25771d27febda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 양편 고리에 그 채를 꿰어 단을 메게 할찌며"
+      ],
+      "raw_text_hashes": [
+        "5f2ab05c4b4113b1170e45a8bf40fa13ed5b8c9d6bc29037d8e25771d27febda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:8",
+      "sequence": 2281,
+      "chapter_label": "EXO 27",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 8
+        }
+      ],
+      "en": "You shall make it hollow with planks. They shall make it as it has been shown you on the mountain.",
+      "ko": "단은 널판으로 비게 만들되 산에서 네게 보인대로 그들이 만들찌니라",
+      "source_text_hash": "3765eeec8e4896952dafa31da07fd1bda9f77127eb3e24dabdc65df2b3c8e277",
+      "translation_text_hash": "77ff40d2e86ab0472e63f03e681972323d3e1140a2abefa50cc1d06a0065604e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단은 널판으로 비게 만들되 산에서 네게 보인대로 그들이 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "77ff40d2e86ab0472e63f03e681972323d3e1140a2abefa50cc1d06a0065604e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:9",
+      "sequence": 2282,
+      "chapter_label": "EXO 27",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 9
+        }
+      ],
+      "en": "“You shall make the court of the tabernacle: for the south side southward there shall be hangings for the court of fine twined linen one hundred cubits long for one side.",
+      "ko": "너는 성막의 뜰을 만들찌니 남을 향하여 뜰 남편에 광이 백 규빗의 세마포장을 쳐서 그 한 편을 당하게 할찌니",
+      "source_text_hash": "78838eb1a5fab0d29d3dc2595a591f5d1ae9908e85fe005f97545d42a1779639",
+      "translation_text_hash": "58d6e2b3551def63252f3681990bb8bd78dad220dbd2f72f437448c154d6436c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 성막의 뜰을 만들찌니 남을 향하여 뜰 남편에 광이 백 규빗의 세마포장을 쳐서 그 한 편을 당하게 할찌니"
+      ],
+      "raw_text_hashes": [
+        "58d6e2b3551def63252f3681990bb8bd78dad220dbd2f72f437448c154d6436c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:10",
+      "sequence": 2283,
+      "chapter_label": "EXO 27",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 10
+        }
+      ],
+      "en": "Its pillars shall be twenty, and their sockets twenty, of bronze. The hooks of the pillars and their fillets shall be of silver.",
+      "ko": "그 기둥이 스물이며 그 받침 스물은 놋으로 하고 그 기둥의 갈고리와 가름대는 은으로 할찌며",
+      "source_text_hash": "ccc6c4d221b054b121c12f57cacdbddab785e5bd605128042233a893f2d07648",
+      "translation_text_hash": "4f99a3686d23db68cfc378f2b6c6e81f46b75a1840a7da0455c723a5748206bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기둥이 스물이며 그 받침 스물은 놋으로 하고 그 기둥의 갈고리와 가름대는 은으로 할찌며"
+      ],
+      "raw_text_hashes": [
+        "4f99a3686d23db68cfc378f2b6c6e81f46b75a1840a7da0455c723a5748206bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:11",
+      "sequence": 2284,
+      "chapter_label": "EXO 27",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 11
+        }
+      ],
+      "en": "Likewise for the length of the north side, there shall be hangings one hundred cubits long, and its pillars twenty, and their sockets twenty, of bronze; the hooks of the pillars, and their fillets, of silver.",
+      "ko": "그 북편에도 광이 백 규빗의 포장을 치되 그 기둥이 스물이며 그 기둥의 받침 스물은 놋으로 하고 그 기둥의 갈고리와 가름대는 은으로 할찌며",
+      "source_text_hash": "19628afc6d59e3f9cbc9669446477ef5838c424fa3e56ec0dddd37a499b0edd4",
+      "translation_text_hash": "13673ce694a604b28ed8142cf04ccca807da973359e8be10059dab54d3a1b7db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 북편에도 광이 백 규빗의 포장을 치되 그 기둥이 스물이며 그 기둥의 받침 스물은 놋으로 하고 그 기둥의 갈고리와 가름대는 은으로 할찌며"
+      ],
+      "raw_text_hashes": [
+        "13673ce694a604b28ed8142cf04ccca807da973359e8be10059dab54d3a1b7db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:12",
+      "sequence": 2285,
+      "chapter_label": "EXO 27",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 12
+        }
+      ],
+      "en": "For the width of the court on the west side shall be hangings of fifty cubits; their pillars ten, and their sockets ten.",
+      "ko": "뜰의 옆 곧 서편에 광 오십 규빗의 포장을 치되 그 기둥이 열이요 받침이 열이며",
+      "source_text_hash": "785f3b6f57efc98bc4175c95a43f2478a1911d939f3757e7e5612b1e2e1229fe",
+      "translation_text_hash": "6a3faa236d4bb426dbecde86765467f07869d8c44bb2ec0f80b69bb541b725da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 옆 곧 서편에 광 오십 규빗의 포장을 치되 그 기둥이 열이요 받침이 열이며"
+      ],
+      "raw_text_hashes": [
+        "6a3faa236d4bb426dbecde86765467f07869d8c44bb2ec0f80b69bb541b725da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:13",
+      "sequence": 2286,
+      "chapter_label": "EXO 27",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 13
+        }
+      ],
+      "en": "The width of the court on the east side eastward shall be fifty cubits.",
+      "ko": "동을 향하여 뜰 동편의 광도 오십 규빗이 될찌며",
+      "source_text_hash": "54425bc89d5653c22fe7a5b5566b6c06a77f638359fe0e3cb906634908b28c2b",
+      "translation_text_hash": "f7b0d674344aecce26036cc9d2cca670433e0036c6a6db26bae97eb83c861439",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동을 향하여 뜰 동편의 광도 오십 규빗이 될찌며"
+      ],
+      "raw_text_hashes": [
+        "f7b0d674344aecce26036cc9d2cca670433e0036c6a6db26bae97eb83c861439"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:14",
+      "sequence": 2287,
+      "chapter_label": "EXO 27",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 14
+        }
+      ],
+      "en": "The hangings for the one side of the gate shall be fifteen cubits; their pillars three, and their sockets three.",
+      "ko": "문 이편을 위하여 포장이 십 오 규빗이며 그 기둥이 셋이요 받침이 셋이요",
+      "source_text_hash": "befd5720dbf1b514226dfb086cad892478dd942945a61e32a01023ea966a1748",
+      "translation_text_hash": "a1a468a78b4c3767531d68de54724141fdb9abe26736d9e3715dd056ccd9c085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문 이편을 위하여 포장이 십 오 규빗이며 그 기둥이 셋이요 받침이 셋이요"
+      ],
+      "raw_text_hashes": [
+        "a1a468a78b4c3767531d68de54724141fdb9abe26736d9e3715dd056ccd9c085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:15",
+      "sequence": 2288,
+      "chapter_label": "EXO 27",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 15
+        }
+      ],
+      "en": "For the other side shall be hangings of fifteen cubits; their pillars three, and their sockets three.",
+      "ko": "문 저편을 위하여도 포장이 십오 규빗이며 그 기둥이 셋이요 받침이 셋이며",
+      "source_text_hash": "2679f55ecab39b85fb0531f991bdc86207d93ff3cda56955de4fdafce4ecd4d9",
+      "translation_text_hash": "55aaf63feba856a828788df34ea58578d7fcf0ef8546b3c053e3eec0eefc9ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문 저편을 위하여도 포장이 십오 규빗이며 그 기둥이 셋이요 받침이 셋이며"
+      ],
+      "raw_text_hashes": [
+        "55aaf63feba856a828788df34ea58578d7fcf0ef8546b3c053e3eec0eefc9ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:16",
+      "sequence": 2289,
+      "chapter_label": "EXO 27",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 16
+        }
+      ],
+      "en": "For the gate of the court shall be a screen of twenty cubits, of blue, and purple, and scarlet, and fine twined linen, the work of the embroiderer; their pillars four, and their sockets four.",
+      "ko": "뜰 문을 위하여는 청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짠 이십 규빗의 장이 있게 할찌니 그 기둥이 넷이요 받침이 넷이며",
+      "source_text_hash": "b6e876169e8ecdd84c99778134fd5562d7ae476a67ee57e16d83d51ebd7234e3",
+      "translation_text_hash": "a9039936de0b369b8ec16054e94f28f5ac3252cb29e703c751473639287b845a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 문을 위하여는 청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짠 이십 규빗의 장이 있게 할찌니 그 기둥이 넷이요 받침이 넷이며"
+      ],
+      "raw_text_hashes": [
+        "a9039936de0b369b8ec16054e94f28f5ac3252cb29e703c751473639287b845a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:17",
+      "sequence": 2290,
+      "chapter_label": "EXO 27",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 17
+        }
+      ],
+      "en": "All the pillars of the court around shall be filleted with silver; their hooks of silver, and their sockets of bronze.",
+      "ko": "뜰 사면 모든 기둥의 가름대와 갈고리는 은이요 그 받침은 놋이며",
+      "source_text_hash": "f5ad6405366ab7530c200baeb48f44f9fe3db889537bfa467541a27f73f45645",
+      "translation_text_hash": "0ded5fc5f4866e1dd215d1f299ceacade02d3044d3978ffb3cd66c04bae2d9fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 사면 모든 기둥의 가름대와 갈고리는 은이요 그 받침은 놋이며"
+      ],
+      "raw_text_hashes": [
+        "0ded5fc5f4866e1dd215d1f299ceacade02d3044d3978ffb3cd66c04bae2d9fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:18",
+      "sequence": 2291,
+      "chapter_label": "EXO 27",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 18
+        }
+      ],
+      "en": "The length of the court shall be one hundred cubits, and the width fifty throughout, and the height five cubits, of fine twined linen, and their sockets of bronze.",
+      "ko": "뜰의 장은 백 규빗이요 광은 오십 규빗이요 세마포장의 고는 오 규빗이요 그 받침은 놋이며",
+      "source_text_hash": "44ae7a8c6fc754f30c1904fe4c97353e902910cd59d7e898a4a7ffbe2bd93bb1",
+      "translation_text_hash": "aa81f84bcc99788e28212257822c20f2b2b50d7145c5bcf2eae5ee2ce60611c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 장은 백 규빗이요 광은 오십 규빗이요 세마포장의 고는 오 규빗이요 그 받침은 놋이며"
+      ],
+      "raw_text_hashes": [
+        "aa81f84bcc99788e28212257822c20f2b2b50d7145c5bcf2eae5ee2ce60611c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:19",
+      "sequence": 2292,
+      "chapter_label": "EXO 27",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 19
+        }
+      ],
+      "en": "All the instruments of the tabernacle in all its service, and all its pins, and all the pins of the court, shall be of bronze.",
+      "ko": "성막에서 쓰는 모든 기구와 그 말뚝과 뜰의 포장 말뚝을 다 놋으로 할찌니라",
+      "source_text_hash": "41f955bcdfebabb763a2ba5abc4432589160046137f9853f28f26db5e2eed800",
+      "translation_text_hash": "b7d71533f183175ca08cbdc08941f99362e6ca67083928191e8c4535fa3f30ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막에서 쓰는 모든 기구와 그 말뚝과 뜰의 포장 말뚝을 다 놋으로 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b7d71533f183175ca08cbdc08941f99362e6ca67083928191e8c4535fa3f30ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:20",
+      "sequence": 2293,
+      "chapter_label": "EXO 27",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 20
+        }
+      ],
+      "en": "“You shall command the children of Israel, that they bring to you pure olive oil beaten for the light, to cause a lamp to burn continually.",
+      "ko": "너는 또 이스라엘 자손에게 명하여 감람으로 찧어낸 순결한 기름을 등불을 위하여 네게로 가져오게 하고 끊이지 말고 등불을 켜되",
+      "source_text_hash": "d8e94e2e4c2c2381bf2c50a56c3487be2d09795c44a1f47226ed676b048b58c0",
+      "translation_text_hash": "00476015c22bc5b0f70d40e847f371754eebf708a8f6437332ba11e7fbe2e4b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 이스라엘 자손에게 명하여 감람으로 찧어낸 순결한 기름을 등불을 위하여 네게로 가져오게 하고 끊이지 말고 등불을 켜되"
+      ],
+      "raw_text_hashes": [
+        "00476015c22bc5b0f70d40e847f371754eebf708a8f6437332ba11e7fbe2e4b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:27:21",
+      "sequence": 2294,
+      "chapter_label": "EXO 27",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 27,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 27,
+          "verse": 21
+        }
+      ],
+      "en": "In the Tent of Meeting, outside the veil which is before the covenant, Aaron and his sons shall keep it in order from evening to morning before the LORD: it shall be a statute forever throughout their generations on the behalf of the children of Israel.",
+      "ko": "아론과 그 아들들로 회막안 증거궤 앞 휘장 밖에서 저녁부터 아침까지 항상 여호와 앞에 그 등불을 간검하게 하라 이는 이스라엘 자손의 대대로 영원한 규례니라",
+      "source_text_hash": "b38be7782e1433fe7624d22c3ee2bb49a5b10139c9b7d44b20f4416d3859dcef",
+      "translation_text_hash": "63ace3d18c4803ce1e9a455deb824602a9714b494b6e10be0ef8052297a72cc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들로 회막안 증거궤 앞 휘장 밖에서 저녁부터 아침까지 항상 여호와 앞에 그 등불을 간검하게 하라 이는 이스라엘 자손의 대대로 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "63ace3d18c4803ce1e9a455deb824602a9714b494b6e10be0ef8052297a72cc1"
+      ]
+    }
+  ]
+}

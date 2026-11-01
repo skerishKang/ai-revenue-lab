@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:093",
+  "unit_ordinal": 571,
+  "unit_label": "PSA 93",
+  "book_code": "PSA",
+  "chapter_number": 93,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:93:1",
+      "sequence": 15428,
+      "chapter_label": "PSA 93",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 93,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 93,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD reigns! He is clothed with majesty! The LORD is armed with strength. The world also is established. It can’t be moved.",
+      "ko": "여호와께서 통치하시니 스스로 권위를 입으셨도다 여호와께서 능력을 입으시며 띠셨으므로 세계도 견고히 서서 요동치 아니하도다",
+      "source_text_hash": "6708e79735551f354722a4fd2a05152db56d5301ead831b2483720bee365a83f",
+      "translation_text_hash": "5a6d0cddbfb17c84428c9fe62d073d8f5f6a2c5f58a70479858d6877086ae28d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 통치하시니 스스로 권위를 입으셨도다 여호와께서 능력을 입으시며 띠셨으므로 세계도 견고히 서서 요동치 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "5a6d0cddbfb17c84428c9fe62d073d8f5f6a2c5f58a70479858d6877086ae28d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:93:2",
+      "sequence": 15429,
+      "chapter_label": "PSA 93",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 93,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 93,
+          "verse": 2
+        }
+      ],
+      "en": "Your throne is established from long ago. You are from everlasting.",
+      "ko": "주의 보좌는 예로부터 견고히 섰으며 주는 영원부터 계셨나이다",
+      "source_text_hash": "8ab6e75a7e95071d298c7790c92c579ae313c5f8c3106e0b207c5c3a7adf7ecb",
+      "translation_text_hash": "1feb8d79fd65179120ce0bf06bd147d9857e64f676d4a9358c8cca1c9142ddd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 보좌는 예로부터 견고히 섰으며 주는 영원부터 계셨나이다"
+      ],
+      "raw_text_hashes": [
+        "1feb8d79fd65179120ce0bf06bd147d9857e64f676d4a9358c8cca1c9142ddd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:93:3",
+      "sequence": 15430,
+      "chapter_label": "PSA 93",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 93,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 93,
+          "verse": 3
+        }
+      ],
+      "en": "The floods have lifted up, LORD, the floods have lifted up their voice. The floods lift up their waves.",
+      "ko": "여호와여 큰 물이 소리를 높였고 큰 물이 그 소리를 높였고 큰 물이 그 물결을 높이나이다",
+      "source_text_hash": "d21309cf4bbd67ad7700ae776817fdd77bbcc094ed2a5c99a8351adb93fb27ba",
+      "translation_text_hash": "5b8781699015ccae86b7077f5ea33636af4de0397f64e4bae0733ea4f700f9d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 큰 물이 소리를 높였고 큰 물이 그 소리를 높였고 큰 물이 그 물결을 높이나이다"
+      ],
+      "raw_text_hashes": [
+        "5b8781699015ccae86b7077f5ea33636af4de0397f64e4bae0733ea4f700f9d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:93:4",
+      "sequence": 15431,
+      "chapter_label": "PSA 93",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 93,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 93,
+          "verse": 4
+        }
+      ],
+      "en": "Above the voices of many waters, the mighty breakers of the sea, the LORD on high is mighty.",
+      "ko": "높이 계신 여호와의 능력은 많은 물 소리와 바다의 큰 파도보다 위대하시니이다",
+      "source_text_hash": "687c7cf51d40849a1d47b13b9f2fb3fb1c6e6bc7e6280cd810b6fe0828ffa6cb",
+      "translation_text_hash": "016149562ba67e1804df12e445e4205af06f439eaff11c865812a3951f144eca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "높이 계신 여호와의 능력은 많은 물 소리와 바다의 큰 파도보다 위대하시니이다"
+      ],
+      "raw_text_hashes": [
+        "016149562ba67e1804df12e445e4205af06f439eaff11c865812a3951f144eca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:93:5",
+      "sequence": 15432,
+      "chapter_label": "PSA 93",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 93,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 93,
+          "verse": 5
+        }
+      ],
+      "en": "Your statutes stand firm. Holiness adorns your house, LORD, forever more.",
+      "ko": "여호와여 주의 증거하심이 확실하고 거룩함이 주의 집에 합당하여 영구하리이다",
+      "source_text_hash": "000d1748ee1c24df0eac29e6e63f76c447403d789577da6a0483a10d69da3f71",
+      "translation_text_hash": "576cbdffcd2b641d5ad9d61d873089eaf56f12a220200ef8536a79510a4d8e89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 증거하심이 확실하고 거룩함이 주의 집에 합당하여 영구하리이다"
+      ],
+      "raw_text_hashes": [
+        "576cbdffcd2b641d5ad9d61d873089eaf56f12a220200ef8536a79510a4d8e89"
+      ]
+    }
+  ]
+}

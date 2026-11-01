@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:073",
+  "unit_ordinal": 551,
+  "unit_label": "PSA 73",
+  "book_code": "PSA",
+  "chapter_number": 73,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:73:1",
+      "sequence": 15022,
+      "chapter_label": "PSA 73",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 1
+        }
+      ],
+      "en": "Surely God is good to Israel, to those who are pure in heart.",
+      "ko": "하나님이 참으로 이스라엘 중 마음이 정결한 자에게 선을 행하시나",
+      "source_text_hash": "357c8809e403a5d7603dda4f1126097902af5fee289ac5ee73d170fd3f9ac777",
+      "translation_text_hash": "b2d56c279169caef4155271720f66fed9433e4a20e582daec25131610d54af23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 참으로 이스라엘 중 마음이 정결한 자에게 선을 행하시나"
+      ],
+      "raw_text_hashes": [
+        "b2d56c279169caef4155271720f66fed9433e4a20e582daec25131610d54af23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:2",
+      "sequence": 15023,
+      "chapter_label": "PSA 73",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 2
+        }
+      ],
+      "en": "But as for me, my feet were almost gone. My steps had nearly slipped.",
+      "ko": "나는 거의 실족할뻔 하였고 내 걸음이 미끄러질뻔 하였으니",
+      "source_text_hash": "25efceaca8ce6a9c669a5809fee0d10f0bf18cd610f0fa0253b10374f4805639",
+      "translation_text_hash": "be3369e2937bb3ed65d62baa84be917ecf46f98c8191a20dac16bd847379addd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 거의 실족할뻔 하였고 내 걸음이 미끄러질뻔 하였으니"
+      ],
+      "raw_text_hashes": [
+        "be3369e2937bb3ed65d62baa84be917ecf46f98c8191a20dac16bd847379addd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:3",
+      "sequence": 15024,
+      "chapter_label": "PSA 73",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 3
+        }
+      ],
+      "en": "For I was envious of the arrogant, when I saw the prosperity of the wicked.",
+      "ko": "이는 내가 악인의 형통함을 보고 오만한 자를 질시하였음이로다",
+      "source_text_hash": "448388b35dbff36bfa1c347dd3fa3c367e1c3d779ed0966e2e4deb1746ea3565",
+      "translation_text_hash": "118edc7b86168d3b33fa8e1eb86e9a110468a97dcb28ceec51bf00d685c039fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 악인의 형통함을 보고 오만한 자를 질시하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "118edc7b86168d3b33fa8e1eb86e9a110468a97dcb28ceec51bf00d685c039fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:4",
+      "sequence": 15025,
+      "chapter_label": "PSA 73",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 4
+        }
+      ],
+      "en": "For there are no struggles in their death, but their strength is firm.",
+      "ko": "저희는 죽는 때에도 고통이 없고 그 힘이 건강하며",
+      "source_text_hash": "353163c240df88c6dc21d305f9a352c0493faa8810509e856a6369fe3bebfacd",
+      "translation_text_hash": "00b0976718696c90237ff8c61afeb92341f5c1b600cccab301ccdd9c5d2e2c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 죽는 때에도 고통이 없고 그 힘이 건강하며"
+      ],
+      "raw_text_hashes": [
+        "00b0976718696c90237ff8c61afeb92341f5c1b600cccab301ccdd9c5d2e2c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:5",
+      "sequence": 15026,
+      "chapter_label": "PSA 73",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 5
+        }
+      ],
+      "en": "They are free from burdens of men, neither are they plagued like other men.",
+      "ko": "타인과 같은 고난이 없고 타인과 같은 재앙도 없나니",
+      "source_text_hash": "e2786b9f8aeb7c8ab9f87e8b074cf11b4c870a71c15175b7ed98201b916b34ea",
+      "translation_text_hash": "f9134b85873223cf20ce57445d6d337f074da291f611b300ef68536450ffd9ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타인과 같은 고난이 없고 타인과 같은 재앙도 없나니"
+      ],
+      "raw_text_hashes": [
+        "f9134b85873223cf20ce57445d6d337f074da291f611b300ef68536450ffd9ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:6",
+      "sequence": 15027,
+      "chapter_label": "PSA 73",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore pride is like a chain around their neck. Violence covers them like a garment.",
+      "ko": "그러므로 교만이 저희 목걸이요 강포가 저희의 입는 옷이며",
+      "source_text_hash": "259df15711f6e5632a542f54974f652ceaee77221e752165c05a78ee89205705",
+      "translation_text_hash": "fc2e9426a740f5c2c08f594cb876e1af61711c051b9e8de8857fb8d47c8b482e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 교만이 저희 목걸이요 강포가 저희의 입는 옷이며"
+      ],
+      "raw_text_hashes": [
+        "fc2e9426a740f5c2c08f594cb876e1af61711c051b9e8de8857fb8d47c8b482e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:7",
+      "sequence": 15028,
+      "chapter_label": "PSA 73",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 7
+        }
+      ],
+      "en": "Their eyes bulge with fat. Their minds pass the limits of conceit.",
+      "ko": "살찜으로 저희 눈이 솟아나며 저희 소득은 마음의 소원보다 지나며",
+      "source_text_hash": "8c55609920612050435bb52978f69b0d4af2a2adb5725fae7d9d02d7385c2cc1",
+      "translation_text_hash": "4829b0dbc8c3aa1c620bc01e071bb625460141c2befed3bc6ce4f8d2e6671fd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살찜으로 저희 눈이 솟아나며 저희 소득은 마음의 소원보다 지나며"
+      ],
+      "raw_text_hashes": [
+        "4829b0dbc8c3aa1c620bc01e071bb625460141c2befed3bc6ce4f8d2e6671fd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:8",
+      "sequence": 15029,
+      "chapter_label": "PSA 73",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 8
+        }
+      ],
+      "en": "They scoff and speak with malice. In arrogance, they threaten oppression.",
+      "ko": "저희는 능욕하며 악하게 압제하여 말하며 거만히 말하며",
+      "source_text_hash": "787df968180771f8886eee8f3d8568108cd854194e987bc8a1b8e5b63c19ed41",
+      "translation_text_hash": "9ba1fadcfc0e2655bb382563f45b6f742e18dffeb62be94a79319351ac6aeae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 능욕하며 악하게 압제하여 말하며 거만히 말하며"
+      ],
+      "raw_text_hashes": [
+        "9ba1fadcfc0e2655bb382563f45b6f742e18dffeb62be94a79319351ac6aeae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:9",
+      "sequence": 15030,
+      "chapter_label": "PSA 73",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 9
+        }
+      ],
+      "en": "They have set their mouth in the heavens. Their tongue walks through the earth.",
+      "ko": "저희 입은 하늘에 두고 저희 혀는 땅에 두루 다니도다",
+      "source_text_hash": "785d516303f53519d8003986ee97d49e2e04df30754decadebd2d29a7bea86b7",
+      "translation_text_hash": "79d0420b9a08a31004ccb7a7f1667971a02cd410c9ea4f8d24d5b4ca1e2ab4bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 입은 하늘에 두고 저희 혀는 땅에 두루 다니도다"
+      ],
+      "raw_text_hashes": [
+        "79d0420b9a08a31004ccb7a7f1667971a02cd410c9ea4f8d24d5b4ca1e2ab4bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:10",
+      "sequence": 15031,
+      "chapter_label": "PSA 73",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 10
+        }
+      ],
+      "en": "Therefore their people return to them, and they drink up waters of abundance.",
+      "ko": "그러므로 그 백성이 이리로 돌아와서 잔에 가득한 물을 다 마시며",
+      "source_text_hash": "c83bc417bc85b5c2a98fe10d3df8fe6ed795ace7144d99ea32c59d3ff64beeb3",
+      "translation_text_hash": "8462edba707eaee9b4f79dc8966747fe6d58da2b9ebf3dec39104edf517c1801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 백성이 이리로 돌아와서 잔에 가득한 물을 다 마시며"
+      ],
+      "raw_text_hashes": [
+        "8462edba707eaee9b4f79dc8966747fe6d58da2b9ebf3dec39104edf517c1801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:11",
+      "sequence": 15032,
+      "chapter_label": "PSA 73",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 11
+        }
+      ],
+      "en": "They say, “How does God know? Is there knowledge in the Most High?”",
+      "ko": "말하기를 하나님이 어찌 알랴 지극히 높은 자에게 지식이 있으랴 하도다",
+      "source_text_hash": "a73c70c957f8fed349ecf06bf3b3da3c8a0ea6b35ff76fe49ef9baa0fe3d6507",
+      "translation_text_hash": "8d1a359656cb2727a2ff7b35f8d512dfc80edc6f7bd5bae4d852f1f86f022b9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 하나님이 어찌 알랴 지극히 높은 자에게 지식이 있으랴 하도다"
+      ],
+      "raw_text_hashes": [
+        "8d1a359656cb2727a2ff7b35f8d512dfc80edc6f7bd5bae4d852f1f86f022b9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:12",
+      "sequence": 15033,
+      "chapter_label": "PSA 73",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, these are the wicked. Being always at ease, they increase in riches.",
+      "ko": "볼지어다 이들은 악인이라 항상 평안하고 재물은 더 하도다",
+      "source_text_hash": "88faebdb35ab2a60a85b289f977aa6bdaf8642d7237af0a7d561c1e13cf06cf9",
+      "translation_text_hash": "9acbef6096f15617bbea32ace6a09eb851bc3b1b01d80167fdfc7a5172bf6ced",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "볼지어다 이들은 악인이라 항상 평안하고 재물은 더 하도다"
+      ],
+      "raw_text_hashes": [
+        "9acbef6096f15617bbea32ace6a09eb851bc3b1b01d80167fdfc7a5172bf6ced"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:13",
+      "sequence": 15034,
+      "chapter_label": "PSA 73",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 13
+        }
+      ],
+      "en": "Surely I have cleansed my heart in vain, and washed my hands in innocence,",
+      "ko": "내가 내 마음을 정히 하며 내 손을 씻어 무죄하다 한 것이 실로 헛되도다",
+      "source_text_hash": "24f8c748cef4429ef15b35c0561d32a4e787b2a41c006d5d209150a533829a99",
+      "translation_text_hash": "4c3d2e69c989a2eb8273841ef9a44047c6b6f97996f63c85ec73eed6b39286c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 마음을 정히 하며 내 손을 씻어 무죄하다 한 것이 실로 헛되도다"
+      ],
+      "raw_text_hashes": [
+        "4c3d2e69c989a2eb8273841ef9a44047c6b6f97996f63c85ec73eed6b39286c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:14",
+      "sequence": 15035,
+      "chapter_label": "PSA 73",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 14
+        }
+      ],
+      "en": "For all day long I have been plagued, and punished every morning.",
+      "ko": "나는 종일 재앙을 당하며 아침마다 징책을 보았도다",
+      "source_text_hash": "9fc8e128c9b6042e54bb0293a5eb73c82b17565b59ed0a05dc3cf4842cfd65b6",
+      "translation_text_hash": "58a7f89ff4a3a029878fed7da8f3a7dacf996df427f7c0dc5d6807bc8081225d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 종일 재앙을 당하며 아침마다 징책을 보았도다"
+      ],
+      "raw_text_hashes": [
+        "58a7f89ff4a3a029878fed7da8f3a7dacf996df427f7c0dc5d6807bc8081225d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:15",
+      "sequence": 15036,
+      "chapter_label": "PSA 73",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 15
+        }
+      ],
+      "en": "If I had said, “I will speak thus”, behold, I would have betrayed the generation of your children.",
+      "ko": "내가 만일 스스로 이르기를 내가 이렇게 말하리라 하였더면 주의 아들들의 시대를 대하여 궤휼을 행하였으리이다",
+      "source_text_hash": "8475be1e086dc305c8392fc5a5737a649c182e8dc081ce9f9341eb0865d68517",
+      "translation_text_hash": "332fa3848a216dca4a633a43f1812e51b85e321c00e7a6280c0a29a680d095fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 스스로 이르기를 내가 이렇게 말하리라 하였더면 주의 아들들의 시대를 대하여 궤휼을 행하였으리이다"
+      ],
+      "raw_text_hashes": [
+        "332fa3848a216dca4a633a43f1812e51b85e321c00e7a6280c0a29a680d095fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:16",
+      "sequence": 15037,
+      "chapter_label": "PSA 73",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 16
+        }
+      ],
+      "en": "When I tried to understand this, it was too painful for me—",
+      "ko": "내가 어찌면 이를 알까 하여 생각한즉 내게 심히 곤란하더니",
+      "source_text_hash": "3337b9c1500c0c0a26463cba27e60fba727729718970cd428daf2f55dca8d723",
+      "translation_text_hash": "ea886c98af3c5fd716c7fe7dda61c0d9b80e6d2451d916d637d04839e2adc156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌면 이를 알까 하여 생각한즉 내게 심히 곤란하더니"
+      ],
+      "raw_text_hashes": [
+        "ea886c98af3c5fd716c7fe7dda61c0d9b80e6d2451d916d637d04839e2adc156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:17",
+      "sequence": 15038,
+      "chapter_label": "PSA 73",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 17
+        }
+      ],
+      "en": "until I entered God’s sanctuary, and considered their latter end.",
+      "ko": "하나님의 성소에 들어갈 때에야 저희 결국을 내가 깨달았나이다",
+      "source_text_hash": "d148787febe26fdeed0eb688606e8dd6bd7180725dd52ff62ffab2b2f35d26e6",
+      "translation_text_hash": "15a5c5c57c1cd85b06c2e05929c65a1e23362807b1840364784c1eac5414b010",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 성소에 들어갈 때에야 저희 결국을 내가 깨달았나이다"
+      ],
+      "raw_text_hashes": [
+        "15a5c5c57c1cd85b06c2e05929c65a1e23362807b1840364784c1eac5414b010"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:18",
+      "sequence": 15039,
+      "chapter_label": "PSA 73",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 18
+        }
+      ],
+      "en": "Surely you set them in slippery places. You throw them down to destruction.",
+      "ko": "주께서 참으로 저희를 미끄러운 곳에 두시며 파멸에 던지시니",
+      "source_text_hash": "6781b90747726591cc81b56867272c575539a0f6cc5c7161550d17eca77c5721",
+      "translation_text_hash": "ce8f3b1875caf5fca9a5caf756dc9db7468fb73998e081a26f119e2091efa66e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 참으로 저희를 미끄러운 곳에 두시며 파멸에 던지시니"
+      ],
+      "raw_text_hashes": [
+        "ce8f3b1875caf5fca9a5caf756dc9db7468fb73998e081a26f119e2091efa66e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:19",
+      "sequence": 15040,
+      "chapter_label": "PSA 73",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 19
+        }
+      ],
+      "en": "How they are suddenly destroyed! They are completely swept away with terrors.",
+      "ko": "저희가 어찌 그리 졸지에 황폐되었는가 놀람으로 전멸하였나이다",
+      "source_text_hash": "9cdb620b8229f8a993761fea3db3d263c07d25277469dde6251d472168342e63",
+      "translation_text_hash": "f502e9e66306c05df2217fcc1b5a8f4d3dcb8db7f30a109c31eb34b41f43c8b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 어찌 그리 졸지에 황폐되었는가 놀람으로 전멸하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f502e9e66306c05df2217fcc1b5a8f4d3dcb8db7f30a109c31eb34b41f43c8b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:20",
+      "sequence": 15041,
+      "chapter_label": "PSA 73",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 20
+        }
+      ],
+      "en": "As a dream when one wakes up, so, Lord, when you awake, you will despise their fantasies.",
+      "ko": "주여 사람이 깬 후에는 꿈을 무시함 같이 주께서 깨신 후에 저희 형상을 멸시하시리이다",
+      "source_text_hash": "7f81c5f09d87df8f0441be7a997444f562489d93c58c74bd114380933f9ae910",
+      "translation_text_hash": "6a49f0d7354ac7b72368a3e74b4b937b3397192905dc63942c494f5836f60428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 사람이 깬 후에는 꿈을 무시함 같이 주께서 깨신 후에 저희 형상을 멸시하시리이다"
+      ],
+      "raw_text_hashes": [
+        "6a49f0d7354ac7b72368a3e74b4b937b3397192905dc63942c494f5836f60428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:21",
+      "sequence": 15042,
+      "chapter_label": "PSA 73",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 21
+        }
+      ],
+      "en": "For my soul was grieved. I was embittered in my heart.",
+      "ko": "내 마음이 산란하며 내 심장이 찔렸나이다",
+      "source_text_hash": "9b116ff742121353a00b3782cbf43b47094cb4870513cb8095256843080354cd",
+      "translation_text_hash": "17acda5a2ca12d563d665a74bb8f65baffa135baa2bc63dd67c00b2565c8c7a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 산란하며 내 심장이 찔렸나이다"
+      ],
+      "raw_text_hashes": [
+        "17acda5a2ca12d563d665a74bb8f65baffa135baa2bc63dd67c00b2565c8c7a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:22",
+      "sequence": 15043,
+      "chapter_label": "PSA 73",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 22
+        }
+      ],
+      "en": "I was so senseless and ignorant. I was a brute beast before you.",
+      "ko": "내가 이같이 우매 무지하니 주의 앞에 짐승이오나",
+      "source_text_hash": "cebbc64266c57ae354784b77c8b8d94e664b582a2b0013d64a739fe42d51b22e",
+      "translation_text_hash": "8ebc8d528dc8674e89618fafc46c2b19bce8975bab0af1bbfe97997056910596",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이같이 우매 무지하니 주의 앞에 짐승이오나"
+      ],
+      "raw_text_hashes": [
+        "8ebc8d528dc8674e89618fafc46c2b19bce8975bab0af1bbfe97997056910596"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:23",
+      "sequence": 15044,
+      "chapter_label": "PSA 73",
+      "verse_label": "23",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 23
+        }
+      ],
+      "en": "Nevertheless, I am continually with you. You have held my right hand.",
+      "ko": "내가 항상 주와 함께하니 주께서 내 오른손을 붙드셨나이다",
+      "source_text_hash": "f052cbc4c4a6445ddc7f2f73d71a6792875eb860e382d0696789d760a560f1bf",
+      "translation_text_hash": "d7b7e2bf4e8ef68d0dfd209cae6f2e53f5d9d6bf512fcf05469c7d88b77010c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 항상 주와 함께하니 주께서 내 오른손을 붙드셨나이다"
+      ],
+      "raw_text_hashes": [
+        "d7b7e2bf4e8ef68d0dfd209cae6f2e53f5d9d6bf512fcf05469c7d88b77010c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:24",
+      "sequence": 15045,
+      "chapter_label": "PSA 73",
+      "verse_label": "24",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 24
+        }
+      ],
+      "en": "You will guide me with your counsel, and afterward receive me to glory.",
+      "ko": "주의 교훈으로 나를 인도하시고 후에는 영광으로 나를 영접하시리니",
+      "source_text_hash": "3886874a127730200a337078fc60bf0be78bad1bfe5356c76afd4d47b6a7b0b2",
+      "translation_text_hash": "c96b2d3980ed5ac3d3a22015ac0c0d213b2ce610e9b9a09f812af39b1d9dca1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 교훈으로 나를 인도하시고 후에는 영광으로 나를 영접하시리니"
+      ],
+      "raw_text_hashes": [
+        "c96b2d3980ed5ac3d3a22015ac0c0d213b2ce610e9b9a09f812af39b1d9dca1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:25",
+      "sequence": 15046,
+      "chapter_label": "PSA 73",
+      "verse_label": "25",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 25
+        }
+      ],
+      "en": "Whom do I have in heaven? There is no one on earth whom I desire besides you.",
+      "ko": "하늘에서는 주 외에 누가 내게 있으리요 땅에서는 주 밖에 나의 사모할 자 없나이다",
+      "source_text_hash": "9b12bf2f27076af0212dccf172c8022260a3f1f329b9c9169ceea8182de30e82",
+      "translation_text_hash": "ee86e2d9ccc9863b2179a027e908934fa1590c13dc68b57f00b9dc5874f288df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에서는 주 외에 누가 내게 있으리요 땅에서는 주 밖에 나의 사모할 자 없나이다"
+      ],
+      "raw_text_hashes": [
+        "ee86e2d9ccc9863b2179a027e908934fa1590c13dc68b57f00b9dc5874f288df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:26",
+      "sequence": 15047,
+      "chapter_label": "PSA 73",
+      "verse_label": "26",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 26
+        }
+      ],
+      "en": "My flesh and my heart fails, but God is the strength of my heart and my portion forever.",
+      "ko": "내 육체와 마음은 쇠잔하나 하나님은 내 마음의 반석이시요 영원한 분깃이시라",
+      "source_text_hash": "2a9da62b74ffd590967b063896556ff6e5b4c3f648b9d9c44e976d4539be1c7b",
+      "translation_text_hash": "f3961212412f3de2790527f1a0b85c8eb21ea4455d72f13502ef882cbb3cf911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 육체와 마음은 쇠잔하나 하나님은 내 마음의 반석이시요 영원한 분깃이시라"
+      ],
+      "raw_text_hashes": [
+        "f3961212412f3de2790527f1a0b85c8eb21ea4455d72f13502ef882cbb3cf911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:27",
+      "sequence": 15048,
+      "chapter_label": "PSA 73",
+      "verse_label": "27",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 27
+        }
+      ],
+      "en": "For, behold, those who are far from you shall perish. You have destroyed all those who are unfaithful to you.",
+      "ko": "대저 주를 멀리하는 자는 망하리니 음녀같이 주를 떠난 자를 주께서 다 멸하셨나이다",
+      "source_text_hash": "7d67376477bf8c210e089e4f3a35ff0320137f260e119df3d55416872f33129b",
+      "translation_text_hash": "a5b2a6b5c54e8a0784be857de4fdf3b49a1c7e2a1eeaa91ac0515ce2e47f11ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주를 멀리하는 자는 망하리니 음녀같이 주를 떠난 자를 주께서 다 멸하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "a5b2a6b5c54e8a0784be857de4fdf3b49a1c7e2a1eeaa91ac0515ce2e47f11ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:73:28",
+      "sequence": 15049,
+      "chapter_label": "PSA 73",
+      "verse_label": "28",
+      "locator": {
+        "book": "PSA",
+        "chapter": 73,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 73,
+          "verse": 28
+        }
+      ],
+      "en": "But it is good for me to come close to God. I have made the Lord GOD my refuge, that I may tell of all your works.",
+      "ko": "하나님께 가까이 함이 내게 복이라 내가 주 여호와를 나의 피난처로 삼아 주의 모든 행사를 전파하리이다",
+      "source_text_hash": "4ae5c5d6a88ea8a19073dd74f054eb3cf3b8bd7031e4b077015387df369f70b4",
+      "translation_text_hash": "9a5c79b6df2e4bee227f531d88b02143fc43784ec0af5e8984e9e7133dff1795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 가까이 함이 내게 복이라 내가 주 여호와를 나의 피난처로 삼아 주의 모든 행사를 전파하리이다"
+      ],
+      "raw_text_hashes": [
+        "9a5c79b6df2e4bee227f531d88b02143fc43784ec0af5e8984e9e7133dff1795"
+      ]
+    }
+  ]
+}

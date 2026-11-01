@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:001",
+  "unit_ordinal": 91,
+  "unit_label": "LEV 1",
+  "book_code": "LEV",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:1:1",
+      "sequence": 2747,
+      "chapter_label": "LEV 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD called to Moses, and spoke to him from the Tent of Meeting, saying,",
+      "ko": "여호와께서 회막에서 모세를 부르시고 그에게 일러 가라사대",
+      "source_text_hash": "b41b76a91d808685c4dca5a6a8edef05367743ac5cac6d7dc87532f741309981",
+      "translation_text_hash": "027cf3ae9843255d9bb5b875c2993921e091d8af700c8f4de779b5a997d515c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 회막에서 모세를 부르시고 그에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "027cf3ae9843255d9bb5b875c2993921e091d8af700c8f4de779b5a997d515c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:2",
+      "sequence": 2748,
+      "chapter_label": "LEV 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When anyone of you offers an offering to the LORD, you shall offer your offering of the livestock, from the herd and from the flock.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희 중에 누구든지 여호와께 예물을 드리려거든 생축 중에서 소나 양으로 예물을 드릴찌니라",
+      "source_text_hash": "fc9e2eff1d4b28949a571b7bfb27fab6e51da147eacc94832b5ff65a833c3ced",
+      "translation_text_hash": "9da17a36bcfdd9a56e9c6a0f80d73ea93097b1355a510f8f5edad85e5ccb41cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희 중에 누구든지 여호와께 예물을 드리려거든 생축 중에서 소나 양으로 예물을 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "9da17a36bcfdd9a56e9c6a0f80d73ea93097b1355a510f8f5edad85e5ccb41cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:3",
+      "sequence": 2749,
+      "chapter_label": "LEV 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "“‘If his offering is a burnt offering from the herd, he shall offer a male without defect. He shall offer it at the door of the Tent of Meeting, that he may be accepted before the LORD.",
+      "ko": "그 예물이 소의 번제이면 흠 없는 수컷으로 회막 문에서 여호와 앞에 열납하시도록 드릴찌니라",
+      "source_text_hash": "17414608cb3adb39f17531a986e1145f0e6378d5749fa05bc818e801e125479f",
+      "translation_text_hash": "d09124c9552ab94ff76e99519ac4409fab3aac654e591f5fe00d388bb1e66e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물이 소의 번제이면 흠 없는 수컷으로 회막 문에서 여호와 앞에 열납하시도록 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "d09124c9552ab94ff76e99519ac4409fab3aac654e591f5fe00d388bb1e66e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:4",
+      "sequence": 2750,
+      "chapter_label": "LEV 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "He shall lay his hand on the head of the burnt offering, and it shall be accepted for him to make atonement for him.",
+      "ko": "그가 번제물의 머리에 안수할찌니 그리하면 열납되어 그를 위하여 속죄가 될 것이라",
+      "source_text_hash": "3d98bacde69e8b0338426f8e054506c08271d5efefed9fe6c3c580c7d7b339e9",
+      "translation_text_hash": "9f997c224980a824e0c14f3987b7c81cb0f3a0eabe4cf673a6b73157d4790180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 번제물의 머리에 안수할찌니 그리하면 열납되어 그를 위하여 속죄가 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "9f997c224980a824e0c14f3987b7c81cb0f3a0eabe4cf673a6b73157d4790180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:5",
+      "sequence": 2751,
+      "chapter_label": "LEV 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "He shall kill the bull before the LORD. Aaron’s sons, the priests, shall present the blood and sprinkle the blood around on the altar that is at the door of the Tent of Meeting.",
+      "ko": "그는 여호와 앞에서 그 수송아지를 잡을 것이요 아론의 자손 제사장들은 그 피를 가져다가 회막 문앞 단 사면에 뿌릴 것이며",
+      "source_text_hash": "48948d35edc28cdf74f2670de6ff989e71a220cdd8a6d1ab539a85ad883cd426",
+      "translation_text_hash": "655ada1c02c1a522fe5d6dc2b4d4de537628404a6e8bb419809fd726f22fc106",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 여호와 앞에서 그 수송아지를 잡을 것이요 아론의 자손 제사장들은 그 피를 가져다가 회막 문앞 단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "655ada1c02c1a522fe5d6dc2b4d4de537628404a6e8bb419809fd726f22fc106"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:6",
+      "sequence": 2752,
+      "chapter_label": "LEV 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "He shall skin the burnt offering and cut it into pieces.",
+      "ko": "그는 또 그 번제 희생의 가죽을 벗기고 각을 뜰 것이요",
+      "source_text_hash": "b6f76cc2dcc14bf1817a98e0ce0a5726f78d05e8316cca52e2a5487a620846cd",
+      "translation_text_hash": "dde3ceb0868b3c56f3e41c057a7b71c00e8a8a53f5e4cd6a0ee3d205f8e334f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 또 그 번제 희생의 가죽을 벗기고 각을 뜰 것이요"
+      ],
+      "raw_text_hashes": [
+        "dde3ceb0868b3c56f3e41c057a7b71c00e8a8a53f5e4cd6a0ee3d205f8e334f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:7",
+      "sequence": 2753,
+      "chapter_label": "LEV 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "The sons of Aaron the priest shall put fire on the altar, and lay wood in order on the fire;",
+      "ko": "제사장 아론의 자손들은 단 위에 불을 두고 불 위에 나무를 벌여 놓고",
+      "source_text_hash": "c838cac5889e1fced0984aadea550b916e556509871bac8ce9335146727a4c7d",
+      "translation_text_hash": "787326450379666f389894c47c64158bd6dec67ff64e401611a29be9c935706a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 자손들은 단 위에 불을 두고 불 위에 나무를 벌여 놓고"
+      ],
+      "raw_text_hashes": [
+        "787326450379666f389894c47c64158bd6dec67ff64e401611a29be9c935706a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:8",
+      "sequence": 2754,
+      "chapter_label": "LEV 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "and Aaron’s sons, the priests, shall lay the pieces, the head, and the fat in order on the wood that is on the fire which is on the altar;",
+      "ko": "아론의 자손 제사장들은 그 뜬 각과 머리와 기름을 단 윗 불 위에 있는 나무에 벌여 놓을것이며",
+      "source_text_hash": "4b13c16208bc3aa410e8437b9a9903c36518e4c5530d93e0d821ab486ff88e52",
+      "translation_text_hash": "81f49c9973c58d1147db4b829f219c1ff2cf3c00320ec15d91d4d455c4d87ad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손 제사장들은 그 뜬 각과 머리와 기름을 단 윗 불 위에 있는 나무에 벌여 놓을것이며"
+      ],
+      "raw_text_hashes": [
+        "81f49c9973c58d1147db4b829f219c1ff2cf3c00320ec15d91d4d455c4d87ad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:9",
+      "sequence": 2755,
+      "chapter_label": "LEV 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "but he shall wash its innards and its legs with water. The priest shall burn all of it on the altar, for a burnt offering, an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "그 내장과 정갱이를 물로 씻을 것이요 제사장은 그 전부를 단 위에 불살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "fcb3b24fd1b78e8116637ab64040c18375a5a4e75f498240c3793a1d6bedadb2",
+      "translation_text_hash": "cdfa36124107e29bd8782537a31a7e9f689efa915643e2e51a441921c1443b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 내장과 정갱이를 물로 씻을 것이요 제사장은 그 전부를 단 위에 불살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "cdfa36124107e29bd8782537a31a7e9f689efa915643e2e51a441921c1443b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:10",
+      "sequence": 2756,
+      "chapter_label": "LEV 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "“‘If his offering is from the flock, from the sheep or from the goats, for a burnt offering, he shall offer a male without defect.",
+      "ko": "만일 그 예물이 떼의 양이나 염소의 번제이면 흠 없는 수컷으로 드릴찌니",
+      "source_text_hash": "c469d03279ffd54ff4326b9bedc4b01d0a2a6e2d4035936b7263c215ac5c871d",
+      "translation_text_hash": "62b6fb122292bf704082a2968b61fb8439903c8a8298f4bd601910cb0a8ff8a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 예물이 떼의 양이나 염소의 번제이면 흠 없는 수컷으로 드릴찌니"
+      ],
+      "raw_text_hashes": [
+        "62b6fb122292bf704082a2968b61fb8439903c8a8298f4bd601910cb0a8ff8a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:11",
+      "sequence": 2757,
+      "chapter_label": "LEV 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "He shall kill it on the north side of the altar before the LORD. Aaron’s sons, the priests, shall sprinkle its blood around on the altar.",
+      "ko": "그가 단 북편에서 여호와 앞에서 잡을 것이요 아론의 자손 제사장들은 그 피를 단 사면에 뿌릴 것이며",
+      "source_text_hash": "c239c2ed7de9ea6d87554ffbd87020f662392203f11b4311099b6ddf7f4206e0",
+      "translation_text_hash": "779384d1725ad9ae005b6466f2dedb72d20e9ba8364b0bb7b0058cdd24e0738b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 단 북편에서 여호와 앞에서 잡을 것이요 아론의 자손 제사장들은 그 피를 단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "779384d1725ad9ae005b6466f2dedb72d20e9ba8364b0bb7b0058cdd24e0738b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:12",
+      "sequence": 2758,
+      "chapter_label": "LEV 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "He shall cut it into its pieces, with its head and its fat. The priest shall lay them in order on the wood that is on the fire which is on the altar,",
+      "ko": "그는 그것의 각을 뜨고 그 머리와 그 기름을 베어 낼 것이요 제사장은 그것을 다 단 윗 불 위에 있는 나무에 벌여 놓을 것이며",
+      "source_text_hash": "8d88e3df679c415e710313f92c7328b5f3accf00b613cb68836621ed0ef04443",
+      "translation_text_hash": "e15e720feeeae909fdce4d41be40ecccc1f235d9379af53ee39324ccd4c83dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 그것의 각을 뜨고 그 머리와 그 기름을 베어 낼 것이요 제사장은 그것을 다 단 윗 불 위에 있는 나무에 벌여 놓을 것이며"
+      ],
+      "raw_text_hashes": [
+        "e15e720feeeae909fdce4d41be40ecccc1f235d9379af53ee39324ccd4c83dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:13",
+      "sequence": 2759,
+      "chapter_label": "LEV 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "but the innards and the legs he shall wash with water. The priest shall offer the whole, and burn it on the altar. It is a burnt offering, an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "그 내장과 정갱이를 물로 씻을 것이요 제사장은 그 전부를 가져다가 단 위에 불살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "283c834807e60d6d292a355b42d8a7b25d398b2ab8eefe4d144774bf9671a4c8",
+      "translation_text_hash": "d698d630d340408a82a5a03e6fe217be4a7e364d03fae2e6b94e223ef18e5d59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 내장과 정갱이를 물로 씻을 것이요 제사장은 그 전부를 가져다가 단 위에 불살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "d698d630d340408a82a5a03e6fe217be4a7e364d03fae2e6b94e223ef18e5d59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:14",
+      "sequence": 2760,
+      "chapter_label": "LEV 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If his offering to the LORD is a burnt offering of birds, then he shall offer his offering from turtledoves or of young pigeons.",
+      "ko": "만일 여호와께 드리는 예물이 새의 번제이면 산비둘기나 집비둘기 새끼로 예물을 삼을 것이요",
+      "source_text_hash": "5c16d160eb061811a41b2c429bc45289ec2b13fb0f0ebbcc952edb7db581ccc0",
+      "translation_text_hash": "f838be372647d787b57d7d9a6bb1699cbc357ffc92d032bdd1e55298a0364c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여호와께 드리는 예물이 새의 번제이면 산비둘기나 집비둘기 새끼로 예물을 삼을 것이요"
+      ],
+      "raw_text_hashes": [
+        "f838be372647d787b57d7d9a6bb1699cbc357ffc92d032bdd1e55298a0364c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:15",
+      "sequence": 2761,
+      "chapter_label": "LEV 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "The priest shall bring it to the altar, and wring off its head, and burn it on the altar; and its blood shall be drained out on the side of the altar;",
+      "ko": "제사장은 그것을 단으로 가져다가 그 머리를 비틀어 끊고 단 위에 불사르고 피는 단 곁에 흘릴 것이며",
+      "source_text_hash": "050cc36f6280f22e71f5b0c80fb2cd203ac48630a29015cb185ccfffcf9b861a",
+      "translation_text_hash": "0512b8eeabd712a8a0c5618ef1eb84bbf41f677a7d532e1a41a94d950e3b25da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것을 단으로 가져다가 그 머리를 비틀어 끊고 단 위에 불사르고 피는 단 곁에 흘릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "0512b8eeabd712a8a0c5618ef1eb84bbf41f677a7d532e1a41a94d950e3b25da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:16",
+      "sequence": 2762,
+      "chapter_label": "LEV 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "and he shall take away its crop and its feathers, and cast it beside the altar on the east part, in the place of the ashes.",
+      "ko": "멱통과 그 더러운 것은 제하여 단 동편 재 버리는 곳에 던지고",
+      "source_text_hash": "54ac698865ccd5ef70c5846f5df1b93ae50c564976a4de759bf416ed0aebc336",
+      "translation_text_hash": "f8085ffff5fb38aac3681339aec65978e01238eea424c2c1644fdb094730007f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멱통과 그 더러운 것은 제하여 단 동편 재 버리는 곳에 던지고"
+      ],
+      "raw_text_hashes": [
+        "f8085ffff5fb38aac3681339aec65978e01238eea424c2c1644fdb094730007f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:1:17",
+      "sequence": 2763,
+      "chapter_label": "LEV 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "He shall tear it by its wings, but shall not divide it apart. The priest shall burn it on the altar, on the wood that is on the fire. It is a burnt offering, an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "또 그 날개 자리에서 그 몸을 찢되 아주 찢지 말고 제사장이 그것을 단 윗 불 위의 나무 위에 살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라",
+      "source_text_hash": "5af64d67b97e682efa1c6d2ab593fe15fd8c6d11efde1b1b0322defa12742902",
+      "translation_text_hash": "3d6369aea5eebefaa4fad5c3a92e4d9da7a054e17453a747c8c46cb8404dc21d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 날개 자리에서 그 몸을 찢되 아주 찢지 말고 제사장이 그것을 단 윗 불 위의 나무 위에 살라 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새니라"
+      ],
+      "raw_text_hashes": [
+        "3d6369aea5eebefaa4fad5c3a92e4d9da7a054e17453a747c8c46cb8404dc21d"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:014",
+  "unit_ordinal": 450,
+  "unit_label": "JOB 14",
+  "book_code": "JOB",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:14:1",
+      "sequence": 13183,
+      "chapter_label": "JOB 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "“Man, who is born of a woman, is of few days, and full of trouble.",
+      "ko": "여인에게서 난 사람은 사는 날이 적고 괴로움이 가득하며",
+      "source_text_hash": "f961ad6ac3effdcad0c12731338927ab5d96259e6901d6b70654e9ecb0863d8a",
+      "translation_text_hash": "fe8539c19b8cd503a910d42e0fec3402ba5aab17308135a960e64734bbaf50f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인에게서 난 사람은 사는 날이 적고 괴로움이 가득하며"
+      ],
+      "raw_text_hashes": [
+        "fe8539c19b8cd503a910d42e0fec3402ba5aab17308135a960e64734bbaf50f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:2",
+      "sequence": 13184,
+      "chapter_label": "JOB 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "He grows up like a flower, and is cut down. He also flees like a shadow, and doesn’t continue.",
+      "ko": "그 발생함이 꽃과 같아서 쇠하여지고 그림자 같이 신속하여서 머물지 아니하거늘",
+      "source_text_hash": "eb8edd5070c8ee0a6f2ed453f58101526cdc2d129a1b38c3a6fbab38e0c13522",
+      "translation_text_hash": "02e3b667333978c3022be07755658d83706c564fab1de52c9d801e29fccc2bf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발생함이 꽃과 같아서 쇠하여지고 그림자 같이 신속하여서 머물지 아니하거늘"
+      ],
+      "raw_text_hashes": [
+        "02e3b667333978c3022be07755658d83706c564fab1de52c9d801e29fccc2bf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:3",
+      "sequence": 13185,
+      "chapter_label": "JOB 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Do you open your eyes on such a one, and bring me into judgment with you?",
+      "ko": "이와 같은 자를 주께서 눈을 들어 살피시나이까 나를 주의 앞으로 이끌어서 심문하시나이까",
+      "source_text_hash": "f1339f347ad7fac2c7bf42fec4c05ce7715ae80ef9e53f33aedc42f7c4895b93",
+      "translation_text_hash": "aa4a3d449beee3f2c9c85bd18211c58d7e0978fbadd84f81c727374cb66d26cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같은 자를 주께서 눈을 들어 살피시나이까 나를 주의 앞으로 이끌어서 심문하시나이까"
+      ],
+      "raw_text_hashes": [
+        "aa4a3d449beee3f2c9c85bd18211c58d7e0978fbadd84f81c727374cb66d26cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:4",
+      "sequence": 13186,
+      "chapter_label": "JOB 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Who can bring a clean thing out of an unclean? Not one.",
+      "ko": "누가 깨끗한 것을 더러운 것 가운데서 낼수 있으리이까 하나도 없나이다",
+      "source_text_hash": "0b003f50a7dd3e6102cbd46d828cc261d44b4e18607e85bc06f543ee7a80fe5d",
+      "translation_text_hash": "db52404001ffb465f22dc3318cea78c1e653309f94d777e6c10eca118ff9b345",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 깨끗한 것을 더러운 것 가운데서 낼수 있으리이까 하나도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "db52404001ffb465f22dc3318cea78c1e653309f94d777e6c10eca118ff9b345"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:5",
+      "sequence": 13187,
+      "chapter_label": "JOB 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "Seeing his days are determined, the number of his months is with you, and you have appointed his bounds that he can’t pass.",
+      "ko": "그 날을 정하셨고 그 달 수도 주께 있으므로 그 제한을 정하여 넘어가지 못하게 하셨사온즉",
+      "source_text_hash": "27f73190a7795f7a1cd5cfcf5c434b655268f30bad4c112bc97a5651b223f01c",
+      "translation_text_hash": "d2f5f0425b92b5e33fcf79ebad13c843fe7c69df7102352c3da4930444ca194d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날을 정하셨고 그 달 수도 주께 있으므로 그 제한을 정하여 넘어가지 못하게 하셨사온즉"
+      ],
+      "raw_text_hashes": [
+        "d2f5f0425b92b5e33fcf79ebad13c843fe7c69df7102352c3da4930444ca194d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:6",
+      "sequence": 13188,
+      "chapter_label": "JOB 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Look away from him, that he may rest, until he accomplishes, as a hireling, his day.",
+      "ko": "그에게서 눈을 돌이켜 그로 쉬게 하사 품군 같이 그 날을 마치게 하옵소서",
+      "source_text_hash": "21ac3a9eacf296ac7619ebdceefe0b25ecaa2e578ddf458fb9b3d59c59f459a8",
+      "translation_text_hash": "4c6fdd4860a706eff201c3a75b896a6e4586964e021f667eb06047227b8d1fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게서 눈을 돌이켜 그로 쉬게 하사 품군 같이 그 날을 마치게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "4c6fdd4860a706eff201c3a75b896a6e4586964e021f667eb06047227b8d1fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:7",
+      "sequence": 13189,
+      "chapter_label": "JOB 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "“For there is hope for a tree if it is cut down, that it will sprout again, that the tender branch of it will not cease.",
+      "ko": "나무는 소망이 있나니 찍힐찌라도 다시 움이 나서 연한 가지가 끊이지 아니하며",
+      "source_text_hash": "7ed236042840a11bc5d21275c374cb4104df2b2fc871a4f40c2d37ef7b2301dd",
+      "translation_text_hash": "d1fd054220187134ef90f815d4a54c44a2941c35b6983b3ad4912fa14a5b180a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무는 소망이 있나니 찍힐찌라도 다시 움이 나서 연한 가지가 끊이지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "d1fd054220187134ef90f815d4a54c44a2941c35b6983b3ad4912fa14a5b180a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:8",
+      "sequence": 13190,
+      "chapter_label": "JOB 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Though its root grows old in the earth, and its stock dies in the ground,",
+      "ko": "그 뿌리가 땅에서 늙고 줄기가 흙에서 죽을찌라도",
+      "source_text_hash": "3c93ef5120a32428dfa9c8cb5727b649a845d56d8abb217e04f0fac7a0726391",
+      "translation_text_hash": "44633ef754c1f381327bfc7a74e0234670f9c23839d8be51e7ddb91733cbe1fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뿌리가 땅에서 늙고 줄기가 흙에서 죽을찌라도"
+      ],
+      "raw_text_hashes": [
+        "44633ef754c1f381327bfc7a74e0234670f9c23839d8be51e7ddb91733cbe1fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:9",
+      "sequence": 13191,
+      "chapter_label": "JOB 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "yet through the scent of water it will bud, and sprout boughs like a plant.",
+      "ko": "물 기운에 움이 돋고 가지가 발하여 새로 심은 것과 같거니와",
+      "source_text_hash": "076016dbd9ec9d9dfb49e66a1a54b88365af6354a34dafd55d5ded7b68ddeb99",
+      "translation_text_hash": "8cbaaeb3b06fbbeff096b97060bbf6b35968001bbbeed534010b2399ca3060f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물 기운에 움이 돋고 가지가 발하여 새로 심은 것과 같거니와"
+      ],
+      "raw_text_hashes": [
+        "8cbaaeb3b06fbbeff096b97060bbf6b35968001bbbeed534010b2399ca3060f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:10",
+      "sequence": 13192,
+      "chapter_label": "JOB 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "But man dies, and is laid low. Yes, man gives up the spirit, and where is he?",
+      "ko": "사람은 죽으면 소멸되나니 그 기운이 끊어진즉 그가 어디 있느뇨",
+      "source_text_hash": "ee218a17d4405fddb42a1852273ec64df74fbc17641200aba4bc8c2c1ef4ce1f",
+      "translation_text_hash": "ffdef779be8ec78f01b944f854a8ae5df854ba940ff0eed526cd809089af4725",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람은 죽으면 소멸되나니 그 기운이 끊어진즉 그가 어디 있느뇨"
+      ],
+      "raw_text_hashes": [
+        "ffdef779be8ec78f01b944f854a8ae5df854ba940ff0eed526cd809089af4725"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:11",
+      "sequence": 13193,
+      "chapter_label": "JOB 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "As the waters fail from the sea, and the river wastes and dries up,",
+      "ko": "물이 바다에서 줄어지고 하수가 잦아서 마름 같이",
+      "source_text_hash": "5fc1e9ce374d3490b70eb7fb10c3d5c6c71f8fe00c74dcfe093b2fb9dcf36dd4",
+      "translation_text_hash": "054055b47bb251b66e33290563125c43fe529ee51b56fb0d73a22b80b3ce263d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 바다에서 줄어지고 하수가 잦아서 마름 같이"
+      ],
+      "raw_text_hashes": [
+        "054055b47bb251b66e33290563125c43fe529ee51b56fb0d73a22b80b3ce263d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:12",
+      "sequence": 13194,
+      "chapter_label": "JOB 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "so man lies down and doesn’t rise. Until the heavens are no more, they will not awake, nor be roused out of their sleep.",
+      "ko": "사람이 누우면 다시 일어나지 못하고 하늘이 없어지기까지 눈을 뜨지 못하며 잠을 깨지 못하느니라",
+      "source_text_hash": "405108db646faee739f31dd6aaa716c5ca1a36b04d961dba76d4c03bdb7f5bef",
+      "translation_text_hash": "5eaaac5aa99276f028c40b540b4648d959536d760db12e260f1b38c48f9d1480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 누우면 다시 일어나지 못하고 하늘이 없어지기까지 눈을 뜨지 못하며 잠을 깨지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "5eaaac5aa99276f028c40b540b4648d959536d760db12e260f1b38c48f9d1480"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:13",
+      "sequence": 13195,
+      "chapter_label": "JOB 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "“Oh that you would hide me in Sheol, that you would keep me secret until your wrath is past, that you would appoint me a set time and remember me!",
+      "ko": "주는 나를 음부에 감추시며 주의 진노가 쉴 때까지 나를 숨기시고 나를 위하여 기한을 정하시고 나를 기억하옵소서",
+      "source_text_hash": "974c7e78ea52e3f4ff010284685c8a238ae52f7590aec9e840d889e06fd95800",
+      "translation_text_hash": "84cce783dfbcbb1ad132bd2b2da6412ab2e6b1d491846b2408cd9b03cf1828dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 나를 음부에 감추시며 주의 진노가 쉴 때까지 나를 숨기시고 나를 위하여 기한을 정하시고 나를 기억하옵소서"
+      ],
+      "raw_text_hashes": [
+        "84cce783dfbcbb1ad132bd2b2da6412ab2e6b1d491846b2408cd9b03cf1828dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:14",
+      "sequence": 13196,
+      "chapter_label": "JOB 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "If a man dies, will he live again? I would wait all the days of my warfare, until my release should come.",
+      "ko": "사람이 죽으면 어찌 다시 살리이까 나는 나의 싸우는 모든 날 동안을 참고 놓이기를 기다렸겠나이다",
+      "source_text_hash": "19d33fa37de442dc02376ff894111c634a7b4505e6df34edf5f5873d3eaafbeb",
+      "translation_text_hash": "cb74cab1349c49342ef94153e1424ca7ce035f1ef54fa82ad52a1b51f176e3a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 죽으면 어찌 다시 살리이까 나는 나의 싸우는 모든 날 동안을 참고 놓이기를 기다렸겠나이다"
+      ],
+      "raw_text_hashes": [
+        "cb74cab1349c49342ef94153e1424ca7ce035f1ef54fa82ad52a1b51f176e3a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:15",
+      "sequence": 13197,
+      "chapter_label": "JOB 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "You would call, and I would answer you. You would have a desire for the work of your hands.",
+      "ko": "주께서는 나를 부르셨겠고 나는 대답하였겠나이다 주께서는 주의 손으로 지으신 것을 아껴 보셨겠나이다",
+      "source_text_hash": "257bfcecff25d6bd82862a6627b3ff3c6c228640eceb88371fa16ef653e90118",
+      "translation_text_hash": "957548d452432c37820c2c3d8431b5d0612b130b76f1cacb428a4fc929a62382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서는 나를 부르셨겠고 나는 대답하였겠나이다 주께서는 주의 손으로 지으신 것을 아껴 보셨겠나이다"
+      ],
+      "raw_text_hashes": [
+        "957548d452432c37820c2c3d8431b5d0612b130b76f1cacb428a4fc929a62382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:16",
+      "sequence": 13198,
+      "chapter_label": "JOB 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "But now you count my steps. Don’t you watch over my sin?",
+      "ko": "그러하온데 이제 주께서 나의 걸음을 세시오니 나의 죄를 살피지 아니하시나이까",
+      "source_text_hash": "f4c1bf2c145a6517450060164e64a28efe9fc9b627528193bad3a30d0a9ccd2f",
+      "translation_text_hash": "b65be0244ca29a56c0ce9961dc337b4468d2c4b34f2e23578670da39644744d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하온데 이제 주께서 나의 걸음을 세시오니 나의 죄를 살피지 아니하시나이까"
+      ],
+      "raw_text_hashes": [
+        "b65be0244ca29a56c0ce9961dc337b4468d2c4b34f2e23578670da39644744d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:17",
+      "sequence": 13199,
+      "chapter_label": "JOB 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "My disobedience is sealed up in a bag. You fasten up my iniquity.",
+      "ko": "내 허물을 주머니에 봉하시고 내 죄악을 싸매시나이다",
+      "source_text_hash": "ba383af8ea4857639aa9ddc61427655eab9b90f8567bd81a8ba6c1a704f9f9ee",
+      "translation_text_hash": "96cfca21780115804bae6a0f4df19966598126b7b61dbb0c4d2147d95eeb55fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 허물을 주머니에 봉하시고 내 죄악을 싸매시나이다"
+      ],
+      "raw_text_hashes": [
+        "96cfca21780115804bae6a0f4df19966598126b7b61dbb0c4d2147d95eeb55fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:18",
+      "sequence": 13200,
+      "chapter_label": "JOB 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "“But the mountain falling comes to nothing. The rock is removed out of its place.",
+      "ko": "무너지는 산은 정녕 흩어지고 바위는 그 자리에서 옮겨가고",
+      "source_text_hash": "51a120e2258df396f5b484e1d173632b37f456f9cfb7e63db9fe9c679622df5f",
+      "translation_text_hash": "7ba5b8867ca7c5685556597cf0120b1858623338278e31cd61123c150d14bc20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무너지는 산은 정녕 흩어지고 바위는 그 자리에서 옮겨가고"
+      ],
+      "raw_text_hashes": [
+        "7ba5b8867ca7c5685556597cf0120b1858623338278e31cd61123c150d14bc20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:19",
+      "sequence": 13201,
+      "chapter_label": "JOB 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "The waters wear the stones. The torrents of it wash away the dust of the earth. So you destroy the hope of man.",
+      "ko": "물은 돌을 닳게 하고 넘치는 물은 땅의 티끌을 씻어 버리나이다 이와 같이 주께서는 사람의 소망을 끊으시나이다",
+      "source_text_hash": "67249a79fbb7533380216b72306bad2966301ca1e95b337a7ace7c7ec16c1e4d",
+      "translation_text_hash": "a60a5ef7f14bc0d620698af8ff578d809b469232d0bd77716d61c84903479f6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물은 돌을 닳게 하고 넘치는 물은 땅의 티끌을 씻어 버리나이다 이와 같이 주께서는 사람의 소망을 끊으시나이다"
+      ],
+      "raw_text_hashes": [
+        "a60a5ef7f14bc0d620698af8ff578d809b469232d0bd77716d61c84903479f6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:20",
+      "sequence": 13202,
+      "chapter_label": "JOB 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "You forever prevail against him, and he departs. You change his face, and send him away.",
+      "ko": "주께서 사람을 영영히 이기셔서 떠나게 하시며 그의 얼굴 빛을 변하게 하시고 쫓아 보내시오니",
+      "source_text_hash": "b9daed662aa1cfbf5d0a4a5da1f87946ae1979515c47a35b10d56b14621f4496",
+      "translation_text_hash": "0d58d7c4f14d2b0ed1e18985c336e354d327f76a6e76db886fd027ead02476a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 사람을 영영히 이기셔서 떠나게 하시며 그의 얼굴 빛을 변하게 하시고 쫓아 보내시오니"
+      ],
+      "raw_text_hashes": [
+        "0d58d7c4f14d2b0ed1e18985c336e354d327f76a6e76db886fd027ead02476a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:21",
+      "sequence": 13203,
+      "chapter_label": "JOB 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "His sons come to honor, and he doesn’t know it. They are brought low, but he doesn’t perceive it of them.",
+      "ko": "그 아들이 존귀하나 그가 알지 못하며 비천하나 그가 깨닫지 못하나이다",
+      "source_text_hash": "fbdbab240c7b8353df4ec5b26169eda570b05b71f5b6e3d5d267578ad86634fe",
+      "translation_text_hash": "1a1d0c43293f1849852897bf7984c4b9d8d470a755c84d5ec641f8c8cf5fe815",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들이 존귀하나 그가 알지 못하며 비천하나 그가 깨닫지 못하나이다"
+      ],
+      "raw_text_hashes": [
+        "1a1d0c43293f1849852897bf7984c4b9d8d470a755c84d5ec641f8c8cf5fe815"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:14:22",
+      "sequence": 13204,
+      "chapter_label": "JOB 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "But his flesh on him has pain, and his soul within him mourns.”",
+      "ko": "오직 자기의 살이 아프고 자기의 마음이 슬플 뿐이니이다",
+      "source_text_hash": "1c6e318abb66d9c47530cac2fdefd20504b756cdba30d485aa07a3c69967bfb0",
+      "translation_text_hash": "47cd71edbe54584c705d8b025455ce15faad8c071c67052d6dbb00cc3a4b5653",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 자기의 살이 아프고 자기의 마음이 슬플 뿐이니이다"
+      ],
+      "raw_text_hashes": [
+        "47cd71edbe54584c705d8b025455ce15faad8c071c67052d6dbb00cc3a4b5653"
+      ]
+    }
+  ]
+}

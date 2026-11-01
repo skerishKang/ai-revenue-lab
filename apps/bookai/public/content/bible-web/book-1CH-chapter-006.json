@@ -1,0 +1,2605 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:006",
+  "unit_ordinal": 344,
+  "unit_label": "1CH 6",
+  "book_code": "1CH",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:6:1",
+      "sequence": 10456,
+      "chapter_label": "1CH 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The sons of Levi: Gershon, Kohath, and Merari.",
+      "ko": "레위의 아들들은 게르손과 그핫과 므라리요",
+      "source_text_hash": "f0d255e4b9978f73512129777a835fd7d2e32a863ae6ff1f336fda45032f1d94",
+      "translation_text_hash": "013e84d7ee56d165d06c1b38c6fe11a7ee7c0ae7d657b590e0294254792a66db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들들은 게르손과 그핫과 므라리요"
+      ],
+      "raw_text_hashes": [
+        "013e84d7ee56d165d06c1b38c6fe11a7ee7c0ae7d657b590e0294254792a66db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:2",
+      "sequence": 10457,
+      "chapter_label": "1CH 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The sons of Kohath: Amram, Izhar, Hebron, and Uzziel.",
+      "ko": "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요",
+      "source_text_hash": "4455061db06c98be0ee0088593b1d003d4388a767bf851531ebefe641fb88399",
+      "translation_text_hash": "b27f15a8221e35192c436bee8ebc6939ed5313c4fa733dc89cc00a762b0e8991",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요"
+      ],
+      "raw_text_hashes": [
+        "b27f15a8221e35192c436bee8ebc6939ed5313c4fa733dc89cc00a762b0e8991"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:3",
+      "sequence": 10458,
+      "chapter_label": "1CH 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "The children of Amram: Aaron, Moses, and Miriam. The sons of Aaron: Nadab, Abihu, Eleazar, and Ithamar.",
+      "ko": "아므람의 자녀는 아론과 모세와 미리암이요 아론의 아들들은 나답과 아비후와 엘르아살과 이다말이며",
+      "source_text_hash": "cad0b114b3b43ff2400e98904bc96696ef9c2b0386fe8125afc18009ede022ef",
+      "translation_text_hash": "73e2ff0101cdb337be5790cdd4a01d508841176e2cbc58b32fb76b250324e0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아므람의 자녀는 아론과 모세와 미리암이요 아론의 아들들은 나답과 아비후와 엘르아살과 이다말이며"
+      ],
+      "raw_text_hashes": [
+        "73e2ff0101cdb337be5790cdd4a01d508841176e2cbc58b32fb76b250324e0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:4",
+      "sequence": 10459,
+      "chapter_label": "1CH 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Eleazar became the father of Phinehas, Phinehas became the father of Abishua,",
+      "ko": "엘르아살은 비느하스를 낳았고 비느하스는 아비수아를 낳았고",
+      "source_text_hash": "b46ae587ca04c36bfeb6bb2e946b38f3d372c6c0d7606e739e49ae48e0545034",
+      "translation_text_hash": "1f3961a729122d5c0cb9269d7ef731feb0617c6cfec8e5a9634e6a3197ab7555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘르아살은 비느하스를 낳았고 비느하스는 아비수아를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "1f3961a729122d5c0cb9269d7ef731feb0617c6cfec8e5a9634e6a3197ab7555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:5",
+      "sequence": 10460,
+      "chapter_label": "1CH 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Abishua became the father of Bukki. Bukki became the father of Uzzi.",
+      "ko": "아비수아는 북기를 낳았고 북기는 웃시를 낳았고",
+      "source_text_hash": "bd25306768828d00e73bb318c3c6222c197c68959cae9cc6acf198f97ccb4ef2",
+      "translation_text_hash": "9efc7cc072535c5106903492a43464c07f9871c4fd2ad908ace64c9e1864080a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비수아는 북기를 낳았고 북기는 웃시를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "9efc7cc072535c5106903492a43464c07f9871c4fd2ad908ace64c9e1864080a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:6",
+      "sequence": 10461,
+      "chapter_label": "1CH 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Uzzi became the father of Zerahiah. Zerahiah became the father of Meraioth.",
+      "ko": "웃시는 스라히야를 낳았고 스라히야는 므라욧을 낳았고",
+      "source_text_hash": "7a401fd8692a43027c046b927264d8b59b9b64a67fb2b6c5cbf1abf242f386e3",
+      "translation_text_hash": "449fa3213bd2fdd7691e96f3db3d3b2f1e1f21a9b7cefa4705190849012e1acd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시는 스라히야를 낳았고 스라히야는 므라욧을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "449fa3213bd2fdd7691e96f3db3d3b2f1e1f21a9b7cefa4705190849012e1acd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:7",
+      "sequence": 10462,
+      "chapter_label": "1CH 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Meraioth became the father of Amariah. Amariah became the father of Ahitub.",
+      "ko": "므라욧은 아마랴를 낳았고 아마랴는 아히둡을 낳았고",
+      "source_text_hash": "f96d7b7768500adf1f11d59190ba8d0fc8418e847718d4a18f1ce0e98f2ebbf6",
+      "translation_text_hash": "8fb70150ce8dc5213652987351137e19a87449387b07397443952b3f1bb807dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라욧은 아마랴를 낳았고 아마랴는 아히둡을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "8fb70150ce8dc5213652987351137e19a87449387b07397443952b3f1bb807dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:8",
+      "sequence": 10463,
+      "chapter_label": "1CH 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Ahitub became the father of Zadok. Zadok became the father of Ahimaaz.",
+      "ko": "아히둡은 사독을 낳았고 사독은 아히마아스를 낳았고",
+      "source_text_hash": "a2d756587ff0b4676d63ff42db5ba3a2f73246872857c1e731e29babc658b800",
+      "translation_text_hash": "7a23bc425547c4166e1b19f3e3e6bb0389fc49ff73e238e3ba45d32e722808f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히둡은 사독을 낳았고 사독은 아히마아스를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "7a23bc425547c4166e1b19f3e3e6bb0389fc49ff73e238e3ba45d32e722808f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:9",
+      "sequence": 10464,
+      "chapter_label": "1CH 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Ahimaaz became the father of Azariah. Azariah became the father of Johanan.",
+      "ko": "아히마아스는 아사랴를 낳았고 아사랴는 요하난을 낳았고",
+      "source_text_hash": "2add843f343bdf35b3d182896b33e14bf7b7aae20e82f69bb72992ee7837b59f",
+      "translation_text_hash": "0c770bbed9e2b6e4735146f5503b255ecea4a5d6d462c8499896a702ae65a174",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히마아스는 아사랴를 낳았고 아사랴는 요하난을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "0c770bbed9e2b6e4735146f5503b255ecea4a5d6d462c8499896a702ae65a174"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:10",
+      "sequence": 10465,
+      "chapter_label": "1CH 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Johanan became the father of Azariah, who executed the priest’s office in the house that Solomon built in Jerusalem.",
+      "ko": "요하난은 아사랴를 낳았으니 이 아사랴는 솔로몬이 예루살렘에 세운 전에서 제사장의 직분을 행한 자며",
+      "source_text_hash": "19704306821fcd7facc926a9244018818c601425340ab8eb7e5ad506d32ff70f",
+      "translation_text_hash": "cd3033ea7aa98d78fa4330b51731cc94efc2bc0438f145a17796edb3d7ccb859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요하난은 아사랴를 낳았으니 이 아사랴는 솔로몬이 예루살렘에 세운 전에서 제사장의 직분을 행한 자며"
+      ],
+      "raw_text_hashes": [
+        "cd3033ea7aa98d78fa4330b51731cc94efc2bc0438f145a17796edb3d7ccb859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:11",
+      "sequence": 10466,
+      "chapter_label": "1CH 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Azariah became the father of Amariah. Amariah became the father of Ahitub.",
+      "ko": "아사랴는 아마랴를 낳았고 아마랴는 아히둡을 낳았고",
+      "source_text_hash": "e7ebcb2260e02dba38b179675524ba760c18a5cb2fa7f9a36e3b3d4f0057e991",
+      "translation_text_hash": "94d69f36595648ce1c520667af0d53da4a0f8249cb8ca1001ed1f243b13453df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴는 아마랴를 낳았고 아마랴는 아히둡을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "94d69f36595648ce1c520667af0d53da4a0f8249cb8ca1001ed1f243b13453df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:12",
+      "sequence": 10467,
+      "chapter_label": "1CH 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Ahitub became the father of Zadok. Zadok became the father of Shallum.",
+      "ko": "아히둡은 사독을 낳았고 사독은 살룸을 낳았고",
+      "source_text_hash": "141d4cda18879d00228eff59936a0faeba8a89da0326a0d6d0b90ff2457ae95d",
+      "translation_text_hash": "4d4071227e7d45d936862d77799779e00d6c47314493eec6136c042986aa39ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히둡은 사독을 낳았고 사독은 살룸을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "4d4071227e7d45d936862d77799779e00d6c47314493eec6136c042986aa39ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:13",
+      "sequence": 10468,
+      "chapter_label": "1CH 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Shallum became the father of Hilkiah. Hilkiah became the father of Azariah.",
+      "ko": "살룸은 힐기야를 낳았고 힐기야는 아사랴를 낳았고",
+      "source_text_hash": "36a3310da925e45e48abebe11eaa7734b1f4cb6c0b733ad7d0950a1752e7704d",
+      "translation_text_hash": "40e10f07858f3c161eab3177506b835b2c405ef69bb8c1af236140de06cf9910",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살룸은 힐기야를 낳았고 힐기야는 아사랴를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "40e10f07858f3c161eab3177506b835b2c405ef69bb8c1af236140de06cf9910"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:14",
+      "sequence": 10469,
+      "chapter_label": "1CH 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Azariah became the father of Seraiah. Seraiah became the father of Jehozadak.",
+      "ko": "아사랴는 스라야를 낳았고 스라야는 여호사닥을 낳았으며",
+      "source_text_hash": "51c65bddc71d0cf67c8634ca010ff0547747ac7397e6fb2d621238d0328cbb95",
+      "translation_text_hash": "f6ee007d5c69819749826386b13cb2e8557b6e24355964a4719973e918d2fcbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴는 스라야를 낳았고 스라야는 여호사닥을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "f6ee007d5c69819749826386b13cb2e8557b6e24355964a4719973e918d2fcbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:15",
+      "sequence": 10470,
+      "chapter_label": "1CH 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Jehozadak went into captivity when the LORD carried Judah and Jerusalem away by the hand of Nebuchadnezzar.",
+      "ko": "여호와께서 느부갓네살의 손으로 유다와 예루살렘 백성을 옮기실 때에 여호사닥도 갔었더라",
+      "source_text_hash": "4cc9ffa8e21bd8bbc3e9f6d5179a8357f9ba0d5cbe9e76fb555bec3f54983716",
+      "translation_text_hash": "c5b9f368613c90b81afeadf8e43dd83813e71417298a315b2addb8a46940d826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 느부갓네살의 손으로 유다와 예루살렘 백성을 옮기실 때에 여호사닥도 갔었더라"
+      ],
+      "raw_text_hashes": [
+        "c5b9f368613c90b81afeadf8e43dd83813e71417298a315b2addb8a46940d826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:16",
+      "sequence": 10471,
+      "chapter_label": "1CH 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "The sons of Levi: Gershom, Kohath, and Merari.",
+      "ko": "레위의 아들들은 게르손과 그핫과 므라리며",
+      "source_text_hash": "e0d50474a9313e491ea3bdcb3eaee2a8cffe6c38a988df4e92d506a5ebaef35f",
+      "translation_text_hash": "90bb0461e01882cb0115d3f5c43ccaf75f75460f4fb4da687906869d242bd3b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들들은 게르손과 그핫과 므라리며"
+      ],
+      "raw_text_hashes": [
+        "90bb0461e01882cb0115d3f5c43ccaf75f75460f4fb4da687906869d242bd3b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:17",
+      "sequence": 10472,
+      "chapter_label": "1CH 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "These are the names of the sons of Gershom: Libni and Shimei.",
+      "ko": "게르손의 아들의 이름은 립니와 시므이요",
+      "source_text_hash": "7cae65ccc6a7f9e573dad14aef08962b84031b846d13929b3a0f07e6b33e6031",
+      "translation_text_hash": "70f4f1385c9de33d40267b8bb2e61e9d3d156c1e408fd536f37300a55ccd3258",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손의 아들의 이름은 립니와 시므이요"
+      ],
+      "raw_text_hashes": [
+        "70f4f1385c9de33d40267b8bb2e61e9d3d156c1e408fd536f37300a55ccd3258"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:18",
+      "sequence": 10473,
+      "chapter_label": "1CH 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "The sons of Kohath were Amram, Izhar, Hebron, and Uzziel.",
+      "ko": "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요",
+      "source_text_hash": "932989ba7e9fc0da6be0eadd888e64f28cb8730d873fe7ffeb2fb2ecdad40c25",
+      "translation_text_hash": "b27f15a8221e35192c436bee8ebc6939ed5313c4fa733dc89cc00a762b0e8991",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫의 아들들은 아므람과 이스할과 헤브론과 웃시엘이요"
+      ],
+      "raw_text_hashes": [
+        "b27f15a8221e35192c436bee8ebc6939ed5313c4fa733dc89cc00a762b0e8991"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:19",
+      "sequence": 10474,
+      "chapter_label": "1CH 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Merari: Mahli and Mushi. These are the families of the Levites according to their fathers’ households.",
+      "ko": "므라리의 아들들은 말리와 무시라 이 레위 사람의 집들이 그 종족을 따라 이러하니",
+      "source_text_hash": "c8dedea2946f6196dfecfadec7d87868791dd8e0b7740dfcf651753bbe12aa1c",
+      "translation_text_hash": "44ece20e627637cd8bc261f27acffbb324dde75528553982ee61c22bf5cf54be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 아들들은 말리와 무시라 이 레위 사람의 집들이 그 종족을 따라 이러하니"
+      ],
+      "raw_text_hashes": [
+        "44ece20e627637cd8bc261f27acffbb324dde75528553982ee61c22bf5cf54be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:20",
+      "sequence": 10475,
+      "chapter_label": "1CH 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Of Gershom: Libni his son, Jahath his son, Zimmah his son,",
+      "ko": "게르손에게서 난 자는 곧 그 아들 립니요 그 아들은 야핫이요 그 아들은 심마요",
+      "source_text_hash": "69430af9b4dfd200b4fb03b028b5183141694c1b9fcfc46d033e706ff8a39978",
+      "translation_text_hash": "5bfd311b7df57c1f587ae8ce6cb010acbf24b30e94df518a928bda2a576f729c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손에게서 난 자는 곧 그 아들 립니요 그 아들은 야핫이요 그 아들은 심마요"
+      ],
+      "raw_text_hashes": [
+        "5bfd311b7df57c1f587ae8ce6cb010acbf24b30e94df518a928bda2a576f729c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:21",
+      "sequence": 10476,
+      "chapter_label": "1CH 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Joah his son, Iddo his son, Zerah his son, and Jeatherai his son.",
+      "ko": "그 아들은 요아요 그 아들은 잇도요 그 아들은 세라요 그 아들은 여아드래며",
+      "source_text_hash": "54133541e787e456926baed03ae0ab28fae007d22152cdf63ce5c6fc4c67299b",
+      "translation_text_hash": "2d34757ea7299791b142c7bbb354fc211ec617627d830f3be9864394ede47cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 요아요 그 아들은 잇도요 그 아들은 세라요 그 아들은 여아드래며"
+      ],
+      "raw_text_hashes": [
+        "2d34757ea7299791b142c7bbb354fc211ec617627d830f3be9864394ede47cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:22",
+      "sequence": 10477,
+      "chapter_label": "1CH 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "The sons of Kohath: Amminadab his son, Korah his son, Assir his son,",
+      "ko": "그핫에게서 난 자는 곧 그 아들 암미나답이요 그 아들은 고라요 그 아들은 앗실이요",
+      "source_text_hash": "87ff67a750602fe62511c0c5f0d8eac67cca14b3e15c6d29958ef4eafe51964c",
+      "translation_text_hash": "4f6d74a50bc9f276597aedc8aff1b94bc6110ab7baf6a9c8606d3eb938de2979",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫에게서 난 자는 곧 그 아들 암미나답이요 그 아들은 고라요 그 아들은 앗실이요"
+      ],
+      "raw_text_hashes": [
+        "4f6d74a50bc9f276597aedc8aff1b94bc6110ab7baf6a9c8606d3eb938de2979"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:23",
+      "sequence": 10478,
+      "chapter_label": "1CH 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Elkanah his son, Ebiasaph his son, Assir his son,",
+      "ko": "그 아들은 엘가나요 그 아들은 에비아삽이요 그 아들은 앗실이요",
+      "source_text_hash": "9c0df27e824df8f92063ce24fb15540f914fbbccf8bf3ba836b85e7d33b0140f",
+      "translation_text_hash": "c9adc1d777c87f11e631abc9118e22cf7d8e4a51225e442a9a2fc18dbda7b787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 엘가나요 그 아들은 에비아삽이요 그 아들은 앗실이요"
+      ],
+      "raw_text_hashes": [
+        "c9adc1d777c87f11e631abc9118e22cf7d8e4a51225e442a9a2fc18dbda7b787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:24",
+      "sequence": 10479,
+      "chapter_label": "1CH 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "Tahath his son, Uriel his son, Uzziah his son, and Shaul his son.",
+      "ko": "그 아들은 다핫이요 그 아들은 우리엘이요 그 아들은 웃시야요 그 아들은 사울이며",
+      "source_text_hash": "efab409d7b8506de8d6aa4dcd9b877eca5cee6508eb2bb68846604e537633e1b",
+      "translation_text_hash": "c4f704a1ed456a59b3c0728d1fbb40254d32a6c6d764c0b443745b66060e33bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 다핫이요 그 아들은 우리엘이요 그 아들은 웃시야요 그 아들은 사울이며"
+      ],
+      "raw_text_hashes": [
+        "c4f704a1ed456a59b3c0728d1fbb40254d32a6c6d764c0b443745b66060e33bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:25",
+      "sequence": 10480,
+      "chapter_label": "1CH 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "The sons of Elkanah: Amasai and Ahimoth.",
+      "ko": "엘가나의 아들들은 아마새와 아히못이라",
+      "source_text_hash": "d4535fda172f21a1d7b28c44a34f1b5093af4788ca61bf3acfe64ef0e11a972a",
+      "translation_text_hash": "bd60b06c3868bc5b1621e39663d209ecd6e1e48ba59f2f117debd8f68e2cfa05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘가나의 아들들은 아마새와 아히못이라"
+      ],
+      "raw_text_hashes": [
+        "bd60b06c3868bc5b1621e39663d209ecd6e1e48ba59f2f117debd8f68e2cfa05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:26",
+      "sequence": 10481,
+      "chapter_label": "1CH 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "As for Elkanah, the sons of Elkanah: Zophai his son, Nahath his son,",
+      "ko": "엘가나로 말하면 그 자손은 이러하니 그 아들은 소배요 그 아들은 나핫이요",
+      "source_text_hash": "c47035d585d64d542c94b6fb6f91ab4b0a144a34e71449516b21930192bf5e06",
+      "translation_text_hash": "167ea09dd311a5da367cdafd31068d002bea6ac9de350a4d88f563aab5f7952d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘가나로 말하면 그 자손은 이러하니 그 아들은 소배요 그 아들은 나핫이요"
+      ],
+      "raw_text_hashes": [
+        "167ea09dd311a5da367cdafd31068d002bea6ac9de350a4d88f563aab5f7952d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:27",
+      "sequence": 10482,
+      "chapter_label": "1CH 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Eliab his son, Jeroham his son, and Elkanah his son.",
+      "ko": "그 아들은 엘리압이요 그 아들은 여로함이요 그 아들은 엘가나며",
+      "source_text_hash": "b7a36825c4f25a3f991c93c7d0f409969b303f51aae039491f09696ed8e4797e",
+      "translation_text_hash": "a2e1ebcfb6511736d6969cff31c34fe4aa9a2ba3faa8adda1378f64973fd4c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 엘리압이요 그 아들은 여로함이요 그 아들은 엘가나며"
+      ],
+      "raw_text_hashes": [
+        "a2e1ebcfb6511736d6969cff31c34fe4aa9a2ba3faa8adda1378f64973fd4c2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:28",
+      "sequence": 10483,
+      "chapter_label": "1CH 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "The sons of Samuel: the firstborn, Joel, and the second, Abijah.",
+      "ko": "사무엘의 아들들은 맏아들 요엘이요 다음은 아비야며",
+      "source_text_hash": "d78172e354b89594013770fdd58a95a3b6f6601364e3adcf5a1ce0fdce4aa9b9",
+      "translation_text_hash": "69fc31ae16a76a6531aae374c56e6ce9ebae55dbd7a5f8cb35b76ee9c8e1dac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘의 아들들은 맏아들 요엘이요 다음은 아비야며"
+      ],
+      "raw_text_hashes": [
+        "69fc31ae16a76a6531aae374c56e6ce9ebae55dbd7a5f8cb35b76ee9c8e1dac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:29",
+      "sequence": 10484,
+      "chapter_label": "1CH 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "The sons of Merari: Mahli, Libni his son, Shimei his son, Uzzah his son,",
+      "ko": "므라리에게서 난 자는 말리요 그 아들은 립니요 그 아들은 시므이요 그 아들은 웃사요",
+      "source_text_hash": "3ca1d4c6beb88402971eeb3d4d0b66b57260ac2e19746096180f0a8107e829eb",
+      "translation_text_hash": "da99faa394f989c1a6ff63f362f627c85db8408d3ee3f7ced3232d3ef79c1934",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리에게서 난 자는 말리요 그 아들은 립니요 그 아들은 시므이요 그 아들은 웃사요"
+      ],
+      "raw_text_hashes": [
+        "da99faa394f989c1a6ff63f362f627c85db8408d3ee3f7ced3232d3ef79c1934"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:30",
+      "sequence": 10485,
+      "chapter_label": "1CH 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "Shimea his son, Haggiah his son, Asaiah his son.",
+      "ko": "그 아들은 시므아요 그 아들은 학기야요 그 아들은 아사야더라",
+      "source_text_hash": "659082d0767e5ad87b6117af949ba0602326e3f258028b6c6f257345a0308ac7",
+      "translation_text_hash": "e5be4c1f8c76d456496f9dbf1bdad2dcf0e2104dca716020b46df401bda21125",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 시므아요 그 아들은 학기야요 그 아들은 아사야더라"
+      ],
+      "raw_text_hashes": [
+        "e5be4c1f8c76d456496f9dbf1bdad2dcf0e2104dca716020b46df401bda21125"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:31",
+      "sequence": 10486,
+      "chapter_label": "1CH 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "These are they whom David set over the service of song in the LORD’s house after the ark came to rest there.",
+      "ko": "언약궤가 평안한 곳을 얻은 후에 다윗이 이 아래의 무리를 세워 여호와의 집에서 찬송하는 일을 맡게 하매",
+      "source_text_hash": "801e2123cf10f1cf5cff7fc7282182940d465bd2619717718feba92920bee487",
+      "translation_text_hash": "9b7f211996e6e380ddbbdc9053bfb8a9b32e2571dfa1830398390e3740de6f3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "언약궤가 평안한 곳을 얻은 후에 다윗이 이 아래의 무리를 세워 여호와의 집에서 찬송하는 일을 맡게 하매"
+      ],
+      "raw_text_hashes": [
+        "9b7f211996e6e380ddbbdc9053bfb8a9b32e2571dfa1830398390e3740de6f3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:32",
+      "sequence": 10487,
+      "chapter_label": "1CH 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "They ministered with song before the tabernacle of the Tent of Meeting until Solomon had built the LORD’s house in Jerusalem. They performed the duties of their office according to their order.",
+      "ko": "솔로몬이 예루살렘에서 여호와의 전을 세울 때까지 저희가 회막 앞에서 찬송하는 일을 행하되 그 반열대로 직무를 행하였더라",
+      "source_text_hash": "6dbb02bab5a9c7b1cea97bb201ceecdfb0dbb55069e9e664a2d6f081969bde42",
+      "translation_text_hash": "5977e741f3b3ea863abc3bc627fa65018e7a57fa8d59511ae94fbcff3dc06f1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 예루살렘에서 여호와의 전을 세울 때까지 저희가 회막 앞에서 찬송하는 일을 행하되 그 반열대로 직무를 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "5977e741f3b3ea863abc3bc627fa65018e7a57fa8d59511ae94fbcff3dc06f1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:33",
+      "sequence": 10488,
+      "chapter_label": "1CH 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "These are those who served, and their sons. Of the sons of the Kohathites: Heman the singer, the son of Joel, the son of Samuel,",
+      "ko": "직무를 행하는 자와 그 아들들이 이러하니 그핫의 자손 중에 헤만은 찬송하는 자라 저는 요엘의 아들이요 요엘은 사무엘의 아들이요",
+      "source_text_hash": "3ee077fa069b82d24b16a9abd99fd6509175ec9001aaf46407d9f305f1ea664b",
+      "translation_text_hash": "04fa9cc78d9e59b85dc41b528a6b317d9a7a37b06f190a3949637df56ca932a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "직무를 행하는 자와 그 아들들이 이러하니 그핫의 자손 중에 헤만은 찬송하는 자라 저는 요엘의 아들이요 요엘은 사무엘의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "04fa9cc78d9e59b85dc41b528a6b317d9a7a37b06f190a3949637df56ca932a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:34",
+      "sequence": 10489,
+      "chapter_label": "1CH 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "the son of Elkanah, the son of Jeroham, the son of Eliel, the son of Toah,",
+      "ko": "사무엘은 엘가나의 아들이요 엘가나는 여로함의 아들이요 여로함은 엘리엘의 아들이요 엘리엘은 도아의 아들이요",
+      "source_text_hash": "20e2947b83c50225d7569ad08cdcc4694a9ac5ba3384c962b738a838eca4b3ed",
+      "translation_text_hash": "233adbead8a336eb3f80603fadc60050a1264fa7fc06d0c06a2a2c239fcb1c9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘은 엘가나의 아들이요 엘가나는 여로함의 아들이요 여로함은 엘리엘의 아들이요 엘리엘은 도아의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "233adbead8a336eb3f80603fadc60050a1264fa7fc06d0c06a2a2c239fcb1c9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:35",
+      "sequence": 10490,
+      "chapter_label": "1CH 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "the son of Zuph, the son of Elkanah, the son of Mahath, the son of Amasai,",
+      "ko": "도아는 숩의 아들이요 숩은 엘가나의 아들이요 엘가나는 마핫의 아들이요 마핫은 아마새의 아들이요",
+      "source_text_hash": "1d17a07cea28bf74e37be0762db73d960a05def17fa9332cd2cb15051da18a10",
+      "translation_text_hash": "b43b448b7e4ed22aa08ad1c1466185f67e6ea80556c579c5a03276a950c5143c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도아는 숩의 아들이요 숩은 엘가나의 아들이요 엘가나는 마핫의 아들이요 마핫은 아마새의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "b43b448b7e4ed22aa08ad1c1466185f67e6ea80556c579c5a03276a950c5143c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:36",
+      "sequence": 10491,
+      "chapter_label": "1CH 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "the son of Elkanah, the son of Joel, the son of Azariah, the son of Zephaniah,",
+      "ko": "아마새는 엘가나의 아들이요 엘가나는 요엘의 아들이요 요엘은 아사랴의 아들이요 아사랴는 스바냐의 아들이요",
+      "source_text_hash": "88557e7989f92b6b41ef06976ab7d866f76ae3fdbd2e0122c0152e5ec0f25588",
+      "translation_text_hash": "d76d72091acaf665c6145df8edfc8765db353396531b3cdd79ffccfe346b9863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마새는 엘가나의 아들이요 엘가나는 요엘의 아들이요 요엘은 아사랴의 아들이요 아사랴는 스바냐의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "d76d72091acaf665c6145df8edfc8765db353396531b3cdd79ffccfe346b9863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:37",
+      "sequence": 10492,
+      "chapter_label": "1CH 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "the son of Tahath, the son of Assir, the son of Ebiasaph, the son of Korah,",
+      "ko": "스바냐는 다핫의 아들이요 다핫은 앗실의 아들이요 앗실은 에비아삽의 아들이요 에비아삽은 고라의 아들이요",
+      "source_text_hash": "52f3e06e29d5eb96e3be0ccada30b47d13c87b7fce44585116603668bf3c7f1c",
+      "translation_text_hash": "0b2208905647e47427e677a5a8697fc24fbaadd570251ee6feedab32fdca7d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스바냐는 다핫의 아들이요 다핫은 앗실의 아들이요 앗실은 에비아삽의 아들이요 에비아삽은 고라의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "0b2208905647e47427e677a5a8697fc24fbaadd570251ee6feedab32fdca7d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:38",
+      "sequence": 10493,
+      "chapter_label": "1CH 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "the son of Izhar, the son of Kohath, the son of Levi, the son of Israel.",
+      "ko": "고라는 이스할의 아들이요 이스할은 그핫의 아들이요 그핫은 레위의 아들이요 레위는 이스라엘의 아들이며",
+      "source_text_hash": "2f4a7b58b0994c4ecf3f958335ca120f2b78dec4bd24d72cebf981c298169411",
+      "translation_text_hash": "b784e1d8e29f77c731535283a8f7576689a45503ec30fac4578fea39ff6d9a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라는 이스할의 아들이요 이스할은 그핫의 아들이요 그핫은 레위의 아들이요 레위는 이스라엘의 아들이며"
+      ],
+      "raw_text_hashes": [
+        "b784e1d8e29f77c731535283a8f7576689a45503ec30fac4578fea39ff6d9a1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:39",
+      "sequence": 10494,
+      "chapter_label": "1CH 6",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 39
+        }
+      ],
+      "en": "His brother Asaph, who stood on his right hand, even Asaph the son of Berechiah, the son of Shimea,",
+      "ko": "헤만의 형제 아삽은 헤만의 우편에서 직무를 행하였으니 저는 베레갸의 아들이요 베레갸는 시므아의 아들이요",
+      "source_text_hash": "569f98c65646c2257ab131af0cc45ac8049a21a48172aa0f26051112de0c2079",
+      "translation_text_hash": "8406138f1a880c3ef03c73a9cc9f4c25ad76bb6b9f0120243333f17a91742e25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤만의 형제 아삽은 헤만의 우편에서 직무를 행하였으니 저는 베레갸의 아들이요 베레갸는 시므아의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "8406138f1a880c3ef03c73a9cc9f4c25ad76bb6b9f0120243333f17a91742e25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:40",
+      "sequence": 10495,
+      "chapter_label": "1CH 6",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 40
+        }
+      ],
+      "en": "the son of Michael, the son of Baaseiah, the son of Malchijah,",
+      "ko": "시므아는 미가엘의 아들이요 미가엘은 바아세야의 아들이요 바아세야는 말기야의 아들이요",
+      "source_text_hash": "acf5be3f1d0b03ceab5b761ae36ef02770aef241cadeff89b808facfa95b12ec",
+      "translation_text_hash": "2e9f4843e572ebba652b7caa643939a826656849e68ee0068cd29aa09f4f1752",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므아는 미가엘의 아들이요 미가엘은 바아세야의 아들이요 바아세야는 말기야의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "2e9f4843e572ebba652b7caa643939a826656849e68ee0068cd29aa09f4f1752"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:41",
+      "sequence": 10496,
+      "chapter_label": "1CH 6",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 41
+        }
+      ],
+      "en": "the son of Ethni, the son of Zerah, the son of Adaiah,",
+      "ko": "말기야는 에드니의 아들이요 에드니는 세라의 아들이요 세라는 아다야의 아들이요",
+      "source_text_hash": "7717d16a931b4b8c46dfafe6e8e9321b47893981ab83ee6169bb60b4da5d3ec1",
+      "translation_text_hash": "fec29a8fab5512434dfcd472774c50b493ba74f088c65b6d5c2eab2158012165",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말기야는 에드니의 아들이요 에드니는 세라의 아들이요 세라는 아다야의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "fec29a8fab5512434dfcd472774c50b493ba74f088c65b6d5c2eab2158012165"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:42",
+      "sequence": 10497,
+      "chapter_label": "1CH 6",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 42
+        }
+      ],
+      "en": "the son of Ethan, the son of Zimmah, the son of Shimei,",
+      "ko": "아다야는 에단의 아들이요 에단은 심마의 아들이요 심마는 시므이의 아들이요",
+      "source_text_hash": "7fd827c7a7e8d11650e55ad91226f0af43b4bff164d58fed27a12658017dbfa5",
+      "translation_text_hash": "2b92872efd6ffe21965ec6eb0b1f108629d15852f2a7a45765a538aad3fe1454",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다야는 에단의 아들이요 에단은 심마의 아들이요 심마는 시므이의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "2b92872efd6ffe21965ec6eb0b1f108629d15852f2a7a45765a538aad3fe1454"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:43",
+      "sequence": 10498,
+      "chapter_label": "1CH 6",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 43
+        }
+      ],
+      "en": "the son of Jahath, the son of Gershom, the son of Levi.",
+      "ko": "시므이는 야핫의 아들이요 야핫은 게르손의 아들이요 게르손은 레위의 아들이며",
+      "source_text_hash": "accec93329087ec7cc4a7fd89d380ff12039bc49df7e89221990676d33e705b0",
+      "translation_text_hash": "02990804039f81ede2c5ac0608e834a6996fe5b891bbc8e84ef5659457dfbefb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므이는 야핫의 아들이요 야핫은 게르손의 아들이요 게르손은 레위의 아들이며"
+      ],
+      "raw_text_hashes": [
+        "02990804039f81ede2c5ac0608e834a6996fe5b891bbc8e84ef5659457dfbefb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:44",
+      "sequence": 10499,
+      "chapter_label": "1CH 6",
+      "verse_label": "44",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 44
+        }
+      ],
+      "en": "On the left hand their brothers the sons of Merari: Ethan the son of Kishi, the son of Abdi, the son of Malluch,",
+      "ko": "저희의 형제 므라리의 자손 중 그 좌편에서 직무를 행하는 자는 에단이라 에단은 기시의 아들이요 기시는 압디의 아들이요 압디는 말룩의 아들이요",
+      "source_text_hash": "83f8225ba59b2993fb785ed9fd3e571ca13dd20f27336a45f34d372f2d8dca59",
+      "translation_text_hash": "094ed5e54c29881d648a0285abab24f82a834ee6d357c1adaa6cde06abdb24ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 형제 므라리의 자손 중 그 좌편에서 직무를 행하는 자는 에단이라 에단은 기시의 아들이요 기시는 압디의 아들이요 압디는 말룩의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "094ed5e54c29881d648a0285abab24f82a834ee6d357c1adaa6cde06abdb24ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:45",
+      "sequence": 10500,
+      "chapter_label": "1CH 6",
+      "verse_label": "45",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 45
+        }
+      ],
+      "en": "the son of Hashabiah, the son of Amaziah, the son of Hilkiah,",
+      "ko": "말룩은 하사뱌의 아들이요 하사뱌는 아마시야의 아들이요 아마시야는 힐기야의 아들이요",
+      "source_text_hash": "7457160007f8ac6478673c1ffacda125121415b22ab532cfd76cdd987803cd2c",
+      "translation_text_hash": "f02e45291f13ba8d7341cf959e506cde176fc1bfae4eb9a8467f88f1d838f6ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말룩은 하사뱌의 아들이요 하사뱌는 아마시야의 아들이요 아마시야는 힐기야의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "f02e45291f13ba8d7341cf959e506cde176fc1bfae4eb9a8467f88f1d838f6ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:46",
+      "sequence": 10501,
+      "chapter_label": "1CH 6",
+      "verse_label": "46",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 46
+        }
+      ],
+      "en": "the son of Amzi, the son of Bani, the son of Shemer,",
+      "ko": "힐기야는 암시의 아들이요 암시는 바니의 아들이요 바니는 세멜의 아들이요",
+      "source_text_hash": "0ec6e0442dab88f75f339cc53178209f03eecd8a3147611a7e0d7d2623836aa4",
+      "translation_text_hash": "a62f17cd056e90104c850389e6ed0cfa768f018345f45a9520d7f9d20b9f6953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힐기야는 암시의 아들이요 암시는 바니의 아들이요 바니는 세멜의 아들이요"
+      ],
+      "raw_text_hashes": [
+        "a62f17cd056e90104c850389e6ed0cfa768f018345f45a9520d7f9d20b9f6953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:47",
+      "sequence": 10502,
+      "chapter_label": "1CH 6",
+      "verse_label": "47",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 47
+        }
+      ],
+      "en": "the son of Mahli, the son of Mushi, the son of Merari, the son of Levi.",
+      "ko": "세멜은 말리의 아들이요 말리는 무시의 아들이요 무시는 므라리의 아들이요 므라리는 레위의 아들이며",
+      "source_text_hash": "61fb610384a1dd318af43b1aaad951f122a0ae818046a4ae3287a1c3156e9c6d",
+      "translation_text_hash": "678ce47237733edb4c962ff51b98b42c15370cdc24742bb52643c1d9c4b807a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세멜은 말리의 아들이요 말리는 무시의 아들이요 무시는 므라리의 아들이요 므라리는 레위의 아들이며"
+      ],
+      "raw_text_hashes": [
+        "678ce47237733edb4c962ff51b98b42c15370cdc24742bb52643c1d9c4b807a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:48",
+      "sequence": 10503,
+      "chapter_label": "1CH 6",
+      "verse_label": "48",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 48
+        }
+      ],
+      "en": "Their brothers the Levites were appointed for all the service of the tabernacle of God’s house.",
+      "ko": "저희의 형제 레위 사람들은 하나님의 집 장막의 모든 일을 맡았더라",
+      "source_text_hash": "38cf12420f6fd1a0b810385a011bf717397783a509660330ec91335ce794e5aa",
+      "translation_text_hash": "378cacb881cfee0761c043ba3bb77bbf87f22f2181bcafa8b512af7b4d43d5a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 형제 레위 사람들은 하나님의 집 장막의 모든 일을 맡았더라"
+      ],
+      "raw_text_hashes": [
+        "378cacb881cfee0761c043ba3bb77bbf87f22f2181bcafa8b512af7b4d43d5a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:49",
+      "sequence": 10504,
+      "chapter_label": "1CH 6",
+      "verse_label": "49",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 49
+        }
+      ],
+      "en": "But Aaron and his sons offered on the altar of burnt offering, and on the altar of incense, for all the work of the most holy place, and to make atonement for Israel, according to all that Moses the servant of God had commanded.",
+      "ko": "아론과 그 자손들은 번제단과 향단 위에 분향하며 제사를 드리며 지성소의 모든 일을 하여 하나님의 종 모세의 모든 명대로 이스라엘을 위하여 속죄하니",
+      "source_text_hash": "ec27db980e07df7c0cd5394e744983048184dc3530b575f4d15a808ac19e2473",
+      "translation_text_hash": "455f9ef4ad64431bbc3c5f9613e5de8432693091043cbc439d73058b4d63ceff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 자손들은 번제단과 향단 위에 분향하며 제사를 드리며 지성소의 모든 일을 하여 하나님의 종 모세의 모든 명대로 이스라엘을 위하여 속죄하니"
+      ],
+      "raw_text_hashes": [
+        "455f9ef4ad64431bbc3c5f9613e5de8432693091043cbc439d73058b4d63ceff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:50",
+      "sequence": 10505,
+      "chapter_label": "1CH 6",
+      "verse_label": "50",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 50
+        }
+      ],
+      "en": "These are the sons of Aaron: Eleazar his son, Phinehas his son, Abishua his son,",
+      "ko": "아론의 자손들은 이러하니라 그 아들은 엘르아살이요 그 아들은 비느하스요 그 아들은 아비수아요",
+      "source_text_hash": "d6035bf23c766f265fd60a65dba1598b4a7f21f13128e4f038f025e0c80b2a3f",
+      "translation_text_hash": "4338171fe0086cc0145e76d232435fee56ff85971b68a68cfd44bff987950f45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손들은 이러하니라 그 아들은 엘르아살이요 그 아들은 비느하스요 그 아들은 아비수아요"
+      ],
+      "raw_text_hashes": [
+        "4338171fe0086cc0145e76d232435fee56ff85971b68a68cfd44bff987950f45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:51",
+      "sequence": 10506,
+      "chapter_label": "1CH 6",
+      "verse_label": "51",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 51
+        }
+      ],
+      "en": "Bukki his son, Uzzi his son, Zerahiah his son,",
+      "ko": "그 아들은 북기요 그 아들은 웃시요 그 아들은 스라히야요",
+      "source_text_hash": "204aafb8cace1a64becfde42865f381de9426adf5a56915674136a93cdce1b56",
+      "translation_text_hash": "66e7e53fc9f006f9e5cf4c8b696b804bf2cbd225d828b14b71fab234c6a2d124",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 북기요 그 아들은 웃시요 그 아들은 스라히야요"
+      ],
+      "raw_text_hashes": [
+        "66e7e53fc9f006f9e5cf4c8b696b804bf2cbd225d828b14b71fab234c6a2d124"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:52",
+      "sequence": 10507,
+      "chapter_label": "1CH 6",
+      "verse_label": "52",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 52
+        }
+      ],
+      "en": "Meraioth his son, Amariah his son, Ahitub his son,",
+      "ko": "그 아들은 므라욧이요 그 아들은 아마랴요 그 아들은 아히둡이요",
+      "source_text_hash": "e5b722daf456ddaf803d4e344267ff6d74b45af84c8069d698533bdb655e5334",
+      "translation_text_hash": "266fcbd75d4d091055f9eb7690fcafb280479f8bcfb6995173e97f59155207df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 므라욧이요 그 아들은 아마랴요 그 아들은 아히둡이요"
+      ],
+      "raw_text_hashes": [
+        "266fcbd75d4d091055f9eb7690fcafb280479f8bcfb6995173e97f59155207df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:53",
+      "sequence": 10508,
+      "chapter_label": "1CH 6",
+      "verse_label": "53",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 53
+        }
+      ],
+      "en": "Zadok his son, and Ahimaaz his son.",
+      "ko": "그 아들은 사독이요 그 아들은 아히마아스더라",
+      "source_text_hash": "a7d7078c2119c1ce8e1b9f4672d06aa25c90469433c52dd7d2a5f44e5a7f2ac2",
+      "translation_text_hash": "a11a52a8cdf72da70f38876f1d13d135470b3c073cb6c695e172454e97b1828f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들은 사독이요 그 아들은 아히마아스더라"
+      ],
+      "raw_text_hashes": [
+        "a11a52a8cdf72da70f38876f1d13d135470b3c073cb6c695e172454e97b1828f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:54",
+      "sequence": 10509,
+      "chapter_label": "1CH 6",
+      "verse_label": "54",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 54
+        }
+      ],
+      "en": "Now these are their dwelling places according to their encampments in their borders: to the sons of Aaron, of the families of the Kohathites (for theirs was the first lot),",
+      "ko": "저희의 거한 곳은 사방 지경 안에 있으니 그 향리는 아래와 같으니라 아론 자손 곧 그핫 족속이 먼저 제비 뽑았으므로",
+      "source_text_hash": "1898ab4403624e665bb6e7d0a749111e291cdbe233dae5b1e709a40a524c76d2",
+      "translation_text_hash": "ba829a16a87fd61db9be0cb3461dddfd5e90ced0d352146f187492dfe6441871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 거한 곳은 사방 지경 안에 있으니 그 향리는 아래와 같으니라 아론 자손 곧 그핫 족속이 먼저 제비 뽑았으므로"
+      ],
+      "raw_text_hashes": [
+        "ba829a16a87fd61db9be0cb3461dddfd5e90ced0d352146f187492dfe6441871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:55",
+      "sequence": 10510,
+      "chapter_label": "1CH 6",
+      "verse_label": "55",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 55
+        }
+      ],
+      "en": "to them they gave Hebron in the land of Judah, and its pasture lands around it;",
+      "ko": "저희에게 유다 땅의 헤브론과 그 사방 들을 주었고",
+      "source_text_hash": "95e7b7341aa63b793e1bdfbe6a5742ce39b7ade80e73f9d6b1889bb066743722",
+      "translation_text_hash": "ecb7d02579eaf2481f4f16b86db35154c1a10f47e50cb67603d23ac661a8c04f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 유다 땅의 헤브론과 그 사방 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "ecb7d02579eaf2481f4f16b86db35154c1a10f47e50cb67603d23ac661a8c04f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:56",
+      "sequence": 10511,
+      "chapter_label": "1CH 6",
+      "verse_label": "56",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 56
+        }
+      ],
+      "en": "but the fields of the city and its villages, they gave to Caleb the son of Jephunneh.",
+      "ko": "그 성의 밭과 향리는 여분네의 아들 갈렙에게 주었으며",
+      "source_text_hash": "422466f85bd800c2144b5b3986617f964ba156161c54c502b14f028686e0650c",
+      "translation_text_hash": "fd24a7f2535c76b04f3dd00985ae8a4f5c074372e4d3d59d6b2f3fdaea8dd614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성의 밭과 향리는 여분네의 아들 갈렙에게 주었으며"
+      ],
+      "raw_text_hashes": [
+        "fd24a7f2535c76b04f3dd00985ae8a4f5c074372e4d3d59d6b2f3fdaea8dd614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:57",
+      "sequence": 10512,
+      "chapter_label": "1CH 6",
+      "verse_label": "57",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 57
+        }
+      ],
+      "en": "To the sons of Aaron they gave the cities of refuge, Hebron, Libnah also with its pasture lands, Jattir, Eshtemoa with its pasture lands,",
+      "ko": "아론 자손에게 도피성을 주었으니 헤브론과 립나와 그 들과 얏딜과 에스드모아와 그 들과",
+      "source_text_hash": "e4a46cb299d4dd8bd3634b8da0b8bc34499137590d93c359ded4fd3d72d1df3d",
+      "translation_text_hash": "eb4e339a69e18cb7b3db68cc5e303375a12c4e456c13b2627aea93180be12449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론 자손에게 도피성을 주었으니 헤브론과 립나와 그 들과 얏딜과 에스드모아와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "eb4e339a69e18cb7b3db68cc5e303375a12c4e456c13b2627aea93180be12449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:58",
+      "sequence": 10513,
+      "chapter_label": "1CH 6",
+      "verse_label": "58",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 58
+        }
+      ],
+      "en": "Hilen with its pasture lands, Debir with its pasture lands,",
+      "ko": "힐렌과 그 들과 드빌과 그 들과",
+      "source_text_hash": "bcbc825a5a02a9a717f1ce61195ab246f5a08b1f5a43c33840836b90859f9bce",
+      "translation_text_hash": "288aa45dadeb936a08e36affdb772b29c856dfb469826ab43a19f99451952cae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힐렌과 그 들과 드빌과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "288aa45dadeb936a08e36affdb772b29c856dfb469826ab43a19f99451952cae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:59",
+      "sequence": 10514,
+      "chapter_label": "1CH 6",
+      "verse_label": "59",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 59
+        }
+      ],
+      "en": "Ashan with its pasture lands, and Beth Shemesh with its pasture lands;",
+      "ko": "아산과 그 들과 벧세메스와 그 들이며",
+      "source_text_hash": "195a41924968cd2634b0c99cf029fbea105335ed7e55b14c1a5dd5136de96d67",
+      "translation_text_hash": "23c5a4916e4f11c64aba2b08880f78cda51b085cf5e89d80131d8d5a163d721d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아산과 그 들과 벧세메스와 그 들이며"
+      ],
+      "raw_text_hashes": [
+        "23c5a4916e4f11c64aba2b08880f78cda51b085cf5e89d80131d8d5a163d721d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:60",
+      "sequence": 10515,
+      "chapter_label": "1CH 6",
+      "verse_label": "60",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 60
+        }
+      ],
+      "en": "and out of the tribe of Benjamin, Geba with its pasture lands, Allemeth with its pasture lands, and Anathoth with its pasture lands. All their cities throughout their families were thirteen cities.",
+      "ko": "또 베냐민 지파 중에서는 게바와 그 들과 알레멧과 그 들과 아나돗과 그 들을 주었으니 그 족속의 얻은 성이 모두 열 셋이었더라",
+      "source_text_hash": "d04d79d6b476f1c41018745029f049a4f88a951900adddd140c5043cd861cf10",
+      "translation_text_hash": "ee345236c236002a44eab93299179f5432a90f0935921bb323797ed0118f8e78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베냐민 지파 중에서는 게바와 그 들과 알레멧과 그 들과 아나돗과 그 들을 주었으니 그 족속의 얻은 성이 모두 열 셋이었더라"
+      ],
+      "raw_text_hashes": [
+        "ee345236c236002a44eab93299179f5432a90f0935921bb323797ed0118f8e78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:61",
+      "sequence": 10516,
+      "chapter_label": "1CH 6",
+      "verse_label": "61",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 61
+        }
+      ],
+      "en": "To the rest of the sons of Kohath were given by lot, out of the family of the tribe, out of the half-tribe, the half of Manasseh, ten cities.",
+      "ko": "그핫 자손의 남은 자에게는 므낫세 반 지파 족속 중에서 제비 뽑아 열 성을 주었고",
+      "source_text_hash": "4ea1e209836823c73189e4091d797e7b57a929fb037e87373c21a9ab5e572805",
+      "translation_text_hash": "b2ff8056395fa3b3122b5ebf8857b11a31e719a1c4dc3c93a5d5f734ed7d5d0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 자손의 남은 자에게는 므낫세 반 지파 족속 중에서 제비 뽑아 열 성을 주었고"
+      ],
+      "raw_text_hashes": [
+        "b2ff8056395fa3b3122b5ebf8857b11a31e719a1c4dc3c93a5d5f734ed7d5d0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:62",
+      "sequence": 10517,
+      "chapter_label": "1CH 6",
+      "verse_label": "62",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 62
+        }
+      ],
+      "en": "To the sons of Gershom, according to their families, out of the tribe of Issachar, and out of the tribe of Asher, and out of the tribe of Naphtali, and out of the tribe of Manasseh in Bashan, thirteen cities.",
+      "ko": "게르손 자손에게는 그 족속대로 잇사갈 지파와 아셀 지파와 납달리 지파와 바산에 있는 므낫세 지파 중에서 열 세 성을 주었고",
+      "source_text_hash": "6a0da8e69e7315b55393756daae60ade65251c943f28148b7d122b0ca3c8d237",
+      "translation_text_hash": "5f3af6d2b6ad0c6a289e864ac357f68086b2c90d759f5a4e37c9ec410e40e5f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손에게는 그 족속대로 잇사갈 지파와 아셀 지파와 납달리 지파와 바산에 있는 므낫세 지파 중에서 열 세 성을 주었고"
+      ],
+      "raw_text_hashes": [
+        "5f3af6d2b6ad0c6a289e864ac357f68086b2c90d759f5a4e37c9ec410e40e5f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:63",
+      "sequence": 10518,
+      "chapter_label": "1CH 6",
+      "verse_label": "63",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 63
+        }
+      ],
+      "en": "To the sons of Merari were given by lot, according to their families, out of the tribe of Reuben, and out of the tribe of Gad, and out of the tribe of Zebulun, twelve cities.",
+      "ko": "므라리 자손에게는 그 족속대로 르우벤 지파와 갓 지파와 스불론 지파 중에서 제비 뽑아 열 두 성을 주었더라",
+      "source_text_hash": "a4cf41f31d11909e45bc99723810a76e500a5f5d9d016e992912f10f73f7a204",
+      "translation_text_hash": "c2ca1bece7a765d4b17b1ada94f301e553a98323851d4121404cef26607f8be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손에게는 그 족속대로 르우벤 지파와 갓 지파와 스불론 지파 중에서 제비 뽑아 열 두 성을 주었더라"
+      ],
+      "raw_text_hashes": [
+        "c2ca1bece7a765d4b17b1ada94f301e553a98323851d4121404cef26607f8be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:64",
+      "sequence": 10519,
+      "chapter_label": "1CH 6",
+      "verse_label": "64",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 64
+        }
+      ],
+      "en": "The children of Israel gave to the Levites the cities with their pasture lands.",
+      "ko": "이스라엘 자손이 이 모든 성과 그 들을 레위 자손에게 주되",
+      "source_text_hash": "68774a6267e9371a71d52bd107973e8a336fe54ec5477405abe9d0a4626c8243",
+      "translation_text_hash": "c7116b78c7e3ccd47b3180cb503b4e426cee7cb1436dcecbaa11cfc60ab220eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 이 모든 성과 그 들을 레위 자손에게 주되"
+      ],
+      "raw_text_hashes": [
+        "c7116b78c7e3ccd47b3180cb503b4e426cee7cb1436dcecbaa11cfc60ab220eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:65",
+      "sequence": 10520,
+      "chapter_label": "1CH 6",
+      "verse_label": "65",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 65
+        }
+      ],
+      "en": "They gave by lot out of the tribe of the children of Judah, and out of the tribe of the children of Simeon, and out of the tribe of the children of Benjamin, these cities which are mentioned by name.",
+      "ko": "유다 자손의 지파와 시므온 자손의 지파와 베냐민 자손의 지파 중에서 이 위에 기록한 여러 성을 제비 뽑아 주었더라",
+      "source_text_hash": "8104a25a9cd47002ac92f75df2924e46cd9422db8aa22855ba702ef637f1a5a7",
+      "translation_text_hash": "3cfec40e56aa594394941346e916341805c3749b237bddac01745a48e8d04aa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손의 지파와 시므온 자손의 지파와 베냐민 자손의 지파 중에서 이 위에 기록한 여러 성을 제비 뽑아 주었더라"
+      ],
+      "raw_text_hashes": [
+        "3cfec40e56aa594394941346e916341805c3749b237bddac01745a48e8d04aa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:66",
+      "sequence": 10521,
+      "chapter_label": "1CH 6",
+      "verse_label": "66",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 66
+        }
+      ],
+      "en": "Some of the families of the sons of Kohath had cities of their borders out of the tribe of Ephraim.",
+      "ko": "그핫 자손의 몇 족속은 에브라임 지파 중에서 성을 얻어 영지를 삼았으며",
+      "source_text_hash": "cb4c26fb700b1212f2f425eccfe1de14e830a600fb94d7ccec212316883acb87",
+      "translation_text_hash": "8f6c4e1d243315f99610d43d6a70fc187102c4e20f8e99ddfdd05af7756648ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 자손의 몇 족속은 에브라임 지파 중에서 성을 얻어 영지를 삼았으며"
+      ],
+      "raw_text_hashes": [
+        "8f6c4e1d243315f99610d43d6a70fc187102c4e20f8e99ddfdd05af7756648ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:67",
+      "sequence": 10522,
+      "chapter_label": "1CH 6",
+      "verse_label": "67",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 67
+        }
+      ],
+      "en": "They gave to them the cities of refuge, Shechem in the hill country of Ephraim with its pasture lands and Gezer with its pasture lands,",
+      "ko": "또 저희에게 도피성을 주었으니 에브라임 산중 세겜과 그 들과 게셀과 그 들과",
+      "source_text_hash": "d4e4bdcaf845f5635399515182c3b5f6f334b7c9ce51c0319539c9383ef15d02",
+      "translation_text_hash": "c7f94640ff721906a9f840841dab96131b71fa643ee4e2d84256b86c7b4dde54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희에게 도피성을 주었으니 에브라임 산중 세겜과 그 들과 게셀과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "c7f94640ff721906a9f840841dab96131b71fa643ee4e2d84256b86c7b4dde54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:68",
+      "sequence": 10523,
+      "chapter_label": "1CH 6",
+      "verse_label": "68",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 68
+        }
+      ],
+      "en": "Jokmeam with its pasture lands, Beth Horon with its pasture lands,",
+      "ko": "욕므암과 그 들과 벧호론과 그 들과",
+      "source_text_hash": "4b6aa276786d4078807f893dc183eb757084ef3c57f48731833786d061905e35",
+      "translation_text_hash": "934c6a36c8f7e07d25e72e392f6ebf9949fbb42603b9c6e10023e40b5d4dad56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욕므암과 그 들과 벧호론과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "934c6a36c8f7e07d25e72e392f6ebf9949fbb42603b9c6e10023e40b5d4dad56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:69",
+      "sequence": 10524,
+      "chapter_label": "1CH 6",
+      "verse_label": "69",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 69
+        }
+      ],
+      "en": "Aijalon with its pasture lands, Gath Rimmon with its pasture lands;",
+      "ko": "아얄론과 그 들과 가드림몬과 그 들이며",
+      "source_text_hash": "6254d1577ad2c6b8151f9e43d0c87b2c81bc29ddd437f2eed8d9fa692c9de2ad",
+      "translation_text_hash": "0059974df6ea00336dbb2c89e343df61284b07d49cbce22836a9ec00a2e3cb7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아얄론과 그 들과 가드림몬과 그 들이며"
+      ],
+      "raw_text_hashes": [
+        "0059974df6ea00336dbb2c89e343df61284b07d49cbce22836a9ec00a2e3cb7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:70",
+      "sequence": 10525,
+      "chapter_label": "1CH 6",
+      "verse_label": "70",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 70
+        }
+      ],
+      "en": "and out of the half-tribe of Manasseh, Aner with its pasture lands, and Bileam with its pasture lands, for the rest of the family of the sons of Kohath.",
+      "ko": "또 그핫 자손의 남은 족속에게는 므낫세 반 지파 중에서 아넬과 그 들과 빌르암과 그 들을 주었더라",
+      "source_text_hash": "1bcd2e2ce260edc50e9fbf9c08ec4230588f76dd27397a42859389c5f26d451c",
+      "translation_text_hash": "27cf219a5586398a907c0e8998839edb465360141ce4e7f6494a61b31ea5ac8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그핫 자손의 남은 족속에게는 므낫세 반 지파 중에서 아넬과 그 들과 빌르암과 그 들을 주었더라"
+      ],
+      "raw_text_hashes": [
+        "27cf219a5586398a907c0e8998839edb465360141ce4e7f6494a61b31ea5ac8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:71",
+      "sequence": 10526,
+      "chapter_label": "1CH 6",
+      "verse_label": "71",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 71
+        }
+      ],
+      "en": "To the sons of Gershom were given, out of the family of the half-tribe of Manasseh, Golan in Bashan with its pasture lands, and Ashtaroth with its pasture lands;",
+      "ko": "게르손 자손에게는 므낫세 반 지파 족속 중에서 바산의 골란과 그 들과 아스다롯과 그 들을 주었고",
+      "source_text_hash": "6753b1f2c7f4c62a92be726af3ddff0794eb76385a6dfb8509fd04bcb77ae987",
+      "translation_text_hash": "e96f4ca3a0f307950129432be2fa847bb7ff9b67a9423135d742f5a6d3c6e289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손에게는 므낫세 반 지파 족속 중에서 바산의 골란과 그 들과 아스다롯과 그 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "e96f4ca3a0f307950129432be2fa847bb7ff9b67a9423135d742f5a6d3c6e289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:72",
+      "sequence": 10527,
+      "chapter_label": "1CH 6",
+      "verse_label": "72",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 72
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 72
+        }
+      ],
+      "en": "and out of the tribe of Issachar, Kedesh with its pasture lands, Daberath with its pasture lands,",
+      "ko": "또 잇사갈 지파 중에서 게데스와 그 들과 다브랏과 그 들과",
+      "source_text_hash": "a79d962c8ad66d86f9cb25c5b06eb4fe9e6b8db7331ca9e6f7186098028cf25e",
+      "translation_text_hash": "6e0035ebbbf8c5a29567b43e5fca4ad4977e903e10d4b884ccceffd71468ab41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 잇사갈 지파 중에서 게데스와 그 들과 다브랏과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "6e0035ebbbf8c5a29567b43e5fca4ad4977e903e10d4b884ccceffd71468ab41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:73",
+      "sequence": 10528,
+      "chapter_label": "1CH 6",
+      "verse_label": "73",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 73
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 73
+        }
+      ],
+      "en": "Ramoth with its pasture lands, and Anem with its pasture lands;",
+      "ko": "라못과 그 들과 아넴과 그 들을 주었고",
+      "source_text_hash": "1c4c1fc81b85315a093086f0ff7036c81536596f715c8e6ad7cafefc17f43837",
+      "translation_text_hash": "882f13d072220398678ab9f67416bd0a6f344f7a991e2e8581a824fd023089fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라못과 그 들과 아넴과 그 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "882f13d072220398678ab9f67416bd0a6f344f7a991e2e8581a824fd023089fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:74",
+      "sequence": 10529,
+      "chapter_label": "1CH 6",
+      "verse_label": "74",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 74
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 74
+        }
+      ],
+      "en": "and out of the tribe of Asher, Mashal with its pasture lands, Abdon with its pasture lands,",
+      "ko": "아셀 지파 중에서 마살과 그 들과 압돈과 그 들과",
+      "source_text_hash": "f8a0eaeb7256f6818b3f5332ee45f023a7b5672d08ca7581d3638e1ee292c951",
+      "translation_text_hash": "3c359a326e5202ac0db2ce7dc6f1bebe1d3eea91ccd6dbf376572f6275fd8fb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지파 중에서 마살과 그 들과 압돈과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "3c359a326e5202ac0db2ce7dc6f1bebe1d3eea91ccd6dbf376572f6275fd8fb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:75",
+      "sequence": 10530,
+      "chapter_label": "1CH 6",
+      "verse_label": "75",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 75
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 75
+        }
+      ],
+      "en": "Hukok with its pasture lands, and Rehob with its pasture lands;",
+      "ko": "후곡과 그 들과 르홉과 그 들을 주었고",
+      "source_text_hash": "b8275e80691659fa486b1e482048ff951b85f8d6a0f034ab3288ff3157488b01",
+      "translation_text_hash": "69632888caecb14e509d51a4e1c82fba3674d161125083fe4df3d6efd18aa886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후곡과 그 들과 르홉과 그 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "69632888caecb14e509d51a4e1c82fba3674d161125083fe4df3d6efd18aa886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:76",
+      "sequence": 10531,
+      "chapter_label": "1CH 6",
+      "verse_label": "76",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 76
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 76
+        }
+      ],
+      "en": "and out of the tribe of Naphtali, Kedesh in Galilee with its pasture lands, Hammon with its pasture lands, and Kiriathaim with its pasture lands.",
+      "ko": "납달리 지파 중에서 갈릴리의 게데스와 그 들과 함몬과 그 들과 기랴다임과 그 들을 주었더라",
+      "source_text_hash": "acd2a1a3e5d7e0626b774dd614eabeda8b0467182d40bb5832a7eb70791d4192",
+      "translation_text_hash": "526fbf23087a7cadf33a8216fe9255287078881bc6988043977215280b395e2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 지파 중에서 갈릴리의 게데스와 그 들과 함몬과 그 들과 기랴다임과 그 들을 주었더라"
+      ],
+      "raw_text_hashes": [
+        "526fbf23087a7cadf33a8216fe9255287078881bc6988043977215280b395e2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:77",
+      "sequence": 10532,
+      "chapter_label": "1CH 6",
+      "verse_label": "77",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 77
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 77
+        }
+      ],
+      "en": "To the rest of the Levites, the sons of Merari, were given, out of the tribe of Zebulun, Rimmono with its pasture lands, and Tabor with its pasture lands;",
+      "ko": "므라리 자손의 남은 자에게는 스불론 지파 중에서 림모노와 그 들과 다볼과 그 들을 주었고",
+      "source_text_hash": "cc6584f810697f5b1ab1b45f5cc212a5e2681e242202d58a8d468fc2cde74381",
+      "translation_text_hash": "00b42727ebb445d77575d9e41065d52e56e13200c31debe932e441ccc07b828e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손의 남은 자에게는 스불론 지파 중에서 림모노와 그 들과 다볼과 그 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "00b42727ebb445d77575d9e41065d52e56e13200c31debe932e441ccc07b828e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:78",
+      "sequence": 10533,
+      "chapter_label": "1CH 6",
+      "verse_label": "78",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 78
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 78
+        }
+      ],
+      "en": "and beyond the Jordan at Jericho, on the east side of the Jordan, were given them out of the tribe of Reuben: Bezer in the wilderness with its pasture lands, Jahzah with its pasture lands,",
+      "ko": "또 요단 건너 동편 곧 여리고 맞은편 르우벤 지파 중에서 광야의 베셀과 그 들과 야사와 그 들과",
+      "source_text_hash": "8fddbfbf403b9f92481a472c6f2f0cb0d2719091e4b066a2333476e36d8e8f15",
+      "translation_text_hash": "15d95e0b27fd8bcba6b86262ad403486edfee4d7ddbe9e5595d2f8b366814684",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 요단 건너 동편 곧 여리고 맞은편 르우벤 지파 중에서 광야의 베셀과 그 들과 야사와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "15d95e0b27fd8bcba6b86262ad403486edfee4d7ddbe9e5595d2f8b366814684"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:79",
+      "sequence": 10534,
+      "chapter_label": "1CH 6",
+      "verse_label": "79",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 79
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 79
+        }
+      ],
+      "en": "Kedemoth with its pasture lands, and Mephaath with its pasture lands;",
+      "ko": "그데못과 그 들과 메바앗과 그 들을 주었고",
+      "source_text_hash": "2583c038d3d6a389be756d575eab2bc93e933bd8c140cfd7b363d7864373b61b",
+      "translation_text_hash": "46c448298b4304395979522199120625ca866bf4094a7889f82ce25f415d9f38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그데못과 그 들과 메바앗과 그 들을 주었고"
+      ],
+      "raw_text_hashes": [
+        "46c448298b4304395979522199120625ca866bf4094a7889f82ce25f415d9f38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:80",
+      "sequence": 10535,
+      "chapter_label": "1CH 6",
+      "verse_label": "80",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 80
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 80
+        }
+      ],
+      "en": "and out of the tribe of Gad, Ramoth in Gilead with its pasture lands, Mahanaim with its pasture lands,",
+      "ko": "또 갓 지파 중에서 길르앗의 라못과 그 들과 마하나임과 그 들과",
+      "source_text_hash": "f1296a0b795efc2afcf00dfd0d9f9c2f892fccddbe63159992494be149c616e0",
+      "translation_text_hash": "b6759e4be1d9e3ff10cc72728cd965e764e6220721974784dd4a14474e29d772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 갓 지파 중에서 길르앗의 라못과 그 들과 마하나임과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "b6759e4be1d9e3ff10cc72728cd965e764e6220721974784dd4a14474e29d772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:6:81",
+      "sequence": 10536,
+      "chapter_label": "1CH 6",
+      "verse_label": "81",
+      "locator": {
+        "book": "1CH",
+        "chapter": 6,
+        "verse": 81
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 6,
+          "verse": 81
+        }
+      ],
+      "en": "Heshbon with its pasture lands, and Jazer with its pasture lands.",
+      "ko": "헤스본과 그 들과 야셀과 그 들을 주었더라",
+      "source_text_hash": "f968f3a224506a7e084c7e02304dbe0528effe79bbb99af807752470eec4cf5e",
+      "translation_text_hash": "93951075616251896e6dd4249b3d892e52b04e6f20e9486a79eab02af29ed69b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본과 그 들과 야셀과 그 들을 주었더라"
+      ],
+      "raw_text_hashes": [
+        "93951075616251896e6dd4249b3d892e52b04e6f20e9486a79eab02af29ed69b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:095",
+  "unit_ordinal": 573,
+  "unit_label": "PSA 95",
+  "book_code": "PSA",
+  "chapter_number": 95,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:95:1",
+      "sequence": 15456,
+      "chapter_label": "PSA 95",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 1
+        }
+      ],
+      "en": "Oh come, let’s sing to the LORD. Let’s shout aloud to the rock of our salvation!",
+      "ko": "오라 우리가 여호와께 노래하며 우리 구원의 반석을 향하여 즐거이 부르자",
+      "source_text_hash": "d58b067a4afba30295249eaee9b186914f516bea124057798adb8bc50b93a5ac",
+      "translation_text_hash": "a3b966aff74ca86611e01b7eb2d55438d867e5ce60bae6456729434a2d751de5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오라 우리가 여호와께 노래하며 우리 구원의 반석을 향하여 즐거이 부르자"
+      ],
+      "raw_text_hashes": [
+        "a3b966aff74ca86611e01b7eb2d55438d867e5ce60bae6456729434a2d751de5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:2",
+      "sequence": 15457,
+      "chapter_label": "PSA 95",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 2
+        }
+      ],
+      "en": "Let’s come before his presence with thanksgiving. Let’s extol him with songs!",
+      "ko": "우리가 감사함으로 그 앞에 나아가며 시로 그를 향하여 즐거이 부르자",
+      "source_text_hash": "5cdd4587a57fc123633ac8d1cfff002614260c02b8949d98f8b89fcb5b2f6c0e",
+      "translation_text_hash": "baaf9c153cedd7367abb5688e195bc69ee9899ec8862a7285b9448d1cebecd01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 감사함으로 그 앞에 나아가며 시로 그를 향하여 즐거이 부르자"
+      ],
+      "raw_text_hashes": [
+        "baaf9c153cedd7367abb5688e195bc69ee9899ec8862a7285b9448d1cebecd01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:3",
+      "sequence": 15458,
+      "chapter_label": "PSA 95",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 3
+        }
+      ],
+      "en": "For the LORD is a great God, a great King above all gods.",
+      "ko": "대저 여호와는 크신 하나님이시요 모든 신 위에 크신 왕이시로다",
+      "source_text_hash": "ddddef3467973085a675786a7b8c7db9a43c1a0df535ee41cf0a9e8c55ac62e2",
+      "translation_text_hash": "c0678b804af4d84cd561f224d510aa0bfddfcadb1b9413b430907a0dd5f00dd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와는 크신 하나님이시요 모든 신 위에 크신 왕이시로다"
+      ],
+      "raw_text_hashes": [
+        "c0678b804af4d84cd561f224d510aa0bfddfcadb1b9413b430907a0dd5f00dd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:4",
+      "sequence": 15459,
+      "chapter_label": "PSA 95",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 4
+        }
+      ],
+      "en": "In his hand are the deep places of the earth. The heights of the mountains are also his.",
+      "ko": "땅의 깊은 곳이 그 위에 있으며 산들의 높은 것도 그의 것이로다",
+      "source_text_hash": "b741d9febdab5c2bfc2382946d15ba8b7b49c1a89617949c342171345ea2ed99",
+      "translation_text_hash": "992e0f536cbbc87795d49f45fbc3de83b9871f5feb399695bad49db5d4b1977b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 깊은 곳이 그 위에 있으며 산들의 높은 것도 그의 것이로다"
+      ],
+      "raw_text_hashes": [
+        "992e0f536cbbc87795d49f45fbc3de83b9871f5feb399695bad49db5d4b1977b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:5",
+      "sequence": 15460,
+      "chapter_label": "PSA 95",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 5
+        }
+      ],
+      "en": "The sea is his, and he made it. His hands formed the dry land.",
+      "ko": "바다가 그의 것이라 그가 만드셨고 육지도 그의 손이 지으셨도다",
+      "source_text_hash": "c377cae77954e1c0d306b73013d1c0a5bdcf9e3b4a7cf807e2fd6b29ec160c86",
+      "translation_text_hash": "e66eaac6074b15fd716af48ae41697fa28e9f4012500861c892fcb36161e0a69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다가 그의 것이라 그가 만드셨고 육지도 그의 손이 지으셨도다"
+      ],
+      "raw_text_hashes": [
+        "e66eaac6074b15fd716af48ae41697fa28e9f4012500861c892fcb36161e0a69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:6",
+      "sequence": 15461,
+      "chapter_label": "PSA 95",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 6
+        }
+      ],
+      "en": "Oh come, let’s worship and bow down. Let’s kneel before the LORD, our Maker,",
+      "ko": "오라 우리가 굽혀 경배하며 우리를 지으신 여호와 앞에 무릎을 꿇자",
+      "source_text_hash": "fd289b848750844fb337f59536f6a00902438542a74a592db1576d3b22ed730a",
+      "translation_text_hash": "db9ee54e4be11fc45658054516e75417973434edc3f077c03725eec9443a9951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오라 우리가 굽혀 경배하며 우리를 지으신 여호와 앞에 무릎을 꿇자"
+      ],
+      "raw_text_hashes": [
+        "db9ee54e4be11fc45658054516e75417973434edc3f077c03725eec9443a9951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:7",
+      "sequence": 15462,
+      "chapter_label": "PSA 95",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 7
+        }
+      ],
+      "en": "for he is our God. We are the people of his pasture, and the sheep in his care. Today, oh that you would hear his voice!",
+      "ko": "대저 저는 우리 하나님이시요 우리는 그의 기르시는 백성이며 그 손의 양이라 너희가 오늘날 그 음성 듣기를 원하노라",
+      "source_text_hash": "381c97dfcfd1788aa75c3a648aea80f6bf7f3ab0a7c575542e0e4028d2736c2f",
+      "translation_text_hash": "74763563f9e248a615cf519132fc2afa7b1cd4d70ccc30ee4d7ec6e7cb0efd97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 저는 우리 하나님이시요 우리는 그의 기르시는 백성이며 그 손의 양이라 너희가 오늘날 그 음성 듣기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "74763563f9e248a615cf519132fc2afa7b1cd4d70ccc30ee4d7ec6e7cb0efd97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:8",
+      "sequence": 15463,
+      "chapter_label": "PSA 95",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 8
+        }
+      ],
+      "en": "Don’t harden your heart, as at Meribah, as in the day of Massah in the wilderness,",
+      "ko": "이르시기를 너희는 므리바에서와 같이 또 광야 맛사의 날과 같이 너희 마음을 강퍅하게 말찌어다",
+      "source_text_hash": "5da5d58af93e0ec26037b0501ea151c8bfc4e7bdc6e00c72d78732fbc7387368",
+      "translation_text_hash": "d0824dead92028efa1af5a598b05d957c4c821d10e7f2ba0b55baa0de3067dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 너희는 므리바에서와 같이 또 광야 맛사의 날과 같이 너희 마음을 강퍅하게 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "d0824dead92028efa1af5a598b05d957c4c821d10e7f2ba0b55baa0de3067dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:9",
+      "sequence": 15464,
+      "chapter_label": "PSA 95",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 9
+        }
+      ],
+      "en": "when your fathers tempted me, tested me, and saw my work.",
+      "ko": "그 때에 너희 열조가 나를 시험하며 나를 탐지하고 나의 행사를 보았도다",
+      "source_text_hash": "9d5f179f14b6982a37edf8fa6a76f1f1cb62e5c5cc15e8a0f641aa77536a4e88",
+      "translation_text_hash": "16db0b76f725b4d6d93181c41f2fa05379fec5ea3189725a1b46df24398e305b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희 열조가 나를 시험하며 나를 탐지하고 나의 행사를 보았도다"
+      ],
+      "raw_text_hashes": [
+        "16db0b76f725b4d6d93181c41f2fa05379fec5ea3189725a1b46df24398e305b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:10",
+      "sequence": 15465,
+      "chapter_label": "PSA 95",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 10
+        }
+      ],
+      "en": "Forty long years I was grieved with that generation, and said, “They are a people who err in their heart. They have not known my ways.”",
+      "ko": "내가 사십년을 그 세대로 인하여 근심하여 이르기를 저희는 마음이 미혹된 백성이라 내 도를 알지 못한다 하였도다",
+      "source_text_hash": "015b92c9087a95e530295ddf515028afb2a5d7392fa656e0adb3b20142e6da8f",
+      "translation_text_hash": "f3d2bca950099168b52a8ec963402fbca8429cb0e4800810fdd65d265ec73126",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사십년을 그 세대로 인하여 근심하여 이르기를 저희는 마음이 미혹된 백성이라 내 도를 알지 못한다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "f3d2bca950099168b52a8ec963402fbca8429cb0e4800810fdd65d265ec73126"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:95:11",
+      "sequence": 15466,
+      "chapter_label": "PSA 95",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 95,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 95,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore I swore in my wrath, “They won’t enter into my rest.”",
+      "ko": "그러므로 내가 노하여 맹세하기를 저희는 내 안식에 들어오지 못하리라 하였도다",
+      "source_text_hash": "d31e3f959c141c71f83cabf719db8b4110176ed751a4969b5097313f7a10fab2",
+      "translation_text_hash": "cffaeace2c26eb1c314606d3067b8287135d03a33d778754a5ac4fc2da875fcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 노하여 맹세하기를 저희는 내 안식에 들어오지 못하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "cffaeace2c26eb1c314606d3067b8287135d03a33d778754a5ac4fc2da875fcb"
+      ]
+    }
+  ]
+}

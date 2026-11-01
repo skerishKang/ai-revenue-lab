@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:018",
+  "unit_ordinal": 68,
+  "unit_label": "EXO 18",
+  "book_code": "EXO",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:18:1",
+      "sequence": 2001,
+      "chapter_label": "EXO 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "Now Jethro, the priest of Midian, Moses’ father-in-law, heard of all that God had done for Moses and for Israel his people, how the LORD had brought Israel out of Egypt.",
+      "ko": "모세의 장인 미디안 제사장 이드로가 하나님이 모세에게와 자기 백성 이스라엘에게 하신 일 곧 여호와께서 이스라엘을 애굽에서 인도하여 내신 모든 일을 들으니라",
+      "source_text_hash": "01fd3f8928dd1d79c877c111f0bd546822cc750340e0bf0b1a64b7b162ec2ed9",
+      "translation_text_hash": "8279e53fa988b055729b318d47612a22e9f1d699621f8c0d37c4137eb6dcf9d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인 미디안 제사장 이드로가 하나님이 모세에게와 자기 백성 이스라엘에게 하신 일 곧 여호와께서 이스라엘을 애굽에서 인도하여 내신 모든 일을 들으니라"
+      ],
+      "raw_text_hashes": [
+        "8279e53fa988b055729b318d47612a22e9f1d699621f8c0d37c4137eb6dcf9d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:2",
+      "sequence": 2002,
+      "chapter_label": "EXO 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "Jethro, Moses’ father-in-law, received Zipporah, Moses’ wife, after he had sent her away,",
+      "ko": "모세의 장인 이드로가 모세가 돌려 보내었던 그의 아내 십보라와",
+      "source_text_hash": "e64f3e827776b565c496321307c0bd9985689645745931cd2ccb831cd6d7e908",
+      "translation_text_hash": "1f13ab807c863c74135ca046124852e31f6d2fa80ae424a397277ca248c30280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인 이드로가 모세가 돌려 보내었던 그의 아내 십보라와"
+      ],
+      "raw_text_hashes": [
+        "1f13ab807c863c74135ca046124852e31f6d2fa80ae424a397277ca248c30280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:3",
+      "sequence": 2003,
+      "chapter_label": "EXO 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "and her two sons. The name of one son was Gershom, for Moses said, “I have lived as a foreigner in a foreign land”.",
+      "ko": "그 두 아들을 데렸으니 그 하나의 이름은 게르솜이라 이는 모세가 이르기를 내가 이방에서 객이 되었다 함이요",
+      "source_text_hash": "c44d9561756415dfdfb8b251cc0df81da59d1585baf27353865a44d8cfb8d043",
+      "translation_text_hash": "2008f36c66884e58736b13ae9f444aad25b796996d2afc1f8b6807b76245a7ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 아들을 데렸으니 그 하나의 이름은 게르솜이라 이는 모세가 이르기를 내가 이방에서 객이 되었다 함이요"
+      ],
+      "raw_text_hashes": [
+        "2008f36c66884e58736b13ae9f444aad25b796996d2afc1f8b6807b76245a7ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:4",
+      "sequence": 2004,
+      "chapter_label": "EXO 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "The name of the other was Eliezer, for he said, “My father’s God was my help and delivered me from Pharaoh’s sword.”",
+      "ko": "하나의 이름은 엘리에셀이라 이는 내 아버지의 하나님이 나를 도우사 바로의 칼에서 구원하셨다 함이더라",
+      "source_text_hash": "95cf001de6be0ba224f8006a77f212819af25c43a37f9c935ceca6cd5e3e3445",
+      "translation_text_hash": "ee737f82afd4fea03d3ce05f054e45e9624fe61d314232b2986297903108f69e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나의 이름은 엘리에셀이라 이는 내 아버지의 하나님이 나를 도우사 바로의 칼에서 구원하셨다 함이더라"
+      ],
+      "raw_text_hashes": [
+        "ee737f82afd4fea03d3ce05f054e45e9624fe61d314232b2986297903108f69e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:5",
+      "sequence": 2005,
+      "chapter_label": "EXO 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "Jethro, Moses’ father-in-law, came with Moses’ sons and his wife to Moses into the wilderness where he was encamped, at the Mountain of God.",
+      "ko": "모세의 장인 이드로가 모세의 아들들과 그 아내로 더불어 광야에 들어와 모세에게 이르니 곧 모세가 하나님의 산에 진 친 곳이라",
+      "source_text_hash": "2b1c75601df54d8619beef70691a3808f7e1ed3b0e84aeacefc9f9d7aef028e9",
+      "translation_text_hash": "93ae08b42fe6019f10e166bb1d0188fce517d4a7c6efad09275412da5dc58bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인 이드로가 모세의 아들들과 그 아내로 더불어 광야에 들어와 모세에게 이르니 곧 모세가 하나님의 산에 진 친 곳이라"
+      ],
+      "raw_text_hashes": [
+        "93ae08b42fe6019f10e166bb1d0188fce517d4a7c6efad09275412da5dc58bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:6",
+      "sequence": 2006,
+      "chapter_label": "EXO 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "He said to Moses, “I, your father-in-law Jethro, have come to you with your wife, and her two sons with her.”",
+      "ko": "그가 모세에게 전언하되 그대의 장인 나 이드로가 그대의 아내와 그와 함께한 그 두 아들로 더불어 그대에게 왔노라",
+      "source_text_hash": "1c1c9f14c5c17817fade8e8e28bf072ef572cb90602b2c60817d13265f32f061",
+      "translation_text_hash": "ccba9d780bac4e94a81e16a53216207f9f5217bd4f0aacc267069d0c9d1768f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 모세에게 전언하되 그대의 장인 나 이드로가 그대의 아내와 그와 함께한 그 두 아들로 더불어 그대에게 왔노라"
+      ],
+      "raw_text_hashes": [
+        "ccba9d780bac4e94a81e16a53216207f9f5217bd4f0aacc267069d0c9d1768f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:7",
+      "sequence": 2007,
+      "chapter_label": "EXO 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "Moses went out to meet his father-in-law, and bowed and kissed him. They asked each other of their welfare, and they came into the tent.",
+      "ko": "모세가 나가서 그 장인을 맞아 절하고 그에게 입맞추고 그들이 서로 문안하고 함께 장막에 들어가서",
+      "source_text_hash": "eae5d1672ecc8317b703f6517f63d1a49f6edff0761a5d266d174203f3a9b151",
+      "translation_text_hash": "05d6bbcb575b6d4b92b0f29e6c3af23eb41dcff96677d5f52722051f183ae3cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 나가서 그 장인을 맞아 절하고 그에게 입맞추고 그들이 서로 문안하고 함께 장막에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "05d6bbcb575b6d4b92b0f29e6c3af23eb41dcff96677d5f52722051f183ae3cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:8",
+      "sequence": 2008,
+      "chapter_label": "EXO 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Moses told his father-in-law all that the LORD had done to Pharaoh and to the Egyptians for Israel’s sake, all the hardships that had come on them on the way, and how the LORD delivered them.",
+      "ko": "모세가 여호와께서 이스라엘을 위하여 바로와 애굽 사람에게 행하신 모든 일과 길에서 그들의 당한 모든 고난과 여호와께서 그들을 구원하신 일을 다 그 장인에게 고하매",
+      "source_text_hash": "66c23908427af4fa01b1bcdf6b145a552cea8b313d62f8f42582eb415fb24582",
+      "translation_text_hash": "5ca2cb633835723efae070a97588e3ceda37631b57cad6a566613df21e600fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께서 이스라엘을 위하여 바로와 애굽 사람에게 행하신 모든 일과 길에서 그들의 당한 모든 고난과 여호와께서 그들을 구원하신 일을 다 그 장인에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "5ca2cb633835723efae070a97588e3ceda37631b57cad6a566613df21e600fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:9",
+      "sequence": 2009,
+      "chapter_label": "EXO 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "Jethro rejoiced for all the goodness which the LORD had done to Israel, in that he had delivered them out of the hand of the Egyptians.",
+      "ko": "이드로가 여호와께서 이스라엘에게 모든 은혜를 베푸사 애굽 사람의 손에서 구원하심을 기뻐하여",
+      "source_text_hash": "9c044e2a54ab01f4cb4e49026f2845fec12b575ee6a5ebf4a50a4278cfd2cc96",
+      "translation_text_hash": "443e840e5866f795fc92967a52c00d5e7ccfd3d314ca561c58e273aa5fd7ac7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이드로가 여호와께서 이스라엘에게 모든 은혜를 베푸사 애굽 사람의 손에서 구원하심을 기뻐하여"
+      ],
+      "raw_text_hashes": [
+        "443e840e5866f795fc92967a52c00d5e7ccfd3d314ca561c58e273aa5fd7ac7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:10",
+      "sequence": 2010,
+      "chapter_label": "EXO 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "Jethro said, “Blessed be the LORD, who has delivered you out of the hand of the Egyptians, and out of the hand of Pharaoh; who has delivered the people from under the hand of the Egyptians.",
+      "ko": "가로되 여호와를 찬송하리로다 너희를 애굽 사람의 손에서와 바로의 손에서 건져내시고 백성을 애굽 사람의 손 밑에서 건지셨도다",
+      "source_text_hash": "db0f91d2252737be647c0df7d2275287e9399a0d4508775c43337562e3def0ec",
+      "translation_text_hash": "de34307329b0046fa51642d524a4b7a04fd06c2fae03a25f1bfec4acadfc5420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와를 찬송하리로다 너희를 애굽 사람의 손에서와 바로의 손에서 건져내시고 백성을 애굽 사람의 손 밑에서 건지셨도다"
+      ],
+      "raw_text_hashes": [
+        "de34307329b0046fa51642d524a4b7a04fd06c2fae03a25f1bfec4acadfc5420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:11",
+      "sequence": 2011,
+      "chapter_label": "EXO 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "Now I know that the LORD is greater than all gods because of the way that they treated people arrogantly.”",
+      "ko": "이제 내가 알았도다 여호와는 모든 신보다 크시므로 이스라엘에게 교만히 행하는 그들을 이기셨도다 하고",
+      "source_text_hash": "0ca5cd9d3a04445c2fc5e4b049712dda2ec5a0a171cd0b71931f011ecb4efa79",
+      "translation_text_hash": "919938ad20db20587aa8c7211026a85dd2e70d0236739b68a853e3e46cec9201",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 알았도다 여호와는 모든 신보다 크시므로 이스라엘에게 교만히 행하는 그들을 이기셨도다 하고"
+      ],
+      "raw_text_hashes": [
+        "919938ad20db20587aa8c7211026a85dd2e70d0236739b68a853e3e46cec9201"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:12",
+      "sequence": 2012,
+      "chapter_label": "EXO 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "Jethro, Moses’ father-in-law, took a burnt offering and sacrifices for God. Aaron came with all the elders of Israel, to eat bread with Moses’ father-in-law before God.",
+      "ko": "모세의 장인 이드로가 번제물과 희생을 하나님께 가져오매 아론과 이스라엘 모든 장로가 와서 모세의 장인과 함께 하나님 앞에서 떡을 먹으니라",
+      "source_text_hash": "cdcd0acc5b3bc33762718eea00696ed86412e07a9c4f18f6e439f90ecffdefd9",
+      "translation_text_hash": "4d108757b97be92658c565eaca6587ab0d567851fc18a85baf18516e0d6f72de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인 이드로가 번제물과 희생을 하나님께 가져오매 아론과 이스라엘 모든 장로가 와서 모세의 장인과 함께 하나님 앞에서 떡을 먹으니라"
+      ],
+      "raw_text_hashes": [
+        "4d108757b97be92658c565eaca6587ab0d567851fc18a85baf18516e0d6f72de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:13",
+      "sequence": 2013,
+      "chapter_label": "EXO 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "On the next day, Moses sat to judge the people, and the people stood around Moses from the morning to the evening.",
+      "ko": "이튿날에 모세가 백성을 재판하느라고 앉았고 백성은 아침부터 저녁까지 모세의 곁에 섰는지라",
+      "source_text_hash": "f0e693edbcfa33250144b603f8a4691ce015c6b651850c9662c3f9e7cd53a986",
+      "translation_text_hash": "0f8473e12c1465b975b7b77ba6720595fc850a39135d0da9df0fbe14d545fbe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 모세가 백성을 재판하느라고 앉았고 백성은 아침부터 저녁까지 모세의 곁에 섰는지라"
+      ],
+      "raw_text_hashes": [
+        "0f8473e12c1465b975b7b77ba6720595fc850a39135d0da9df0fbe14d545fbe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:14",
+      "sequence": 2014,
+      "chapter_label": "EXO 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "When Moses’ father-in-law saw all that he did to the people, he said, “What is this thing that you do for the people? Why do you sit alone, and all the people stand around you from morning to evening?”",
+      "ko": "모세의 장인이 모세가 백성에게 행하는 모든 일을 보고 가로되 그대가 이 백성에게 행하는 이 일이 어찜이뇨 어찌하여 그대는 홀로 앉았고 백성은 아침부터 저녁까지 그대의 곁에 섰느뇨",
+      "source_text_hash": "44eaae7d5f68ab35dd792a0389855825f7b31959df63fa759d384cf15dbebfcd",
+      "translation_text_hash": "e6c1346ea5a65e91c66f08bc5acf69fb273bc778d5797c6b7df14a84063d4409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인이 모세가 백성에게 행하는 모든 일을 보고 가로되 그대가 이 백성에게 행하는 이 일이 어찜이뇨 어찌하여 그대는 홀로 앉았고 백성은 아침부터 저녁까지 그대의 곁에 섰느뇨"
+      ],
+      "raw_text_hashes": [
+        "e6c1346ea5a65e91c66f08bc5acf69fb273bc778d5797c6b7df14a84063d4409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:15",
+      "sequence": 2015,
+      "chapter_label": "EXO 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Moses said to his father-in-law, “Because the people come to me to inquire of God.",
+      "ko": "모세가 그 장인에게 대답하되 백성이 하나님께 물으려고 내게로 옴이라",
+      "source_text_hash": "c7d03adf4459d442923fbbe9ff9487696245e275f458453d23341300201d0ca8",
+      "translation_text_hash": "bffd01f1e666421b205ea2c1c76e281bc913783f2956d826ce6d65adbc3b5c58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 장인에게 대답하되 백성이 하나님께 물으려고 내게로 옴이라"
+      ],
+      "raw_text_hashes": [
+        "bffd01f1e666421b205ea2c1c76e281bc913783f2956d826ce6d65adbc3b5c58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:16",
+      "sequence": 2016,
+      "chapter_label": "EXO 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "When they have a matter, they come to me, and I judge between a man and his neighbor, and I make them know the statutes of God, and his laws.”",
+      "ko": "그들이 일이 있으면 내게로 오나니 내가 그 양편을 판단하여 하나님의 율례와 법도를 알게 하나이다",
+      "source_text_hash": "99ec06a90c876dacb379d9f73465bb7933215bc1debfd6920529e2c224f9c2d2",
+      "translation_text_hash": "1fb8d261c668c1ee9062275176758ba5758670bfd154459810da37b353b6d17a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 일이 있으면 내게로 오나니 내가 그 양편을 판단하여 하나님의 율례와 법도를 알게 하나이다"
+      ],
+      "raw_text_hashes": [
+        "1fb8d261c668c1ee9062275176758ba5758670bfd154459810da37b353b6d17a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:17",
+      "sequence": 2017,
+      "chapter_label": "EXO 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "Moses’ father-in-law said to him, “The thing that you do is not good.",
+      "ko": "모세의 장인이 그에게 이르되 그대의 하는 것이 선하지 못하도다",
+      "source_text_hash": "a8a6bf8cbf5caf7c6cc3c182b71ff65c6677e1268f7b91b3e2534a2e5d051075",
+      "translation_text_hash": "737f47d03a1f1891bbc06625c53de94db7c6e3b814587060f94f00f9a74be3f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 장인이 그에게 이르되 그대의 하는 것이 선하지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "737f47d03a1f1891bbc06625c53de94db7c6e3b814587060f94f00f9a74be3f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:18",
+      "sequence": 2018,
+      "chapter_label": "EXO 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "You will surely wear away, both you, and this people that is with you; for the thing is too heavy for you. You are not able to perform it yourself alone.",
+      "ko": "그대와 그대와 함께 한 이 백성이 필연 기력이 쇠하리니 이 일이 그대에게 너무 중함이라 그대가 혼자 할 수 없으리라",
+      "source_text_hash": "156d82bf1803504e4c7a39523cd303cc92f446327bb332ff066603a13db5b085",
+      "translation_text_hash": "b2d25336809ba69d7fa1f387a36ca6adf17d3c489d0d7678822d24a3f498ceb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대와 그대와 함께 한 이 백성이 필연 기력이 쇠하리니 이 일이 그대에게 너무 중함이라 그대가 혼자 할 수 없으리라"
+      ],
+      "raw_text_hashes": [
+        "b2d25336809ba69d7fa1f387a36ca6adf17d3c489d0d7678822d24a3f498ceb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:19",
+      "sequence": 2019,
+      "chapter_label": "EXO 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "Listen now to my voice. I will give you counsel, and God be with you. You represent the people before God, and bring the causes to God.",
+      "ko": "이제 내 말을 들으라 내가 그대에게 방침을 가르치리니 하나님이 그대와 함께 계실찌로다 그대는 백성을 위하여 하나님 앞에 있어서 소송을 하나님께 베풀며",
+      "source_text_hash": "c4b322e0ea6c8877757d4e251dc2b8331b75b8c7ccade837c31c364654904b06",
+      "translation_text_hash": "de49570a6a096c19624f209273110a06ad365a48df377260c7b62f25c0a60de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내 말을 들으라 내가 그대에게 방침을 가르치리니 하나님이 그대와 함께 계실찌로다 그대는 백성을 위하여 하나님 앞에 있어서 소송을 하나님께 베풀며"
+      ],
+      "raw_text_hashes": [
+        "de49570a6a096c19624f209273110a06ad365a48df377260c7b62f25c0a60de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:20",
+      "sequence": 2020,
+      "chapter_label": "EXO 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "You shall teach them the statutes and the laws, and shall show them the way in which they must walk, and the work that they must do.",
+      "ko": "그들에게 율례와 법도를 가르쳐서 마땅히 갈 길과 할 일을 그들에게 보이고",
+      "source_text_hash": "c082c49273e2a634545a1386d2b4ab6d60f9c0fb65b8621d5ccd5e0ed309ad31",
+      "translation_text_hash": "9c978dbfcaaad8ac2bf7d31d20ce3c799a7252a6e06cd4240004e36d66b89e25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 율례와 법도를 가르쳐서 마땅히 갈 길과 할 일을 그들에게 보이고"
+      ],
+      "raw_text_hashes": [
+        "9c978dbfcaaad8ac2bf7d31d20ce3c799a7252a6e06cd4240004e36d66b89e25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:21",
+      "sequence": 2021,
+      "chapter_label": "EXO 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "Moreover you shall provide out of all the people able men which fear God: men of truth, hating unjust gain; and place such over them, to be rulers of thousands, rulers of hundreds, rulers of fifties, and rulers of tens.",
+      "ko": "그대는 또 온 백성 가운데서 재덕이 겸전한 자 곧 하나님을 두려워하며 진실무망하며 불의한 이를 미워하는 자를 빼서 백성 위에 세워 천부장과 백부장과 오십부장과 십부장을 삼아",
+      "source_text_hash": "f1c15c3bb81296562915a04ccbcaf07886ae8298f791fdff46b396a2b5e3ca9d",
+      "translation_text_hash": "3538e5d183ce6539fe699ac4e4bcd9566a21206599ed17cfdb627a84891cf23c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대는 또 온 백성 가운데서 재덕이 겸전한 자 곧 하나님을 두려워하며 진실무망하며 불의한 이를 미워하는 자를 빼서 백성 위에 세워 천부장과 백부장과 오십부장과 십부장을 삼아"
+      ],
+      "raw_text_hashes": [
+        "3538e5d183ce6539fe699ac4e4bcd9566a21206599ed17cfdb627a84891cf23c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:22",
+      "sequence": 2022,
+      "chapter_label": "EXO 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "Let them judge the people at all times. It shall be that every great matter they shall bring to you, but every small matter they shall judge themselves. So shall it be easier for you, and they shall share the load with you.",
+      "ko": "그들로 때를 따라 백성을 재판하게 하라 무릇 큰 일이면 그대에게 베풀 것이고 무릇 작은 일이면 그들이 스스로 재판할 것이니 그리하면 그들이 그대와 함께 담당할 것인즉 일이 그대에게 쉬우리라",
+      "source_text_hash": "594a62aa52bcafa4b4d55f0defe2cf77e79a3652b43d2bb7252ee4c8a42f384d",
+      "translation_text_hash": "435de8ead8b9ddda04b0b6a3a98e19ba7a4a1f3130c133ca216fda0bcd1e5b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들로 때를 따라 백성을 재판하게 하라 무릇 큰 일이면 그대에게 베풀 것이고 무릇 작은 일이면 그들이 스스로 재판할 것이니 그리하면 그들이 그대와 함께 담당할 것인즉 일이 그대에게 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "435de8ead8b9ddda04b0b6a3a98e19ba7a4a1f3130c133ca216fda0bcd1e5b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:23",
+      "sequence": 2023,
+      "chapter_label": "EXO 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "If you will do this thing, and God commands you so, then you will be able to endure, and all these people also will go to their place in peace.”",
+      "ko": "그대가 만일 이 일을 하고 하나님께서도 그대에게 인가하시면 그대가 이 일을 감당하고 이 모든 백성도 자기 곳으로 평안히 가리라",
+      "source_text_hash": "cf778f509ae005c11c9e578b62fd6441047353dd5358bda2ee9eb37348e33585",
+      "translation_text_hash": "e565593e9014063745c01dd8dedd7a5b4cc332ae3948952a4a768ea1839867f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그대가 만일 이 일을 하고 하나님께서도 그대에게 인가하시면 그대가 이 일을 감당하고 이 모든 백성도 자기 곳으로 평안히 가리라"
+      ],
+      "raw_text_hashes": [
+        "e565593e9014063745c01dd8dedd7a5b4cc332ae3948952a4a768ea1839867f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:24",
+      "sequence": 2024,
+      "chapter_label": "EXO 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "So Moses listened to the voice of his father-in-law, and did all that he had said.",
+      "ko": "이에 모세가 자기 장인의 말을 듣고 그 모든 말대로 하여",
+      "source_text_hash": "929c8ffa7a75f86f50f7c1e7e9de213e1193173425bde2b2c32c5d7661a9b466",
+      "translation_text_hash": "791d42139fbc2fc0849c7f3a6c2445ffcd9cd1c194ef314015b974711470f767",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세가 자기 장인의 말을 듣고 그 모든 말대로 하여"
+      ],
+      "raw_text_hashes": [
+        "791d42139fbc2fc0849c7f3a6c2445ffcd9cd1c194ef314015b974711470f767"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:25",
+      "sequence": 2025,
+      "chapter_label": "EXO 18",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 25
+        }
+      ],
+      "en": "Moses chose able men out of all Israel, and made them heads over the people, rulers of thousands, rulers of hundreds, rulers of fifties, and rulers of tens.",
+      "ko": "이스라엘 무리 중에서 재덕이 겸전한 자를 빼서 그들로 백성의 두목 곧 천부장과 백부장과 오십부장과 십부장을 삼으매",
+      "source_text_hash": "b276d06c0ee8df20a84f57d7ca09858d854fe181515da6692aaf636abb70bba0",
+      "translation_text_hash": "65aa7713e4010af6d776869e6d557870f8d2a36d6e882637ce51cf00e193bd32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 무리 중에서 재덕이 겸전한 자를 빼서 그들로 백성의 두목 곧 천부장과 백부장과 오십부장과 십부장을 삼으매"
+      ],
+      "raw_text_hashes": [
+        "65aa7713e4010af6d776869e6d557870f8d2a36d6e882637ce51cf00e193bd32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:26",
+      "sequence": 2026,
+      "chapter_label": "EXO 18",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 26
+        }
+      ],
+      "en": "They judged the people at all times. They brought the hard cases to Moses, but every small matter they judged themselves.",
+      "ko": "그들이 때를 따라 백성을 재판하되 어려운 일은 모세에게 베풀고 쉬운 일은 자단하더라",
+      "source_text_hash": "e7b5b269727ffec0b8528e8d0b8fcfe0b34603a718216d2497d6cb65b52b7704",
+      "translation_text_hash": "9c957dd391c0e622f3066aa876a47864c917459c6d74ad14283a500084b37989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 때를 따라 백성을 재판하되 어려운 일은 모세에게 베풀고 쉬운 일은 자단하더라"
+      ],
+      "raw_text_hashes": [
+        "9c957dd391c0e622f3066aa876a47864c917459c6d74ad14283a500084b37989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:18:27",
+      "sequence": 2027,
+      "chapter_label": "EXO 18",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 18,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 18,
+          "verse": 27
+        }
+      ],
+      "en": "Moses let his father-in-law depart, and he went his way into his own land.",
+      "ko": "모세가 그 장인을 보내니 그가 자기 고향으로 돌아가니라",
+      "source_text_hash": "6d554f3656aae794b9bf87175443ba8233271ab4cfcc3e959f0f1a352c232de6",
+      "translation_text_hash": "2b1632cb8c0edec68b288293d029f0ba0d55a9f76e09955851a910ce79e6e839",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 장인을 보내니 그가 자기 고향으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "2b1632cb8c0edec68b288293d029f0ba0d55a9f76e09955851a910ce79e6e839"
+      ]
+    }
+  ]
+}

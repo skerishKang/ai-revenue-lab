@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:014",
+  "unit_ordinal": 693,
+  "unit_label": "ISA 14",
+  "book_code": "ISA",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:14:1",
+      "sequence": 17930,
+      "chapter_label": "ISA 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "For the LORD will have compassion on Jacob, and will yet choose Israel, and set them in their own land. The foreigner will join himself with them, and they will unite with the house of Jacob.",
+      "ko": "여호와께서 야곱을 긍휼히 여기시며 이스라엘을 다시 택하여 자기 고토에 두시리니 나그네 된 자가 야곱 족속에게 가입되어 그들과 연합할 것이며",
+      "source_text_hash": "8c484d35b6c9f20f8a222ee6a2866081ad6f06fad98cecec448ec54367812b89",
+      "translation_text_hash": "916691e2773c58240750150adb579106490c736817d9398e9533015d82364b32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 야곱을 긍휼히 여기시며 이스라엘을 다시 택하여 자기 고토에 두시리니 나그네 된 자가 야곱 족속에게 가입되어 그들과 연합할 것이며"
+      ],
+      "raw_text_hashes": [
+        "916691e2773c58240750150adb579106490c736817d9398e9533015d82364b32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:2",
+      "sequence": 17931,
+      "chapter_label": "ISA 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "The peoples will take them, and bring them to their place. The house of Israel will possess them in the LORD’s land for servants and for handmaids. They will take as captives those whose captives they were; and they shall rule over their oppressors.",
+      "ko": "민족들이 그들을 데리고 그들의 본토에 돌아오리니 이스라엘 족속이 여호와의 땅에서 그들을 얻어 노비를 삼겠고 전에 자기를 사로잡던 자를 사로잡고 자기를 압제하던 자를 주관하리라",
+      "source_text_hash": "ccbb36210e2af8722d33e7f6031bfb28aee6c38487800cb3fd31f3c216935404",
+      "translation_text_hash": "2fe3a1aabcd11c297eb71e64955d9c4d7eb1388ca4f2d077055b9e582a0a4658",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민족들이 그들을 데리고 그들의 본토에 돌아오리니 이스라엘 족속이 여호와의 땅에서 그들을 얻어 노비를 삼겠고 전에 자기를 사로잡던 자를 사로잡고 자기를 압제하던 자를 주관하리라"
+      ],
+      "raw_text_hashes": [
+        "2fe3a1aabcd11c297eb71e64955d9c4d7eb1388ca4f2d077055b9e582a0a4658"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:3",
+      "sequence": 17932,
+      "chapter_label": "ISA 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "It will happen in the day that the LORD will give you rest from your sorrow, from your trouble, and from the hard service in which you were made to serve,",
+      "ko": "여호와께서 너를 슬픔과 곤고와 및 너의 수고하는 고역에서 놓으시고 안식을 주시는 날에",
+      "source_text_hash": "aec058fd63ec59b22bcc23c29cb7038112198813853772dc5db48b03be193400",
+      "translation_text_hash": "6b651795c29010de1439faa866fa345c4676de4c514fdabec338a7dddc565637",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 슬픔과 곤고와 및 너의 수고하는 고역에서 놓으시고 안식을 주시는 날에"
+      ],
+      "raw_text_hashes": [
+        "6b651795c29010de1439faa866fa345c4676de4c514fdabec338a7dddc565637"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:4",
+      "sequence": 17933,
+      "chapter_label": "ISA 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "that you will take up this parable against the king of Babylon, and say, “How the oppressor has ceased! The golden city has ceased!”",
+      "ko": "너는 바벨론 왕에 대하여 이 노래를 지어 이르기를 학대하던 자가 어찌 그리 그쳤으며 강포한 성이 어찌 그리 폐하였는고",
+      "source_text_hash": "164845de34c1400e52940f6bf345b0b92e87352ea2710ce2588aaa9fd037259a",
+      "translation_text_hash": "873468df80b68994cf52ee5d88bc9fb1a64134f343ad5cdd2bd2fb296b21400c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 바벨론 왕에 대하여 이 노래를 지어 이르기를 학대하던 자가 어찌 그리 그쳤으며 강포한 성이 어찌 그리 폐하였는고"
+      ],
+      "raw_text_hashes": [
+        "873468df80b68994cf52ee5d88bc9fb1a64134f343ad5cdd2bd2fb296b21400c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:5",
+      "sequence": 17934,
+      "chapter_label": "ISA 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD has broken the staff of the wicked, the scepter of the rulers,",
+      "ko": "여호와께서 악인의 몽둥이와 패권자의 홀을 꺾으셨도다",
+      "source_text_hash": "983f3f54dfc495e760835e03f167461340d9d40b2f8b3d2e319749a6c6faf5b4",
+      "translation_text_hash": "4e6ec1231256dce8a69f67a1048af630cd87b46a11c07be9c9a11c592a2fc06d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 악인의 몽둥이와 패권자의 홀을 꺾으셨도다"
+      ],
+      "raw_text_hashes": [
+        "4e6ec1231256dce8a69f67a1048af630cd87b46a11c07be9c9a11c592a2fc06d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:6",
+      "sequence": 17935,
+      "chapter_label": "ISA 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "who struck the peoples in wrath with a continual stroke, who ruled the nations in anger, with a persecution that no one restrained.",
+      "ko": "그들이 분내어 여러 민족을 치되 치기를 마지 아니하였고 노하여 열방을 억압하여도 그 억압을 막을 자 없었더니",
+      "source_text_hash": "502f7ffd30d56059a8e59ae2c900c2d630801a491ce5e991732890535d7dd8b5",
+      "translation_text_hash": "7616369a5c159a7733208d9ab0463b354c7e9637f928203f9eceba346c3aff3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 분내어 여러 민족을 치되 치기를 마지 아니하였고 노하여 열방을 억압하여도 그 억압을 막을 자 없었더니"
+      ],
+      "raw_text_hashes": [
+        "7616369a5c159a7733208d9ab0463b354c7e9637f928203f9eceba346c3aff3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:7",
+      "sequence": 17936,
+      "chapter_label": "ISA 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "The whole earth is at rest, and is quiet. They break out in song.",
+      "ko": "이제는 온 땅이 평안하고 정온하니 무리가 소리질러 노래하는도다",
+      "source_text_hash": "1e3708830cc79edaae582460c63b4e639308cca566fd3a55cb2b6048ee80f53e",
+      "translation_text_hash": "85b6cfcf9f8f17943fd6f73917d05a2a532fb6e773bc7cc7500bce9c7fc929e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 온 땅이 평안하고 정온하니 무리가 소리질러 노래하는도다"
+      ],
+      "raw_text_hashes": [
+        "85b6cfcf9f8f17943fd6f73917d05a2a532fb6e773bc7cc7500bce9c7fc929e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:8",
+      "sequence": 17937,
+      "chapter_label": "ISA 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Yes, the cypress trees rejoice with you, with the cedars of Lebanon, saying, “Since you are humbled, no lumberjack has come up against us.”",
+      "ko": "향나무와 레바논 백향목도 너로 인하여 기뻐하여 이르기를 네가 넘어뜨리웠은즉 올라와서 우리를 작벌할 자 없다 하는도다",
+      "source_text_hash": "48244a27d3a1fa4a506d9b8b7de5b2fd6111d3a2299998132d54b3ee511e84e7",
+      "translation_text_hash": "8171ca7dc233900c50881813cc5166a702eb480af4be01257b5ca190bace77b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "향나무와 레바논 백향목도 너로 인하여 기뻐하여 이르기를 네가 넘어뜨리웠은즉 올라와서 우리를 작벌할 자 없다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "8171ca7dc233900c50881813cc5166a702eb480af4be01257b5ca190bace77b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:9",
+      "sequence": 17938,
+      "chapter_label": "ISA 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Sheol from beneath has moved for you to meet you at your coming. It stirs up the departed spirits for you, even all the rulers of the earth. It has raised up from their thrones all the kings of the nations.",
+      "ko": "아래의 음부가 너로 인하여 소동하여 너의 옴을 영접하되 그것이 세상에서의 모든 영웅을 너로 인하여 동하게 하며 열방의 모든 왕으로 그 보좌에서 일어서게 하므로",
+      "source_text_hash": "d6f5e4c5d81e7f50dc85104e488d76fb0589c4ea07dd4f2b4cde4ae884a3832d",
+      "translation_text_hash": "b233e357345bc1f9fa8652b36dd9ec5a5819ce6aea21dd9fa55f789820c1a8dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아래의 음부가 너로 인하여 소동하여 너의 옴을 영접하되 그것이 세상에서의 모든 영웅을 너로 인하여 동하게 하며 열방의 모든 왕으로 그 보좌에서 일어서게 하므로"
+      ],
+      "raw_text_hashes": [
+        "b233e357345bc1f9fa8652b36dd9ec5a5819ce6aea21dd9fa55f789820c1a8dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:10",
+      "sequence": 17939,
+      "chapter_label": "ISA 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "They all will answer and ask you, “Have you also become as weak as we are? Have you become like us?”",
+      "ko": "그들은 다 네게 말하여 이르기를 너도 우리 같이 연약하게 되었느냐 너도 우리 같이 되었느냐 하리로다",
+      "source_text_hash": "42988138fd017cf7d1534ad523542d95be1da1c259a2fda17b25b415c9dcd2e4",
+      "translation_text_hash": "dca449c0d9c2db1800e03fb2bc9e3886d9d10cfb8dc3fa6c727f5e1cd9c2d402",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 다 네게 말하여 이르기를 너도 우리 같이 연약하게 되었느냐 너도 우리 같이 되었느냐 하리로다"
+      ],
+      "raw_text_hashes": [
+        "dca449c0d9c2db1800e03fb2bc9e3886d9d10cfb8dc3fa6c727f5e1cd9c2d402"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:11",
+      "sequence": 17940,
+      "chapter_label": "ISA 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "Your pomp is brought down to Sheol, with the sound of your stringed instruments. Maggots are spread out under you, and worms cover you.",
+      "ko": "네 영화가 음부에 떨어졌음이여 너의 비파 소리까지로다 구더기가 네 아래 깔림이여 지렁이가 너를 덮었도다",
+      "source_text_hash": "b8b755f57454bc74398ed6104d67d90674c463becc6cbf052a9c54c3db0f14fb",
+      "translation_text_hash": "0aa080fd205ddb493215522afc7e5bcf81912d94ee430fe28bb399d8849b7786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 영화가 음부에 떨어졌음이여 너의 비파 소리까지로다 구더기가 네 아래 깔림이여 지렁이가 너를 덮었도다"
+      ],
+      "raw_text_hashes": [
+        "0aa080fd205ddb493215522afc7e5bcf81912d94ee430fe28bb399d8849b7786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:12",
+      "sequence": 17941,
+      "chapter_label": "ISA 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "How you have fallen from heaven, shining one, son of the dawn! How you are cut down to the ground, who laid the nations low!",
+      "ko": "너 아침의 아들 계명성이여 어찌 그리 하늘에서 떨어졌으며 너 열국을 엎은 자여 어찌 그리 땅에 찍혔는고",
+      "source_text_hash": "18aba5b62afa0dbbfff12d781990842f7dab5eb550b7b45e3b419899bb849ee0",
+      "translation_text_hash": "10459643f27705806e75dacffc15c6ed849885486b30302530d716eb17870426",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 아침의 아들 계명성이여 어찌 그리 하늘에서 떨어졌으며 너 열국을 엎은 자여 어찌 그리 땅에 찍혔는고"
+      ],
+      "raw_text_hashes": [
+        "10459643f27705806e75dacffc15c6ed849885486b30302530d716eb17870426"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:13",
+      "sequence": 17942,
+      "chapter_label": "ISA 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "You said in your heart, “I will ascend into heaven! I will exalt my throne above the stars of God! I will sit on the mountain of assembly, in the far north!",
+      "ko": "네가 네 마음에 이르기를 내가 하늘에 올라 하나님의 뭇별 위에 나의 보좌를 높이리라 내가 북극 집회의 산 위에 좌정하리라",
+      "source_text_hash": "9db504d1f92cff3652467d5dfaad65b3406b6177419abf9490e07b6a4e5f2499",
+      "translation_text_hash": "4da0bb89a7088dfe7a967139dc3f91e741365cb747597bf56101b13b85173f29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 마음에 이르기를 내가 하늘에 올라 하나님의 뭇별 위에 나의 보좌를 높이리라 내가 북극 집회의 산 위에 좌정하리라"
+      ],
+      "raw_text_hashes": [
+        "4da0bb89a7088dfe7a967139dc3f91e741365cb747597bf56101b13b85173f29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:14",
+      "sequence": 17943,
+      "chapter_label": "ISA 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "I will ascend above the heights of the clouds! I will make myself like the Most High!”",
+      "ko": "가장 높은 구름에 올라 지극히 높은 자와 비기리라 하도다",
+      "source_text_hash": "adde960fbbe4629847b37dde4935cd38760f035e2edd3f16bea6a92e5ca465c0",
+      "translation_text_hash": "edb609de699d01d9b9cf708803b97ede64a0ee79267539fb88a8e6b7832135b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가장 높은 구름에 올라 지극히 높은 자와 비기리라 하도다"
+      ],
+      "raw_text_hashes": [
+        "edb609de699d01d9b9cf708803b97ede64a0ee79267539fb88a8e6b7832135b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:15",
+      "sequence": 17944,
+      "chapter_label": "ISA 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Yet you shall be brought down to Sheol, to the depths of the pit.",
+      "ko": "그러나 이제 네가 음부 곧 구덩이의 맨밑에 빠치우리로다",
+      "source_text_hash": "4e52e21eb35ab412a5b7947d2ce6927a918fa4cd8fe65c09d751056e3e193039",
+      "translation_text_hash": "771e582f512b17d30115058fdee93a1a5d9eccb9a3441a2d25dccdf7cd51548e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제 네가 음부 곧 구덩이의 맨밑에 빠치우리로다"
+      ],
+      "raw_text_hashes": [
+        "771e582f512b17d30115058fdee93a1a5d9eccb9a3441a2d25dccdf7cd51548e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:16",
+      "sequence": 17945,
+      "chapter_label": "ISA 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "Those who see you will stare at you. They will ponder you, saying, “Is this the man who made the earth to tremble, who shook kingdoms,",
+      "ko": "너를 보는 자가 주목하여 너를 자세히 살펴 보며 말하기를 이 사람이 땅을 진동시키며 열국을 경동시키며",
+      "source_text_hash": "ea9e590c52d57f3c84fffa798e5beb01b0713144a2687840b28584999868fe66",
+      "translation_text_hash": "84a656298f228c9ebf3225d722e780b628160be9af9b6300e1beb664c9217eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 보는 자가 주목하여 너를 자세히 살펴 보며 말하기를 이 사람이 땅을 진동시키며 열국을 경동시키며"
+      ],
+      "raw_text_hashes": [
+        "84a656298f228c9ebf3225d722e780b628160be9af9b6300e1beb664c9217eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:17",
+      "sequence": 17946,
+      "chapter_label": "ISA 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "who made the world like a wilderness, and overthrew its cities, who didn’t release his prisoners to their home?”",
+      "ko": "세계를 황무케 하며 성읍을 파괴하며 사로잡힌 자를 그 집으로 놓아 보내지 않던 자가 아니뇨 하리로다",
+      "source_text_hash": "1776ff6d664a17aabf088010934a123cb64787e7e3c108bd4afdc042a36d50ce",
+      "translation_text_hash": "020306442d9d966d7229d9a596fd761d4c9cc33dc1b4972adca061cd680f76d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세계를 황무케 하며 성읍을 파괴하며 사로잡힌 자를 그 집으로 놓아 보내지 않던 자가 아니뇨 하리로다"
+      ],
+      "raw_text_hashes": [
+        "020306442d9d966d7229d9a596fd761d4c9cc33dc1b4972adca061cd680f76d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:18",
+      "sequence": 17947,
+      "chapter_label": "ISA 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "All the kings of the nations sleep in glory, everyone in his own house.",
+      "ko": "열방의 왕들은 모두 각각 자기 집에서 영광 중에 자건마는",
+      "source_text_hash": "25a41cb6cfcaaa962ad1553955ec409b1a279ead8443af0c026e18d89649c164",
+      "translation_text_hash": "a52a94ff0e402362eb038207adbd46b45bb73ce973c3ccda0262e557ba8658d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방의 왕들은 모두 각각 자기 집에서 영광 중에 자건마는"
+      ],
+      "raw_text_hashes": [
+        "a52a94ff0e402362eb038207adbd46b45bb73ce973c3ccda0262e557ba8658d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:19",
+      "sequence": 17948,
+      "chapter_label": "ISA 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "But you are cast away from your tomb like an abominable branch, clothed with the slain who are thrust through with the sword, who go down to the stones of the pit; like a dead body trodden under foot.",
+      "ko": "오직 너는 자기 무덤에서 내어쫓겼으니 가증한 나무가지 같고 칼에 찔려 돌구덩이에 빠진 주검에 둘려싸였으니 밟힌 시체와 같도다",
+      "source_text_hash": "65b2d7546af9051645e341dca1e07184ace5ba2441279c44c135e0071445b58a",
+      "translation_text_hash": "6ee3ad5d2dce0443697a703f313a05d035bd1c72b669dcaf8239d20ad12bf7cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 자기 무덤에서 내어쫓겼으니 가증한 나무가지 같고 칼에 찔려 돌구덩이에 빠진 주검에 둘려싸였으니 밟힌 시체와 같도다"
+      ],
+      "raw_text_hashes": [
+        "6ee3ad5d2dce0443697a703f313a05d035bd1c72b669dcaf8239d20ad12bf7cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:20",
+      "sequence": 17949,
+      "chapter_label": "ISA 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "You will not join them in burial, because you have destroyed your land. You have killed your people. The offspring of evildoers will not be named forever.",
+      "ko": "네가 자기 땅을 망케 하였고 자기 백성을 죽였으므로 그들과 일반으로 안장함을 얻지 못하나니 악을 행하는 자의 후손은 영영히 이름이 나지 못하리로다 할찌니라",
+      "source_text_hash": "e54d4ef70550e12d4f50ef8d04523032af17e2e515a511d12dcfef2e16e2a210",
+      "translation_text_hash": "f75c43732c3a9a34ecbb7c2a88dd64ea36fe57a2a591fd6327050008d36af7e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 자기 땅을 망케 하였고 자기 백성을 죽였으므로 그들과 일반으로 안장함을 얻지 못하나니 악을 행하는 자의 후손은 영영히 이름이 나지 못하리로다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "f75c43732c3a9a34ecbb7c2a88dd64ea36fe57a2a591fd6327050008d36af7e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:21",
+      "sequence": 17950,
+      "chapter_label": "ISA 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "Prepare for slaughter of his children because of the iniquity of their fathers, that they not rise up and possess the earth, and fill the surface of the world with cities.",
+      "ko": "너희는 그들의 열조의 죄악을 인하여 그 자손 도륙하기를 예비하여 그들로 일어나 땅을 취하여 세상에 성읍을 충만케 하지 못하게 하라",
+      "source_text_hash": "9a8e7da2e8b5f7554bdcb679b56c6fe358b7a4048715a4d71843d970f5e1b004",
+      "translation_text_hash": "3d5921510e441fbede473742d1b51a6e258fc590d33845eb802443bd8cca9af6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그들의 열조의 죄악을 인하여 그 자손 도륙하기를 예비하여 그들로 일어나 땅을 취하여 세상에 성읍을 충만케 하지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "3d5921510e441fbede473742d1b51a6e258fc590d33845eb802443bd8cca9af6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:22",
+      "sequence": 17951,
+      "chapter_label": "ISA 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "“I will rise up against them,” says the LORD of Armies, “and cut off from Babylon name and remnant, and son and son’s son,” says the LORD.",
+      "ko": "만군의 여호와께서 말씀하시되 내가 일어나 그들을 쳐서 그 이름과 남은 자와 아들과 후손을 바벨론에서 끊으리라 나 여호와의 말이니라",
+      "source_text_hash": "85d7e0eb3b46b104eacc342d69ef2b76e29b7cc2bb97048a8ec5fb0d6a0282bc",
+      "translation_text_hash": "1ce57ad5769800b776a388438e6fb4693c9d68881f96cb3e71ef114fb76bbd3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 말씀하시되 내가 일어나 그들을 쳐서 그 이름과 남은 자와 아들과 후손을 바벨론에서 끊으리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "1ce57ad5769800b776a388438e6fb4693c9d68881f96cb3e71ef114fb76bbd3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:23",
+      "sequence": 17952,
+      "chapter_label": "ISA 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "“I will also make it a possession for the porcupine, and pools of water. I will sweep it with the broom of destruction,” says the LORD of Armies.",
+      "ko": "내가 또 그것으로 고슴도치의 굴혈과 물웅덩이가 되게 하고 또 멸망의 비로 소제하리라 나 만군의 여호와의 말이니라",
+      "source_text_hash": "1457c1c9fa9a1bb8930a91870fe1e995629a94d0d3cc3a3ff99aa94c05a12976",
+      "translation_text_hash": "5ec4f58ff7ae00a1632270387404c52ad1a833acc938dfee3d58693d4062ad60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그것으로 고슴도치의 굴혈과 물웅덩이가 되게 하고 또 멸망의 비로 소제하리라 나 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "5ec4f58ff7ae00a1632270387404c52ad1a833acc938dfee3d58693d4062ad60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:24",
+      "sequence": 17953,
+      "chapter_label": "ISA 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD of Armies has sworn, saying, “Surely, as I have thought, so shall it happen; and as I have purposed, so shall it stand:",
+      "ko": "만군의 여호와께서 맹세하여 가라사대 나의 생각한 것이 반드시 되며 나의 경영한 것이 반드시 이루리라",
+      "source_text_hash": "5dbaaf67fe8813d04323fb5364172e41bdefc5b88ea9dfc97a1e3fcc8f6a5396",
+      "translation_text_hash": "dba3d9a0d11fa080adcb78a53cb14e74d33dcf6c6a0f943162307e4582076120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 맹세하여 가라사대 나의 생각한 것이 반드시 되며 나의 경영한 것이 반드시 이루리라"
+      ],
+      "raw_text_hashes": [
+        "dba3d9a0d11fa080adcb78a53cb14e74d33dcf6c6a0f943162307e4582076120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:25",
+      "sequence": 17954,
+      "chapter_label": "ISA 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "that I will break the Assyrian in my land, and tread him under foot on my mountains. Then his yoke will leave them, and his burden leave their shoulders.",
+      "ko": "내가 앗수르 사람을 나의 땅에서 파하며 나의 산에서 발아래 밟으리니 그 때에 그의 멍에가 이스라엘에게서 떠나고 그의 짐이 그들의 어깨에서 벗어질 것이라",
+      "source_text_hash": "eaded8730737170d1076a7a369816d873c334d06c30beb8bd66055e9653826af",
+      "translation_text_hash": "ab72b76f00f570871c1a75aac96255c8803f6b9840dda0ce4cee7f90636d7256",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 앗수르 사람을 나의 땅에서 파하며 나의 산에서 발아래 밟으리니 그 때에 그의 멍에가 이스라엘에게서 떠나고 그의 짐이 그들의 어깨에서 벗어질 것이라"
+      ],
+      "raw_text_hashes": [
+        "ab72b76f00f570871c1a75aac96255c8803f6b9840dda0ce4cee7f90636d7256"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:26",
+      "sequence": 17955,
+      "chapter_label": "ISA 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "This is the plan that is determined for the whole earth. This is the hand that is stretched out over all the nations.",
+      "ko": "이것이 온 세계를 향하여 정한 경영이며 이것이 열방을 향하여 편 손이라 하셨나니",
+      "source_text_hash": "d696d2a62003419b785b5036ea157fac64486e15a2a7cda03d37113c5f8c31b0",
+      "translation_text_hash": "b2b0e6ad07cad4aa3cbe7c6ed96d133011e9210ff756aac6f8a96ead537512b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 온 세계를 향하여 정한 경영이며 이것이 열방을 향하여 편 손이라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "b2b0e6ad07cad4aa3cbe7c6ed96d133011e9210ff756aac6f8a96ead537512b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:27",
+      "sequence": 17956,
+      "chapter_label": "ISA 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "For the LORD of Armies has planned, and who can stop it? His hand is stretched out, and who can turn it back?”",
+      "ko": "만군의 여호와께서 경영하셨은즉 누가 능히 그것을 폐하며 그 손을 펴셨은즉 누가 능히 그것을 돌이키랴",
+      "source_text_hash": "c52e23335dad8abf02b7a95c015e65338cba64ba8e52ce4a8ee830242e9663ef",
+      "translation_text_hash": "f6d026616389897646279dd3d243eafef99bfe90e86527ad5b28598a40044f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 경영하셨은즉 누가 능히 그것을 폐하며 그 손을 펴셨은즉 누가 능히 그것을 돌이키랴"
+      ],
+      "raw_text_hashes": [
+        "f6d026616389897646279dd3d243eafef99bfe90e86527ad5b28598a40044f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:28",
+      "sequence": 17957,
+      "chapter_label": "ISA 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "This burden was in the year that King Ahaz died.",
+      "ko": "아하스왕의 죽던 해에 받은 경고라",
+      "source_text_hash": "b9442ab5be5464f814f208dbdf43b5ac3d7ac23f5f6d12d9e839c0d3752b6236",
+      "translation_text_hash": "e6dbe24fed6a34afda65b5ccc73354b497f24d72e5246a3e8e8ba57cda94c9f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스왕의 죽던 해에 받은 경고라"
+      ],
+      "raw_text_hashes": [
+        "e6dbe24fed6a34afda65b5ccc73354b497f24d72e5246a3e8e8ba57cda94c9f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:29",
+      "sequence": 17958,
+      "chapter_label": "ISA 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Don’t rejoice, O Philistia, all of you, because the rod that struck you is broken; for out of the serpent’s root an adder will emerge, and his fruit will be a fiery flying serpent.",
+      "ko": "블레셋 온 땅이여 너를 치던 막대기가 부러졌다고 기뻐하지 말라 뱀의 뿌리에서는 독사가 나겠고 그 열매는 나는 불뱀이 되리라",
+      "source_text_hash": "81e676ef8bffb91e8a2531fe362b3ed4300f2e9c071fd0aea1e3da71ca66389a",
+      "translation_text_hash": "56cada45af00cb4f34cf397e2e1a9c10c59b675661f30153395463881bb7afbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 온 땅이여 너를 치던 막대기가 부러졌다고 기뻐하지 말라 뱀의 뿌리에서는 독사가 나겠고 그 열매는 나는 불뱀이 되리라"
+      ],
+      "raw_text_hashes": [
+        "56cada45af00cb4f34cf397e2e1a9c10c59b675661f30153395463881bb7afbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:30",
+      "sequence": 17959,
+      "chapter_label": "ISA 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "The firstborn of the poor will eat, and the needy will lie down in safety; and I will kill your root with famine, and your remnant will be killed.",
+      "ko": "가난한 자의 장자는 먹겠고 빈핍한 자는 평안히 누우려니와 내가 너의 뿌리를 기근으로 죽일 것이요 너의 남은 자는 살륙을 당하리라",
+      "source_text_hash": "aeac70201c973a77719d162cb2dac83014939178e74487a1ade12c6ab9e864c8",
+      "translation_text_hash": "9dec61e84ce5e80bda924ba931b9e0cef21e7f0aa175cb5746468a3365595dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자의 장자는 먹겠고 빈핍한 자는 평안히 누우려니와 내가 너의 뿌리를 기근으로 죽일 것이요 너의 남은 자는 살륙을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "9dec61e84ce5e80bda924ba931b9e0cef21e7f0aa175cb5746468a3365595dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:31",
+      "sequence": 17960,
+      "chapter_label": "ISA 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "Howl, gate! Cry, city! You are melted away, Philistia, all of you; for smoke comes out of the north, and there is no straggler in his ranks.",
+      "ko": "성문이여 슬피 울찌어다 성읍이여 부르짖을찌어다 너 블레셋이여 다 소멸되게 되었도다 대저 연기가 북방에서 오는데 그 항오를 떨어져 행하는 자 없느니라",
+      "source_text_hash": "5b7be216fea257f7cbb53d0aef6080c46353c703c4b7b8c486f1b878deb2a176",
+      "translation_text_hash": "c4f4b07380abac15c476e04bdc895b305e72484e1309dc596e70715f0330c8a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문이여 슬피 울찌어다 성읍이여 부르짖을찌어다 너 블레셋이여 다 소멸되게 되었도다 대저 연기가 북방에서 오는데 그 항오를 떨어져 행하는 자 없느니라"
+      ],
+      "raw_text_hashes": [
+        "c4f4b07380abac15c476e04bdc895b305e72484e1309dc596e70715f0330c8a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:14:32",
+      "sequence": 17961,
+      "chapter_label": "ISA 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "ISA",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "What will they answer the messengers of the nation? That the LORD has founded Zion, and in her the afflicted of his people will take refuge.",
+      "ko": "그 나라 사신들에게 어떻게 대답하겠느냐 여호와께서 시온을 세우셨으니 그의 백성의 곤고한 자들이 그 안에서 피난하리라 할 것이니라",
+      "source_text_hash": "98052b4f6a07d65dc753ff60d6c38a15660c5569cf0e52d913d5eda223fe342e",
+      "translation_text_hash": "db70ec3904b630d36cb9c8467ef7f39a48d531b31027d618655fe118c347fec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나라 사신들에게 어떻게 대답하겠느냐 여호와께서 시온을 세우셨으니 그의 백성의 곤고한 자들이 그 안에서 피난하리라 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "db70ec3904b630d36cb9c8467ef7f39a48d531b31027d618655fe118c347fec8"
+      ]
+    }
+  ]
+}

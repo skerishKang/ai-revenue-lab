@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:020",
+  "unit_ordinal": 110,
+  "unit_label": "LEV 20",
+  "book_code": "LEV",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:20:1",
+      "sequence": 3320,
+      "chapter_label": "LEV 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:2",
+      "sequence": 3321,
+      "chapter_label": "LEV 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "“Moreover, you shall tell the children of Israel, ‘Anyone of the children of Israel, or of the strangers who live as foreigners in Israel, who gives any of his offspring to Molech shall surely be put to death. The people of the land shall stone that person with stones.",
+      "ko": "너는 이스라엘 자손에게 또 이르라 무릇 그가 이스라엘 자손이든지 이스라엘에 우거한 타국인이든지 그 자식을 몰렉에게 주거든 반드시 죽이되 그 지방 사람이 돌로 칠 것이요",
+      "source_text_hash": "3989ef57c9fc824b2f1eb6ecbd6457e54b60fe6c51ad3dbeb951f24016a0b250",
+      "translation_text_hash": "0458e4db73973d1e24dff45836f26ea4b02c150619a6e760f8122f1ba803dbfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 또 이르라 무릇 그가 이스라엘 자손이든지 이스라엘에 우거한 타국인이든지 그 자식을 몰렉에게 주거든 반드시 죽이되 그 지방 사람이 돌로 칠 것이요"
+      ],
+      "raw_text_hashes": [
+        "0458e4db73973d1e24dff45836f26ea4b02c150619a6e760f8122f1ba803dbfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:3",
+      "sequence": 3322,
+      "chapter_label": "LEV 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "I also will set my face against that person, and will cut him off from among his people, because he has given of his offspring to Molech, to defile my sanctuary, and to profane my holy name.",
+      "ko": "나도 그 사람에게 진노하여 그를 그 백성 중에서 끊으리니 이는 그가 그 자식을 몰렉에게 주어서 내 성소를 더럽히고 내 성호를 욕되게 하였음이라",
+      "source_text_hash": "016caabdf1fec56d37d13b373220c0ffbcdab671a3e01af09b7726ec29dfbf5f",
+      "translation_text_hash": "5bc5c2d9f2babd0e00132d0bf2fa2be23e793787cf497ae9a9a4bc6e4e954af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 그 사람에게 진노하여 그를 그 백성 중에서 끊으리니 이는 그가 그 자식을 몰렉에게 주어서 내 성소를 더럽히고 내 성호를 욕되게 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "5bc5c2d9f2babd0e00132d0bf2fa2be23e793787cf497ae9a9a4bc6e4e954af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:4",
+      "sequence": 3323,
+      "chapter_label": "LEV 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "If the people of the land all hide their eyes from that person when he gives of his offspring to Molech, and don’t put him to death,",
+      "ko": "그가 그 자식을 몰렉에게 주는 것을 그 지방 사람이 못본체하고 그를 죽이지 아니하면",
+      "source_text_hash": "774fc7654cd3f6bdd6e6c95cf8ae423cb3cbf4d028d303173e71d7429dabb7dd",
+      "translation_text_hash": "2a5ca17dc59278712a797d79ee8016871f8d71dc8ebece1408e6980730688d33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 자식을 몰렉에게 주는 것을 그 지방 사람이 못본체하고 그를 죽이지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "2a5ca17dc59278712a797d79ee8016871f8d71dc8ebece1408e6980730688d33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:5",
+      "sequence": 3324,
+      "chapter_label": "LEV 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "then I will set my face against that man and against his family, and will cut him off, and all who play the prostitute after him to play the prostitute with Molech, from among their people.",
+      "ko": "내가 그 사람과 그 권속에게 진노하여 그와 무릇 그를 본받아 몰렉을 음란히 섬기는 모든 사람을 그 백성 중에서 끊으리라",
+      "source_text_hash": "3ce02edcff5ab15f401cfd2327cb6f3e5d4d27017d1a4ce060e6670c48b1e4ac",
+      "translation_text_hash": "422bd3fd155e790db194a08973aa6f6dbf14a6c8a3104471b2691937b1a4c0db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 사람과 그 권속에게 진노하여 그와 무릇 그를 본받아 몰렉을 음란히 섬기는 모든 사람을 그 백성 중에서 끊으리라"
+      ],
+      "raw_text_hashes": [
+        "422bd3fd155e790db194a08973aa6f6dbf14a6c8a3104471b2691937b1a4c0db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:6",
+      "sequence": 3325,
+      "chapter_label": "LEV 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "“‘The person that turns to those who are mediums and wizards, to play the prostitute after them, I will even set my face against that person, and will cut him off from among his people.",
+      "ko": "음란하듯 신접한 자와 박수를 추종하는 자에게는 내가 진노하여 그를 그 백성 중에서 끊으리니",
+      "source_text_hash": "2edd40d816458522ee8afe790b3f5ee5c99803fee74484e4cf13746f59dd1d50",
+      "translation_text_hash": "8ba16ff52dcb73005f401026325744dbf20e40eafaff37bb630ab47d3c2d9c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음란하듯 신접한 자와 박수를 추종하는 자에게는 내가 진노하여 그를 그 백성 중에서 끊으리니"
+      ],
+      "raw_text_hashes": [
+        "8ba16ff52dcb73005f401026325744dbf20e40eafaff37bb630ab47d3c2d9c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:7",
+      "sequence": 3326,
+      "chapter_label": "LEV 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "“‘Sanctify yourselves therefore, and be holy; for I am the LORD your God.",
+      "ko": "너희는 스스로 깨끗케 하여 거룩할찌어다 나는 너희 하나님 여호와니라",
+      "source_text_hash": "44416eb0a133b8580efad9008de317070adf8f65aac2103a93d69ddcbb7d443f",
+      "translation_text_hash": "26e8c19bf777bebfb2ea9dbcedd43ca2c218e73705d0cb115461f1fba8302b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 깨끗케 하여 거룩할찌어다 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "26e8c19bf777bebfb2ea9dbcedd43ca2c218e73705d0cb115461f1fba8302b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:8",
+      "sequence": 3327,
+      "chapter_label": "LEV 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "You shall keep my statutes, and do them. I am the LORD who sanctifies you.",
+      "ko": "너희는 내 규례를 지켜 행하라 나는 너희를 거룩케 하는 여호와니라",
+      "source_text_hash": "447c52e8af21d35a4562e779bcea990fa505b301776cabf54ea1619bf6f982a7",
+      "translation_text_hash": "1c060c148f50f0949ce8823ed717826afd568aa8db9b10560b8310cd37bc5c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내 규례를 지켜 행하라 나는 너희를 거룩케 하는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "1c060c148f50f0949ce8823ed717826afd568aa8db9b10560b8310cd37bc5c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:9",
+      "sequence": 3328,
+      "chapter_label": "LEV 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "“‘For everyone who curses his father or his mother shall surely be put to death. He has cursed his father or his mother. His blood shall be upon himself.",
+      "ko": "무릇 그 아비나 어미를 저주하는 자는 반드시 죽일찌니 그가 그 아비나 어미를 저주하였은즉 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "211fa1bf360aa38406306735812a93ec52213c48bb10967fa48a79520ba32e17",
+      "translation_text_hash": "233ecb5c516617facc0ddfd54c4f6bd356e55d363951deb2e53afa4618ce2c8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 아비나 어미를 저주하는 자는 반드시 죽일찌니 그가 그 아비나 어미를 저주하였은즉 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "233ecb5c516617facc0ddfd54c4f6bd356e55d363951deb2e53afa4618ce2c8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:10",
+      "sequence": 3329,
+      "chapter_label": "LEV 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "“‘The man who commits adultery with another man’s wife, even he who commits adultery with his neighbor’s wife, the adulterer and the adulteress shall surely be put to death.",
+      "ko": "누구든지 남의 아내와 간음하는 자 곧 그 이웃의 아내와 간음하는 자는 그 간부와 음부를 반드시 죽일찌니라",
+      "source_text_hash": "13281785692466406cc24b23a766a8aa00ec71798ef34c21c7cac711406f5d8b",
+      "translation_text_hash": "5922d19ccac2b0d5cce78375df773d3fe4289c207e3f7f818b11cf19eadbf4c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 남의 아내와 간음하는 자 곧 그 이웃의 아내와 간음하는 자는 그 간부와 음부를 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "5922d19ccac2b0d5cce78375df773d3fe4289c207e3f7f818b11cf19eadbf4c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:11",
+      "sequence": 3330,
+      "chapter_label": "LEV 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "“‘The man who lies with his father’s wife has uncovered his father’s nakedness. Both of them shall surely be put to death. Their blood shall be upon themselves.",
+      "ko": "누구든지 그 계모와 동침하는 자는 그 아비의 하체를 범하였은즉 둘 다 반드시 죽일찌니 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "2cf329eb89f5cf3b6e81d5e003d4246fafed5f1493521f62575bd1d104786cc8",
+      "translation_text_hash": "884ec8f3ad63c9c6713dd3ac5429778a2ce74a2dd8738f7f905938a0a842b492",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 계모와 동침하는 자는 그 아비의 하체를 범하였은즉 둘 다 반드시 죽일찌니 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "884ec8f3ad63c9c6713dd3ac5429778a2ce74a2dd8738f7f905938a0a842b492"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:12",
+      "sequence": 3331,
+      "chapter_label": "LEV 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "“‘If a man lies with his daughter-in-law, both of them shall surely be put to death. They have committed a perversion. Their blood shall be upon themselves.",
+      "ko": "누구든지 그 자부와 동침하거든 둘 다 반드시 죽일찌니 그들이 가증한 일을 행하였음이라 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "95cd1493e91ac66de447793d1f7a4db57b8dcac3363ae717d039aa856d704463",
+      "translation_text_hash": "668fc8ab0a1173e5b22e8b3a17aaf8a096b65f0afdfd49f36b0a02e6e35d019d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 자부와 동침하거든 둘 다 반드시 죽일찌니 그들이 가증한 일을 행하였음이라 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "668fc8ab0a1173e5b22e8b3a17aaf8a096b65f0afdfd49f36b0a02e6e35d019d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:13",
+      "sequence": 3332,
+      "chapter_label": "LEV 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "“‘If a man lies with a male, as with a woman, both of them have committed an abomination. They shall surely be put to death. Their blood shall be upon themselves.",
+      "ko": "누구든지 여인과 교합하듯 남자와 교합하면 둘 다 가증한 일을 행함인즉 반드시 죽일찌니 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "7e275e2ac9db36dbcfe0d531cfb744f7080b7c6face49306d22b5c14f6ffe217",
+      "translation_text_hash": "844c9f0aa23ee910071448b548d1185b5eb31bda3c0c00e9fd19451f354ab636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 여인과 교합하듯 남자와 교합하면 둘 다 가증한 일을 행함인즉 반드시 죽일찌니 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "844c9f0aa23ee910071448b548d1185b5eb31bda3c0c00e9fd19451f354ab636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:14",
+      "sequence": 3333,
+      "chapter_label": "LEV 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If a man takes a wife and her mother, it is wickedness. They shall be burned with fire, both he and they, that there may be no wickedness among you.",
+      "ko": "누구든지 아내와 그 장모를 아울러 취하면 악행인즉 그와 그들을 함께 불사를찌니 이는 너희 중에 악행이 없게 하려 함이니라",
+      "source_text_hash": "02860b6c167353ad18a9e3a4276758e13038832459a36238220eba5eefc5af0b",
+      "translation_text_hash": "11a72a6265577e6353f54b33959dc30e66c5b597075af7c92a3068cfa661fb9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 아내와 그 장모를 아울러 취하면 악행인즉 그와 그들을 함께 불사를찌니 이는 너희 중에 악행이 없게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "11a72a6265577e6353f54b33959dc30e66c5b597075af7c92a3068cfa661fb9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:15",
+      "sequence": 3334,
+      "chapter_label": "LEV 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "“‘If a man lies with an animal, he shall surely be put to death; and you shall kill the animal.",
+      "ko": "남자가 짐승과 교합하면 반드시 죽이고 너희는 그 짐승도 죽일 것이며",
+      "source_text_hash": "b150bb445b7a6907ed191b65a07aa2d29a3b9c1309b5714a31bec44d11f6302a",
+      "translation_text_hash": "7a2d01f5fb6cb724d30c12a2a2df2796ac95213ac6219026d98c78e4ddd5a871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자가 짐승과 교합하면 반드시 죽이고 너희는 그 짐승도 죽일 것이며"
+      ],
+      "raw_text_hashes": [
+        "7a2d01f5fb6cb724d30c12a2a2df2796ac95213ac6219026d98c78e4ddd5a871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:16",
+      "sequence": 3335,
+      "chapter_label": "LEV 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "“‘If a woman approaches any animal and lies with it, you shall kill the woman and the animal. They shall surely be put to death. Their blood shall be upon them.",
+      "ko": "여자가 짐승에게 가까이 하여 교합하거든 너는 여자와 짐승을 죽이되 이들을 반드시 죽일찌니 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "269d4a5eee50d78100a58862840888274576bfca00ff620a9e33f21ebee1dab2",
+      "translation_text_hash": "adb62f9c6040ae4a6cb6a45b7fed38af377539531351e916da91ac4e6e895d00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 짐승에게 가까이 하여 교합하거든 너는 여자와 짐승을 죽이되 이들을 반드시 죽일찌니 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "adb62f9c6040ae4a6cb6a45b7fed38af377539531351e916da91ac4e6e895d00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:17",
+      "sequence": 3336,
+      "chapter_label": "LEV 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "“‘If a man takes his sister—his father’s daughter, or his mother’s daughter—and sees her nakedness, and she sees his nakedness, it is a shameful thing. They shall be cut off in the sight of the children of their people. He has uncovered his sister’s nakedness. He shall bear his iniquity.",
+      "ko": "누구든지 그 자매 곧 아비의 딸이나 어미의 딸을 취하여 그 여자의 하체를 보고 여자는 그 남자의 하체를 보면 부끄러운 일이라 그 민족 앞에서 그들이 끊어질찌니 그가 그 자매의 하체를 범하였은즉 그 죄를 당하리라",
+      "source_text_hash": "e8087c9f6fb3a72cbf90ee69df2cd522fbab13a909b4ce8e0ca756d86a39cc59",
+      "translation_text_hash": "cc3c2b0fce72f4c25faf74704938df6ea51579a65a586f49c0d9e037031603f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 자매 곧 아비의 딸이나 어미의 딸을 취하여 그 여자의 하체를 보고 여자는 그 남자의 하체를 보면 부끄러운 일이라 그 민족 앞에서 그들이 끊어질찌니 그가 그 자매의 하체를 범하였은즉 그 죄를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "cc3c2b0fce72f4c25faf74704938df6ea51579a65a586f49c0d9e037031603f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:18",
+      "sequence": 3337,
+      "chapter_label": "LEV 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "“‘If a man lies with a woman having her monthly period, and uncovers her nakedness, he has made her fountain naked, and she has uncovered the fountain of her blood. Both of them shall be cut off from among their people.",
+      "ko": "누구든지 경도하는 여인과 동침하여 그의 하체를 범하면 남자는 그 여인의 근원을 드러내었고 여인은 자기의 피 근원을 드러내었음인즉 둘 다 백성 중에서 끊쳐지리라",
+      "source_text_hash": "738394eda58328339994f6bb1e1a65fc10ce207a92f8d10dcb79f050238a1e37",
+      "translation_text_hash": "ddcaf4d95c247bf9be623e8db222d0750a8538fc9d9bfc852eba72cbb7a291dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 경도하는 여인과 동침하여 그의 하체를 범하면 남자는 그 여인의 근원을 드러내었고 여인은 자기의 피 근원을 드러내었음인즉 둘 다 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "ddcaf4d95c247bf9be623e8db222d0750a8538fc9d9bfc852eba72cbb7a291dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:19",
+      "sequence": 3338,
+      "chapter_label": "LEV 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "“‘You shall not uncover the nakedness of your mother’s sister, nor of your father’s sister, for he has made his close relative naked. They shall bear their iniquity.",
+      "ko": "너의 이모나 고모의 하체를 범하지 말찌니 이는 골육지친의 하체인즉 그들이 그 죄를 당하리라",
+      "source_text_hash": "cad230e85b93c38c796c33500fdd9ca49d8cb34e9e0e4408fabcc723a8553189",
+      "translation_text_hash": "c56c03b610f1427aca87c6c873e0e39a80dac23c0fdfee8b94feb2519c244ba6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 이모나 고모의 하체를 범하지 말찌니 이는 골육지친의 하체인즉 그들이 그 죄를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "c56c03b610f1427aca87c6c873e0e39a80dac23c0fdfee8b94feb2519c244ba6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:20",
+      "sequence": 3339,
+      "chapter_label": "LEV 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "If a man lies with his uncle’s wife, he has uncovered his uncle’s nakedness. They shall bear their sin. They shall die childless.",
+      "ko": "누구든지 백숙모와 동침하면 그 백숙부의 하체를 범함이니 그들이 그 죄를 당하여 무자히 죽으리라",
+      "source_text_hash": "d39eee23911f6df1f95e0be13f5bb97d603dda0bb2113dd3761607d87801fece",
+      "translation_text_hash": "8ddf335957bd619bfbdd130eff5d556a00b4752b624ffdb36d5882353b9d042d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 백숙모와 동침하면 그 백숙부의 하체를 범함이니 그들이 그 죄를 당하여 무자히 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "8ddf335957bd619bfbdd130eff5d556a00b4752b624ffdb36d5882353b9d042d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:21",
+      "sequence": 3340,
+      "chapter_label": "LEV 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "“‘If a man takes his brother’s wife, it is an impurity. He has uncovered his brother’s nakedness. They shall be childless.",
+      "ko": "누구든지 그 형제의 아내를 취하면 더러운 일이라 그가 그 형제의 하체를 범함이니 그들이 무자하리라",
+      "source_text_hash": "0b18bd51cd8addfe0cfb82ad8555b069001a41bb3789720037b4098b41a96fc1",
+      "translation_text_hash": "871e0ed235a29040ba35edbcfdc9e90dff8d8560b13c6b87d519a206a488424c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 그 형제의 아내를 취하면 더러운 일이라 그가 그 형제의 하체를 범함이니 그들이 무자하리라"
+      ],
+      "raw_text_hashes": [
+        "871e0ed235a29040ba35edbcfdc9e90dff8d8560b13c6b87d519a206a488424c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:22",
+      "sequence": 3341,
+      "chapter_label": "LEV 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "“‘You shall therefore keep all my statutes and all my ordinances, and do them, that the land where I am bringing you to dwell may not vomit you out.",
+      "ko": "너희는 나의 모든 규례와 법도를 지켜 행하라 그리하여야 내가 너희를 인도하여 거하게 하는 땅이 너희를 토하지 아니하리라",
+      "source_text_hash": "40bcff70eb55cfa76d6369add07f0261b0f5119baca0d3924f35cb2f7f72ac0e",
+      "translation_text_hash": "d19346955d1e7d7ad1408696af639c2cbd763f4f7b1e63aafc3080d962574013",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 모든 규례와 법도를 지켜 행하라 그리하여야 내가 너희를 인도하여 거하게 하는 땅이 너희를 토하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d19346955d1e7d7ad1408696af639c2cbd763f4f7b1e63aafc3080d962574013"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:23",
+      "sequence": 3342,
+      "chapter_label": "LEV 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "You shall not walk in the customs of the nation which I am casting out before you; for they did all these things, and therefore I abhorred them.",
+      "ko": "너희는 내가 너희 앞에서 쫓아내는 족속의 풍속을 좇지 말라 그들이 이 모든 일을 행하므로 내가 그들을 가증히 여기노라",
+      "source_text_hash": "3b6836745b7b16c80fba3411591d3aa56136352d1d80280c737f1127e57b6625",
+      "translation_text_hash": "7045afd2f9627de480daf9fa9f39fe794a5b40eb71a1b46cbdaa3574924b6c6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내가 너희 앞에서 쫓아내는 족속의 풍속을 좇지 말라 그들이 이 모든 일을 행하므로 내가 그들을 가증히 여기노라"
+      ],
+      "raw_text_hashes": [
+        "7045afd2f9627de480daf9fa9f39fe794a5b40eb71a1b46cbdaa3574924b6c6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:24",
+      "sequence": 3343,
+      "chapter_label": "LEV 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "But I have said to you, “You shall inherit their land, and I will give it to you to possess it, a land flowing with milk and honey.” I am the LORD your God, who has separated you from the peoples.",
+      "ko": "내가 전에 너희에게 이르기를 너희가 그들의 땅을 기업으로 얻을 것이라 내가 그 땅 곧 젖과 꿀이 흐르는 땅으로 너희에게 주어 유업을 삼게 하리라 하였노라 나는 너희를 만민 중에서 구별한 너희 하나님 여호와라",
+      "source_text_hash": "ce22aff5bedc5a606a224548cd31d739f62bb08dc8bb824314721d10f864458d",
+      "translation_text_hash": "98a66b7cfd9bbd817c88e0253a7d65783b673cf1a68eca549e2147f87dfd5eb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에 너희에게 이르기를 너희가 그들의 땅을 기업으로 얻을 것이라 내가 그 땅 곧 젖과 꿀이 흐르는 땅으로 너희에게 주어 유업을 삼게 하리라 하였노라 나는 너희를 만민 중에서 구별한 너희 하나님 여호와라"
+      ],
+      "raw_text_hashes": [
+        "98a66b7cfd9bbd817c88e0253a7d65783b673cf1a68eca549e2147f87dfd5eb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:25",
+      "sequence": 3344,
+      "chapter_label": "LEV 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "“‘You shall therefore make a distinction between the clean animal and the unclean, and between the unclean fowl and the clean. You shall not make yourselves abominable by animal, or by bird, or by anything with which the ground teems, which I have separated from you as unclean for you.",
+      "ko": "너희는 짐승의 정하고 부정함과 새의 정하고 부정함을 구별하고 내가 너희를 위하여 부정한 것으로 구별한 짐승이나 새나 땅에 기는 곤충으로 인하여 너희 몸을 더럽히지 말라",
+      "source_text_hash": "0ec4b109090f5cd607a92d858bcd7bdfe00b91ed285f605e8367a205f6a9d445",
+      "translation_text_hash": "3a798e1e411148d455dc249a933418107e01242d2f2a6e0c3dc6f801ef6cb8c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 짐승의 정하고 부정함과 새의 정하고 부정함을 구별하고 내가 너희를 위하여 부정한 것으로 구별한 짐승이나 새나 땅에 기는 곤충으로 인하여 너희 몸을 더럽히지 말라"
+      ],
+      "raw_text_hashes": [
+        "3a798e1e411148d455dc249a933418107e01242d2f2a6e0c3dc6f801ef6cb8c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:26",
+      "sequence": 3345,
+      "chapter_label": "LEV 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "You shall be holy to me, for I, the LORD, am holy, and have set you apart from the peoples, that you should be mine.",
+      "ko": "너희는 내게 거룩할지어다 이는 나 여호와가 거룩하고 내가 또 너희로 나의 소유를 삼으려고 너희를 만민 중에서 구별하였음이니라",
+      "source_text_hash": "e3fe9e463fcccf847f772c5ff52e5bdcef97f966a5386f7fe54d432084050eb2",
+      "translation_text_hash": "8e7482344f99a6bac84760d99807317b73f4b0b4e3004a61040731c3d6738a0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내게 거룩할지어다 이는 나 여호와가 거룩하고 내가 또 너희로 나의 소유를 삼으려고 너희를 만민 중에서 구별하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "8e7482344f99a6bac84760d99807317b73f4b0b4e3004a61040731c3d6738a0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:20:27",
+      "sequence": 3346,
+      "chapter_label": "LEV 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "“‘A man or a woman that is a medium or is a wizard shall surely be put to death. They shall be stoned with stones. Their blood shall be upon themselves.’”",
+      "ko": "남자나 여자가 신접하거나 박수가 되거든 반드시 죽일지니 곧 돌로 그를 치라 그 피가 자기에게로 돌아가리라",
+      "source_text_hash": "01578aae7babbfc6e5eb06f4ea3eef59f76e2c8b086e3b1058a2c83de4c8bb08",
+      "translation_text_hash": "eec98294c8ee6c4c9c666906ac97a38de6ff41419824feba7352d7fbabef3057",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남자나 여자가 신접하거나 박수가 되거든 반드시 죽일지니 곧 돌로 그를 치라 그 피가 자기에게로 돌아가리라"
+      ],
+      "raw_text_hashes": [
+        "eec98294c8ee6c4c9c666906ac97a38de6ff41419824feba7352d7fbabef3057"
+      ]
+    }
+  ]
+}

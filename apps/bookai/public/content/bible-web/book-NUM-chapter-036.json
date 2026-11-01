@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:036",
+  "unit_ordinal": 153,
+  "unit_label": "NUM 36",
+  "book_code": "NUM",
+  "chapter_number": 36,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:36:1",
+      "sequence": 4881,
+      "chapter_label": "NUM 36",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 1
+        }
+      ],
+      "en": "The heads of the fathers’ households of the family of the children of Gilead, the son of Machir, the son of Manasseh, of the families of the sons of Joseph, came near and spoke before Moses and before the princes, the heads of the fathers’ households of the children of Israel.",
+      "ko": "요셉 자손의 가족 중 므낫세의 손자 마길의 아들 길르앗 자손 가족의 두령들이 나아와 모세와 이스라엘 자손의 두령 된 족장들 앞에 말하여",
+      "source_text_hash": "6ca56effd017532b81604a02177174e9cfc6900dce9e2238f608e6b182690502",
+      "translation_text_hash": "2d776ed52e31d538d3c66beaa781ef043490223d981f6db474ba33bf7dd5e4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉 자손의 가족 중 므낫세의 손자 마길의 아들 길르앗 자손 가족의 두령들이 나아와 모세와 이스라엘 자손의 두령 된 족장들 앞에 말하여"
+      ],
+      "raw_text_hashes": [
+        "2d776ed52e31d538d3c66beaa781ef043490223d981f6db474ba33bf7dd5e4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:2",
+      "sequence": 4882,
+      "chapter_label": "NUM 36",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 2
+        }
+      ],
+      "en": "They said, “The LORD commanded my lord to give the land for inheritance by lot to the children of Israel. My lord was commanded by the LORD to give the inheritance of Zelophehad our brother to his daughters.",
+      "ko": "가로되 여호와께서 우리 주에게 명하사 이스라엘 자손에게 그 기업의 땅을 제비 뽑아 주게 하셨고 여호와께서 또 우리 주에게 명하사 우리 형제 슬로브핫의 기업으로 그 딸들에게 주게 하셨은즉",
+      "source_text_hash": "75bf2d2c12136fadce6a4f3435a7c0e8194ab4629bbbdde99650c1fe6e8c44ab",
+      "translation_text_hash": "f859dbf6a72f23fed612cb83e8600e594dba94dddbc61dbb04f45cc2f0ac9587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와께서 우리 주에게 명하사 이스라엘 자손에게 그 기업의 땅을 제비 뽑아 주게 하셨고 여호와께서 또 우리 주에게 명하사 우리 형제 슬로브핫의 기업으로 그 딸들에게 주게 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "f859dbf6a72f23fed612cb83e8600e594dba94dddbc61dbb04f45cc2f0ac9587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:3",
+      "sequence": 4883,
+      "chapter_label": "NUM 36",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 3
+        }
+      ],
+      "en": "If they are married to any of the sons of the other tribes of the children of Israel, then their inheritance will be taken away from the inheritance of our fathers, and will be added to the inheritance of the tribe to which they shall belong. So it will be taken away from the lot of our inheritance.",
+      "ko": "그들이 만일 이스라엘 자손의 다른 지파 남자들에게 시집가면 그들의 기업은 우리 조상의 기업에서 감삭되고 그들의 속할 그 지파의 기업에 첨가되리니 그러면 우리 제비 뽑은 기업에서 감삭될 것이요",
+      "source_text_hash": "1e2341a1c38761c8498af0bd61aeda1d7e5d7a5413de4f91ec9679079cc2459f",
+      "translation_text_hash": "8bff95b720810e641cc5300932deab234630c25d2e90b4c131012591a921158c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 만일 이스라엘 자손의 다른 지파 남자들에게 시집가면 그들의 기업은 우리 조상의 기업에서 감삭되고 그들의 속할 그 지파의 기업에 첨가되리니 그러면 우리 제비 뽑은 기업에서 감삭될 것이요"
+      ],
+      "raw_text_hashes": [
+        "8bff95b720810e641cc5300932deab234630c25d2e90b4c131012591a921158c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:4",
+      "sequence": 4884,
+      "chapter_label": "NUM 36",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 4
+        }
+      ],
+      "en": "When the jubilee of the children of Israel comes, then their inheritance will be added to the inheritance of the tribe to which they shall belong. So their inheritance will be taken away from the inheritance of the tribe of our fathers.”",
+      "ko": "이스라엘 자손의 희년을 당하여 그 기업이 그가 속한 지파에 첨가될 것이라 그런즉 그들의 기업은 우리 조상 지파의 기업에서 아주 감삭되리이다",
+      "source_text_hash": "9d8727976e4e6d8e4037b66c6b394a2fd64acadc4f03275536f10fbf3cd20c19",
+      "translation_text_hash": "4f16f1cf4906074e552e75bca0e6e7828a73bd706887e2dfe58b54356296759c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 희년을 당하여 그 기업이 그가 속한 지파에 첨가될 것이라 그런즉 그들의 기업은 우리 조상 지파의 기업에서 아주 감삭되리이다"
+      ],
+      "raw_text_hashes": [
+        "4f16f1cf4906074e552e75bca0e6e7828a73bd706887e2dfe58b54356296759c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:5",
+      "sequence": 4885,
+      "chapter_label": "NUM 36",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 5
+        }
+      ],
+      "en": "Moses commanded the children of Israel according to the LORD’s word, saying, “The tribe of the sons of Joseph speak what is right.",
+      "ko": "모세가 여호와의 말씀으로 이스라엘에게 명하여 가로되 요셉 자손 지파의 말이 옳도다",
+      "source_text_hash": "878b8b8b522268f59d527368722ec0c4802f701064c7ee574578016944fec396",
+      "translation_text_hash": "b573d50e00e242b2ffb03ce018e01bc7efa2f5252be5457ab7192bae6610832e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 말씀으로 이스라엘에게 명하여 가로되 요셉 자손 지파의 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "b573d50e00e242b2ffb03ce018e01bc7efa2f5252be5457ab7192bae6610832e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:6",
+      "sequence": 4886,
+      "chapter_label": "NUM 36",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 6
+        }
+      ],
+      "en": "This is the thing which the LORD commands concerning the daughters of Zelophehad, saying, ‘Let them be married to whom they think best, only they shall marry into the family of the tribe of their father.",
+      "ko": "슬로브핫의 딸들에게 대한 여호와의 명이 이러하니라 이르시되 슬로브핫의 딸들은 마음대로 시집가려니와 오직 그 조상 지파의 가족에게로만 시집갈찌니",
+      "source_text_hash": "42de55756c0083462377b7250a3de23c74a2b7aef90a5d38dd441ca03fbf66fa",
+      "translation_text_hash": "6ca103ee4faa06aed9ae68170d5cc87f621e79981ac31c8a412510cc41d119d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬로브핫의 딸들에게 대한 여호와의 명이 이러하니라 이르시되 슬로브핫의 딸들은 마음대로 시집가려니와 오직 그 조상 지파의 가족에게로만 시집갈찌니"
+      ],
+      "raw_text_hashes": [
+        "6ca103ee4faa06aed9ae68170d5cc87f621e79981ac31c8a412510cc41d119d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:7",
+      "sequence": 4887,
+      "chapter_label": "NUM 36",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 7
+        }
+      ],
+      "en": "So shall no inheritance of the children of Israel move from tribe to tribe; for the children of Israel shall all keep the inheritance of the tribe of his fathers.",
+      "ko": "그리하면 이스라엘 자손의 기업이 이 지파에서 저 지파로 옮기지 않고 이스라엘 자손이 다 각기 조상 지파의 기업을 지킬 것이니라 하셨나니",
+      "source_text_hash": "cf25b6c2110e8b0c07e321576e6f88e6185e4bc5759c3604b1c1be8847c50526",
+      "translation_text_hash": "f4dc6ad748487ff6b90ac5f26bcae547c56fc51a17db51b50edcfc2896ca8b19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 이스라엘 자손의 기업이 이 지파에서 저 지파로 옮기지 않고 이스라엘 자손이 다 각기 조상 지파의 기업을 지킬 것이니라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "f4dc6ad748487ff6b90ac5f26bcae547c56fc51a17db51b50edcfc2896ca8b19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:8",
+      "sequence": 4888,
+      "chapter_label": "NUM 36",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 8
+        }
+      ],
+      "en": "Every daughter who possesses an inheritance in any tribe of the children of Israel shall be wife to one of the family of the tribe of her father, that the children of Israel may each possess the inheritance of his fathers.",
+      "ko": "이스라엘 자손의 지파 중 무릇 그 기업을 이은 딸들은 자기 조상 지파 가족 되는 사람에게로 시집갈 것이라 그리하면 이스라엘 자손이 각기 조상의 기업을 보존하게 되어서",
+      "source_text_hash": "fede71358b7b28cbd7175610ff3c603b50e74b75b387bdecaf2018bd7b95ad7c",
+      "translation_text_hash": "a40d47d303908097e1f3680a1e37cc502bc367bafcca5b11015463a905d751ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 지파 중 무릇 그 기업을 이은 딸들은 자기 조상 지파 가족 되는 사람에게로 시집갈 것이라 그리하면 이스라엘 자손이 각기 조상의 기업을 보존하게 되어서"
+      ],
+      "raw_text_hashes": [
+        "a40d47d303908097e1f3680a1e37cc502bc367bafcca5b11015463a905d751ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:9",
+      "sequence": 4889,
+      "chapter_label": "NUM 36",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 9
+        }
+      ],
+      "en": "So shall no inheritance move from one tribe to another tribe; for the tribes of the children of Israel shall each keep his own inheritance.’”",
+      "ko": "그 기업으로 이 지파에서 저 지파로 옮기게 하지 아니하고 이스라엘 자손 지파가 각각 자기 기업을 지키리라",
+      "source_text_hash": "33dbcc14da34504b6faa4452b25d171fd1d900653859978d4e1bc3858f3eb82a",
+      "translation_text_hash": "56ef929a130e188907e774e24165e92daaef60ce6ba8d20ca9016f170c647681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기업으로 이 지파에서 저 지파로 옮기게 하지 아니하고 이스라엘 자손 지파가 각각 자기 기업을 지키리라"
+      ],
+      "raw_text_hashes": [
+        "56ef929a130e188907e774e24165e92daaef60ce6ba8d20ca9016f170c647681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:10",
+      "sequence": 4890,
+      "chapter_label": "NUM 36",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 10
+        }
+      ],
+      "en": "The daughters of Zelophehad did as the LORD commanded Moses:",
+      "ko": "슬로브핫의 딸들이 여호와께서 모세에게 명하신대로 행하니라",
+      "source_text_hash": "106c61445e1ab08c5bda414d8c1fd3e8015b83f24c0db227209c788755c80cb8",
+      "translation_text_hash": "448b0bf46a9d16924b59618f05b1774c717ad9e36f75b2c2fb934f5a46dd1042",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬로브핫의 딸들이 여호와께서 모세에게 명하신대로 행하니라"
+      ],
+      "raw_text_hashes": [
+        "448b0bf46a9d16924b59618f05b1774c717ad9e36f75b2c2fb934f5a46dd1042"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:11",
+      "sequence": 4891,
+      "chapter_label": "NUM 36",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 11
+        }
+      ],
+      "en": "for Mahlah, Tirzah, Hoglah, Milcah, and Noah, the daughters of Zelophehad, were married to their father’s brothers’ sons.",
+      "ko": "슬로브핫의 딸 말라와 디르사와 호글라와 밀가와 노아가 다 그 아비 형제의 아들들에게로 시집가되",
+      "source_text_hash": "0ce879abd94909e41eb35aef071abf148f777f6cda2a56ad7529a973d3d5d037",
+      "translation_text_hash": "27cd450089d42f034abef77084bcd70781281153e0a7c7249dbe19efd7a55527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬로브핫의 딸 말라와 디르사와 호글라와 밀가와 노아가 다 그 아비 형제의 아들들에게로 시집가되"
+      ],
+      "raw_text_hashes": [
+        "27cd450089d42f034abef77084bcd70781281153e0a7c7249dbe19efd7a55527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:12",
+      "sequence": 4892,
+      "chapter_label": "NUM 36",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 12
+        }
+      ],
+      "en": "They were married into the families of the sons of Manasseh the son of Joseph. Their inheritance remained in the tribe of the family of their father.",
+      "ko": "그들이 요셉의 아들 므낫세 자손의 가족에게로 시집 간고로 그 기업이 그 아비 가족의 지파에 여전히 있었더라",
+      "source_text_hash": "1dc67f9f3d2c6d3330cb502688916c00d396f69d44802bebac0770f274f2e43c",
+      "translation_text_hash": "331f9db585898784ea604e6df85f7b46a45816bba45930ccb203bd7bfca05a37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 요셉의 아들 므낫세 자손의 가족에게로 시집 간고로 그 기업이 그 아비 가족의 지파에 여전히 있었더라"
+      ],
+      "raw_text_hashes": [
+        "331f9db585898784ea604e6df85f7b46a45816bba45930ccb203bd7bfca05a37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:36:13",
+      "sequence": 4893,
+      "chapter_label": "NUM 36",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 36,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 36,
+          "verse": 13
+        }
+      ],
+      "en": "These are the commandments and the ordinances which the LORD commanded by Moses to the children of Israel in the plains of Moab by the Jordan at Jericho.",
+      "ko": "이는 여리고 맞은편 요단 가 모압 평지에서 여호와께서 모세로 이스라엘 자손에게 명하신 명령과 규례니라",
+      "source_text_hash": "baf81cdf3e23d9bd3b89b9dcfe478af65fbf712eace86ef0946b44af0a5076f0",
+      "translation_text_hash": "a82808e305aeb2e7876aafdb88e08145bb63426948aa544b3a34ea883a16764d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여리고 맞은편 요단 가 모압 평지에서 여호와께서 모세로 이스라엘 자손에게 명하신 명령과 규례니라"
+      ],
+      "raw_text_hashes": [
+        "a82808e305aeb2e7876aafdb88e08145bb63426948aa544b3a34ea883a16764d"
+      ]
+    }
+  ]
+}

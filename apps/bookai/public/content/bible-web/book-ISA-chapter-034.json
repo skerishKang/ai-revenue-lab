@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:034",
+  "unit_ordinal": 713,
+  "unit_label": "ISA 34",
+  "book_code": "ISA",
+  "chapter_number": 34,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:34:1",
+      "sequence": 18305,
+      "chapter_label": "ISA 34",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 1
+        }
+      ],
+      "en": "Come near, you nations, to hear! Listen, you peoples. Let the earth and all it contains hear, the world, and everything that comes from it.",
+      "ko": "열국이여 너희는 나아와 들을찌어다 민족들이여 귀를 기울일찌어다 땅과 땅에 충만한 것, 세계와 세계에서 나는 모든 것이여 들을찌어다",
+      "source_text_hash": "db154412721651d98f781a07da7994fdddce2a0ffb1008ffd6f13c165207e4e5",
+      "translation_text_hash": "4870aee8ebe1cbcf6e6fbd18c2351cd1a2c464b4c2313b3384cfc769f862398c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열국이여 너희는 나아와 들을찌어다 민족들이여 귀를 기울일찌어다 땅과 땅에 충만한 것, 세계와 세계에서 나는 모든 것이여 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "4870aee8ebe1cbcf6e6fbd18c2351cd1a2c464b4c2313b3384cfc769f862398c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:2",
+      "sequence": 18306,
+      "chapter_label": "ISA 34",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 2
+        }
+      ],
+      "en": "For the LORD is enraged against all the nations, and angry with all their armies. He has utterly destroyed them. He has given them over for slaughter.",
+      "ko": "대저 여호와께서 만국을 향하여 진노하시며 그들의 만군을 향하여 분내사 그들을 진멸하시며 살륙케 하셨은즉",
+      "source_text_hash": "3269604fb83b0db8c794d1c5af6eb6c7f9c40d256846cf3119f575ca599a15f9",
+      "translation_text_hash": "ac657e99c896a6c50b82667a984889d2860c9f43eb094b75ab3563d9918214ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 여호와께서 만국을 향하여 진노하시며 그들의 만군을 향하여 분내사 그들을 진멸하시며 살륙케 하셨은즉"
+      ],
+      "raw_text_hashes": [
+        "ac657e99c896a6c50b82667a984889d2860c9f43eb094b75ab3563d9918214ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:3",
+      "sequence": 18307,
+      "chapter_label": "ISA 34",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 3
+        }
+      ],
+      "en": "Their slain will also be cast out, and the stench of their dead bodies will come up. The mountains will melt in their blood.",
+      "ko": "그 살륙 당한 자는 내어던진바 되며 그 사체의 악취가 솟아오르고 그 피에 산들이 녹을 것이며",
+      "source_text_hash": "ecae0b6aba1df6dedae9e2417d4dbde51d9e16f3855bf874bf16966a8642a182",
+      "translation_text_hash": "3f552a3694f4fb624c34f82098428da6b1a8ebc5d5ac71264127962f2a00405f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 살륙 당한 자는 내어던진바 되며 그 사체의 악취가 솟아오르고 그 피에 산들이 녹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "3f552a3694f4fb624c34f82098428da6b1a8ebc5d5ac71264127962f2a00405f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:4",
+      "sequence": 18308,
+      "chapter_label": "ISA 34",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 4
+        }
+      ],
+      "en": "All of the army of the sky will be dissolved. The sky will be rolled up like a scroll, and all its armies will fade away, as a leaf fades from off a vine or a fig tree.",
+      "ko": "하늘의 만상이 사라지고 하늘들이 두루마리 같이 말리되 그 만상의 쇠잔함이 포도나무 잎이 마름 같고 무화과나무 잎이 마름 같으리라",
+      "source_text_hash": "4719316034d8dd54ebdd047134029ef2fe466ec2d6c15ca36e7ac9289896ac09",
+      "translation_text_hash": "995243cb1177efabb892787934c1cab163d5d666536c31960b09474f017d1319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 만상이 사라지고 하늘들이 두루마리 같이 말리되 그 만상의 쇠잔함이 포도나무 잎이 마름 같고 무화과나무 잎이 마름 같으리라"
+      ],
+      "raw_text_hashes": [
+        "995243cb1177efabb892787934c1cab163d5d666536c31960b09474f017d1319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:5",
+      "sequence": 18309,
+      "chapter_label": "ISA 34",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 5
+        }
+      ],
+      "en": "For my sword has drunk its fill in the sky. Behold, it will come down on Edom, and on the people of my curse, for judgment.",
+      "ko": "여호와의 칼이 하늘에서 족하게 마셨은즉 보라 이것이 에돔 위에 내리며 멸망으로 정한 백성 위에 내려서 그를 심판할 것이라",
+      "source_text_hash": "0ae596b77f3889985fedc5254b281a46a2ef243149e821930c14826404bac0b5",
+      "translation_text_hash": "00dae92a5ff4e50feb23a073893f9b181c98196ed911ee7392f5d2a5cc990449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 칼이 하늘에서 족하게 마셨은즉 보라 이것이 에돔 위에 내리며 멸망으로 정한 백성 위에 내려서 그를 심판할 것이라"
+      ],
+      "raw_text_hashes": [
+        "00dae92a5ff4e50feb23a073893f9b181c98196ed911ee7392f5d2a5cc990449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:6",
+      "sequence": 18310,
+      "chapter_label": "ISA 34",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD’s sword is filled with blood. It is covered with fat, with the blood of lambs and goats, with the fat of the kidneys of rams; for the LORD has a sacrifice in Bozrah, and a great slaughter in the land of Edom.",
+      "ko": "여호와의 칼이 피 곧 어린 양과 염소의 피에 만족하고 기름 곧 수양의 콩팥 기름에 윤택하니 이는 여호와께서 보스라에서 희생을 내시며 에돔 땅에서 큰 살륙을 행하심이라",
+      "source_text_hash": "e0c92608f1976495bf51fa7a74e96e1ea1aa4a5bf7d609f3eb46ccd06ec46285",
+      "translation_text_hash": "c1e4af004511c486fe9a096cf54f87b190ab87ab63c0b90a158c938ddd80c123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 칼이 피 곧 어린 양과 염소의 피에 만족하고 기름 곧 수양의 콩팥 기름에 윤택하니 이는 여호와께서 보스라에서 희생을 내시며 에돔 땅에서 큰 살륙을 행하심이라"
+      ],
+      "raw_text_hashes": [
+        "c1e4af004511c486fe9a096cf54f87b190ab87ab63c0b90a158c938ddd80c123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:7",
+      "sequence": 18311,
+      "chapter_label": "ISA 34",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 7
+        }
+      ],
+      "en": "The wild oxen will come down with them, and the young bulls with the mighty bulls; and their land will be drunken with blood, and their dust made greasy with fat.",
+      "ko": "들소와 송아지와 수소가 한 가지로 도살장에 내려가니 그들의 땅이 피에 취하며 흙이 기름으로 윤택하리라",
+      "source_text_hash": "2e9d3c655d90ea1a9d8c864b669d130786f17154bc9c1f3b48d2252aee4010ce",
+      "translation_text_hash": "0c314749f1ed7ca27ffefe4ac8845c2cfce68c21eaafbeb131562c32badbed65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들소와 송아지와 수소가 한 가지로 도살장에 내려가니 그들의 땅이 피에 취하며 흙이 기름으로 윤택하리라"
+      ],
+      "raw_text_hashes": [
+        "0c314749f1ed7ca27ffefe4ac8845c2cfce68c21eaafbeb131562c32badbed65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:8",
+      "sequence": 18312,
+      "chapter_label": "ISA 34",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 8
+        }
+      ],
+      "en": "For the LORD has a day of vengeance, a year of recompense for the cause of Zion.",
+      "ko": "이것은 여호와의 보수할 날이요 시온의 송사를 위하여 신원하실 해라",
+      "source_text_hash": "89cad905d8df3822646b08b941519613f66c5108bc8a78821bafa53ef2aca4a0",
+      "translation_text_hash": "1a5575e86124c83534dae70fba678ce882cba118c8bb195fb4923da9e031c049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 여호와의 보수할 날이요 시온의 송사를 위하여 신원하실 해라"
+      ],
+      "raw_text_hashes": [
+        "1a5575e86124c83534dae70fba678ce882cba118c8bb195fb4923da9e031c049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:9",
+      "sequence": 18313,
+      "chapter_label": "ISA 34",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 9
+        }
+      ],
+      "en": "Its streams will be turned into pitch, its dust into sulfur, and its land will become burning pitch.",
+      "ko": "에돔의 시내들은 변하여 역청이 되고 그 티끌은 유황이 되고 그 땅은 불 붙는 역청이 되며",
+      "source_text_hash": "c601228e64786fd5b03b0d13b678a9c65d7eed1b1dc7ffbf2729efd2f1b7a588",
+      "translation_text_hash": "7892173759453b0a1ea17d6703a0487c90b7b2accfd17ee004e3427a37b21635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에돔의 시내들은 변하여 역청이 되고 그 티끌은 유황이 되고 그 땅은 불 붙는 역청이 되며"
+      ],
+      "raw_text_hashes": [
+        "7892173759453b0a1ea17d6703a0487c90b7b2accfd17ee004e3427a37b21635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:10",
+      "sequence": 18314,
+      "chapter_label": "ISA 34",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 10
+        }
+      ],
+      "en": "It won’t be quenched night or day. Its smoke will go up forever. From generation to generation, it will lie waste. No one will pass through it forever and ever.",
+      "ko": "낮에나 밤에나 꺼지지 않고 그 연기가 끊임 없이 떠오를 것이며 세세에 황무하여 그리로 지날 자가 영영히 없겠고",
+      "source_text_hash": "27dd7a1c9f5620b0a1b9d03547157d56965d45cb3223ac15db50a75f78fdba13",
+      "translation_text_hash": "053f434e9ec64c07b76660f8dd4f11af74ecf63b5bb880d0e3c66b64e64f6945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에나 밤에나 꺼지지 않고 그 연기가 끊임 없이 떠오를 것이며 세세에 황무하여 그리로 지날 자가 영영히 없겠고"
+      ],
+      "raw_text_hashes": [
+        "053f434e9ec64c07b76660f8dd4f11af74ecf63b5bb880d0e3c66b64e64f6945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:11",
+      "sequence": 18315,
+      "chapter_label": "ISA 34",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 11
+        }
+      ],
+      "en": "But the pelican and the porcupine will possess it. The owl and the raven will dwell in it. He will stretch the line of confusion over it, and the plumb line of emptiness.",
+      "ko": "당아와 고슴도치가 그 땅을 차지하며 부엉이와 까마귀가 거기 거할 것이라 여호와께서 혼란의 줄과 공허의 추를 에돔에 베푸실 것인즉",
+      "source_text_hash": "d78f57b3b3c31b60676897c1d49ad2f53ef5354233b579d6d9495d97dd475088",
+      "translation_text_hash": "57e54c6059434b32c7d560ae2f9e44fe5c3a9a82d0f9062781e2f611c0c4570f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당아와 고슴도치가 그 땅을 차지하며 부엉이와 까마귀가 거기 거할 것이라 여호와께서 혼란의 줄과 공허의 추를 에돔에 베푸실 것인즉"
+      ],
+      "raw_text_hashes": [
+        "57e54c6059434b32c7d560ae2f9e44fe5c3a9a82d0f9062781e2f611c0c4570f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:12",
+      "sequence": 18316,
+      "chapter_label": "ISA 34",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 12
+        }
+      ],
+      "en": "They shall call its nobles to the kingdom, but none shall be there; and all its princes shall be nothing.",
+      "ko": "그들이 국가를 이으려 하여 귀인들을 부르되 아무도 없겠고 그 모든 방백도 없게 될 것이요",
+      "source_text_hash": "cf47452e6267c7389d0f098c66218319839808a0dcd4d1e5f6078877017d6858",
+      "translation_text_hash": "9e144466574822a1ee3ad5d3bbe0ad4d53f5772b242425c4c2e14b3890ba97ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 국가를 이으려 하여 귀인들을 부르되 아무도 없겠고 그 모든 방백도 없게 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "9e144466574822a1ee3ad5d3bbe0ad4d53f5772b242425c4c2e14b3890ba97ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:13",
+      "sequence": 18317,
+      "chapter_label": "ISA 34",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 13
+        }
+      ],
+      "en": "Thorns will come up in its palaces, nettles and thistles in its fortresses; and it will be a habitation of jackals, a court for ostriches.",
+      "ko": "그 궁궐에는 가시나무가 나며 그 견고한 성에는 엉겅퀴와 새품이 자라서 시랑의 굴과 타조의 처소가 될 것이니",
+      "source_text_hash": "446038df7d791ec8ec993e1c19f4b214510955287b073a0b8333975297ad7732",
+      "translation_text_hash": "0e9dbdb54682d86fdd793ca31eb12047a5eaca0cb5b0a7d9af0114d90c795771",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 궁궐에는 가시나무가 나며 그 견고한 성에는 엉겅퀴와 새품이 자라서 시랑의 굴과 타조의 처소가 될 것이니"
+      ],
+      "raw_text_hashes": [
+        "0e9dbdb54682d86fdd793ca31eb12047a5eaca0cb5b0a7d9af0114d90c795771"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:14",
+      "sequence": 18318,
+      "chapter_label": "ISA 34",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 14
+        }
+      ],
+      "en": "The wild animals of the desert will meet with the wolves, and the wild goat will cry to his fellow. Yes, the night creature shall settle there, and shall find herself a place of rest.",
+      "ko": "들짐승이 이리와 만나며 수염소가 그 동류를 부르며 올빼미가 거기 거하여 쉬는 처소를 삼으며",
+      "source_text_hash": "0b62cf2f46f72e04ff0457edd5c7092a2c0bd9d587ec8506ed7dea26fbcd50e7",
+      "translation_text_hash": "a766615bd47c3b301c5c90302549351f12bf653c943d6bdb69bc84a7576995e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들짐승이 이리와 만나며 수염소가 그 동류를 부르며 올빼미가 거기 거하여 쉬는 처소를 삼으며"
+      ],
+      "raw_text_hashes": [
+        "a766615bd47c3b301c5c90302549351f12bf653c943d6bdb69bc84a7576995e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:15",
+      "sequence": 18319,
+      "chapter_label": "ISA 34",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 15
+        }
+      ],
+      "en": "The arrow snake will make her nest there, and lay, hatch, and gather under her shade. Yes, the kites will be gathered there, every one with her mate.",
+      "ko": "부엉이가 거기 깃들이고 알을 낳아 까서 그 그늘에 모으며 솔개들도 그 짝과 함께 거기 모이리라",
+      "source_text_hash": "47d7346b60b6a651bb050b9b0246bec1ae9368dcd159f626d472d717c4f1a8c8",
+      "translation_text_hash": "7ff2e05ab68fbd10980690beee3948978e7bcfe71bbacfe0efd744ee706b835e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부엉이가 거기 깃들이고 알을 낳아 까서 그 그늘에 모으며 솔개들도 그 짝과 함께 거기 모이리라"
+      ],
+      "raw_text_hashes": [
+        "7ff2e05ab68fbd10980690beee3948978e7bcfe71bbacfe0efd744ee706b835e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:16",
+      "sequence": 18320,
+      "chapter_label": "ISA 34",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 16
+        }
+      ],
+      "en": "Search in the book of the LORD, and read: not one of these will be missing. None will lack her mate. For my mouth has commanded, and his Spirit has gathered them.",
+      "ko": "너희는 여호와의 책을 자세히 읽어보라 이것들이 하나도 빠진 것이 없고 하나도 그 짝이 없는 것이 없으리니 이는 여호와의 입이 이를 명하셨고 그의 신이 이것들을 모으셨음이라",
+      "source_text_hash": "3e24b4a36ca2dac2d2f00af70b24a7386e958a175e74112c815494b65d980749",
+      "translation_text_hash": "cf16244b3c012828561c9b022d867bcb7950f773c7307c8293715dfa8def30d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와의 책을 자세히 읽어보라 이것들이 하나도 빠진 것이 없고 하나도 그 짝이 없는 것이 없으리니 이는 여호와의 입이 이를 명하셨고 그의 신이 이것들을 모으셨음이라"
+      ],
+      "raw_text_hashes": [
+        "cf16244b3c012828561c9b022d867bcb7950f773c7307c8293715dfa8def30d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:34:17",
+      "sequence": 18321,
+      "chapter_label": "ISA 34",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 34,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 34,
+          "verse": 17
+        }
+      ],
+      "en": "He has cast the lot for them, and his hand has divided it to them with a measuring line. They shall possess it forever. From generation to generation they will dwell in it.",
+      "ko": "여호와께서 그것들을 위하여 제비를 뽑으시며 친수로 줄을 띠어 그 땅을 그것들에게 나눠주셨으니 그것들이 영영히 차지하며 대대로 거기 거하리라",
+      "source_text_hash": "c1ac488c3d1f18d87f7fdc3d08fa7e6149c44983e7ae2d5486b402c921632e3a",
+      "translation_text_hash": "30a5357cbeace44cec60ce3613d6ce369cd5389486c7667c6fd0a5b609d6b6ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그것들을 위하여 제비를 뽑으시며 친수로 줄을 띠어 그 땅을 그것들에게 나눠주셨으니 그것들이 영영히 차지하며 대대로 거기 거하리라"
+      ],
+      "raw_text_hashes": [
+        "30a5357cbeace44cec60ce3613d6ce369cd5389486c7667c6fd0a5b609d6b6ad"
+      ]
+    }
+  ]
+}

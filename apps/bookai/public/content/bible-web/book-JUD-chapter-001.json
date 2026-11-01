@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JUD:chapter:001",
+  "unit_ordinal": 1167,
+  "unit_label": "JUD 1",
+  "book_code": "JUD",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JUD:1:1",
+      "sequence": 30670,
+      "chapter_label": "JUD 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Jude, a servant of Jesus Christ, and brother of James, to those who are called, sanctified by God the Father, and kept for Jesus Christ:",
+      "ko": "예수 그리스도의 종이요 야고보의 형제인 유다는 부르심을 입은 자 곧 하나님 아버지 안에서 사랑을 얻고 예수 그리스도를 위하여 지키심을 입은 자들에게 편지하노라",
+      "source_text_hash": "96bb9e5b4f2cc834fb8b92da3287ace198f2a1dd4796572acf52817acb43e68e",
+      "translation_text_hash": "c3269db284ad93487d3d896b7dd69670fcfd70b488c41551aeeed9715dc9b50f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 종이요 야고보의 형제인 유다는 부르심을 입은 자 곧 하나님 아버지 안에서 사랑을 얻고 예수 그리스도를 위하여 지키심을 입은 자들에게 편지하노라"
+      ],
+      "raw_text_hashes": [
+        "c3269db284ad93487d3d896b7dd69670fcfd70b488c41551aeeed9715dc9b50f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:2",
+      "sequence": 30671,
+      "chapter_label": "JUD 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "May mercy, peace, and love be multiplied to you.",
+      "ko": "긍휼과 평강과 사랑이 너희에게 더욱 많을찌어다",
+      "source_text_hash": "eda0025737ba3e004dccdd11fb5a03e0b4db81f992faf0559cc8ca573922bd5d",
+      "translation_text_hash": "566932ad01a82fe7e226fc3f1ebf56dcef6fa00485c61513e61f960a1d2fbbe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "긍휼과 평강과 사랑이 너희에게 더욱 많을찌어다"
+      ],
+      "raw_text_hashes": [
+        "566932ad01a82fe7e226fc3f1ebf56dcef6fa00485c61513e61f960a1d2fbbe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:3",
+      "sequence": 30672,
+      "chapter_label": "JUD 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Beloved, while I was very eager to write to you about our common salvation, I was constrained to write to you exhorting you to contend earnestly for the faith which was once for all delivered to the saints.",
+      "ko": "사랑하는 자들아 내가 우리의 일반으로 얻은 구원을 들어 너희에게 편지하려는 뜻이 간절하던 차에 성도에게 단번에 주신 믿음의 도를 위하여 힘써 싸우라는 편지로 너희를 권하여야 할 필요를 느꼈노니",
+      "source_text_hash": "24b7351a6237f61dbf2dcaddeac51a30e161ba6306a325f74d8d3a475a45b9cc",
+      "translation_text_hash": "9276b760387f144193185ef15965ef2f16ca5d0a4b5ac5d77930b91e2c7b51f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 내가 우리의 일반으로 얻은 구원을 들어 너희에게 편지하려는 뜻이 간절하던 차에 성도에게 단번에 주신 믿음의 도를 위하여 힘써 싸우라는 편지로 너희를 권하여야 할 필요를 느꼈노니"
+      ],
+      "raw_text_hashes": [
+        "9276b760387f144193185ef15965ef2f16ca5d0a4b5ac5d77930b91e2c7b51f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:4",
+      "sequence": 30673,
+      "chapter_label": "JUD 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "For there are certain men who crept in secretly, even those who were long ago written about for this condemnation: ungodly men, turning the grace of our God into indecency, and denying our only Master, God, and Lord, Jesus Christ.",
+      "ko": "이는 가만히 들어온 사람 몇이 있음이라 저희는 옛적부터 이 판결을 받기로 미리 기록된 자니 경건치 아니하여 우리 하나님의 은혜를 도리어 색욕거리로 바꾸고 홀로 하나이신 주재 곧 우리 주 예수 그리스도를 부인하는 자니라",
+      "source_text_hash": "810b67eec90a407aae48969b3a815f0f335dae602f237e2a180bb77560d910b7",
+      "translation_text_hash": "90a381178438552cdafb5681a2af2d973e86f1ee520c7536519f3d12e6274895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 가만히 들어온 사람 몇이 있음이라 저희는 옛적부터 이 판결을 받기로 미리 기록된 자니 경건치 아니하여 우리 하나님의 은혜를 도리어 색욕거리로 바꾸고 홀로 하나이신 주재 곧 우리 주 예수 그리스도를 부인하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "90a381178438552cdafb5681a2af2d973e86f1ee520c7536519f3d12e6274895"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:5",
+      "sequence": 30674,
+      "chapter_label": "JUD 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Now I desire to remind you, though you already know this, that the Lord, having saved a people out of the land of Egypt, afterward destroyed those who didn’t believe.",
+      "ko": "너희가 본래 범사를 알았으나 내가 너희로 다시 생각나게 하고자 하노라 주께서 백성을 애굽에서 구원하여 내시고 후에 믿지 아니하는 자들을 멸하셨으며",
+      "source_text_hash": "4af5f2d953ddba34c56616bc5dafb48778adb0731fa7f00be56cf54d5bce27bd",
+      "translation_text_hash": "16b44df5f91a143f5afdde97ee1b867fca781e330198a0aaa850f756400cd210",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 본래 범사를 알았으나 내가 너희로 다시 생각나게 하고자 하노라 주께서 백성을 애굽에서 구원하여 내시고 후에 믿지 아니하는 자들을 멸하셨으며"
+      ],
+      "raw_text_hashes": [
+        "16b44df5f91a143f5afdde97ee1b867fca781e330198a0aaa850f756400cd210"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:6",
+      "sequence": 30675,
+      "chapter_label": "JUD 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Angels who didn’t keep their first domain, but deserted their own dwelling place, he has kept in everlasting bonds under darkness for the judgment of the great day.",
+      "ko": "또 자기 지위를 지키지 아니하고 자기 처소를 떠난 천사들을 큰 날의 심판까지 영원한 결박으로 흑암에 가두셨으며",
+      "source_text_hash": "7608697d0c1dc31bc4434884fc3e7f325758bb72e5e3c81356aabed4d15ce799",
+      "translation_text_hash": "11f80f69cf9ccfc77806cdbf83169845a2d5fcdc1be972597c729b9bb18ad219",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기 지위를 지키지 아니하고 자기 처소를 떠난 천사들을 큰 날의 심판까지 영원한 결박으로 흑암에 가두셨으며"
+      ],
+      "raw_text_hashes": [
+        "11f80f69cf9ccfc77806cdbf83169845a2d5fcdc1be972597c729b9bb18ad219"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:7",
+      "sequence": 30676,
+      "chapter_label": "JUD 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Even as Sodom and Gomorrah and the cities around them, having in the same way as these given themselves over to sexual immorality and gone after strange flesh, are shown as an example, suffering the punishment of eternal fire.",
+      "ko": "소돔과 고모라와 그 이웃 도시들도 저희와 같은 모양으로 간음을 행하며 다른 색을 따라 가다가 영원한 불의 형벌을 받음으로 거울이 되었느니라",
+      "source_text_hash": "5bb4ebf1a3c72e437892725e60f18ceec6caf8a1e893b6cbb5764e43c5297024",
+      "translation_text_hash": "5bf5cce142e11ccdc1d707314f03991d85986d87465f0243d24134f9a624537f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소돔과 고모라와 그 이웃 도시들도 저희와 같은 모양으로 간음을 행하며 다른 색을 따라 가다가 영원한 불의 형벌을 받음으로 거울이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "5bf5cce142e11ccdc1d707314f03991d85986d87465f0243d24134f9a624537f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:8",
+      "sequence": 30677,
+      "chapter_label": "JUD 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Yet in the same way, these also in their dreaming defile the flesh, despise authority, and slander celestial beings.",
+      "ko": "그러한데 꿈꾸는 이 사람들도 그와 같이 육체를 더럽히며 권위를 업신여기며 영광을 훼방하는도다",
+      "source_text_hash": "c0837490a4ea77114c958543fa83bcb8fc809988e86d2bab7b53db84580b44f0",
+      "translation_text_hash": "06c6e0cb363342f3fdc1c1efbe23a7ad78550c5cf25748de7dd94131faf1a982",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러한데 꿈꾸는 이 사람들도 그와 같이 육체를 더럽히며 권위를 업신여기며 영광을 훼방하는도다"
+      ],
+      "raw_text_hashes": [
+        "06c6e0cb363342f3fdc1c1efbe23a7ad78550c5cf25748de7dd94131faf1a982"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:9",
+      "sequence": 30678,
+      "chapter_label": "JUD 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "But Michael, the archangel, when contending with the devil and arguing about the body of Moses, dared not bring against him an abusive condemnation, but said, “May the Lord rebuke you!”",
+      "ko": "천사장 미가엘이 모세의 시체에 대하여 마귀와 다투어 변론할 때에 감히 훼방하는 판결을 쓰지 못하고 다만 말하되 주께서 너를 꾸짖으시기를 원하노라 하였거늘",
+      "source_text_hash": "74ee0a0c4badb85de69b97169e4558b110229b2db05f1b659c488d48c7a1c043",
+      "translation_text_hash": "2c5b205cf4253a32a5bf52c6ff5157d6db13a81a52a1e481d78c1bd61842d8f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사장 미가엘이 모세의 시체에 대하여 마귀와 다투어 변론할 때에 감히 훼방하는 판결을 쓰지 못하고 다만 말하되 주께서 너를 꾸짖으시기를 원하노라 하였거늘"
+      ],
+      "raw_text_hashes": [
+        "2c5b205cf4253a32a5bf52c6ff5157d6db13a81a52a1e481d78c1bd61842d8f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:10",
+      "sequence": 30679,
+      "chapter_label": "JUD 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "But these speak evil of whatever things they don’t know. They are destroyed in these things that they understand naturally, like the creatures without reason.",
+      "ko": "이 사람들은 무엇이든지 그 알지 못하는 것을 훼방하는도다 또 저희는 이성 없는 짐승 같이 본능으로 아는 그것으로 멸망하느니라",
+      "source_text_hash": "fe476cbbf9ffad463b27a721bd0dee733b1d226dc12740ca342700ce2e6c7c01",
+      "translation_text_hash": "50d8e536f28109e9744a871f94f94299ece6c59d4474a4a4395a84b1bf5463a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 무엇이든지 그 알지 못하는 것을 훼방하는도다 또 저희는 이성 없는 짐승 같이 본능으로 아는 그것으로 멸망하느니라"
+      ],
+      "raw_text_hashes": [
+        "50d8e536f28109e9744a871f94f94299ece6c59d4474a4a4395a84b1bf5463a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:11",
+      "sequence": 30680,
+      "chapter_label": "JUD 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Woe to them! For they went in the way of Cain, and ran riotously in the error of Balaam for hire, and perished in Korah’s rebellion.",
+      "ko": "화 있을찐저 이 사람들이여, 가인의 길에 행하였으며 삯을 위하여 발람의 어그러진 길로 몰려 갔으며 고라의 패역을 좇아 멸망을 받았도다",
+      "source_text_hash": "400f30d64b25f2df62ff0f8a845d3701094a14d24d42914967f54a80ff25519d",
+      "translation_text_hash": "9b28e4b22b42b4c1959ac2299dadbf6d886aadd15c7fb6b39ff41bfd4d8b4089",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 이 사람들이여, 가인의 길에 행하였으며 삯을 위하여 발람의 어그러진 길로 몰려 갔으며 고라의 패역을 좇아 멸망을 받았도다"
+      ],
+      "raw_text_hashes": [
+        "9b28e4b22b42b4c1959ac2299dadbf6d886aadd15c7fb6b39ff41bfd4d8b4089"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:12",
+      "sequence": 30681,
+      "chapter_label": "JUD 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "These are hidden rocky reefs in your love feasts when they feast with you, shepherds who without fear feed themselves; clouds without water, carried along by winds; autumn trees without fruit, twice dead, plucked up by the roots;",
+      "ko": "저희는 기탄 없이 너희와 함께 먹으니 너의 애찬의 암초요 자기 몸만 기르는 목자요 바람에 불려가는 물 없는 구름이요 죽고 또 죽어 뿌리까지 뽑힌 열매 없는 가을 나무요",
+      "source_text_hash": "fed7d8054b9105603a260ce4e8cdb37b212d165294945810c506fa607874fc6f",
+      "translation_text_hash": "10625e17defffd414bf2b5ae9e3bdc6f963286fbeb6200d995b41e4248739a90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 기탄 없이 너희와 함께 먹으니 너의 애찬의 암초요 자기 몸만 기르는 목자요 바람에 불려가는 물 없는 구름이요 죽고 또 죽어 뿌리까지 뽑힌 열매 없는 가을 나무요"
+      ],
+      "raw_text_hashes": [
+        "10625e17defffd414bf2b5ae9e3bdc6f963286fbeb6200d995b41e4248739a90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:13",
+      "sequence": 30682,
+      "chapter_label": "JUD 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "wild waves of the sea, foaming out their own shame; wandering stars, for whom the blackness of darkness has been reserved forever.",
+      "ko": "자기의 수치의 거품을 뿜는 바다의 거친 물결이요 영원히 예비된 캄캄한 흑암에 돌아갈 유리하는 별들이라",
+      "source_text_hash": "78a1c505589868f6073ba69d7ef955976f9ec5556e93d0f204a0ac713129f500",
+      "translation_text_hash": "fcfec941b8faec0ccd2430ff2d489861899615fe54826eaf7723c9dffdb91cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 수치의 거품을 뿜는 바다의 거친 물결이요 영원히 예비된 캄캄한 흑암에 돌아갈 유리하는 별들이라"
+      ],
+      "raw_text_hashes": [
+        "fcfec941b8faec0ccd2430ff2d489861899615fe54826eaf7723c9dffdb91cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:14",
+      "sequence": 30683,
+      "chapter_label": "JUD 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "About these also Enoch, the seventh from Adam, prophesied, saying, “Behold, the Lord came with ten thousands of his holy ones,",
+      "ko": "아담의 칠세 손 에녹이 사람들에게 대하여도 예언하여 이르되 보라 주께서 그 수만의 거룩한 자와 함께 임하셨나니",
+      "source_text_hash": "f34c72720d394709078ebbba0d2207bdde626f573adb2e655826ff6f4b4401ba",
+      "translation_text_hash": "776f7432839a9166e157fae434d6e46699d4cb6c1627a81d2684e417c2207ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담의 칠세 손 에녹이 사람들에게 대하여도 예언하여 이르되 보라 주께서 그 수만의 거룩한 자와 함께 임하셨나니"
+      ],
+      "raw_text_hashes": [
+        "776f7432839a9166e157fae434d6e46699d4cb6c1627a81d2684e417c2207ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:15",
+      "sequence": 30684,
+      "chapter_label": "JUD 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "to execute judgment on all, and to convict all the ungodly of all their works of ungodliness which they have done in an ungodly way, and of all the hard things which ungodly sinners have spoken against him.”",
+      "ko": "이는 뭇사람을 심판하사 모든 경건치 않은 자의 경건치 않게 행한 모든 경건치 않은 일과 또 경건치 않은 죄인의 주께 거스려 한 모든 강퍅한 말을 인하여 저희를 정죄하려 하심이라 하였느니라",
+      "source_text_hash": "f569e913303ca02c0cd7a20198410026f98f63eaf814c3056528c8ae6eee32ff",
+      "translation_text_hash": "fbd6617f6bfa98a845c3fef31118385420ca8d05f7b4e4d6fe132c9d5dd196fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 뭇사람을 심판하사 모든 경건치 않은 자의 경건치 않게 행한 모든 경건치 않은 일과 또 경건치 않은 죄인의 주께 거스려 한 모든 강퍅한 말을 인하여 저희를 정죄하려 하심이라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "fbd6617f6bfa98a845c3fef31118385420ca8d05f7b4e4d6fe132c9d5dd196fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:16",
+      "sequence": 30685,
+      "chapter_label": "JUD 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "These are murmurers and complainers, walking after their lusts—and their mouth speaks proud things—showing respect of persons to gain advantage.",
+      "ko": "이 사람들은 원망하는 자며 불만을 토하는 자며 그 정욕대로 행하는 자라 그 입으로 자랑하는 말을 내며 이를 위하여 아첨하느니라",
+      "source_text_hash": "a976a67a88fc55d5a7a829b42a123b662825f6674d3201a919370ebc2803272a",
+      "translation_text_hash": "7b1e00d3a1d7b45735e5f449f41dad0686ed49932f77ddefddfb1af23b77e851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 원망하는 자며 불만을 토하는 자며 그 정욕대로 행하는 자라 그 입으로 자랑하는 말을 내며 이를 위하여 아첨하느니라"
+      ],
+      "raw_text_hashes": [
+        "7b1e00d3a1d7b45735e5f449f41dad0686ed49932f77ddefddfb1af23b77e851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:17",
+      "sequence": 30686,
+      "chapter_label": "JUD 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "But you, beloved, remember the words which have been spoken before by the apostles of our Lord Jesus Christ.",
+      "ko": "사랑하는 자들아 너희는 우리 주 예수 그리스도의 사도들의 미리 한 말을 기억하라",
+      "source_text_hash": "07c51007a7030cfe1bab19bb9f245eecabac54d42d62a51ba1811941131b805c",
+      "translation_text_hash": "c3abbf143db414fbf7fe52c3b63c1d69c65a4aba21630588accecb682795b2ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 너희는 우리 주 예수 그리스도의 사도들의 미리 한 말을 기억하라"
+      ],
+      "raw_text_hashes": [
+        "c3abbf143db414fbf7fe52c3b63c1d69c65a4aba21630588accecb682795b2ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:18",
+      "sequence": 30687,
+      "chapter_label": "JUD 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "They said to you, “In the last time there will be mockers, walking after their own ungodly lusts.”",
+      "ko": "그들이 너희에게 말하기를 마지막 때에 자기의 경건치 않은 정욕대로 행하며 기롱하는 자들이 있으리라 하였나니",
+      "source_text_hash": "004090492f5a126a411490017e425692e95e6e004dd6243d3e58fee7b8355adf",
+      "translation_text_hash": "7b18f0ed40acdb274468bc822f4ed8547fe993e7033ed056f5db75513990e9b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너희에게 말하기를 마지막 때에 자기의 경건치 않은 정욕대로 행하며 기롱하는 자들이 있으리라 하였나니"
+      ],
+      "raw_text_hashes": [
+        "7b18f0ed40acdb274468bc822f4ed8547fe993e7033ed056f5db75513990e9b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:19",
+      "sequence": 30688,
+      "chapter_label": "JUD 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "These are those who cause divisions and are sensual, not having the Spirit.",
+      "ko": "이 사람들은 당을 짓는 자며 육에 속한 자며 성령은 없는 자니라",
+      "source_text_hash": "55cd6315d19fa02cc81ab083b988fe7e6da9e44353a8ed5f08611b6716796473",
+      "translation_text_hash": "8fb5f21a3a05b96db70160a1a77dcb94d212bbafd4eaf5bf4da293991a2675c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 당을 짓는 자며 육에 속한 자며 성령은 없는 자니라"
+      ],
+      "raw_text_hashes": [
+        "8fb5f21a3a05b96db70160a1a77dcb94d212bbafd4eaf5bf4da293991a2675c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:20",
+      "sequence": 30689,
+      "chapter_label": "JUD 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "But you, beloved, keep building up yourselves on your most holy faith, praying in the Holy Spirit.",
+      "ko": "사랑하는 자들아 너희는 너희의 지극히 거룩한 믿음 위에 자기를 건축하며 성령으로 기도하며",
+      "source_text_hash": "6a2a88cf236110ff088d7fe0734fdbd80565517f4b1c74a3e7013df03e644e90",
+      "translation_text_hash": "d9ba131de90f84dc4fced0d6a145aca7dd213a26d648707557405893b65086a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑하는 자들아 너희는 너희의 지극히 거룩한 믿음 위에 자기를 건축하며 성령으로 기도하며"
+      ],
+      "raw_text_hashes": [
+        "d9ba131de90f84dc4fced0d6a145aca7dd213a26d648707557405893b65086a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:21",
+      "sequence": 30690,
+      "chapter_label": "JUD 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Keep yourselves in God’s love, looking for the mercy of our Lord Jesus Christ to eternal life.",
+      "ko": "하나님의 사랑 안에서 자기를 지키며 영생에 이르도록 우리 주 예수 그리스도의 긍휼을 기다리라",
+      "source_text_hash": "dc33019eb7ef6d07371850a6de147f94cb0491bae2619bf84920b27afc09f0fa",
+      "translation_text_hash": "c7b2a72b02448b9e3aa6dbaafe1d06cdf4fc0e30fc55bfffe63fcbd9bcc3d0eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사랑 안에서 자기를 지키며 영생에 이르도록 우리 주 예수 그리스도의 긍휼을 기다리라"
+      ],
+      "raw_text_hashes": [
+        "c7b2a72b02448b9e3aa6dbaafe1d06cdf4fc0e30fc55bfffe63fcbd9bcc3d0eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:22",
+      "sequence": 30691,
+      "chapter_label": "JUD 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "On some have compassion, making a distinction,",
+      "ko": "어떤 의심하는 자들을 긍휼히 여기라",
+      "source_text_hash": "5b5a8759829a87553d5ab958e8254171edacb74a94207b75150964a8da273229",
+      "translation_text_hash": "3037c0b527c31339edda884f44bbaa5586a4e0efe3aa33d0629ac86005cfd38f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 의심하는 자들을 긍휼히 여기라"
+      ],
+      "raw_text_hashes": [
+        "3037c0b527c31339edda884f44bbaa5586a4e0efe3aa33d0629ac86005cfd38f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:23",
+      "sequence": 30692,
+      "chapter_label": "JUD 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "and some save, snatching them out of the fire with fear, hating even the clothing stained by the flesh.",
+      "ko": "또 어떤 자를 불에서 끌어내어 구원하라 또 어떤 자를 그 육체로 더럽힌 옷이라도 싫어하여 두려움으로 긍휼히 여기라",
+      "source_text_hash": "f40727d046caa3528eebd1b1e213c983f215162785f2e1f348247dfac0c56627",
+      "translation_text_hash": "1fbb2d59a5cb762d48a313b6895bdb89160f001f8240cf84b80d72fda27aa159",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤 자를 불에서 끌어내어 구원하라 또 어떤 자를 그 육체로 더럽힌 옷이라도 싫어하여 두려움으로 긍휼히 여기라"
+      ],
+      "raw_text_hashes": [
+        "1fbb2d59a5cb762d48a313b6895bdb89160f001f8240cf84b80d72fda27aa159"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:24",
+      "sequence": 30693,
+      "chapter_label": "JUD 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "Now to him who is able to keep them from stumbling, and to present you faultless before the presence of his glory in great joy,",
+      "ko": "능히 너희를 보호하사 거침이 없게 하시고 너희로 그 영광 앞에 흠이 없이 즐거움으로 서게 하실 자",
+      "source_text_hash": "3f72d9446fa79d1ac84a81ba9a03bcff738cd770984405256c2cd40388bee58b",
+      "translation_text_hash": "ddb70398c5970e8d39b3a499807e664735811bced0a27b98980bf24310a39465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능히 너희를 보호하사 거침이 없게 하시고 너희로 그 영광 앞에 흠이 없이 즐거움으로 서게 하실 자"
+      ],
+      "raw_text_hashes": [
+        "ddb70398c5970e8d39b3a499807e664735811bced0a27b98980bf24310a39465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JUD:1:25",
+      "sequence": 30694,
+      "chapter_label": "JUD 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "JUD",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JUD",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "to God our Savior, who alone is wise, be glory and majesty, dominion and power, both now and forever. Amen.",
+      "ko": "곧 우리 구주 홀로 하나이신 하나님께 우리 주 예수 그리스도로 말미암아 영광과 위엄과 권력과 권세가 만고 전부터 이제와 세세에 있을찌어다 아멘",
+      "source_text_hash": "dd5f3adabce855b41eda0ff29b8e9be1fb4fc323f8d6b4f615479694b5f87e05",
+      "translation_text_hash": "63e3fca9af6dbd5c1a3c50a0a84f3efcc3c9d181f8321d0ff01c870fc58759cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 우리 구주 홀로 하나이신 하나님께 우리 주 예수 그리스도로 말미암아 영광과 위엄과 권력과 권세가 만고 전부터 이제와 세세에 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "63e3fca9af6dbd5c1a3c50a0a84f3efcc3c9d181f8321d0ff01c870fc58759cf"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:015",
+  "unit_ordinal": 251,
+  "unit_label": "1SA 15",
+  "book_code": "1SA",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:15:1",
+      "sequence": 7562,
+      "chapter_label": "1SA 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "Samuel said to Saul, “The LORD sent me to anoint you to be king over his people, over Israel. Now therefore listen to the voice of the LORD’s words.",
+      "ko": "사무엘이 사울에게 이르되 여호와께서 나를 보내어 왕에게 기름을 부어 그 백성 이스라엘 위에 왕을 삼으셨은즉 이제 왕은 여호와의 말씀을 들으소서",
+      "source_text_hash": "4e330257aa48773f7aad8125ced3bdac599a68b7f31a1230ec3e1d3c017ba5ac",
+      "translation_text_hash": "bcf3058f72b752ad43e35c6171925dd8e52ff6232ff898849a70f3a53c863b4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이르되 여호와께서 나를 보내어 왕에게 기름을 부어 그 백성 이스라엘 위에 왕을 삼으셨은즉 이제 왕은 여호와의 말씀을 들으소서"
+      ],
+      "raw_text_hashes": [
+        "bcf3058f72b752ad43e35c6171925dd8e52ff6232ff898849a70f3a53c863b4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:2",
+      "sequence": 7563,
+      "chapter_label": "1SA 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD of Armies says, ‘I remember what Amalek did to Israel, how he set himself against him on the way when he came up out of Egypt.",
+      "ko": "만군의 여호와께서 이같이 말씀하시기를 아말렉이 이스라엘에게 행한 일 곧 애굽에서 나올 때에 길에서 대적한 일을 내가 추억하노니",
+      "source_text_hash": "8f44c32543d0c6f7f83d7e32c31909045e92c518b503246a5469014af03d786f",
+      "translation_text_hash": "38e77f2fd46c9786628718cbecc9baeae0c46d52733a36626ef4347e83688976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시기를 아말렉이 이스라엘에게 행한 일 곧 애굽에서 나올 때에 길에서 대적한 일을 내가 추억하노니"
+      ],
+      "raw_text_hashes": [
+        "38e77f2fd46c9786628718cbecc9baeae0c46d52733a36626ef4347e83688976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:3",
+      "sequence": 7564,
+      "chapter_label": "1SA 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Now go and strike Amalek, and utterly destroy all that they have, and don’t spare them; but kill both man and woman, infant and nursing baby, ox and sheep, camel and donkey.’”",
+      "ko": "지금 가서 아말렉을 쳐서 그들의 모든 소유를 남기지 말고 진멸하되 남녀와 소아와 젖먹는 아이와 우양과 약대와 나귀를 죽이라 하셨나이다",
+      "source_text_hash": "b00dcf38cb33ac703ab7ff7877119b8c2398da869efe124a315bfcc79438f64c",
+      "translation_text_hash": "0c18dec2d0f1c85a53eadb6fa3dfb30c607f5051846ec96c533836f0a67e2040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 가서 아말렉을 쳐서 그들의 모든 소유를 남기지 말고 진멸하되 남녀와 소아와 젖먹는 아이와 우양과 약대와 나귀를 죽이라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0c18dec2d0f1c85a53eadb6fa3dfb30c607f5051846ec96c533836f0a67e2040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:4",
+      "sequence": 7565,
+      "chapter_label": "1SA 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Saul summoned the people, and counted them in Telaim, two hundred thousand footmen and ten thousand men of Judah.",
+      "ko": "사울이 백성을 소집하고 그들을 들라임에서 계수하니 보병이 이십만이요 유다 사람이 일만이라",
+      "source_text_hash": "73bac64f855b19011d5607870ff45f9192d83e9c73825dd75b910792334fbf7d",
+      "translation_text_hash": "59a6656b21d41c54873919741c9d11ab7655fae723b80a568c099cd764af00e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 백성을 소집하고 그들을 들라임에서 계수하니 보병이 이십만이요 유다 사람이 일만이라"
+      ],
+      "raw_text_hashes": [
+        "59a6656b21d41c54873919741c9d11ab7655fae723b80a568c099cd764af00e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:5",
+      "sequence": 7566,
+      "chapter_label": "1SA 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "Saul came to the city of Amalek, and set an ambush in the valley.",
+      "ko": "사울이 아말렉성에 이르러 골짜기에 복병하니라",
+      "source_text_hash": "37afb84719b5e47467d4a43593397864a55c0338a3ef076b67cd0cb7d3079d9f",
+      "translation_text_hash": "2164d109a777421abc9f6b8c971d887ad99f75adb7ae40bfda700228c05aebc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 아말렉성에 이르러 골짜기에 복병하니라"
+      ],
+      "raw_text_hashes": [
+        "2164d109a777421abc9f6b8c971d887ad99f75adb7ae40bfda700228c05aebc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:6",
+      "sequence": 7567,
+      "chapter_label": "1SA 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Saul said to the Kenites, “Go, depart, go down from among the Amalekites, lest I destroy you with them; for you showed kindness to all the children of Israel when they came up out of Egypt.” So the Kenites departed from among the Amalekites.",
+      "ko": "사울이 겐 사람에게 이르되 아말렉 사람 중에서 떠나 내려가라 그들과 함께 너희를 멸하게 될까 하노라 이스라엘 모든 자손이 애굽에서 올라올 때에 너희가 그들을 선대하였느니라 이에 겐 사람이 아말렉 사람 중에서 떠나니라",
+      "source_text_hash": "c524a40f86115fcfcbe77657f3e7e9ccd47559964d8da5d652d142b8409b1e3a",
+      "translation_text_hash": "3647c9b7ecb2a96c57ba059db95d34b153f64acb4f4c9aa167af12203666d87b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 겐 사람에게 이르되 아말렉 사람 중에서 떠나 내려가라 그들과 함께 너희를 멸하게 될까 하노라 이스라엘 모든 자손이 애굽에서 올라올 때에 너희가 그들을 선대하였느니라 이에 겐 사람이 아말렉 사람 중에서 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "3647c9b7ecb2a96c57ba059db95d34b153f64acb4f4c9aa167af12203666d87b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:7",
+      "sequence": 7568,
+      "chapter_label": "1SA 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "Saul struck the Amalekites, from Havilah as you go to Shur, which is before Egypt.",
+      "ko": "사울이 하윌라에서부터 애굽 앞 술에 이르기까지 아말렉 사람을 치고",
+      "source_text_hash": "3f8155c16f75b110e9ec34053a9d408a9d32fa3486c09c28b89e9b1eb488c16e",
+      "translation_text_hash": "1bea9805b292896fe033624b7626d9f81093fc1bcb3e1c41266a20d8c0bc84a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 하윌라에서부터 애굽 앞 술에 이르기까지 아말렉 사람을 치고"
+      ],
+      "raw_text_hashes": [
+        "1bea9805b292896fe033624b7626d9f81093fc1bcb3e1c41266a20d8c0bc84a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:8",
+      "sequence": 7569,
+      "chapter_label": "1SA 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "He took Agag the king of the Amalekites alive, and utterly destroyed all the people with the edge of the sword.",
+      "ko": "아말렉 사람의 왕 아각을 사로잡고 칼날로 그 모든 백성을 진멸하였으되",
+      "source_text_hash": "5befb6226d030f34deac1cbb307d684763f5ace5ae0c5465fbcb0734157f2683",
+      "translation_text_hash": "8b625543d030e187b402037a73a28103a54e23f73760d725c179156261347235",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아말렉 사람의 왕 아각을 사로잡고 칼날로 그 모든 백성을 진멸하였으되"
+      ],
+      "raw_text_hashes": [
+        "8b625543d030e187b402037a73a28103a54e23f73760d725c179156261347235"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:9",
+      "sequence": 7570,
+      "chapter_label": "1SA 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "But Saul and the people spared Agag and the best of the sheep, of the cattle, of the fat calves, of the lambs, and all that was good, and were not willing to utterly destroy them; but everything that was vile and refuse, that they destroyed utterly.",
+      "ko": "사울과 백성이 아각과 그 양과 소의 가장 좋은 것 또는 기름진 것과 어린 양과 모든 좋은 것을 남기고 진멸키를 즐겨 아니하고 가치 없고 낮은 것은 진멸하니라",
+      "source_text_hash": "413e8a0bd29023b6322c0e47a340506e8e80a55240aaad7d53f70fd229d2bc12",
+      "translation_text_hash": "e0c37c0b1f1b861cc3d5e46113361d9f6f82b437a2730bf130272e83ae8815be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 백성이 아각과 그 양과 소의 가장 좋은 것 또는 기름진 것과 어린 양과 모든 좋은 것을 남기고 진멸키를 즐겨 아니하고 가치 없고 낮은 것은 진멸하니라"
+      ],
+      "raw_text_hashes": [
+        "e0c37c0b1f1b861cc3d5e46113361d9f6f82b437a2730bf130272e83ae8815be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:10",
+      "sequence": 7571,
+      "chapter_label": "1SA 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Then the LORD’s word came to Samuel, saying,",
+      "ko": "여호와의 말씀이 사무엘에게 임하니라 가라사대",
+      "source_text_hash": "27fe9221cf8dfe251746b9cbd6c29500375d4701ef2f97fd013c28861d19767b",
+      "translation_text_hash": "1e1f7a7dc43f4a8e6eb4422b63a5caaed96890796e8f8aaf4048e97ae6f62b4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 사무엘에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1e1f7a7dc43f4a8e6eb4422b63a5caaed96890796e8f8aaf4048e97ae6f62b4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:11",
+      "sequence": 7572,
+      "chapter_label": "1SA 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "“It grieves me that I have set up Saul to be king, for he has turned back from following me, and has not performed my commandments.” Samuel was angry; and he cried to the LORD all night.",
+      "ko": "내가 사울을 세워 왕 삼은 것을 후회하노니 그가 돌이켜서 나를 좇지 아니하며 내 명령을 이루지 아니하였음이니라 하신지라 사무엘이 근심하여 온 밤을 여호와께 부르짖으니라",
+      "source_text_hash": "b8ef8faedb0390f2cb2966e26225944e3990b707fb961f5262989cd93d8dbe27",
+      "translation_text_hash": "b1ca0b62a9d0a991398966fa7981d2644eeceec6e38d64f3b4bd79c6c0d60cbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사울을 세워 왕 삼은 것을 후회하노니 그가 돌이켜서 나를 좇지 아니하며 내 명령을 이루지 아니하였음이니라 하신지라 사무엘이 근심하여 온 밤을 여호와께 부르짖으니라"
+      ],
+      "raw_text_hashes": [
+        "b1ca0b62a9d0a991398966fa7981d2644eeceec6e38d64f3b4bd79c6c0d60cbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:12",
+      "sequence": 7573,
+      "chapter_label": "1SA 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Samuel rose early to meet Saul in the morning; and Samuel was told, saying, “Saul came to Carmel, and behold, he set up a monument for himself, turned, passed on, and went down to Gilgal.”",
+      "ko": "사무엘이 사울을 만나려고 아침에 일찌기 일어났더니 혹이 사무엘에게 고하여 가로되 사울이 갈멜에 이르러 자기를 위하여 기념비를 세우고 돌이켜 행하여 길갈로 내려갔다 하는지라",
+      "source_text_hash": "4227c32f5c9f14eccb302269cd480fdb943336d39602713050898a2210a10e77",
+      "translation_text_hash": "3d83c04efb4da20a1812105fd483387a864c0d3bffa912f9b3dba1f73c4a0037",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울을 만나려고 아침에 일찌기 일어났더니 혹이 사무엘에게 고하여 가로되 사울이 갈멜에 이르러 자기를 위하여 기념비를 세우고 돌이켜 행하여 길갈로 내려갔다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "3d83c04efb4da20a1812105fd483387a864c0d3bffa912f9b3dba1f73c4a0037"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:13",
+      "sequence": 7574,
+      "chapter_label": "1SA 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "Samuel came to Saul; and Saul said to him, “You are blessed by the LORD! I have performed the commandment of the LORD.”",
+      "ko": "사무엘이 사울에게 이른즉 사울이 그에게 이르되 원컨대 당신은 여호와께 복을 받으소서 내가 여호와의 명령을 행하였나이다",
+      "source_text_hash": "442387cd64b26849a95e8af1c78bedc8ce899f0664cb8cab824cb5fbd9cc6c2d",
+      "translation_text_hash": "74c673d07b04c6ddcac2b0b4c3275198c1fc40abc699492ef886d183336457b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이른즉 사울이 그에게 이르되 원컨대 당신은 여호와께 복을 받으소서 내가 여호와의 명령을 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "74c673d07b04c6ddcac2b0b4c3275198c1fc40abc699492ef886d183336457b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:14",
+      "sequence": 7575,
+      "chapter_label": "1SA 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "Samuel said, “Then what does this bleating of the sheep in my ears and the lowing of the cattle which I hear mean?”",
+      "ko": "사무엘이 가로되 그러면 내 귀에 들어오는 이 양의 소리와 내게 들리는 소의 소리는 어찜이니이까",
+      "source_text_hash": "f2fb44cc3929fdaa088938d895245018769da0ba8a6da890a49a26fc749d1109",
+      "translation_text_hash": "86666e0e4ec0815be7221a366bc9e5536e62a3d4e9764cea7f93f84ef40a5437",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 그러면 내 귀에 들어오는 이 양의 소리와 내게 들리는 소의 소리는 어찜이니이까"
+      ],
+      "raw_text_hashes": [
+        "86666e0e4ec0815be7221a366bc9e5536e62a3d4e9764cea7f93f84ef40a5437"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:15",
+      "sequence": 7576,
+      "chapter_label": "1SA 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "Saul said, “They have brought them from the Amalekites; for the people spared the best of the sheep and of the cattle, to sacrifice to the LORD your God. We have utterly destroyed the rest.”",
+      "ko": "사울이 가로되 그것은 무리가 아말렉 사람에게서 끌어 온 것인데 백성이 당신의 하나님 여호와께 제사하려 하여 양과 소의 가장 좋은 것을 남김이요 그 외의 것은 우리가 진멸하였나이다",
+      "source_text_hash": "7c4cd83d27bd1211599e7487a68435d7bf120de886e2d7dcdce3742bba8c74cd",
+      "translation_text_hash": "980fc0cfb1887bdcb8ff151ddf2d85d04d89059993c718d65aac2dc43c37aa8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 그것은 무리가 아말렉 사람에게서 끌어 온 것인데 백성이 당신의 하나님 여호와께 제사하려 하여 양과 소의 가장 좋은 것을 남김이요 그 외의 것은 우리가 진멸하였나이다"
+      ],
+      "raw_text_hashes": [
+        "980fc0cfb1887bdcb8ff151ddf2d85d04d89059993c718d65aac2dc43c37aa8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:16",
+      "sequence": 7577,
+      "chapter_label": "1SA 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "Then Samuel said to Saul, “Stay, and I will tell you what the LORD said to me last night.” He said to him, “Say on.”",
+      "ko": "사무엘이 사울에게 이르되 가만히 계시옵소서 간 밤에 여호와께서 내게 이르신 것을 왕에게 말하리이다 가로되 말씀하소서",
+      "source_text_hash": "cbfc0b3db4aac22afed3d703fe99e65699b4e63e60c09cfb4cb159d25986a785",
+      "translation_text_hash": "536ea6c23380df5c54d0c9940f3e547f0703d1adcbf0acb414aee12c2ff969ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이르되 가만히 계시옵소서 간 밤에 여호와께서 내게 이르신 것을 왕에게 말하리이다 가로되 말씀하소서"
+      ],
+      "raw_text_hashes": [
+        "536ea6c23380df5c54d0c9940f3e547f0703d1adcbf0acb414aee12c2ff969ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:17",
+      "sequence": 7578,
+      "chapter_label": "1SA 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "Samuel said, “Though you were little in your own sight, weren’t you made the head of the tribes of Israel? The LORD anointed you king over Israel;",
+      "ko": "사무엘이 가로되 왕이 스스로 작게 여길 그 때에 이스라엘 지파의 머리가 되지 아니하셨나이까 여호와께서 왕에게 기름을 부어 이스라엘 왕을 삼으시고",
+      "source_text_hash": "e1a326639efd957e149ccaa2da5b7c269da94edca784687a7d3fa30c93b74ab5",
+      "translation_text_hash": "2f3e0099b02e95ead7dcdaa8d7da4361e6a1e1e2b4af2846fc50ad98f2db3d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 왕이 스스로 작게 여길 그 때에 이스라엘 지파의 머리가 되지 아니하셨나이까 여호와께서 왕에게 기름을 부어 이스라엘 왕을 삼으시고"
+      ],
+      "raw_text_hashes": [
+        "2f3e0099b02e95ead7dcdaa8d7da4361e6a1e1e2b4af2846fc50ad98f2db3d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:18",
+      "sequence": 7579,
+      "chapter_label": "1SA 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "and the LORD sent you on a journey, and said, ‘Go, and utterly destroy the sinners the Amalekites, and fight against them until they are consumed.’",
+      "ko": "또 왕을 길로 보내시며 이르시기를 가서 죄인 아말렉 사람을 진멸하되 다 없어지기까지 치라 하셨거늘",
+      "source_text_hash": "088636daff608d088a2ee29adc549181481e00677e4eeac8f07ae61276878988",
+      "translation_text_hash": "a90e8ca893b3efceb9d38d09b8ff0bb2ad8e58ffd771e941309bc3b8785d51a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 왕을 길로 보내시며 이르시기를 가서 죄인 아말렉 사람을 진멸하되 다 없어지기까지 치라 하셨거늘"
+      ],
+      "raw_text_hashes": [
+        "a90e8ca893b3efceb9d38d09b8ff0bb2ad8e58ffd771e941309bc3b8785d51a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:19",
+      "sequence": 7580,
+      "chapter_label": "1SA 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "Why then didn’t you obey the LORD’s voice, but took the plunder, and did that which was evil in the LORD’s sight?”",
+      "ko": "어찌하여 왕이 여호와의 목소리를 청종치 아니하고 탈취하기에만 급하여 여호와의 악하게 여기시는 것을 행하였나이까",
+      "source_text_hash": "e6a47579a630b23bfb17b7ffa87c3389e1e896d0aa1f2b1010f50b4f08dd0f9a",
+      "translation_text_hash": "f78f48c52df973353ee086081ba57d9039852b53106f4723cdaea30abb66bda7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 왕이 여호와의 목소리를 청종치 아니하고 탈취하기에만 급하여 여호와의 악하게 여기시는 것을 행하였나이까"
+      ],
+      "raw_text_hashes": [
+        "f78f48c52df973353ee086081ba57d9039852b53106f4723cdaea30abb66bda7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:20",
+      "sequence": 7581,
+      "chapter_label": "1SA 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Saul said to Samuel, “But I have obeyed the LORD’s voice, and have gone the way which the LORD sent me, and have brought Agag the king of Amalek, and have utterly destroyed the Amalekites.",
+      "ko": "사울이 사무엘에게 이르되 나는 실로 여호와의 목소리를 청종하여 여호와께서 보내신 길로 가서 아말렉 왕 아각을 끌어 왔고 아말렉 사람을 진멸하였으나",
+      "source_text_hash": "9d1c738d5b89ed9e1642080452bda099850ec678cc2bbc1878770c18ff59371c",
+      "translation_text_hash": "78de352fb6669ba5ab0a4e3620f9769891fab70109ac0fcd1c93256885b787b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 사무엘에게 이르되 나는 실로 여호와의 목소리를 청종하여 여호와께서 보내신 길로 가서 아말렉 왕 아각을 끌어 왔고 아말렉 사람을 진멸하였으나"
+      ],
+      "raw_text_hashes": [
+        "78de352fb6669ba5ab0a4e3620f9769891fab70109ac0fcd1c93256885b787b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:21",
+      "sequence": 7582,
+      "chapter_label": "1SA 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "But the people took of the plunder, sheep and cattle, the best of the devoted things, to sacrifice to the LORD your God in Gilgal.”",
+      "ko": "다만 백성이 그 마땅히 멸할 것 중에서 가장 좋은 것으로 길갈에서 당신의 하나님 여호와께 제사하려고 양과 소를 취하였나이다",
+      "source_text_hash": "71c6864a36a5495a5203871539f9367fb13d33f76e92927d955a1ef381e17322",
+      "translation_text_hash": "b28abfc79b8bf5001963baa388f506a0c31e05fb1174e81b1c609fda051ace4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 백성이 그 마땅히 멸할 것 중에서 가장 좋은 것으로 길갈에서 당신의 하나님 여호와께 제사하려고 양과 소를 취하였나이다"
+      ],
+      "raw_text_hashes": [
+        "b28abfc79b8bf5001963baa388f506a0c31e05fb1174e81b1c609fda051ace4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:22",
+      "sequence": 7583,
+      "chapter_label": "1SA 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Samuel said, “Has the LORD as great delight in burnt offerings and sacrifices, as in obeying the LORD’s voice? Behold, to obey is better than sacrifice, and to listen than the fat of rams.",
+      "ko": "사무엘이 가로되 여호와께서 번제와 다른 제사를 그 목소리 순종하는 것을 좋아하심 같이 좋아하시겠나이까 순종이 제사보다 낫고 듣는것이 수양의 기름보다 나으니",
+      "source_text_hash": "6b27618ee5dfb7bfb52427896610516cf951ec4979ea497b54eb881e9acd1b96",
+      "translation_text_hash": "354332eff7e1a0512ed599cd4ee298933b5858d1c73bb78bc5f7e4c162d6068a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 여호와께서 번제와 다른 제사를 그 목소리 순종하는 것을 좋아하심 같이 좋아하시겠나이까 순종이 제사보다 낫고 듣는것이 수양의 기름보다 나으니"
+      ],
+      "raw_text_hashes": [
+        "354332eff7e1a0512ed599cd4ee298933b5858d1c73bb78bc5f7e4c162d6068a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:23",
+      "sequence": 7584,
+      "chapter_label": "1SA 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "For rebellion is as the sin of witchcraft, and stubbornness is as idolatry and teraphim. Because you have rejected the LORD’s word, he has also rejected you from being king.”",
+      "ko": "이는 거역하는 것은 사술의 죄와 같고 완고한 것은 사신 우상에게 절하는 죄와 같음이라 왕이 여호와의 말씀을 버렸으므로 여호와께서도 왕을 버려 왕이 되지 못하게 하셨나이다",
+      "source_text_hash": "c03c71406b0eec82302b59ce61f58821960087f10aaadd50a6880640efd3c896",
+      "translation_text_hash": "35a8e85dd299b1e837f9d467ef44b5ddcf3c162220ef527d2d8ccec3db8ad84d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 거역하는 것은 사술의 죄와 같고 완고한 것은 사신 우상에게 절하는 죄와 같음이라 왕이 여호와의 말씀을 버렸으므로 여호와께서도 왕을 버려 왕이 되지 못하게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "35a8e85dd299b1e837f9d467ef44b5ddcf3c162220ef527d2d8ccec3db8ad84d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:24",
+      "sequence": 7585,
+      "chapter_label": "1SA 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Saul said to Samuel, “I have sinned; for I have transgressed the commandment of the LORD and your words, because I feared the people and obeyed their voice.",
+      "ko": "사울이 사무엘에게 이르되 내가 범죄하였나이다 내가 여호와의 명령과 당신의 말씀을 어긴 것은 내가 백성을 두려워하여 그 말을 청종하였음이니이다",
+      "source_text_hash": "be3920e9a65026512e8da34bd54bd9a21cd5766c81f49454ce6bd60af6dbc39f",
+      "translation_text_hash": "2dae5c118410b6a0da92e5610d62ebb98c35f66fabc1fe6d32af26098fdca787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 사무엘에게 이르되 내가 범죄하였나이다 내가 여호와의 명령과 당신의 말씀을 어긴 것은 내가 백성을 두려워하여 그 말을 청종하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "2dae5c118410b6a0da92e5610d62ebb98c35f66fabc1fe6d32af26098fdca787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:25",
+      "sequence": 7586,
+      "chapter_label": "1SA 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "Now therefore, please pardon my sin, and turn again with me, that I may worship the LORD.”",
+      "ko": "청하오니 지금 내 죄를 사하고 나와 함께 돌아가서 나로 여호와께 경배하게 하소서",
+      "source_text_hash": "7d36b21cbf5084304b274542718bb13c70bae45ccd392b226d35639fb768ab96",
+      "translation_text_hash": "717acdcf18bba6e007e5ae11e44539ba4eb4212a20b229bbaf0129ba6640bd9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청하오니 지금 내 죄를 사하고 나와 함께 돌아가서 나로 여호와께 경배하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "717acdcf18bba6e007e5ae11e44539ba4eb4212a20b229bbaf0129ba6640bd9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:26",
+      "sequence": 7587,
+      "chapter_label": "1SA 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "Samuel said to Saul, “I will not return with you; for you have rejected the LORD’s word, and the LORD has rejected you from being king over Israel.”",
+      "ko": "사무엘이 사울에게 이르되 나는 왕과 함께 돌아가지 아니하리니 이는 왕이 여호와의 말씀을 버렸으므로 여호와께서 왕을 버려 이스라엘 왕이 되지 못하게 하셨음이니이다 하고",
+      "source_text_hash": "8bc79a9a40a19a88a3ccbafd9bb88656b0cbd3621c69e940a38461391a93636c",
+      "translation_text_hash": "435e1a88677e484f79763c229b40ae9fc4c07c9156be46a4d59096a093b2d8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이르되 나는 왕과 함께 돌아가지 아니하리니 이는 왕이 여호와의 말씀을 버렸으므로 여호와께서 왕을 버려 이스라엘 왕이 되지 못하게 하셨음이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "435e1a88677e484f79763c229b40ae9fc4c07c9156be46a4d59096a093b2d8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:27",
+      "sequence": 7588,
+      "chapter_label": "1SA 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "As Samuel turned around to go away, Saul grabbed the skirt of his robe, and it tore.",
+      "ko": "사무엘이 가려고 돌이킬 때에 사울이 그의 겉옷자락을 붙잡으매 찢어진지라",
+      "source_text_hash": "a833f0ff4237bce86cb7bfd7b679c479dafe38c3433a4ba340595d93118ec0a2",
+      "translation_text_hash": "4ebca98a511bdb3b0b3643b5939090e5e4baac4d82568032c4f9dfdbf113b9ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가려고 돌이킬 때에 사울이 그의 겉옷자락을 붙잡으매 찢어진지라"
+      ],
+      "raw_text_hashes": [
+        "4ebca98a511bdb3b0b3643b5939090e5e4baac4d82568032c4f9dfdbf113b9ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:28",
+      "sequence": 7589,
+      "chapter_label": "1SA 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Samuel said to him, “The LORD has torn the kingdom of Israel from you today, and has given it to a neighbor of yours who is better than you.",
+      "ko": "사무엘이 그에게 이르되 여호와께서 오늘 이스라엘 나라를 왕에게서 떼어서 왕보다 나은 왕의 이웃에게 주셨나이다",
+      "source_text_hash": "cb7688cdc2df34cd6e41cf3c8b0d9513b52bba3ce61e9c1d90469b865cf8a8f4",
+      "translation_text_hash": "63d1681543d32fe5f62bbdba972744205b6c47f1fcf0cab79e369b9e437b7757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 그에게 이르되 여호와께서 오늘 이스라엘 나라를 왕에게서 떼어서 왕보다 나은 왕의 이웃에게 주셨나이다"
+      ],
+      "raw_text_hashes": [
+        "63d1681543d32fe5f62bbdba972744205b6c47f1fcf0cab79e369b9e437b7757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:29",
+      "sequence": 7590,
+      "chapter_label": "1SA 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Also the Strength of Israel will not lie nor repent; for he is not a man, that he should repent.”",
+      "ko": "이스라엘의 지존자는 거짓이나 변개함이 없으시니 그는 사람이 아니시므로 결코 변개치 않으심이니이다",
+      "source_text_hash": "b307d0e9a9a0378c8352d5afd8b32b4bea269c854386f667510cf81ea8d199ee",
+      "translation_text_hash": "b281247998d0ae35b3a05e47baccaa021d8ba56c5994c7048349be9877465683",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 지존자는 거짓이나 변개함이 없으시니 그는 사람이 아니시므로 결코 변개치 않으심이니이다"
+      ],
+      "raw_text_hashes": [
+        "b281247998d0ae35b3a05e47baccaa021d8ba56c5994c7048349be9877465683"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:30",
+      "sequence": 7591,
+      "chapter_label": "1SA 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "Then he said, “I have sinned; yet please honor me now before the elders of my people and before Israel, and come back with me, that I may worship the LORD your God.”",
+      "ko": "사울이 가로되 내가 범죄하였을찌라도 청하옵나니 내 백성의 장로들의 앞과 이스라엘의 앞에서 나를 높이사 나와 함께 돌아가서 나로 당신의 하나님 여호와께 경배하게 하소서",
+      "source_text_hash": "393397b914579f16f3f436e62255893c14c5b9c4ae0fee11df265aa0960e72b1",
+      "translation_text_hash": "4e3d3fb4fd829e3d64fa67e1887bbd211eef3b9fd3db7d18c0aa9c7c878d56ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 내가 범죄하였을찌라도 청하옵나니 내 백성의 장로들의 앞과 이스라엘의 앞에서 나를 높이사 나와 함께 돌아가서 나로 당신의 하나님 여호와께 경배하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "4e3d3fb4fd829e3d64fa67e1887bbd211eef3b9fd3db7d18c0aa9c7c878d56ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:31",
+      "sequence": 7592,
+      "chapter_label": "1SA 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "So Samuel went back with Saul; and Saul worshiped the LORD.",
+      "ko": "이에 사무엘이 돌이켜 사울을 따라가매 사울이 여호와께 경배하니라",
+      "source_text_hash": "68eff577ade800fd4119138591cc5c3a6f8cd0a11f968b0c92fbae23b29f4ffc",
+      "translation_text_hash": "d1f0373c3143c03ac0930dbac24bbd0eed851ad33c51f8c9ed84613ae1df05dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사무엘이 돌이켜 사울을 따라가매 사울이 여호와께 경배하니라"
+      ],
+      "raw_text_hashes": [
+        "d1f0373c3143c03ac0930dbac24bbd0eed851ad33c51f8c9ed84613ae1df05dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:32",
+      "sequence": 7593,
+      "chapter_label": "1SA 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "Then Samuel said, “Bring Agag the king of the Amalekites here to me!” Agag came to him cheerfully. Agag said, “Surely the bitterness of death is past.”",
+      "ko": "사무엘이 가로되 너희는 아말렉 사람의 왕 아각을 내게로 이끌어 오라 하였더니 아각이 즐거이 오며 가로되 진실로 사망의 괴로움이 지났도다 하니라",
+      "source_text_hash": "bb484bec5f6d11b381ce6402bf7c157ff82cdd93a23d7f3a50fbc36d1374c485",
+      "translation_text_hash": "6c548e6077d9378ec1bd84166326fc26af967cd8e4e98831dc5da36e51e87757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 너희는 아말렉 사람의 왕 아각을 내게로 이끌어 오라 하였더니 아각이 즐거이 오며 가로되 진실로 사망의 괴로움이 지났도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "6c548e6077d9378ec1bd84166326fc26af967cd8e4e98831dc5da36e51e87757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:33",
+      "sequence": 7594,
+      "chapter_label": "1SA 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "Samuel said, “As your sword has made women childless, so your mother will be childless among women!” Then Samuel cut Agag in pieces before the LORD in Gilgal.",
+      "ko": "사무엘이 가로되 네 칼이 여인들로 무자케 한것 같이 여인 중 네 어미가 무자하리라 하고 그가 길갈에서 여호와 앞에서 아각을 찍어 쪼개니라",
+      "source_text_hash": "9e30bf126fab9216dcf63d39e2737c57ea459f32869eb419a57ca614320da90a",
+      "translation_text_hash": "9d4f77ade1ac795040f7c57d257928a85ab888ff6c4103b31a756bb9289cb851",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 네 칼이 여인들로 무자케 한것 같이 여인 중 네 어미가 무자하리라 하고 그가 길갈에서 여호와 앞에서 아각을 찍어 쪼개니라"
+      ],
+      "raw_text_hashes": [
+        "9d4f77ade1ac795040f7c57d257928a85ab888ff6c4103b31a756bb9289cb851"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:34",
+      "sequence": 7595,
+      "chapter_label": "1SA 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "Then Samuel went to Ramah; and Saul went up to his house to Gibeah of Saul.",
+      "ko": "이에 사무엘은 라마로 가고 사울은 사울 기브아 본집으로 올라가니라",
+      "source_text_hash": "0510bf4b8187094a9b8500d51eea1e9e3f76efe5ff75e04f56bed666c34a6d57",
+      "translation_text_hash": "8efec3933a5d53dcef650d9ae88056446b5afa78f52d086705c89dd010630746",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사무엘은 라마로 가고 사울은 사울 기브아 본집으로 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "8efec3933a5d53dcef650d9ae88056446b5afa78f52d086705c89dd010630746"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:15:35",
+      "sequence": 7596,
+      "chapter_label": "1SA 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "1SA",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "Samuel came no more to see Saul until the day of his death, but Samuel mourned for Saul. The LORD grieved that he had made Saul king over Israel.",
+      "ko": "사무엘이 죽는 날까지 사울을 다시 가서 보지 아니하였으니 이는 그가 사울을 위하여 슬퍼함이었고 여호와께서는 사울로 이스라엘 왕 삼으신 것을 후회하셨더라",
+      "source_text_hash": "0995c36dbc28343a4cf3df136dea58ae0da9914c65bc16c34ea44a681394b3e3",
+      "translation_text_hash": "2b6da33de2743c1472608584750cd167b88285279cd7ec5a2beee45535a23068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 죽는 날까지 사울을 다시 가서 보지 아니하였으니 이는 그가 사울을 위하여 슬퍼함이었고 여호와께서는 사울로 이스라엘 왕 삼으신 것을 후회하셨더라"
+      ],
+      "raw_text_hashes": [
+        "2b6da33de2743c1472608584750cd167b88285279cd7ec5a2beee45535a23068"
+      ]
+    }
+  ]
+}

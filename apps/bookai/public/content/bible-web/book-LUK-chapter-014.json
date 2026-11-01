@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:014",
+  "unit_ordinal": 987,
+  "unit_label": "LUK 14",
+  "book_code": "LUK",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:14:1",
+      "sequence": 25555,
+      "chapter_label": "LUK 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "When he went into the house of one of the rulers of the Pharisees on a Sabbath to eat bread, they were watching him.",
+      "ko": "안식일에 예수께서 바리새인의 한 두령의 집에 떡 잡수시러 들어가시니 저희가 엿보고 있더라",
+      "source_text_hash": "0f435651c6b4c2e06ab2144ae81bacbe79d2c1d2be0771440e64ca84321e7353",
+      "translation_text_hash": "56c26a24b302432db233209f7828f2599c7f52ffb168850350ae5ede03370e5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 예수께서 바리새인의 한 두령의 집에 떡 잡수시러 들어가시니 저희가 엿보고 있더라"
+      ],
+      "raw_text_hashes": [
+        "56c26a24b302432db233209f7828f2599c7f52ffb168850350ae5ede03370e5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:2",
+      "sequence": 25556,
+      "chapter_label": "LUK 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, a certain man who had dropsy was in front of him.",
+      "ko": "주의 앞에 고창병 든 한 사람이 있는지라",
+      "source_text_hash": "f251a2c29352d8e0e84b5b792ae32a3a19d4ed35db7c1f06a614aeba9f449fb1",
+      "translation_text_hash": "2828ebdb2372abb165ba1a5faad3bae0ffc07f5109430cc338fa79cbda56e3ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 앞에 고창병 든 한 사람이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "2828ebdb2372abb165ba1a5faad3bae0ffc07f5109430cc338fa79cbda56e3ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:3",
+      "sequence": 25557,
+      "chapter_label": "LUK 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus, answering, spoke to the lawyers and Pharisees, saying, “Is it lawful to heal on the Sabbath?”",
+      "ko": "예수께서 대답하여 율법사들과 바리새인들에게 일러 가라사대 안식일에 병 고쳐주는 것이 합당하냐 아니하냐",
+      "source_text_hash": "e40b443a6b1ace31c9772b3404cfbd8fc7d23bde76ba896c4a5eec40da01355c",
+      "translation_text_hash": "0cdf7e71a5a225843546da3341037523bc4889a137457575d8e3041a9a7d7c92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 율법사들과 바리새인들에게 일러 가라사대 안식일에 병 고쳐주는 것이 합당하냐 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "0cdf7e71a5a225843546da3341037523bc4889a137457575d8e3041a9a7d7c92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:4",
+      "sequence": 25558,
+      "chapter_label": "LUK 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "But they were silent. He took him, and healed him, and let him go.",
+      "ko": "저희가 잠잠하거늘 예수께서 그 사람을 데려다가 고쳐 보내시고",
+      "source_text_hash": "d92421856ebaf7fe6e067b945937ba77e6bd11692467b3c2c9b72216ab76ced2",
+      "translation_text_hash": "5b754f6c9f4d844dc0d44d3d7380a893b1f043bc99810a9714aabd8b133ad584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 잠잠하거늘 예수께서 그 사람을 데려다가 고쳐 보내시고"
+      ],
+      "raw_text_hashes": [
+        "5b754f6c9f4d844dc0d44d3d7380a893b1f043bc99810a9714aabd8b133ad584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:5",
+      "sequence": 25559,
+      "chapter_label": "LUK 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "He answered them, “Which of you, if your sonor an ox fell into a well, wouldn’t immediately pull him out on a Sabbath day?”",
+      "ko": "또 저희에게 이르시되 너희 중에 누가 그 아들이나 소나 우물에 빠졌으면 안식일에라도 곧 끌어내지 않겠느냐 하시니",
+      "source_text_hash": "ebdc07ae42e50fcb9d4b19378abd8c76151b671b95304c212c753fc2c7b3a335",
+      "translation_text_hash": "884535d0f4431f793735da1e055e5f45a737ad9ee46affe5eea08a5ded06a22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희에게 이르시되 너희 중에 누가 그 아들이나 소나 우물에 빠졌으면 안식일에라도 곧 끌어내지 않겠느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "884535d0f4431f793735da1e055e5f45a737ad9ee46affe5eea08a5ded06a22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:6",
+      "sequence": 25560,
+      "chapter_label": "LUK 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "They couldn’t answer him regarding these things.",
+      "ko": "저희가 이에 대하여 대답지 못하니라",
+      "source_text_hash": "d0e602a0fcff0214c1da0b2c7c36da50fe4411806dad29bc796846ccd5dc3d00",
+      "translation_text_hash": "013b6d78f9d0a43dcd93fbd7fad083183b4cfe194a88cf757e831f6e93bb2357",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이에 대하여 대답지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "013b6d78f9d0a43dcd93fbd7fad083183b4cfe194a88cf757e831f6e93bb2357"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:7",
+      "sequence": 25561,
+      "chapter_label": "LUK 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "He spoke a parable to those who were invited, when he noticed how they chose the best seats, and said to them,",
+      "ko": "청함을 받은 사람들의 상좌 택함을 보시고 저희에게 비유로 말씀하여 가라사대",
+      "source_text_hash": "038ba07145dc9a2b4b58938b0af5f89f515e0403ce755c71610a038f735ffb8f",
+      "translation_text_hash": "f5925b394cf281cd7384be330bd6fc9a81fa295d13f84965b475892e84d51876",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청함을 받은 사람들의 상좌 택함을 보시고 저희에게 비유로 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "f5925b394cf281cd7384be330bd6fc9a81fa295d13f84965b475892e84d51876"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:8",
+      "sequence": 25562,
+      "chapter_label": "LUK 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "“When you are invited by anyone to a wedding feast, don’t sit in the best seat, since perhaps someone more honorable than you might be invited by him,",
+      "ko": "네가 누구에게나 혼인 잔치에 청함을 받았을 때에 상좌에 앉지 말라 그렇지 않으면 너보다 더 높은 사람이 청함을 받은 경우에",
+      "source_text_hash": "9a8b9fcdd1b51539bca42bcbb7239132da76f1e3b8c57b3c67ebb4aae34b7ca1",
+      "translation_text_hash": "2115d102aed28159ebf1afbe9983c97bd6a01579d8b1a8f262b900a9ec112668",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누구에게나 혼인 잔치에 청함을 받았을 때에 상좌에 앉지 말라 그렇지 않으면 너보다 더 높은 사람이 청함을 받은 경우에"
+      ],
+      "raw_text_hashes": [
+        "2115d102aed28159ebf1afbe9983c97bd6a01579d8b1a8f262b900a9ec112668"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:9",
+      "sequence": 25563,
+      "chapter_label": "LUK 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "and he who invited both of you would come and tell you, ‘Make room for this person.’ Then you would begin, with shame, to take the lowest place.",
+      "ko": "너와 저를 청한 자가 와서 너더러 이 사람에게 자리를 내어 주라 하리니 그 때에 네가 부끄러워 말석으로 가게 되리라",
+      "source_text_hash": "b32761316528129b7e4ce21e579157c6bdb33d8ecf7e9e786722ece270969d8f",
+      "translation_text_hash": "e4402b27e6b4c198330d26bf981792a3f76586474a840a06078e14832f4037fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 저를 청한 자가 와서 너더러 이 사람에게 자리를 내어 주라 하리니 그 때에 네가 부끄러워 말석으로 가게 되리라"
+      ],
+      "raw_text_hashes": [
+        "e4402b27e6b4c198330d26bf981792a3f76586474a840a06078e14832f4037fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:10",
+      "sequence": 25564,
+      "chapter_label": "LUK 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "But when you are invited, go and sit in the lowest place, so that when he who invited you comes, he may tell you, ‘Friend, move up higher.’ Then you will be honored in the presence of all who sit at the table with you.",
+      "ko": "청함을 받았을 때에 차라리 가서 말석에 앉으라 그러면 너를 청한 자가 와서 너더러 벗이여 올라 앉으라 하리니 그 때에야 함께 앉은 모든 사람 앞에 영광이 있으리라",
+      "source_text_hash": "2e6c9bfa4eda9087d08be0e53e3342a428319f984b923213693a8332ec02fdb1",
+      "translation_text_hash": "c893420f32784ca957c4bc3f85dcea03c8f51010b45b4d14a20dfcf7a37d9220",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청함을 받았을 때에 차라리 가서 말석에 앉으라 그러면 너를 청한 자가 와서 너더러 벗이여 올라 앉으라 하리니 그 때에야 함께 앉은 모든 사람 앞에 영광이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "c893420f32784ca957c4bc3f85dcea03c8f51010b45b4d14a20dfcf7a37d9220"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:11",
+      "sequence": 25565,
+      "chapter_label": "LUK 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "For everyone who exalts himself will be humbled, and whoever humbles himself will be exalted.”",
+      "ko": "무릇 자기를 높이는 자는 낮아지고 자기를 낮추는 자는 높아지리라",
+      "source_text_hash": "72462dbaefd88789ef31c3bd767e8ca0d946e71e67cc8e68dd5e5cc2a85ad031",
+      "translation_text_hash": "3c2b136872cf021e38a3df62aea2a3414ca9e3fd7a7c817693e7f8315facf6c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 자기를 높이는 자는 낮아지고 자기를 낮추는 자는 높아지리라"
+      ],
+      "raw_text_hashes": [
+        "3c2b136872cf021e38a3df62aea2a3414ca9e3fd7a7c817693e7f8315facf6c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:12",
+      "sequence": 25566,
+      "chapter_label": "LUK 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "He also said to the one who had invited him, “When you make a dinner or a supper, don’t call your friends, nor your brothers, nor your kinsmen, nor rich neighbors, or perhaps they might also return the favor, and pay you back.",
+      "ko": "또 자기를 청한 자에게 이르시되 네가 점심이나 저녁이나 베풀거든 벗이나 형제나 친척이나 부한 이웃을 청하지 말라 두렵건대 그 사람들이 너를 도로 청하여 네게 갚음이 될까 하라",
+      "source_text_hash": "7437459c3cb9716a245cc336470770ff063e018d73bda5b9e71b729689565c1f",
+      "translation_text_hash": "bd5ad670e88e8ff9d5b76c23b501c2d82acdd1df6f84ee9a6175f949bc7acd8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기를 청한 자에게 이르시되 네가 점심이나 저녁이나 베풀거든 벗이나 형제나 친척이나 부한 이웃을 청하지 말라 두렵건대 그 사람들이 너를 도로 청하여 네게 갚음이 될까 하라"
+      ],
+      "raw_text_hashes": [
+        "bd5ad670e88e8ff9d5b76c23b501c2d82acdd1df6f84ee9a6175f949bc7acd8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:13",
+      "sequence": 25567,
+      "chapter_label": "LUK 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "But when you make a feast, ask the poor, the maimed, the lame, or the blind;",
+      "ko": "잔치를 배설하거든 차라리 가난한 자들과 병신들과 저는 자들과 소경들을 청하라",
+      "source_text_hash": "ef9738f0b9ba85b83216d17aa6932bf28b78536ba3ce04884e8acaac2ebc8339",
+      "translation_text_hash": "6bfb99081dac4566309ffa13dd2975a8c59639b8ce25cf4e19021e3460e319eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잔치를 배설하거든 차라리 가난한 자들과 병신들과 저는 자들과 소경들을 청하라"
+      ],
+      "raw_text_hashes": [
+        "6bfb99081dac4566309ffa13dd2975a8c59639b8ce25cf4e19021e3460e319eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:14",
+      "sequence": 25568,
+      "chapter_label": "LUK 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "and you will be blessed, because they don’t have the resources to repay you. For you will be repaid in the resurrection of the righteous.”",
+      "ko": "그리하면 저희가 갚을 것이 없는고로 네게 복이 되리니 이는 의인들의 부활시에 네가 갚음을 받겠음이니라 하시더라",
+      "source_text_hash": "8a95c2d4e66e673df42444ec9d09e2ca00e23af9e173b7c94fdb751e7379bfec",
+      "translation_text_hash": "f37b8fdbd7349e1410d1bff9ca00dbdd0c3b3495db1dccdf6f55a87a4ccb1f02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 저희가 갚을 것이 없는고로 네게 복이 되리니 이는 의인들의 부활시에 네가 갚음을 받겠음이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "f37b8fdbd7349e1410d1bff9ca00dbdd0c3b3495db1dccdf6f55a87a4ccb1f02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:15",
+      "sequence": 25569,
+      "chapter_label": "LUK 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "When one of those who sat at the table with him heard these things, he said to him, “Blessed is he who will feast in God’s Kingdom!”",
+      "ko": "함께 먹는 사람 중에 하나가 이 말을 듣고 이르되 무릇 하나님의 나라에서 떡을 먹는 자는 복되도다 하니",
+      "source_text_hash": "16fe360bc773e5815b00d356c070acd7640630d9c7b314bb0ada3212f102a321",
+      "translation_text_hash": "731d6db2c6ae4d87806583865a907a18fcbdb76320bb20a93e0a01d54273543f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함께 먹는 사람 중에 하나가 이 말을 듣고 이르되 무릇 하나님의 나라에서 떡을 먹는 자는 복되도다 하니"
+      ],
+      "raw_text_hashes": [
+        "731d6db2c6ae4d87806583865a907a18fcbdb76320bb20a93e0a01d54273543f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:16",
+      "sequence": 25570,
+      "chapter_label": "LUK 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "But he said to him, “A certain man made a great supper, and he invited many people.",
+      "ko": "이르시되 어떤 사람이 큰 잔치를 배설하고 많은 사람을 청하였더니",
+      "source_text_hash": "c09639847b3251b3d2a8bbc4ae93c355218ace1c37076ecaeef03601001cf332",
+      "translation_text_hash": "6423c2874ec8bc101231be2b1a19da301895fcc518946227d2f2e7ebe3863c99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 어떤 사람이 큰 잔치를 배설하고 많은 사람을 청하였더니"
+      ],
+      "raw_text_hashes": [
+        "6423c2874ec8bc101231be2b1a19da301895fcc518946227d2f2e7ebe3863c99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:17",
+      "sequence": 25571,
+      "chapter_label": "LUK 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "He sent out his servant at supper time to tell those who were invited, ‘Come, for everything is ready now.’",
+      "ko": "잔치할 시간에 그 청하였던 자들에게 종을 보내어 가로되 오소서 모든 것이 준비되었나이다 하매",
+      "source_text_hash": "cfea4ec0f6ff2e8fe3ebe4c0d89a5bc8798ed443089ab6200f965db9c6171601",
+      "translation_text_hash": "b9869addbf14a46a383513c374644357e24438e2bb85433f66b0d4070a62e4c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잔치할 시간에 그 청하였던 자들에게 종을 보내어 가로되 오소서 모든 것이 준비되었나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "b9869addbf14a46a383513c374644357e24438e2bb85433f66b0d4070a62e4c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:18",
+      "sequence": 25572,
+      "chapter_label": "LUK 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "They all as one began to make excuses.“The first said to him, ‘I have bought a field, and I must go and see it. Please have me excused.’",
+      "ko": "다 일치하게 사양하여 하나는 가로되 나는 밭을 샀으매 불가불 나가 보아야 하겠으니 청컨대 나를 용서하도록 하라 하고",
+      "source_text_hash": "18adbb3f9a3f16cec64ac7a95b878cddc4bde59f25e5c21c240de612b11ecd33",
+      "translation_text_hash": "75745c1c10f8d77a0f85155c397e55e62559a7414eb5e997f1ddf9ae588f8786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 일치하게 사양하여 하나는 가로되 나는 밭을 샀으매 불가불 나가 보아야 하겠으니 청컨대 나를 용서하도록 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "75745c1c10f8d77a0f85155c397e55e62559a7414eb5e997f1ddf9ae588f8786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:19",
+      "sequence": 25573,
+      "chapter_label": "LUK 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "“Another said, ‘I have bought five yoke of oxen, and I must go try them out. Please have me excused.’",
+      "ko": "또 하나는 가로되 나는 소 다섯 겨리를 샀으매 시험하러 가니 청컨대 나를 용서하도록 하라 하고",
+      "source_text_hash": "30ea0141684ac652b101cfa6cf121ef75df68d831ac27c30ea1c5109334e69bd",
+      "translation_text_hash": "2c4cd03151b21928f31fcaaffe7c4385a4609d6ec50af1a39b6b1edc36656bd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나는 가로되 나는 소 다섯 겨리를 샀으매 시험하러 가니 청컨대 나를 용서하도록 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "2c4cd03151b21928f31fcaaffe7c4385a4609d6ec50af1a39b6b1edc36656bd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:20",
+      "sequence": 25574,
+      "chapter_label": "LUK 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "“Another said, ‘I have married a wife, and therefore I can’t come.’",
+      "ko": "또 하나는 가로되 나는 장가 들었으니 그러므로 가지 못하겠노라 하는지라",
+      "source_text_hash": "cbb4deba0c424940133427cfa4a5632315c6926627ecb938694c5e44f8b3e33a",
+      "translation_text_hash": "75c18d5a2ccf1e9b3ccaa7b26a36bf86e9e7c0a9f214a696428cb3f296da7713",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하나는 가로되 나는 장가 들었으니 그러므로 가지 못하겠노라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "75c18d5a2ccf1e9b3ccaa7b26a36bf86e9e7c0a9f214a696428cb3f296da7713"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:21",
+      "sequence": 25575,
+      "chapter_label": "LUK 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "“That servant came, and told his lord these things. Then the master of the house, being angry, said to his servant, ‘Go out quickly into the streets and lanes of the city, and bring in the poor, maimed, blind, and lame.’",
+      "ko": "종이 돌아와 주인에게 그대로 고하니 이에 집주인이 노하여 그 종에게 이르되 빨리 시내의 거리와 골목으로 나가서 가난한 자들과 병신들과 소경들과 저는 자들을 데려오라 하니라",
+      "source_text_hash": "2f692f268ad1a0dffd895db46597b6e3f743a135d9dcf71295df7948347daa72",
+      "translation_text_hash": "78dcff4c0e597521949d80cecd25b6804b7e4a29301d2b034c64338160104de8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 돌아와 주인에게 그대로 고하니 이에 집주인이 노하여 그 종에게 이르되 빨리 시내의 거리와 골목으로 나가서 가난한 자들과 병신들과 소경들과 저는 자들을 데려오라 하니라"
+      ],
+      "raw_text_hashes": [
+        "78dcff4c0e597521949d80cecd25b6804b7e4a29301d2b034c64338160104de8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:22",
+      "sequence": 25576,
+      "chapter_label": "LUK 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "“The servant said, ‘Lord, it is done as you commanded, and there is still room.’",
+      "ko": "종이 가로되 주인이여 명하신대로 하였으되 오히려 자리가 있나이다",
+      "source_text_hash": "d6b3287f59ffcc0409e417124a83f9afa72c3eac3c6a0b1299e2ea70f5a54940",
+      "translation_text_hash": "38d3f106477723221ad80b6eca12619d33b77289521ad60941e2e756df87cb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 가로되 주인이여 명하신대로 하였으되 오히려 자리가 있나이다"
+      ],
+      "raw_text_hashes": [
+        "38d3f106477723221ad80b6eca12619d33b77289521ad60941e2e756df87cb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:23",
+      "sequence": 25577,
+      "chapter_label": "LUK 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "“The lord said to the servant, ‘Go out into the highways and hedges, and compel them to come in, that my house may be filled.",
+      "ko": "주인이 종에게 이르되 길과 산울 가로 나가서 사람을 강권하여 데려다가 내 집을 채우라",
+      "source_text_hash": "247fc7aed95b79f9a58abb6a44ce60c0f3028537fd479552635466b2927fe356",
+      "translation_text_hash": "49fa90ab0998612c574d451267e8b3d75aa7d0aa55431d35fda1deba1968af1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 종에게 이르되 길과 산울 가로 나가서 사람을 강권하여 데려다가 내 집을 채우라"
+      ],
+      "raw_text_hashes": [
+        "49fa90ab0998612c574d451267e8b3d75aa7d0aa55431d35fda1deba1968af1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:24",
+      "sequence": 25578,
+      "chapter_label": "LUK 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "For I tell you that none of those men who were invited will taste of my supper. For many are called, but few are chosen.’”",
+      "ko": "내가 너희에게 말하노니 전에 청하였던 그 사람은 하나도 내 잔치를 맛보지 못하리라 하였다 하시니라",
+      "source_text_hash": "76743822b55249e3abbc39bcbd5848ffdc0c65ffc6c76023ca90e398d8140b8e",
+      "translation_text_hash": "af86872e1bb9f22467b32c0344bda521a1ab48895e17b548b7aaf5111aa67495",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 전에 청하였던 그 사람은 하나도 내 잔치를 맛보지 못하리라 하였다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "af86872e1bb9f22467b32c0344bda521a1ab48895e17b548b7aaf5111aa67495"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:25",
+      "sequence": 25579,
+      "chapter_label": "LUK 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "Now great multitudes were going with him. He turned and said to them,",
+      "ko": "허다한 무리가 함께 갈쌔 예수께서 돌이키사 이르시되",
+      "source_text_hash": "b9ed2f66714a7862466881bd09b430861bde7fc646f7730cebee25cfcf27416b",
+      "translation_text_hash": "f1468403f522cd9658d37547e9bcb4fbbd1036e9a8f766acbcc85a13c2b20511",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허다한 무리가 함께 갈쌔 예수께서 돌이키사 이르시되"
+      ],
+      "raw_text_hashes": [
+        "f1468403f522cd9658d37547e9bcb4fbbd1036e9a8f766acbcc85a13c2b20511"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:26",
+      "sequence": 25580,
+      "chapter_label": "LUK 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "“If anyone comes to me, and doesn’t disregardhis own father, mother, wife, children, brothers, and sisters, yes, and his own life also, he can’t be my disciple.",
+      "ko": "무릇 내게 오는 자가 자기 부모와 처자와 형제와 자매와 및 자기 목숨까지 미워하지 아니하면 능히 나의 제자가 되지 못하고",
+      "source_text_hash": "5ba215bcba7ec6632a658c65a82c7eaf8113cecd95df7acfc9ddf6d3c1d5bc05",
+      "translation_text_hash": "38a247395ddc6a44c0f9039d238ff55bfbc3c31b0f369c4fe3f635f98ef77e1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 내게 오는 자가 자기 부모와 처자와 형제와 자매와 및 자기 목숨까지 미워하지 아니하면 능히 나의 제자가 되지 못하고"
+      ],
+      "raw_text_hashes": [
+        "38a247395ddc6a44c0f9039d238ff55bfbc3c31b0f369c4fe3f635f98ef77e1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:27",
+      "sequence": 25581,
+      "chapter_label": "LUK 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "Whoever doesn’t bear his own cross and come after me, can’t be my disciple.",
+      "ko": "누구든지 자기 십자가를 지고 나를 좇지 않는 자도 능히 나의 제자가 되지 못하리라",
+      "source_text_hash": "318735345bc97c20fad2bbc076f40d115f92b37dc6592c5a10cdd6357db03ab1",
+      "translation_text_hash": "2d9fd3119577ff507afcbf84e18293cd227ae83baa926a39ca3b77858c6cd170",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 자기 십자가를 지고 나를 좇지 않는 자도 능히 나의 제자가 되지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "2d9fd3119577ff507afcbf84e18293cd227ae83baa926a39ca3b77858c6cd170"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:28",
+      "sequence": 25582,
+      "chapter_label": "LUK 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "For which of you, desiring to build a tower, doesn’t first sit down and count the cost, to see if he has enough to complete it?",
+      "ko": "너희 중에 누가 망대를 세우고자 할찐대 자기의 가진 것이 준공하기까지에 족할는지 먼저 앉아 그 비용을 예산하지 아니하겠느냐",
+      "source_text_hash": "dcd7c8436ee0327c0d721631a238c6b5d4ae26711c6951ae034152021a48cec6",
+      "translation_text_hash": "0e12eb783e6c8f69505f23e7f65dc22d843146ee5c004426f5d70a9bc893ef14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 망대를 세우고자 할찐대 자기의 가진 것이 준공하기까지에 족할는지 먼저 앉아 그 비용을 예산하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "0e12eb783e6c8f69505f23e7f65dc22d843146ee5c004426f5d70a9bc893ef14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:29",
+      "sequence": 25583,
+      "chapter_label": "LUK 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "Or perhaps, when he has laid a foundation and isn’t able to finish, everyone who sees begins to mock him,",
+      "ko": "그렇게 아니하여 그 기초만 쌓고 능히 이루지 못하면 보는 자가 다 비웃어",
+      "source_text_hash": "06f89e926bbd58041413a7e3d5c80f1bcc76973e9efa707d2f0e8e48cf4763c8",
+      "translation_text_hash": "d91d74afc5e0044b2f46025c488812dde178d8c53086aadb8ce542696718611b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그렇게 아니하여 그 기초만 쌓고 능히 이루지 못하면 보는 자가 다 비웃어"
+      ],
+      "raw_text_hashes": [
+        "d91d74afc5e0044b2f46025c488812dde178d8c53086aadb8ce542696718611b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:30",
+      "sequence": 25584,
+      "chapter_label": "LUK 14",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 30
+        }
+      ],
+      "en": "saying, ‘This man began to build and wasn’t able to finish.’",
+      "ko": "가로되 이 사람이 역사를 시작하고 능히 이루지 못하였다 하리라",
+      "source_text_hash": "249298a57776f09678e7c5be7369d4c7ee21f09fa5230a7e3255f18d41ebfbd3",
+      "translation_text_hash": "eda2ec4f5e7c823af6548a82ac97d75e684694a83cffb3ab8a11afb0316c8719",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이 사람이 역사를 시작하고 능히 이루지 못하였다 하리라"
+      ],
+      "raw_text_hashes": [
+        "eda2ec4f5e7c823af6548a82ac97d75e684694a83cffb3ab8a11afb0316c8719"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:31",
+      "sequence": 25585,
+      "chapter_label": "LUK 14",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 31
+        }
+      ],
+      "en": "Or what king, as he goes to encounter another king in war, will not sit down first and consider whether he is able with ten thousand to meet him who comes against him with twenty thousand?",
+      "ko": "또 어느 임금이 다른 임금과 싸우러 갈 때에 먼저 앉아 일만으로서 저 이만을 가지고 오는 자를 대적할 수 있을까 헤아리지 아니하겠느냐",
+      "source_text_hash": "cdf5c2f921b45ce7e29cf7bb7150140eab6c0cbdf5a379023b067ba29c5791d1",
+      "translation_text_hash": "c2c5ce33b0cbecd3b63672d6328e1f0a2bb76b02093531b3fa3fe515f33cdc24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어느 임금이 다른 임금과 싸우러 갈 때에 먼저 앉아 일만으로서 저 이만을 가지고 오는 자를 대적할 수 있을까 헤아리지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c2c5ce33b0cbecd3b63672d6328e1f0a2bb76b02093531b3fa3fe515f33cdc24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:32",
+      "sequence": 25586,
+      "chapter_label": "LUK 14",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 32
+        }
+      ],
+      "en": "Or else, while the other is yet a great way off, he sends an envoy and asks for conditions of peace.",
+      "ko": "만일 못할터이면 저가 아직 멀리 있을 동안에 사신을 보내어 화친을 청할찌니라",
+      "source_text_hash": "8c7ee013f30a88a8b6a5211eb961d269045b64ebae38aa199e68f3f352a7ac4e",
+      "translation_text_hash": "b66d7d9140005b2563122353276a2ea5b53decf024ee1fb1850519516f1e8883",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 못할터이면 저가 아직 멀리 있을 동안에 사신을 보내어 화친을 청할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b66d7d9140005b2563122353276a2ea5b53decf024ee1fb1850519516f1e8883"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:33",
+      "sequence": 25587,
+      "chapter_label": "LUK 14",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 33
+        }
+      ],
+      "en": "So therefore, whoever of you who doesn’t renounce all that he has, he can’t be my disciple.",
+      "ko": "이와 같이 너희 중에 누구든지 자기의 모든 소유를 버리지 아니하면 능히 내 제자가 되지 못하리라",
+      "source_text_hash": "3eedd90108c34000dba9c6134e19a9fcb60a42f2062ce81cf224104b4638eeca",
+      "translation_text_hash": "a3df522c41587c88acc50fa1d5842e4d78018e44bb744996613b4ca677b35c18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희 중에 누구든지 자기의 모든 소유를 버리지 아니하면 능히 내 제자가 되지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "a3df522c41587c88acc50fa1d5842e4d78018e44bb744996613b4ca677b35c18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:34",
+      "sequence": 25588,
+      "chapter_label": "LUK 14",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 34
+        }
+      ],
+      "en": "“Salt is good, but if the salt becomes flat and tasteless, with what do you season it?",
+      "ko": "소금이 좋은 것이나 소금도 만일 그 맛을 잃었으면 무엇으로 짜게 하리요",
+      "source_text_hash": "3e7c03308df0f915943f0a9bbb4bec958459b22c0bde8b6140101780fa0978c2",
+      "translation_text_hash": "107c397219aecfbda2bf0bd92cbf0ada976065b49e146e76335a5082b4449dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소금이 좋은 것이나 소금도 만일 그 맛을 잃었으면 무엇으로 짜게 하리요"
+      ],
+      "raw_text_hashes": [
+        "107c397219aecfbda2bf0bd92cbf0ada976065b49e146e76335a5082b4449dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:14:35",
+      "sequence": 25589,
+      "chapter_label": "LUK 14",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 14,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 14,
+          "verse": 35
+        }
+      ],
+      "en": "It is fit neither for the soil nor for the manure pile. It is thrown out. He who has ears to hear, let him hear.”",
+      "ko": "땅에도, 거름에도 쓸데 없어 내어버리느니라 들을 귀가 있는 자는 들을찌어다 하시니라",
+      "source_text_hash": "cc565b13cade8b6c60d73d87e2a18ea6fe6abcc02c8aa980d8ddbb365fb814e8",
+      "translation_text_hash": "e592762342d0ea98c21a6913a973090e7fc54497af6f2ab320a1eb48215285db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에도, 거름에도 쓸데 없어 내어버리느니라 들을 귀가 있는 자는 들을찌어다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e592762342d0ea98c21a6913a973090e7fc54497af6f2ab320a1eb48215285db"
+      ]
+    }
+  ]
+}

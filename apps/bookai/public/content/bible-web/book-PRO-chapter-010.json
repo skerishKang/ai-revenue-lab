@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:010",
+  "unit_ordinal": 638,
+  "unit_label": "PRO 10",
+  "book_code": "PRO",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:10:1",
+      "sequence": 16658,
+      "chapter_label": "PRO 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "The proverbs of Solomon. A wise son makes a glad father; but a foolish son brings grief to his mother.",
+      "ko": "솔로몬의 잠언이라 지혜로운 아들은 아비로 기쁘게 하거니와 미련한 아들은 어미의 근심이니라",
+      "source_text_hash": "6487b4a3fb37a7a3cba337b1cac83acb10e2a571527e31d3d66b2861bae9c683",
+      "translation_text_hash": "2f82f5d27c9f80432c62931d026dd4b9b72fdeefca14bb5d080c8278ed969293",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 잠언이라 지혜로운 아들은 아비로 기쁘게 하거니와 미련한 아들은 어미의 근심이니라"
+      ],
+      "raw_text_hashes": [
+        "2f82f5d27c9f80432c62931d026dd4b9b72fdeefca14bb5d080c8278ed969293"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:2",
+      "sequence": 16659,
+      "chapter_label": "PRO 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Treasures of wickedness profit nothing, but righteousness delivers from death.",
+      "ko": "불의의 재물은 무익하여도 의리는 죽음에서 건지느니라",
+      "source_text_hash": "8a54467ba54094fd8bccf1187da2882039c4fe668eea45840c999433ac8b556d",
+      "translation_text_hash": "1db9188c48883877d69b8975ee55743a36fb03ae0a3cb54f222e2f4148c8d855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의의 재물은 무익하여도 의리는 죽음에서 건지느니라"
+      ],
+      "raw_text_hashes": [
+        "1db9188c48883877d69b8975ee55743a36fb03ae0a3cb54f222e2f4148c8d855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:3",
+      "sequence": 16660,
+      "chapter_label": "PRO 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD will not allow the soul of the righteous to go hungry, but he thrusts away the desire of the wicked.",
+      "ko": "여호와께서 의인의 영혼은 주리지 않게 하시나 악인의 소욕은 물리치시느니라",
+      "source_text_hash": "6632867cb462f13ef2a5b6d1490683e452a398895ca8466a940553818dedda84",
+      "translation_text_hash": "d8492c5d19312e1ea7fa915c3e9138a85fc77a836a8f9808ac74e4a21c16fd27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 의인의 영혼은 주리지 않게 하시나 악인의 소욕은 물리치시느니라"
+      ],
+      "raw_text_hashes": [
+        "d8492c5d19312e1ea7fa915c3e9138a85fc77a836a8f9808ac74e4a21c16fd27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:4",
+      "sequence": 16661,
+      "chapter_label": "PRO 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "He becomes poor who works with a lazy hand, but the hand of the diligent brings wealth.",
+      "ko": "손을 게으르게 놀리는 자는 가난하게 되고 손이 부지런한 자는 부하게 되느니라",
+      "source_text_hash": "96317b6fd47645ba3ead466a02d62aac7f879078776b3ea448519b03a89b6162",
+      "translation_text_hash": "7f13b77625572d5bb2607971d9e4ee73d8f888bf5899de2cdbf403e6eea374ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 게으르게 놀리는 자는 가난하게 되고 손이 부지런한 자는 부하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "7f13b77625572d5bb2607971d9e4ee73d8f888bf5899de2cdbf403e6eea374ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:5",
+      "sequence": 16662,
+      "chapter_label": "PRO 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "He who gathers in summer is a wise son, but he who sleeps during the harvest is a son who causes shame.",
+      "ko": "여름에 거두는 자는 지혜로운 아들이나 추수 때에 자는 자는 부끄러움을 끼치는 아들이니라",
+      "source_text_hash": "2526719a14dec6ad1d1e9531a83951e3923aeac6e6333141c472486ed57bde41",
+      "translation_text_hash": "a7126e40d3240b681919b390aee48582fda6936fccf488e86ea6a4b004678268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여름에 거두는 자는 지혜로운 아들이나 추수 때에 자는 자는 부끄러움을 끼치는 아들이니라"
+      ],
+      "raw_text_hashes": [
+        "a7126e40d3240b681919b390aee48582fda6936fccf488e86ea6a4b004678268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:6",
+      "sequence": 16663,
+      "chapter_label": "PRO 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Blessings are on the head of the righteous, but violence covers the mouth of the wicked.",
+      "ko": "의인의 머리에는 복이 임하거늘 악인의 입은 독을 머금었느니라",
+      "source_text_hash": "93298be924b2f1608c249fd6b7531807ad56faeed415d653bd27ab3bd4e0359b",
+      "translation_text_hash": "1f45521c5d5fbb5c6eb3189206ef78bf3a82fc958684c1b701ef823b734984bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 머리에는 복이 임하거늘 악인의 입은 독을 머금었느니라"
+      ],
+      "raw_text_hashes": [
+        "1f45521c5d5fbb5c6eb3189206ef78bf3a82fc958684c1b701ef823b734984bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:7",
+      "sequence": 16664,
+      "chapter_label": "PRO 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "The memory of the righteous is blessed, but the name of the wicked will rot.",
+      "ko": "의인을 기념할 때에는 칭찬하거니와 악인의 이름은 썩으리라",
+      "source_text_hash": "6a65a11ef6115163b7ad30a06d010fa025263ea59664082bf0d146c1d28b1a1e",
+      "translation_text_hash": "f906ff591e610bd1f0590da51934b1c45ec610734c37bf4164bfe9c6c614c5d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인을 기념할 때에는 칭찬하거니와 악인의 이름은 썩으리라"
+      ],
+      "raw_text_hashes": [
+        "f906ff591e610bd1f0590da51934b1c45ec610734c37bf4164bfe9c6c614c5d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:8",
+      "sequence": 16665,
+      "chapter_label": "PRO 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "The wise in heart accept commandments, but a chattering fool will fall.",
+      "ko": "마음이 지혜로운 자는 명령을 받거니와 입이 미련한 자는 패망하리라",
+      "source_text_hash": "1f02310768e3255055ca7915175b348097fbd8a3a0583dec4efc8095518c60a6",
+      "translation_text_hash": "26e20ed7802dcdd366f870d86c1fa6eb9ea7d66305999effd3a85d7566f35c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 지혜로운 자는 명령을 받거니와 입이 미련한 자는 패망하리라"
+      ],
+      "raw_text_hashes": [
+        "26e20ed7802dcdd366f870d86c1fa6eb9ea7d66305999effd3a85d7566f35c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:9",
+      "sequence": 16666,
+      "chapter_label": "PRO 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "He who walks blamelessly walks surely, but he who perverts his ways will be found out.",
+      "ko": "바른길로 행하는 자는 걸음이 평안하려니와 굽은 길로 행하는 자는 드러나리라",
+      "source_text_hash": "6a7a4f66f6d23c29e7a926ce1cf5a54a80017a542ff349fab46e6f0ce159dbad",
+      "translation_text_hash": "c3384673e12570593d335b73ce3df3efc6240fbbddc34644aa6d49e105e24873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바른길로 행하는 자는 걸음이 평안하려니와 굽은 길로 행하는 자는 드러나리라"
+      ],
+      "raw_text_hashes": [
+        "c3384673e12570593d335b73ce3df3efc6240fbbddc34644aa6d49e105e24873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:10",
+      "sequence": 16667,
+      "chapter_label": "PRO 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "One who winks with the eye causes sorrow, but a chattering fool will fall.",
+      "ko": "눈짓하는 자는 근심을 끼치고 입이 미련한 자는 패망하느니라",
+      "source_text_hash": "3cf4873eb6b187755f6fc34433ed5578583b72fec765d3fd641fc981995c5f1e",
+      "translation_text_hash": "a87c029d1359d831d5d17a619f3c3a737dcfae46dfa9a17b19e327b850b9afd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈짓하는 자는 근심을 끼치고 입이 미련한 자는 패망하느니라"
+      ],
+      "raw_text_hashes": [
+        "a87c029d1359d831d5d17a619f3c3a737dcfae46dfa9a17b19e327b850b9afd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:11",
+      "sequence": 16668,
+      "chapter_label": "PRO 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "The mouth of the righteous is a spring of life, but violence covers the mouth of the wicked.",
+      "ko": "의인의 입은 생명의 샘이라도 악인의 입은 독을 머금었느니라",
+      "source_text_hash": "46533f156f13f6dfb0dd4afb84b49b558a2dc98df8374ae79a33ac0bbeed1cee",
+      "translation_text_hash": "9d5d0e894141030c4afef29000b08c67cd43e90dbce5039b2f2dde355e9ad03e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 입은 생명의 샘이라도 악인의 입은 독을 머금었느니라"
+      ],
+      "raw_text_hashes": [
+        "9d5d0e894141030c4afef29000b08c67cd43e90dbce5039b2f2dde355e9ad03e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:12",
+      "sequence": 16669,
+      "chapter_label": "PRO 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Hatred stirs up strife, but love covers all wrongs.",
+      "ko": "미움은 다툼을 일으켜도 사랑은 모든 허물을 가리우느니라",
+      "source_text_hash": "ebe223e11efba90ea7560cc746fd65fb1701be701610fc1b1ad62b1cc8c2b1db",
+      "translation_text_hash": "e69d5d5adf018ce5a831575a22e7f2098851aa4f3ed2fc1230265eb174afc404",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미움은 다툼을 일으켜도 사랑은 모든 허물을 가리우느니라"
+      ],
+      "raw_text_hashes": [
+        "e69d5d5adf018ce5a831575a22e7f2098851aa4f3ed2fc1230265eb174afc404"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:13",
+      "sequence": 16670,
+      "chapter_label": "PRO 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Wisdom is found on the lips of him who has discernment, but a rod is for the back of him who is void of understanding.",
+      "ko": "명철한 자의 입술에는 지혜가 있어도 지혜 없는 자의 등을 위하여는 채찍이 있느니라",
+      "source_text_hash": "66dda780c2411f4b252b7c6de28d814e93f09bde7d27c347111ee0bddfa89427",
+      "translation_text_hash": "b2639d810d91170db7040311db3133811dc13e45883fcbd0a0c00ecb6c5d9105",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명철한 자의 입술에는 지혜가 있어도 지혜 없는 자의 등을 위하여는 채찍이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "b2639d810d91170db7040311db3133811dc13e45883fcbd0a0c00ecb6c5d9105"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:14",
+      "sequence": 16671,
+      "chapter_label": "PRO 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Wise men lay up knowledge, but the mouth of the foolish is near ruin.",
+      "ko": "지혜로운 자는 지식을 간직하거니와 미련한 자의 입은 멸망에 가까우니라",
+      "source_text_hash": "3d493281dfba5f2aa2fff9ef36093d22fa19b47f64b87b4ad8fb8ad7c95af739",
+      "translation_text_hash": "b488ee0cf2373c1b0fea473e8c9eaa96f0fe4082f9a139d8bef998a0ae05f56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜로운 자는 지식을 간직하거니와 미련한 자의 입은 멸망에 가까우니라"
+      ],
+      "raw_text_hashes": [
+        "b488ee0cf2373c1b0fea473e8c9eaa96f0fe4082f9a139d8bef998a0ae05f56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:15",
+      "sequence": 16672,
+      "chapter_label": "PRO 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "The rich man’s wealth is his strong city. The destruction of the poor is their poverty.",
+      "ko": "부자의 재물은 그의 견고한 성이요 가난한 자의 궁핍은 그의 패망이니라",
+      "source_text_hash": "1203bc37b42e05ad12cae776625663ea58ac68f5cd68c6833502fcf8ce828932",
+      "translation_text_hash": "bbe5ff28b795a9f0ba51ad610d27c94e94be3988e7cf4878cf74f7826cc3aee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부자의 재물은 그의 견고한 성이요 가난한 자의 궁핍은 그의 패망이니라"
+      ],
+      "raw_text_hashes": [
+        "bbe5ff28b795a9f0ba51ad610d27c94e94be3988e7cf4878cf74f7826cc3aee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:16",
+      "sequence": 16673,
+      "chapter_label": "PRO 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "The labor of the righteous leads to life. The increase of the wicked leads to sin.",
+      "ko": "의인의 수고는 생명에 이르고 악인의 소득은 죄에 이르느니라",
+      "source_text_hash": "6e3bff6e3bf4c7b17cee6deedb2ac77a19c999b783726f7d37863f4c3622050c",
+      "translation_text_hash": "dc7e317a545d6e7297799ba3b47a93ae761f64a5ade05c3e76f8166b5a4601ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 수고는 생명에 이르고 악인의 소득은 죄에 이르느니라"
+      ],
+      "raw_text_hashes": [
+        "dc7e317a545d6e7297799ba3b47a93ae761f64a5ade05c3e76f8166b5a4601ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:17",
+      "sequence": 16674,
+      "chapter_label": "PRO 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "He is in the way of life who heeds correction, but he who forsakes reproof leads others astray.",
+      "ko": "훈계를 지키는 자는 생명길로 행하여도 징계를 버리는 자는 그릇 가느니라",
+      "source_text_hash": "6459aba20a21d5d95894a39fa6d36d80359ade09aac80f4ee46b95e53fc6aef6",
+      "translation_text_hash": "c3f87c99c2acafa6589085e75b01d2ab6ee029380a724e6c2d26329f717d2804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훈계를 지키는 자는 생명길로 행하여도 징계를 버리는 자는 그릇 가느니라"
+      ],
+      "raw_text_hashes": [
+        "c3f87c99c2acafa6589085e75b01d2ab6ee029380a724e6c2d26329f717d2804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:18",
+      "sequence": 16675,
+      "chapter_label": "PRO 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "He who hides hatred has lying lips. He who utters a slander is a fool.",
+      "ko": "미워함을 감추는 자는 거짓의 입술을 가진 자요 참소하는 자는 미련한 자니라",
+      "source_text_hash": "f122903e9d6165365d233aa880dc522bd12016f63a4cd7a910cf8ddb8a37128f",
+      "translation_text_hash": "94d160e8be46d6623cf7e113f5f5558b293ac7928ba2ee61cc44226ef34d5db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미워함을 감추는 자는 거짓의 입술을 가진 자요 참소하는 자는 미련한 자니라"
+      ],
+      "raw_text_hashes": [
+        "94d160e8be46d6623cf7e113f5f5558b293ac7928ba2ee61cc44226ef34d5db7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:19",
+      "sequence": 16676,
+      "chapter_label": "PRO 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "In the multitude of words there is no lack of disobedience, but he who restrains his lips does wisely.",
+      "ko": "말이 많으면 허물을 면키 어려우나 그 입술을 제어하는 자는 지혜가 있느니라",
+      "source_text_hash": "9b2c0364c05f6479e71b4cf79ab0991f8d32446fa2373bb15a460ca1f64842d0",
+      "translation_text_hash": "100c0109580867d9ad6c2543ffd9e5fb298a8f749a2e0a6ed5aa7fe041ab8f89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말이 많으면 허물을 면키 어려우나 그 입술을 제어하는 자는 지혜가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "100c0109580867d9ad6c2543ffd9e5fb298a8f749a2e0a6ed5aa7fe041ab8f89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:20",
+      "sequence": 16677,
+      "chapter_label": "PRO 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "The tongue of the righteous is like choice silver. The heart of the wicked is of little worth.",
+      "ko": "의인의 혀는 천은과 같거니와 악인의 마음은 가치가 적으니라",
+      "source_text_hash": "44453846500e4cfb7213f2a7c2a1c92f53115afb7823e9f36e058f70af9c253c",
+      "translation_text_hash": "dbac9f72835e1455957f60c0d6a18d3ce543cc64ff7f0b8a8512b325aadbbb88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 혀는 천은과 같거니와 악인의 마음은 가치가 적으니라"
+      ],
+      "raw_text_hashes": [
+        "dbac9f72835e1455957f60c0d6a18d3ce543cc64ff7f0b8a8512b325aadbbb88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:21",
+      "sequence": 16678,
+      "chapter_label": "PRO 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "The lips of the righteous feed many, but the foolish die for lack of understanding.",
+      "ko": "의인의 입술은 여러 사람을 교육하나 미련한 자는 지식이 없으므로 죽느니라",
+      "source_text_hash": "430efc0d0ff096e9d14aeb0bb3740321f672724c8ff895571867d2a4d9b8c2ca",
+      "translation_text_hash": "f36445923a50e64b6f3ee966584a3e1178a8e85bac6f33e2d73b2e50c42b7842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 입술은 여러 사람을 교육하나 미련한 자는 지식이 없으므로 죽느니라"
+      ],
+      "raw_text_hashes": [
+        "f36445923a50e64b6f3ee966584a3e1178a8e85bac6f33e2d73b2e50c42b7842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:22",
+      "sequence": 16679,
+      "chapter_label": "PRO 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD’s blessing brings wealth, and he adds no trouble to it.",
+      "ko": "여호와께서 복을 주시므로 사람으로 부하게 하시고 근심을 겸하여 주지 아니하시느니라",
+      "source_text_hash": "0e0896e5f4ff27136af605de0c46fa0d6309a7e87a29f75b0c762e515ad9336a",
+      "translation_text_hash": "c969983613510df72cab187c5f980383c0adeb9d1a66325462e8c34577dbaed5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 복을 주시므로 사람으로 부하게 하시고 근심을 겸하여 주지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "c969983613510df72cab187c5f980383c0adeb9d1a66325462e8c34577dbaed5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:23",
+      "sequence": 16680,
+      "chapter_label": "PRO 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "It is a fool’s pleasure to do wickedness, but wisdom is a man of understanding’s pleasure.",
+      "ko": "미련한 자는 행악으로 낙을 삼는 것 같이 명철한 자는 지혜로 낙을 삼느니라",
+      "source_text_hash": "4701c3757565942372b8b9e1c2fdce1b7f55d6e43845af56dfcf5cef7fb410c8",
+      "translation_text_hash": "7f732ab050daec7f12c94c5ba6284f322d214bba6f72fbd8292d810bbfd6e1f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자는 행악으로 낙을 삼는 것 같이 명철한 자는 지혜로 낙을 삼느니라"
+      ],
+      "raw_text_hashes": [
+        "7f732ab050daec7f12c94c5ba6284f322d214bba6f72fbd8292d810bbfd6e1f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:24",
+      "sequence": 16681,
+      "chapter_label": "PRO 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "What the wicked fear will overtake them, but the desire of the righteous will be granted.",
+      "ko": "악인에게는 그의 두려워하는 것이 임하거니와 의인은 그 원하는 것이 이루어지느니라",
+      "source_text_hash": "207eb9e01adcb71357c620fe87b2efbb1ac233317e28131253527345b3136b73",
+      "translation_text_hash": "7cd3c5216970cbeba33acf63f0b3fa9511e0a04f9b10f2c0e85b13c80cff0f8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게는 그의 두려워하는 것이 임하거니와 의인은 그 원하는 것이 이루어지느니라"
+      ],
+      "raw_text_hashes": [
+        "7cd3c5216970cbeba33acf63f0b3fa9511e0a04f9b10f2c0e85b13c80cff0f8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:25",
+      "sequence": 16682,
+      "chapter_label": "PRO 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "When the whirlwind passes, the wicked is no more; but the righteous stand firm forever.",
+      "ko": "회리바람이 지나가면 악인은 없어져도 의인은 영원한 기초 같으니라",
+      "source_text_hash": "4134f6ad106beb0ec4da301962e247b81ba7cfb80443e6ee3ffdf9a9636a3cae",
+      "translation_text_hash": "e9fd810389e504f2c73d532396250c90c7af94a2e9ea5f9ac7e13d3f694bbaa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회리바람이 지나가면 악인은 없어져도 의인은 영원한 기초 같으니라"
+      ],
+      "raw_text_hashes": [
+        "e9fd810389e504f2c73d532396250c90c7af94a2e9ea5f9ac7e13d3f694bbaa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:26",
+      "sequence": 16683,
+      "chapter_label": "PRO 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "As vinegar to the teeth, and as smoke to the eyes, so is the sluggard to those who send him.",
+      "ko": "게으른 자는 그 부리는 사람에게 마치 이에 초 같고 눈에 연기 같으니라",
+      "source_text_hash": "5b68314882bfcb0541517b98b05e39aa128e4f080d14696223abeb179969c407",
+      "translation_text_hash": "4123f32d87c8252af8051818cefe8ec1991c093e5889bcde909fe0391eb0a153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 그 부리는 사람에게 마치 이에 초 같고 눈에 연기 같으니라"
+      ],
+      "raw_text_hashes": [
+        "4123f32d87c8252af8051818cefe8ec1991c093e5889bcde909fe0391eb0a153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:27",
+      "sequence": 16684,
+      "chapter_label": "PRO 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "The fear of the LORD prolongs days, but the years of the wicked shall be shortened.",
+      "ko": "여호와를 경외하면 장수하느니라 그러나 악인의 년세는 짧아지느니라",
+      "source_text_hash": "a60580ac8dafed7a2afd1391a6db640db5f6c37d9a779bb754f09e7863856147",
+      "translation_text_hash": "aa4d1660690c728a8b3ffdd1e579eb04d579d84313babe12e90ae20a5c148b14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하면 장수하느니라 그러나 악인의 년세는 짧아지느니라"
+      ],
+      "raw_text_hashes": [
+        "aa4d1660690c728a8b3ffdd1e579eb04d579d84313babe12e90ae20a5c148b14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:28",
+      "sequence": 16685,
+      "chapter_label": "PRO 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "The prospect of the righteous is joy, but the hope of the wicked will perish.",
+      "ko": "의인의 소망은 즐거움을 이루어도 악인의 소망은 끊어지느니라",
+      "source_text_hash": "227280c5b3e5089caa52e7d19c7f3ae65dcbac4e218bc26ed4814b043ebc590b",
+      "translation_text_hash": "e1c1ffc17d8e4326eafce3245b136e28c9e3a367b12eae464e7f319cb4eb67b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 소망은 즐거움을 이루어도 악인의 소망은 끊어지느니라"
+      ],
+      "raw_text_hashes": [
+        "e1c1ffc17d8e4326eafce3245b136e28c9e3a367b12eae464e7f319cb4eb67b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:29",
+      "sequence": 16686,
+      "chapter_label": "PRO 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "The way of the LORD is a stronghold to the upright, but it is a destruction to the workers of iniquity.",
+      "ko": "여호와의 도가 정직한 자에게는 산성이요 행악하는 자에게는 멸망이니라",
+      "source_text_hash": "b9dfffc8a4bc0462408d0368b371a035aaecd3dff6556c489bd2cf43a6306a86",
+      "translation_text_hash": "3ad8ae5c8b72f68dfc1bba8b4e6216e28afebffaf41c210aa657b407885f8139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 도가 정직한 자에게는 산성이요 행악하는 자에게는 멸망이니라"
+      ],
+      "raw_text_hashes": [
+        "3ad8ae5c8b72f68dfc1bba8b4e6216e28afebffaf41c210aa657b407885f8139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:30",
+      "sequence": 16687,
+      "chapter_label": "PRO 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "The righteous will never be removed, but the wicked will not dwell in the land.",
+      "ko": "의인은 영영히 이동되지 아니하여도 악인은 땅에 거하지 못하게 되느니라",
+      "source_text_hash": "717132a333253bd93f306c7d27adbe1d3a7b48f82e52039ffbeb9aa42f444d27",
+      "translation_text_hash": "7613f16b9280ba645c5fdb58027ef73e4277b5b98d63c0038b1cce71f6943b8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인은 영영히 이동되지 아니하여도 악인은 땅에 거하지 못하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "7613f16b9280ba645c5fdb58027ef73e4277b5b98d63c0038b1cce71f6943b8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:31",
+      "sequence": 16688,
+      "chapter_label": "PRO 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "The mouth of the righteous produces wisdom, but the perverse tongue will be cut off.",
+      "ko": "의인의 입은 지혜를 내어도 패역한 혀는 베임을 당할 것이니라",
+      "source_text_hash": "bbf74a58e80fb15842f8f71743182693f5c05119c062577a4a76517246e1fad0",
+      "translation_text_hash": "35eaf7b30fb2ffa73620957afd914d4c28782db1149acc89540c83a84f3d905c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 입은 지혜를 내어도 패역한 혀는 베임을 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "35eaf7b30fb2ffa73620957afd914d4c28782db1149acc89540c83a84f3d905c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:10:32",
+      "sequence": 16689,
+      "chapter_label": "PRO 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "The lips of the righteous know what is acceptable, but the mouth of the wicked is perverse.",
+      "ko": "의인의 입술은 기쁘게 할 것을 알거늘 악인의 입은 패역을 말하느니라",
+      "source_text_hash": "68e5a9ebd59123f500a32e1f28e58d693788fde9dfd6e3531825002c57f9d81e",
+      "translation_text_hash": "e5c32a595ed9f0b3841f239fba67636f026ebc0807e2c8aaf2d4b249dc0e7498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 입술은 기쁘게 할 것을 알거늘 악인의 입은 패역을 말하느니라"
+      ],
+      "raw_text_hashes": [
+        "e5c32a595ed9f0b3841f239fba67636f026ebc0807e2c8aaf2d4b249dc0e7498"
+      ]
+    }
+  ]
+}

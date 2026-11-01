@@ -1,0 +1,237 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:047",
+  "unit_ordinal": 792,
+  "unit_label": "JER 47",
+  "book_code": "JER",
+  "chapter_number": 47,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:47:1",
+      "sequence": 20075,
+      "chapter_label": "JER 47",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word that came to Jeremiah the prophet concerning the Philistines, before Pharaoh struck Gaza.",
+      "ko": "바로가 가사를 치기 전에 블레셋 사람에 대하여 선지자 예레미야에게 임한 여호와의 말씀이라",
+      "source_text_hash": "6ac35b89bde04faa9ba48c2adeb6715353347c49215453aaa8eff945e1bd4fce",
+      "translation_text_hash": "c5808e884f79eb60c79dd423e6b0ebd56d22a7799bb2a071ac1e729f76adfe86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 가사를 치기 전에 블레셋 사람에 대하여 선지자 예레미야에게 임한 여호와의 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "c5808e884f79eb60c79dd423e6b0ebd56d22a7799bb2a071ac1e729f76adfe86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:2",
+      "sequence": 20076,
+      "chapter_label": "JER 47",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD says: “Behold, waters rise up out of the north, and will become an overflowing stream, and will overflow the land and all that is therein, the city and those who dwell therein. The men will cry, and all the inhabitants of the land will wail.",
+      "ko": "여호와께서 이같이 말씀하시되 보라 물이 북방에서 일어나 창일하는 시내를 이루어 그 땅과 그 중에 있는 모든 것과 그 성읍과 거기 거하는 자들을 엄몰시키리니 사람들이 부르짖으며 그 땅 모든 거민이 애곡할 것이라",
+      "source_text_hash": "a347510d920be886f2b8875f0f4dc5d8c45bce37818783e669442f768df2826b",
+      "translation_text_hash": "803c319dff77c03e7475cb5b107b03920dcc51fe0d98b168efcf396e91a6f945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 보라 물이 북방에서 일어나 창일하는 시내를 이루어 그 땅과 그 중에 있는 모든 것과 그 성읍과 거기 거하는 자들을 엄몰시키리니 사람들이 부르짖으며 그 땅 모든 거민이 애곡할 것이라"
+      ],
+      "raw_text_hashes": [
+        "803c319dff77c03e7475cb5b107b03920dcc51fe0d98b168efcf396e91a6f945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:3",
+      "sequence": 20077,
+      "chapter_label": "JER 47",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 3
+        }
+      ],
+      "en": "At the noise of the stamping of the hoofs of his strong ones, at the rushing of his chariots, at the rumbling of his wheels, the fathers don’t look back for their children because their hands are so feeble,",
+      "ko": "힘센 것의 굽 치는 소리와 달리는 병거 바퀴의 울리는 소리에 아비의 손이 풀려서 그 자녀를 돌아보지 못하리니",
+      "source_text_hash": "b76b6d5550795b7d69d9627b84bb1a4fcb46b511fcae5fe1a64af0849d3f8bc5",
+      "translation_text_hash": "1e4120b41b77ed8e3797eb6f95981a95d9616f3b086695cc1c7188b55c3afe82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힘센 것의 굽 치는 소리와 달리는 병거 바퀴의 울리는 소리에 아비의 손이 풀려서 그 자녀를 돌아보지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "1e4120b41b77ed8e3797eb6f95981a95d9616f3b086695cc1c7188b55c3afe82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:4",
+      "sequence": 20078,
+      "chapter_label": "JER 47",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 4
+        }
+      ],
+      "en": "because of the day that comes to destroy all the Philistines, to cut off from Tyre and Sidon every helper who remains; for the LORD will destroy the Philistines, the remnant of the isle of Caphtor.",
+      "ko": "이는 블레셋 사람을 진멸하시며 두로와 시돈에 남아 있는바 도와줄 자를 다 끊어버리시는 날이 이름이라 여호와께서 갑돌섬에 남아 있는 블레셋 사람을 멸하시리라",
+      "source_text_hash": "8ed5fbde139cfcb4fa6631d2ba1590310d665644a927b21150cc986cdb1cc3a3",
+      "translation_text_hash": "c95635133f68ce29e9fae034fd0a6ae2f2e1125414af48e41c95f6c89548f3d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 블레셋 사람을 진멸하시며 두로와 시돈에 남아 있는바 도와줄 자를 다 끊어버리시는 날이 이름이라 여호와께서 갑돌섬에 남아 있는 블레셋 사람을 멸하시리라"
+      ],
+      "raw_text_hashes": [
+        "c95635133f68ce29e9fae034fd0a6ae2f2e1125414af48e41c95f6c89548f3d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:5",
+      "sequence": 20079,
+      "chapter_label": "JER 47",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 5
+        }
+      ],
+      "en": "Baldness has come on Gaza; Ashkelon is brought to nothing. You remnant of their valley, how long will you cut yourself?",
+      "ko": "가사가 삭발되었고 아스글론과 그들에게 남아 있는 평지가 멸망되었나니 네가 네 몸 베기를 어느 때까지 하겠느냐",
+      "source_text_hash": "7fd57c7773ebb30260986feb3e0626614432e10a023ca8a3752a24eefa796ef1",
+      "translation_text_hash": "76c03cd67b5bb5f1962e4e117710cdfa08bef4ed4262a1eb1e176ec66dbf6c13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가사가 삭발되었고 아스글론과 그들에게 남아 있는 평지가 멸망되었나니 네가 네 몸 베기를 어느 때까지 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "76c03cd67b5bb5f1962e4e117710cdfa08bef4ed4262a1eb1e176ec66dbf6c13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:6",
+      "sequence": 20080,
+      "chapter_label": "JER 47",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 6
+        }
+      ],
+      "en": "“‘You sword of the LORD, how long will it be before you are quiet? Put yourself back into your scabbard; rest, and be still.’",
+      "ko": "여호와의 칼이여 네가 언제까지 쉬지 않겠느냐 네 집에 들어가서 가만히 쉴찌어다",
+      "source_text_hash": "7513430821a41215e0836255cc830a2a7c596920b70c59e6a4302e0d7fe7840d",
+      "translation_text_hash": "41a4252ac7e7bc526ffbc707771e03d36cba5f7dca661d4317927e28175d6a64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 칼이여 네가 언제까지 쉬지 않겠느냐 네 집에 들어가서 가만히 쉴찌어다"
+      ],
+      "raw_text_hashes": [
+        "41a4252ac7e7bc526ffbc707771e03d36cba5f7dca661d4317927e28175d6a64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:47:7",
+      "sequence": 20081,
+      "chapter_label": "JER 47",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 47,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 47,
+          "verse": 7
+        }
+      ],
+      "en": "“How can you be quiet, since the LORD has given you a command? Against Ashkelon, and against the seashore, there he has appointed it.”",
+      "ko": "여호와께서 이를 명하셨은즉 어떻게 쉬겠느냐 아스글론과 해변을 치려 하여 그가 명정하셨느니라",
+      "source_text_hash": "2171d6bfd4554db068e66ce733ff16c084a8d5ec7d9764ff47a250a168c673fd",
+      "translation_text_hash": "72190a74ce37b1ffa223236b4e999febc3b7f7348df6d9333842c10b36a18a1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이를 명하셨은즉 어떻게 쉬겠느냐 아스글론과 해변을 치려 하여 그가 명정하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "72190a74ce37b1ffa223236b4e999febc3b7f7348df6d9333842c10b36a18a1d"
+      ]
+    }
+  ]
+}

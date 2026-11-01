@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:042",
+  "unit_ordinal": 520,
+  "unit_label": "PSA 42",
+  "book_code": "PSA",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:42:1",
+      "sequence": 14557,
+      "chapter_label": "PSA 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "As the deer pants for the water brooks, so my soul pants after you, God.",
+      "ko": "하나님이여 사슴이 시냇물을 찾기에 갈급함 같이 내 영혼이 주를 찾기에 갈급하니이다",
+      "source_text_hash": "ded8f11d50428d6539067c7557371271a06313da3866b96fdc301c6ded03d5a3",
+      "translation_text_hash": "3ffd4bfb4a9ab80897fced4033fe0ba00c06261bd046ff9935e035bd2f726c96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 사슴이 시냇물을 찾기에 갈급함 같이 내 영혼이 주를 찾기에 갈급하니이다"
+      ],
+      "raw_text_hashes": [
+        "3ffd4bfb4a9ab80897fced4033fe0ba00c06261bd046ff9935e035bd2f726c96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:2",
+      "sequence": 14558,
+      "chapter_label": "PSA 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "My soul thirsts for God, for the living God. When shall I come and appear before God?",
+      "ko": "내 영혼이 하나님 곧 생존하시는 하나님을 갈망하나니 내가 어느 때에 나아가서 하나님 앞에 뵈올꼬",
+      "source_text_hash": "4cd00d6900537ad518a6d1840325bf864a78ac72ea7caad6e62e5e858e62e365",
+      "translation_text_hash": "eee81869d637325a280bdc797b36001340722640064845fd4914ba4741939aea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼이 하나님 곧 생존하시는 하나님을 갈망하나니 내가 어느 때에 나아가서 하나님 앞에 뵈올꼬"
+      ],
+      "raw_text_hashes": [
+        "eee81869d637325a280bdc797b36001340722640064845fd4914ba4741939aea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:3",
+      "sequence": 14559,
+      "chapter_label": "PSA 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "My tears have been my food day and night, while they continually ask me, “Where is your God?”",
+      "ko": "사람들이 종일 나더러 하는 말이 네 하나님이 어디 있느뇨 하니 내 눈물이 주야로 내 음식이 되었도다",
+      "source_text_hash": "70cb943076ea5e7b4b74bbfbc69362a7977c595729cb156fbce6a245f09baf9e",
+      "translation_text_hash": "a017d5114c7a66819772ab3f9d0509f9b5cbd6ed842ce91097102ca64b30507d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 종일 나더러 하는 말이 네 하나님이 어디 있느뇨 하니 내 눈물이 주야로 내 음식이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "a017d5114c7a66819772ab3f9d0509f9b5cbd6ed842ce91097102ca64b30507d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:4",
+      "sequence": 14560,
+      "chapter_label": "PSA 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "These things I remember, and pour out my soul within me, how I used to go with the crowd, and led them to God’s house, with the voice of joy and praise, a multitude keeping a holy day.",
+      "ko": "내가 전에 성일을 지키는 무리와 동행하여 기쁨과 찬송의 소리를 발하며 저희를 하나님의 집으로 인도하였더니 이제 이 일을 기억하고 내 마음이 상하는도다",
+      "source_text_hash": "56a777894ec5908b03f108c222473e1cdbdd7a15b0cb666241102d852be0745c",
+      "translation_text_hash": "6cbd0eaf402fdab4918cd3d0f89ce20251c807ace651092f506986945670747f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에 성일을 지키는 무리와 동행하여 기쁨과 찬송의 소리를 발하며 저희를 하나님의 집으로 인도하였더니 이제 이 일을 기억하고 내 마음이 상하는도다"
+      ],
+      "raw_text_hashes": [
+        "6cbd0eaf402fdab4918cd3d0f89ce20251c807ace651092f506986945670747f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:5",
+      "sequence": 14561,
+      "chapter_label": "PSA 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "Why are you in despair, my soul? Why are you disturbed within me? Hope in God! For I shall still praise him for the saving help of his presence.",
+      "ko": "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 그 얼굴의 도우심을 인하여 내가 오히려 찬송하리로다",
+      "source_text_hash": "3aab9b3a008b0e7be3b26c0a80d490f14043ffde680084701d58bf627cb7140b",
+      "translation_text_hash": "9429c299d0df4fb9360b1b1962d6c7b31cec11dc49dc027249f83dd7dd4e1ca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 그 얼굴의 도우심을 인하여 내가 오히려 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "9429c299d0df4fb9360b1b1962d6c7b31cec11dc49dc027249f83dd7dd4e1ca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:6",
+      "sequence": 14562,
+      "chapter_label": "PSA 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "My God, my soul is in despair within me. Therefore I remember you from the land of the Jordan, the heights of Hermon, from the hill Mizar.",
+      "ko": "내 하나님이여 내 영혼이 내 속에서 낙망이 되므로 내가 요단땅과 헤르몬과 미살산에서 주를 기억하나이다",
+      "source_text_hash": "6a65eb4d4936dcc26fc27ac3da21a15b97458c77cdf706a30efb110639c6c5b3",
+      "translation_text_hash": "18be245cfff7bab77e824330912f55bf61473f03b58e6e4a4100aa249b1775f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 내 영혼이 내 속에서 낙망이 되므로 내가 요단땅과 헤르몬과 미살산에서 주를 기억하나이다"
+      ],
+      "raw_text_hashes": [
+        "18be245cfff7bab77e824330912f55bf61473f03b58e6e4a4100aa249b1775f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:7",
+      "sequence": 14563,
+      "chapter_label": "PSA 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "Deep calls to deep at the noise of your waterfalls. All your waves and your billows have swept over me.",
+      "ko": "주의 폭포 소리에 깊은 바다가 서로 부르며 주의 파도와 물결이 나를 엄몰하도소이다",
+      "source_text_hash": "7392daf4bef372b664c182120cc6c960f2f968980485a3a7e35248b2fb7769fc",
+      "translation_text_hash": "3ddd1494a17e7c1b30e9f397e2f400c2cfb72bd621cc46936e4eefe9dea56d35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 폭포 소리에 깊은 바다가 서로 부르며 주의 파도와 물결이 나를 엄몰하도소이다"
+      ],
+      "raw_text_hashes": [
+        "3ddd1494a17e7c1b30e9f397e2f400c2cfb72bd621cc46936e4eefe9dea56d35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:8",
+      "sequence": 14564,
+      "chapter_label": "PSA 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD will command his loving kindness in the daytime. In the night his song shall be with me: a prayer to the God of my life.",
+      "ko": "낮에는 여호와께서 그 인자함을 베푸시고 밤에는 그 찬송이 내게 있어 생명의 하나님께 기도하리로다",
+      "source_text_hash": "30eb0db646e83b6bc2e97d994a4feaca13f72c47840818219847a42f8d81be60",
+      "translation_text_hash": "97ba7808ff5404caf44bf212eca4b39a030e94bef3a247eb39d2e3df7267ad36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮에는 여호와께서 그 인자함을 베푸시고 밤에는 그 찬송이 내게 있어 생명의 하나님께 기도하리로다"
+      ],
+      "raw_text_hashes": [
+        "97ba7808ff5404caf44bf212eca4b39a030e94bef3a247eb39d2e3df7267ad36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:9",
+      "sequence": 14565,
+      "chapter_label": "PSA 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "I will ask God, my rock, “Why have you forgotten me? Why do I go mourning because of the oppression of the enemy?”",
+      "ko": "내 반석이신 하나님께 말하기를 어찌하여 나를 잊으셨나이까 내가 어찌하여 원수의 압제로 인하여 슬프게 다니나이까 하리로다",
+      "source_text_hash": "6595128813a784574a5ab9c57518456a6576a108b645915af8c7eef1033a40eb",
+      "translation_text_hash": "d45935bbda3bd1940ffba028d6958b3201fe51dc416ac652886b49c0b9abc412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 반석이신 하나님께 말하기를 어찌하여 나를 잊으셨나이까 내가 어찌하여 원수의 압제로 인하여 슬프게 다니나이까 하리로다"
+      ],
+      "raw_text_hashes": [
+        "d45935bbda3bd1940ffba028d6958b3201fe51dc416ac652886b49c0b9abc412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:10",
+      "sequence": 14566,
+      "chapter_label": "PSA 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "As with a sword in my bones, my adversaries reproach me, while they continually ask me, “Where is your God?”",
+      "ko": "내 뼈를 찌르는 칼 같이 내 대적이 나를 비방하여 늘 말하기를 네 하나님이 어디 있느냐 하도다",
+      "source_text_hash": "a49e46fa3e0775b88ffa8ef8d188f61dedafb3eb23c651b53b3abe645196e1dc",
+      "translation_text_hash": "808444db6dafa0444e56a076b4eba1cd8e7fc9b1a3279934ad6a88a65261e0d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 뼈를 찌르는 칼 같이 내 대적이 나를 비방하여 늘 말하기를 네 하나님이 어디 있느냐 하도다"
+      ],
+      "raw_text_hashes": [
+        "808444db6dafa0444e56a076b4eba1cd8e7fc9b1a3279934ad6a88a65261e0d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:42:11",
+      "sequence": 14567,
+      "chapter_label": "PSA 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "Why are you in despair, my soul? Why are you disturbed within me? Hope in God! For I shall still praise him, the saving help of my countenance, and my God.",
+      "ko": "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 나는 내 얼굴을 도우시는 내 하나님을 오히려 찬송하리로다",
+      "source_text_hash": "22d52851adb908085c23a790f0b36f4b86fccbcdfe886a25ca48a7368369fb11",
+      "translation_text_hash": "6965fd58445ef896248ebe7d91c0639bb3a43bf0d637f90b397f28f4dc6e271d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영혼아 네가 어찌하여 낙망하며 어찌하여 내 속에서 불안하여 하는고 너는 하나님을 바라라 나는 내 얼굴을 도우시는 내 하나님을 오히려 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "6965fd58445ef896248ebe7d91c0639bb3a43bf0d637f90b397f28f4dc6e271d"
+      ]
+    }
+  ]
+}

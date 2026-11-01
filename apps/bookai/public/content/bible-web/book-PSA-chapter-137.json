@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:137",
+  "unit_ordinal": 615,
+  "unit_label": "PSA 137",
+  "book_code": "PSA",
+  "chapter_number": 137,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:137:1",
+      "sequence": 16224,
+      "chapter_label": "PSA 137",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 1
+        }
+      ],
+      "en": "By the rivers of Babylon, there we sat down. Yes, we wept, when we remembered Zion.",
+      "ko": "우리가 바벨론의 여러 강변 거기 앉아서 시온을 기억하며 울었도다",
+      "source_text_hash": "b2e1c4412a3abb2ff8901e8d4776e38c77208b0165ade2ff83ca7c1e24db3041",
+      "translation_text_hash": "7213eafda100d65a4f8763af12a7a1e63309e31153b96e8503bccf78a2cf41aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 바벨론의 여러 강변 거기 앉아서 시온을 기억하며 울었도다"
+      ],
+      "raw_text_hashes": [
+        "7213eafda100d65a4f8763af12a7a1e63309e31153b96e8503bccf78a2cf41aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:2",
+      "sequence": 16225,
+      "chapter_label": "PSA 137",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 2
+        }
+      ],
+      "en": "On the willows in that land, we hung up our harps.",
+      "ko": "그 중의 버드나무에 우리가 우리의 수금을 걸었나니",
+      "source_text_hash": "1948bc3b797c4846d0466d9def66c0e0e5e79871d7a1e8dc07aa7ec3f2cd866e",
+      "translation_text_hash": "6d41bb79f5b4d16f7a95f8a1da17d1432e2a9683333eb1e6a350eca046637fb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 중의 버드나무에 우리가 우리의 수금을 걸었나니"
+      ],
+      "raw_text_hashes": [
+        "6d41bb79f5b4d16f7a95f8a1da17d1432e2a9683333eb1e6a350eca046637fb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:3",
+      "sequence": 16226,
+      "chapter_label": "PSA 137",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 3
+        }
+      ],
+      "en": "For there, those who led us captive asked us for songs. Those who tormented us demanded songs of joy: “Sing us one of the songs of Zion!”",
+      "ko": "이는 우리를 사로잡은 자가 거기서 우리에게 노래를 청하며 우리를 황폐케 한 자가 기쁨을 청하고 자기들을 위하여 시온 노래 중 하나를 노래하라 함이로다",
+      "source_text_hash": "a9c0225ab9e5877c15f84101acc86be81757d9fa33e4026be86c1eb7fe0dbc62",
+      "translation_text_hash": "9be02077b4c713767dfb70ec359f187fa59a255e1866e7502fbe75bdee839f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리를 사로잡은 자가 거기서 우리에게 노래를 청하며 우리를 황폐케 한 자가 기쁨을 청하고 자기들을 위하여 시온 노래 중 하나를 노래하라 함이로다"
+      ],
+      "raw_text_hashes": [
+        "9be02077b4c713767dfb70ec359f187fa59a255e1866e7502fbe75bdee839f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:4",
+      "sequence": 16227,
+      "chapter_label": "PSA 137",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 4
+        }
+      ],
+      "en": "How can we sing the LORD’s song in a foreign land?",
+      "ko": "우리가 이방에 있어서 어찌 여호와의 노래를 부를꼬",
+      "source_text_hash": "20f2c229d4da8ddad42aeeab72f2db3185d1864d76a683d5a5a23de9104599af",
+      "translation_text_hash": "e821a3fec7422f6081016868985989c4b8d810a21977b798618635e98845557f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이방에 있어서 어찌 여호와의 노래를 부를꼬"
+      ],
+      "raw_text_hashes": [
+        "e821a3fec7422f6081016868985989c4b8d810a21977b798618635e98845557f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:5",
+      "sequence": 16228,
+      "chapter_label": "PSA 137",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 5
+        }
+      ],
+      "en": "If I forget you, Jerusalem, let my right hand forget its skill.",
+      "ko": "예루살렘아 내가 너를 잊을찐대 내 오른손이 그 재주를 잊을찌로다",
+      "source_text_hash": "d98a7fbc8d30523a9f4fb9c24c8614a451ccc1220ae765b755750233e6dcc14c",
+      "translation_text_hash": "df8bd02ecc780f1d3fc6619c89b664fc130085c7f72fdf56aff745cb33a517d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 내가 너를 잊을찐대 내 오른손이 그 재주를 잊을찌로다"
+      ],
+      "raw_text_hashes": [
+        "df8bd02ecc780f1d3fc6619c89b664fc130085c7f72fdf56aff745cb33a517d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:6",
+      "sequence": 16229,
+      "chapter_label": "PSA 137",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 6
+        }
+      ],
+      "en": "Let my tongue stick to the roof of my mouth if I don’t remember you, if I don’t prefer Jerusalem above my chief joy.",
+      "ko": "내가 예루살렘을 기억지 아니하거나 내가 너를 나의 제일 즐거워하는 것보다 지나치게 아니할찐대 내 혀가 내 입 천장에 붙을찌로다",
+      "source_text_hash": "3081be8e29b889acf3e6cdd4fcb4ebcd28bb0f1265a325ae58f826413d454e84",
+      "translation_text_hash": "84df3383e6b628343980d5f4756caff2488887a85f5dfcc4e9ef6cc8da1d2d19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘을 기억지 아니하거나 내가 너를 나의 제일 즐거워하는 것보다 지나치게 아니할찐대 내 혀가 내 입 천장에 붙을찌로다"
+      ],
+      "raw_text_hashes": [
+        "84df3383e6b628343980d5f4756caff2488887a85f5dfcc4e9ef6cc8da1d2d19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:7",
+      "sequence": 16230,
+      "chapter_label": "PSA 137",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 7
+        }
+      ],
+      "en": "Remember, LORD, against the children of Edom in the day of Jerusalem, who said, “Raze it! Raze it even to its foundation!”",
+      "ko": "여호와여 예루살렘이 해 받던 날을 기억하시고 에돔 자손을 치소서 저희 말이 훼파하라 훼파하라 그 기초까지 훼파하라 하였나이다",
+      "source_text_hash": "0fb76a376328d5ae3e8850f3403df81c9fe8ace8902a2cc1ec8bcdf15eeb7af1",
+      "translation_text_hash": "1ac34d2e2a70dedb34030b0480e4a52ad999bfb2710b8a8f2e0432d993ef05fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 예루살렘이 해 받던 날을 기억하시고 에돔 자손을 치소서 저희 말이 훼파하라 훼파하라 그 기초까지 훼파하라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "1ac34d2e2a70dedb34030b0480e4a52ad999bfb2710b8a8f2e0432d993ef05fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:8",
+      "sequence": 16231,
+      "chapter_label": "PSA 137",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 8
+        }
+      ],
+      "en": "Daughter of Babylon, doomed to destruction, he will be happy who repays you, as you have done to us.",
+      "ko": "여자 같은 멸망할 바벨론아 네가 우리에게 행한 대로 네게 갚는 자가 유복하리로다",
+      "source_text_hash": "84690945f5acc88c1a47fb441462139382e236c0472a6671abd91412fc938e63",
+      "translation_text_hash": "5684c5128634d704e99e8e819573b9df993d8685ca99d2b0844691fbb416bbc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자 같은 멸망할 바벨론아 네가 우리에게 행한 대로 네게 갚는 자가 유복하리로다"
+      ],
+      "raw_text_hashes": [
+        "5684c5128634d704e99e8e819573b9df993d8685ca99d2b0844691fbb416bbc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:137:9",
+      "sequence": 16232,
+      "chapter_label": "PSA 137",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 137,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 137,
+          "verse": 9
+        }
+      ],
+      "en": "Happy shall he be, who takes and dashes your little ones against the rock.",
+      "ko": "네 어린것들을 반석에 메어치는 자는 유복하리로다",
+      "source_text_hash": "b384f5b743d5abdfd5925fd3f7a20e1deab2b6325521b230913fccb30c742b4c",
+      "translation_text_hash": "e962682a0d84e5ab0f8b1b5edb89229aaf1877edb3f39c16dc38afcee940db9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 어린것들을 반석에 메어치는 자는 유복하리로다"
+      ],
+      "raw_text_hashes": [
+        "e962682a0d84e5ab0f8b1b5edb89229aaf1877edb3f39c16dc38afcee940db9a"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2189 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:028",
+  "unit_ordinal": 181,
+  "unit_label": "DEU 28",
+  "book_code": "DEU",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:28:1",
+      "sequence": 5613,
+      "chapter_label": "DEU 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "It shall happen, if you shall listen diligently to the LORD your God’s voice, to observe to do all his commandments which I command you today, that the LORD your God will set you high above all the nations of the earth.",
+      "ko": "네가 네 하나님 여호와의 말씀을 삼가 듣고 내가 오늘날 네게 명하는 그 모든 명령을 지켜 행하면 네 하나님 여호와께서 너를 세계 모든 민족 위에 뛰어나게 하실 것이라",
+      "source_text_hash": "d6ca8335a83749c321492e257043097d334746e57e3908ad9751b6af4e892da3",
+      "translation_text_hash": "02d60ec65e3a2e27b2c88484774155b4844b441815a39381178c0cbbbf335002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 하나님 여호와의 말씀을 삼가 듣고 내가 오늘날 네게 명하는 그 모든 명령을 지켜 행하면 네 하나님 여호와께서 너를 세계 모든 민족 위에 뛰어나게 하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "02d60ec65e3a2e27b2c88484774155b4844b441815a39381178c0cbbbf335002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:2",
+      "sequence": 5614,
+      "chapter_label": "DEU 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "All these blessings will come upon you, and overtake you, if you listen to the LORD your God’s voice.",
+      "ko": "네가 네 하나님 여호와의 말씀을 순종하면 이 모든 복이 네게 임하며 네게 미치리니",
+      "source_text_hash": "3ee964ef47e043b27a2e2c28d81791ff22d926849ab274759f4c21bedd0f4128",
+      "translation_text_hash": "3fd9ba4eb6f519c877593e782c83b2d2ac8caaba3115a47f3398d51a54ccb5f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 하나님 여호와의 말씀을 순종하면 이 모든 복이 네게 임하며 네게 미치리니"
+      ],
+      "raw_text_hashes": [
+        "3fd9ba4eb6f519c877593e782c83b2d2ac8caaba3115a47f3398d51a54ccb5f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:3",
+      "sequence": 5615,
+      "chapter_label": "DEU 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "You shall be blessed in the city, and you shall be blessed in the field.",
+      "ko": "성읍에서도 복을 받고 들에서도 복을 받을 것이며",
+      "source_text_hash": "d8b6da6dac8927171643b0813f790af2b6ffed7fd2d2b3116b80fe25c4b52a43",
+      "translation_text_hash": "d8e076c490329a32ee5c012f3fbedc47ed13df57a4c52d7a9843181f0ccd5e5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍에서도 복을 받고 들에서도 복을 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "d8e076c490329a32ee5c012f3fbedc47ed13df57a4c52d7a9843181f0ccd5e5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:4",
+      "sequence": 5616,
+      "chapter_label": "DEU 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "You shall be blessed in the fruit of your body, the fruit of your ground, the fruit of your animals, the increase of your livestock, and the young of your flock.",
+      "ko": "네 몸의 소생과 네 토지의 소산과 네 짐승의 새끼와 우양의 새끼가 복을 받을 것이며",
+      "source_text_hash": "d724560201d505f0b064a1e3b9b21f49a8becf8bce602599164fb0fad2a75102",
+      "translation_text_hash": "da2e8ff4a5aa2510e15db1eb611db3cac80ca9e24912c1d43b2ce9784fd5c4c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 몸의 소생과 네 토지의 소산과 네 짐승의 새끼와 우양의 새끼가 복을 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "da2e8ff4a5aa2510e15db1eb611db3cac80ca9e24912c1d43b2ce9784fd5c4c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:5",
+      "sequence": 5617,
+      "chapter_label": "DEU 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Your basket and your kneading trough shall be blessed.",
+      "ko": "네 광주리와 떡반죽 그릇이 복을 받을 것이며",
+      "source_text_hash": "027d0ef3793ebeee62c5b4292b7f610b92cce24c6cc149ed471534fef0209db3",
+      "translation_text_hash": "e44c9d542ed4c29b05cb51a240ebb72e67a0271b13dd2ce770bc0e22b81ad378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 광주리와 떡반죽 그릇이 복을 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "e44c9d542ed4c29b05cb51a240ebb72e67a0271b13dd2ce770bc0e22b81ad378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:6",
+      "sequence": 5618,
+      "chapter_label": "DEU 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "You shall be blessed when you come in, and you shall be blessed when you go out.",
+      "ko": "네가 들어와도 복을 받고 나가도 복을 받을 것이니라",
+      "source_text_hash": "fed15a396c442eb0d97b2afe2bdfd4e58473216e02554ddf884134ea1d883a98",
+      "translation_text_hash": "c29edfca4fd4c017e02603b029abd7bc990c4ea653c3f170152f3f053cb5bac1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 들어와도 복을 받고 나가도 복을 받을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c29edfca4fd4c017e02603b029abd7bc990c4ea653c3f170152f3f053cb5bac1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:7",
+      "sequence": 5619,
+      "chapter_label": "DEU 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD will cause your enemies who rise up against you to be struck before you. They will come out against you one way, and will flee before you seven ways.",
+      "ko": "네 대적들이 일어나 너를 치려하면 여호와께서 그들을 네 앞에서 패하게 하시리니 그들이 한 길로 너를 치러 들어왔으나 네 앞에서 일곱 길로 도망하리라",
+      "source_text_hash": "f24e5bb17b7ade2673f06263a580e77d6299ff0e736cfbc38c177841a75108d7",
+      "translation_text_hash": "73b1c3f602a77e49f58ed385dd85f0f23e5105f7401ba619febd664634946734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 대적들이 일어나 너를 치려하면 여호와께서 그들을 네 앞에서 패하게 하시리니 그들이 한 길로 너를 치러 들어왔으나 네 앞에서 일곱 길로 도망하리라"
+      ],
+      "raw_text_hashes": [
+        "73b1c3f602a77e49f58ed385dd85f0f23e5105f7401ba619febd664634946734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:8",
+      "sequence": 5620,
+      "chapter_label": "DEU 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD will command the blessing on you in your barns, and in all that you put your hand to. He will bless you in the land which the LORD your God gives you.",
+      "ko": "여호와께서 명하사 네 창고와 네 손으로 하는 모든 일에 복을 내리시고 네 하나님 여호와께서 네게 주시는 땅에서 네게 복을 주실 것이며",
+      "source_text_hash": "7c6ecfd25adf42b4bd5e132d6e105605aed50f2e57ef6b5d19401a8864f5cef0",
+      "translation_text_hash": "7cbdbc4a913596bee986ded047ca65aa70b0137d7f51346b776838b3bea6990c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 명하사 네 창고와 네 손으로 하는 모든 일에 복을 내리시고 네 하나님 여호와께서 네게 주시는 땅에서 네게 복을 주실 것이며"
+      ],
+      "raw_text_hashes": [
+        "7cbdbc4a913596bee986ded047ca65aa70b0137d7f51346b776838b3bea6990c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:9",
+      "sequence": 5621,
+      "chapter_label": "DEU 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD will establish you for a holy people to himself, as he has sworn to you, if you shall keep the commandments of the LORD your God, and walk in his ways.",
+      "ko": "네가 네 하나님 여호와의 명령을 지켜 그 길로 행하면 여호와께서 네게 맹세하신 대로 너를 세워 자기의 성민이 되게 하시리니",
+      "source_text_hash": "44eb0903f716bb402ef35a71b80d67237f1dca7dc515c70a3a5c3a475148b4a5",
+      "translation_text_hash": "da80290a7f62308e4a3bf4052c0aae838f3674e3cab7b7d179d5ff68be53e125",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 하나님 여호와의 명령을 지켜 그 길로 행하면 여호와께서 네게 맹세하신 대로 너를 세워 자기의 성민이 되게 하시리니"
+      ],
+      "raw_text_hashes": [
+        "da80290a7f62308e4a3bf4052c0aae838f3674e3cab7b7d179d5ff68be53e125"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:10",
+      "sequence": 5622,
+      "chapter_label": "DEU 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "All the peoples of the earth shall see that you are called by the LORD’s name, and they will be afraid of you.",
+      "ko": "너를 여호와의 이름으로 일컬음을 세계 만민이 보고 너를 두려워하리라",
+      "source_text_hash": "fd05e931cbd00bccd4dec55ee1145fce618526703418b1ce90db4201842faa85",
+      "translation_text_hash": "fbe604889365a4a098d05a306998427a011fc10d906a4cbaa2033390cc003c8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 여호와의 이름으로 일컬음을 세계 만민이 보고 너를 두려워하리라"
+      ],
+      "raw_text_hashes": [
+        "fbe604889365a4a098d05a306998427a011fc10d906a4cbaa2033390cc003c8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:11",
+      "sequence": 5623,
+      "chapter_label": "DEU 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD will grant you abundant prosperity in the fruit of your body, in the fruit of your livestock, and in the fruit of your ground, in the land which the LORD swore to your fathers to give you.",
+      "ko": "여호와께서 네게 주리라고 네 열조에게 맹세하신 땅에서 네게 복을 주사 네 몸의 소생과 육축의 새끼와 토지의 소산으로 많게 하시며",
+      "source_text_hash": "5e53cc88187c867c5b53fd602881d9372de42654cd40756c1e68bde66ace55cb",
+      "translation_text_hash": "bb12e48f20ed73b54d423e7ab652703c50dc66462905d60781262c7cbdb68199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네게 주리라고 네 열조에게 맹세하신 땅에서 네게 복을 주사 네 몸의 소생과 육축의 새끼와 토지의 소산으로 많게 하시며"
+      ],
+      "raw_text_hashes": [
+        "bb12e48f20ed73b54d423e7ab652703c50dc66462905d60781262c7cbdb68199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:12",
+      "sequence": 5624,
+      "chapter_label": "DEU 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD will open to you his good treasure in the sky, to give the rain of your land in its season, and to bless all the work of your hand. You will lend to many nations, and you will not borrow.",
+      "ko": "여호와께서 너를 위하여 하늘의 아름다운 보고를 열으사 네 땅에 때를 따라 비를 내리시고 네 손으로 하는 모든 일에 복을 주시리니 네가 많은 민족에게 꾸어줄찌라도 너는 꾸지 아니할 것이요",
+      "source_text_hash": "eb60fe7d565815f6a181d7f57b8323a723b014b2acb079643b95efe8622e7861",
+      "translation_text_hash": "ae77711ac4e3d36eca853fa447e3b66b5df7c87ffd6fcd421f31aaecfd8b50ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 위하여 하늘의 아름다운 보고를 열으사 네 땅에 때를 따라 비를 내리시고 네 손으로 하는 모든 일에 복을 주시리니 네가 많은 민족에게 꾸어줄찌라도 너는 꾸지 아니할 것이요"
+      ],
+      "raw_text_hashes": [
+        "ae77711ac4e3d36eca853fa447e3b66b5df7c87ffd6fcd421f31aaecfd8b50ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:13",
+      "sequence": 5625,
+      "chapter_label": "DEU 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD will make you the head, and not the tail. You will be above only, and you will not be beneath, if you listen to the commandments of the LORD your God which I command you today, to observe and to do,",
+      "ko": "여호와께서 너로 머리가 되고 꼬리가 되지 않게 하시며 위에만 있고 아래에 있지 않게 하시리니 오직 너는 내가 오늘날 네게 명하는 네 하나님 여호와의 명령을 듣고 지켜 행하며",
+      "source_text_hash": "e21298d57aae28a5cd960d6ae109be5e55bb727183b8a6b36988d1008d7e6352",
+      "translation_text_hash": "a6315792a2cffd13c3c67a8f7dae7eaac0e0ce73918d9050321c0bc5176abb4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너로 머리가 되고 꼬리가 되지 않게 하시며 위에만 있고 아래에 있지 않게 하시리니 오직 너는 내가 오늘날 네게 명하는 네 하나님 여호와의 명령을 듣고 지켜 행하며"
+      ],
+      "raw_text_hashes": [
+        "a6315792a2cffd13c3c67a8f7dae7eaac0e0ce73918d9050321c0bc5176abb4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:14",
+      "sequence": 5626,
+      "chapter_label": "DEU 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "and shall not turn away from any of the words which I command you today, to the right hand or to the left, to go after other gods to serve them.",
+      "ko": "내가 오늘날 너희에게 명하는 그 말씀을 떠나 좌로나 우로나 치우치지 아니하고 다른 신을 따라 섬기지 아니하면 이와 같으리라",
+      "source_text_hash": "fca31e152a047b8e18b76433e08f4bbd01decb1f052c83db031433df1ab5bd76",
+      "translation_text_hash": "532133c678ada3f913b2fab99d4e38bf86d1541ea2f1d6870dd950abfd5aab9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘날 너희에게 명하는 그 말씀을 떠나 좌로나 우로나 치우치지 아니하고 다른 신을 따라 섬기지 아니하면 이와 같으리라"
+      ],
+      "raw_text_hashes": [
+        "532133c678ada3f913b2fab99d4e38bf86d1541ea2f1d6870dd950abfd5aab9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:15",
+      "sequence": 5627,
+      "chapter_label": "DEU 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "But it shall come to pass, if you will not listen to the LORD your God’s voice, to observe to do all his commandments and his statutes which I command you today, that all these curses will come on you and overtake you.",
+      "ko": "네가 만일 네 하나님 여호와의 말씀을 순종하지 아니하여 내가 오늘날 네게 명하는 그 모든 명령과 규례를 지켜 행하지 아니하면 이 모든 저주가 네게 임하고 네게 미칠 것이니",
+      "source_text_hash": "cc0b4293fb8ca15338b4786b14e2dca0833e2c4061872ed88c2e75f04d04dbc5",
+      "translation_text_hash": "68c01f7a511e8b8d0ca48f563b95090fdf12355e790d9cb2b1bdc903c2bd4a56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 네 하나님 여호와의 말씀을 순종하지 아니하여 내가 오늘날 네게 명하는 그 모든 명령과 규례를 지켜 행하지 아니하면 이 모든 저주가 네게 임하고 네게 미칠 것이니"
+      ],
+      "raw_text_hashes": [
+        "68c01f7a511e8b8d0ca48f563b95090fdf12355e790d9cb2b1bdc903c2bd4a56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:16",
+      "sequence": 5628,
+      "chapter_label": "DEU 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "You will be cursed in the city, and you will be cursed in the field.",
+      "ko": "네가 성읍에서도 저주를 받으며 들에서도 저주를 받을 것이요",
+      "source_text_hash": "762a7a475e86a91fc889ce5f683cd9c425eb579372bab8eee23eb253e78121a2",
+      "translation_text_hash": "65d76a738ec32cddfd7fa4c884ddb342fa55d720f645aa3526101ef11c5d6f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 성읍에서도 저주를 받으며 들에서도 저주를 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "65d76a738ec32cddfd7fa4c884ddb342fa55d720f645aa3526101ef11c5d6f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:17",
+      "sequence": 5629,
+      "chapter_label": "DEU 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "Your basket and your kneading trough will be cursed.",
+      "ko": "또 네 광주리와 떡반죽 그릇이 저주를 받을 것이요",
+      "source_text_hash": "a74e961afdc425548e03cc11a10220d479ac0715d580eb9e4b04a6cc40b7a7cc",
+      "translation_text_hash": "b3feac188868e6cff66da62175fb85d9ea97ed6bae3ccc14b74a3b5d401cba41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 광주리와 떡반죽 그릇이 저주를 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "b3feac188868e6cff66da62175fb85d9ea97ed6bae3ccc14b74a3b5d401cba41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:18",
+      "sequence": 5630,
+      "chapter_label": "DEU 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "The fruit of your body, the fruit of your ground, the increase of your livestock, and the young of your flock will be cursed.",
+      "ko": "네 몸의 소생과 네 토지의 소산과 네 우양의 새끼가 저주를 받을 것이며",
+      "source_text_hash": "0df5fe1e7f64903ec2962623723c32842464fd8c0cb98f1c2535bca6dc50e9fe",
+      "translation_text_hash": "2a58b49dfb6d21b3cb21fa5551dfb329f09abe7590bab183a9304659f71d334c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 몸의 소생과 네 토지의 소산과 네 우양의 새끼가 저주를 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "2a58b49dfb6d21b3cb21fa5551dfb329f09abe7590bab183a9304659f71d334c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:19",
+      "sequence": 5631,
+      "chapter_label": "DEU 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "You will be cursed when you come in, and you will be cursed when you go out.",
+      "ko": "네가 들어와도 저주를 받고 나가도 저주를 받으리라",
+      "source_text_hash": "aa03708ef7a772bb636e78da07db2277dca6e539a6543f28eee08971e0f8a0ca",
+      "translation_text_hash": "eeb854896d1cb02e7e098e64bb7c036b9094d00e04f42d50960149f87de66f14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 들어와도 저주를 받고 나가도 저주를 받으리라"
+      ],
+      "raw_text_hashes": [
+        "eeb854896d1cb02e7e098e64bb7c036b9094d00e04f42d50960149f87de66f14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:20",
+      "sequence": 5632,
+      "chapter_label": "DEU 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD will send on you cursing, confusion, and rebuke in all that you put your hand to do, until you are destroyed and until you perish quickly, because of the evil of your doings, by which you have forsaken me.",
+      "ko": "네가 악을 행하여 그를 잊으므로 네 손으로 하는 모든 일에 여호와께서 저주와 공구와 견책을 내리사 망하며 속히 파멸케 하실 것이며",
+      "source_text_hash": "f1097d06e5d3d7edb365e2ecf516e38f36563b05fe1994a278ca8aa654e9a843",
+      "translation_text_hash": "191d503aeb5b6130d2a706a4fcfc9be72ec014af591048d60d13500650d83498",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 악을 행하여 그를 잊으므로 네 손으로 하는 모든 일에 여호와께서 저주와 공구와 견책을 내리사 망하며 속히 파멸케 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "191d503aeb5b6130d2a706a4fcfc9be72ec014af591048d60d13500650d83498"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:21",
+      "sequence": 5633,
+      "chapter_label": "DEU 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD will make the pestilence cling to you, until he has consumed you from off the land where you go in to possess it.",
+      "ko": "여호와께서 네 몸에 염병이 들게 하사 네가 들어가 얻을 땅에서 필경 너를 멸하실 것이며",
+      "source_text_hash": "84659b716041172321eb3132022f930be884f4eecd353a9179b7963cf9f0a147",
+      "translation_text_hash": "83154f2f75041e1300a0595a75a7a4f8e8c5f658252e25cd1cd3f5a15eafb56e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네 몸에 염병이 들게 하사 네가 들어가 얻을 땅에서 필경 너를 멸하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "83154f2f75041e1300a0595a75a7a4f8e8c5f658252e25cd1cd3f5a15eafb56e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:22",
+      "sequence": 5634,
+      "chapter_label": "DEU 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD will strike you with consumption, with fever, with inflammation, with fiery heat, with the sword, with blight, and with mildew. They will pursue you until you perish.",
+      "ko": "여호와께서 폐병과 열병과 상한과 학질과 한재와 풍재와 썩는 재앙으로 너를 치시리니 이 재앙들이 너를 따라서 너를 진멸케 할 것이라",
+      "source_text_hash": "32461a06642f547269c6fcf1d9eb3b9c511d34bd5e530768203c1229cb151fa9",
+      "translation_text_hash": "b092acf20f63a43b06997fdc97aadf106b252581e2fc501ea7afbb60d640a8bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 폐병과 열병과 상한과 학질과 한재와 풍재와 썩는 재앙으로 너를 치시리니 이 재앙들이 너를 따라서 너를 진멸케 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "b092acf20f63a43b06997fdc97aadf106b252581e2fc501ea7afbb60d640a8bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:23",
+      "sequence": 5635,
+      "chapter_label": "DEU 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "Your sky that is over your head will be bronze, and the earth that is under you will be iron.",
+      "ko": "네 머리 위의 하늘은 놋이 되고 네 아래의 땅은 철이 될 것이며",
+      "source_text_hash": "24e5dbf6706df24c991c1096db1510addb91abbba924fd3e5ee6803dd959c913",
+      "translation_text_hash": "5caffc63a5b8e33816dd489b3cfb87a952c1106545b32c3e55c263768acefd9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 머리 위의 하늘은 놋이 되고 네 아래의 땅은 철이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "5caffc63a5b8e33816dd489b3cfb87a952c1106545b32c3e55c263768acefd9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:24",
+      "sequence": 5636,
+      "chapter_label": "DEU 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD will make the rain of your land powder and dust. It will come down on you from the sky, until you are destroyed.",
+      "ko": "여호와께서 비 대신에 티끌과 모래를 네 땅에 내리시리니 그것들이 하늘에서 네 위에 내려서 필경 너를 멸하리라",
+      "source_text_hash": "e8bec5c588b12feb1431e3e0818a61be75596d322d8c45b43b6c0b79219bdf45",
+      "translation_text_hash": "98f3f6d69d798aee40ce68e531fc4620713ce6d6d76c8826022afdee84859952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 비 대신에 티끌과 모래를 네 땅에 내리시리니 그것들이 하늘에서 네 위에 내려서 필경 너를 멸하리라"
+      ],
+      "raw_text_hashes": [
+        "98f3f6d69d798aee40ce68e531fc4620713ce6d6d76c8826022afdee84859952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:25",
+      "sequence": 5637,
+      "chapter_label": "DEU 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "The LORD will cause you to be struck before your enemies. You will go out one way against them, and will flee seven ways before them. You will be tossed back and forth among all the kingdoms of the earth.",
+      "ko": "여호와께서 너로 네 대적 앞에 패하게 하시리니 네가 한 길로 그들을 치러 나가서는 그들의 앞에서 일곱 길로 도망할 것이며 네가 또 세계 만국 중에 흩음을 당하고",
+      "source_text_hash": "6ee4677b9d5e5993f3701e4f49eca3bfac006f18d7481b9a1e1bc1c413f68657",
+      "translation_text_hash": "4dd05b66f44a2d27d304100b626d44b2f996e84eb01a5155cb32fb4ba02b4c83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너로 네 대적 앞에 패하게 하시리니 네가 한 길로 그들을 치러 나가서는 그들의 앞에서 일곱 길로 도망할 것이며 네가 또 세계 만국 중에 흩음을 당하고"
+      ],
+      "raw_text_hashes": [
+        "4dd05b66f44a2d27d304100b626d44b2f996e84eb01a5155cb32fb4ba02b4c83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:26",
+      "sequence": 5638,
+      "chapter_label": "DEU 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "Your dead bodies will be food to all birds of the sky, and to the animals of the earth; and there will be no one to frighten them away.",
+      "ko": "네 시체가 공중의 모든 새와 땅 짐승들의 밥이 될 것이나 그것들을 쫓아 줄 자가 없을 것이며",
+      "source_text_hash": "4c52d26206758cc0bc33c0f604bc75a6db7740842c4a1a3c0e13f99e55b85ac6",
+      "translation_text_hash": "cf90befa9e79963d0b8e155f20973fa29d442a522f199e0328b1cb13efa5a743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 시체가 공중의 모든 새와 땅 짐승들의 밥이 될 것이나 그것들을 쫓아 줄 자가 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "cf90befa9e79963d0b8e155f20973fa29d442a522f199e0328b1cb13efa5a743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:27",
+      "sequence": 5639,
+      "chapter_label": "DEU 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "The LORD will strike you with the boils of Egypt, with the tumors, with the scurvy, and with the itch, of which you can not be healed.",
+      "ko": "여호와께서 애굽의 종기와 치질과 괴혈병과 개창으로 너를 치시리니 네가 치료함을 얻지 못할 것이며",
+      "source_text_hash": "5196b76e2bd666c53240d32be4cc1d9a4f7082993c5d758e0614995b18351909",
+      "translation_text_hash": "1137f81ca5b54253331f5eec0e702b37aa6d49e0624e09588d8f6c8fc0ea5a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 애굽의 종기와 치질과 괴혈병과 개창으로 너를 치시리니 네가 치료함을 얻지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "1137f81ca5b54253331f5eec0e702b37aa6d49e0624e09588d8f6c8fc0ea5a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:28",
+      "sequence": 5640,
+      "chapter_label": "DEU 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD will strike you with madness, with blindness, and with astonishment of heart.",
+      "ko": "여호와께서 또 너를 미침과 눈멂과 경심증으로 치시리니",
+      "source_text_hash": "14cf317b38e26641f38d506460a21cdbdd7321fb648c49c46e4636fcf7fe2527",
+      "translation_text_hash": "c818338255dc6336d36ff922fbc991cb344f02fa179a128f56bdb8fbe2f19f76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 너를 미침과 눈멂과 경심증으로 치시리니"
+      ],
+      "raw_text_hashes": [
+        "c818338255dc6336d36ff922fbc991cb344f02fa179a128f56bdb8fbe2f19f76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:29",
+      "sequence": 5641,
+      "chapter_label": "DEU 28",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 29
+        }
+      ],
+      "en": "You will grope at noonday, as the blind gropes in darkness, and you shall not prosper in your ways. You will only be oppressed and robbed always, and there will be no one to save you.",
+      "ko": "소경이 어두운데서 더듬는 것과 같이 네가 백주에도 더듬고 네 길이 형통치 못하여 항상 압제와 노략을 당할 뿐이니 너를 구원할 자가 없을 것이며",
+      "source_text_hash": "81ad1074acf444c124d8917f2861dc9f972cfc88e9329fbcb4f7cc4c2713e653",
+      "translation_text_hash": "cde14b5f94695cc6cd3d1d58052d144bd60939b279ca4429eeb0603fd5b81a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경이 어두운데서 더듬는 것과 같이 네가 백주에도 더듬고 네 길이 형통치 못하여 항상 압제와 노략을 당할 뿐이니 너를 구원할 자가 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "cde14b5f94695cc6cd3d1d58052d144bd60939b279ca4429eeb0603fd5b81a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:30",
+      "sequence": 5642,
+      "chapter_label": "DEU 28",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 30
+        }
+      ],
+      "en": "You will betroth a wife, and another man shall lie with her. You will build a house, and you won’t dwell in it. You will plant a vineyard, and not use its fruit.",
+      "ko": "네가 여자와 약혼하였으나 다른 사람이 그와 같이 잘 것이요 집을 건축하였으나 거기 거하지 못할 것이요 포도원을 심었으나 네가 그 과실을 쓰지 못할 것이며",
+      "source_text_hash": "e1752d9e99e9c73d63ae0d14b6a4e09bf2e03186cc09eb2a51f6c62a0349a6de",
+      "translation_text_hash": "baa60afd3e363e29f1496397de5551e2eb6150aac6acd96ad25d477b339e6a7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 여자와 약혼하였으나 다른 사람이 그와 같이 잘 것이요 집을 건축하였으나 거기 거하지 못할 것이요 포도원을 심었으나 네가 그 과실을 쓰지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "baa60afd3e363e29f1496397de5551e2eb6150aac6acd96ad25d477b339e6a7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:31",
+      "sequence": 5643,
+      "chapter_label": "DEU 28",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 31
+        }
+      ],
+      "en": "Your ox will be slain before your eyes, and you will not eat any of it. Your donkey will be violently taken away from before your face, and will not be restored to you. Your sheep will be given to your enemies, and you will have no one to save you.",
+      "ko": "네 소를 네 목전에서 잡았으나 네가 먹지 못할 것이며 네 나귀를 네 목전에서 빼앗아감을 당하여도 도로 찾지 못할 것이며 네 양을 대적에게 빼앗길 것이나 너를 도와 줄 자가 없을 것이며",
+      "source_text_hash": "88494217aba48aad0887c04dba58a9ea08e48d9e4c7e955f30e03985ff09f7c3",
+      "translation_text_hash": "b5aa34c3dae8cffcb30abd09d199a67d44c8e28b42d0e25ecf2bd8f53adf6a78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 소를 네 목전에서 잡았으나 네가 먹지 못할 것이며 네 나귀를 네 목전에서 빼앗아감을 당하여도 도로 찾지 못할 것이며 네 양을 대적에게 빼앗길 것이나 너를 도와 줄 자가 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "b5aa34c3dae8cffcb30abd09d199a67d44c8e28b42d0e25ecf2bd8f53adf6a78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:32",
+      "sequence": 5644,
+      "chapter_label": "DEU 28",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 32
+        }
+      ],
+      "en": "Your sons and your daughters will be given to another people. Your eyes will look and fail with longing for them all day long. There will be no power in your hand.",
+      "ko": "네 자녀를 다른 민족에게 빼앗기고 종일 생각하고 알아봄으로 눈이 쇠하여지나 네 손에 능이 없을 것이며",
+      "source_text_hash": "b5b7d4db0a82ea37f25ebe975ca7d50e08e86f967761db7c29f4d1a3c6693967",
+      "translation_text_hash": "739de2d9edc70e1d0e95a74c3313187e3ff3c4d3e67cb81d875fd571cd1e3113",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자녀를 다른 민족에게 빼앗기고 종일 생각하고 알아봄으로 눈이 쇠하여지나 네 손에 능이 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "739de2d9edc70e1d0e95a74c3313187e3ff3c4d3e67cb81d875fd571cd1e3113"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:33",
+      "sequence": 5645,
+      "chapter_label": "DEU 28",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 33
+        }
+      ],
+      "en": "A nation which you don’t know will eat the fruit of your ground and all of your work. You will only be oppressed and crushed always,",
+      "ko": "네 토지 소산과 네 수고로 얻은 것을 네가 알지 못하는 민족이 먹겠고 너는 항상 압제와 학대를 받을 뿐이리니",
+      "source_text_hash": "4a1608a84618185a4d15b086a390009314f356df7ac5cad0dc60e733e26fb598",
+      "translation_text_hash": "f208058f78f65339542b722d4bf58c24e0e149e55f7d5d9f865227c66183fd77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 토지 소산과 네 수고로 얻은 것을 네가 알지 못하는 민족이 먹겠고 너는 항상 압제와 학대를 받을 뿐이리니"
+      ],
+      "raw_text_hashes": [
+        "f208058f78f65339542b722d4bf58c24e0e149e55f7d5d9f865227c66183fd77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:34",
+      "sequence": 5646,
+      "chapter_label": "DEU 28",
+      "verse_label": "34",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 34
+        }
+      ],
+      "en": "so that the sights that you see with your eyes will drive you mad.",
+      "ko": "이러므로 네 눈에 보이는 일로 인하여 네가 미치리라",
+      "source_text_hash": "fec00f0df94d171d237b0c8d22524ab64284dd5efad26922582792e3a516d0ba",
+      "translation_text_hash": "2374b2acfdaffe1f9a443d00b9303aa54b66c353abee9a21fc77785f5edceff5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 네 눈에 보이는 일로 인하여 네가 미치리라"
+      ],
+      "raw_text_hashes": [
+        "2374b2acfdaffe1f9a443d00b9303aa54b66c353abee9a21fc77785f5edceff5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:35",
+      "sequence": 5647,
+      "chapter_label": "DEU 28",
+      "verse_label": "35",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD will strike you in the knees and in the legs with a sore boil, of which you cannot be healed, from the sole of your foot to the crown of your head.",
+      "ko": "여호와께서 네 무릎과 다리를 쳐서 고치지 못할 심한 종기로 발하게 하여 발바닥으로 정수리까지 이르게 하시리라",
+      "source_text_hash": "18580b83f0813aea34d8fdc6e134f19a5eb2198e67d28ff8254859731301f97a",
+      "translation_text_hash": "ab74da66b634a3167529791dd0792d71bb6652c2515d9cc23865f4badcba1fc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네 무릎과 다리를 쳐서 고치지 못할 심한 종기로 발하게 하여 발바닥으로 정수리까지 이르게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "ab74da66b634a3167529791dd0792d71bb6652c2515d9cc23865f4badcba1fc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:36",
+      "sequence": 5648,
+      "chapter_label": "DEU 28",
+      "verse_label": "36",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 36
+        }
+      ],
+      "en": "The LORD will bring you, and your king whom you will set over yourselves, to a nation that you have not known, you nor your fathers. There you will serve other gods of wood and stone.",
+      "ko": "여호와께서 너와 네가 세울 네 임금을 너와 네 열조가 알지 못하던 나라로 끌어가시리니 네가 거기서 목석으로 만든 다른 신들을 섬길 것이며",
+      "source_text_hash": "1cb50a8560bebe40d5db53f475a2a37e52d5451ed82daa52e44f0efd11fb7ed4",
+      "translation_text_hash": "0d6bec388a0a51ef0897a7f4faa4c351f07edd77a05b1bd1449b7824c2ec9756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너와 네가 세울 네 임금을 너와 네 열조가 알지 못하던 나라로 끌어가시리니 네가 거기서 목석으로 만든 다른 신들을 섬길 것이며"
+      ],
+      "raw_text_hashes": [
+        "0d6bec388a0a51ef0897a7f4faa4c351f07edd77a05b1bd1449b7824c2ec9756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:37",
+      "sequence": 5649,
+      "chapter_label": "DEU 28",
+      "verse_label": "37",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 37
+        }
+      ],
+      "en": "You will become an astonishment, a proverb, and a byword among all the peoples where the LORD will lead you away.",
+      "ko": "여호와께서 너를 끌어 가시는 모든 민족 중에서 네가 놀램과 속담과 비방거리가 될 것이라",
+      "source_text_hash": "c52d7d2f92b174f6ab879a3726849c49e9535913f4cdcccd412a1be0ef048ae8",
+      "translation_text_hash": "30b659d796df176296213eeaff58993ecef61f56d8b8a999574849b6e47a9b0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 끌어 가시는 모든 민족 중에서 네가 놀램과 속담과 비방거리가 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "30b659d796df176296213eeaff58993ecef61f56d8b8a999574849b6e47a9b0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:38",
+      "sequence": 5650,
+      "chapter_label": "DEU 28",
+      "verse_label": "38",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 38
+        }
+      ],
+      "en": "You will carry much seed out into the field, and will gather little in, for the locust will consume it.",
+      "ko": "네가 많은 종자를 들에 심을지라도 메뚜기가 먹으므로 거둘 것이 적을 것이며",
+      "source_text_hash": "a6fb094ae32d5f31fd84a01038f09799b7e1e8cd6d536e523ce00fe772a756ed",
+      "translation_text_hash": "05bcc37c786c1316af0d6b902c087866334cefddf8c22bfe02c38b855fb8f9e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 많은 종자를 들에 심을지라도 메뚜기가 먹으므로 거둘 것이 적을 것이며"
+      ],
+      "raw_text_hashes": [
+        "05bcc37c786c1316af0d6b902c087866334cefddf8c22bfe02c38b855fb8f9e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:39",
+      "sequence": 5651,
+      "chapter_label": "DEU 28",
+      "verse_label": "39",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 39
+        }
+      ],
+      "en": "You will plant vineyards and dress them, but you will neither drink of the wine, nor harvest, because worms will eat them.",
+      "ko": "네가 포도원을 심고 다스릴지라도 벌레가 먹으므로 포도를 따지 못하고 포도주를 마시지 못할 것이며",
+      "source_text_hash": "2757e086a41b74aa21471c0c47829e632298575135fb55f531fd79840e881b2e",
+      "translation_text_hash": "58ec6b46630536c37fe2495657d7c336fed05acd2431371715f206be5c090eba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 포도원을 심고 다스릴지라도 벌레가 먹으므로 포도를 따지 못하고 포도주를 마시지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "58ec6b46630536c37fe2495657d7c336fed05acd2431371715f206be5c090eba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:40",
+      "sequence": 5652,
+      "chapter_label": "DEU 28",
+      "verse_label": "40",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 40
+        }
+      ],
+      "en": "You will have olive trees throughout all your borders, but you won’t anoint yourself with the oil, for your olives will drop off.",
+      "ko": "네 모든 경내에 감람나무가 있을지라도 그 열매가 떨어지므로 그 기름을 네 몸에 바르지 못할 것이며",
+      "source_text_hash": "ba533ec45aeb65385688f5fb57282db9a274ab1b0a10d026d2a7109ff2088f6d",
+      "translation_text_hash": "1b931b908fde3da22ae1dae3d1262f1f73c679808f4d3420a76f6e15fa51d504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 경내에 감람나무가 있을지라도 그 열매가 떨어지므로 그 기름을 네 몸에 바르지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "1b931b908fde3da22ae1dae3d1262f1f73c679808f4d3420a76f6e15fa51d504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:41",
+      "sequence": 5653,
+      "chapter_label": "DEU 28",
+      "verse_label": "41",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 41
+        }
+      ],
+      "en": "You will father sons and daughters, but they will not be yours, for they will go into captivity.",
+      "ko": "네가 자녀를 낳을지라도 그들이 포로가 되므로 네게 있지 못할 것이며",
+      "source_text_hash": "ceb1c694014be805317ab038100d5ad9201894b6318a74e43dada7152c31d239",
+      "translation_text_hash": "fbe25fe781550b611315cf0f9cecaf96a1366aac44ea7fe04b7517b900187c82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 자녀를 낳을지라도 그들이 포로가 되므로 네게 있지 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fbe25fe781550b611315cf0f9cecaf96a1366aac44ea7fe04b7517b900187c82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:42",
+      "sequence": 5654,
+      "chapter_label": "DEU 28",
+      "verse_label": "42",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 42
+        }
+      ],
+      "en": "Locusts will consume all of your trees and the fruit of your ground.",
+      "ko": "네 모든 나무와 토지 소산은 메뚜기가 먹을 것이며",
+      "source_text_hash": "4762f4538a68bad15fcb728ec2f12314d75eb8d848676aa7b9f88154415b5e46",
+      "translation_text_hash": "bea19eb05e2a16a94dd2b9b004c6626724b5c88cec1977940bbc3c307958cca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 나무와 토지 소산은 메뚜기가 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "bea19eb05e2a16a94dd2b9b004c6626724b5c88cec1977940bbc3c307958cca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:43",
+      "sequence": 5655,
+      "chapter_label": "DEU 28",
+      "verse_label": "43",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 43
+        }
+      ],
+      "en": "The foreigner who is among you will mount up above you higher and higher, and you will come down lower and lower.",
+      "ko": "너의 중에 우거하는 이방인은 점점 높아져서 네 위에 뛰어나고 너는 점점 낮아질 것이며",
+      "source_text_hash": "808c9f09f269bc27953d2de08a447e297431bf65c7d903806b7263fd8add55e8",
+      "translation_text_hash": "15d2b9b1eff3081c759ccb024eb8e05fd97297948cd493e78b99d49a80062e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 중에 우거하는 이방인은 점점 높아져서 네 위에 뛰어나고 너는 점점 낮아질 것이며"
+      ],
+      "raw_text_hashes": [
+        "15d2b9b1eff3081c759ccb024eb8e05fd97297948cd493e78b99d49a80062e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:44",
+      "sequence": 5656,
+      "chapter_label": "DEU 28",
+      "verse_label": "44",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 44
+        }
+      ],
+      "en": "He will lend to you, and you won’t lend to him. He will be the head, and you will be the tail.",
+      "ko": "그는 네게 꾸일지라도 너는 그에게 뀌지 못하리니 그는 머리가 되고 너는 꼬리가 될 것이라",
+      "source_text_hash": "172a4102b1939e98cf995b4713a422530b6fee3bea5b3969da07de5c09b2bd57",
+      "translation_text_hash": "676e867d9ca6d7c7e184864835a8f6df3e47c840b40d0ce78d0d4cf21c2c1e6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 네게 꾸일지라도 너는 그에게 뀌지 못하리니 그는 머리가 되고 너는 꼬리가 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "676e867d9ca6d7c7e184864835a8f6df3e47c840b40d0ce78d0d4cf21c2c1e6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:45",
+      "sequence": 5657,
+      "chapter_label": "DEU 28",
+      "verse_label": "45",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 45
+        }
+      ],
+      "en": "All these curses will come on you, and will pursue you and overtake you, until you are destroyed, because you didn’t listen to the LORD your God’s voice, to keep his commandments and his statutes which he commanded you.",
+      "ko": "네가 네 하나님 여호와의 말씀을 순종치 아니하고 네게 명하신 그 명령과 규례를 지키지 아니하므로 이 모든 저주가 네게 임하고 너를 따르고 네게 미쳐서 필경 너를 멸하리니",
+      "source_text_hash": "6e73b26ca299c1e576487c1e3d8a55f3f0bc1d01d6b49f0b9d9aa83a56877c07",
+      "translation_text_hash": "947e869807c8ec06069fa9f94bc1eb9dab45d780f7d8e4b60216796c451237ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 하나님 여호와의 말씀을 순종치 아니하고 네게 명하신 그 명령과 규례를 지키지 아니하므로 이 모든 저주가 네게 임하고 너를 따르고 네게 미쳐서 필경 너를 멸하리니"
+      ],
+      "raw_text_hashes": [
+        "947e869807c8ec06069fa9f94bc1eb9dab45d780f7d8e4b60216796c451237ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:46",
+      "sequence": 5658,
+      "chapter_label": "DEU 28",
+      "verse_label": "46",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 46
+        }
+      ],
+      "en": "They will be for a sign and for a wonder to you and to your offspring forever.",
+      "ko": "이 모든 저주가 너와 네 자손에게 영원히 있어서 표적과 감계가 되리라",
+      "source_text_hash": "f8adf442ce1179ed01bd499729f86efb03dab0599ef118dbfc3b351c8875c0f9",
+      "translation_text_hash": "e4c576f9c71a75ddefdd9f9962ea55d8bb6aaff429c4063792dceec0b94f0450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 저주가 너와 네 자손에게 영원히 있어서 표적과 감계가 되리라"
+      ],
+      "raw_text_hashes": [
+        "e4c576f9c71a75ddefdd9f9962ea55d8bb6aaff429c4063792dceec0b94f0450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:47",
+      "sequence": 5659,
+      "chapter_label": "DEU 28",
+      "verse_label": "47",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 47
+        }
+      ],
+      "en": "Because you didn’t serve the LORD your God with joyfulness and with gladness of heart, by reason of the abundance of all things;",
+      "ko": "네가 모든 것이 풍족하여도 기쁨과 즐거운 마음으로 네 하나님 여호와를 섬기지 아니함을 인하여",
+      "source_text_hash": "b4920c07eee2249d9032ea52049178f975c790dfe5b7eef5bb9b34587780a4fa",
+      "translation_text_hash": "da8fbc064a4e3710c15ceb9acc97b188d8a9b4f5f526e02db4869f88380a287a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 모든 것이 풍족하여도 기쁨과 즐거운 마음으로 네 하나님 여호와를 섬기지 아니함을 인하여"
+      ],
+      "raw_text_hashes": [
+        "da8fbc064a4e3710c15ceb9acc97b188d8a9b4f5f526e02db4869f88380a287a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:48",
+      "sequence": 5660,
+      "chapter_label": "DEU 28",
+      "verse_label": "48",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 48
+        }
+      ],
+      "en": "therefore you will serve your enemies whom the LORD sends against you, in hunger, in thirst, in nakedness, and in lack of all things. He will put an iron yoke on your neck until he has destroyed you.",
+      "ko": "네가 주리고 목마르고 헐벗고 모든 것이 핍절한 중에서 여호와께서 보내사 너를 치게 하실 대적을 섬기게 될 것이니 그가 철 멍에를 네 목에 메워서 필경 너를 멸할 것이라",
+      "source_text_hash": "b2c9913dff9f4461fdd939aab1c04a74e578fb5debb64db24c91174eee90ca07",
+      "translation_text_hash": "113c25c012552b3108778c7afec9f7b0d1108c6829b9f761f7d78120b9d69d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 주리고 목마르고 헐벗고 모든 것이 핍절한 중에서 여호와께서 보내사 너를 치게 하실 대적을 섬기게 될 것이니 그가 철 멍에를 네 목에 메워서 필경 너를 멸할 것이라"
+      ],
+      "raw_text_hashes": [
+        "113c25c012552b3108778c7afec9f7b0d1108c6829b9f761f7d78120b9d69d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:49",
+      "sequence": 5661,
+      "chapter_label": "DEU 28",
+      "verse_label": "49",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 49
+        }
+      ],
+      "en": "The LORD will bring a nation against you from far away, from the end of the earth, as the eagle flies: a nation whose language you will not understand,",
+      "ko": "곧 여호와께서 원방에서, 땅끝에서 한 민족을 독수리의 날음 같이 너를 치러 오게 하시리니 이는 네가 그 언어를 알지 못하는 민족이요",
+      "source_text_hash": "06a44b8ad9507bb28474c0888844f382379f5be6f451656d83306e4762e5d183",
+      "translation_text_hash": "e83a02a959278e18b6f99cc67098443402f24ec147915284a4749acf73ec38b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와께서 원방에서, 땅끝에서 한 민족을 독수리의 날음 같이 너를 치러 오게 하시리니 이는 네가 그 언어를 알지 못하는 민족이요"
+      ],
+      "raw_text_hashes": [
+        "e83a02a959278e18b6f99cc67098443402f24ec147915284a4749acf73ec38b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:50",
+      "sequence": 5662,
+      "chapter_label": "DEU 28",
+      "verse_label": "50",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 50
+        }
+      ],
+      "en": "a nation of fierce facial expressions, that doesn’t respect the elderly, nor show favor to the young.",
+      "ko": "그 용모가 흉악한 민족이라 노인을 돌아보지 아니하며 유치를 긍휼히 여기지 아니하며",
+      "source_text_hash": "6790a742c5ec475ab1ae8062054c2031b6e7e08159512f9b515f158c656a102b",
+      "translation_text_hash": "a24c91c213cbb164b65a2646d3cfc50b7bf4006ec0d46d09d13917ca99067a76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 용모가 흉악한 민족이라 노인을 돌아보지 아니하며 유치를 긍휼히 여기지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "a24c91c213cbb164b65a2646d3cfc50b7bf4006ec0d46d09d13917ca99067a76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:51",
+      "sequence": 5663,
+      "chapter_label": "DEU 28",
+      "verse_label": "51",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 51
+        }
+      ],
+      "en": "They will eat the fruit of your livestock and the fruit of your ground, until you are destroyed. They also won’t leave you grain, new wine, oil, the increase of your livestock, or the young of your flock, until they have caused you to perish.",
+      "ko": "네 육축의 새끼와 네 토지의 소산을 먹어서 필경은 너를 멸망시키며 또 곡식이나 포도주나 기름이나 소의 새끼나 양의 새끼를 너를 위하여 남기지 아니하고 필경은 너를 멸절시키리라",
+      "source_text_hash": "bce2327c83cc1e9602b9ec7f4abb58c9bd37dedb1428e20d489bb2e4f8f6b8ce",
+      "translation_text_hash": "c98ad51fa2780aa7137af1262f61acf49423072238ced067e176bdde9ad60640",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 육축의 새끼와 네 토지의 소산을 먹어서 필경은 너를 멸망시키며 또 곡식이나 포도주나 기름이나 소의 새끼나 양의 새끼를 너를 위하여 남기지 아니하고 필경은 너를 멸절시키리라"
+      ],
+      "raw_text_hashes": [
+        "c98ad51fa2780aa7137af1262f61acf49423072238ced067e176bdde9ad60640"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:52",
+      "sequence": 5664,
+      "chapter_label": "DEU 28",
+      "verse_label": "52",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 52
+        }
+      ],
+      "en": "They will besiege you in all your gates until your high and fortified walls in which you trusted come down throughout all your land. They will besiege you in all your gates throughout all your land which the LORD your God has given you.",
+      "ko": "그들이 전국에서 네 모든 성읍을 에워싸고 네가 의뢰하는바 높고 견고한 성벽을 다 헐며 네 하나님 여호와께서 네게 주시는 땅의 모든 성읍에서 너를 에워싸리니",
+      "source_text_hash": "cfa040a3e5f7d68895c150e48b362587908e25414122da34798af4343cdc6f9b",
+      "translation_text_hash": "95244af0ed84414a7cdf10cdba48cecbff9214440a6c1001d9ce9908f58bd548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 전국에서 네 모든 성읍을 에워싸고 네가 의뢰하는바 높고 견고한 성벽을 다 헐며 네 하나님 여호와께서 네게 주시는 땅의 모든 성읍에서 너를 에워싸리니"
+      ],
+      "raw_text_hashes": [
+        "95244af0ed84414a7cdf10cdba48cecbff9214440a6c1001d9ce9908f58bd548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:53",
+      "sequence": 5665,
+      "chapter_label": "DEU 28",
+      "verse_label": "53",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 53
+        }
+      ],
+      "en": "You will eat the fruit of your own body, the flesh of your sons and of your daughters, whom the LORD your God has given you, in the siege and in the distress with which your enemies will distress you.",
+      "ko": "네가 대적에게 에워싸이고 맹렬히 쳐서 곤란케 함을 당하므로 네 하나님 여호와께서 네게 주신 자녀 곧 네 몸의 소생의 고기를 먹을 것이라",
+      "source_text_hash": "7a95543330568c7fc63cd2b49061d6a489a2e6d5ce173549d858a2198dd3423c",
+      "translation_text_hash": "430071e3816ef703b7e081152f01e5d9ef654c44c67c52e245079e62961287f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 대적에게 에워싸이고 맹렬히 쳐서 곤란케 함을 당하므로 네 하나님 여호와께서 네게 주신 자녀 곧 네 몸의 소생의 고기를 먹을 것이라"
+      ],
+      "raw_text_hashes": [
+        "430071e3816ef703b7e081152f01e5d9ef654c44c67c52e245079e62961287f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:54",
+      "sequence": 5666,
+      "chapter_label": "DEU 28",
+      "verse_label": "54",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 54
+        }
+      ],
+      "en": "The man who is tender among you, and very delicate, his eye will be evil toward his brother, toward the wife whom he loves, and toward the remnant of his children whom he has remaining,",
+      "ko": "너희 중에 유순하고 연약한 남자라도 그 형제와 그 품의 아내와 그 남은 자녀를 질시하여",
+      "source_text_hash": "1261e48041e045368e8424dde76a8c7e618de5a0f5c1eaf298336046baccc657",
+      "translation_text_hash": "3ac0b57514d0b391f94816472cea2fd050c4b0ea32d8ac744454f2d38b3e799f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 유순하고 연약한 남자라도 그 형제와 그 품의 아내와 그 남은 자녀를 질시하여"
+      ],
+      "raw_text_hashes": [
+        "3ac0b57514d0b391f94816472cea2fd050c4b0ea32d8ac744454f2d38b3e799f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:55",
+      "sequence": 5667,
+      "chapter_label": "DEU 28",
+      "verse_label": "55",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 55
+        }
+      ],
+      "en": "so that he will not give to any of them of the flesh of his children whom he will eat, because he has nothing left to him, in the siege and in the distress with which your enemy will distress you in all your gates.",
+      "ko": "자기의 먹는 그 자녀의 고기를 그 중 누구에게든지 주지 아니하리니 이는 네 대적이 네 모든 성읍을 에워싸고 맹렬히 너를 쳐서 곤란케 하므로 아무것도 그에게 남음이 없는 연고일 것이며",
+      "source_text_hash": "c598803c1150535e90bc9d692056d286788d57941bf20c32a345ba031fc7d1e9",
+      "translation_text_hash": "5f23858c027a53cb1baff47b3855460034f51679a53af1e3c68688d727b43043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 먹는 그 자녀의 고기를 그 중 누구에게든지 주지 아니하리니 이는 네 대적이 네 모든 성읍을 에워싸고 맹렬히 너를 쳐서 곤란케 하므로 아무것도 그에게 남음이 없는 연고일 것이며"
+      ],
+      "raw_text_hashes": [
+        "5f23858c027a53cb1baff47b3855460034f51679a53af1e3c68688d727b43043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:56",
+      "sequence": 5668,
+      "chapter_label": "DEU 28",
+      "verse_label": "56",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 56
+        }
+      ],
+      "en": "The tender and delicate woman among you, who would not venture to set the sole of her foot on the ground for delicateness and tenderness, her eye will be evil toward the husband that she loves, toward her son, toward her daughter,",
+      "ko": "또 너희 중에 유순하고 연약한 부녀 곧 유순하고 연약하여 그 발바닥으로 땅을 밟아 보지도 아니하던 자라도 그 품의 남편과 그 자녀를 질시하여",
+      "source_text_hash": "6c04661b9be75c729817aa3cc962141e0154f8a477fc6764bb91788c5218cda0",
+      "translation_text_hash": "59c8e550babd1851232df698623d62ef032e74cbc0b1d9a8dd19e76cc6e58910",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 중에 유순하고 연약한 부녀 곧 유순하고 연약하여 그 발바닥으로 땅을 밟아 보지도 아니하던 자라도 그 품의 남편과 그 자녀를 질시하여"
+      ],
+      "raw_text_hashes": [
+        "59c8e550babd1851232df698623d62ef032e74cbc0b1d9a8dd19e76cc6e58910"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:57",
+      "sequence": 5669,
+      "chapter_label": "DEU 28",
+      "verse_label": "57",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 57
+        }
+      ],
+      "en": "toward her young one who comes out from between her feet, and toward her children whom she bears; for she will eat them secretly for lack of all things in the siege and in the distress with which your enemy will distress you in your gates.",
+      "ko": "그 다리 사이에서 나온 태와 자기의 낳은 어린 자식을 가만히 먹으리니 이는 네 대적이 네 생명을 에워싸고 맹렬히 쳐서 곤란케 하므로 아무것도 얻지 못함이리라",
+      "source_text_hash": "9069e292b1e8d87f38058a46b97c371e1ee7216e8feded57e47f031289ea6834",
+      "translation_text_hash": "a08a478054d4ec97c794ac49bacf4f9881142cdb5f12b03b8a013515c0123ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다리 사이에서 나온 태와 자기의 낳은 어린 자식을 가만히 먹으리니 이는 네 대적이 네 생명을 에워싸고 맹렬히 쳐서 곤란케 하므로 아무것도 얻지 못함이리라"
+      ],
+      "raw_text_hashes": [
+        "a08a478054d4ec97c794ac49bacf4f9881142cdb5f12b03b8a013515c0123ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:58",
+      "sequence": 5670,
+      "chapter_label": "DEU 28",
+      "verse_label": "58",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 58
+        }
+      ],
+      "en": "If you will not observe to do all the words of this law that are written in this book, that you may fear this glorious and fearful name, THE LORD your God,",
+      "ko": "네가 만일 이 책에 기록한 이 율법의 모든 말씀을 지켜 행하지 아니하고 네 하나님 여호와라 하는 영화롭고 두려운 이름을 경외하지 아니하면",
+      "source_text_hash": "136ad72b9fbe2a5f81e681816a44aae89c16d50312f6bd88a4baf1732aa82791",
+      "translation_text_hash": "41e9ee7fe925089c2380a1a35e806af78384fd7adf6948c8d5d5c8adf007ef0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 이 책에 기록한 이 율법의 모든 말씀을 지켜 행하지 아니하고 네 하나님 여호와라 하는 영화롭고 두려운 이름을 경외하지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "41e9ee7fe925089c2380a1a35e806af78384fd7adf6948c8d5d5c8adf007ef0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:59",
+      "sequence": 5671,
+      "chapter_label": "DEU 28",
+      "verse_label": "59",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 59
+        }
+      ],
+      "en": "then the LORD will make your plagues and the plagues of your offspring fearful, even great plagues, and of long duration, and severe sicknesses, and of long duration.",
+      "ko": "여호와께서 너의 재앙과 네 자손의 재앙을 극렬하게 하시리니 그 재앙이 크고 오래고 그 질병이 중하고 오랠 것이라",
+      "source_text_hash": "de39f0eef26a7df4f566ebb6af9849495e2a0db3515704eb2351559cd723491e",
+      "translation_text_hash": "1ddfce41f8103765b7b0bb1940e1a985c590506a834810bdc8a1421bde6f947d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너의 재앙과 네 자손의 재앙을 극렬하게 하시리니 그 재앙이 크고 오래고 그 질병이 중하고 오랠 것이라"
+      ],
+      "raw_text_hashes": [
+        "1ddfce41f8103765b7b0bb1940e1a985c590506a834810bdc8a1421bde6f947d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:60",
+      "sequence": 5672,
+      "chapter_label": "DEU 28",
+      "verse_label": "60",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 60
+        }
+      ],
+      "en": "He will bring on you again all the diseases of Egypt, which you were afraid of; and they will cling to you.",
+      "ko": "여호와께서 네가 두려워하던 애굽의 모든 질병을 네게로 가져다가 네 몸에 들어붓게 하실 것이며",
+      "source_text_hash": "aa1dce03a713419229e1ba566227013e5d2248fa2cfb376dcab54c1c7382eb67",
+      "translation_text_hash": "07a8c4f1483f581c6685349fdfa221203d137d9db2ec8a0477eb05c18824e4a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 네가 두려워하던 애굽의 모든 질병을 네게로 가져다가 네 몸에 들어붓게 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "07a8c4f1483f581c6685349fdfa221203d137d9db2ec8a0477eb05c18824e4a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:61",
+      "sequence": 5673,
+      "chapter_label": "DEU 28",
+      "verse_label": "61",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 61
+        }
+      ],
+      "en": "Also every sickness and every plague which is not written in the book of this law, the LORD will bring them on you until you are destroyed.",
+      "ko": "또 이 율법책에 기록지 아니한 모든 질병과 모든 재앙을 너의 멸망하기까지 여호와께서 네게 내리실 것이니",
+      "source_text_hash": "7bf8c9ff4d20fe76fa31973c0a11836a000fd266fcf610d5eb1c64b61eb4be24",
+      "translation_text_hash": "71f6b3091cad48f7ea9d4e2367705dce6fdf449123607e665dd8cacb1dbf5947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이 율법책에 기록지 아니한 모든 질병과 모든 재앙을 너의 멸망하기까지 여호와께서 네게 내리실 것이니"
+      ],
+      "raw_text_hashes": [
+        "71f6b3091cad48f7ea9d4e2367705dce6fdf449123607e665dd8cacb1dbf5947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:62",
+      "sequence": 5674,
+      "chapter_label": "DEU 28",
+      "verse_label": "62",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 62
+        }
+      ],
+      "en": "You will be left few in number, even though you were as the stars of the sky for multitude, because you didn’t listen to the LORD your God’s voice.",
+      "ko": "너희가 하늘의 별 같이 많았을지라도 네 하나님 여호와의 말씀을 순종치 아니하므로 남는 자가 얼마되지 못할 것이라",
+      "source_text_hash": "29ad54d6e61b987b170b2d09f71f16928acb28204fcfc0ccb53c0f45764d2db7",
+      "translation_text_hash": "df42644a1775b6dc58af8a1b31ee3be1483f43cd812649dd702cd47863986a8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하늘의 별 같이 많았을지라도 네 하나님 여호와의 말씀을 순종치 아니하므로 남는 자가 얼마되지 못할 것이라"
+      ],
+      "raw_text_hashes": [
+        "df42644a1775b6dc58af8a1b31ee3be1483f43cd812649dd702cd47863986a8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:63",
+      "sequence": 5675,
+      "chapter_label": "DEU 28",
+      "verse_label": "63",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 63
+        }
+      ],
+      "en": "It will happen that as the LORD rejoiced over you to do you good, and to multiply you, so the LORD will rejoice over you to cause you to perish and to destroy you. You will be plucked from the land that you are going in to possess.",
+      "ko": "이왕에 여호와께서 너희에게 선을 행하시고 너희로 번성케 하시기를 기뻐하시던 것 같이 이제는 여호와께서 너희를 망하게 하시며 멸하시기를 기뻐하시리니 너희가 들어가 얻는 땅에서 뽑힐 것이요",
+      "source_text_hash": "721c207fc5f622c3de9137a9aac6bc8304d2774461fd5c9f57363d2267c91d68",
+      "translation_text_hash": "7bb54823b12c8f346d2abf91c8e13e731a4010103c842b158f82e75f891a98d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이왕에 여호와께서 너희에게 선을 행하시고 너희로 번성케 하시기를 기뻐하시던 것 같이 이제는 여호와께서 너희를 망하게 하시며 멸하시기를 기뻐하시리니 너희가 들어가 얻는 땅에서 뽑힐 것이요"
+      ],
+      "raw_text_hashes": [
+        "7bb54823b12c8f346d2abf91c8e13e731a4010103c842b158f82e75f891a98d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:64",
+      "sequence": 5676,
+      "chapter_label": "DEU 28",
+      "verse_label": "64",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 64
+        }
+      ],
+      "en": "The LORD will scatter you among all peoples, from one end of the earth to the other end of the earth. There you will serve other gods which you have not known, you nor your fathers, even wood and stone.",
+      "ko": "여호와께서 너를 땅 이 끝에서 저 끝까지 만민 중에 흩으시리니 네가 그곳에서 너와 네 열조의 알지 못하던 목석 우상을 섬길 것이라",
+      "source_text_hash": "d54889ed16b92cda42039da78539bfac69b03c8bd54b9478c19b9df188af6b03",
+      "translation_text_hash": "0687e759f3a125c0f1da61fc0a1f41c9bc3698a4f1c057353335a0ae00bb702a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 땅 이 끝에서 저 끝까지 만민 중에 흩으시리니 네가 그곳에서 너와 네 열조의 알지 못하던 목석 우상을 섬길 것이라"
+      ],
+      "raw_text_hashes": [
+        "0687e759f3a125c0f1da61fc0a1f41c9bc3698a4f1c057353335a0ae00bb702a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:65",
+      "sequence": 5677,
+      "chapter_label": "DEU 28",
+      "verse_label": "65",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 65
+        }
+      ],
+      "en": "Among these nations you will find no ease, and there will be no rest for the sole of your foot; but the LORD will give you there a trembling heart, failing of eyes, and pining of soul.",
+      "ko": "그 열국 중에서 네가 평안함을 얻지 못하며 네 발바닥을 쉴 곳도 얻지 못하고 오직 여호와께서 거기서 너의 마음으로 떨고 눈으로 쇠하고 정신으로 산란케 하시리니",
+      "source_text_hash": "62b316c44d70f9b68be0f21c135a6043a1a501d9411e91054f088fc1d55f741b",
+      "translation_text_hash": "8c9542855321c5886323466f9216df4374f7e0d78bcea9a9fb3fbea117cc96af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열국 중에서 네가 평안함을 얻지 못하며 네 발바닥을 쉴 곳도 얻지 못하고 오직 여호와께서 거기서 너의 마음으로 떨고 눈으로 쇠하고 정신으로 산란케 하시리니"
+      ],
+      "raw_text_hashes": [
+        "8c9542855321c5886323466f9216df4374f7e0d78bcea9a9fb3fbea117cc96af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:66",
+      "sequence": 5678,
+      "chapter_label": "DEU 28",
+      "verse_label": "66",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 66
+        }
+      ],
+      "en": "Your life will hang in doubt before you. You will be afraid night and day, and will have no assurance of your life.",
+      "ko": "네 생명이 의심나는 곳에 달린 것 같아서 주야로 두려워하며 네 생명을 확신할 수 없을 것이라",
+      "source_text_hash": "36701459712c09a45de349339265d8145a2d2c40e4079a417a119ae17493dc25",
+      "translation_text_hash": "7fe7fd5dbd1392c381b8c9e5170b917799856465f12ae26a5556235e320c67e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생명이 의심나는 곳에 달린 것 같아서 주야로 두려워하며 네 생명을 확신할 수 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "7fe7fd5dbd1392c381b8c9e5170b917799856465f12ae26a5556235e320c67e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:67",
+      "sequence": 5679,
+      "chapter_label": "DEU 28",
+      "verse_label": "67",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 67
+        }
+      ],
+      "en": "In the morning you will say, “I wish it were evening!” and at evening you will say, “I wish it were morning!” for the fear of your heart which you will fear, and for the sights which your eyes will see.",
+      "ko": "네 마음의 두려움과 눈의 보는 것으로 인하여 아침에는 이르기를 아하 저녁이 되었으면 좋겠다 할 것이요 저녁에는 이르기를 아하 아침이 되었으면 좋겠다 하리라",
+      "source_text_hash": "97e8f6a58225a97c44ac5afdc20a9c2f11ef878c3557ff1432b3d687887b30d7",
+      "translation_text_hash": "cf71dcdd1de7d5190bc9b31d4f0f7a9f20c61645e34a2df984cb5fa4fb3da3a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음의 두려움과 눈의 보는 것으로 인하여 아침에는 이르기를 아하 저녁이 되었으면 좋겠다 할 것이요 저녁에는 이르기를 아하 아침이 되었으면 좋겠다 하리라"
+      ],
+      "raw_text_hashes": [
+        "cf71dcdd1de7d5190bc9b31d4f0f7a9f20c61645e34a2df984cb5fa4fb3da3a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:28:68",
+      "sequence": 5680,
+      "chapter_label": "DEU 28",
+      "verse_label": "68",
+      "locator": {
+        "book": "DEU",
+        "chapter": 28,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 28,
+          "verse": 68
+        }
+      ],
+      "en": "The LORD will bring you into Egypt again with ships, by the way of which I told you that you would never see it again. There you will offer yourselves to your enemies for male and female slaves, and nobody will buy you.",
+      "ko": "여호와께서 너를 배에 실으시고 전에 네게 고하여 이르시기를 네가 다시는 그 길을 보지 아니하리라 하시던 그 길로 너를 애굽으로 끌어가실 것이라 거기서 너희가 너희 몸을 대적에게 노비로 팔려하나 너희를 살 자가 없으리라",
+      "source_text_hash": "0f094b46193858b170ff86e3ab5a9911ad8c958dddcbc89bc53305e0c387d42e",
+      "translation_text_hash": "3e88f944aab18efb87183b1aa18827c001525bb4c9bdae0bf48fdb174f00bc97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너를 배에 실으시고 전에 네게 고하여 이르시기를 네가 다시는 그 길을 보지 아니하리라 하시던 그 길로 너를 애굽으로 끌어가실 것이라 거기서 너희가 너희 몸을 대적에게 노비로 팔려하나 너희를 살 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "3e88f944aab18efb87183b1aa18827c001525bb4c9bdae0bf48fdb174f00bc97"
+      ]
+    }
+  ]
+}

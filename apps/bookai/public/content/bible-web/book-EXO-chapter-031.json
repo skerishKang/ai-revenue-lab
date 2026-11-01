@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:031",
+  "unit_ordinal": 81,
+  "unit_label": "EXO 31",
+  "book_code": "EXO",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:31:1",
+      "sequence": 2422,
+      "chapter_label": "EXO 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:2",
+      "sequence": 2423,
+      "chapter_label": "EXO 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "“Behold, I have called by name Bezalel the son of Uri, the son of Hur, of the tribe of Judah.",
+      "ko": "내가 유다 지파 훌의 손자요 우리의 아들인 브살렐을 지명하여 부르고",
+      "source_text_hash": "17e3467ea529ef2f670f4f2dd381c8035514449694c86aef8f968343eaa1e3e4",
+      "translation_text_hash": "4128a4ad348fdfed82fc250b508e13116d62d40fdccf65cb893318554a3706c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다 지파 훌의 손자요 우리의 아들인 브살렐을 지명하여 부르고"
+      ],
+      "raw_text_hashes": [
+        "4128a4ad348fdfed82fc250b508e13116d62d40fdccf65cb893318554a3706c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:3",
+      "sequence": 2424,
+      "chapter_label": "EXO 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "I have filled him with the Spirit of God, in wisdom, and in understanding, and in knowledge, and in all kinds of workmanship,",
+      "ko": "하나님의 신을 그에게 충만하게 하여 지혜와 총명과 지식과 여러가지 재주로",
+      "source_text_hash": "2d8320354fbb6e4f037eac05ff2d34257db02a86ce8e9bdf852ec64f8d76be75",
+      "translation_text_hash": "d3f15a7dff74ad35d053a6aaf4c0ba71ae4e57fca45472fb6d23154a660342ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 신을 그에게 충만하게 하여 지혜와 총명과 지식과 여러가지 재주로"
+      ],
+      "raw_text_hashes": [
+        "d3f15a7dff74ad35d053a6aaf4c0ba71ae4e57fca45472fb6d23154a660342ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:4",
+      "sequence": 2425,
+      "chapter_label": "EXO 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "to devise skillful works, to work in gold, and in silver, and in bronze,",
+      "ko": "공교한 일을 연구하여 금과 은과 놋으로 만들게 하며",
+      "source_text_hash": "81ae34312148dac285c67abcfa5836c37131b3847f1c089d11a649a0c03065a5",
+      "translation_text_hash": "b09f359c367422f316cd0b0af62b2cb6a14cad9fbe02c6d66dde6e47e581d57c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공교한 일을 연구하여 금과 은과 놋으로 만들게 하며"
+      ],
+      "raw_text_hashes": [
+        "b09f359c367422f316cd0b0af62b2cb6a14cad9fbe02c6d66dde6e47e581d57c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:5",
+      "sequence": 2426,
+      "chapter_label": "EXO 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "and in cutting of stones for setting, and in carving of wood, to work in all kinds of workmanship.",
+      "ko": "보석을 깎아 물리며 나무를 새겨서 여러가지 일을 하게 하고",
+      "source_text_hash": "5bf622f3d9a80c991dff827be901724aeb2f2c51b2d7efec3a89f9afe6250f13",
+      "translation_text_hash": "110caf6d80b1f752843e0027a59e845d9b9625b4d2afbd58451387ee13c26b97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보석을 깎아 물리며 나무를 새겨서 여러가지 일을 하게 하고"
+      ],
+      "raw_text_hashes": [
+        "110caf6d80b1f752843e0027a59e845d9b9625b4d2afbd58451387ee13c26b97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:6",
+      "sequence": 2427,
+      "chapter_label": "EXO 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, I myself have appointed with him Oholiab, the son of Ahisamach, of the tribe of Dan; and in the heart of all who are wise-hearted I have put wisdom, that they may make all that I have commanded you:",
+      "ko": "내가 또 단 지파 아히사막의 아들 오홀리압을 세워 그와 함께 하게 하며 무릇 지혜로운 마음이 있는 자에게 내가 지혜를 주어 그들로 내가 네게 명한 것을 다 만들게 할찌니",
+      "source_text_hash": "fb975a3891178909028a05e6b910e40c2d767653737a09c37b5d3ac9e75d3c3b",
+      "translation_text_hash": "0b07675bcea2861ef5fc24bc6e41a8680201d35a7369e61be16622135eba3e80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 단 지파 아히사막의 아들 오홀리압을 세워 그와 함께 하게 하며 무릇 지혜로운 마음이 있는 자에게 내가 지혜를 주어 그들로 내가 네게 명한 것을 다 만들게 할찌니"
+      ],
+      "raw_text_hashes": [
+        "0b07675bcea2861ef5fc24bc6e41a8680201d35a7369e61be16622135eba3e80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:7",
+      "sequence": 2428,
+      "chapter_label": "EXO 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "the Tent of Meeting, the ark of the covenant, the mercy seat that is on it, all the furniture of the Tent,",
+      "ko": "곧 회막과 증거궤와 그 위의 속죄소와 회막의 모든 기구와",
+      "source_text_hash": "bcec8159aa17e46806f8da2d21544a9ef317b2f07c954c20c1ebaf7d96d7d18c",
+      "translation_text_hash": "ba80387437f1e776f628ff181167ccaba15fa7d56221409e5080c8629be786b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 회막과 증거궤와 그 위의 속죄소와 회막의 모든 기구와"
+      ],
+      "raw_text_hashes": [
+        "ba80387437f1e776f628ff181167ccaba15fa7d56221409e5080c8629be786b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:8",
+      "sequence": 2429,
+      "chapter_label": "EXO 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "the table and its vessels, the pure lamp stand with all its vessels, the altar of incense,",
+      "ko": "상과 그 기구와 정금 등대와 그 모든 기구와 분향단과",
+      "source_text_hash": "8f8dfd7e30e8c1de8998bf77752aed7ab26f8f0082ad0130ad0cb0cb66af8a05",
+      "translation_text_hash": "ae15a627f5b71592c3c9d717d8873cab7a51a9a1f199975d0ba6650397df5280",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상과 그 기구와 정금 등대와 그 모든 기구와 분향단과"
+      ],
+      "raw_text_hashes": [
+        "ae15a627f5b71592c3c9d717d8873cab7a51a9a1f199975d0ba6650397df5280"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:9",
+      "sequence": 2430,
+      "chapter_label": "EXO 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "the altar of burnt offering with all its vessels, the basin and its base,",
+      "ko": "번제단과 그 모든 기구와 물두멍과 그 받침과",
+      "source_text_hash": "c6a4253160d7ec90d178a1d62722d5510380b5bb6e9ee1f6d16db4a606d1c285",
+      "translation_text_hash": "7a6447a405781ccca779ae0c69f750a4b8cc5b10bde75ea3a76150ad2c7738d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제단과 그 모든 기구와 물두멍과 그 받침과"
+      ],
+      "raw_text_hashes": [
+        "7a6447a405781ccca779ae0c69f750a4b8cc5b10bde75ea3a76150ad2c7738d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:10",
+      "sequence": 2431,
+      "chapter_label": "EXO 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "the finely worked garments—the holy garments for Aaron the priest, the garments of his sons to minister in the priest’s office—",
+      "ko": "제사직을 행할 때에 입는 공교히 짠 의복 곧 제사장 아론의 성의와 그 아들들의 옷과",
+      "source_text_hash": "713c7beaa66856a536922dec59a04ac626df7b383b88fed5befbf4d683510bcf",
+      "translation_text_hash": "1101c08d8c3487ae8a2d4d43b351c1c31b1f68440f1135528baa99f3473d2a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사직을 행할 때에 입는 공교히 짠 의복 곧 제사장 아론의 성의와 그 아들들의 옷과"
+      ],
+      "raw_text_hashes": [
+        "1101c08d8c3487ae8a2d4d43b351c1c31b1f68440f1135528baa99f3473d2a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:11",
+      "sequence": 2432,
+      "chapter_label": "EXO 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "the anointing oil, and the incense of sweet spices for the holy place: according to all that I have commanded you they shall do.”",
+      "ko": "관유와 성소의 향기로운 향이라 무릇 내가 네게 명한대로 그들이 만들찌니라",
+      "source_text_hash": "5ed1b53a9c853f55e5c4281998623d86a8913569cb59293d7353f032d2cf8d41",
+      "translation_text_hash": "4d200a060aa7323b906707509c332eb823ebfcbf75d0125777fcc8a74cdb3215",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관유와 성소의 향기로운 향이라 무릇 내가 네게 명한대로 그들이 만들찌니라"
+      ],
+      "raw_text_hashes": [
+        "4d200a060aa7323b906707509c332eb823ebfcbf75d0125777fcc8a74cdb3215"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:12",
+      "sequence": 2433,
+      "chapter_label": "EXO 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:13",
+      "sequence": 2434,
+      "chapter_label": "EXO 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "“Speak also to the children of Israel, saying, ‘Most certainly you shall keep my Sabbaths; for it is a sign between me and you throughout your generations, that you may know that I am the LORD who sanctifies you.",
+      "ko": "너는 이스라엘 자손에게 고하여 이르기를 너희는 나의 안식일을 지키라 이는 나와 너희 사이에 너희 대대의 표징이니 나는 너희를 거룩하게 하는 여호와인줄 너희로 알게 함이라",
+      "source_text_hash": "56b3c25af725f56ce6da945e13f60547e21bf29680e70646ba2e6023eded2315",
+      "translation_text_hash": "76cd102de1fc2301d3ae56f953896dab9efc323af0a97cd77807b906d8b3511a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이스라엘 자손에게 고하여 이르기를 너희는 나의 안식일을 지키라 이는 나와 너희 사이에 너희 대대의 표징이니 나는 너희를 거룩하게 하는 여호와인줄 너희로 알게 함이라"
+      ],
+      "raw_text_hashes": [
+        "76cd102de1fc2301d3ae56f953896dab9efc323af0a97cd77807b906d8b3511a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:14",
+      "sequence": 2435,
+      "chapter_label": "EXO 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "You shall keep the Sabbath therefore, for it is holy to you. Everyone who profanes it shall surely be put to death; for whoever does any work therein, that soul shall be cut off from among his people.",
+      "ko": "너희는 안식일을 지킬찌니 이는 너희에게 성일이 됨이라 무릇 그 날을 더럽히는 자는 죽일찌며 무릇 그 날에 일하는 자는 그 백성 중에서 그 생명이 끊쳐지리라",
+      "source_text_hash": "95fa037bc006f75dc07dab818383bf161eb93cae4423b88dabfe542f75b691de",
+      "translation_text_hash": "9393aba53638b07405001a500326021e41ac9646b93aebdc6ccbc3df76a79aff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 안식일을 지킬찌니 이는 너희에게 성일이 됨이라 무릇 그 날을 더럽히는 자는 죽일찌며 무릇 그 날에 일하는 자는 그 백성 중에서 그 생명이 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "9393aba53638b07405001a500326021e41ac9646b93aebdc6ccbc3df76a79aff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:15",
+      "sequence": 2436,
+      "chapter_label": "EXO 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "Six days shall work be done, but on the seventh day is a Sabbath of solemn rest, holy to the LORD. Whoever does any work on the Sabbath day shall surely be put to death.",
+      "ko": "엿새 동안은 일할 것이나 제 칠일은 큰 안식일이니 여호와께 거룩한 것이라 무릇 안식일에 일하는 자를 반드시 죽일찌니라",
+      "source_text_hash": "ba560cb64010651b9c6fac6c657683ff4afd741798dc9c6d6948751c93499311",
+      "translation_text_hash": "034f9bbc12c38805ffdd0374e124d6785f8ae3d4882a12a079af99093a4269a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 동안은 일할 것이나 제 칠일은 큰 안식일이니 여호와께 거룩한 것이라 무릇 안식일에 일하는 자를 반드시 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "034f9bbc12c38805ffdd0374e124d6785f8ae3d4882a12a079af99093a4269a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:16",
+      "sequence": 2437,
+      "chapter_label": "EXO 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore the children of Israel shall keep the Sabbath, to observe the Sabbath throughout their generations, for a perpetual covenant.",
+      "ko": "이같이 이스라엘 자손이 안식일을 지켜서 그것으로 대대로 영원한 언약을 삼을 것이니",
+      "source_text_hash": "b2b67c4008bb0bb208774f9943661336ab80de5b9f62e7d09ce4eb9a652f5214",
+      "translation_text_hash": "feaf21b5083f47ef162d1fc0d68a26285a7482d133ea13a015f2d1ae43dcf86e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이같이 이스라엘 자손이 안식일을 지켜서 그것으로 대대로 영원한 언약을 삼을 것이니"
+      ],
+      "raw_text_hashes": [
+        "feaf21b5083f47ef162d1fc0d68a26285a7482d133ea13a015f2d1ae43dcf86e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:17",
+      "sequence": 2438,
+      "chapter_label": "EXO 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "It is a sign between me and the children of Israel forever; for in six days the LORD made heaven and earth, and on the seventh day he rested, and was refreshed.’”",
+      "ko": "이는 나와 이스라엘 자손 사이에 영원한 표징이며 나 여호와가 엿새 동안에 천지를 창조하고 제 칠일에 쉬어 평안하였음이니라 하라",
+      "source_text_hash": "396ef2eddab7e4f775372ea43ab8004a721216a6a656db6b2cf00396c68c0340",
+      "translation_text_hash": "3499b8bc76d482e655d203b3aa581f4ba507977b8122ec17ec717d15e26cd5a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 나와 이스라엘 자손 사이에 영원한 표징이며 나 여호와가 엿새 동안에 천지를 창조하고 제 칠일에 쉬어 평안하였음이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "3499b8bc76d482e655d203b3aa581f4ba507977b8122ec17ec717d15e26cd5a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:31:18",
+      "sequence": 2439,
+      "chapter_label": "EXO 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "When he finished speaking with him on Mount Sinai, he gave Moses the two tablets of the covenant, stone tablets, written with God’s finger.",
+      "ko": "여호와께서 시내산 위에서 모세에게 이르시기를 마치신 때에 증거판 둘을 모세에게 주시니 이는 돌판이요 하나님이 친히 쓰신 것이더라",
+      "source_text_hash": "bd21dcc43638c3ee5cfaefe9b2081c7e7c2bfe822d3e93c326e28fe9cd63c26f",
+      "translation_text_hash": "56e0580c6b0cd954c4d78b5bfd19433dd8044db1398b2b32bd97a6a64a53d62b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내산 위에서 모세에게 이르시기를 마치신 때에 증거판 둘을 모세에게 주시니 이는 돌판이요 하나님이 친히 쓰신 것이더라"
+      ],
+      "raw_text_hashes": [
+        "56e0580c6b0cd954c4d78b5bfd19433dd8044db1398b2b32bd97a6a64a53d62b"
+      ]
+    }
+  ]
+}

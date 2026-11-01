@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:006",
+  "unit_ordinal": 1052,
+  "unit_label": "ROM 6",
+  "book_code": "ROM",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:6:1",
+      "sequence": 28066,
+      "chapter_label": "ROM 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "What shall we say then? Shall we continue in sin, that grace may abound?",
+      "ko": "그런즉 우리가 무슨 말 하리요 은혜를 더하게 하려고 죄에 거하겠느뇨",
+      "source_text_hash": "10a15e62ab2c24e99846a9872ab6c1e2bd49be385daf2f0f4e5f925db01ba512",
+      "translation_text_hash": "02f5c4ab3cf504af04df88e1f2f0550cf52fa80a185089e8f6af4c046ef39943",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 무슨 말 하리요 은혜를 더하게 하려고 죄에 거하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "02f5c4ab3cf504af04df88e1f2f0550cf52fa80a185089e8f6af4c046ef39943"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:2",
+      "sequence": 28067,
+      "chapter_label": "ROM 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "May it never be! We who died to sin, how could we live in it any longer?",
+      "ko": "그럴 수 없느니라 죄에 대하여 죽은 우리가 어찌 그 가운데 더 살리요",
+      "source_text_hash": "05708bf696141e6e0a58d04d9e5e23f59f04f887f714ee739cdd1a919bc468a3",
+      "translation_text_hash": "49da036ca14cac4e248d9a7d80c596e655107602ff24f70480619e2a8ab2094d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴 수 없느니라 죄에 대하여 죽은 우리가 어찌 그 가운데 더 살리요"
+      ],
+      "raw_text_hashes": [
+        "49da036ca14cac4e248d9a7d80c596e655107602ff24f70480619e2a8ab2094d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:3",
+      "sequence": 28068,
+      "chapter_label": "ROM 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Or don’t you know that all of us who were baptized into Christ Jesus were baptized into his death?",
+      "ko": "무릇 그리스도 예수와 합하여 세례를 받은 우리는 그의 죽으심과 합하여 세례 받은 줄을 알지 못하느뇨",
+      "source_text_hash": "64ed7be6c21825621f28b4dedbd6327349db119b1e5109ad3946fad453202e5c",
+      "translation_text_hash": "7b0175358510f5aa7ab22c4dc627dc8f7238dc2fb2ae40e25961db2dc3025bef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그리스도 예수와 합하여 세례를 받은 우리는 그의 죽으심과 합하여 세례 받은 줄을 알지 못하느뇨"
+      ],
+      "raw_text_hashes": [
+        "7b0175358510f5aa7ab22c4dc627dc8f7238dc2fb2ae40e25961db2dc3025bef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:4",
+      "sequence": 28069,
+      "chapter_label": "ROM 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "We were buried therefore with him through baptism into death, that just as Christ was raised from the dead through the glory of the Father, so we also might walk in newness of life.",
+      "ko": "그러므로 우리가 그의 죽으심과 합하여 세례를 받음으로 그와 함께 장사되었나니 이는 아버지의 영광으로 말미암아 그리스도를 죽은 자 가운데서 살리심과 같이 우리로 또한 새 생명 가운데서 행하게 하려 함이니라",
+      "source_text_hash": "f8c04f06cfb9643f4aceb1c6d64469a1d45bc54e2713ccabff8dd8392be0b941",
+      "translation_text_hash": "6593b9833245442d396576e72310bd81a8fcb6891368aab4955991265b51c272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 우리가 그의 죽으심과 합하여 세례를 받음으로 그와 함께 장사되었나니 이는 아버지의 영광으로 말미암아 그리스도를 죽은 자 가운데서 살리심과 같이 우리로 또한 새 생명 가운데서 행하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "6593b9833245442d396576e72310bd81a8fcb6891368aab4955991265b51c272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:5",
+      "sequence": 28070,
+      "chapter_label": "ROM 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "For if we have become united with him in the likeness of his death, we will also be part of his resurrection;",
+      "ko": "만일 우리가 그의 죽으심을 본받아 연합한 자가 되었으면 또한 그의 부활을 본받아 연합한 자가 되리라",
+      "source_text_hash": "55ec3c38ff8a8fc466b2f9ec37b12db62ffc659e4421058b23e3ef92989ff4bc",
+      "translation_text_hash": "7802a452474a46c21ae9b2e8088d148d081ce460d60a84c727764278f9283b6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 그의 죽으심을 본받아 연합한 자가 되었으면 또한 그의 부활을 본받아 연합한 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "7802a452474a46c21ae9b2e8088d148d081ce460d60a84c727764278f9283b6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:6",
+      "sequence": 28071,
+      "chapter_label": "ROM 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "knowing this, that our old man was crucified with him, that the body of sin might be done away with, so that we would no longer be in bondage to sin.",
+      "ko": "우리가 알거니와 우리 옛 사람이 예수와 함께 십자가에 못 박힌 것은 죄의 몸이 멸하여 다시는 우리가 죄에게 종노릇 하지 아니하려 함이니",
+      "source_text_hash": "9551c67a7680b94ad7f4dca08f7319d3dc1217821f5e0157d502af9999c64a38",
+      "translation_text_hash": "7a6fbbc56ed99d5ee56aa185b1779973e011e52c8de11112789401d204cc2f03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 알거니와 우리 옛 사람이 예수와 함께 십자가에 못 박힌 것은 죄의 몸이 멸하여 다시는 우리가 죄에게 종노릇 하지 아니하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "7a6fbbc56ed99d5ee56aa185b1779973e011e52c8de11112789401d204cc2f03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:7",
+      "sequence": 28072,
+      "chapter_label": "ROM 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "For he who has died has been freed from sin.",
+      "ko": "이는 죽은 자가 죄에서 벗어나 의롭다 하심을 얻었음이니라",
+      "source_text_hash": "d9f5ca13c8c41e81756f16d92ed1d32bd8469a191b4acba07890a5c1dcc5da4e",
+      "translation_text_hash": "5fc386320925e5feb26313055b83b2147883d6f980f05dbd43154f2ba8033bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 죽은 자가 죄에서 벗어나 의롭다 하심을 얻었음이니라"
+      ],
+      "raw_text_hashes": [
+        "5fc386320925e5feb26313055b83b2147883d6f980f05dbd43154f2ba8033bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:8",
+      "sequence": 28073,
+      "chapter_label": "ROM 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "But if we died with Christ, we believe that we will also live with him,",
+      "ko": "만일 우리가 그리스도와 함께 죽었으면 또한 그와 함께 살 줄을 믿노니",
+      "source_text_hash": "2cdeec6b6e79285e7ccfbd19fc442867519c02436b391a7e92b34df02020d0f3",
+      "translation_text_hash": "277ab75b5538f281ed7549fadb42f76e67d0838017aa45efd31947d324ca2580",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 그리스도와 함께 죽었으면 또한 그와 함께 살 줄을 믿노니"
+      ],
+      "raw_text_hashes": [
+        "277ab75b5538f281ed7549fadb42f76e67d0838017aa45efd31947d324ca2580"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:9",
+      "sequence": 28074,
+      "chapter_label": "ROM 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "knowing that Christ, being raised from the dead, dies no more. Death no longer has dominion over him!",
+      "ko": "이는 그리스도께서 죽은 자 가운데서 사셨으매 다시 죽지 아니하시고 사망이 다시 그를 주장하지 못할 줄을 앎이로라",
+      "source_text_hash": "aebf5b301dd463a2b25a61f36dfd79bca762a9d9f9a8a6e5490fd5eeeea1989c",
+      "translation_text_hash": "e6af6fa7d6fe9f8fc16dac8de94e5e4a2b185301d0a0de9231e971dd54415c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도께서 죽은 자 가운데서 사셨으매 다시 죽지 아니하시고 사망이 다시 그를 주장하지 못할 줄을 앎이로라"
+      ],
+      "raw_text_hashes": [
+        "e6af6fa7d6fe9f8fc16dac8de94e5e4a2b185301d0a0de9231e971dd54415c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:10",
+      "sequence": 28075,
+      "chapter_label": "ROM 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "For the death that he died, he died to sin one time; but the life that he lives, he lives to God.",
+      "ko": "그의 죽으심은 죄에 대하여 단번에 죽으심이요 그의 살으심은 하나님께 대하여 살으심이니",
+      "source_text_hash": "1d15fbce55334b116d94ce4ab72807fc1656893acf285596367cc789cbab44fc",
+      "translation_text_hash": "462e35d52cdd3e28c0771d3eb0814e770aadc9625315daa81a6325519767b3b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 죽으심은 죄에 대하여 단번에 죽으심이요 그의 살으심은 하나님께 대하여 살으심이니"
+      ],
+      "raw_text_hashes": [
+        "462e35d52cdd3e28c0771d3eb0814e770aadc9625315daa81a6325519767b3b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:11",
+      "sequence": 28076,
+      "chapter_label": "ROM 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Thus consider yourselves also to be dead to sin, but alive to God in Christ Jesus our Lord.",
+      "ko": "이와 같이 너희도 너희 자신을 죄에 대하여는 죽은 자요 그리스도 예수 안에서 하나님을 대하여는 산 자로 여길찌어다",
+      "source_text_hash": "e6f6cb5bc5369b8fbb951b6238a753d39770465372cee40deaf8cea649ec7a86",
+      "translation_text_hash": "83611c87c1c8391ee421e7d0671c275d9ed2adf65aca08bc6023a876f96582e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 너희 자신을 죄에 대하여는 죽은 자요 그리스도 예수 안에서 하나님을 대하여는 산 자로 여길찌어다"
+      ],
+      "raw_text_hashes": [
+        "83611c87c1c8391ee421e7d0671c275d9ed2adf65aca08bc6023a876f96582e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:12",
+      "sequence": 28077,
+      "chapter_label": "ROM 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore don’t let sin reign in your mortal body, that you should obey it in its lusts.",
+      "ko": "그러므로 너희는 죄로 너희 죽을 몸에 왕노릇하지 못하게 하여 몸의 사욕을 순종치 말고",
+      "source_text_hash": "91dbf1db91ce6945dd26cdcc09b67b4a656e0e406a1fe0e595ed495769c0e516",
+      "translation_text_hash": "3bd99251a968fdcda65cdd0912bdab4ff8f466a61f82538cc87ef919ddd40959",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 죄로 너희 죽을 몸에 왕노릇하지 못하게 하여 몸의 사욕을 순종치 말고"
+      ],
+      "raw_text_hashes": [
+        "3bd99251a968fdcda65cdd0912bdab4ff8f466a61f82538cc87ef919ddd40959"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:13",
+      "sequence": 28078,
+      "chapter_label": "ROM 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Also, do not present your members to sin as instruments of unrighteousness, but present yourselves to God as alive from the dead, and your members as instruments of righteousness to God.",
+      "ko": "또한 너희 지체를 불의의 병기로 죄에게 드리지 말고 오직 너희 자신을 죽은 자 가운데서 다시 산 자 같이 하나님께 드리며 너희 지체를 의의 병기로 하나님께 드리라",
+      "source_text_hash": "ce31781f038a4a621847fbb1da6c8c34ec3246a749a529708560296f4e17ba53",
+      "translation_text_hash": "93e41f2b340f9f45b47fbed9c77772b0e772d5b3d6f04ed4196da11001d038c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 너희 지체를 불의의 병기로 죄에게 드리지 말고 오직 너희 자신을 죽은 자 가운데서 다시 산 자 같이 하나님께 드리며 너희 지체를 의의 병기로 하나님께 드리라"
+      ],
+      "raw_text_hashes": [
+        "93e41f2b340f9f45b47fbed9c77772b0e772d5b3d6f04ed4196da11001d038c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:14",
+      "sequence": 28079,
+      "chapter_label": "ROM 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "For sin will not have dominion over you, for you are not under law, but under grace.",
+      "ko": "죄가 너희를 주관치 못하리니 이는 너희가 법 아래 있지 아니하고 은혜 아래 있음이니라",
+      "source_text_hash": "de627cdd98c2697c8d03e7759181d89ccb8d95afb044bfc6b478aa1d7a8827eb",
+      "translation_text_hash": "115bd2630bc38c0c1e759432e37696c850d7bf35a6166727f507e11b0144308f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄가 너희를 주관치 못하리니 이는 너희가 법 아래 있지 아니하고 은혜 아래 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "115bd2630bc38c0c1e759432e37696c850d7bf35a6166727f507e11b0144308f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:15",
+      "sequence": 28080,
+      "chapter_label": "ROM 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "What then? Shall we sin because we are not under law but under grace? May it never be!",
+      "ko": "그런즉 어찌하리요 우리가 법 아래 있지 아니하고 은혜 아래 있으니 죄를 지으리요 그럴 수 없느니라",
+      "source_text_hash": "c1c3d6adcb1a138b996dd2944fd2c8b9015b8c94a56c6b6d53882e263007b64a",
+      "translation_text_hash": "f25bf937becd5031d17fd3878dd5f70e073e752be5482e7aea171c87253993ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 어찌하리요 우리가 법 아래 있지 아니하고 은혜 아래 있으니 죄를 지으리요 그럴 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "f25bf937becd5031d17fd3878dd5f70e073e752be5482e7aea171c87253993ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:16",
+      "sequence": 28081,
+      "chapter_label": "ROM 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t you know that when you present yourselves as servants and obey someone, you are the servants of whomever you obey, whether of sin to death, or of obedience to righteousness?",
+      "ko": "너희 자신을 종으로 드려 누구에게 순종하든지 그 순종함을 받는 자의 종이 되는 줄을 너희가 알지 못하느냐 혹은 죄의 종으로 사망에 이르고 혹은 순종의 종으로 의에 이르느니라",
+      "source_text_hash": "485a5b4540276b51a9367d5c4461b9f59346bbb6336e9f6c4cd6ee24883f9964",
+      "translation_text_hash": "85234b5f26807a1bc2273e69e84e65369c2b5dffe9fa3db80e0e777d8f511a67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 자신을 종으로 드려 누구에게 순종하든지 그 순종함을 받는 자의 종이 되는 줄을 너희가 알지 못하느냐 혹은 죄의 종으로 사망에 이르고 혹은 순종의 종으로 의에 이르느니라"
+      ],
+      "raw_text_hashes": [
+        "85234b5f26807a1bc2273e69e84e65369c2b5dffe9fa3db80e0e777d8f511a67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:17",
+      "sequence": 28082,
+      "chapter_label": "ROM 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "But thanks be to God that, whereas you were bondservants of sin, you became obedient from the heart to that form of teaching to which you were delivered.",
+      "ko": "하나님께 감사하리로다 너희가 본래 죄의 종이더니 너희에게 전하여 준바 교훈의 본을 마음으로 순종하여",
+      "source_text_hash": "b8ce00097efe73a250819772811aab2a1aee5e3dc6b92dbab798a70ee304bbe0",
+      "translation_text_hash": "5535edd46ca2b3104a9256d03486236721f9c7ab2c83bc5d029e0f98e1710fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 감사하리로다 너희가 본래 죄의 종이더니 너희에게 전하여 준바 교훈의 본을 마음으로 순종하여"
+      ],
+      "raw_text_hashes": [
+        "5535edd46ca2b3104a9256d03486236721f9c7ab2c83bc5d029e0f98e1710fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:18",
+      "sequence": 28083,
+      "chapter_label": "ROM 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "Being made free from sin, you became bondservants of righteousness.",
+      "ko": "죄에게서 해방되어 의에게 종이 되었느니라",
+      "source_text_hash": "f182cdea3f015ef8c3e0d1d3707e32baddf9e2e9f5d5d89eebf25da31329cb46",
+      "translation_text_hash": "2d687acbbfa79a1813eb2ff9d7b14643ebafb8274cefb946b0c8399472899abf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄에게서 해방되어 의에게 종이 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "2d687acbbfa79a1813eb2ff9d7b14643ebafb8274cefb946b0c8399472899abf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:19",
+      "sequence": 28084,
+      "chapter_label": "ROM 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "I speak in human terms because of the weakness of your flesh; for as you presented your members as servants to uncleanness and to wickedness upon wickedness, even so now present your members as servants to righteousness for sanctification.",
+      "ko": "너희 육신이 연약하므로 내가 사람의 예대로 말하노니 전에 너희가 너희 지체를 부정과 불법에 드려 불법에 이른것 같이 이제는 너희 지체를 의에게 종으로 드려 거룩함에 이르라",
+      "source_text_hash": "b9110a9c47bb8fbbffc86136d2870be195aa1900e93e50c45c1452da1ea717de",
+      "translation_text_hash": "c8673e0fcc0fd0d3b10c4163c74ca1d1405e6606fb9a1856ef14b93498e2bc5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 육신이 연약하므로 내가 사람의 예대로 말하노니 전에 너희가 너희 지체를 부정과 불법에 드려 불법에 이른것 같이 이제는 너희 지체를 의에게 종으로 드려 거룩함에 이르라"
+      ],
+      "raw_text_hashes": [
+        "c8673e0fcc0fd0d3b10c4163c74ca1d1405e6606fb9a1856ef14b93498e2bc5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:20",
+      "sequence": 28085,
+      "chapter_label": "ROM 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "For when you were servants of sin, you were free from righteousness.",
+      "ko": "너희가 죄의 종이 되었을 때에는 의에 대하여 자유하였느니라",
+      "source_text_hash": "1df5f876f5a6e41d75189492a0db879f75157f0af72f849c67edcdffc7b7b0d7",
+      "translation_text_hash": "ce518c678625a7e766ad935615cce5158f19df4c527cbd72256a9f19170cb548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 죄의 종이 되었을 때에는 의에 대하여 자유하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ce518c678625a7e766ad935615cce5158f19df4c527cbd72256a9f19170cb548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:21",
+      "sequence": 28086,
+      "chapter_label": "ROM 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "What fruit then did you have at that time in the things of which you are now ashamed? For the end of those things is death.",
+      "ko": "너희가 그 때에 무슨 열매를 얻었느뇨 이제는 너희가 그 일을 부끄러워하나니 이는 그 마지막이 사망임이니라",
+      "source_text_hash": "126337d4e80b446683b3e686cf104ecad14d7aabd85cd98c1839fbaa7bc76e69",
+      "translation_text_hash": "2402425f6620d17f8611533ccd2dc3629131a83e399ed3acef16dee1640a6198",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 때에 무슨 열매를 얻었느뇨 이제는 너희가 그 일을 부끄러워하나니 이는 그 마지막이 사망임이니라"
+      ],
+      "raw_text_hashes": [
+        "2402425f6620d17f8611533ccd2dc3629131a83e399ed3acef16dee1640a6198"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:22",
+      "sequence": 28087,
+      "chapter_label": "ROM 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "But now, being made free from sin and having become servants of God, you have your fruit of sanctification and the result of eternal life.",
+      "ko": "그러나 이제는 너희가 죄에게서 해방되고 하나님께 종이 되어 거룩함에 이르는 열매를 얻었으니 이 마지막은 영생이라",
+      "source_text_hash": "d52da94ef38d9bd005b7e33861b1889a1a3608793fdf1288e4e7d1816e219ba5",
+      "translation_text_hash": "aed9320b644b042d904e61896b06d2c0ede2cebc3cbb5d2d7b6ce5672f0a4760",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제는 너희가 죄에게서 해방되고 하나님께 종이 되어 거룩함에 이르는 열매를 얻었으니 이 마지막은 영생이라"
+      ],
+      "raw_text_hashes": [
+        "aed9320b644b042d904e61896b06d2c0ede2cebc3cbb5d2d7b6ce5672f0a4760"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:6:23",
+      "sequence": 28088,
+      "chapter_label": "ROM 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "For the wages of sin is death, but the free gift of God is eternal life in Christ Jesus our Lord.",
+      "ko": "죄의 삯은 사망이요 하나님의 은사는 그리스도 예수 우리 주 안에 있는 영생이니라",
+      "source_text_hash": "08e66eaa27aa418f26fdeeac65e1a95efc7dac28395056fcafe47d05038e1cc1",
+      "translation_text_hash": "e9bbdc996a9ec5b8ae7c858df050cd1f1363f562d5465c0ee738c36da0716d0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죄의 삯은 사망이요 하나님의 은사는 그리스도 예수 우리 주 안에 있는 영생이니라"
+      ],
+      "raw_text_hashes": [
+        "e9bbdc996a9ec5b8ae7c858df050cd1f1363f562d5465c0ee738c36da0716d0d"
+      ]
+    }
+  ]
+}

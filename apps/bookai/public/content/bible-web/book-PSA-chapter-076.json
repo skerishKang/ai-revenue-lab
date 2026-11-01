@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:076",
+  "unit_ordinal": 554,
+  "unit_label": "PSA 76",
+  "book_code": "PSA",
+  "chapter_number": 76,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:76:1",
+      "sequence": 15083,
+      "chapter_label": "PSA 76",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 1
+        }
+      ],
+      "en": "In Judah, God is known. His name is great in Israel.",
+      "ko": "하나님이 유다에 알린바 되셨으며 그 이름은 이스라엘에 크시도다",
+      "source_text_hash": "0d0b94ff4cf19f291394aff314ce86dd6469ad3d27e46f940129c10412aa863a",
+      "translation_text_hash": "addd676c39ccbe6f4c241d78a6996552f248a6146e21f34616ef4f3d086879fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 유다에 알린바 되셨으며 그 이름은 이스라엘에 크시도다"
+      ],
+      "raw_text_hashes": [
+        "addd676c39ccbe6f4c241d78a6996552f248a6146e21f34616ef4f3d086879fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:2",
+      "sequence": 15084,
+      "chapter_label": "PSA 76",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 2
+        }
+      ],
+      "en": "His tabernacle is also in Salem. His dwelling place in Zion.",
+      "ko": "그 장막이 또한 살렘에 있음이여 그 처소는 시온에 있도다",
+      "source_text_hash": "286e86e533aa504b12f80ca4687ea1492237c5cf0216190b528c1f9fb55f5346",
+      "translation_text_hash": "9afdd9f333b5f2905f3f1cebe4d739469ef2d8f067d17f8184cd336926dedd2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장막이 또한 살렘에 있음이여 그 처소는 시온에 있도다"
+      ],
+      "raw_text_hashes": [
+        "9afdd9f333b5f2905f3f1cebe4d739469ef2d8f067d17f8184cd336926dedd2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:3",
+      "sequence": 15085,
+      "chapter_label": "PSA 76",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 3
+        }
+      ],
+      "en": "There he broke the flaming arrows of the bow, the shield, and the sword, and the weapons of war. Selah.",
+      "ko": "거기서 저가 화살과 방패와 칼과 전쟁을 깨치시도다 (셀라)",
+      "source_text_hash": "22f0105576e4261bc0c57a0a7ab1e00fa5b7a745700a99ecf5e9ff97f98d8ba8",
+      "translation_text_hash": "03045dffc9a7e78b53a5201ca254009938cfd5d171a313a3f5268cd3474d0c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 저가 화살과 방패와 칼과 전쟁을 깨치시도다 (셀라)"
+      ],
+      "raw_text_hashes": [
+        "03045dffc9a7e78b53a5201ca254009938cfd5d171a313a3f5268cd3474d0c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:4",
+      "sequence": 15086,
+      "chapter_label": "PSA 76",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 4
+        }
+      ],
+      "en": "Glorious are you, and excellent, more than mountains of game.",
+      "ko": "주는 영화로우시며 약탈한 산에서 존귀하시도다",
+      "source_text_hash": "51d9c121a0518c955f4f03d760863cd03077ee2b3ca1d01468b402e63ac8e4dd",
+      "translation_text_hash": "da28730dc1ee56898699ad0d8ea5610830102ea95276fa9bb04e28464bb8cedb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주는 영화로우시며 약탈한 산에서 존귀하시도다"
+      ],
+      "raw_text_hashes": [
+        "da28730dc1ee56898699ad0d8ea5610830102ea95276fa9bb04e28464bb8cedb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:5",
+      "sequence": 15087,
+      "chapter_label": "PSA 76",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 5
+        }
+      ],
+      "en": "Valiant men lie plundered, they have slept their last sleep. None of the men of war can lift their hands.",
+      "ko": "마음이 강한 자는 탈취를 당하여 자기 잠을 자고 장사는 자기 손을 놀리지 못하도다",
+      "source_text_hash": "dab96942146977e40534498c80fbef1f8cb7a2d039d5b2c0c7b1cddc683b33ff",
+      "translation_text_hash": "50e2a93f17cf761e3fdd40ff85d75c797c1ab97d98dec1e678d4e6616e09e0ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 강한 자는 탈취를 당하여 자기 잠을 자고 장사는 자기 손을 놀리지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "50e2a93f17cf761e3fdd40ff85d75c797c1ab97d98dec1e678d4e6616e09e0ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:6",
+      "sequence": 15088,
+      "chapter_label": "PSA 76",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 6
+        }
+      ],
+      "en": "At your rebuke, God of Jacob, both chariot and horse are cast into a dead sleep.",
+      "ko": "야곱의 하나님이여 주께서 꾸짖으시매 병거와 말이 다 깊은 잠이 들었나이다",
+      "source_text_hash": "6ce67a0c520df8e792c5f5e205e2e7fc2b0066b1d0ba7c4bd2f71325d5e4088e",
+      "translation_text_hash": "0f06582bb004cf9bf2eef625b1267eaf0a4ed7fbf33628c0ae360b589dd08aee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 하나님이여 주께서 꾸짖으시매 병거와 말이 다 깊은 잠이 들었나이다"
+      ],
+      "raw_text_hashes": [
+        "0f06582bb004cf9bf2eef625b1267eaf0a4ed7fbf33628c0ae360b589dd08aee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:7",
+      "sequence": 15089,
+      "chapter_label": "PSA 76",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 7
+        }
+      ],
+      "en": "You, even you, are to be feared. Who can stand in your sight when you are angry?",
+      "ko": "주 곧 주는 경외할 자시니 주께서 한번 노하실 때에 누가 주의 목전에 서리이까",
+      "source_text_hash": "1b9e068af0f89b563c47f622bc2d12485ddf9734b15a84c07bb30b9fae5f0eb7",
+      "translation_text_hash": "f15370c8c3333199a6f22b490ab28fa7b4f3e1e4ae18a2cd8d1672099f82bfb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 곧 주는 경외할 자시니 주께서 한번 노하실 때에 누가 주의 목전에 서리이까"
+      ],
+      "raw_text_hashes": [
+        "f15370c8c3333199a6f22b490ab28fa7b4f3e1e4ae18a2cd8d1672099f82bfb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:8",
+      "sequence": 15090,
+      "chapter_label": "PSA 76",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 8
+        }
+      ],
+      "en": "You pronounced judgment from heaven. The earth feared, and was silent,",
+      "ko": "주께서 하늘에서 판결을 선포하시매 땅이 두려워 잠잠하였나니",
+      "source_text_hash": "28809ae1334cb1b6b5df49f00d161ab1ceacd0a9e376ed202de1bf26ca8530a6",
+      "translation_text_hash": "f8886c2c03f8f35ce7245f793a2d692ef7e630e5f7d02676b9070849d0169074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 하늘에서 판결을 선포하시매 땅이 두려워 잠잠하였나니"
+      ],
+      "raw_text_hashes": [
+        "f8886c2c03f8f35ce7245f793a2d692ef7e630e5f7d02676b9070849d0169074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:9",
+      "sequence": 15091,
+      "chapter_label": "PSA 76",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 9
+        }
+      ],
+      "en": "when God arose to judgment, to save all the afflicted ones of the earth. Selah.",
+      "ko": "곧 하나님이 땅의 모든 온유한 자를 구원하시려고 판단하러 일어나신 때에로다(셀라)",
+      "source_text_hash": "566c25249454d3322d7b0c93d0382aaec2ee2262393dc052c1ed254f89605f34",
+      "translation_text_hash": "7d2d7034858137c6f3c344a21d9dcecfe699bf2c7394a8d9b1361b04fa664a25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 하나님이 땅의 모든 온유한 자를 구원하시려고 판단하러 일어나신 때에로다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "7d2d7034858137c6f3c344a21d9dcecfe699bf2c7394a8d9b1361b04fa664a25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:10",
+      "sequence": 15092,
+      "chapter_label": "PSA 76",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 10
+        }
+      ],
+      "en": "Surely the wrath of man praises you. The survivors of your wrath are restrained.",
+      "ko": "진실로 사람의 노는 장차 주를 찬송하게 될 것이요 그 남은 노는 주께서 금하시리이다",
+      "source_text_hash": "34a2e9e06f51608f1d026ddcbbaac7f18709c7d81263e2ee239d32830e95c9ad",
+      "translation_text_hash": "20b8547455c2d289e4aaec9be7e18816dd7881a166200749621362fe64fa3cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 사람의 노는 장차 주를 찬송하게 될 것이요 그 남은 노는 주께서 금하시리이다"
+      ],
+      "raw_text_hashes": [
+        "20b8547455c2d289e4aaec9be7e18816dd7881a166200749621362fe64fa3cb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:11",
+      "sequence": 15093,
+      "chapter_label": "PSA 76",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 11
+        }
+      ],
+      "en": "Make vows to the LORD your God, and fulfill them! Let all of his neighbors bring presents to him who is to be feared.",
+      "ko": "너희는 여호와 너희 하나님께 서원하고 갚으라 사방에 있는 모든 자도 마땅히 경외할 이에게 예물을 드릴찌로다",
+      "source_text_hash": "b49fc987a3bacd18985c53a55f58f5c4ecb48434c97aa4b70c8099cc70c18736",
+      "translation_text_hash": "00356f3ba01268800e63e839016001ccf8edce70de478425b97c8ccf95e64fb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와 너희 하나님께 서원하고 갚으라 사방에 있는 모든 자도 마땅히 경외할 이에게 예물을 드릴찌로다"
+      ],
+      "raw_text_hashes": [
+        "00356f3ba01268800e63e839016001ccf8edce70de478425b97c8ccf95e64fb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:76:12",
+      "sequence": 15094,
+      "chapter_label": "PSA 76",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 76,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 76,
+          "verse": 12
+        }
+      ],
+      "en": "He will cut off the spirit of princes. He is feared by the kings of the earth.",
+      "ko": "저가 방백들의 심령을 꺾으시리니 저는 세상의 왕들에게 두려움이시로다",
+      "source_text_hash": "a1ade7d0980033b61fd214916af2c99600730a4a31b62012771b949b588deef6",
+      "translation_text_hash": "9b910fa3a27e40d451b83292b1aefa34cbc3334fd3da8aeb6e94ea67a242ad36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 방백들의 심령을 꺾으시리니 저는 세상의 왕들에게 두려움이시로다"
+      ],
+      "raw_text_hashes": [
+        "9b910fa3a27e40d451b83292b1aefa34cbc3334fd3da8aeb6e94ea67a242ad36"
+      ]
+    }
+  ]
+}

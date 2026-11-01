@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:005",
+  "unit_ordinal": 55,
+  "unit_label": "EXO 5",
+  "book_code": "EXO",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:5:1",
+      "sequence": 1634,
+      "chapter_label": "EXO 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Afterward Moses and Aaron came, and said to Pharaoh, “This is what the LORD, the God of Israel, says, ‘Let my people go, that they may hold a feast to me in the wilderness.’”",
+      "ko": "그 후에 모세와 아론이 가서 바로에게 이르되 이스라엘 하나님 여호와의 말씀에 내 백성을 보내라 그들이 광야에서 내 앞에 절기를 지킬 것이니라 하셨나이다",
+      "source_text_hash": "e3e30e93d99c10eb3f8376cb8f85344ebea6d01b421f5a465c4f35d9d998f072",
+      "translation_text_hash": "38cd438bcd45777390fd66c7e0e512d496707818a89234add003ba97347aa172",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 모세와 아론이 가서 바로에게 이르되 이스라엘 하나님 여호와의 말씀에 내 백성을 보내라 그들이 광야에서 내 앞에 절기를 지킬 것이니라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "38cd438bcd45777390fd66c7e0e512d496707818a89234add003ba97347aa172"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:2",
+      "sequence": 1635,
+      "chapter_label": "EXO 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Pharaoh said, “Who is the LORD, that I should listen to his voice to let Israel go? I don’t know the LORD, and moreover I will not let Israel go.”",
+      "ko": "바로가 가로되 여호와가 누구관대 내가 그 말을 듣고 이스라엘을 보내겠느냐 나는 여호와를 알지 못하니 이스라엘도 보내지 아니하리라",
+      "source_text_hash": "61775a36b8ad01400f175f001914c6af16f9621c4d90a38df2921aa3c6862221",
+      "translation_text_hash": "521ce19b75a3ce0a0a435de7effdda58e4509e58f0d0589e9bc73d08fd554690",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 가로되 여호와가 누구관대 내가 그 말을 듣고 이스라엘을 보내겠느냐 나는 여호와를 알지 못하니 이스라엘도 보내지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "521ce19b75a3ce0a0a435de7effdda58e4509e58f0d0589e9bc73d08fd554690"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:3",
+      "sequence": 1636,
+      "chapter_label": "EXO 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "They said, “The God of the Hebrews has met with us. Please let us go three days’ journey into the wilderness, and sacrifice to the LORD, our God, lest he fall on us with pestilence, or with the sword.”",
+      "ko": "그들이 가로되 히브리인의 하나님이 우리에게 나타나셨은즉 우리가 사흘길쯤 광야에 가서 우리 하나님 여호와께 희생을 드리려하오니 가기를 허락하소서 여호와께서 온역이나 칼로 우리를 치실까 두려워하나이다",
+      "source_text_hash": "68aac323ec883bbabc03ef128252acc8321dc3de53819c598161e5902dce625c",
+      "translation_text_hash": "572bdce7c7ba3f58265e58d97f4cc9e9802f8c81bf92f2c72683e56452db2412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 히브리인의 하나님이 우리에게 나타나셨은즉 우리가 사흘길쯤 광야에 가서 우리 하나님 여호와께 희생을 드리려하오니 가기를 허락하소서 여호와께서 온역이나 칼로 우리를 치실까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "572bdce7c7ba3f58265e58d97f4cc9e9802f8c81bf92f2c72683e56452db2412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:4",
+      "sequence": 1637,
+      "chapter_label": "EXO 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "The king of Egypt said to them, “Why do you, Moses and Aaron, take the people from their work? Get back to your burdens!”",
+      "ko": "애굽 왕이 그들에게 이르되 모세와 아론아 너희가 어찌하여 백성으로 역사를 쉬게 하느냐 가서 너희의 역사나 하라",
+      "source_text_hash": "e84b708e590cc19bc076874a0ff406a7a52470a3258705f5b775b9a2c6d40032",
+      "translation_text_hash": "eed6592fbeabd572b74d6e9425b2c8fd88ab6912370e66d6ca47f5b04d2e127f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 왕이 그들에게 이르되 모세와 아론아 너희가 어찌하여 백성으로 역사를 쉬게 하느냐 가서 너희의 역사나 하라"
+      ],
+      "raw_text_hashes": [
+        "eed6592fbeabd572b74d6e9425b2c8fd88ab6912370e66d6ca47f5b04d2e127f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:5",
+      "sequence": 1638,
+      "chapter_label": "EXO 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Pharaoh said, “Behold, the people of the land are now many, and you make them rest from their burdens.”",
+      "ko": "또 가로되 이제 나라에 이 백성이 많거늘 너희가 그들로 역사를 쉬게 하는도다 하고",
+      "source_text_hash": "de0f6a63b54aafd879feee0f8da71d08ec9c7fa74b32c6e03830f80b62d240ab",
+      "translation_text_hash": "200bba8445cfdc6c2aa169179ac453ea108ce05167b5a900df70be95bd99c417",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 이제 나라에 이 백성이 많거늘 너희가 그들로 역사를 쉬게 하는도다 하고"
+      ],
+      "raw_text_hashes": [
+        "200bba8445cfdc6c2aa169179ac453ea108ce05167b5a900df70be95bd99c417"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:6",
+      "sequence": 1639,
+      "chapter_label": "EXO 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "The same day Pharaoh commanded the taskmasters of the people and their officers, saying,",
+      "ko": "바로가 당일에 백성의 간역자들과 패장들에게 명하여 가로되",
+      "source_text_hash": "ac9d2d8be49acd1a1e50c8abfa38af63713018c2665941656eac0f7223cb3893",
+      "translation_text_hash": "d9cf580738f850e05a044219a72e828dbac1201292ef5c3089917cd58d4864ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 당일에 백성의 간역자들과 패장들에게 명하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "d9cf580738f850e05a044219a72e828dbac1201292ef5c3089917cd58d4864ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:7",
+      "sequence": 1640,
+      "chapter_label": "EXO 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "“You shall no longer give the people straw to make brick, as before. Let them go and gather straw for themselves.",
+      "ko": "너희는 백성에게 다시는 벽돌 소용의 짚을 전과 같이 주지 말고 그들로 가서 스스로 줍게 하라",
+      "source_text_hash": "ff6a586b02d1af58c23cdf56c22a9ce46257575f704b9e2d11843561f74d4796",
+      "translation_text_hash": "2f7a4158c09e346f6a69e52c397b6a312191d288ea90643ea5e5273a317ed1bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 백성에게 다시는 벽돌 소용의 짚을 전과 같이 주지 말고 그들로 가서 스스로 줍게 하라"
+      ],
+      "raw_text_hashes": [
+        "2f7a4158c09e346f6a69e52c397b6a312191d288ea90643ea5e5273a317ed1bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:8",
+      "sequence": 1641,
+      "chapter_label": "EXO 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "You shall require from them the number of the bricks which they made before. You shall not diminish anything of it, for they are idle. Therefore they cry, saying, ‘Let’s go and sacrifice to our God.’",
+      "ko": "또 그들의 전에 만든 벽돌 수효대로 그들로 만들게 하고 감하지 말라 그들이 게으르므로 소리질러 이르기를 우리가 가서 우리 하나님께 희생을 드리자 하나니",
+      "source_text_hash": "ebc444d9986097a78bb0b0df8ca0c2373397240927f4ae48e252f8b5771e7536",
+      "translation_text_hash": "29f2024b6bec93379842117c7067e269306e196a709cadf08fa25c2ba02bb54e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들의 전에 만든 벽돌 수효대로 그들로 만들게 하고 감하지 말라 그들이 게으르므로 소리질러 이르기를 우리가 가서 우리 하나님께 희생을 드리자 하나니"
+      ],
+      "raw_text_hashes": [
+        "29f2024b6bec93379842117c7067e269306e196a709cadf08fa25c2ba02bb54e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:9",
+      "sequence": 1642,
+      "chapter_label": "EXO 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Let heavier work be laid on the men, that they may labor in it. Don’t let them pay any attention to lying words.”",
+      "ko": "그 사람들의 고역을 무겁게 함으로 수고롭게 하여 그들로 거짓말을 듣지 않게 하라",
+      "source_text_hash": "2ecb029d9818b7dc4a81462cd01cbc4b868beaf31b2726e565762a8b17a886b4",
+      "translation_text_hash": "c7b76c3bb9ebfc74fb048b25965c8ddb513958c132d713b4604e8c287f955ce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들의 고역을 무겁게 함으로 수고롭게 하여 그들로 거짓말을 듣지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "c7b76c3bb9ebfc74fb048b25965c8ddb513958c132d713b4604e8c287f955ce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:10",
+      "sequence": 1643,
+      "chapter_label": "EXO 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "The taskmasters of the people went out with their officers, and they spoke to the people, saying, “This is what Pharaoh says: ‘I will not give you straw.",
+      "ko": "간역자들과 패장들이 나가서 백성에게 일러 가로되 바로의 말씀에 내가 너희에게 짚을 주지 아니하리니",
+      "source_text_hash": "e16c5f8a642a2b6115859d33fb143cb44415acfa7e44a592ccdc259e2420263f",
+      "translation_text_hash": "6e7433ce56e8ddb0575b3817dbb143f0510a345e59c9b0175483f73e81ae2261",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간역자들과 패장들이 나가서 백성에게 일러 가로되 바로의 말씀에 내가 너희에게 짚을 주지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "6e7433ce56e8ddb0575b3817dbb143f0510a345e59c9b0175483f73e81ae2261"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:11",
+      "sequence": 1644,
+      "chapter_label": "EXO 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Go yourselves, get straw where you can find it, for nothing of your work shall be diminished.’”",
+      "ko": "너희는 짚을 얻을 곳으로 가서 주우라 너희 일은 조금도 감하지 아니하리라 하셨느니라",
+      "source_text_hash": "6607ef09526371af059ad98736ec108134a212a3c9bb47b3e8a07b12b0214246",
+      "translation_text_hash": "3554ba42b5a2519aa5ae262ea58a6d4297de5a9d36a79fb6ef4871347534dd74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 짚을 얻을 곳으로 가서 주우라 너희 일은 조금도 감하지 아니하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3554ba42b5a2519aa5ae262ea58a6d4297de5a9d36a79fb6ef4871347534dd74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:12",
+      "sequence": 1645,
+      "chapter_label": "EXO 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "So the people were scattered abroad throughout all the land of Egypt to gather stubble for straw.",
+      "ko": "백성이 애굽 온 땅에 흩어져 곡초 그루터기를 거두어다가 짚을 대신하니",
+      "source_text_hash": "fdd5e78e1576f47f7537446abf516454426f6d214b53b87c4973a76b6c808209",
+      "translation_text_hash": "37d9618c054651e788a7e0bbe8b5dbeeec27a072320cda9f7dcf7936a3986a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 애굽 온 땅에 흩어져 곡초 그루터기를 거두어다가 짚을 대신하니"
+      ],
+      "raw_text_hashes": [
+        "37d9618c054651e788a7e0bbe8b5dbeeec27a072320cda9f7dcf7936a3986a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:13",
+      "sequence": 1646,
+      "chapter_label": "EXO 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "The taskmasters were urgent saying, “Fulfill your work quota daily, as when there was straw!”",
+      "ko": "간역자들이 그들을 독촉하여 가로되 너희는 짚이 있을 때와 같이 당일 일을 당일에 마치라 하며",
+      "source_text_hash": "ca7eb73f038704155998bcdefb84fd3c75f0b5d4b5647ceb586c1fe552a5fd91",
+      "translation_text_hash": "9ed3f910106ba18e01263391d1e42e58f98ef26ca30ab2a17c2da1ddafb85b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간역자들이 그들을 독촉하여 가로되 너희는 짚이 있을 때와 같이 당일 일을 당일에 마치라 하며"
+      ],
+      "raw_text_hashes": [
+        "9ed3f910106ba18e01263391d1e42e58f98ef26ca30ab2a17c2da1ddafb85b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:14",
+      "sequence": 1647,
+      "chapter_label": "EXO 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "The officers of the children of Israel, whom Pharaoh’s taskmasters had set over them, were beaten, and were asked, “Why haven’t you fulfilled your quota both yesterday and today, in making brick as before?”",
+      "ko": "바로의 간역자들이 자기들의 세운바 이스라엘 자손의 패장들을 때리며 가로되 너희가 어찌하여 어제와 오늘에 만드는 벽돌의 수효를 전과 같이 채우지 아니하였느냐 하니라",
+      "source_text_hash": "e3684a6e3765026bf74c90386a67678fe1ed5b3a4d302e25a7f3cf88e5106240",
+      "translation_text_hash": "962a526068ca3916abd7501b757d920f6fa4414e3f4c82b947e5ac0ce410b85e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 간역자들이 자기들의 세운바 이스라엘 자손의 패장들을 때리며 가로되 너희가 어찌하여 어제와 오늘에 만드는 벽돌의 수효를 전과 같이 채우지 아니하였느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "962a526068ca3916abd7501b757d920f6fa4414e3f4c82b947e5ac0ce410b85e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:15",
+      "sequence": 1648,
+      "chapter_label": "EXO 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Then the officers of the children of Israel came and cried to Pharaoh, saying, “Why do you deal this way with your servants?",
+      "ko": "이스라엘 자손의 패장들이 가서 바로에게 호소하여 가로되 왕은 어찌하여 종들에게 이같이 하시나이까",
+      "source_text_hash": "9508feb5f965f6403b6c9b875c6e9c996a5bfc8d0aac344d377b60de615f0dc1",
+      "translation_text_hash": "1b05902bbbd4a2a398b9661455af07160fa5192fc9ebe746f0a43230808acbf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 패장들이 가서 바로에게 호소하여 가로되 왕은 어찌하여 종들에게 이같이 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "1b05902bbbd4a2a398b9661455af07160fa5192fc9ebe746f0a43230808acbf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:16",
+      "sequence": 1649,
+      "chapter_label": "EXO 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "No straw is given to your servants, and they tell us, ‘Make brick!’ and behold, your servants are beaten; but the fault is in your own people.”",
+      "ko": "종들에게 짚을 주지아니하고 그들이 우리더러 벽돌을 만들라 하나이다 종들이 매를 맞으오니 이는 왕의 백성의 허물이니이다",
+      "source_text_hash": "de2ba4b20ebc59a060b3af173021fa12a8a836724d1456daad7987be8c04e222",
+      "translation_text_hash": "fc7d97908c1f5b7ad0fab95e1d64419d7728341ade633b557c959538576d11d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종들에게 짚을 주지아니하고 그들이 우리더러 벽돌을 만들라 하나이다 종들이 매를 맞으오니 이는 왕의 백성의 허물이니이다"
+      ],
+      "raw_text_hashes": [
+        "fc7d97908c1f5b7ad0fab95e1d64419d7728341ade633b557c959538576d11d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:17",
+      "sequence": 1650,
+      "chapter_label": "EXO 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "But Pharaoh said, “You are idle! You are idle! Therefore you say, ‘Let’s go and sacrifice to the LORD.’",
+      "ko": "바로가 가로되 너희가 게으르다 게으르다 그러므로 너희가 이르기를 우리가 가서 여호와께 희생을 드리자 하는도다",
+      "source_text_hash": "0c51be5cc780ac86250af28e6a85d596d2e2449da412015b96c29bec808324a2",
+      "translation_text_hash": "3d9d690252631593dbffc92e42d2ccbc716363649d3f069443ef9f0c1a073808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 가로되 너희가 게으르다 게으르다 그러므로 너희가 이르기를 우리가 가서 여호와께 희생을 드리자 하는도다"
+      ],
+      "raw_text_hashes": [
+        "3d9d690252631593dbffc92e42d2ccbc716363649d3f069443ef9f0c1a073808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:18",
+      "sequence": 1651,
+      "chapter_label": "EXO 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Go therefore now, and work; for no straw shall be given to you; yet you shall deliver the same number of bricks!”",
+      "ko": "이제 가서 일하라 짚은 너희에게 주지 않을찌라도 너희가 벽돌은 여수히 바칠찌니라",
+      "source_text_hash": "572e788884cd9bdb20ea18623fec22e9270f29e2cbbfd0b567192620e179b91d",
+      "translation_text_hash": "12108611358bc18771eae2e18e2d46dff5d2429bc472cc4d4e9a6db7e5339af6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 가서 일하라 짚은 너희에게 주지 않을찌라도 너희가 벽돌은 여수히 바칠찌니라"
+      ],
+      "raw_text_hashes": [
+        "12108611358bc18771eae2e18e2d46dff5d2429bc472cc4d4e9a6db7e5339af6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:19",
+      "sequence": 1652,
+      "chapter_label": "EXO 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "The officers of the children of Israel saw that they were in trouble when it was said, “You shall not diminish anything from your daily quota of bricks!”",
+      "ko": "이스라엘 자손의 패장들이 너희의 매일 만드는 벽돌을 조금도 감하지 못하리라 함을 듣고 화가 몸에 미친줄 알고",
+      "source_text_hash": "2a457acff4b18c09730aa94107172affe4116cb4a1c6228b6b2419e2ae61c052",
+      "translation_text_hash": "d6b66279315384f459458e07ffb6ac2e540e0699e985d81e17cf4d94bd5d4a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 패장들이 너희의 매일 만드는 벽돌을 조금도 감하지 못하리라 함을 듣고 화가 몸에 미친줄 알고"
+      ],
+      "raw_text_hashes": [
+        "d6b66279315384f459458e07ffb6ac2e540e0699e985d81e17cf4d94bd5d4a55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:20",
+      "sequence": 1653,
+      "chapter_label": "EXO 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "They met Moses and Aaron, who stood along the way, as they came out from Pharaoh.",
+      "ko": "그들이 바로를 떠나 나올 때에 모세와 아론이 길에 선것을 만나",
+      "source_text_hash": "2c70ee5c885687295195c37f9fd5e1bee0482a2331ceebc16463439abf8bbcf8",
+      "translation_text_hash": "8e09aca081c36a2f32f5a4a07a19be759676613785db5c4f51dad245d28533b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 바로를 떠나 나올 때에 모세와 아론이 길에 선것을 만나"
+      ],
+      "raw_text_hashes": [
+        "8e09aca081c36a2f32f5a4a07a19be759676613785db5c4f51dad245d28533b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:21",
+      "sequence": 1654,
+      "chapter_label": "EXO 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "They said to them, “May the LORD look at you and judge, because you have made us a stench to be abhorred in the eyes of Pharaoh, and in the eyes of his servants, to put a sword in their hand to kill us!”",
+      "ko": "그들에게 이르되 너희가 우리로 바로의 눈과 그 신하의 눈에 미운 물건이 되게 하고 그들의 손에 칼을 주어 우리를 죽이게 하는도다 여호와는 너희를 감찰하시고 판단하시기를 원하노라",
+      "source_text_hash": "eb67dd3e77aff93968858fa9b24733c53a3756b0f240bf4b50806234f7f508cf",
+      "translation_text_hash": "010e096533fab837264c2e402c70f039c35a9e0f2afc1ec7c3a022753b0b8316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 너희가 우리로 바로의 눈과 그 신하의 눈에 미운 물건이 되게 하고 그들의 손에 칼을 주어 우리를 죽이게 하는도다 여호와는 너희를 감찰하시고 판단하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "010e096533fab837264c2e402c70f039c35a9e0f2afc1ec7c3a022753b0b8316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:22",
+      "sequence": 1655,
+      "chapter_label": "EXO 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Moses returned to the LORD, and said, “Lord, why have you brought trouble on this people? Why is it that you have sent me?",
+      "ko": "모세가 여호와께 돌아와서 고하되 주여 어찌하여 이 백성으로 학대를 당케 하셨나이까 어찌하여 나를 보내셨나이까",
+      "source_text_hash": "f803dbdb6dec759dc416d51894bef1eff2d7fefea4e26fb8792bd8c6f62489f0",
+      "translation_text_hash": "208fa008352e3e73a0708685acbbc397a02738d65192dec7831ddb37ce51d043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 돌아와서 고하되 주여 어찌하여 이 백성으로 학대를 당케 하셨나이까 어찌하여 나를 보내셨나이까"
+      ],
+      "raw_text_hashes": [
+        "208fa008352e3e73a0708685acbbc397a02738d65192dec7831ddb37ce51d043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:5:23",
+      "sequence": 1656,
+      "chapter_label": "EXO 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "For since I came to Pharaoh to speak in your name, he has brought trouble on this people. You have not rescued your people at all!”",
+      "ko": "내가 바로에게 와서 주의 이름으로 말함으로부터 그가 이 백성을 더 학대하며 주께서도 주의 백성을 구원치 아니하시나이다",
+      "source_text_hash": "0b2bd579429b1318f46d15a543bb251225ac169d03d9145e776d19ccc77fa5fd",
+      "translation_text_hash": "f4117564e5fa2434e3059808d3388c21a5fab39ad83d7380f1e765f400cc933e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바로에게 와서 주의 이름으로 말함으로부터 그가 이 백성을 더 학대하며 주께서도 주의 백성을 구원치 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "f4117564e5fa2434e3059808d3388c21a5fab39ad83d7380f1e765f400cc933e"
+      ]
+    }
+  ]
+}

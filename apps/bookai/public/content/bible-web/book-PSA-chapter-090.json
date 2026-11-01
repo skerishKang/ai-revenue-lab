@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:090",
+  "unit_ordinal": 568,
+  "unit_label": "PSA 90",
+  "book_code": "PSA",
+  "chapter_number": 90,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:90:1",
+      "sequence": 15380,
+      "chapter_label": "PSA 90",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 1
+        }
+      ],
+      "en": "Lord, you have been our dwelling place for all generations.",
+      "ko": "주여 주는 대대에 우리의 거처가 되셨나이다",
+      "source_text_hash": "516541dc09f8b09f045010ffeeb5c5ae9b500235807c8f86ee11caee75fc7cfd",
+      "translation_text_hash": "f378445d7b21fcb38872f891a37df9245cf80b6c6f8454e6557511e3b1862542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 주는 대대에 우리의 거처가 되셨나이다"
+      ],
+      "raw_text_hashes": [
+        "f378445d7b21fcb38872f891a37df9245cf80b6c6f8454e6557511e3b1862542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:2",
+      "sequence": 15381,
+      "chapter_label": "PSA 90",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 2
+        }
+      ],
+      "en": "Before the mountains were born, before you had formed the earth and the world, even from everlasting to everlasting, you are God.",
+      "ko": "산이 생기기 전, 땅과 세계도 주께서 조성하시기 전 곧 영원부터 영원까지 주는 하나님이시니이다",
+      "source_text_hash": "fec93b860a6b87fe4388966083139310c7c48b1a752102f859acd42f00ddcf4a",
+      "translation_text_hash": "6b4fb84a54ea54c98dd7bf0215cdaf1ebe43fdef2082bbfc1e7148bc037dccb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산이 생기기 전, 땅과 세계도 주께서 조성하시기 전 곧 영원부터 영원까지 주는 하나님이시니이다"
+      ],
+      "raw_text_hashes": [
+        "6b4fb84a54ea54c98dd7bf0215cdaf1ebe43fdef2082bbfc1e7148bc037dccb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:3",
+      "sequence": 15382,
+      "chapter_label": "PSA 90",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 3
+        }
+      ],
+      "en": "You turn man to destruction, saying, “Return, you children of men.”",
+      "ko": "주께서 사람을 티끌로 돌아가게 하시고 말씀하시기를 너희 인생들은 돌아가라 하셨사오니",
+      "source_text_hash": "7c85c670da6bc27121a44f6f0318d0ce9a58a5f9a42605951bccb7c3a518aa10",
+      "translation_text_hash": "a7ab654e22e58e843bd83e45c47a4c4db25e363551f6eef67b5eb01ad39c253a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 사람을 티끌로 돌아가게 하시고 말씀하시기를 너희 인생들은 돌아가라 하셨사오니"
+      ],
+      "raw_text_hashes": [
+        "a7ab654e22e58e843bd83e45c47a4c4db25e363551f6eef67b5eb01ad39c253a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:4",
+      "sequence": 15383,
+      "chapter_label": "PSA 90",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 4
+        }
+      ],
+      "en": "For a thousand years in your sight are just like yesterday when it is past, like a watch in the night.",
+      "ko": "주의 목전에는 천년이 지나간 어제 같으며 밤의 한 경점 같을 뿐임이니이다",
+      "source_text_hash": "7d9223a572ff6217009965ff70ddd49063ccff6e0dff5693746b49d4d8201431",
+      "translation_text_hash": "0a19fc5ecabdc1685dd78dd0485298ea93eb878aa663530d6535ec47bdc55601",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 목전에는 천년이 지나간 어제 같으며 밤의 한 경점 같을 뿐임이니이다"
+      ],
+      "raw_text_hashes": [
+        "0a19fc5ecabdc1685dd78dd0485298ea93eb878aa663530d6535ec47bdc55601"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:5",
+      "sequence": 15384,
+      "chapter_label": "PSA 90",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 5
+        }
+      ],
+      "en": "You sweep them away as they sleep. In the morning they sprout like new grass.",
+      "ko": "주께서 저희를 홍수처럼 쓸어 가시나이다 저희는 잠간 자는것 같으며 아침에 돋는 풀 같으니이다",
+      "source_text_hash": "342df6b405943f983a80db0ad63ac4ec0ad3317ae00701afc33478099ac983d8",
+      "translation_text_hash": "c6266d8dd84f60da4addd80cbfb2def9068d1932e32af3c04e46f1e64c051835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 저희를 홍수처럼 쓸어 가시나이다 저희는 잠간 자는것 같으며 아침에 돋는 풀 같으니이다"
+      ],
+      "raw_text_hashes": [
+        "c6266d8dd84f60da4addd80cbfb2def9068d1932e32af3c04e46f1e64c051835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:6",
+      "sequence": 15385,
+      "chapter_label": "PSA 90",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 6
+        }
+      ],
+      "en": "In the morning it sprouts and springs up. By evening, it is withered and dry.",
+      "ko": "풀은 아침에 꽃이 피어 자라다가 저녁에는 벤바 되어 마르나이다",
+      "source_text_hash": "eda5047f1b6df71e14a10bc5821218914d321de490ab820af5489a19fa5bcb8b",
+      "translation_text_hash": "a8da701b5d117894c6edf61d601f32984d6662b675cd58113f160b41feefe6fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풀은 아침에 꽃이 피어 자라다가 저녁에는 벤바 되어 마르나이다"
+      ],
+      "raw_text_hashes": [
+        "a8da701b5d117894c6edf61d601f32984d6662b675cd58113f160b41feefe6fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:7",
+      "sequence": 15386,
+      "chapter_label": "PSA 90",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 7
+        }
+      ],
+      "en": "For we are consumed in your anger. We are troubled in your wrath.",
+      "ko": "우리는 주의 노에 소멸되며 주의 분내심에 놀라나이다",
+      "source_text_hash": "51e3ba26aa93cde6cdd2b5619cadb57e84cace9d905a56299e324edae33cbbfe",
+      "translation_text_hash": "1ed8e41eb36598075c6f3209c647c237c51ab79b3b7f33291aab670c9dc4b995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 주의 노에 소멸되며 주의 분내심에 놀라나이다"
+      ],
+      "raw_text_hashes": [
+        "1ed8e41eb36598075c6f3209c647c237c51ab79b3b7f33291aab670c9dc4b995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:8",
+      "sequence": 15387,
+      "chapter_label": "PSA 90",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 8
+        }
+      ],
+      "en": "You have set our iniquities before you, our secret sins in the light of your presence.",
+      "ko": "주께서 우리의 죄악을 주의 앞에 놓으시며 우리의 은밀한 죄를 주의 얼굴 빛 가운데 두셨사오니",
+      "source_text_hash": "e0f2521cd8a5ebaaa6b60e49919818a241212fd0514a82dd01b6a8d2e48e6945",
+      "translation_text_hash": "b567c1b7427b8b074eeb40aef5e4917f46d4eb7ae94d072cf7b8e05aa90ae7f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 우리의 죄악을 주의 앞에 놓으시며 우리의 은밀한 죄를 주의 얼굴 빛 가운데 두셨사오니"
+      ],
+      "raw_text_hashes": [
+        "b567c1b7427b8b074eeb40aef5e4917f46d4eb7ae94d072cf7b8e05aa90ae7f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:9",
+      "sequence": 15388,
+      "chapter_label": "PSA 90",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 9
+        }
+      ],
+      "en": "For all our days have passed away in your wrath. We bring our years to an end as a sigh.",
+      "ko": "우리의 모든 날이 주의 분노 중에 지나가며 우리의 평생이 일식간에 다하였나이다",
+      "source_text_hash": "57265bf753f840fb7a5eb0ff19856d5a474a037169f59496a3304496016e1250",
+      "translation_text_hash": "28819b91e226a4e40bf7647ce0784a605e1bf894c0097ae381f462fb3b29544a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 모든 날이 주의 분노 중에 지나가며 우리의 평생이 일식간에 다하였나이다"
+      ],
+      "raw_text_hashes": [
+        "28819b91e226a4e40bf7647ce0784a605e1bf894c0097ae381f462fb3b29544a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:10",
+      "sequence": 15389,
+      "chapter_label": "PSA 90",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 10
+        }
+      ],
+      "en": "The days of our years are seventy, or even by reason of strength eighty years; yet their pride is but labor and sorrow, for it passes quickly, and we fly away.",
+      "ko": "우리의 년수가 칠십이요 강건하면 팔십이라도 그 년수의 자랑은 수고와 슬픔 뿐이요 신속히 가니 우리가 날아가나이다",
+      "source_text_hash": "1615ac81e07ccdc9f1e9288a436d352658d21900f5791e54d88c1d2d8501dbb6",
+      "translation_text_hash": "8ed026d913a238225e2661be808bf492dd45c78dab0e5d44baaf18d52944f0a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 년수가 칠십이요 강건하면 팔십이라도 그 년수의 자랑은 수고와 슬픔 뿐이요 신속히 가니 우리가 날아가나이다"
+      ],
+      "raw_text_hashes": [
+        "8ed026d913a238225e2661be808bf492dd45c78dab0e5d44baaf18d52944f0a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:11",
+      "sequence": 15390,
+      "chapter_label": "PSA 90",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 11
+        }
+      ],
+      "en": "Who knows the power of your anger, your wrath according to the fear that is due to you?",
+      "ko": "누가 주의 노의 능력을 알며 누가 주를 두려워하여야 할대로 주의 진노를 알리이까",
+      "source_text_hash": "569432af261ea98c3635ed349f2471d0424a95b3badd0bb9ff7f54021aa13999",
+      "translation_text_hash": "9b181daa043786019e52b7c5fa536e5167575e342c6562ba5680ef26a704c59a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 주의 노의 능력을 알며 누가 주를 두려워하여야 할대로 주의 진노를 알리이까"
+      ],
+      "raw_text_hashes": [
+        "9b181daa043786019e52b7c5fa536e5167575e342c6562ba5680ef26a704c59a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:12",
+      "sequence": 15391,
+      "chapter_label": "PSA 90",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 12
+        }
+      ],
+      "en": "So teach us to count our days, that we may gain a heart of wisdom.",
+      "ko": "우리에게 우리 날 계수함을 가르치사 지혜의 마음을 얻게 하소서",
+      "source_text_hash": "f9e1f0d2ce5567d2f176180c1bc967a68816dc28295c2c706562fc673f7a9611",
+      "translation_text_hash": "9c2cae15167c358d563ad408f2d7fec60735d05e7e69438706da84868603c9f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 우리 날 계수함을 가르치사 지혜의 마음을 얻게 하소서"
+      ],
+      "raw_text_hashes": [
+        "9c2cae15167c358d563ad408f2d7fec60735d05e7e69438706da84868603c9f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:13",
+      "sequence": 15392,
+      "chapter_label": "PSA 90",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 13
+        }
+      ],
+      "en": "Relent, LORD! How long? Have compassion on your servants!",
+      "ko": "여호와여 돌아오소서 언제까지니이까 주의 종들을 긍휼히 여기소서",
+      "source_text_hash": "d0724ce540c0834ff2b93feaa2d4a0754ddd150253739d24eaa8f7f9eca5f51e",
+      "translation_text_hash": "951ed29de4bc9635632d0a294aa343fcc24eb47f8ef8c7cc6b976dcc9a473a47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 돌아오소서 언제까지니이까 주의 종들을 긍휼히 여기소서"
+      ],
+      "raw_text_hashes": [
+        "951ed29de4bc9635632d0a294aa343fcc24eb47f8ef8c7cc6b976dcc9a473a47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:14",
+      "sequence": 15393,
+      "chapter_label": "PSA 90",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 14
+        }
+      ],
+      "en": "Satisfy us in the morning with your loving kindness, that we may rejoice and be glad all our days.",
+      "ko": "아침에 주의 인자로 우리를 만족케 하사 우리 평생에 즐겁고 기쁘게 하소서",
+      "source_text_hash": "a0c5a3c12ae559071a6ce9543a4181e86fddcaf63f3f2c581fb391bc1b55f5e5",
+      "translation_text_hash": "298971a37863cc1840a7c2c02ac62468e9ec0bcad98c491fdfdfa6d8e7452b42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 주의 인자로 우리를 만족케 하사 우리 평생에 즐겁고 기쁘게 하소서"
+      ],
+      "raw_text_hashes": [
+        "298971a37863cc1840a7c2c02ac62468e9ec0bcad98c491fdfdfa6d8e7452b42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:15",
+      "sequence": 15394,
+      "chapter_label": "PSA 90",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 15
+        }
+      ],
+      "en": "Make us glad for as many days as you have afflicted us, for as many years as we have seen evil.",
+      "ko": "우리를 곤고케 하신 날수대로와 우리의 화를 당한 년수대로 기쁘게 하소서",
+      "source_text_hash": "b5d6550b14e5180b7b0b02d03bb06835140f1c895f051da4524a6e6c5a86b7c5",
+      "translation_text_hash": "051d3b81c0cce9ea9d8443f97fcf22e8fc78fd1030594dd84689fb25692c46c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 곤고케 하신 날수대로와 우리의 화를 당한 년수대로 기쁘게 하소서"
+      ],
+      "raw_text_hashes": [
+        "051d3b81c0cce9ea9d8443f97fcf22e8fc78fd1030594dd84689fb25692c46c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:16",
+      "sequence": 15395,
+      "chapter_label": "PSA 90",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 16
+        }
+      ],
+      "en": "Let your work appear to your servants, your glory to their children.",
+      "ko": "주의 행사를 주의 종들에게 나타내시며 주의 영광을 저희 자손에게 나타내소서",
+      "source_text_hash": "ae1a3b97fc01ccc2d7f487bb638c9f47180025635683a714f7745883280fe4df",
+      "translation_text_hash": "559d0098c0deb79ef8147e88fe982b60b855661e8d0afe6b9e33eb308885886b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 행사를 주의 종들에게 나타내시며 주의 영광을 저희 자손에게 나타내소서"
+      ],
+      "raw_text_hashes": [
+        "559d0098c0deb79ef8147e88fe982b60b855661e8d0afe6b9e33eb308885886b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:90:17",
+      "sequence": 15396,
+      "chapter_label": "PSA 90",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 90,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 90,
+          "verse": 17
+        }
+      ],
+      "en": "Let the favor of the Lord our God be on us. Establish the work of our hands for us. Yes, establish the work of our hands.",
+      "ko": "주 우리 하나님의 은총을 우리에게 임하게 하사 우리 손의 행사를 우리에게 견고케 하소서 우리 손의 행사를 견고케 하소서",
+      "source_text_hash": "76b6127f250da3a0740952f0e7eb503e7b21a4c79c631f9077f3efabce0b5b1a",
+      "translation_text_hash": "b3ebf8b32e64f94d5a6e056fb42fc39a011f66206e1c6ea0a7b27df38c22949f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 우리 하나님의 은총을 우리에게 임하게 하사 우리 손의 행사를 우리에게 견고케 하소서 우리 손의 행사를 견고케 하소서"
+      ],
+      "raw_text_hashes": [
+        "b3ebf8b32e64f94d5a6e056fb42fc39a011f66206e1c6ea0a7b27df38c22949f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:043",
+  "unit_ordinal": 845,
+  "unit_label": "EZK 43",
+  "book_code": "EZK",
+  "chapter_number": 43,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:43:1",
+      "sequence": 21574,
+      "chapter_label": "EZK 43",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 1
+        }
+      ],
+      "en": "Afterward he brought me to the gate, even the gate that looks toward the east.",
+      "ko": "그 후에 그가 나를 데리고 문에 이르니 곧 동향한 문이라",
+      "source_text_hash": "d048d4299b79a9988845d2d4f4bbea1b718de237cf560ea7cd08bdeb226694fe",
+      "translation_text_hash": "72d9c7d0496dcfe875e0eab0482b928c089c26b9194284e8a66260e9d6818b37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 그가 나를 데리고 문에 이르니 곧 동향한 문이라"
+      ],
+      "raw_text_hashes": [
+        "72d9c7d0496dcfe875e0eab0482b928c089c26b9194284e8a66260e9d6818b37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:2",
+      "sequence": 21575,
+      "chapter_label": "EZK 43",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, the glory of the God of Israel came from the way of the east. His voice was like the sound of many waters; and the earth was illuminated with his glory.",
+      "ko": "이스라엘 하나님의 영광이 동편에서부터 오는데 하나님의 음성이 많은 물소리 같고 땅은 그 영광으로 인하여 빛나니",
+      "source_text_hash": "2abd909f7abc5da7b988a6761e6be3bb7a8f60a5daddf4b6b58f3a9baf0b4ca6",
+      "translation_text_hash": "0f71130e97c51442553adf275832dc7915c85bdedc76f989d5972de4d4db1e85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 하나님의 영광이 동편에서부터 오는데 하나님의 음성이 많은 물소리 같고 땅은 그 영광으로 인하여 빛나니"
+      ],
+      "raw_text_hashes": [
+        "0f71130e97c51442553adf275832dc7915c85bdedc76f989d5972de4d4db1e85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:3",
+      "sequence": 21576,
+      "chapter_label": "EZK 43",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 3
+        }
+      ],
+      "en": "It was like the appearance of the vision which I saw, even according to the vision that I saw when I came to destroy the city; and the visions were like the vision that I saw by the river Chebar; and I fell on my face.",
+      "ko": "그 모양이 내가 본 이상 곧 전에 성읍을 멸하러 올 때에 보던 이상 같고 그발 하숫가에서 보던 이상과도 같기로 내가 곧 얼굴을 땅에 대고 엎드렸더니",
+      "source_text_hash": "a827ac023d41d9ca1024f366c8306040a0f32d6864d25ee357280738fb5c9bd7",
+      "translation_text_hash": "40822dd0e27e32e49b97e710bd93357a389eadd5daba746e49f00c3a46c316b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모양이 내가 본 이상 곧 전에 성읍을 멸하러 올 때에 보던 이상 같고 그발 하숫가에서 보던 이상과도 같기로 내가 곧 얼굴을 땅에 대고 엎드렸더니"
+      ],
+      "raw_text_hashes": [
+        "40822dd0e27e32e49b97e710bd93357a389eadd5daba746e49f00c3a46c316b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:4",
+      "sequence": 21577,
+      "chapter_label": "EZK 43",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD’s glory came into the house by the way of the gate which faces toward the east.",
+      "ko": "여호와의 영광이 동문으로 말미암아 전으로 들어가고",
+      "source_text_hash": "505acd5432f4a7e275ad550adbe87176df842d87c604281cde48df9c8de1d3db",
+      "translation_text_hash": "120dc00d4839aaf619d02322eaa37a1a6761fc8d62c1ff61ce3e9820bf344db1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 동문으로 말미암아 전으로 들어가고"
+      ],
+      "raw_text_hashes": [
+        "120dc00d4839aaf619d02322eaa37a1a6761fc8d62c1ff61ce3e9820bf344db1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:5",
+      "sequence": 21578,
+      "chapter_label": "EZK 43",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 5
+        }
+      ],
+      "en": "The Spirit took me up and brought me into the inner court; and behold, the LORD’s glory filled the house.",
+      "ko": "성신이 나를 들어 데리고 안 뜰에 들어 가시기로 내가 보니 여호와의 영광이 전에 가득하더라",
+      "source_text_hash": "f8381d7844589a9915dc2f751db2ec93c92e0a989e754d4b2fc2d388fcae4cd0",
+      "translation_text_hash": "89085f382ccb5d3857dec1958a8124f777ec97abc846b888f98275b7a0364ff5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성신이 나를 들어 데리고 안 뜰에 들어 가시기로 내가 보니 여호와의 영광이 전에 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "89085f382ccb5d3857dec1958a8124f777ec97abc846b888f98275b7a0364ff5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:6",
+      "sequence": 21579,
+      "chapter_label": "EZK 43",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 6
+        }
+      ],
+      "en": "I heard one speaking to me out of the house, and a man stood by me.",
+      "ko": "들은즉 누구인지 전에서 내게 말하더니 사람이 내 곁에 서서",
+      "source_text_hash": "0c2644eb86a0dcb87835021e4327fc7c0860fedd5f1308564a479beb9fa058ac",
+      "translation_text_hash": "65bc7c63d9d37638e3c482d5bfec7ff031a79659285f9e874c8d58e80eae9af1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들은즉 누구인지 전에서 내게 말하더니 사람이 내 곁에 서서"
+      ],
+      "raw_text_hashes": [
+        "65bc7c63d9d37638e3c482d5bfec7ff031a79659285f9e874c8d58e80eae9af1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:7",
+      "sequence": 21580,
+      "chapter_label": "EZK 43",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 7
+        }
+      ],
+      "en": "He said to me, “Son of man, this is the place of my throne and the place of the soles of my feet, where I will dwell among the children of Israel forever. The house of Israel will no more defile my holy name, neither they nor their kings, by their prostitution and by the dead bodies of their kings in their high places;",
+      "ko": "내게 이르시되 인자야 이는 내 보좌의 처소, 내 발을 두는 처소, 내가 이스라엘 족속 가운데 영원히 거할 곳이라 이스라엘 족속 곧 그들과 그 왕들이 음란히 행하며 그 죽은 왕들의 시체로 다시는 내 거룩한 이름을 더럽히지 아니하리라",
+      "source_text_hash": "71b333b5066a96bdbb5be348cc59dacfa481adf5340aaeeacc1818695245c2c0",
+      "translation_text_hash": "701ef3d337a11087adfdb8a7112912dead0fe2b60801084ccde5562ba794ef09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 인자야 이는 내 보좌의 처소, 내 발을 두는 처소, 내가 이스라엘 족속 가운데 영원히 거할 곳이라 이스라엘 족속 곧 그들과 그 왕들이 음란히 행하며 그 죽은 왕들의 시체로 다시는 내 거룩한 이름을 더럽히지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "701ef3d337a11087adfdb8a7112912dead0fe2b60801084ccde5562ba794ef09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:8",
+      "sequence": 21581,
+      "chapter_label": "EZK 43",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 8
+        }
+      ],
+      "en": "in their setting of their threshold by my threshold and their door post beside my door post. There was a wall between me and them; and they have defiled my holy name by their abominations which they have committed. Therefore I have consumed them in my anger.",
+      "ko": "그들이 그 문지방을 내 문지방 곁에 두며 그 문설주를 내 문설주 곁에 두어서 그들과 나 사이에 겨우 한 담이 막히게 하였고 또 그 행하는 가증한 일로 내 거룩한 이름을 더럽혔으므로 내가 노하여 멸하였거니와",
+      "source_text_hash": "3348a2a9c13bc542392f6c18076ea4ccd47a675a20caeca20629a29caff66c89",
+      "translation_text_hash": "676770194a0f5d94b73cdb7ae5fdcc7d2a38779313fe3e78e51ba67bb36669e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 문지방을 내 문지방 곁에 두며 그 문설주를 내 문설주 곁에 두어서 그들과 나 사이에 겨우 한 담이 막히게 하였고 또 그 행하는 가증한 일로 내 거룩한 이름을 더럽혔으므로 내가 노하여 멸하였거니와"
+      ],
+      "raw_text_hashes": [
+        "676770194a0f5d94b73cdb7ae5fdcc7d2a38779313fe3e78e51ba67bb36669e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:9",
+      "sequence": 21582,
+      "chapter_label": "EZK 43",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 9
+        }
+      ],
+      "en": "Now let them put away their prostitution, and the dead bodies of their kings far from me. Then I will dwell among them forever.",
+      "ko": "이제는 그들이 그 음란과 그 왕들의 시체를 내게서 멀리 제하여 버려야 할것이라 그리하면 내가 영원토록 그들의 가운데 거하리라",
+      "source_text_hash": "f6e896f68cd0bd6ddf19b8bc364c8d49bc554f15f98a92c2b3628d58b3915aaf",
+      "translation_text_hash": "2135809c9e9e1003a84671c8a164850b323010f16ffbe587c74e755561fbba7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 그들이 그 음란과 그 왕들의 시체를 내게서 멀리 제하여 버려야 할것이라 그리하면 내가 영원토록 그들의 가운데 거하리라"
+      ],
+      "raw_text_hashes": [
+        "2135809c9e9e1003a84671c8a164850b323010f16ffbe587c74e755561fbba7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:10",
+      "sequence": 21583,
+      "chapter_label": "EZK 43",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 10
+        }
+      ],
+      "en": "“You, son of man, show the house to the house of Israel, that they may be ashamed of their iniquities; and let them measure the pattern.",
+      "ko": "인자야 너는 이 전을 이스라엘 족속에게 보여서 그들로 자기의 죄악을 부끄러워하고 그 형상을 측량하게 하라",
+      "source_text_hash": "2f4ed774b27c2f892c267d7ed6badf18ab33948c0ba550e7453e80ccd62eaddb",
+      "translation_text_hash": "721d513f93d51377d619d124096e3742e03d3600403a9d4b5ac2515064eec8c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 이 전을 이스라엘 족속에게 보여서 그들로 자기의 죄악을 부끄러워하고 그 형상을 측량하게 하라"
+      ],
+      "raw_text_hashes": [
+        "721d513f93d51377d619d124096e3742e03d3600403a9d4b5ac2515064eec8c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:11",
+      "sequence": 21584,
+      "chapter_label": "EZK 43",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 11
+        }
+      ],
+      "en": "If they are ashamed of all that they have done, make known to them the form of the house, its fashion, its exits, its entrances, its structure, all its ordinances, all its forms, and all its laws; and write it in their sight, that they may keep the whole form of it, and all its ordinances, and do them.",
+      "ko": "만일 그들이 자기의 행한 모든 일을 부끄러워하거든 너는 이 전의 제도와 식양과 그 출입하는 곳과 그 모든 형상을 보이며 또 그 모든 규례와 그 모든 법도와 그 모든 율례를 알게 하고 그 목전에 그것을 써서 그들로 그 모든 법도와 그 모든 규례를 지켜 행하게 하라",
+      "source_text_hash": "7874ff1bce71d7cb93da60acf81e856e67f0cb56e71d56f4652a4fceee4e7dc9",
+      "translation_text_hash": "f979dbd1744922a5b246b1376f4dbf9dd4f8dd3e8f009b7fe4fc66367fb835a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그들이 자기의 행한 모든 일을 부끄러워하거든 너는 이 전의 제도와 식양과 그 출입하는 곳과 그 모든 형상을 보이며 또 그 모든 규례와 그 모든 법도와 그 모든 율례를 알게 하고 그 목전에 그것을 써서 그들로 그 모든 법도와 그 모든 규례를 지켜 행하게 하라"
+      ],
+      "raw_text_hashes": [
+        "f979dbd1744922a5b246b1376f4dbf9dd4f8dd3e8f009b7fe4fc66367fb835a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:12",
+      "sequence": 21585,
+      "chapter_label": "EZK 43",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 12
+        }
+      ],
+      "en": "“This is the law of the house. On the top of the mountain the whole limit around it shall be most holy. Behold, this is the law of the house.",
+      "ko": "전의 법은 이러하니라 산 꼭대기 지점의 주위는 지극히 거룩하리라 전의 법은 이러하니라",
+      "source_text_hash": "83129309e56779206df83a4ce8957cb9aa46548bf5bf8c83e1d6955d13771a54",
+      "translation_text_hash": "7f0971b9c1224d0a5c46ef5b599bcbf08a026a4bda9552c733b86cf8a2546cb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전의 법은 이러하니라 산 꼭대기 지점의 주위는 지극히 거룩하리라 전의 법은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "7f0971b9c1224d0a5c46ef5b599bcbf08a026a4bda9552c733b86cf8a2546cb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:13",
+      "sequence": 21586,
+      "chapter_label": "EZK 43",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 13
+        }
+      ],
+      "en": "“These are the measurements of the altar by cubits (the cubit is a cubit and a hand width): the bottom shall be a cubit, and the width a cubit, and its border around its edge a span; and this shall be the base of the altar.",
+      "ko": "제단의 척수는 이러하니라 (한 자는 팔꿈치에서부터 손가락에 이르고 한 손바닥 넓이가 더한 것이라) 제단 밑받침의 고가 일척이요 그 사면 가장자리의 광이 일척이며 그 가으로 둘린 턱의 광이 한뼘이니 이는 제단 밑받침이요",
+      "source_text_hash": "0c5c26b8b62e0ddedae4a21b56cdca157ae93de708d0d1137194e654c2a6e3b4",
+      "translation_text_hash": "618d6a9c316ffab4fae02e7f46b7d932968bbd52cbdec12e6dc235f653c45c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제단의 척수는 이러하니라 (한 자는 팔꿈치에서부터 손가락에 이르고 한 손바닥 넓이가 더한 것이라) 제단 밑받침의 고가 일척이요 그 사면 가장자리의 광이 일척이며 그 가으로 둘린 턱의 광이 한뼘이니 이는 제단 밑받침이요"
+      ],
+      "raw_text_hashes": [
+        "618d6a9c316ffab4fae02e7f46b7d932968bbd52cbdec12e6dc235f653c45c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:14",
+      "sequence": 21587,
+      "chapter_label": "EZK 43",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 14
+        }
+      ],
+      "en": "From the bottom on the ground to the lower ledge shall be two cubits, and the width one cubit; and from the lesser ledge to the greater ledge shall be four cubits, and the width a cubit.",
+      "ko": "이 땅에 닿은 밑받침 면에서 아랫층의 고가 이척이요 그 가장자리의 광이 일척이며 이 아랫층 면에서 이층의 고가 사척이요 그 가장자리의 광이 일척이며",
+      "source_text_hash": "6b9ffc8cb8cceee0e80b993a9bab143b859a8abc857872d2d76f32b87331c0b7",
+      "translation_text_hash": "d800c76ca99c48a8b134e9503981233f7cac8cc76188babc6752811710f88776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅에 닿은 밑받침 면에서 아랫층의 고가 이척이요 그 가장자리의 광이 일척이며 이 아랫층 면에서 이층의 고가 사척이요 그 가장자리의 광이 일척이며"
+      ],
+      "raw_text_hashes": [
+        "d800c76ca99c48a8b134e9503981233f7cac8cc76188babc6752811710f88776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:15",
+      "sequence": 21588,
+      "chapter_label": "EZK 43",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 15
+        }
+      ],
+      "en": "The upper altar shall be four cubits; and from the altar hearth and upward there shall be four horns.",
+      "ko": "그 번제단 윗층의 고가 사척이며 그 번제하는 바닥에서 솟은 뿔이 넷이며",
+      "source_text_hash": "a36443822b8b3327d642b718b0c2f03e7ef9d9369f41382432e2468e05fd23c2",
+      "translation_text_hash": "59c4a171c560577d7410dc76efda61c1ee231050ae849f2213a3590bc6f10cef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 번제단 윗층의 고가 사척이며 그 번제하는 바닥에서 솟은 뿔이 넷이며"
+      ],
+      "raw_text_hashes": [
+        "59c4a171c560577d7410dc76efda61c1ee231050ae849f2213a3590bc6f10cef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:16",
+      "sequence": 21589,
+      "chapter_label": "EZK 43",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 16
+        }
+      ],
+      "en": "The altar hearth shall be twelve cubits long by twelve wide, square in its four sides.",
+      "ko": "그 번제하는 바닥의 장이 십 이척이요 광이 십 이척이니 네모 반듯하고",
+      "source_text_hash": "769aa8081f22a9e9df26cc90efae8f8039fd1b9d61e263a91870e24b2f71f0b7",
+      "translation_text_hash": "8e1d2a21d1c3b8a251285c39ec53e80d3c6167aa45d443173058c41408a1a3e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 번제하는 바닥의 장이 십 이척이요 광이 십 이척이니 네모 반듯하고"
+      ],
+      "raw_text_hashes": [
+        "8e1d2a21d1c3b8a251285c39ec53e80d3c6167aa45d443173058c41408a1a3e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:17",
+      "sequence": 21590,
+      "chapter_label": "EZK 43",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 17
+        }
+      ],
+      "en": "The ledge shall be fourteen cubits long by fourteen wide in its four sides; and the border about it shall be half a cubit; and its bottom shall be a cubit around; and its steps shall look toward the east.”",
+      "ko": "그 아랫층의 장이 십 사척이요 광이 십 사척이니 네모 반듯하고 그 밑받침에 둘린 턱의 광이 반척이며 그 가장자리의 광이 일척이니라 그 층계는 동을 향하게 할찌니라",
+      "source_text_hash": "4b3d4415b852509a957536d4e9943bef6cb2cbba85c1bdb87759e7a096683165",
+      "translation_text_hash": "ca688a6f1bfb4a3809827c286c276b94d2c9fd0fe367ed022c79fd2a564b5d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아랫층의 장이 십 사척이요 광이 십 사척이니 네모 반듯하고 그 밑받침에 둘린 턱의 광이 반척이며 그 가장자리의 광이 일척이니라 그 층계는 동을 향하게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ca688a6f1bfb4a3809827c286c276b94d2c9fd0fe367ed022c79fd2a564b5d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:18",
+      "sequence": 21591,
+      "chapter_label": "EZK 43",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 18
+        }
+      ],
+      "en": "He said to me, “Son of man, the Lord GOD says: ‘These are the ordinances of the altar in the day when they make it, to offer burnt offerings on it, and to sprinkle blood on it.",
+      "ko": "그가 내게 이르시되 인자야 나 주 여호와가 말하노라 이 제단을 만드는 날에 그 위에 번제를 드리며 피를 뿌리는 규례가 이러하니라",
+      "source_text_hash": "4fb5cc901d00e9600bd5c12203d1648b0655a61b340615de466ea1db6d87c995",
+      "translation_text_hash": "035ecbb2b6ef538cb018d98c0c289173d13be03a16a8e0bb3610110e0c0bf681",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 나 주 여호와가 말하노라 이 제단을 만드는 날에 그 위에 번제를 드리며 피를 뿌리는 규례가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "035ecbb2b6ef538cb018d98c0c289173d13be03a16a8e0bb3610110e0c0bf681"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:19",
+      "sequence": 21592,
+      "chapter_label": "EZK 43",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 19
+        }
+      ],
+      "en": "You shall give to the Levitical priests who are of the offspring of Zadok, who are near to me, to minister to me,’ says the Lord GOD, ‘a young bull for a sin offering.",
+      "ko": "나 주 여호와가 말하노라 나를 가까이 하여 내게 수종드는 사독의 자손 레위 사람 제사장에게 너는 어린 수송아지 하나를 주어 속죄 제물을 삼되",
+      "source_text_hash": "2b9e7163ccd84f8cd345b34cba249c96424846416f9bf890d14bc30d70371e23",
+      "translation_text_hash": "310390c4b82605f3821ea022a66c610a13569ce5146307d72ab53f254af9bb4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 나를 가까이 하여 내게 수종드는 사독의 자손 레위 사람 제사장에게 너는 어린 수송아지 하나를 주어 속죄 제물을 삼되"
+      ],
+      "raw_text_hashes": [
+        "310390c4b82605f3821ea022a66c610a13569ce5146307d72ab53f254af9bb4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:20",
+      "sequence": 21593,
+      "chapter_label": "EZK 43",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 20
+        }
+      ],
+      "en": "You shall take of its blood and put it on its four horns, and on the four corners of the ledge, and on the border all around. You shall cleanse it and make atonement for it that way.",
+      "ko": "네가 그 피를 취하여 제단의 네 뿔과 아랫층 네 모퉁이와 사면 가장자리에 발라 속죄하여 제단을 정결케 하고",
+      "source_text_hash": "34d67e963d226c97921d94b655f8d0be1857c07c63256156c8616efdf4a36abb",
+      "translation_text_hash": "356d202dbeabf54316503ed7e0f748585d0eafd952b821b1f9fefe3f2be03f8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그 피를 취하여 제단의 네 뿔과 아랫층 네 모퉁이와 사면 가장자리에 발라 속죄하여 제단을 정결케 하고"
+      ],
+      "raw_text_hashes": [
+        "356d202dbeabf54316503ed7e0f748585d0eafd952b821b1f9fefe3f2be03f8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:21",
+      "sequence": 21594,
+      "chapter_label": "EZK 43",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 21
+        }
+      ],
+      "en": "You shall also take the bull of the sin offering, and it shall be burned in the appointed place of the house, outside of the sanctuary.",
+      "ko": "그 속죄 제물의 수송아지를 취하여 전의 정한 처소 곧 성소 밖에서 불사를찌며",
+      "source_text_hash": "e69d977c941ef45db7cc693c8015943b7d566159a0b9d1af96a040677040f136",
+      "translation_text_hash": "af0132b6f4c4e27fa821db17b938de76e1e66728ec74cafc4a92383af90ef958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속죄 제물의 수송아지를 취하여 전의 정한 처소 곧 성소 밖에서 불사를찌며"
+      ],
+      "raw_text_hashes": [
+        "af0132b6f4c4e27fa821db17b938de76e1e66728ec74cafc4a92383af90ef958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:22",
+      "sequence": 21595,
+      "chapter_label": "EZK 43",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 22
+        }
+      ],
+      "en": "“On the second day you shall offer a male goat without defect for a sin offering; and they shall cleanse the altar, as they cleansed it with the bull.",
+      "ko": "다음 날에는 흠 없는 수염소 하나로 속죄 제물을 삼아 드려서 그 제단을 정결케 하기를 수송아지로 정결케 함과 같이 하고",
+      "source_text_hash": "319e88ea9f13931d3dda53156ab3b1f98c52144d6b86c37d670b8cb872968abb",
+      "translation_text_hash": "ae885f916298ddd15cda15bf31eecc0cfd87dbb051e60ced608c56dedd0e8711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다음 날에는 흠 없는 수염소 하나로 속죄 제물을 삼아 드려서 그 제단을 정결케 하기를 수송아지로 정결케 함과 같이 하고"
+      ],
+      "raw_text_hashes": [
+        "ae885f916298ddd15cda15bf31eecc0cfd87dbb051e60ced608c56dedd0e8711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:23",
+      "sequence": 21596,
+      "chapter_label": "EZK 43",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 23
+        }
+      ],
+      "en": "When you have finished cleansing it, you shall offer a young bull without defect and a ram out of the flock without defect.",
+      "ko": "정결케 하기를 마친 후에는 흠 없는 수송아지 하나와 떼 가운데서 흠 없는 수양 하나를 드리되",
+      "source_text_hash": "92ce05b0988248f69c85769cdcc295848306a28263776cefe3b2452513e05eed",
+      "translation_text_hash": "af6c3a1fc13359b907e8f1c4bb4bb01dd72d5e818a7ad8384e9030e39d50810f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정결케 하기를 마친 후에는 흠 없는 수송아지 하나와 떼 가운데서 흠 없는 수양 하나를 드리되"
+      ],
+      "raw_text_hashes": [
+        "af6c3a1fc13359b907e8f1c4bb4bb01dd72d5e818a7ad8384e9030e39d50810f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:24",
+      "sequence": 21597,
+      "chapter_label": "EZK 43",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 24
+        }
+      ],
+      "en": "You shall bring them near to the LORD, and the priests shall cast salt on them, and they shall offer them up for a burnt offering to the LORD.",
+      "ko": "나 여호와 앞에 받들어다가 제사장은 그 위에 소금을 쳐서 나 여호와께 번제로 드릴 것이며",
+      "source_text_hash": "6f476fcafee8a9a7a4535fd5000cc0bbf7b22f155eff1221fdee8fb1bfcb078d",
+      "translation_text_hash": "31c8c47e8b2e813f55740f9052b265da952c001bf6c6d56026991c4b0d585232",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와 앞에 받들어다가 제사장은 그 위에 소금을 쳐서 나 여호와께 번제로 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "31c8c47e8b2e813f55740f9052b265da952c001bf6c6d56026991c4b0d585232"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:25",
+      "sequence": 21598,
+      "chapter_label": "EZK 43",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 25
+        }
+      ],
+      "en": "“Seven days you shall prepare every day a goat for a sin offering. They shall also prepare a young bull and a ram out of the flock, without defect.",
+      "ko": "칠일 동안은 매일 염소 하나를 갖추어 속죄 제물을 삼고 또 어린 수송아지 하나와 떼 가운데서 수양 하나를 흠 없는 것으로 갖출 것이며",
+      "source_text_hash": "00c98d8762ed76631e8a391fb15778db53f028d835e794b3b38b1736a397da6e",
+      "translation_text_hash": "86c14d420d5b3bba83bbe09ea099a7eec1512a2f8b2722572927343a020fcec5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 동안은 매일 염소 하나를 갖추어 속죄 제물을 삼고 또 어린 수송아지 하나와 떼 가운데서 수양 하나를 흠 없는 것으로 갖출 것이며"
+      ],
+      "raw_text_hashes": [
+        "86c14d420d5b3bba83bbe09ea099a7eec1512a2f8b2722572927343a020fcec5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:26",
+      "sequence": 21599,
+      "chapter_label": "EZK 43",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 26
+        }
+      ],
+      "en": "Seven days shall they make atonement for the altar and purify it. So shall they consecrate it.",
+      "ko": "이와 같이 칠일 동안 제단을 위하여 속죄제를 드려 정결케 하며 봉헌할 것이요",
+      "source_text_hash": "00902c3a5667f842080e257ac4d5272c874b2fe0597e3faf7db7ce27743df405",
+      "translation_text_hash": "93696f741cd6c16571d7470d0414bccf303abe079a92b3f7595f5f0e690e783a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 칠일 동안 제단을 위하여 속죄제를 드려 정결케 하며 봉헌할 것이요"
+      ],
+      "raw_text_hashes": [
+        "93696f741cd6c16571d7470d0414bccf303abe079a92b3f7595f5f0e690e783a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:43:27",
+      "sequence": 21600,
+      "chapter_label": "EZK 43",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 43,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 43,
+          "verse": 27
+        }
+      ],
+      "en": "When they have accomplished the days, it shall be that on the eighth day and onward, the priests shall make your burnt offerings on the altar and your peace offerings. Then I will accept you,’ says the Lord GOD.”",
+      "ko": "이 모든 날이 찬 후 제 팔일에와 그 다음에는 제사장이 제단 위에서 너희 번제와 감사제를 드릴 것이라 그리하면 내가 너희를 즐겁게 받으리라 나 주 여호와의 말이니라 하시더라",
+      "source_text_hash": "4eae441151a0316b6484b457939a82907ae21e798ad1ba4ce31c1213449093ce",
+      "translation_text_hash": "ae4a3821c7be518a6b00641092f593a13d64bbb95be67b1444fa4e1f3f6e0af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 날이 찬 후 제 팔일에와 그 다음에는 제사장이 제단 위에서 너희 번제와 감사제를 드릴 것이라 그리하면 내가 너희를 즐겁게 받으리라 나 주 여호와의 말이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "ae4a3821c7be518a6b00641092f593a13d64bbb95be67b1444fa4e1f3f6e0af2"
+      ]
+    }
+  ]
+}

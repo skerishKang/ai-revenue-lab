@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:024",
+  "unit_ordinal": 141,
+  "unit_label": "NUM 24",
+  "book_code": "NUM",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:24:1",
+      "sequence": 4448,
+      "chapter_label": "NUM 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "When Balaam saw that it pleased the LORD to bless Israel, he didn’t go, as at the other times, to use divination, but he set his face toward the wilderness.",
+      "ko": "발람이 자기가 이스라엘을 축복하는 것을 여호와께서 선히 여기심을 보고 전과 같이 사술을 쓰지 아니하고 그 낯을 광야로 향하여",
+      "source_text_hash": "5e9236b08722fdab6e5322d001227e575c712e0e1711823b81676bf01a279001",
+      "translation_text_hash": "f3426d7370e50bc7aaf63fd85860a6a15330c0335dcb51943a0ec0436d0fe332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 자기가 이스라엘을 축복하는 것을 여호와께서 선히 여기심을 보고 전과 같이 사술을 쓰지 아니하고 그 낯을 광야로 향하여"
+      ],
+      "raw_text_hashes": [
+        "f3426d7370e50bc7aaf63fd85860a6a15330c0335dcb51943a0ec0436d0fe332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:2",
+      "sequence": 4449,
+      "chapter_label": "NUM 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "Balaam lifted up his eyes, and he saw Israel dwelling according to their tribes; and the Spirit of God came on him.",
+      "ko": "눈을 들어 이스라엘이 그 지파대로 거하는 것을 보는 동시에 하나님의 신이 그 위에 임하신지라",
+      "source_text_hash": "6bd13be0d08718c32f017012e8fc9302d93e459002f8ee98ea11fd47c396471a",
+      "translation_text_hash": "334ec12953b60d7208f370a7cfd5906bff573f18a2307a14bb07a49ef55e8da7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈을 들어 이스라엘이 그 지파대로 거하는 것을 보는 동시에 하나님의 신이 그 위에 임하신지라"
+      ],
+      "raw_text_hashes": [
+        "334ec12953b60d7208f370a7cfd5906bff573f18a2307a14bb07a49ef55e8da7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:3",
+      "sequence": 4450,
+      "chapter_label": "NUM 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "He took up his parable, and said, “Balaam the son of Beor says, the man whose eyes are open says;",
+      "ko": "그가 노래를 지어 가로되 브올의 아들 발람이 말하며 눈을 감았던 자가 말하며",
+      "source_text_hash": "29e26fb2b869bc0935760c241d2481cd0b64b62189346b5c2236b3dd45b91f0f",
+      "translation_text_hash": "29c0e23969cc6d77ac99a4fffc7014304967dbfecaea5e50038f641f4ae1fd14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 노래를 지어 가로되 브올의 아들 발람이 말하며 눈을 감았던 자가 말하며"
+      ],
+      "raw_text_hashes": [
+        "29c0e23969cc6d77ac99a4fffc7014304967dbfecaea5e50038f641f4ae1fd14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:4",
+      "sequence": 4451,
+      "chapter_label": "NUM 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "he says, who hears the words of God, who sees the vision of the Almighty, falling down, and having his eyes open:",
+      "ko": "하나님의 말씀을 듣는 자, 전능자의 이상을 보는 자, 엎드려서 눈을 뜬 자가 말하기를",
+      "source_text_hash": "51b40b2987dd90184b60b1b28e99151bae0c6d55f6880c77a8eb684903d2bd8b",
+      "translation_text_hash": "85b708bdc21b02fd5dae42ee95d8bb9395739571d521f41d716b8aaa3667954c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀을 듣는 자, 전능자의 이상을 보는 자, 엎드려서 눈을 뜬 자가 말하기를"
+      ],
+      "raw_text_hashes": [
+        "85b708bdc21b02fd5dae42ee95d8bb9395739571d521f41d716b8aaa3667954c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:5",
+      "sequence": 4452,
+      "chapter_label": "NUM 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "How goodly are your tents, Jacob, and your dwellings, Israel!",
+      "ko": "야곱이여 네 장막이, 이스라엘이여 네 거처가 어찌 그리 아름다운고",
+      "source_text_hash": "17286b20cf163a515c94c301c47e6a19ec636339f9e0a107f5d3d21be9839474",
+      "translation_text_hash": "4f96e98aeccb33c95bff2c6b44043e7a200c5a337cf5f199c0b9a822367df21b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이여 네 장막이, 이스라엘이여 네 거처가 어찌 그리 아름다운고"
+      ],
+      "raw_text_hashes": [
+        "4f96e98aeccb33c95bff2c6b44043e7a200c5a337cf5f199c0b9a822367df21b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:6",
+      "sequence": 4453,
+      "chapter_label": "NUM 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "As valleys they are spread out, as gardens by the riverside, as aloes which the LORD has planted, as cedar trees beside the waters.",
+      "ko": "그 벌어짐이 골짜기 같고 강 가의 동산 같으며 여호와의 심으신 침향목들 같고 물 가의 백향목들 같도다",
+      "source_text_hash": "64fb09df77820e64e9ad2cc6559d8264c7602ef6c625a46a30aa8265b577e80e",
+      "translation_text_hash": "0f6332469efdbe8d4d49ecfcec44a21d349aaa7b6abffe3adb2e7d4fc061fc6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 벌어짐이 골짜기 같고 강 가의 동산 같으며 여호와의 심으신 침향목들 같고 물 가의 백향목들 같도다"
+      ],
+      "raw_text_hashes": [
+        "0f6332469efdbe8d4d49ecfcec44a21d349aaa7b6abffe3adb2e7d4fc061fc6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:7",
+      "sequence": 4454,
+      "chapter_label": "NUM 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "Water shall flow from his buckets. His seed shall be in many waters. His king shall be higher than Agag. His kingdom shall be exalted.",
+      "ko": "그 통에서는 물이 넘치겠고 그 종자는 많은 물 가에 있으리로다 그 왕이 아각보다 높으니 그 나라가 진흥하리로다",
+      "source_text_hash": "c58926d60af9d71845aa3919a740fb58c9e911abfa1a591cb24aff8a041c6a92",
+      "translation_text_hash": "a277e18feb01b9a9daaa64fbf0ab5a9cc82e3ba650e724e82745d16cc6e26f50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 통에서는 물이 넘치겠고 그 종자는 많은 물 가에 있으리로다 그 왕이 아각보다 높으니 그 나라가 진흥하리로다"
+      ],
+      "raw_text_hashes": [
+        "a277e18feb01b9a9daaa64fbf0ab5a9cc82e3ba650e724e82745d16cc6e26f50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:8",
+      "sequence": 4455,
+      "chapter_label": "NUM 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "God brings him out of Egypt. He has as it were the strength of the wild ox. He shall consume the nations his adversaries, shall break their bones in pieces, and pierce them with his arrows.",
+      "ko": "하나님이 그를 애굽에서 인도하여 내셨으니 그 힘이 들소와 같도다 그 적국을 삼키고 그들의 뼈를 꺾으며 화살로 쏘아 꿰뚫으리로다",
+      "source_text_hash": "bcbacc3675aa4c5b20c8f0a1422d113829dd4f738442c855a46997e98186897d",
+      "translation_text_hash": "9a57bd9fc5f23d4c5c4724ea72c501d30932b0534445ef9f8a22109f6ea9fb55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그를 애굽에서 인도하여 내셨으니 그 힘이 들소와 같도다 그 적국을 삼키고 그들의 뼈를 꺾으며 화살로 쏘아 꿰뚫으리로다"
+      ],
+      "raw_text_hashes": [
+        "9a57bd9fc5f23d4c5c4724ea72c501d30932b0534445ef9f8a22109f6ea9fb55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:9",
+      "sequence": 4456,
+      "chapter_label": "NUM 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "He couched, he lay down as a lion, as a lioness; who shall rouse him up? Everyone who blesses you is blessed. Everyone who curses you is cursed.”",
+      "ko": "꿇어 앉고 누움이 수사자와 같고 암사자와도 같으니 일으킬 자 누구이랴 너를 축복하는 자마다 복을 받을 것이요 너를 저주하는 자마다 저주를 받을찌로다",
+      "source_text_hash": "d35b631eb0eb50bc6b4ac13cd41cbfc21361bfcc49e8029ac1e30d2e0c38c7b5",
+      "translation_text_hash": "79934b16f6f066e1ab2b36d22338957070ed44263980d03db3ca0021b162967c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꿇어 앉고 누움이 수사자와 같고 암사자와도 같으니 일으킬 자 누구이랴 너를 축복하는 자마다 복을 받을 것이요 너를 저주하는 자마다 저주를 받을찌로다"
+      ],
+      "raw_text_hashes": [
+        "79934b16f6f066e1ab2b36d22338957070ed44263980d03db3ca0021b162967c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:10",
+      "sequence": 4457,
+      "chapter_label": "NUM 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Balak’s anger burned against Balaam, and he struck his hands together. Balak said to Balaam, “I called you to curse my enemies, and, behold, you have altogether blessed them these three times.",
+      "ko": "발락이 발람에게 노하여 손뼉을 치며 발람에게 말하되 내가 그대를 부른 것은 내 원수를 저주하라 함이어늘 그대가 이같이 세번 그들을 축복하였도다",
+      "source_text_hash": "fc57121fd80db5306943a26aa52a921c64a5f8a521ebd9ebbbc18aa3c726944d",
+      "translation_text_hash": "3421e692fe87b0d9c1114e656e1b3c342b6aef92c06b00d282630d16128e4a83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발락이 발람에게 노하여 손뼉을 치며 발람에게 말하되 내가 그대를 부른 것은 내 원수를 저주하라 함이어늘 그대가 이같이 세번 그들을 축복하였도다"
+      ],
+      "raw_text_hashes": [
+        "3421e692fe87b0d9c1114e656e1b3c342b6aef92c06b00d282630d16128e4a83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:11",
+      "sequence": 4458,
+      "chapter_label": "NUM 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore, flee to your place, now! I thought to promote you to great honor; but, behold, the LORD has kept you back from honor.”",
+      "ko": "그러므로 그대는 이제 그대의 곳으로 달려가라 내가 그대를 높여 심히 존귀케 하기로 뜻하였더니 여호와가 그대를 막아 존귀치 못하게 하셨도다",
+      "source_text_hash": "59e45a586bc0a8a08221862b632b73aa257fa68a6fcc9e209e3cc7598468ff73",
+      "translation_text_hash": "8f576af1a7e71db55d12d7448345466de83918f53fa8d8a1209603a66ce9cc98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그대는 이제 그대의 곳으로 달려가라 내가 그대를 높여 심히 존귀케 하기로 뜻하였더니 여호와가 그대를 막아 존귀치 못하게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "8f576af1a7e71db55d12d7448345466de83918f53fa8d8a1209603a66ce9cc98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:12",
+      "sequence": 4459,
+      "chapter_label": "NUM 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "Balaam said to Balak, “Didn’t I also tell your messengers whom you sent to me, saying,",
+      "ko": "발람이 발락에게 이르되 당신이 내게 보낸 사자들에게 내가 고하여 이르지 아니하였나이까",
+      "source_text_hash": "c46edf8019941a6609809ed79d60a9f6eeaa217fd81bf305eefdecb9c23d25fc",
+      "translation_text_hash": "cc16833134c02555491cfc089daa6d0f1b15d54daffa84f3ddb8b868c168992c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 발락에게 이르되 당신이 내게 보낸 사자들에게 내가 고하여 이르지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "cc16833134c02555491cfc089daa6d0f1b15d54daffa84f3ddb8b868c168992c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:13",
+      "sequence": 4460,
+      "chapter_label": "NUM 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "‘If Balak would give me his house full of silver and gold, I can’t go beyond the LORD’s word, to do either good or bad from my own mind. I will say what the LORD says’?",
+      "ko": "가령 발락이 그 집에 은금을 가득히 채워서 내게 줄찌라도 나는 여호와의 말씀을 어기고 선악간 임의로 행하지 못하고 여호와께서 말씀하신대로 말하리라 하지 아니하였나이까",
+      "source_text_hash": "97ce10077932056796dc8685a7a9efe6c338aafd3c3ebf03f737e9524a3555f7",
+      "translation_text_hash": "6d4537290c897e4f0a56f1ea101c6a304e8fcfeee5fe9287fe012d3b5a3af925",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 발락이 그 집에 은금을 가득히 채워서 내게 줄찌라도 나는 여호와의 말씀을 어기고 선악간 임의로 행하지 못하고 여호와께서 말씀하신대로 말하리라 하지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "6d4537290c897e4f0a56f1ea101c6a304e8fcfeee5fe9287fe012d3b5a3af925"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:14",
+      "sequence": 4461,
+      "chapter_label": "NUM 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "Now, behold, I go to my people. Come, I will inform you what this people shall do to your people in the latter days.”",
+      "ko": "이제 나는 내 백성에게로 돌아가거니와 들으소서 내가 이 백성이 후일에 당신의 백성에게 어떻게 할 것을 당신에게 고하리이다 하고",
+      "source_text_hash": "49e60857a6c5e75a8d5c3ad9fcd1e6bb55421bb31579aff6dc1ff609592af0ce",
+      "translation_text_hash": "216dd2afc7f0af68fd9cced8384f2a11050792f55fca900e4a656dc845d3134c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 나는 내 백성에게로 돌아가거니와 들으소서 내가 이 백성이 후일에 당신의 백성에게 어떻게 할 것을 당신에게 고하리이다 하고"
+      ],
+      "raw_text_hashes": [
+        "216dd2afc7f0af68fd9cced8384f2a11050792f55fca900e4a656dc845d3134c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:15",
+      "sequence": 4462,
+      "chapter_label": "NUM 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "He took up his parable, and said, “Balaam the son of Beor says, the man whose eyes are open says;",
+      "ko": "노래를 지어 가로되 브올의 아들 발람이 말하며 눈을 감았던 자가 말하며",
+      "source_text_hash": "29e26fb2b869bc0935760c241d2481cd0b64b62189346b5c2236b3dd45b91f0f",
+      "translation_text_hash": "cec03495a7369907db2489bec3a967b0376ecf1618422e7cac154962c7127fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래를 지어 가로되 브올의 아들 발람이 말하며 눈을 감았던 자가 말하며"
+      ],
+      "raw_text_hashes": [
+        "cec03495a7369907db2489bec3a967b0376ecf1618422e7cac154962c7127fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:16",
+      "sequence": 4463,
+      "chapter_label": "NUM 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "he says, who hears the words of God, knows the knowledge of the Most High, and who sees the vision of the Almighty, falling down, and having his eyes open:",
+      "ko": "하나님의 말씀을 듣는 자가 말하며 지극히 높으신 자의 지식을 아는 자, 전능자의 이상을 보는 자, 엎드려서 눈을 뜬 자가 말하기를",
+      "source_text_hash": "ea4e121b7358d03add437bf40e4723c815406b9623c362c3150410d2fa7b1554",
+      "translation_text_hash": "b75a345952b09b2ec47d3ac22642a65195393a332130fac1809605bf482d1e81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀을 듣는 자가 말하며 지극히 높으신 자의 지식을 아는 자, 전능자의 이상을 보는 자, 엎드려서 눈을 뜬 자가 말하기를"
+      ],
+      "raw_text_hashes": [
+        "b75a345952b09b2ec47d3ac22642a65195393a332130fac1809605bf482d1e81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:17",
+      "sequence": 4464,
+      "chapter_label": "NUM 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "I see him, but not now. I see him, but not near. A star will come out of Jacob. A scepter will rise out of Israel, and shall strike through the corners of Moab, and crush all the sons of Sheth.",
+      "ko": "내가 그를 보아도 이 때의 일이 아니며 내가 그를 바라보아도 가까운 일이 아니로다 한 별이 야곱에게서 나오며 한 홀이 이스라엘에게서 일어나서 모압을 이 편에서 저 편까지 쳐서 파하고 또 소동하는 자식들을 다 멸하리로다",
+      "source_text_hash": "1e32938b33c6ac88edefd52fe35a01891aacf4908b40849394d267490dd656c9",
+      "translation_text_hash": "dedc126a5b1c5156782b3db9ac93383652df73e293b50f57d5499a75f1cdb768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그를 보아도 이 때의 일이 아니며 내가 그를 바라보아도 가까운 일이 아니로다 한 별이 야곱에게서 나오며 한 홀이 이스라엘에게서 일어나서 모압을 이 편에서 저 편까지 쳐서 파하고 또 소동하는 자식들을 다 멸하리로다"
+      ],
+      "raw_text_hashes": [
+        "dedc126a5b1c5156782b3db9ac93383652df73e293b50f57d5499a75f1cdb768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:18",
+      "sequence": 4465,
+      "chapter_label": "NUM 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "Edom shall be a possession. Seir, his enemy, also shall be a possession, while Israel does valiantly.",
+      "ko": "그 원수 에돔은 그들의 산업이 되며 그 원수 세일도 그들의 산업이 되고 그 동시에 이스라엘은 용감히 행동하리로다",
+      "source_text_hash": "cb5bfa0b255b53a82ceb1cdeccf5e546dacea1f85327052e40908ddf0a5ec455",
+      "translation_text_hash": "0fa402a4ad1cc79f20566e737402bd5611329f8826587bb52e7386817fd1fbb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 원수 에돔은 그들의 산업이 되며 그 원수 세일도 그들의 산업이 되고 그 동시에 이스라엘은 용감히 행동하리로다"
+      ],
+      "raw_text_hashes": [
+        "0fa402a4ad1cc79f20566e737402bd5611329f8826587bb52e7386817fd1fbb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:19",
+      "sequence": 4466,
+      "chapter_label": "NUM 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "Out of Jacob shall one have dominion, and shall destroy the remnant from the city.”",
+      "ko": "주권자가 야곱에게서 나서 남은 자들을 그 성읍에서 멸절하리로다 하고",
+      "source_text_hash": "62ed48e452b220edd13097cf7c5612a94960496b18bc2568d43d489b337d517d",
+      "translation_text_hash": "266ec2c9c71a831c71cf0246a19b5c6778927e99d62af6175db72508c557478f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주권자가 야곱에게서 나서 남은 자들을 그 성읍에서 멸절하리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "266ec2c9c71a831c71cf0246a19b5c6778927e99d62af6175db72508c557478f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:20",
+      "sequence": 4467,
+      "chapter_label": "NUM 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "He looked at Amalek, and took up his parable, and said, “Amalek was the first of the nations, but his latter end shall come to destruction.”",
+      "ko": "또 아말렉을 바라보며 노래를 지어 가로되 아말렉은 열국중 으뜸이나 종말은 멸망에 이르리로다 하고",
+      "source_text_hash": "a1736e3e90cd797ff5ed666956ac1f142211e968a2e79e846436baf89ab38d13",
+      "translation_text_hash": "3cbe8052d6a80e9200b868849412aadfc11791f1a8011b6a03be613cf9da9cd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아말렉을 바라보며 노래를 지어 가로되 아말렉은 열국중 으뜸이나 종말은 멸망에 이르리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "3cbe8052d6a80e9200b868849412aadfc11791f1a8011b6a03be613cf9da9cd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:21",
+      "sequence": 4468,
+      "chapter_label": "NUM 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "He looked at the Kenite, and took up his parable, and said, “Your dwelling place is strong. Your nest is set in the rock.",
+      "ko": "또 가인 족속을 바라보며 노래를 지어 가로되 너의 거처가 견고하니 네 보금자리는 바위에 있도다",
+      "source_text_hash": "ada69324b4ee07914bf4e3ea2891ca125eb1224a0a5f1bf85768e83dd48b9c03",
+      "translation_text_hash": "3004ca77f3c81edede17083ddf124bca74f476a4c9c62d4f97b7bcd3505feaa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가인 족속을 바라보며 노래를 지어 가로되 너의 거처가 견고하니 네 보금자리는 바위에 있도다"
+      ],
+      "raw_text_hashes": [
+        "3004ca77f3c81edede17083ddf124bca74f476a4c9c62d4f97b7bcd3505feaa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:22",
+      "sequence": 4469,
+      "chapter_label": "NUM 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Nevertheless Kain shall be wasted, until Asshur carries you away captive.”",
+      "ko": "그러나 가인이 쇠미하리니 나중에는 앗수르의 포로가 되리로다 하고",
+      "source_text_hash": "85f45eed887d4d3111dad1ebdfdf512d9906567c6abe33ea34ecf56dbd5e3248",
+      "translation_text_hash": "63489b0add888a395fc06fccf60ed86c716050ce0aa835a82c3750373d910dbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 가인이 쇠미하리니 나중에는 앗수르의 포로가 되리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "63489b0add888a395fc06fccf60ed86c716050ce0aa835a82c3750373d910dbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:23",
+      "sequence": 4470,
+      "chapter_label": "NUM 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "He took up his parable, and said, “Alas, who shall live when God does this?",
+      "ko": "또 노래를 지어 가로되 슬프다 하나님이 이 일을 행하시리니 그 때에 살 자가 누구이랴",
+      "source_text_hash": "bc14e3c08ddc09860c5c5c1f7b916935554ab55bddd77c67694fb8bd756e839f",
+      "translation_text_hash": "c2d120d6803cf3b21162882cb8f0b82831839a58f5855b8ac3c19797beb2d2d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 노래를 지어 가로되 슬프다 하나님이 이 일을 행하시리니 그 때에 살 자가 누구이랴"
+      ],
+      "raw_text_hashes": [
+        "c2d120d6803cf3b21162882cb8f0b82831839a58f5855b8ac3c19797beb2d2d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:24",
+      "sequence": 4471,
+      "chapter_label": "NUM 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "But ships shall come from the coast of Kittim. They shall afflict Asshur, and shall afflict Eber. He also shall come to destruction.”",
+      "ko": "깃딤 해변에서 배들이 와서 앗수르를 학대하며 에벨을 괴롭게 하리라마는 그도 멸망하리로다 하고",
+      "source_text_hash": "e3b0da1886e10f82be1581f51e5baec1a965508859416a9c236927da8ea07080",
+      "translation_text_hash": "98423b8f279068c184efde0a5147f192d326d2a564565b3658f97f43e207177f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깃딤 해변에서 배들이 와서 앗수르를 학대하며 에벨을 괴롭게 하리라마는 그도 멸망하리로다 하고"
+      ],
+      "raw_text_hashes": [
+        "98423b8f279068c184efde0a5147f192d326d2a564565b3658f97f43e207177f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:24:25",
+      "sequence": 4472,
+      "chapter_label": "NUM 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "Balaam rose up, and went and returned to his place; and Balak also went his way.",
+      "ko": "발람이 일어나 자기 곳으로 돌아갔고 발락도 자기 길로 갔더라",
+      "source_text_hash": "695ee9490857b83d25a38b59611bd6d17d71b93a8f45431ff75e0ab5eec6f06d",
+      "translation_text_hash": "025d19b0f3cf0d31bdaea91ec39b150f2bc824e3bc6e5edabb53cad967b4127d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발람이 일어나 자기 곳으로 돌아갔고 발락도 자기 길로 갔더라"
+      ],
+      "raw_text_hashes": [
+        "025d19b0f3cf0d31bdaea91ec39b150f2bc824e3bc6e5edabb53cad967b4127d"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:145",
+  "unit_ordinal": 623,
+  "unit_label": "PSA 145",
+  "book_code": "PSA",
+  "chapter_number": 145,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:145:1",
+      "sequence": 16322,
+      "chapter_label": "PSA 145",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 1
+        }
+      ],
+      "en": "I will exalt you, my God, the King. I will praise your name forever and ever.",
+      "ko": "왕이신 나의 하나님이여 내가 주를 높이고 영원히 주의 이름을 송축하리이다",
+      "source_text_hash": "9b5450dcb33d96820ffa4294dc19dcf5b27bd7c318168a0c8e67c066ca9318f2",
+      "translation_text_hash": "fdacbdd01ac40ab57c2f4d6275c766025259e02ce2c382d5b1406871c20a3035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이신 나의 하나님이여 내가 주를 높이고 영원히 주의 이름을 송축하리이다"
+      ],
+      "raw_text_hashes": [
+        "fdacbdd01ac40ab57c2f4d6275c766025259e02ce2c382d5b1406871c20a3035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:2",
+      "sequence": 16323,
+      "chapter_label": "PSA 145",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 2
+        }
+      ],
+      "en": "Every day I will praise you. I will extol your name forever and ever.",
+      "ko": "내가 날마다 주를 송축하며 영영히 주의 이름을 송축하리이다",
+      "source_text_hash": "e2c467036b80449af7f7552f1bd08b6e90466b098b773ee676150be10b203322",
+      "translation_text_hash": "73520abeab8c9236060f480d64b48eea1e4a12b99c426778ab09d370b2068f2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 날마다 주를 송축하며 영영히 주의 이름을 송축하리이다"
+      ],
+      "raw_text_hashes": [
+        "73520abeab8c9236060f480d64b48eea1e4a12b99c426778ab09d370b2068f2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:3",
+      "sequence": 16324,
+      "chapter_label": "PSA 145",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 3
+        }
+      ],
+      "en": "Great is the LORD, and greatly to be praised! His greatness is unsearchable.",
+      "ko": "여호와는 광대하시니 크게 찬양할 것이라 그의 광대하심을 측량치 못하리로다",
+      "source_text_hash": "52efcaef662ef5353a15f4df025c0125df09ea5a501b9d8f63c6cb1e7727bb42",
+      "translation_text_hash": "74b2fadc96ebb2352a8409c1bc64ad03e1cd8007950e62cb0d0d89e6148c1d71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 광대하시니 크게 찬양할 것이라 그의 광대하심을 측량치 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "74b2fadc96ebb2352a8409c1bc64ad03e1cd8007950e62cb0d0d89e6148c1d71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:4",
+      "sequence": 16325,
+      "chapter_label": "PSA 145",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 4
+        }
+      ],
+      "en": "One generation will commend your works to another, and will declare your mighty acts.",
+      "ko": "대대로 주의 행사를 크게 칭송하며 주의 능한 일을 선포하리로다",
+      "source_text_hash": "365ccd2043ca10fa63d432f1c156ef79f6dd0e559cdbbed786c32776249e9074",
+      "translation_text_hash": "b5d9d77c77e8e1123e41aaf41aa0978f92ee2bef3d7cb62aec7884a8545ef6da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대대로 주의 행사를 크게 칭송하며 주의 능한 일을 선포하리로다"
+      ],
+      "raw_text_hashes": [
+        "b5d9d77c77e8e1123e41aaf41aa0978f92ee2bef3d7cb62aec7884a8545ef6da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:5",
+      "sequence": 16326,
+      "chapter_label": "PSA 145",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 5
+        }
+      ],
+      "en": "I will meditate on the glorious majesty of your honor, on your wondrous works.",
+      "ko": "주의 존귀하고 영광스러운 위엄과 주의 기사를 나는 묵상하리이다",
+      "source_text_hash": "cf89d8fc705666af4db44ef2a2a0ace78b2e5d991dcf8ffac714e79986a980ee",
+      "translation_text_hash": "5337f2157500611b8ff40510be359c1f1372c0a5e963e65806ddcb2986a1b139",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 존귀하고 영광스러운 위엄과 주의 기사를 나는 묵상하리이다"
+      ],
+      "raw_text_hashes": [
+        "5337f2157500611b8ff40510be359c1f1372c0a5e963e65806ddcb2986a1b139"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:6",
+      "sequence": 16327,
+      "chapter_label": "PSA 145",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 6
+        }
+      ],
+      "en": "Men will speak of the might of your awesome acts. I will declare your greatness.",
+      "ko": "사람들은 주의 두려운 일의 세력을 말할 것이요 나도 주의 광대하심을 선포하리이다",
+      "source_text_hash": "48da948dc6c3868adccb5d34ddf54d54d12235fb94483d18f1445396a2691ea8",
+      "translation_text_hash": "4338d2de428954d1a6e630ce6794609aa4f8b11772684e8af461dbfac45a4fea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들은 주의 두려운 일의 세력을 말할 것이요 나도 주의 광대하심을 선포하리이다"
+      ],
+      "raw_text_hashes": [
+        "4338d2de428954d1a6e630ce6794609aa4f8b11772684e8af461dbfac45a4fea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:7",
+      "sequence": 16328,
+      "chapter_label": "PSA 145",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 7
+        }
+      ],
+      "en": "They will utter the memory of your great goodness, and will sing of your righteousness.",
+      "ko": "저희가 주의 크신 은혜를 기념하여 말하며 주의 의를 노래하리이다",
+      "source_text_hash": "03350b4ed85169319073065a669c32c6394816c026244ff2901a20b51a4a5e3d",
+      "translation_text_hash": "bbd9d0b984d79ad172c422877f6e2b26f7d63e2973c9d35d311b56613fe4afc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 크신 은혜를 기념하여 말하며 주의 의를 노래하리이다"
+      ],
+      "raw_text_hashes": [
+        "bbd9d0b984d79ad172c422877f6e2b26f7d63e2973c9d35d311b56613fe4afc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:8",
+      "sequence": 16329,
+      "chapter_label": "PSA 145",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD is gracious, merciful, slow to anger, and of great loving kindness.",
+      "ko": "여호와는 은혜로우시며 자비하시며 노하기를 더디하시며 인자하심이 크시도다",
+      "source_text_hash": "4e44b9ce2f2d714412fd5a184442f97b755c0e7d8740459ed4083bb9c5d8aa01",
+      "translation_text_hash": "dab15f2ffcd0ccd3de6669fc2f9ca5e79ec18945a84364230c3ab9757652968b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 은혜로우시며 자비하시며 노하기를 더디하시며 인자하심이 크시도다"
+      ],
+      "raw_text_hashes": [
+        "dab15f2ffcd0ccd3de6669fc2f9ca5e79ec18945a84364230c3ab9757652968b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:9",
+      "sequence": 16330,
+      "chapter_label": "PSA 145",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD is good to all. His tender mercies are over all his works.",
+      "ko": "여호와께서는 만유를 선대하시며 그 지으신 모든 것에 긍휼을 베푸시는도다",
+      "source_text_hash": "748ecce04440ee9a891a4ae8e6b382fd73f73a7eba42dd5df182afc3e016a060",
+      "translation_text_hash": "a7721d3d88520763b2dcab37d862ad1e68548e09a2a25ea9d7e6eaadfa5ac7a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 만유를 선대하시며 그 지으신 모든 것에 긍휼을 베푸시는도다"
+      ],
+      "raw_text_hashes": [
+        "a7721d3d88520763b2dcab37d862ad1e68548e09a2a25ea9d7e6eaadfa5ac7a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:10",
+      "sequence": 16331,
+      "chapter_label": "PSA 145",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 10
+        }
+      ],
+      "en": "All your works will give thanks to you, LORD. Your saints will extol you.",
+      "ko": "여호와여 주의 지으신 모든 것이 주께 감사하며 주의 성도가 주를 송축하리이다",
+      "source_text_hash": "e493082531c9f8c1b0d5120b16e7874a80a5e28f7e34b3e5a3ecc2b5223d1eec",
+      "translation_text_hash": "eb60cfd54a9deb4633f7e2b9d9fddfce0fd880f78cc0e83a5f35a65628282cfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 지으신 모든 것이 주께 감사하며 주의 성도가 주를 송축하리이다"
+      ],
+      "raw_text_hashes": [
+        "eb60cfd54a9deb4633f7e2b9d9fddfce0fd880f78cc0e83a5f35a65628282cfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:11",
+      "sequence": 16332,
+      "chapter_label": "PSA 145",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 11
+        }
+      ],
+      "en": "They will speak of the glory of your kingdom, and talk about your power,",
+      "ko": "저희가 주의 나라의 영광을 말하며 주의 능을 일러서",
+      "source_text_hash": "699d121b237dee4a27d1054764329d9b15326707e8fb39fb6f5e1417cd4fb961",
+      "translation_text_hash": "7bea096265ef4874e7c5c4bd955cc2e840e914cec8a160365a65902511a79bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 주의 나라의 영광을 말하며 주의 능을 일러서"
+      ],
+      "raw_text_hashes": [
+        "7bea096265ef4874e7c5c4bd955cc2e840e914cec8a160365a65902511a79bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:12",
+      "sequence": 16333,
+      "chapter_label": "PSA 145",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 12
+        }
+      ],
+      "en": "to make known to the sons of men his mighty acts, the glory of the majesty of his kingdom.",
+      "ko": "주의 능하신 일과 주의 나라의 위엄의 영광을 인생에게 알게 하리이다",
+      "source_text_hash": "04bc8686dd540d295303829161b329e18a0724572eb02d41c07668aa392c3641",
+      "translation_text_hash": "26350018a22528b595a9e63271ce92ec2639632c12454842d7e2232d1b1a493f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 능하신 일과 주의 나라의 위엄의 영광을 인생에게 알게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "26350018a22528b595a9e63271ce92ec2639632c12454842d7e2232d1b1a493f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:13",
+      "sequence": 16334,
+      "chapter_label": "PSA 145",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 13
+        }
+      ],
+      "en": "Your kingdom is an everlasting kingdom. Your dominion endures throughout all generations. The LORD is faithful in all his words, and loving in all his deeds.",
+      "ko": "주의 나라는 영원한 나라이니 주의 통치는 대대에 이르리이다",
+      "source_text_hash": "9787ff4fe06c5266b6439ead2c89570b89a902356d2681c62fdec1753e5ee672",
+      "translation_text_hash": "c6472b1a287bd9c698f52a40a3f516533bb61243330a56e3aad011b9ffce40d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 나라는 영원한 나라이니 주의 통치는 대대에 이르리이다"
+      ],
+      "raw_text_hashes": [
+        "c6472b1a287bd9c698f52a40a3f516533bb61243330a56e3aad011b9ffce40d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:14",
+      "sequence": 16335,
+      "chapter_label": "PSA 145",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD upholds all who fall, and raises up all those who are bowed down.",
+      "ko": "여호와께서는 모든 넘어지는 자를 붙드시며 비굴한 자를 일으키시는도다",
+      "source_text_hash": "bc2e6817e1bcd7f366666d75a2c7c0f72ed5b206aa5571a3e1ae46c2197a2ac6",
+      "translation_text_hash": "4628ca3f2034f197099b3a73647bc9822a5c5981dc4f2c5dd90361652e9a6363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 모든 넘어지는 자를 붙드시며 비굴한 자를 일으키시는도다"
+      ],
+      "raw_text_hashes": [
+        "4628ca3f2034f197099b3a73647bc9822a5c5981dc4f2c5dd90361652e9a6363"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:15",
+      "sequence": 16336,
+      "chapter_label": "PSA 145",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 15
+        }
+      ],
+      "en": "The eyes of all wait for you. You give them their food in due season.",
+      "ko": "중생의 눈이 주를 앙망하오니 주는 때를 따라 저희에게 식물을 주시며",
+      "source_text_hash": "ffed6cb5b2e35861405ba39b256a62c388d005defa6bdee1527aec76620998d0",
+      "translation_text_hash": "acf7fe61a8241aca85f8c310d22d4212abea492803da58f1b7960f64ce24aadc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중생의 눈이 주를 앙망하오니 주는 때를 따라 저희에게 식물을 주시며"
+      ],
+      "raw_text_hashes": [
+        "acf7fe61a8241aca85f8c310d22d4212abea492803da58f1b7960f64ce24aadc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:16",
+      "sequence": 16337,
+      "chapter_label": "PSA 145",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 16
+        }
+      ],
+      "en": "You open your hand, and satisfy the desire of every living thing.",
+      "ko": "손을 펴사 모든 생물의 소원을 만족케 하시나이다",
+      "source_text_hash": "57965706cc9cc955ba2a7555217f89c14b2b2f482c18e09d06fc04bb2b1287f8",
+      "translation_text_hash": "376ea770a19f55589d74e7744fceb10478b04f02e93eca62decfc609a4200ba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 펴사 모든 생물의 소원을 만족케 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "376ea770a19f55589d74e7744fceb10478b04f02e93eca62decfc609a4200ba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:17",
+      "sequence": 16338,
+      "chapter_label": "PSA 145",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD is righteous in all his ways, and gracious in all his works.",
+      "ko": "여호와께서는 그 모든 행위에 의로우시며 그 모든 행사에 은혜로우시도다",
+      "source_text_hash": "12b280fd7401ed54d4ff7837758103c353da6f06d39d6657283c3c44e1a44b33",
+      "translation_text_hash": "c057a24f54ed1820e3c63f6a6e1bec545ba8a4a2d943e590b3ee942193261fda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 그 모든 행위에 의로우시며 그 모든 행사에 은혜로우시도다"
+      ],
+      "raw_text_hashes": [
+        "c057a24f54ed1820e3c63f6a6e1bec545ba8a4a2d943e590b3ee942193261fda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:18",
+      "sequence": 16339,
+      "chapter_label": "PSA 145",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 18
+        }
+      ],
+      "en": "The LORD is near to all those who call on him, to all who call on him in truth.",
+      "ko": "여호와께서는 자기에게 간구하는 모든 자 곧 진실하게 간구하는 모든 자에게 가까이 하시는도다",
+      "source_text_hash": "8958157ae3356a305d75329b282bd571b62a35ff770b1368460e1f674532a2ed",
+      "translation_text_hash": "afcba40f5d6ad30ae57d5cd8ce51519b661446f2d631694dba0fcba828a1e622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 자기에게 간구하는 모든 자 곧 진실하게 간구하는 모든 자에게 가까이 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "afcba40f5d6ad30ae57d5cd8ce51519b661446f2d631694dba0fcba828a1e622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:19",
+      "sequence": 16340,
+      "chapter_label": "PSA 145",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 19
+        }
+      ],
+      "en": "He will fulfill the desire of those who fear him. He also will hear their cry, and will save them.",
+      "ko": "저는 자기를 경외하는 자의 소원을 이루시며 또 저희 부르짖음을 들으사 구원하시리로다",
+      "source_text_hash": "4310cfc5bc64de5494d136ca12a504e693ae5e837945b389ebfc7198393837c5",
+      "translation_text_hash": "48675784aab86e3696ffde248e230f2f2081a6d0f9feea6243618fe8f2906ad5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 자기를 경외하는 자의 소원을 이루시며 또 저희 부르짖음을 들으사 구원하시리로다"
+      ],
+      "raw_text_hashes": [
+        "48675784aab86e3696ffde248e230f2f2081a6d0f9feea6243618fe8f2906ad5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:20",
+      "sequence": 16341,
+      "chapter_label": "PSA 145",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD preserves all those who love him, but he will destroy all the wicked.",
+      "ko": "여호와께서 자기를 사랑하는 자는 다 보호하시고 악인은 다 멸하시리로다",
+      "source_text_hash": "5ccf762ff4754f3fc6d8a37d3ff9aca5ebe6d6620778baf82d11fd3b1b276082",
+      "translation_text_hash": "e4dad6bf93a8dbca1cd0736e6f7ea97a6a161142513cd7104ed54f5cf07fdf0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 사랑하는 자는 다 보호하시고 악인은 다 멸하시리로다"
+      ],
+      "raw_text_hashes": [
+        "e4dad6bf93a8dbca1cd0736e6f7ea97a6a161142513cd7104ed54f5cf07fdf0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:145:21",
+      "sequence": 16342,
+      "chapter_label": "PSA 145",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 145,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 145,
+          "verse": 21
+        }
+      ],
+      "en": "My mouth will speak the praise of the LORD. Let all flesh bless his holy name forever and ever.",
+      "ko": "내 입이 여호와의 영예를 말하며 모든 육체가 그의 성호를 영영히 송축할찌로다",
+      "source_text_hash": "fdd49f9ce8a5c38a6619f567b50f88503ca0c725d8bdd8b7d30dc9126e133bdb",
+      "translation_text_hash": "6061f7a147ac9c768ccfbe9adc81a1a0f545e7f52e72546658c5539a4e53ac02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 입이 여호와의 영예를 말하며 모든 육체가 그의 성호를 영영히 송축할찌로다"
+      ],
+      "raw_text_hashes": [
+        "6061f7a147ac9c768ccfbe9adc81a1a0f545e7f52e72546658c5539a4e53ac02"
+      ]
+    }
+  ]
+}

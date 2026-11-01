@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:026",
+  "unit_ordinal": 705,
+  "unit_label": "ISA 26",
+  "book_code": "ISA",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:26:1",
+      "sequence": 18132,
+      "chapter_label": "ISA 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "In that day, this song will be sung in the land of Judah: “We have a strong city. God appoints salvation for walls and bulwarks.",
+      "ko": "그 날에 유다 땅에서 이 노래를 부르리라 우리에게 견고한 성읍이 있음이여 여호와께서 구원으로 성과 곽을 삼으시리로다",
+      "source_text_hash": "3ef6d6d2df9d2bfef1dfb5de29d72d8c98cbcb4b03a3323f964c8f385c24847e",
+      "translation_text_hash": "74684402e113a038e549d9060cde2d547cf037bfc2cdef8a5c5c6d2afbf75f78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 유다 땅에서 이 노래를 부르리라 우리에게 견고한 성읍이 있음이여 여호와께서 구원으로 성과 곽을 삼으시리로다"
+      ],
+      "raw_text_hashes": [
+        "74684402e113a038e549d9060cde2d547cf037bfc2cdef8a5c5c6d2afbf75f78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:2",
+      "sequence": 18133,
+      "chapter_label": "ISA 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "Open the gates, that the righteous nation may enter: the one which keeps faith.",
+      "ko": "너희는 문들을 열고 신을 지키는 의로운 나라로 들어오게 할찌어다",
+      "source_text_hash": "4ccdf9c4caae2fa8ab0a9999d6d58524443cf3816344a70bc7f6728c4f1a18ca",
+      "translation_text_hash": "80590e91f34ac88bad10b80f9cab545dc488001370ed7152f3e36ad413c10f07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 문들을 열고 신을 지키는 의로운 나라로 들어오게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "80590e91f34ac88bad10b80f9cab545dc488001370ed7152f3e36ad413c10f07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:3",
+      "sequence": 18134,
+      "chapter_label": "ISA 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "You will keep whoever’s mind is steadfast in perfect peace, because he trusts in you.",
+      "ko": "주께서 심지가 견고한 자를 평강에 평강으로 지키시리니 이는 그가 주를 의뢰함이니이다",
+      "source_text_hash": "fd1cecd5867bbd2c39fba453ef2e992826802053ff1992c55e31f14a6d4e8f1c",
+      "translation_text_hash": "35269b8f8cf0d2d7940ffe6f08b3bf6a7c734c12f183e34c6999bd9824856fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 심지가 견고한 자를 평강에 평강으로 지키시리니 이는 그가 주를 의뢰함이니이다"
+      ],
+      "raw_text_hashes": [
+        "35269b8f8cf0d2d7940ffe6f08b3bf6a7c734c12f183e34c6999bd9824856fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:4",
+      "sequence": 18135,
+      "chapter_label": "ISA 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "Trust in the LORD forever; for in the LORD, the LORD, is an everlasting Rock.",
+      "ko": "너희는 여호와를 영원히 의뢰하라 주 여호와는 영원한 반석이심이로다",
+      "source_text_hash": "6251e4a9658f1d387508d13590c1645d483ec93f35ecc7451392111330575743",
+      "translation_text_hash": "87d082b5fb709932dfcf7ea86f76f66fff39b7d63b09f429a7bad957746bee30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와를 영원히 의뢰하라 주 여호와는 영원한 반석이심이로다"
+      ],
+      "raw_text_hashes": [
+        "87d082b5fb709932dfcf7ea86f76f66fff39b7d63b09f429a7bad957746bee30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:5",
+      "sequence": 18136,
+      "chapter_label": "ISA 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "For he has brought down those who dwell on high, the lofty city. He lays it low. He lays it low even to the ground. He brings it even to the dust.",
+      "ko": "높은데 거하는 자를 낮추시며 솟은 성을 헐어 땅에 엎으시되 진토에 미치게 하셨도다",
+      "source_text_hash": "1fd7ad07205588283d97c7a52259d978be9ee9ad9b278b9a3119384d4962e9eb",
+      "translation_text_hash": "d7ac87cde62cfd75428789465e4a405da12a76c18899149cd73c7aa0ab5ce0b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "높은데 거하는 자를 낮추시며 솟은 성을 헐어 땅에 엎으시되 진토에 미치게 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "d7ac87cde62cfd75428789465e4a405da12a76c18899149cd73c7aa0ab5ce0b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:6",
+      "sequence": 18137,
+      "chapter_label": "ISA 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "The foot shall tread it down, even the feet of the poor and the steps of the needy.”",
+      "ko": "발이 그것을 밟으리니 곧 빈궁한 자의 발과 곤핍한 자의 걸음이리로다",
+      "source_text_hash": "1eb8cc6dd3f3fd7de44cc76d0bdd103ab9934c63e2a4fbe91161231996509ee4",
+      "translation_text_hash": "2f41b3536bc8039827e89d16eb361ec3752aeecd1fe0e885f03d4cebaad02758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발이 그것을 밟으리니 곧 빈궁한 자의 발과 곤핍한 자의 걸음이리로다"
+      ],
+      "raw_text_hashes": [
+        "2f41b3536bc8039827e89d16eb361ec3752aeecd1fe0e885f03d4cebaad02758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:7",
+      "sequence": 18138,
+      "chapter_label": "ISA 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "The way of the just is uprightness. You who are upright make the path of the righteous level.",
+      "ko": "의인의 길은 정직함이여 정직하신 주께서 의인의 첩경을 평탄케 하시도다",
+      "source_text_hash": "ea39ea00f3d600fa5d9e789894206e2f876fa605f44fd449c5c7b201cc3bf6f7",
+      "translation_text_hash": "9b1d5540b12e70dfeba7a9f651b9ff65b72ee697e545359a47c8a42df1d1e183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인의 길은 정직함이여 정직하신 주께서 의인의 첩경을 평탄케 하시도다"
+      ],
+      "raw_text_hashes": [
+        "9b1d5540b12e70dfeba7a9f651b9ff65b72ee697e545359a47c8a42df1d1e183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:8",
+      "sequence": 18139,
+      "chapter_label": "ISA 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "Yes, in the way of your judgments, LORD, we have waited for you. Your name and your renown are the desire of our soul.",
+      "ko": "여호와여 주의 심판하시는 길에서 우리가 주를 기다렸사오며 주의 이름 곧 주의 기념 이름을 우리 영혼이 사모하나이다",
+      "source_text_hash": "3762467cf4847486472b205e361e31026ff0ac106203d460011e0d5e5b10dec2",
+      "translation_text_hash": "d4e612002a9cc8e7a289e7d3ee6ab6fb6f4b663e037265bf61a654ae5e96d4a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 심판하시는 길에서 우리가 주를 기다렸사오며 주의 이름 곧 주의 기념 이름을 우리 영혼이 사모하나이다"
+      ],
+      "raw_text_hashes": [
+        "d4e612002a9cc8e7a289e7d3ee6ab6fb6f4b663e037265bf61a654ae5e96d4a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:9",
+      "sequence": 18140,
+      "chapter_label": "ISA 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "With my soul I have desired you in the night. Yes, with my spirit within me I will seek you earnestly; for when your judgments are on the earth, the inhabitants of the world learn righteousness.",
+      "ko": "밤에 내 영혼이 주를 사모하였사온즉 내 중심이 주를 간절히 구하오리니 이는 주께서 땅에서 심판하시는 때에 세계의 거민이 의를 배움이니이다",
+      "source_text_hash": "84be11b9db3873424313e51dbbfe5ad077e37b24931344e205216e8b29309025",
+      "translation_text_hash": "1aa553afde372ceb47e4c4f7c9a5c4d6f2ba523b489104dddcbcab8d97d3d380",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 내 영혼이 주를 사모하였사온즉 내 중심이 주를 간절히 구하오리니 이는 주께서 땅에서 심판하시는 때에 세계의 거민이 의를 배움이니이다"
+      ],
+      "raw_text_hashes": [
+        "1aa553afde372ceb47e4c4f7c9a5c4d6f2ba523b489104dddcbcab8d97d3d380"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:10",
+      "sequence": 18141,
+      "chapter_label": "ISA 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "Let favor be shown to the wicked, yet he will not learn righteousness. In the land of uprightness he will deal wrongfully, and will not see the LORD’s majesty.",
+      "ko": "악인은 은총을 입을찌라도 의를 배우지 아니하며 정직한 땅에서 불의를 행하고 여호와의 위엄을 돌아보지 아니하는도다",
+      "source_text_hash": "3e72d32a9e38605d166bc6243fb286ca5d87adf0eb71f88170efe83e5a5c9315",
+      "translation_text_hash": "cd2fe2195aea423a8f8740287501a7b86fd249ba2635fbe5e2bd3ac81084e331",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 은총을 입을찌라도 의를 배우지 아니하며 정직한 땅에서 불의를 행하고 여호와의 위엄을 돌아보지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "cd2fe2195aea423a8f8740287501a7b86fd249ba2635fbe5e2bd3ac81084e331"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:11",
+      "sequence": 18142,
+      "chapter_label": "ISA 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "LORD, your hand is lifted up, yet they don’t see; but they will see your zeal for the people and be disappointed. Yes, fire will consume your adversaries.",
+      "ko": "여호와여 주의 손이 높이 들릴찌라도 그들이 보지 아니하나이다마는 백성을 위하시는 주의 열성을 보면 부끄러워할 것이라 불이 주의 대적을 사르리이다",
+      "source_text_hash": "ff301beca19fb10900488b92ddbfcf20a187ee585bc9ccc2f49dee0a2c67e83c",
+      "translation_text_hash": "554e60842f23acfdd020ea817381433ff1eae7eb8327ff02f4490741c14d6c02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 손이 높이 들릴찌라도 그들이 보지 아니하나이다마는 백성을 위하시는 주의 열성을 보면 부끄러워할 것이라 불이 주의 대적을 사르리이다"
+      ],
+      "raw_text_hashes": [
+        "554e60842f23acfdd020ea817381433ff1eae7eb8327ff02f4490741c14d6c02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:12",
+      "sequence": 18143,
+      "chapter_label": "ISA 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "LORD, you will ordain peace for us, for you have also done all our work for us.",
+      "ko": "여호와여 주께서 우리를 위하여 평강을 베푸시오리니 주께서 우리 모든 일을 우리를 위하여 이루심이니이다",
+      "source_text_hash": "c6bd991057fd22603bac753e435ca84ba9e88e5e50cdb5187aa825952b39e604",
+      "translation_text_hash": "eb196b1f9b0136db4f6cadd6a1e0befde71ba6ea41a85eed3c5d0d3657d22a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 우리를 위하여 평강을 베푸시오리니 주께서 우리 모든 일을 우리를 위하여 이루심이니이다"
+      ],
+      "raw_text_hashes": [
+        "eb196b1f9b0136db4f6cadd6a1e0befde71ba6ea41a85eed3c5d0d3657d22a97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:13",
+      "sequence": 18144,
+      "chapter_label": "ISA 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "LORD our God, other lords besides you have had dominion over us, but we will only acknowledge your name.",
+      "ko": "여호와 우리 하나님이시여 주 외에 다른 주들이 우리를 관할하였사오나 우리가 주만 의뢰하고 주의 이름을 부르리이다",
+      "source_text_hash": "5854cfdc5228982127ed5defce4808f80c530114ea60c08c9fa70bb23d507e4b",
+      "translation_text_hash": "5698c9add4a1513c0f01c6c2736c7e571a3583be32d9bae2afc77278b3c05b69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 하나님이시여 주 외에 다른 주들이 우리를 관할하였사오나 우리가 주만 의뢰하고 주의 이름을 부르리이다"
+      ],
+      "raw_text_hashes": [
+        "5698c9add4a1513c0f01c6c2736c7e571a3583be32d9bae2afc77278b3c05b69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:14",
+      "sequence": 18145,
+      "chapter_label": "ISA 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "The dead shall not live. The departed spirits shall not rise. Therefore you have visited and destroyed them, and caused all memory of them to perish.",
+      "ko": "그들은 죽었은즉 다시 살지 못하겠고 사망하였은즉 일어나지 못할 것이니 이는 주께서 벌하여 멸하사 그 모든 기억을 멸절하셨음이니이다",
+      "source_text_hash": "51439920101c4c8751c32ed41fb30ee7ca9d0d1e378d4b4463153019a7ffdcfb",
+      "translation_text_hash": "606c7ac535498d928adbea25da5161ac55b3f8726c8fcee68e4825a2a5f9def6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 죽었은즉 다시 살지 못하겠고 사망하였은즉 일어나지 못할 것이니 이는 주께서 벌하여 멸하사 그 모든 기억을 멸절하셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "606c7ac535498d928adbea25da5161ac55b3f8726c8fcee68e4825a2a5f9def6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:15",
+      "sequence": 18146,
+      "chapter_label": "ISA 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "You have increased the nation, O LORD. You have increased the nation! You are glorified! You have enlarged all the borders of the land.",
+      "ko": "여호와여 주께서 이 나라를 더 크게 하셨고 이 나라를 더 크게 하셨나이다 스스로 영광을 얻으시고 이 땅의 모든 경계를 확장하셨나이다",
+      "source_text_hash": "bddf75fa17fb08626b3a7d5a6c9f60772ba24448b7e29d222e9c3aab5346e0b0",
+      "translation_text_hash": "0355e36d36e725e8ed09f4bc8fabd93b2494207178ca224c817e7291d9c9f78f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 이 나라를 더 크게 하셨고 이 나라를 더 크게 하셨나이다 스스로 영광을 얻으시고 이 땅의 모든 경계를 확장하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0355e36d36e725e8ed09f4bc8fabd93b2494207178ca224c817e7291d9c9f78f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:16",
+      "sequence": 18147,
+      "chapter_label": "ISA 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "LORD, in trouble they have visited you. They poured out a prayer when your chastening was on them.",
+      "ko": "여호와여 백성이 환난 중에 주를 앙모하였사오며 주의 징벌이 그들에게 임할 때에 그들이 간절히 주께 기도하였나이다",
+      "source_text_hash": "1d31592f5dbedf17ee6b0d5daa6419b980058a75256e91fc7f35ae488e06b8cb",
+      "translation_text_hash": "31f40968583e2e00339709637f84bf32de1486cf2a51bd68c086e01d873b03e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 백성이 환난 중에 주를 앙모하였사오며 주의 징벌이 그들에게 임할 때에 그들이 간절히 주께 기도하였나이다"
+      ],
+      "raw_text_hashes": [
+        "31f40968583e2e00339709637f84bf32de1486cf2a51bd68c086e01d873b03e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:17",
+      "sequence": 18148,
+      "chapter_label": "ISA 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Just as a woman with child, who draws near the time of her delivery, is in pain and cries out in her pangs, so we have been before you, LORD.",
+      "ko": "여호와여 잉태한 여인이 산기가 임박하여 구로하며 부르짖음 같이 우리가 주의 앞에 이러하니이다",
+      "source_text_hash": "4ba5b10b83c7605b9c9e50eed0ee19180d4cd9413c2203f57dabe26132f870e3",
+      "translation_text_hash": "2a9bd56fe2d58707fb3332a653bd98845f2dd77595d2d53b86105fc67fb5187e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 잉태한 여인이 산기가 임박하여 구로하며 부르짖음 같이 우리가 주의 앞에 이러하니이다"
+      ],
+      "raw_text_hashes": [
+        "2a9bd56fe2d58707fb3332a653bd98845f2dd77595d2d53b86105fc67fb5187e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:18",
+      "sequence": 18149,
+      "chapter_label": "ISA 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "We have been with child. We have been in pain. We gave birth, it seems, only to wind. We have not worked any deliverance on the earth; neither have the inhabitants of the world fallen.",
+      "ko": "우리가 잉태하고 고통하였을찌라도 낳은 것은 바람 같아서 땅에 구원을 베풀지 못하였고 세계의 거민을 생산치 못하였나이다",
+      "source_text_hash": "cb0230985aff35c3aae75e871c7c1a2af32ec6b847ab7cd530bebf779218c58c",
+      "translation_text_hash": "118e8664511eae72b2bd68dfdfbbec64731561e67263e9b7b0c8fe0be9739b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 잉태하고 고통하였을찌라도 낳은 것은 바람 같아서 땅에 구원을 베풀지 못하였고 세계의 거민을 생산치 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "118e8664511eae72b2bd68dfdfbbec64731561e67263e9b7b0c8fe0be9739b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:19",
+      "sequence": 18150,
+      "chapter_label": "ISA 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "Your dead shall live. Their dead bodies shall arise. Awake and sing, you who dwell in the dust; for your dew is like the dew of herbs, and the earth will cast out the departed spirits.",
+      "ko": "주의 죽은 자들은 살아나고 우리의 시체들은 일어나리이다 티끌에 거하는 자들아 너희는 깨어 노래하라 주의 이슬은 빛난 이슬이니 땅이 죽은 자를 내어 놓으리로다",
+      "source_text_hash": "c271111bece11390161172141ef2052bdfdb297295266cd5b7889a14c7e625be",
+      "translation_text_hash": "a86d7d4fa49df2ae8b53c7a5cf212ec75e983cb94048f4a8b3d3bf7c0b4a6ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 죽은 자들은 살아나고 우리의 시체들은 일어나리이다 티끌에 거하는 자들아 너희는 깨어 노래하라 주의 이슬은 빛난 이슬이니 땅이 죽은 자를 내어 놓으리로다"
+      ],
+      "raw_text_hashes": [
+        "a86d7d4fa49df2ae8b53c7a5cf212ec75e983cb94048f4a8b3d3bf7c0b4a6ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:20",
+      "sequence": 18151,
+      "chapter_label": "ISA 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Come, my people, enter into your rooms, and shut your doors behind you. Hide yourself for a little moment, until the indignation is past.",
+      "ko": "내 백성아 갈찌어다 네 밀실에 들어가서 네 문을 닫고 분노가 지나기까지 잠간 숨을찌어다",
+      "source_text_hash": "b6f29a5594eb4d0862acab1e0db4fb04f78a2a66c5e7d1278c1195e29d77549f",
+      "translation_text_hash": "5b9cf4944354397c2b185c1accffdcc62c38ecc5ea8535a0e961ee613c68c791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성아 갈찌어다 네 밀실에 들어가서 네 문을 닫고 분노가 지나기까지 잠간 숨을찌어다"
+      ],
+      "raw_text_hashes": [
+        "5b9cf4944354397c2b185c1accffdcc62c38ecc5ea8535a0e961ee613c68c791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:26:21",
+      "sequence": 18152,
+      "chapter_label": "ISA 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "For, behold, the LORD comes out of his place to punish the inhabitants of the earth for their iniquity. The earth also will disclose her blood, and will no longer cover her slain.",
+      "ko": "보라 여호와께서 그 처소에서 나오사 땅의 거민의 죄악을 벌하실 것이라 땅이 그 위에 잦았던 피를 드러내고 그 살해 당한 자를 다시는 가리우지 아니하리라",
+      "source_text_hash": "86115f920411856bb97a85c11916ce93a6ffa3cb85d28f71533ae18e75b293f4",
+      "translation_text_hash": "5ff19996ddd34defd24d430b7654bd35676cda5cbdf0587914f3af207fd63804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 여호와께서 그 처소에서 나오사 땅의 거민의 죄악을 벌하실 것이라 땅이 그 위에 잦았던 피를 드러내고 그 살해 당한 자를 다시는 가리우지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "5ff19996ddd34defd24d430b7654bd35676cda5cbdf0587914f3af207fd63804"
+      ]
+    }
+  ]
+}

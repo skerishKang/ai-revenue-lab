@@ -1,0 +1,397 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:004",
+  "unit_ordinal": 271,
+  "unit_label": "2SA 4",
+  "book_code": "2SA",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:4:1",
+      "sequence": 8122,
+      "chapter_label": "2SA 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "When Saul’s son heard that Abner was dead in Hebron, his hands became feeble, and all the Israelites were troubled.",
+      "ko": "사울의 아들 이스보셋이 아브넬의 헤브론에서 죽었다 함을 듣고 손맥이 풀렸고 온 이스라엘이 놀라니라",
+      "source_text_hash": "f36a691544ce0b74954004f8e9a04d0920e6dd727a532fef8efb0e6f64234ab3",
+      "translation_text_hash": "90ab951851fc86c39b091be0ea34ad03f34aa2d5739e5031b24002e89b607fee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 이스보셋이 아브넬의 헤브론에서 죽었다 함을 듣고 손맥이 풀렸고 온 이스라엘이 놀라니라"
+      ],
+      "raw_text_hashes": [
+        "90ab951851fc86c39b091be0ea34ad03f34aa2d5739e5031b24002e89b607fee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:2",
+      "sequence": 8123,
+      "chapter_label": "2SA 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Saul’s son had two men who were captains of raiding bands. The name of one was Baanah and the name of the other Rechab, the sons of Rimmon the Beerothite, of the children of Benjamin (for Beeroth also is considered a part of Benjamin;",
+      "ko": "사울의 아들 이스보셋에게 군장 두 사람이 있으니 하나의 이름은 바아나요 하나의 이름은 레갑이라 베냐민 족속 브에롯 사람 림몬의 아들들이더라 브에롯도 베냐민 지파에 속하였으니",
+      "source_text_hash": "01b4f5686c1eb3eeb4d8365b3ab55da00948ad55683851ab9c752f2d97878d23",
+      "translation_text_hash": "1f65e4777ddba6c06908bbab86e1685d2181d937365cbe00768b1907978bb030",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 이스보셋에게 군장 두 사람이 있으니 하나의 이름은 바아나요 하나의 이름은 레갑이라 베냐민 족속 브에롯 사람 림몬의 아들들이더라 브에롯도 베냐민 지파에 속하였으니"
+      ],
+      "raw_text_hashes": [
+        "1f65e4777ddba6c06908bbab86e1685d2181d937365cbe00768b1907978bb030"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:3",
+      "sequence": 8124,
+      "chapter_label": "2SA 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "and the Beerothites fled to Gittaim, and have lived as foreigners there until today).",
+      "ko": "일찍 브에롯 사람들이 깃다임으로 도망하여 오늘까지 거기 우거함이더라",
+      "source_text_hash": "7ae49c436450ed193677b3e0ecc842225c079881d1f8b39212fa314632c0e539",
+      "translation_text_hash": "2703bc1373a4f058f237cbd95d9673e99bab2b5ca4631074df03a2ed060328a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일찍 브에롯 사람들이 깃다임으로 도망하여 오늘까지 거기 우거함이더라"
+      ],
+      "raw_text_hashes": [
+        "2703bc1373a4f058f237cbd95d9673e99bab2b5ca4631074df03a2ed060328a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:4",
+      "sequence": 8125,
+      "chapter_label": "2SA 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Now Jonathan, Saul’s son, had a son who was lame in his feet. He was five years old when the news came about Saul and Jonathan out of Jezreel; and his nurse picked him up and fled. As she hurried to flee, he fell and became lame. His name was Mephibosheth.",
+      "ko": "사울의 아들 요나단에게 절뚝발이 아들 하나가 있으니 이름은 므비보셋이라 전에 사울과 요나단의 죽은 소식이 이스르엘에서 올 때에 그 나이 다섯살이었는데 그 유모가 안고 도망하더니 급히 도망하므로 아이가 떨어져 절게 되었더라",
+      "source_text_hash": "22441d4923460be533a7f9c3d27d1feea1d6385086bdc79aa14fc7284ac5853e",
+      "translation_text_hash": "b6e76d49c9e8d45fbaffc6cd081a1f842b4e4d2ffd54fd07217b4283d681e762",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울의 아들 요나단에게 절뚝발이 아들 하나가 있으니 이름은 므비보셋이라 전에 사울과 요나단의 죽은 소식이 이스르엘에서 올 때에 그 나이 다섯살이었는데 그 유모가 안고 도망하더니 급히 도망하므로 아이가 떨어져 절게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "b6e76d49c9e8d45fbaffc6cd081a1f842b4e4d2ffd54fd07217b4283d681e762"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:5",
+      "sequence": 8126,
+      "chapter_label": "2SA 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "The sons of Rimmon the Beerothite, Rechab and Baanah, went out and came at about the heat of the day to the house of Ishbosheth as he took his rest at noon.",
+      "ko": "브에롯 사람 림몬의 아들 레갑과 바아나가 행하여 볕이 쬘 때 즈음에 이스보셋의 집에 이르니 마침 저가 낮잠을 자는지라",
+      "source_text_hash": "73061a890930786ca97278c9d12877fb4354775f1688b83a5acc86a5057f0684",
+      "translation_text_hash": "1754ef215a17fb1ffdc1aa8bf01caf81aefe2a568353bce5f3425fdc30ad6377",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브에롯 사람 림몬의 아들 레갑과 바아나가 행하여 볕이 쬘 때 즈음에 이스보셋의 집에 이르니 마침 저가 낮잠을 자는지라"
+      ],
+      "raw_text_hashes": [
+        "1754ef215a17fb1ffdc1aa8bf01caf81aefe2a568353bce5f3425fdc30ad6377"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:6",
+      "sequence": 8127,
+      "chapter_label": "2SA 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "They came there into the middle of the house as though they would have fetched wheat, and they struck him in the body; and Rechab and Baanah his brother escaped.",
+      "ko": "레갑과 그 형제 바아나가 밀을 가지러 온체하고 집 가운데로 들어가서 그 배를 찌르고 도망하였더라",
+      "source_text_hash": "2fefb027a821ed9c4dd48273c71fa7dfbe2a462a825ab7cdccc8754bfad7a039",
+      "translation_text_hash": "cbf977efb6c64b6365f493c031c434885f4815d48796784afd51fa27a9bd8710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레갑과 그 형제 바아나가 밀을 가지러 온체하고 집 가운데로 들어가서 그 배를 찌르고 도망하였더라"
+      ],
+      "raw_text_hashes": [
+        "cbf977efb6c64b6365f493c031c434885f4815d48796784afd51fa27a9bd8710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:7",
+      "sequence": 8128,
+      "chapter_label": "2SA 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Now when they came into the house as he lay on his bed in his bedroom, they struck him, killed him, beheaded him, and took his head, and went by the way of the Arabah all night.",
+      "ko": "저희가 집에 들어가니 이스보셋이 침실에서 상 위에 누웠는지라 저를 쳐 죽이고 목을 베어 그 머리를 가지고 밤새도록 아라바 길로 행하여",
+      "source_text_hash": "24301c558def87c928d43bf2a2e4f7b71a6f4f29a5e1acf02b52601b0204bbdf",
+      "translation_text_hash": "0a27c5386cabeec448a3df2904b8179dff74e06a26c88e3242a876e67dd7b5d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 집에 들어가니 이스보셋이 침실에서 상 위에 누웠는지라 저를 쳐 죽이고 목을 베어 그 머리를 가지고 밤새도록 아라바 길로 행하여"
+      ],
+      "raw_text_hashes": [
+        "0a27c5386cabeec448a3df2904b8179dff74e06a26c88e3242a876e67dd7b5d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:8",
+      "sequence": 8129,
+      "chapter_label": "2SA 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "They brought the head of Ishbosheth to David to Hebron, and said to the king, “Behold, the head of Ishbosheth, the son of Saul, your enemy, who sought your life! The LORD has avenged my lord the king today of Saul and of his offspring.”",
+      "ko": "헤브론에 이르러 다윗왕에게 이스보셋의 머리를 드리며 고하되 왕의 생명을 해하려 하던 원수 사울의 아들 이스보셋의 머리가 여기 있나이다 여호와께서 오늘 우리 주 되신 왕의 원수를 사울과 그 자손에게 갚으셨나이다",
+      "source_text_hash": "4ce36115b0b8443f37ea63377dcc01fed003ad227ed3d052cb0f0d0fc375e638",
+      "translation_text_hash": "4333f80c986439081ab308bf00c003ea7fec9db49e6d250f23b3e63f8613d35e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론에 이르러 다윗왕에게 이스보셋의 머리를 드리며 고하되 왕의 생명을 해하려 하던 원수 사울의 아들 이스보셋의 머리가 여기 있나이다 여호와께서 오늘 우리 주 되신 왕의 원수를 사울과 그 자손에게 갚으셨나이다"
+      ],
+      "raw_text_hashes": [
+        "4333f80c986439081ab308bf00c003ea7fec9db49e6d250f23b3e63f8613d35e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:9",
+      "sequence": 8130,
+      "chapter_label": "2SA 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "David answered Rechab and Baanah his brother, the sons of Rimmon the Beerothite, and said to them, “As the LORD lives, who has redeemed my soul out of all adversity,",
+      "ko": "다윗이 브에롯 사람 림몬의 아들 레갑과 그 형제 바아나에게 대답하여 가로되 내 생명을 여러 환난 가운데서 건지신 여호와의 사심을 가리켜 맹세하노니",
+      "source_text_hash": "f7a41d1129b3925bd99b760f95b175a68639b6923a5df581f482b8021acdb9b0",
+      "translation_text_hash": "348cc675ba1f628a0cfdf886a5919365e9a92cd25e157b59cac35b24658ece19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 브에롯 사람 림몬의 아들 레갑과 그 형제 바아나에게 대답하여 가로되 내 생명을 여러 환난 가운데서 건지신 여호와의 사심을 가리켜 맹세하노니"
+      ],
+      "raw_text_hashes": [
+        "348cc675ba1f628a0cfdf886a5919365e9a92cd25e157b59cac35b24658ece19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:10",
+      "sequence": 8131,
+      "chapter_label": "2SA 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "when someone told me, ‘Behold, Saul is dead,’ thinking that he brought good news, I seized him and killed him in Ziklag, which was the reward I gave him for his news.",
+      "ko": "전에 사람이 내게 고하기를 사울이 죽었다 하며 좋은 소식을 전하는 줄로 생각하였어도 내가 저를 잡아 시글락에서 죽여서 그것으로 그 기별의 갚음을 삼았거든",
+      "source_text_hash": "45cc86df943b1b888596e89e2c62bf37ec1eb15f1f631db0f9ed092cbf562b9b",
+      "translation_text_hash": "7a0999f66831d7d40bb830f94cfc2a7022b1e4278b9f1f87b0990d34651a902e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전에 사람이 내게 고하기를 사울이 죽었다 하며 좋은 소식을 전하는 줄로 생각하였어도 내가 저를 잡아 시글락에서 죽여서 그것으로 그 기별의 갚음을 삼았거든"
+      ],
+      "raw_text_hashes": [
+        "7a0999f66831d7d40bb830f94cfc2a7022b1e4278b9f1f87b0990d34651a902e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:11",
+      "sequence": 8132,
+      "chapter_label": "2SA 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "How much more, when wicked men have slain a righteous person in his own house on his bed, should I not now require his blood from your hand, and rid the earth of you?”",
+      "ko": "하물며 악인이 의인을 그 집 침상 위에서 죽인 것이겠느냐 그런즉 내가 저의 피흘린 죄를 너희에게 갚아서 너희를 이 땅에서 없이 하지 아니하겠느냐 하고",
+      "source_text_hash": "e9642c9fc828625404636f23e77f0e2515ac1b8166c34e15d7e31ac1f9833d26",
+      "translation_text_hash": "1eef39cd823b5f9e42a32a3a53a572469db79567f53ce4d28ed71f382074012c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하물며 악인이 의인을 그 집 침상 위에서 죽인 것이겠느냐 그런즉 내가 저의 피흘린 죄를 너희에게 갚아서 너희를 이 땅에서 없이 하지 아니하겠느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "1eef39cd823b5f9e42a32a3a53a572469db79567f53ce4d28ed71f382074012c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:4:12",
+      "sequence": 8133,
+      "chapter_label": "2SA 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "David commanded his young men, and they killed them, cut off their hands and their feet, and hanged them up beside the pool in Hebron. But they took the head of Ishbosheth and buried it in Abner’s grave in Hebron.",
+      "ko": "소년들을 명하매 곧 저희를 죽이고 수족을 베어 헤브론 못가에 매어달고 이스보셋의 머리를 가져다가 헤브론에서 아브넬의 무덤에 장사하였더라",
+      "source_text_hash": "9a836b5562dd0d59a78028b7c6f2c25cb677ab5b8837c12010821299c6f89aa6",
+      "translation_text_hash": "63eb304dac5f9eda6e6cb4a33c77c39d89b63b41d2f3257f02ed826bf6baa5f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년들을 명하매 곧 저희를 죽이고 수족을 베어 헤브론 못가에 매어달고 이스보셋의 머리를 가져다가 헤브론에서 아브넬의 무덤에 장사하였더라"
+      ],
+      "raw_text_hashes": [
+        "63eb304dac5f9eda6e6cb4a33c77c39d89b63b41d2f3257f02ed826bf6baa5f2"
+      ]
+    }
+  ]
+}

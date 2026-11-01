@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:029",
+  "unit_ordinal": 831,
+  "unit_label": "EZK 29",
+  "book_code": "EZK",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:29:1",
+      "sequence": 21185,
+      "chapter_label": "EZK 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "In the tenth year, in the tenth month, on the twelfth day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십년 시월 십 이일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "8aa1a17c931ec78c5976ac86c4d64a46784e885f592c5a955c8b7560f03ac946",
+      "translation_text_hash": "10701f3c8f9f09aa6a7072b824883694e164c587b0d45b9507d48a3024111b5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십년 시월 십 이일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "10701f3c8f9f09aa6a7072b824883694e164c587b0d45b9507d48a3024111b5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:2",
+      "sequence": 21186,
+      "chapter_label": "EZK 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, set your face against Pharaoh king of Egypt, and prophesy against him and against all Egypt.",
+      "ko": "인자야 너는 애굽 왕 바로와 온 애굽으로 낯을 향하고 쳐서 예언하라",
+      "source_text_hash": "ea45e3ff8c584bfe7c295ff6b2b8dc00aa6eb7670942ac4cf30983112767c6df",
+      "translation_text_hash": "20a5da642c866da7f4ead9d0bc4826fdd3f419821248d26128f198fdf538e897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 애굽 왕 바로와 온 애굽으로 낯을 향하고 쳐서 예언하라"
+      ],
+      "raw_text_hashes": [
+        "20a5da642c866da7f4ead9d0bc4826fdd3f419821248d26128f198fdf538e897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:3",
+      "sequence": 21187,
+      "chapter_label": "EZK 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "Speak and say, ‘The Lord GOD says: “Behold, I am against you, Pharaoh king of Egypt, the great monster that lies in the middle of his rivers, that has said, ‘My river is my own, and I have made it for myself.’",
+      "ko": "너는 말하여 이르기를 주 여호와의 말씀에 애굽 왕 바로야 내가 너를 대적하노라 너는 자기의 강들 중에 누운 큰 악어라 스스로 이르기를 내 이 강은 내 것이라 내가 나를 위하여 만들었다 하는도다",
+      "source_text_hash": "39636303e9fc6c6862b646b8e94c262aba0ad35edb8c0538c1f41c4297003caf",
+      "translation_text_hash": "117b66153a99426b9c6d6abed0f74e9e66a2cd214f7c0c6c56cbe9c4ac09a28f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 말하여 이르기를 주 여호와의 말씀에 애굽 왕 바로야 내가 너를 대적하노라 너는 자기의 강들 중에 누운 큰 악어라 스스로 이르기를 내 이 강은 내 것이라 내가 나를 위하여 만들었다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "117b66153a99426b9c6d6abed0f74e9e66a2cd214f7c0c6c56cbe9c4ac09a28f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:4",
+      "sequence": 21188,
+      "chapter_label": "EZK 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "I will put hooks in your jaws, and I will make the fish of your rivers stick to your scales. I will bring you up out of the middle of your rivers, with all the fish of your rivers which stick to your scales.",
+      "ko": "내가 갈고리로 네 아가미를 꿰고 네 강의 고기로 네 비늘에 붙게 하고 네 비늘에 붙은 강의 모든 고기와 함께 너를 네 강들 중에서 끌어내고",
+      "source_text_hash": "a4c4411a0422dd7792dd6703ce4dfc5af0c8d3add608f72424e3d88271fa5efa",
+      "translation_text_hash": "500f0c62bcc39895b4aa7cfa653055d2a6e0716262411639cc093d2ac500a375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 갈고리로 네 아가미를 꿰고 네 강의 고기로 네 비늘에 붙게 하고 네 비늘에 붙은 강의 모든 고기와 함께 너를 네 강들 중에서 끌어내고"
+      ],
+      "raw_text_hashes": [
+        "500f0c62bcc39895b4aa7cfa653055d2a6e0716262411639cc093d2ac500a375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:5",
+      "sequence": 21189,
+      "chapter_label": "EZK 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "I’ll cast you out into the wilderness, you and all the fish of your rivers. You’ll fall on the open field. You won’t be brought together or gathered. I have given you for food to the animals of the earth and to the birds of the sky.",
+      "ko": "너와 네 강의 모든 고기를 들에 던지리니 네가 지면에 떨어지고 다시는 거두거나 모음을 입지 못할 것은 내가 너를 들짐승과 공중의 새의 식물로 주었음이라",
+      "source_text_hash": "b68b10a1157d67790c991e668b7ed681877214ee62de695053773d1736d658c6",
+      "translation_text_hash": "b2fa7ef2797e28ba75693b2d81f37bdb9ead03df98b4ad47dea80fc20a1cb7f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 강의 모든 고기를 들에 던지리니 네가 지면에 떨어지고 다시는 거두거나 모음을 입지 못할 것은 내가 너를 들짐승과 공중의 새의 식물로 주었음이라"
+      ],
+      "raw_text_hashes": [
+        "b2fa7ef2797e28ba75693b2d81f37bdb9ead03df98b4ad47dea80fc20a1cb7f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:6",
+      "sequence": 21190,
+      "chapter_label": "EZK 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "“‘“All the inhabitants of Egypt will know that I am the LORD, because they have been a staff of reed to the house of Israel.",
+      "ko": "애굽의 모든 거민이 나를 여호와인줄 알리라 애굽은 본래 이스라엘 족속에게 갈대 지팡이라",
+      "source_text_hash": "9ac461e8c6b10a1238324dc5cd8d43c80361edc16e7da54db81e6c1f0bc61577",
+      "translation_text_hash": "ba3668f9cdcb07fde48ec12ab9eb48dccd8a5d099f593e6a419f844968275162",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 모든 거민이 나를 여호와인줄 알리라 애굽은 본래 이스라엘 족속에게 갈대 지팡이라"
+      ],
+      "raw_text_hashes": [
+        "ba3668f9cdcb07fde48ec12ab9eb48dccd8a5d099f593e6a419f844968275162"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:7",
+      "sequence": 21191,
+      "chapter_label": "EZK 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "When they took hold of you by your hand, you broke and tore all their shoulders. When they leaned on you, you broke and paralyzed all of their thighs.”",
+      "ko": "그들이 너를 손으로 잡은즉 네가 부러져서 그들의 모든 어깨를 찢었고 그들이 너를 의지한즉 네가 부러져서 그들의 모든 허리로 흔들리게 하였느니라",
+      "source_text_hash": "84e2edb376d728cce6c270ae4c3e95f4ea86fbb8d4a48a1e321ccfec76b46919",
+      "translation_text_hash": "661bffdf2da1c51a645849dcb74e027e97d72f6671f8533f113fc412e2d359e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너를 손으로 잡은즉 네가 부러져서 그들의 모든 어깨를 찢었고 그들이 너를 의지한즉 네가 부러져서 그들의 모든 허리로 흔들리게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "661bffdf2da1c51a645849dcb74e027e97d72f6671f8533f113fc412e2d359e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:8",
+      "sequence": 21192,
+      "chapter_label": "EZK 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “Behold, I will bring a sword on you, and will cut off man and animal from you.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 칼로 네게 임하게 하여 네게서 사람과 짐승을 끊은즉",
+      "source_text_hash": "8342cacdcfa4d36e71a613a9354ce40b1a791299d22a59cc1fe2799e4cb5c683",
+      "translation_text_hash": "b1e518b10d117b7f3636acc076570e10a8eb672aa3879603a5f8929f1d578e9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 칼로 네게 임하게 하여 네게서 사람과 짐승을 끊은즉"
+      ],
+      "raw_text_hashes": [
+        "b1e518b10d117b7f3636acc076570e10a8eb672aa3879603a5f8929f1d578e9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:9",
+      "sequence": 21193,
+      "chapter_label": "EZK 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "The land of Egypt will be a desolation and a waste. Then they will know that I am the LORD. “‘“Because he has said, ‘The river is mine, and I have made it,’",
+      "ko": "애굽 땅이 사막과 황무지가 되리니 그들이 나를 여호와인줄 알리라 네가 스스로 이르기를 이 강은 내 것이라 내가 만들었다 하도다",
+      "source_text_hash": "90fd41f643a2bceff848ac136e2be1945311a70f45ece42d0f3aef831b9d88ee",
+      "translation_text_hash": "f6737d815972fc7ddcd614121c90defbc112ca4b9204bbe6daff22439921d4bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅이 사막과 황무지가 되리니 그들이 나를 여호와인줄 알리라 네가 스스로 이르기를 이 강은 내 것이라 내가 만들었다 하도다"
+      ],
+      "raw_text_hashes": [
+        "f6737d815972fc7ddcd614121c90defbc112ca4b9204bbe6daff22439921d4bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:10",
+      "sequence": 21194,
+      "chapter_label": "EZK 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "therefore, behold, I am against you and against your rivers. I will make the land of Egypt an utter waste and desolation, from the tower of Seveneh even to the border of Ethiopia.",
+      "ko": "그러므로 내가 너와 네 강들을 쳐서 애굽 땅 믹돌에서부터 수에네 곧 구스 지경까지 황무한 황무지 곧 사막이 되게 하리니",
+      "source_text_hash": "9a840e11550c3199c67434aebdaa5881d8c73627aa507b16ced4838739eb01c1",
+      "translation_text_hash": "622e6257422108e44647d8e92f5082fbda227b7fed03ff299d3889fcc58cc6c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너와 네 강들을 쳐서 애굽 땅 믹돌에서부터 수에네 곧 구스 지경까지 황무한 황무지 곧 사막이 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "622e6257422108e44647d8e92f5082fbda227b7fed03ff299d3889fcc58cc6c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:11",
+      "sequence": 21195,
+      "chapter_label": "EZK 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "No foot of man will pass through it, nor will any animal foot pass through it. It won’t be inhabited for forty years.",
+      "ko": "그 가운데로 사람의 발도 지나가지 아니하며 짐승의 발도 지나가지 아니하고 거접하는 사람이 없이 사십년이 지날찌라",
+      "source_text_hash": "0096ff62bdecf943bf40bda84727bcd811ad5d2827b3486f3359573c67e416d9",
+      "translation_text_hash": "ccdcc4aab56e00eb81e0efb3c27ed6e6a69bc6765f205ec27ac1d9a9b9a80307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 가운데로 사람의 발도 지나가지 아니하며 짐승의 발도 지나가지 아니하고 거접하는 사람이 없이 사십년이 지날찌라"
+      ],
+      "raw_text_hashes": [
+        "ccdcc4aab56e00eb81e0efb3c27ed6e6a69bc6765f205ec27ac1d9a9b9a80307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:12",
+      "sequence": 21196,
+      "chapter_label": "EZK 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "I will make the land of Egypt a desolation in the middle of the countries that are desolate. Her cities among the cities that are laid waste will be a desolation forty years. I will scatter the Egyptians among the nations, and will disperse them through the countries.”",
+      "ko": "내가 애굽 땅으로 황무한 열국 같이 황무하게 하며 애굽 성읍도 사막이 된 열국의 성읍 같이 사십년 동안 황무하게 하고 애굽 사람들은 각국 가운데로 흩으며 열방 가운데로 헤치리라",
+      "source_text_hash": "4c1ceaf78e6ec34e870a90750cbce59b10beb5c64de1deb67467b3388d8de08a",
+      "translation_text_hash": "1c739926faa72a61d10dc1a515994b9ae55f284fa0d41068856d6d0593898f5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 땅으로 황무한 열국 같이 황무하게 하며 애굽 성읍도 사막이 된 열국의 성읍 같이 사십년 동안 황무하게 하고 애굽 사람들은 각국 가운데로 흩으며 열방 가운데로 헤치리라"
+      ],
+      "raw_text_hashes": [
+        "1c739926faa72a61d10dc1a515994b9ae55f284fa0d41068856d6d0593898f5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:13",
+      "sequence": 21197,
+      "chapter_label": "EZK 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "“‘For the Lord GOD says: “At the end of forty years I will gather the Egyptians from the peoples where they were scattered.",
+      "ko": "나 주 여호와가 말하노라 사십년 끝에 내가 만민 중에 흩은 애굽 사람을 다시 모아 내되",
+      "source_text_hash": "0d9cf5ad466b4bcc7ec51bd5b24a92bda3399d929f4d40e78ecc16b4cb97c3f9",
+      "translation_text_hash": "63813c4f2690e521972987e21393c2cf1d68b0b687859ce3e67c127effa0dc14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 사십년 끝에 내가 만민 중에 흩은 애굽 사람을 다시 모아 내되"
+      ],
+      "raw_text_hashes": [
+        "63813c4f2690e521972987e21393c2cf1d68b0b687859ce3e67c127effa0dc14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:14",
+      "sequence": 21198,
+      "chapter_label": "EZK 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "I will reverse the captivity of Egypt, and will cause them to return into the land of Pathros, into the land of their birth. There they will be a lowly kingdom.",
+      "ko": "애굽의 사로잡힌 자들을 돌이켜 바드로스 땅 곧 그 고토로 돌아 가게 할 것이라 그들이 거기서 미약한 나라가 되되",
+      "source_text_hash": "f9013ccf577dd49a1d62e8927586269b89efe71aa71ca6f7913745fce2590470",
+      "translation_text_hash": "53e9fa5d0b0f095077937e14f2fdd29e0dea99409f14d901c6f467ac42d6eb75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽의 사로잡힌 자들을 돌이켜 바드로스 땅 곧 그 고토로 돌아 가게 할 것이라 그들이 거기서 미약한 나라가 되되"
+      ],
+      "raw_text_hashes": [
+        "53e9fa5d0b0f095077937e14f2fdd29e0dea99409f14d901c6f467ac42d6eb75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:15",
+      "sequence": 21199,
+      "chapter_label": "EZK 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "It will be the lowest of the kingdoms. It won’t lift itself up above the nations any more. I will diminish them so that they will no longer rule over the nations.",
+      "ko": "나라 중에 지극히 미약한 나라가 되어 다시는 열국 위에 스스로 높이지 못하리니 내가 그들을 감하여 다시는 열국을 다스리지 못하게 할 것임이라",
+      "source_text_hash": "d7a7604e8c27f17524551f4abe0cf024c8df4e1d068d814c61388d40433df23f",
+      "translation_text_hash": "4d6f83bfb96d49f7bf9605f0cb6d8d118a828aa11858f78a807cfa3a2c891c57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라 중에 지극히 미약한 나라가 되어 다시는 열국 위에 스스로 높이지 못하리니 내가 그들을 감하여 다시는 열국을 다스리지 못하게 할 것임이라"
+      ],
+      "raw_text_hashes": [
+        "4d6f83bfb96d49f7bf9605f0cb6d8d118a828aa11858f78a807cfa3a2c891c57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:16",
+      "sequence": 21200,
+      "chapter_label": "EZK 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "It will no longer be the confidence of the house of Israel, bringing iniquity to memory, when they turn to look after them. Then they will know that I am the Lord GOD.”’”",
+      "ko": "그들이 다시는 이스라엘 족속의 의뢰가 되지 못할 것이요 이스라엘 족속은 돌이켜 그들을 바라보지 아니하므로 그 죄악이 기억나게 되지 아니하리니 그들이 나를 주 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "6651687c6e3d81f5a4fa4cebce96c68112265aa36258e0c67a570825efa6412d",
+      "translation_text_hash": "ca8f06fa584da7b4133489d8ec3618d30c2c0af1aa734e8f7f17eea74207518b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 다시는 이스라엘 족속의 의뢰가 되지 못할 것이요 이스라엘 족속은 돌이켜 그들을 바라보지 아니하므로 그 죄악이 기억나게 되지 아니하리니 그들이 나를 주 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "ca8f06fa584da7b4133489d8ec3618d30c2c0af1aa734e8f7f17eea74207518b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:17",
+      "sequence": 21201,
+      "chapter_label": "EZK 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "It came to pass in the twenty-seventh year, in the first month, in the first day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 이십 칠년 정월 초 일일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "793ce488d8ebd5dc46476fe5ba0cf054a7d3ffe32927e0949811774eab18735e",
+      "translation_text_hash": "98aefe7351867074f3cf53980913c5a751543ec92dfde70985dfdcba2776c50a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 이십 칠년 정월 초 일일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "98aefe7351867074f3cf53980913c5a751543ec92dfde70985dfdcba2776c50a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:18",
+      "sequence": 21202,
+      "chapter_label": "EZK 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "“Son of man, Nebuchadnezzar king of Babylon caused his army to serve a great service against Tyre. Every head was made bald, and every shoulder was worn; yet he had no wages, nor did his army, from Tyre, for the service that he had served against it.",
+      "ko": "인자야 바벨론 왕 느부갓네살이 그 군대로 두로를 치게 할 때에 크게 수고하여 각 머리털이 무지러졌고 각 어깨가 벗어졌으나 그와 군대가 그 수고한 보수를 두로에서 얻지 못하였느니라",
+      "source_text_hash": "4f9433b2eef55df08b7b0fdb01bc57cb2918f340c78ae82057b3289fdd103ae1",
+      "translation_text_hash": "608e9a1b5e3dc3809abd4753466b82b67d9db4c18997b7ec3ba5beb647f367cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 바벨론 왕 느부갓네살이 그 군대로 두로를 치게 할 때에 크게 수고하여 각 머리털이 무지러졌고 각 어깨가 벗어졌으나 그와 군대가 그 수고한 보수를 두로에서 얻지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "608e9a1b5e3dc3809abd4753466b82b67d9db4c18997b7ec3ba5beb647f367cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:19",
+      "sequence": 21203,
+      "chapter_label": "EZK 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "Therefore the Lord GOD says: ‘Behold, I will give the land of Egypt to Nebuchadnezzar king of Babylon. He will carry off her multitude, take her plunder, and take her prey. That will be the wages for his army.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 애굽 땅을 바벨론 왕 느부갓네살에게 붙이리니 그가 그 무리를 옮겨가며 물건을 노략하며 빼앗아 갈 것이라 이것이 그 군대의 보수가 되리라",
+      "source_text_hash": "6f21e8dde84871239f4c528ff5605480da72dab775fe9dfd9121f534760ba966",
+      "translation_text_hash": "2d3f7de0f34d3b6ef24306b0a5f030b64e8bfb797d1131d0b3f3adcc2b95f77e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 애굽 땅을 바벨론 왕 느부갓네살에게 붙이리니 그가 그 무리를 옮겨가며 물건을 노략하며 빼앗아 갈 것이라 이것이 그 군대의 보수가 되리라"
+      ],
+      "raw_text_hashes": [
+        "2d3f7de0f34d3b6ef24306b0a5f030b64e8bfb797d1131d0b3f3adcc2b95f77e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:20",
+      "sequence": 21204,
+      "chapter_label": "EZK 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "I have given him the land of Egypt as his payment for which he served, because they worked for me,’ says the Lord GOD.",
+      "ko": "그들의 수고는 나를 위하여 함인즉 그 보수로 내가 애굽 땅을 그에게 주었느니라 나 주 여호와의 말이니라",
+      "source_text_hash": "41613951266157bdb98a7b4c0d1e0690e5bfbd74b2145b746cfcae91d88f1f07",
+      "translation_text_hash": "1039726fb286d0bc0b09334c3e2caf1d36dce6e15f59871fff4c4ecfe7f15cd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 수고는 나를 위하여 함인즉 그 보수로 내가 애굽 땅을 그에게 주었느니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "1039726fb286d0bc0b09334c3e2caf1d36dce6e15f59871fff4c4ecfe7f15cd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:29:21",
+      "sequence": 21205,
+      "chapter_label": "EZK 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "“In that day I will cause a horn to sprout for the house of Israel, and I will open your mouth among them. Then they will know that I am the LORD.”",
+      "ko": "그 날에 내가 이스라엘 족속에게 한 뿔이 솟아나게 하고 내가 또 너로 그들 중에서 입을 열게 하리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "aa4b8b2c8fd4158878e21d715ad421610a5ebd102a01b48fa1756a674b8f5c06",
+      "translation_text_hash": "0a1b246c4b157c03e3255603679e400bf13890e675f974c9a0be61b4dc24fb47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 내가 이스라엘 족속에게 한 뿔이 솟아나게 하고 내가 또 너로 그들 중에서 입을 열게 하리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "0a1b246c4b157c03e3255603679e400bf13890e675f974c9a0be61b4dc24fb47"
+      ]
+    }
+  ]
+}

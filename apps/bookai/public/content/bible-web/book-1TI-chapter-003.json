@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:003",
+  "unit_ordinal": 1122,
+  "unit_label": "1TI 3",
+  "book_code": "1TI",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:3:1",
+      "sequence": 29729,
+      "chapter_label": "1TI 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "This is a faithful saying: someone who seeks to be an overseer desires a good work.",
+      "ko": "미쁘다 이 말이여, 사람이 감독의 직분을 얻으려하면 선한 일을 사모한다 함이로다",
+      "source_text_hash": "8451d0f268158032034279f44b598bbf206bb7da0785ee65d855d64a9920377e",
+      "translation_text_hash": "5fe6c62c1ba12739f64e51de9fa46203a4a32350c4889f6493005f0ab2b6d85b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미쁘다 이 말이여, 사람이 감독의 직분을 얻으려하면 선한 일을 사모한다 함이로다"
+      ],
+      "raw_text_hashes": [
+        "5fe6c62c1ba12739f64e51de9fa46203a4a32350c4889f6493005f0ab2b6d85b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:2",
+      "sequence": 29730,
+      "chapter_label": "1TI 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The overseer therefore must be without reproach, the husband of one wife, temperate, sensible, modest, hospitable, good at teaching;",
+      "ko": "그러므로 감독은 책망할 것이 없으며 한 아내의 남편이 되며 절제하며 근신하며 아담하며 나그네를 대접하며 가르치기를 잘하며",
+      "source_text_hash": "2be9f2f9ed9e6384772b09bb89ec01490a8488b362501274af7e65c76ca36bfb",
+      "translation_text_hash": "4458e95d61de10147126eb8038f621d79bdd494c9904abf608711bced216e313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 감독은 책망할 것이 없으며 한 아내의 남편이 되며 절제하며 근신하며 아담하며 나그네를 대접하며 가르치기를 잘하며"
+      ],
+      "raw_text_hashes": [
+        "4458e95d61de10147126eb8038f621d79bdd494c9904abf608711bced216e313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:3",
+      "sequence": 29731,
+      "chapter_label": "1TI 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "not a drinker, not violent, not greedy for money, but gentle, not quarrelsome, not covetous;",
+      "ko": "술을 즐기지 아니하며 구타하지 아니하며 오직 관용하며 다투지 아니하며 돈을 사랑치 아니하며",
+      "source_text_hash": "90bf4bce6e44bf0a8c15ab7f3b35fd5ec3e93becc5cec4fd43cca2823377bacb",
+      "translation_text_hash": "51c97f020266311af0e20f43cf4e2b58c62c53fb08bb8a40c659330601359112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "술을 즐기지 아니하며 구타하지 아니하며 오직 관용하며 다투지 아니하며 돈을 사랑치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "51c97f020266311af0e20f43cf4e2b58c62c53fb08bb8a40c659330601359112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:4",
+      "sequence": 29732,
+      "chapter_label": "1TI 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "one who rules his own house well, having children in subjection with all reverence;",
+      "ko": "자기 집을 잘 다스려 자녀들로 모든 단정함으로 복종케 하는 자라야 할찌며",
+      "source_text_hash": "7cc4ac53d7d44e5a0ba5fd358c411825df4bf39541ba507a4b904e7b91e04d48",
+      "translation_text_hash": "480cec5a817f5912cf2b675525c35c0fe768667cc49658b276ef77a47c20c0ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 집을 잘 다스려 자녀들로 모든 단정함으로 복종케 하는 자라야 할찌며"
+      ],
+      "raw_text_hashes": [
+        "480cec5a817f5912cf2b675525c35c0fe768667cc49658b276ef77a47c20c0ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:5",
+      "sequence": 29733,
+      "chapter_label": "1TI 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "(for how could someone who doesn’t know how to rule his own house take care of God’s assembly?)",
+      "ko": "(사람이 자기 집을 다스릴줄 알지 못하면 어찌 하나님의 교회를 돌아 보리요)",
+      "source_text_hash": "a0b287cd6d72a854938ca5c3b2c229020e81e2a75c5491dce00f6ffa5339a8fd",
+      "translation_text_hash": "c15f79105825368b8894ab7f6d387d5b6c57dabd407ae8ae9855b64579228534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(사람이 자기 집을 다스릴줄 알지 못하면 어찌 하나님의 교회를 돌아 보리요)"
+      ],
+      "raw_text_hashes": [
+        "c15f79105825368b8894ab7f6d387d5b6c57dabd407ae8ae9855b64579228534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:6",
+      "sequence": 29734,
+      "chapter_label": "1TI 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "not a new convert, lest being puffed up he fall into the same condemnation as the devil.",
+      "ko": "새로 입교한 자도 말찌니 교만하여져서 마귀를 정죄하는 그 정죄에 빠질까 함이요",
+      "source_text_hash": "f661df422aed8225071d0edb3c3cf3dac0fc7f2862181612e1fc6184795cc629",
+      "translation_text_hash": "5273ab1e3bd464c79b29762c3b20093e2e146b8ae70e967bfd8c4f6604f7e41f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새로 입교한 자도 말찌니 교만하여져서 마귀를 정죄하는 그 정죄에 빠질까 함이요"
+      ],
+      "raw_text_hashes": [
+        "5273ab1e3bd464c79b29762c3b20093e2e146b8ae70e967bfd8c4f6604f7e41f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:7",
+      "sequence": 29735,
+      "chapter_label": "1TI 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Moreover he must have good testimony from those who are outside, to avoid falling into reproach and the snare of the devil.",
+      "ko": "또한 외인에게서도 선한 증거를 얻은 자라야 할찌니 비방과 마귀의 올무에 빠질까 염려하라",
+      "source_text_hash": "e7c1d307cfaabae4e7b3df5e79bc4cf14abfbedfbc14ab427464ff2f739cefb7",
+      "translation_text_hash": "5fb8368973b013be632c70aeda3bfe650aee65aa7d8138d30bf1ff9cf33d3e52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 외인에게서도 선한 증거를 얻은 자라야 할찌니 비방과 마귀의 올무에 빠질까 염려하라"
+      ],
+      "raw_text_hashes": [
+        "5fb8368973b013be632c70aeda3bfe650aee65aa7d8138d30bf1ff9cf33d3e52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:8",
+      "sequence": 29736,
+      "chapter_label": "1TI 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Servants, in the same way, must be reverent, not double-tongued, not addicted to much wine, not greedy for money,",
+      "ko": "이와 같이 집사들도 단정하고 일구 이언을 하지 아니하고 술에 인박이지 아니하고 더러운 이를 탐하지 아니하고",
+      "source_text_hash": "4e28a45ae157d57fcc6e907801909a6f6514cec0e11b9c1d7540db674ea660dc",
+      "translation_text_hash": "1962e1acb3ec224050e632be4baa308b550dfb13a6b32685ad7c077910851962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 집사들도 단정하고 일구 이언을 하지 아니하고 술에 인박이지 아니하고 더러운 이를 탐하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "1962e1acb3ec224050e632be4baa308b550dfb13a6b32685ad7c077910851962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:9",
+      "sequence": 29737,
+      "chapter_label": "1TI 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "holding the mystery of the faith in a pure conscience.",
+      "ko": "깨끗한 양심에 믿음의 비밀을 가진 자라야 할찌니",
+      "source_text_hash": "d0bd6d82eaf96394b7047b3bd0d5a025aa0fc257c71d8cde4b839eeb1d3186de",
+      "translation_text_hash": "bb93d5ab522158ce678c608d8566b6d3098b8fb6e68c63c34901730d6da08899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗한 양심에 믿음의 비밀을 가진 자라야 할찌니"
+      ],
+      "raw_text_hashes": [
+        "bb93d5ab522158ce678c608d8566b6d3098b8fb6e68c63c34901730d6da08899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:10",
+      "sequence": 29738,
+      "chapter_label": "1TI 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Let them also first be tested; then let them serve if they are blameless.",
+      "ko": "이에 이 사람들을 먼저 시험하여 보고 그 후에 책망할 것이 없으면 집사의 직분을 하게 할 것이요",
+      "source_text_hash": "1f6b9a890f6073afde2b7df7942cb1ccd7c12675077f45fbe38d4669835c92c4",
+      "translation_text_hash": "849e192f59b97cddfeca8b7903840cc4c0c2be0c990b0050582eddfa574d77d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이 사람들을 먼저 시험하여 보고 그 후에 책망할 것이 없으면 집사의 직분을 하게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "849e192f59b97cddfeca8b7903840cc4c0c2be0c990b0050582eddfa574d77d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:11",
+      "sequence": 29739,
+      "chapter_label": "1TI 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Their wives in the same way must be reverent, not slanderers, temperate, and faithful in all things.",
+      "ko": "여자들도 이와 같이 단정하고 참소하지 말며 절제하며 모든 일에 충성된 자라야 할찌니라",
+      "source_text_hash": "af74444407b50035d95e17d92d7c67c424a3eae4f107221c8aeae30655016a07",
+      "translation_text_hash": "2bd28decaf59863a41fb7d56212f1e4ff4a7335f73a182bac1b00d5e4a8b046e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들도 이와 같이 단정하고 참소하지 말며 절제하며 모든 일에 충성된 자라야 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2bd28decaf59863a41fb7d56212f1e4ff4a7335f73a182bac1b00d5e4a8b046e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:12",
+      "sequence": 29740,
+      "chapter_label": "1TI 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Let servants be husbands of one wife, ruling their children and their own houses well.",
+      "ko": "집사들은 한 아내의 남편이 되어 자녀와 자기 집을 잘 다스리는 자일찌니",
+      "source_text_hash": "fcb0cbc9dd32f8930e64e31780348b2da79950054bbeabd2191fb32632f42696",
+      "translation_text_hash": "d1bd2d7bf089a73e92f69457fc6249b363366eea2237b645a3c010013d04c1a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집사들은 한 아내의 남편이 되어 자녀와 자기 집을 잘 다스리는 자일찌니"
+      ],
+      "raw_text_hashes": [
+        "d1bd2d7bf089a73e92f69457fc6249b363366eea2237b645a3c010013d04c1a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:13",
+      "sequence": 29741,
+      "chapter_label": "1TI 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "For those who have served well gain for themselves a good standing and great boldness in the faith which is in Christ Jesus.",
+      "ko": "집사의 직분을 잘한 자들은 아름다운 지위와 그리스도 예수 안에 있는 믿음에 큰 담력을 얻느니라",
+      "source_text_hash": "5b0f6b2d7cd9365e7a88ea60dbb5a4957369a7d93d9b488059e321d80d373af6",
+      "translation_text_hash": "1bbc0786bf24b2a88f430c62f315fb7de295d21d8a61508762661efa3d10b95b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집사의 직분을 잘한 자들은 아름다운 지위와 그리스도 예수 안에 있는 믿음에 큰 담력을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "1bbc0786bf24b2a88f430c62f315fb7de295d21d8a61508762661efa3d10b95b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:14",
+      "sequence": 29742,
+      "chapter_label": "1TI 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "These things I write to you, hoping to come to you shortly,",
+      "ko": "내가 속히 네게 가기를 바라나 이것을 네게 쓰는 것은",
+      "source_text_hash": "30eed4ed1960f1e2aaaf1bc4fe55f8474cd5b23a2a0b6ff2acb5727daff6dd81",
+      "translation_text_hash": "56b9ded8c79c1a5ee5a65a3c6329134537174f7469452137b828aecfdae1a495",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 속히 네게 가기를 바라나 이것을 네게 쓰는 것은"
+      ],
+      "raw_text_hashes": [
+        "56b9ded8c79c1a5ee5a65a3c6329134537174f7469452137b828aecfdae1a495"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:15",
+      "sequence": 29743,
+      "chapter_label": "1TI 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "but if I wait long, that you may know how men ought to behave themselves in God’s house, which is the assembly of the living God, the pillar and ground of the truth.",
+      "ko": "만일 내가 지체하면 너로 하나님의 집에서 어떻게 행하여야 할 것을 알게 하려 함이니 이 집은 살아 계신 하나님의 교회요 진리의 기둥과 터이니라",
+      "source_text_hash": "7688b8946ec08c0d5faad61efff91b535aee5c1c18717501d7bb5aeb69bef75a",
+      "translation_text_hash": "d32b87e281b4289784e7ae511d4395d166027f1bc1af9aeace94126f4215879b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 지체하면 너로 하나님의 집에서 어떻게 행하여야 할 것을 알게 하려 함이니 이 집은 살아 계신 하나님의 교회요 진리의 기둥과 터이니라"
+      ],
+      "raw_text_hashes": [
+        "d32b87e281b4289784e7ae511d4395d166027f1bc1af9aeace94126f4215879b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:3:16",
+      "sequence": 29744,
+      "chapter_label": "1TI 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TI",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Without controversy, the mystery of godliness is great: God was revealed in the flesh, justified in the spirit, seen by angels, preached among the nations, believed on in the world, and received up in glory.",
+      "ko": "크도다 경건의 비밀이여, 그렇지 않다 하는 이 없도다 그는 육신으로 나타난 바 되시고 영으로 의롭다 하심을 입으시고 천사들에게 보이시고 만국에서 전파되시고 세상에서 믿은바 되시고 영광 가운데서 올리우셨음이니라",
+      "source_text_hash": "2f7c7aeeabe4b24765768fb5ec4973f4b7e1dbb95fcabcdd5e1c528f27a25aec",
+      "translation_text_hash": "9d354bba2bd998130a0efe34142ae7e16fb9a4f4010c783c246b08fe91a40d9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크도다 경건의 비밀이여, 그렇지 않다 하는 이 없도다 그는 육신으로 나타난 바 되시고 영으로 의롭다 하심을 입으시고 천사들에게 보이시고 만국에서 전파되시고 세상에서 믿은바 되시고 영광 가운데서 올리우셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "9d354bba2bd998130a0efe34142ae7e16fb9a4f4010c783c246b08fe91a40d9b"
+      ]
+    }
+  ]
+}

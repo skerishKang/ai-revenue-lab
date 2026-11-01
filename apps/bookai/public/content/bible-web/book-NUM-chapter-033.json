@@ -1,0 +1,1805 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:033",
+  "unit_ordinal": 150,
+  "unit_label": "NUM 33",
+  "book_code": "NUM",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:33:1",
+      "sequence": 4762,
+      "chapter_label": "NUM 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "These are the journeys of the children of Israel, when they went out of the land of Egypt by their armies under the hand of Moses and Aaron.",
+      "ko": "이스라엘 자손이 모세와 아론의 관할하에 그 항오대로 애굽 땅에서 나오던 때의 노정이 이러하니라",
+      "source_text_hash": "9e8e5fc560b4dc6ba0c2319118c3479f287fb4c36d582d54b78eb85abf435086",
+      "translation_text_hash": "ccc4f37cf8f2e92bb1c964eb18f213fefdc7cede737bea6d0d7f419d161ef907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 모세와 아론의 관할하에 그 항오대로 애굽 땅에서 나오던 때의 노정이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "ccc4f37cf8f2e92bb1c964eb18f213fefdc7cede737bea6d0d7f419d161ef907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:2",
+      "sequence": 4763,
+      "chapter_label": "NUM 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "Moses wrote the starting points of their journeys by the commandment of the LORD. These are their journeys according to their starting points.",
+      "ko": "모세가 여호와의 명대로 그 노정을 따라 그 진행한 것을 기록하였으니 그 진행한대로 그 노정은 이러하니라",
+      "source_text_hash": "dcda97d8b27068355fa80ad78f452d3adf0c1043c1cf8fe242432b586a53f5c6",
+      "translation_text_hash": "5d96bcdcc022c2740ca77ae103c0187d56f3321d77b31e768a3eb79c9b9a5d45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 명대로 그 노정을 따라 그 진행한 것을 기록하였으니 그 진행한대로 그 노정은 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "5d96bcdcc022c2740ca77ae103c0187d56f3321d77b31e768a3eb79c9b9a5d45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:3",
+      "sequence": 4764,
+      "chapter_label": "NUM 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "They traveled from Rameses in the first month, on the fifteenth day of the first month; on the next day after the Passover, the children of Israel went out with a high hand in the sight of all the Egyptians,",
+      "ko": "그들이 정월 십오일에 라암셋에서 발행하였으니 곧 유월절 다음 날이라 이스라엘 자손이 애굽 모든 사람의 목전에서 큰 권능으로 나왔으니",
+      "source_text_hash": "9faa597eb6f10eae2e5d62b5c73686daa79976f9bb55a747a0f6a8edb9652bc1",
+      "translation_text_hash": "b5fc3b7122c32b0e76d8864471ec47fe8d9d3e1ed8e5f3f71657bf3e460c5217",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 정월 십오일에 라암셋에서 발행하였으니 곧 유월절 다음 날이라 이스라엘 자손이 애굽 모든 사람의 목전에서 큰 권능으로 나왔으니"
+      ],
+      "raw_text_hashes": [
+        "b5fc3b7122c32b0e76d8864471ec47fe8d9d3e1ed8e5f3f71657bf3e460c5217"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:4",
+      "sequence": 4765,
+      "chapter_label": "NUM 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "while the Egyptians were burying all their firstborn, whom the LORD had struck among them. The LORD also executed judgments on their gods.",
+      "ko": "애굽인은 여호와께서 그들 중에 치신 그 모든 장자를 장사하는 때라 여호와께서 그들의 신들에게도 벌을 주셨더라",
+      "source_text_hash": "203104196cea7ba67a448fc1bd2bd2c55d35eb0394bd16a5271835c887682793",
+      "translation_text_hash": "d6797fbc8c9c42663913595797ba10cb60111f994f5a7ca9d5b313bdc0a67a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽인은 여호와께서 그들 중에 치신 그 모든 장자를 장사하는 때라 여호와께서 그들의 신들에게도 벌을 주셨더라"
+      ],
+      "raw_text_hashes": [
+        "d6797fbc8c9c42663913595797ba10cb60111f994f5a7ca9d5b313bdc0a67a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:5",
+      "sequence": 4766,
+      "chapter_label": "NUM 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Israel traveled from Rameses, and encamped in Succoth.",
+      "ko": "이스라엘 자손이 라암셋에서 발행하여 숙곳에 진 쳤고",
+      "source_text_hash": "9b03160485f3145e664655f61dc5dbffccbbd6f435c28c711a4914d3fecf6232",
+      "translation_text_hash": "eb13b3d66c28850d67df8ae0ce8419515326b3e6c6271edab78a5eeba15c29f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 라암셋에서 발행하여 숙곳에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "eb13b3d66c28850d67df8ae0ce8419515326b3e6c6271edab78a5eeba15c29f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:6",
+      "sequence": 4767,
+      "chapter_label": "NUM 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "They traveled from Succoth, and encamped in Etham, which is in the edge of the wilderness.",
+      "ko": "숙곳에서 발행하여 광야 끝 에담에 진 쳤고",
+      "source_text_hash": "7997b0a146bc8bd21c573b53c6df5b4b558fad4beb16ad039dbb82754f9222b5",
+      "translation_text_hash": "79d042b25f4b3a1b7fa9c77b76476238ac167183afcb5a8c22cc2d72fd4ac60b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숙곳에서 발행하여 광야 끝 에담에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "79d042b25f4b3a1b7fa9c77b76476238ac167183afcb5a8c22cc2d72fd4ac60b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:7",
+      "sequence": 4768,
+      "chapter_label": "NUM 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "They traveled from Etham, and turned back to Pihahiroth, which is before Baal Zephon, and they encamped before Migdol.",
+      "ko": "에담에서 발행하여 바알스본 앞 비하히롯으로 돌아가서 믹돌 앞에 진 쳤고",
+      "source_text_hash": "7efbca2144e09acf31a98c4c832c4194e3b284993306490ed4635f72ef850fa1",
+      "translation_text_hash": "f2f68149b6485caa690b068e05b779c3c1a372dfc438a884fef1368242634b9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에담에서 발행하여 바알스본 앞 비하히롯으로 돌아가서 믹돌 앞에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "f2f68149b6485caa690b068e05b779c3c1a372dfc438a884fef1368242634b9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:8",
+      "sequence": 4769,
+      "chapter_label": "NUM 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "They traveled from before Hahiroth, and crossed through the middle of the sea into the wilderness. They went three days’ journey in the wilderness of Etham, and encamped in Marah.",
+      "ko": "하히롯 앞에서 발행하여 바다 가운데로 지나 광야에 이르고 에담 광야로 삼일 길쯤 들어가서 마라에 진 쳤고",
+      "source_text_hash": "e57f88144ba1b6abfb33ad7cba855eb0b3009e2934d5ceb451e5e1eae3ed14cb",
+      "translation_text_hash": "ba139aa703303dc91cb04c9acf7deb4c3a4941c7f7b6fdab9ed92a2e80a8f65d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하히롯 앞에서 발행하여 바다 가운데로 지나 광야에 이르고 에담 광야로 삼일 길쯤 들어가서 마라에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "ba139aa703303dc91cb04c9acf7deb4c3a4941c7f7b6fdab9ed92a2e80a8f65d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:9",
+      "sequence": 4770,
+      "chapter_label": "NUM 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "They traveled from Marah, and came to Elim. In Elim, there were twelve springs of water and seventy palm trees, and they encamped there.",
+      "ko": "마라에서 발행하여 엘림에 이르니 엘림에는 샘물 열 둘과 종려 칠십 주가 있으므로 거기 진 쳤고",
+      "source_text_hash": "bcf16fdd92a9d6d2bfe1992dda50fde56f6e2cb8a805f4edbcc5399b2dccb9d8",
+      "translation_text_hash": "15cb47cd4db0eb4c689f75e8007a6e795013daf75eb197d5058cb4de1ee9420d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마라에서 발행하여 엘림에 이르니 엘림에는 샘물 열 둘과 종려 칠십 주가 있으므로 거기 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "15cb47cd4db0eb4c689f75e8007a6e795013daf75eb197d5058cb4de1ee9420d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:10",
+      "sequence": 4771,
+      "chapter_label": "NUM 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "They traveled from Elim, and encamped by the Red Sea.",
+      "ko": "엘림에서 발행하여 홍해 가에 진 쳤고",
+      "source_text_hash": "774eecf9f54d6536a2584b7f4fa05d12d54bc45bf16bc9954593e386ed69fbb4",
+      "translation_text_hash": "ca2398e2e4fcd3022667e68fedaded7688f3679f2a52499a3fec2dda33bbc69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘림에서 발행하여 홍해 가에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "ca2398e2e4fcd3022667e68fedaded7688f3679f2a52499a3fec2dda33bbc69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:11",
+      "sequence": 4772,
+      "chapter_label": "NUM 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "They traveled from the Red Sea, and encamped in the wilderness of Sin.",
+      "ko": "홍해 가에서 발행하여 신 광야에 진 쳤고",
+      "source_text_hash": "ef3287a495a4525325850665877cf1ef1596cc18a8f8ece3badbc1e56b574ae8",
+      "translation_text_hash": "b37891e3ad02b3e3045b84d013a48ad984a381f0fb80d291baf6ec5c75cc03cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍해 가에서 발행하여 신 광야에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "b37891e3ad02b3e3045b84d013a48ad984a381f0fb80d291baf6ec5c75cc03cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:12",
+      "sequence": 4773,
+      "chapter_label": "NUM 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "They traveled from the wilderness of Sin, and encamped in Dophkah.",
+      "ko": "신 광야에서 발행하여",
+      "source_text_hash": "64ac07b346e14bce19b0143be7dafd6c25dceb41b029a2d38c86e85e8b8a63c9",
+      "translation_text_hash": "488252933dd8044ab32b2c7e712bc71844a90fa641d7162bc13314e57f121d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신 광야에서 발행하여"
+      ],
+      "raw_text_hashes": [
+        "488252933dd8044ab32b2c7e712bc71844a90fa641d7162bc13314e57f121d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:13",
+      "sequence": 4774,
+      "chapter_label": "NUM 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "They traveled from Dophkah, and encamped in Alush.",
+      "ko": "돕가에 진 쳤고 돕가에서 발행하여 알루스에 진 쳤고",
+      "source_text_hash": "da0ab8a8ee98c708b0c429b2aa98e79cb4e9ad15a6c0ecb833bef9445f5a031b",
+      "translation_text_hash": "1ca34a9bda82a77b262aba64f69d9e991085dce1a9df71333c11c37e2c1bf9c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돕가에 진 쳤고 돕가에서 발행하여 알루스에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "1ca34a9bda82a77b262aba64f69d9e991085dce1a9df71333c11c37e2c1bf9c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:14",
+      "sequence": 4775,
+      "chapter_label": "NUM 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "They traveled from Alush, and encamped in Rephidim, where there was no water for the people to drink.",
+      "ko": "알루스에서 발행하여 르비딤에 진 쳤는데 거기는 백성의 마실 물이 없었더라",
+      "source_text_hash": "07255597de0a466c5541df08498c0109971ae788c5ba2ba9e182a9cbd22c920a",
+      "translation_text_hash": "01bf4ae0a9eed99b99c49c78535978c64093387bb95b81de4e7078cb2ead7c11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알루스에서 발행하여 르비딤에 진 쳤는데 거기는 백성의 마실 물이 없었더라"
+      ],
+      "raw_text_hashes": [
+        "01bf4ae0a9eed99b99c49c78535978c64093387bb95b81de4e7078cb2ead7c11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:15",
+      "sequence": 4776,
+      "chapter_label": "NUM 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "They traveled from Rephidim, and encamped in the wilderness of Sinai.",
+      "ko": "르비딤에서 발행하여 시내 광야에 진 쳤고",
+      "source_text_hash": "0695e28c0706bc3466911d23c907fb4dd7f94439293e6d4ea4f0a11166c5622b",
+      "translation_text_hash": "a8f2906ec90a542d5f70cf839dd15a9066c77c3718081cfebcdba2dc80912ce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르비딤에서 발행하여 시내 광야에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "a8f2906ec90a542d5f70cf839dd15a9066c77c3718081cfebcdba2dc80912ce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:16",
+      "sequence": 4777,
+      "chapter_label": "NUM 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "They traveled from the wilderness of Sinai, and encamped in Kibroth Hattaavah.",
+      "ko": "시내 광야에서 발행하여 기브롯핫다아와에 진 쳤고",
+      "source_text_hash": "6821e992c8eed35cb77226c65caacfccb004e380febd62bfec69661987de88b5",
+      "translation_text_hash": "f3ee862d2a61784791528526250460edcf5e43c8d691d90c4a9e817af09107d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시내 광야에서 발행하여 기브롯핫다아와에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "f3ee862d2a61784791528526250460edcf5e43c8d691d90c4a9e817af09107d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:17",
+      "sequence": 4778,
+      "chapter_label": "NUM 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "They traveled from Kibroth Hattaavah, and encamped in Hazeroth.",
+      "ko": "기브롯핫다아와에서 발행하여 하세롯에 진 쳤고",
+      "source_text_hash": "ee7714c7bff95f9466b179a21e043bd1f71f62eedaaa6f9d31fb4513da02a06b",
+      "translation_text_hash": "c596958d17a90fd0d00c9e3d8cd09aa8c5b590fb7820500b3c8ebc55348a1a56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브롯핫다아와에서 발행하여 하세롯에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "c596958d17a90fd0d00c9e3d8cd09aa8c5b590fb7820500b3c8ebc55348a1a56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:18",
+      "sequence": 4779,
+      "chapter_label": "NUM 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "They traveled from Hazeroth, and encamped in Rithmah.",
+      "ko": "하세롯에서 발행하여 릿마에 진 쳤고",
+      "source_text_hash": "a6a6ad005d56346f3041fa84ade193c721d5a09cc3533ef1ecd18814150045d5",
+      "translation_text_hash": "72dffad0a7f793f0a799929f4c9d77202c4c5519345740a65b9a2211446e08ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하세롯에서 발행하여 릿마에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "72dffad0a7f793f0a799929f4c9d77202c4c5519345740a65b9a2211446e08ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:19",
+      "sequence": 4780,
+      "chapter_label": "NUM 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "They traveled from Rithmah, and encamped in Rimmon Perez.",
+      "ko": "릿마에서 발행하여 림몬베레스에 진 쳤고",
+      "source_text_hash": "f7c2814549e9038683abde70ab29c1de4ddb3ff05d3761e3a5ed827da3c70196",
+      "translation_text_hash": "3d2c240e8cc9ae50c21060be22190879ac7f8dd7b46c4a1ae4a18ab83356aa9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "릿마에서 발행하여 림몬베레스에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "3d2c240e8cc9ae50c21060be22190879ac7f8dd7b46c4a1ae4a18ab83356aa9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:20",
+      "sequence": 4781,
+      "chapter_label": "NUM 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "They traveled from Rimmon Perez, and encamped in Libnah.",
+      "ko": "림몬베레스에서 발행하여 립나에 진 쳤고",
+      "source_text_hash": "e0daa87a207d072f2163ef71d4f8be81329eb941e2ad7100db2e4269e7075e07",
+      "translation_text_hash": "32c1c58d806aeff0ab2c33f11c1037e0710b756ddcdc8d9ffcacb87935d8f48f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "림몬베레스에서 발행하여 립나에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "32c1c58d806aeff0ab2c33f11c1037e0710b756ddcdc8d9ffcacb87935d8f48f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:21",
+      "sequence": 4782,
+      "chapter_label": "NUM 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "They traveled from Libnah, and encamped in Rissah.",
+      "ko": "립나에서 발행하여 릿사에 진 쳤고",
+      "source_text_hash": "2a53d1d47970f70df9013cbdd1022fd13315c4794a617818874cf8c24c68b379",
+      "translation_text_hash": "f00a45b029691f748aee14a2ae9955117a27cca9c2ff02faeb22c77449aee8f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "립나에서 발행하여 릿사에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "f00a45b029691f748aee14a2ae9955117a27cca9c2ff02faeb22c77449aee8f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:22",
+      "sequence": 4783,
+      "chapter_label": "NUM 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "They traveled from Rissah, and encamped in Kehelathah.",
+      "ko": "릿사에서 발행하여 그헬라다에 진 쳤고",
+      "source_text_hash": "b49f89401e529646d9086a9481616b1752adcd7a44b07fc3c8eee6e6a44a9cbf",
+      "translation_text_hash": "9c89530d5eb55cafdced89e8aeb1e910fc2513486f3738964970d29d0493728e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "릿사에서 발행하여 그헬라다에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "9c89530d5eb55cafdced89e8aeb1e910fc2513486f3738964970d29d0493728e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:23",
+      "sequence": 4784,
+      "chapter_label": "NUM 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "They traveled from Kehelathah, and encamped in Mount Shepher.",
+      "ko": "그헬라다에서 발행하여 세벨산에 진 쳤고",
+      "source_text_hash": "75686736d05ba9611daee320fbd8c3b70085a3f3ced2b29e8af4dcb91dbe26d4",
+      "translation_text_hash": "bf976653b4ae9e8f87f54ad41cb2841e3fcac7cd488e09e99e1b523986621492",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그헬라다에서 발행하여 세벨산에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "bf976653b4ae9e8f87f54ad41cb2841e3fcac7cd488e09e99e1b523986621492"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:24",
+      "sequence": 4785,
+      "chapter_label": "NUM 33",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 24
+        }
+      ],
+      "en": "They traveled from Mount Shepher, and encamped in Haradah.",
+      "ko": "세벨산에서 발행하여 하라다에 진 쳤고",
+      "source_text_hash": "7252d0d9fa741228f35e679f540dab60ad628907e544633b953622a4d2bc9e1f",
+      "translation_text_hash": "a8166c44d55bb3a07b2dc2a9b1b9405733680413c4615e3c4242a88ffa8c4ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세벨산에서 발행하여 하라다에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "a8166c44d55bb3a07b2dc2a9b1b9405733680413c4615e3c4242a88ffa8c4ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:25",
+      "sequence": 4786,
+      "chapter_label": "NUM 33",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 25
+        }
+      ],
+      "en": "They traveled from Haradah, and encamped in Makheloth.",
+      "ko": "하라다에서 발행하여 막헬롯에 진 쳤고",
+      "source_text_hash": "5d22260ee61e73f1fea96260435bd9408420d4941355dd739366292ae24f8356",
+      "translation_text_hash": "53bf1e1a1ca859a417dc967d767a0cf4bb9199e239914811fda09b0d413311f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하라다에서 발행하여 막헬롯에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "53bf1e1a1ca859a417dc967d767a0cf4bb9199e239914811fda09b0d413311f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:26",
+      "sequence": 4787,
+      "chapter_label": "NUM 33",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 26
+        }
+      ],
+      "en": "They traveled from Makheloth, and encamped in Tahath.",
+      "ko": "막헬롯에서 발행하여 다핫에 진 쳤고",
+      "source_text_hash": "41e2b9fc7175dbf8f0d3ba7c60fc9d8a20ffd53aca0ca534d28a81127dd0c4c1",
+      "translation_text_hash": "e5f8f7052c4b69b5a020871c09e140ffa34e961347c5f4b856e881dfff0cdbad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "막헬롯에서 발행하여 다핫에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "e5f8f7052c4b69b5a020871c09e140ffa34e961347c5f4b856e881dfff0cdbad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:27",
+      "sequence": 4788,
+      "chapter_label": "NUM 33",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 27
+        }
+      ],
+      "en": "They traveled from Tahath, and encamped in Terah.",
+      "ko": "다핫에서 발행하여 데라에 진 쳤고",
+      "source_text_hash": "10dee2ebb0688b9113d5e06de139f84d514c571b96669771a44495e267d6e2ed",
+      "translation_text_hash": "9c5b73ddcfbb72a64449958f4b1ee5971b9c53e8a6c3cd5d8cc55a9667d2bb38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다핫에서 발행하여 데라에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "9c5b73ddcfbb72a64449958f4b1ee5971b9c53e8a6c3cd5d8cc55a9667d2bb38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:28",
+      "sequence": 4789,
+      "chapter_label": "NUM 33",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 28
+        }
+      ],
+      "en": "They traveled from Terah, and encamped in Mithkah.",
+      "ko": "데라에서 발행하여 밋가에 진 쳤고",
+      "source_text_hash": "08c939d8fdb027e1e6a5f0613996b80d11bd5cd2048e155d829adffa598e1f4a",
+      "translation_text_hash": "7f54d10d38276ddd39be9bcd1990c3e2016f1c89f9f0158abf45491892b777f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데라에서 발행하여 밋가에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "7f54d10d38276ddd39be9bcd1990c3e2016f1c89f9f0158abf45491892b777f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:29",
+      "sequence": 4790,
+      "chapter_label": "NUM 33",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 29
+        }
+      ],
+      "en": "They traveled from Mithkah, and encamped in Hashmonah.",
+      "ko": "밋가에서 발행하여 하스모나에 진 쳤고",
+      "source_text_hash": "3bc144d43b8d85c0e5eadb0a6cd4df15b2bfff0a1e727fb0a393906d12d18489",
+      "translation_text_hash": "1be06af274b186ebba18440cfabe17fb895a543ed1991dc8b41e3a48e33ec0e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밋가에서 발행하여 하스모나에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "1be06af274b186ebba18440cfabe17fb895a543ed1991dc8b41e3a48e33ec0e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:30",
+      "sequence": 4791,
+      "chapter_label": "NUM 33",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 30
+        }
+      ],
+      "en": "They traveled from Hashmonah, and encamped in Moseroth.",
+      "ko": "하스모나에서 발행하여 모세롯에 진 쳤고",
+      "source_text_hash": "dbc7d4d699a830ba64428345cece6f8f139c248787a41b70c789b655fdaad6f0",
+      "translation_text_hash": "bee34b0c3bab89ea5979d18782b1a2e64d5de7326c54cdee88baf83fac50f924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하스모나에서 발행하여 모세롯에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "bee34b0c3bab89ea5979d18782b1a2e64d5de7326c54cdee88baf83fac50f924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:31",
+      "sequence": 4792,
+      "chapter_label": "NUM 33",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 31
+        }
+      ],
+      "en": "They traveled from Moseroth, and encamped in Bene Jaakan.",
+      "ko": "모세롯에서 발행하여 브네야아간에 진 쳤고",
+      "source_text_hash": "bf1e18c49619935a831f66a3adf114a9078e226f7744673ed3e023a5e9b7c3b4",
+      "translation_text_hash": "a5831a0ef0ab273e31fd372dc7eeb8fc6c087f244e3ca19e8a6932dde3470408",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세롯에서 발행하여 브네야아간에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "a5831a0ef0ab273e31fd372dc7eeb8fc6c087f244e3ca19e8a6932dde3470408"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:32",
+      "sequence": 4793,
+      "chapter_label": "NUM 33",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 32
+        }
+      ],
+      "en": "They traveled from Bene Jaakan, and encamped in Hor Haggidgad.",
+      "ko": "브네야아간에서 발행하여 홀하깃갓에 진 쳤고",
+      "source_text_hash": "5f1137ca21ee8b21f4b6fb9fa25c362bd78fc78d6873fb91f26541ebdf381e88",
+      "translation_text_hash": "21066a21e99e3b8eed0adff2a917b46a89497613b47718268984890cb58da064",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브네야아간에서 발행하여 홀하깃갓에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "21066a21e99e3b8eed0adff2a917b46a89497613b47718268984890cb58da064"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:33",
+      "sequence": 4794,
+      "chapter_label": "NUM 33",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 33
+        }
+      ],
+      "en": "They traveled from Hor Haggidgad, and encamped in Jotbathah.",
+      "ko": "홀하깃갓에서 발행하여 욧바다에 진 쳤고",
+      "source_text_hash": "2322aee24d6fe885c94ea3a210aba4c5e53a2a985cb490eb8531ef275a015fed",
+      "translation_text_hash": "bbed02aa0698304144bc5afb61a04febcb07c642c61131ef6cdd980c401a73aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀하깃갓에서 발행하여 욧바다에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "bbed02aa0698304144bc5afb61a04febcb07c642c61131ef6cdd980c401a73aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:34",
+      "sequence": 4795,
+      "chapter_label": "NUM 33",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 34
+        }
+      ],
+      "en": "They traveled from Jotbathah, and encamped in Abronah.",
+      "ko": "욧바다에서 발행하여 아브로나에 진 쳤고",
+      "source_text_hash": "025b078f619658ef9ef9d189c5db49062bf23c323be21b6c9366015004f2e5e1",
+      "translation_text_hash": "f42ffbd34f60e0607640c28f94f474e29a92c347f12a5d4092c5bbadd989e756",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욧바다에서 발행하여 아브로나에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "f42ffbd34f60e0607640c28f94f474e29a92c347f12a5d4092c5bbadd989e756"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:35",
+      "sequence": 4796,
+      "chapter_label": "NUM 33",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 35
+        }
+      ],
+      "en": "They traveled from Abronah, and encamped in Ezion Geber.",
+      "ko": "아브로나에서 발행하여 에시온게벨에 진 쳤고",
+      "source_text_hash": "ff4658eebaf38dd5cb29a7f2694bf2ceca26090a3bb9096687040280ba307b95",
+      "translation_text_hash": "9efa9098cc558cceb964eabeaae32242c4653277d8d0a3b2a9ac0f8618238bcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브로나에서 발행하여 에시온게벨에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "9efa9098cc558cceb964eabeaae32242c4653277d8d0a3b2a9ac0f8618238bcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:36",
+      "sequence": 4797,
+      "chapter_label": "NUM 33",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 36
+        }
+      ],
+      "en": "They traveled from Ezion Geber, and encamped at Kadesh in the wilderness of Zin.",
+      "ko": "에시온게벨에서 발행하여 신 광야 곧 가데스에 진 쳤고",
+      "source_text_hash": "174ada8baffb9f0f4e5dd14420000806859a72a12bfca7adacca800caa5cd7f8",
+      "translation_text_hash": "d99b66710fd7c5d400acdc3e651c10e323b9f9d3d287bf02bebe74c6cbcd7361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에시온게벨에서 발행하여 신 광야 곧 가데스에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "d99b66710fd7c5d400acdc3e651c10e323b9f9d3d287bf02bebe74c6cbcd7361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:37",
+      "sequence": 4798,
+      "chapter_label": "NUM 33",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 37
+        }
+      ],
+      "en": "They traveled from Kadesh, and encamped in Mount Hor, in the edge of the land of Edom.",
+      "ko": "가데스에서 발행하여 에돔 국경 호르산에 진 쳤더라",
+      "source_text_hash": "db0033d59e79e663f06557355b95be4e89f3c7bfe32b24a480d13bafd107ff03",
+      "translation_text_hash": "906878118dd8b7ea5325fc0f31956d0d7440aefb22c32522a6b898a84485e3e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가데스에서 발행하여 에돔 국경 호르산에 진 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "906878118dd8b7ea5325fc0f31956d0d7440aefb22c32522a6b898a84485e3e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:38",
+      "sequence": 4799,
+      "chapter_label": "NUM 33",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 38
+        }
+      ],
+      "en": "Aaron the priest went up into Mount Hor at the commandment of the LORD and died there, in the fortieth year after the children of Israel had come out of the land of Egypt, in the fifth month, on the first day of the month.",
+      "ko": "이스라엘 자손이 애굽 땅에서 나온지 사십년 오월 일일에 제사장 아론이 여호와의 명으로 호르산에 올라가 거기서 죽었으니",
+      "source_text_hash": "c5fbc80e962e11230886ebe239773d95c76f0f20fa410766d4733cd40b10e10b",
+      "translation_text_hash": "4ad212d2050b456a5aa56678a3f47a17b22c0a6c09aa021e68527c15d9a6e3aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽 땅에서 나온지 사십년 오월 일일에 제사장 아론이 여호와의 명으로 호르산에 올라가 거기서 죽었으니"
+      ],
+      "raw_text_hashes": [
+        "4ad212d2050b456a5aa56678a3f47a17b22c0a6c09aa021e68527c15d9a6e3aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:39",
+      "sequence": 4800,
+      "chapter_label": "NUM 33",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 39
+        }
+      ],
+      "en": "Aaron was one hundred twenty-three years old when he died in Mount Hor.",
+      "ko": "아론이 호르산에서 죽던 때에 나이 일백 이십 삼세이었더라",
+      "source_text_hash": "5515c7363b3d0d102095947a7d995505f69aa8beb6373d79f5a3be8a95975401",
+      "translation_text_hash": "2f2b044d89b4bd110caa72b7b3c453e264d38856f427de8360b5c3e25cb927f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 호르산에서 죽던 때에 나이 일백 이십 삼세이었더라"
+      ],
+      "raw_text_hashes": [
+        "2f2b044d89b4bd110caa72b7b3c453e264d38856f427de8360b5c3e25cb927f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:40",
+      "sequence": 4801,
+      "chapter_label": "NUM 33",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 40
+        }
+      ],
+      "en": "The Canaanite king of Arad, who lived in the South in the land of Canaan, heard of the coming of the children of Israel.",
+      "ko": "가나안 땅 남방에 거한 가나안 사람 아랏왕이 이스라엘의 옴을 들었더라",
+      "source_text_hash": "7e09b6a8b1746f8e4a45c4630587da5c7ade58ef8c014a60e3fb4bb481422669",
+      "translation_text_hash": "dd8e4f819deac2f529c1bc3b1c9cb31953b695aa95d2f1af099d605a94d12db8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 땅 남방에 거한 가나안 사람 아랏왕이 이스라엘의 옴을 들었더라"
+      ],
+      "raw_text_hashes": [
+        "dd8e4f819deac2f529c1bc3b1c9cb31953b695aa95d2f1af099d605a94d12db8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:41",
+      "sequence": 4802,
+      "chapter_label": "NUM 33",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 41
+        }
+      ],
+      "en": "They traveled from Mount Hor, and encamped in Zalmonah.",
+      "ko": "그들이 호르산에서 발행하여 살모나에 진 쳤고",
+      "source_text_hash": "a8888a47d63ca00de2f1195ec628e0d8deef390367a4b1927df70629df05da04",
+      "translation_text_hash": "acb72ea362505d9fac32e23144d9f42c53da9b93832b767310823727883f8c41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 호르산에서 발행하여 살모나에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "acb72ea362505d9fac32e23144d9f42c53da9b93832b767310823727883f8c41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:42",
+      "sequence": 4803,
+      "chapter_label": "NUM 33",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 42
+        }
+      ],
+      "en": "They traveled from Zalmonah, and encamped in Punon.",
+      "ko": "살모나에서 발행하여 부논에 진 쳤고",
+      "source_text_hash": "644032822bc8c1602e2e7dfe59478094aaa21633a090b9f1123723aaba90dc75",
+      "translation_text_hash": "34a6599032d4dafe1caa3aa3a8a63d5bf28e2e4c9a4c98ce1e8d749b83d68f6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살모나에서 발행하여 부논에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "34a6599032d4dafe1caa3aa3a8a63d5bf28e2e4c9a4c98ce1e8d749b83d68f6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:43",
+      "sequence": 4804,
+      "chapter_label": "NUM 33",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 43
+        }
+      ],
+      "en": "They traveled from Punon, and encamped in Oboth.",
+      "ko": "부논에서 발행하여 오봇에 진 쳤고",
+      "source_text_hash": "8e41fb6aaeb93ab346a7a03f7f8c4f86f95a37b03eeb960d339afa1dbfd28aac",
+      "translation_text_hash": "57936013169e02aeb6c46859b7c1ab7d0a024148e2f848649f5461a24002e511",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부논에서 발행하여 오봇에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "57936013169e02aeb6c46859b7c1ab7d0a024148e2f848649f5461a24002e511"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:44",
+      "sequence": 4805,
+      "chapter_label": "NUM 33",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 44
+        }
+      ],
+      "en": "They traveled from Oboth, and encamped in Iye Abarim, in the border of Moab.",
+      "ko": "오봇에서 발행하여 모압 변경 이예아바림에 진 쳤고",
+      "source_text_hash": "cb63bc2022f0ec04b218ad4d366400ac8bba506d169136878670296f359ff8b7",
+      "translation_text_hash": "d4ad9b3b3d0c0523d3de33a4480471024ab084ea216c0e1095acf7f853f54751",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오봇에서 발행하여 모압 변경 이예아바림에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "d4ad9b3b3d0c0523d3de33a4480471024ab084ea216c0e1095acf7f853f54751"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:45",
+      "sequence": 4806,
+      "chapter_label": "NUM 33",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 45
+        }
+      ],
+      "en": "They traveled from Iyim, and encamped in Dibon Gad.",
+      "ko": "이임에서 발행하여 디본갓에 진 쳤고",
+      "source_text_hash": "e15ec97745d8f04f5941731cf6689ebe7892091ee610c115d9b08960fd34cf9a",
+      "translation_text_hash": "2cdfcd744fe1f96d059f028749d597d309142285f864e03036c47dd54081452b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이임에서 발행하여 디본갓에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "2cdfcd744fe1f96d059f028749d597d309142285f864e03036c47dd54081452b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:46",
+      "sequence": 4807,
+      "chapter_label": "NUM 33",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 46
+        }
+      ],
+      "en": "They traveled from Dibon Gad, and encamped in Almon Diblathaim.",
+      "ko": "디본갓에서 발행하여 알몬디블라다임에 진 쳤고",
+      "source_text_hash": "5cec83f8d66d3ad152221e1ac6f73108dcb546377eb8c501398c1d083d1c146a",
+      "translation_text_hash": "a42afbecfd82c4143c883ad3c48d59e95e403edcf1b2588d92e673dd8e61ace0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디본갓에서 발행하여 알몬디블라다임에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "a42afbecfd82c4143c883ad3c48d59e95e403edcf1b2588d92e673dd8e61ace0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:47",
+      "sequence": 4808,
+      "chapter_label": "NUM 33",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 47
+        }
+      ],
+      "en": "They traveled from Almon Diblathaim, and encamped in the mountains of Abarim, before Nebo.",
+      "ko": "알몬디블라다임에서 발행하여 느보 앞 아바림산에 진 쳤고",
+      "source_text_hash": "d9bec0e012d6c54da3da154e775cc215f41d5bf7967010794aba084d7f5ae467",
+      "translation_text_hash": "8a8eaecb086bc2aa1ca3ef572ad4c59e3d4fae281ca4a529079e45b69f75775b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "알몬디블라다임에서 발행하여 느보 앞 아바림산에 진 쳤고"
+      ],
+      "raw_text_hashes": [
+        "8a8eaecb086bc2aa1ca3ef572ad4c59e3d4fae281ca4a529079e45b69f75775b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:48",
+      "sequence": 4809,
+      "chapter_label": "NUM 33",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 48
+        }
+      ],
+      "en": "They traveled from the mountains of Abarim, and encamped in the plains of Moab by the Jordan at Jericho.",
+      "ko": "아바림산에서 발행하여 여리고 맞은편 요단 가 모압 평지에 진 쳤으니",
+      "source_text_hash": "e651cbf424699a663214bd89986a2dde197d96d8678229c209317b5467ad5beb",
+      "translation_text_hash": "74dffae59072b4c4bf2c5196fa0994029135af564e212f6ce4ea3b909d3c0841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아바림산에서 발행하여 여리고 맞은편 요단 가 모압 평지에 진 쳤으니"
+      ],
+      "raw_text_hashes": [
+        "74dffae59072b4c4bf2c5196fa0994029135af564e212f6ce4ea3b909d3c0841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:49",
+      "sequence": 4810,
+      "chapter_label": "NUM 33",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 49
+        }
+      ],
+      "en": "They encamped by the Jordan, from Beth Jeshimoth even to Abel Shittim in the plains of Moab.",
+      "ko": "요단 가 모압 평지의 진이 벧여시못에서부터 아벨싯딤에 미쳤었더라",
+      "source_text_hash": "db526bf314bb009d52e5bec552ff8e69c9f810d3b5c3cb277eb5c94d205b307d",
+      "translation_text_hash": "652ae6f086c1e520cde34c1a5d3759da012ed0597a2de81cce46602dadab4d6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 가 모압 평지의 진이 벧여시못에서부터 아벨싯딤에 미쳤었더라"
+      ],
+      "raw_text_hashes": [
+        "652ae6f086c1e520cde34c1a5d3759da012ed0597a2de81cce46602dadab4d6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:50",
+      "sequence": 4811,
+      "chapter_label": "NUM 33",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 50
+        }
+      ],
+      "en": "The LORD spoke to Moses in the plains of Moab by the Jordan at Jericho, saying,",
+      "ko": "여리고 맞은편 요단 가 모압 평지에서 여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "7c162341e693fe282da007ee67ad33d70c95c7bb5091c3aca9ecdb269cef1bc5",
+      "translation_text_hash": "50eb93ff176690eb38321fbdee25830243c1894f6b715adf45876cd6ac6a9478",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여리고 맞은편 요단 가 모압 평지에서 여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "50eb93ff176690eb38321fbdee25830243c1894f6b715adf45876cd6ac6a9478"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:51",
+      "sequence": 4812,
+      "chapter_label": "NUM 33",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 51
+        }
+      ],
+      "en": "Speak to the children of Israel, and tell them, “When you pass over the Jordan into the land of Canaan,",
+      "ko": "이스라엘 자손에게 말하여 그들에게 이르라 너희가 요단을 건너 가나안 땅에 들어가거든",
+      "source_text_hash": "ace23ad386d2861f5097b8fc9999fa46e67ce5efe7f8eb8e3564080eb2f50b12",
+      "translation_text_hash": "b5ca251a7ed522ce946dda9deb363e56a9da01a3ad330899e97be80785cacff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 말하여 그들에게 이르라 너희가 요단을 건너 가나안 땅에 들어가거든"
+      ],
+      "raw_text_hashes": [
+        "b5ca251a7ed522ce946dda9deb363e56a9da01a3ad330899e97be80785cacff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:52",
+      "sequence": 4813,
+      "chapter_label": "NUM 33",
+      "verse_label": "52",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 52
+        }
+      ],
+      "en": "then you shall drive out all the inhabitants of the land from before you, destroy all their stone idols, destroy all their molten images, and demolish all their high places.",
+      "ko": "그 땅 거민을 너희 앞에서 다 몰아내고 그 새긴 석상과 부어 만든 우상을 다 파멸하며 산당을 다 훼파하고",
+      "source_text_hash": "2fcac08e75e909757ddf6f070d55f8c592d6ec3131f91c980010113519d1f47c",
+      "translation_text_hash": "13084c7edc9aae181ca2716239ce692c2ef87ab98bf1b09f3e7c208403686375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 거민을 너희 앞에서 다 몰아내고 그 새긴 석상과 부어 만든 우상을 다 파멸하며 산당을 다 훼파하고"
+      ],
+      "raw_text_hashes": [
+        "13084c7edc9aae181ca2716239ce692c2ef87ab98bf1b09f3e7c208403686375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:53",
+      "sequence": 4814,
+      "chapter_label": "NUM 33",
+      "verse_label": "53",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 53
+        }
+      ],
+      "en": "You shall take possession of the land, and dwell therein; for I have given the land to you to possess it.",
+      "ko": "그 땅을 취하여 거기 거하라 내가 그 땅을 너희 산업으로 너희에게 주었음이라",
+      "source_text_hash": "21265b5a4423b7d93a7b9b46e1556b6529af6679cfb2ebd78872d081510045e9",
+      "translation_text_hash": "9f9ac7249a3b1ec0d28a4662f3057d49c440826c41d21f4495b4154b15572b2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅을 취하여 거기 거하라 내가 그 땅을 너희 산업으로 너희에게 주었음이라"
+      ],
+      "raw_text_hashes": [
+        "9f9ac7249a3b1ec0d28a4662f3057d49c440826c41d21f4495b4154b15572b2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:54",
+      "sequence": 4815,
+      "chapter_label": "NUM 33",
+      "verse_label": "54",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 54
+        }
+      ],
+      "en": "You shall inherit the land by lot according to your families; to the larger groups you shall give a larger inheritance, and to the smaller you shall give a smaller inheritance. Wherever the lot falls to any man, that shall be his. You shall inherit according to the tribes of your fathers.",
+      "ko": "너희의 가족을 따라서 그 땅을 제비 뽑아 나눌 것이니 수가 많으면 많은 기업을 주고 적으면 적은 기업을 주되 각기 제비 뽑힌대로 그 소유가 될 것인즉 너희 열조의 지파를 따라 기업을 얻을 것이니라",
+      "source_text_hash": "8a7ede470bc48b9005eb7a309881cedca7edb832de2daee972b3095b86586dbb",
+      "translation_text_hash": "a85d6b2ea66521816ce1e8c6c28d0022d2c093d2c4c59d58abc6c61d7e54cb09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 가족을 따라서 그 땅을 제비 뽑아 나눌 것이니 수가 많으면 많은 기업을 주고 적으면 적은 기업을 주되 각기 제비 뽑힌대로 그 소유가 될 것인즉 너희 열조의 지파를 따라 기업을 얻을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a85d6b2ea66521816ce1e8c6c28d0022d2c093d2c4c59d58abc6c61d7e54cb09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:55",
+      "sequence": 4816,
+      "chapter_label": "NUM 33",
+      "verse_label": "55",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 55
+        }
+      ],
+      "en": "“But if you do not drive out the inhabitants of the land from before you, then those you let remain of them will be like pricks in your eyes and thorns in your sides. They will harass you in the land in which you dwell.",
+      "ko": "너희가 만일 그 땅 거민을 너희 앞에서 몰아내지 아니하면 너희의 남겨둔 자가 너희의 눈에 가시와 너희의 옆구리에 찌르는 것이 되어 너희 거하는 땅에서 너희를 괴롭게 할 것이요",
+      "source_text_hash": "c2fe6df602194a65e0224ca851323bc0b742a0c52b4c4ab01184042b5237653b",
+      "translation_text_hash": "9923ebf33ed284ede38d5944f5867d6e77213ed8eb5da049bf00991bc71ce96a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 그 땅 거민을 너희 앞에서 몰아내지 아니하면 너희의 남겨둔 자가 너희의 눈에 가시와 너희의 옆구리에 찌르는 것이 되어 너희 거하는 땅에서 너희를 괴롭게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9923ebf33ed284ede38d5944f5867d6e77213ed8eb5da049bf00991bc71ce96a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:33:56",
+      "sequence": 4817,
+      "chapter_label": "NUM 33",
+      "verse_label": "56",
+      "locator": {
+        "book": "NUM",
+        "chapter": 33,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 33,
+          "verse": 56
+        }
+      ],
+      "en": "It shall happen that as I thought to do to them, so I will do to you.”",
+      "ko": "나는 그들에게 행하기로 생각한 것을 너희에게 행하리라",
+      "source_text_hash": "2f4c6fd5821fc29074f8c1dbfdf8321c161153168d3ebb71e4c93dd44111139a",
+      "translation_text_hash": "a435bbb52fc09f6bd44a59842bf81786a8a3d1a0cf5d2b392e4b26c7aa8523e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 그들에게 행하기로 생각한 것을 너희에게 행하리라"
+      ],
+      "raw_text_hashes": [
+        "a435bbb52fc09f6bd44a59842bf81786a8a3d1a0cf5d2b392e4b26c7aa8523e5"
+      ]
+    }
+  ]
+}

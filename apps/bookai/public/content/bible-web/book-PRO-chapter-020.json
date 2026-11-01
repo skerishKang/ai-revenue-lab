@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:020",
+  "unit_ordinal": 648,
+  "unit_label": "PRO 20",
+  "book_code": "PRO",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:20:1",
+      "sequence": 16956,
+      "chapter_label": "PRO 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "Wine is a mocker and beer is a brawler. Whoever is led astray by them is not wise.",
+      "ko": "포도주는 거만케 하는 것이요 독주는 떠들게 하는 것이라 무릇 이에 미혹되는 자에게는 지혜가 없느니라",
+      "source_text_hash": "7a18dfdda9af5a8dec20b49feb9e0925ba13c03476e83e48f896f94691493ac2",
+      "translation_text_hash": "b520f5a093ed9a951f39c8ca2a236de60ac8242a794b4603ccae948d05fdb0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주는 거만케 하는 것이요 독주는 떠들게 하는 것이라 무릇 이에 미혹되는 자에게는 지혜가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "b520f5a093ed9a951f39c8ca2a236de60ac8242a794b4603ccae948d05fdb0e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:2",
+      "sequence": 16957,
+      "chapter_label": "PRO 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "The terror of a king is like the roaring of a lion. He who provokes him to anger forfeits his own life.",
+      "ko": "왕의 진노는 사자의 부르짖음 같으니 그를 노하게 하는 것은 자기의 생명을 해하는 것이니라",
+      "source_text_hash": "aaad7fcb93b22c2e575bdf3ae59b0527ea94b11b899074b04e6150be92189d1d",
+      "translation_text_hash": "20dca4f726710d525008b147695d39d2e7d331d288dd6ebc29859ac2709db0be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 진노는 사자의 부르짖음 같으니 그를 노하게 하는 것은 자기의 생명을 해하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "20dca4f726710d525008b147695d39d2e7d331d288dd6ebc29859ac2709db0be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:3",
+      "sequence": 16958,
+      "chapter_label": "PRO 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "It is an honor for a man to keep aloof from strife, but every fool will be quarreling.",
+      "ko": "다툼을 멀리 하는 것이 사람에게 영광이어늘 미련한 자마다 다툼을 일으키느니라",
+      "source_text_hash": "b91dd55b995adecb5489153b96e665f7c52487e4c0f6390f906b4b8aeb4236c0",
+      "translation_text_hash": "357459132ec85d7e06036e2842b54b1b5d0f74bca8ef8fa73f22c6e972838cd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다툼을 멀리 하는 것이 사람에게 영광이어늘 미련한 자마다 다툼을 일으키느니라"
+      ],
+      "raw_text_hashes": [
+        "357459132ec85d7e06036e2842b54b1b5d0f74bca8ef8fa73f22c6e972838cd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:4",
+      "sequence": 16959,
+      "chapter_label": "PRO 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "The sluggard will not plow by reason of the winter; therefore he shall beg in harvest, and have nothing.",
+      "ko": "게으른 자는 가을에 밭 갈지 아니하나니 그러므로 거둘 때에는 구걸할찌라도 얻지 못하리라",
+      "source_text_hash": "6c8659ac4ec6f026dfaf33b9d1a9729baddf1208d083ab1058c68fd67fc8ac32",
+      "translation_text_hash": "413d93d507328d776d681a35a6dc83abf775cb4b27a0a6f67a9dfdc666ca3302",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 가을에 밭 갈지 아니하나니 그러므로 거둘 때에는 구걸할찌라도 얻지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "413d93d507328d776d681a35a6dc83abf775cb4b27a0a6f67a9dfdc666ca3302"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:5",
+      "sequence": 16960,
+      "chapter_label": "PRO 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Counsel in the heart of man is like deep water, but a man of understanding will draw it out.",
+      "ko": "사람의 마음에 있는 모략은 깊은 물 같으니라 그럴찌라도 명철한 사람은 그것을 길어 내느니라",
+      "source_text_hash": "8225feb309a640ff495d52bb7a80d60abb760a109679d9caaf936fc25bfde619",
+      "translation_text_hash": "bfc8d3f00c9bec3051ef424b94b3dcca9ac91942d7073f73d1fb255664b9ae5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 마음에 있는 모략은 깊은 물 같으니라 그럴찌라도 명철한 사람은 그것을 길어 내느니라"
+      ],
+      "raw_text_hashes": [
+        "bfc8d3f00c9bec3051ef424b94b3dcca9ac91942d7073f73d1fb255664b9ae5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:6",
+      "sequence": 16961,
+      "chapter_label": "PRO 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "Many men claim to be men of unfailing love, but who can find a faithful man?",
+      "ko": "많은 사람은 각기 자기의 인자함을 자랑하나니 충성된 자를 누가 만날 수 있으랴",
+      "source_text_hash": "647868aebef4e2c7f9bed4582c57f60d8b550c1e70b09bbd68d8d9395ed5fae8",
+      "translation_text_hash": "ccea837b31ec8195c419745479458ffdf11e5b085a5742d01c1cb30214a043d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람은 각기 자기의 인자함을 자랑하나니 충성된 자를 누가 만날 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "ccea837b31ec8195c419745479458ffdf11e5b085a5742d01c1cb30214a043d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:7",
+      "sequence": 16962,
+      "chapter_label": "PRO 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "A righteous man walks in integrity. Blessed are his children after him.",
+      "ko": "완전히 행하는 자가 의인이라 그 후손에게 복이 있느니라",
+      "source_text_hash": "eda9168442787bf7f21429571ee9fc8c1a54e382bb9b65e9fcee67155857c11e",
+      "translation_text_hash": "8b19a644f2b97e3109b328875c2f9016578f64ecd429508b0072c8e5ac27bd94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "완전히 행하는 자가 의인이라 그 후손에게 복이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "8b19a644f2b97e3109b328875c2f9016578f64ecd429508b0072c8e5ac27bd94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:8",
+      "sequence": 16963,
+      "chapter_label": "PRO 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "A king who sits on the throne of judgment scatters away all evil with his eyes.",
+      "ko": "심판 자리에 앉은 왕은 그 눈으로 모든 악을 흩어지게 하느니라",
+      "source_text_hash": "bc1e5afde62c6c071d99e033c6a6b3e33ad4a4bc4c73ca6c842e8ccf62c7e6db",
+      "translation_text_hash": "8b1032e54dc5b12a7ec4cb3e69e2b2609b15e0686a91d2f9615aaf8a9a1e5d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 자리에 앉은 왕은 그 눈으로 모든 악을 흩어지게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "8b1032e54dc5b12a7ec4cb3e69e2b2609b15e0686a91d2f9615aaf8a9a1e5d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:9",
+      "sequence": 16964,
+      "chapter_label": "PRO 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Who can say, “I have made my heart pure. I am clean and without sin”?",
+      "ko": "내가 내 마음을 정하게 하였다 내 죄를 깨끗하게 하였다 할 자가 누구뇨",
+      "source_text_hash": "476b614b07b4c6ab013b723ce6d87ccc74e62266264a6058d44687df4694d0e0",
+      "translation_text_hash": "bef887a65228fdca8af73fd6a693d2f9c6899936ce8985a64ace325d522c35f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 마음을 정하게 하였다 내 죄를 깨끗하게 하였다 할 자가 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "bef887a65228fdca8af73fd6a693d2f9c6899936ce8985a64ace325d522c35f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:10",
+      "sequence": 16965,
+      "chapter_label": "PRO 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "Differing weights and differing measures, both of them alike are an abomination to the LORD.",
+      "ko": "한결 같지 않은 저울 추와 말은 다 여호와께서 미워하시느니라",
+      "source_text_hash": "d8d46b7c8d5bf9ad8585838376d95e1a536c4da3a23591f5218ee9617704cf74",
+      "translation_text_hash": "ed253aeb95146cd10a4887e3bbedef27f2821c0f754c0e1f2d82fab48e4a4e59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한결 같지 않은 저울 추와 말은 다 여호와께서 미워하시느니라"
+      ],
+      "raw_text_hashes": [
+        "ed253aeb95146cd10a4887e3bbedef27f2821c0f754c0e1f2d82fab48e4a4e59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:11",
+      "sequence": 16966,
+      "chapter_label": "PRO 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "Even a child makes himself known by his doings, whether his work is pure, and whether it is right.",
+      "ko": "비록 아이라도 그 동작으로 자기의 품행의 청결하며 정직한 여부를 나타내느니라",
+      "source_text_hash": "c12c14e08f2b5707877e368a37b8f329d1b4d3653aa634785d57c9739a6f9c5a",
+      "translation_text_hash": "168b7e7d8efb648f3aaab414254045e43f776120b55ef93c83180e2b8e490b64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비록 아이라도 그 동작으로 자기의 품행의 청결하며 정직한 여부를 나타내느니라"
+      ],
+      "raw_text_hashes": [
+        "168b7e7d8efb648f3aaab414254045e43f776120b55ef93c83180e2b8e490b64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:12",
+      "sequence": 16967,
+      "chapter_label": "PRO 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "The hearing ear, and the seeing eye, the LORD has made even both of them.",
+      "ko": "듣는 귀와 보는 눈은 다 여호와의 지으신 것이니라",
+      "source_text_hash": "b9a83a5a08ac4cb8edbac58054f343c45e1b210ae6155dd21c86cee76f7dd2b0",
+      "translation_text_hash": "d5d182c9be31bf463c3c5c94c1e7018f72efe0a51e0f9d5b018771ff6339795f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 귀와 보는 눈은 다 여호와의 지으신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d5d182c9be31bf463c3c5c94c1e7018f72efe0a51e0f9d5b018771ff6339795f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:13",
+      "sequence": 16968,
+      "chapter_label": "PRO 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "Don’t love sleep, lest you come to poverty. Open your eyes, and you shall be satisfied with bread.",
+      "ko": "너는 잠자기를 좋아하지 말라 네가 빈궁하게 될까 두려우니라 네 눈을 뜨라 그리하면 양식에 족하리라",
+      "source_text_hash": "dd1714b61f64c6e4a6611ab653661f56b8343e62fcfc7725e25a09bd8563aa3a",
+      "translation_text_hash": "1717df94b8df9f55aea7c0dc9d0bf4a7d5e2d7cc45ab71417713507980a7376f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 잠자기를 좋아하지 말라 네가 빈궁하게 될까 두려우니라 네 눈을 뜨라 그리하면 양식에 족하리라"
+      ],
+      "raw_text_hashes": [
+        "1717df94b8df9f55aea7c0dc9d0bf4a7d5e2d7cc45ab71417713507980a7376f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:14",
+      "sequence": 16969,
+      "chapter_label": "PRO 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "“It’s no good, it’s no good,” says the buyer; but when he is gone his way, then he boasts.",
+      "ko": "사는 자가 물건이 좋지 못하다 좋지 못하다 하다가 돌아간 후에는 자랑하느니라",
+      "source_text_hash": "66e919becb82136d53826413d6a6478755a9fba6b6795bb4d66e4f11302524b1",
+      "translation_text_hash": "61652d54009c10e24e13100b72e8377fe53f55592262aa20687ce7c89569c9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사는 자가 물건이 좋지 못하다 좋지 못하다 하다가 돌아간 후에는 자랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "61652d54009c10e24e13100b72e8377fe53f55592262aa20687ce7c89569c9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:15",
+      "sequence": 16970,
+      "chapter_label": "PRO 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "There is gold and abundance of rubies, but the lips of knowledge are a rare jewel.",
+      "ko": "세상에 금도 있고 진주도 많거니와 지혜로운 입술이 더욱 귀한 보배니라",
+      "source_text_hash": "37262167edb7e2500602726257abf004c7c38124420a78bc8caefee813b7b7e6",
+      "translation_text_hash": "a740f4d9f5f81e2b374b0fb0feb0f34577a021cac3354922962345082ef6f67e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상에 금도 있고 진주도 많거니와 지혜로운 입술이 더욱 귀한 보배니라"
+      ],
+      "raw_text_hashes": [
+        "a740f4d9f5f81e2b374b0fb0feb0f34577a021cac3354922962345082ef6f67e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:16",
+      "sequence": 16971,
+      "chapter_label": "PRO 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "Take the garment of one who puts up collateral for a stranger; and hold him in pledge for a wayward woman.",
+      "ko": "타인을 위하여 보증이 된 자의 옷을 취하라 외인들의 보증이 된 자는 그 몸을 볼모잡힐찌니라",
+      "source_text_hash": "c7f5d626bef54e6715607bcba80598c74ac5c6aeb063231371d94fde3529a31e",
+      "translation_text_hash": "15c1b17e29df34db96930520531b90b7f7cb90eec8a9638fdfc8faa24f10ef08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타인을 위하여 보증이 된 자의 옷을 취하라 외인들의 보증이 된 자는 그 몸을 볼모잡힐찌니라"
+      ],
+      "raw_text_hashes": [
+        "15c1b17e29df34db96930520531b90b7f7cb90eec8a9638fdfc8faa24f10ef08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:17",
+      "sequence": 16972,
+      "chapter_label": "PRO 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "Fraudulent food is sweet to a man, but afterwards his mouth is filled with gravel.",
+      "ko": "속이고 취한 식물은 맛이 좋은듯하나 후에는 그 입에 모래가 가득하게 되리라",
+      "source_text_hash": "b43c02e08e0b634db33ebf71161b25ff45f80cae83203d63dd23cf2821cf7fc7",
+      "translation_text_hash": "5fab0d54f1a714911a08d111726d4bf041d0e88cd5929dc3a6011d5c0083ebce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속이고 취한 식물은 맛이 좋은듯하나 후에는 그 입에 모래가 가득하게 되리라"
+      ],
+      "raw_text_hashes": [
+        "5fab0d54f1a714911a08d111726d4bf041d0e88cd5929dc3a6011d5c0083ebce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:18",
+      "sequence": 16973,
+      "chapter_label": "PRO 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "Plans are established by advice; by wise guidance you wage war!",
+      "ko": "무릇 경영은 의논함으로 성취하나니 모략을 베풀고 전쟁할찌니라",
+      "source_text_hash": "ab80cffc5deab81490a0213069b3d684f611e93c72a9b76c5e500a0513cc3be3",
+      "translation_text_hash": "3bfae05e4b94b062111ce028f5a3e6183e97350cb931943d1842366809fa013c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 경영은 의논함으로 성취하나니 모략을 베풀고 전쟁할찌니라"
+      ],
+      "raw_text_hashes": [
+        "3bfae05e4b94b062111ce028f5a3e6183e97350cb931943d1842366809fa013c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:19",
+      "sequence": 16974,
+      "chapter_label": "PRO 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "He who goes about as a tale-bearer reveals secrets; therefore don’t keep company with him who opens wide his lips.",
+      "ko": "두루 다니며 한담하는 자는 남의 비밀을 누설하나니 입술을 벌린 자를 사귀지 말찌니라",
+      "source_text_hash": "e3031dbeb7e84450cbdb021227c31cd1c1be6cfe348569abc1afb950a02dd41a",
+      "translation_text_hash": "0a653b2de22c1492748ce0fbbda89f4c62c314d352506641ac3bbfc2c52b8d8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두루 다니며 한담하는 자는 남의 비밀을 누설하나니 입술을 벌린 자를 사귀지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "0a653b2de22c1492748ce0fbbda89f4c62c314d352506641ac3bbfc2c52b8d8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:20",
+      "sequence": 16975,
+      "chapter_label": "PRO 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "Whoever curses his father or his mother, his lamp shall be put out in blackness of darkness.",
+      "ko": "자기의 아비나 어미를 저주하는 자는 그 등불이 유암 중에 꺼짐을 당하리라",
+      "source_text_hash": "7acd563f928f32fd5b84203c9843d0e06f3990d0fe517fa23cf77ec1d3a4ddfd",
+      "translation_text_hash": "439d464ff59533bd157bd6a429a34b9bd99e728b6a982e88e00c597e17b515ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 아비나 어미를 저주하는 자는 그 등불이 유암 중에 꺼짐을 당하리라"
+      ],
+      "raw_text_hashes": [
+        "439d464ff59533bd157bd6a429a34b9bd99e728b6a982e88e00c597e17b515ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:21",
+      "sequence": 16976,
+      "chapter_label": "PRO 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "An inheritance quickly gained at the beginning won’t be blessed in the end.",
+      "ko": "처음에 속히 잡은 산업은 마침내 복이 되지 아니하느니라",
+      "source_text_hash": "6f77a1d55f7fd370cf5be37538950482238726f9af092108a310e0108fda7a8f",
+      "translation_text_hash": "ba35dd7eee04f35a5ea5df87dd12aff00554d1261c3ef077a4f8a129fa9ef1ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음에 속히 잡은 산업은 마침내 복이 되지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "ba35dd7eee04f35a5ea5df87dd12aff00554d1261c3ef077a4f8a129fa9ef1ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:22",
+      "sequence": 16977,
+      "chapter_label": "PRO 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "Don’t say, “I will pay back evil.” Wait for the LORD, and he will save you.",
+      "ko": "너는 악을 갚겠다 말하지 말고 여호와를 기다리라 그가 너를 구원하시리라",
+      "source_text_hash": "4f54b156b363a3545a5eebcc140bd3e939600cc6975ad54bb58e446af1ef64c0",
+      "translation_text_hash": "3e7826f04bf9fed8413cc4fb20ceb410adc8054793679db8cebbdc94e173167e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 악을 갚겠다 말하지 말고 여호와를 기다리라 그가 너를 구원하시리라"
+      ],
+      "raw_text_hashes": [
+        "3e7826f04bf9fed8413cc4fb20ceb410adc8054793679db8cebbdc94e173167e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:23",
+      "sequence": 16978,
+      "chapter_label": "PRO 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD detests differing weights, and dishonest scales are not pleasing.",
+      "ko": "한결 같지 않은 저울 추는 여호와의 미워하시는 것이요 속이는 저울은 좋지 못한 것이니라",
+      "source_text_hash": "19e47837919f93905a954c2e1c59c39f9b78d1989a839b217db9a46d077c2f4f",
+      "translation_text_hash": "526305142277dc735b068bbce543cfcea2b684d011aec03f57c2c8d43f76b291",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한결 같지 않은 저울 추는 여호와의 미워하시는 것이요 속이는 저울은 좋지 못한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "526305142277dc735b068bbce543cfcea2b684d011aec03f57c2c8d43f76b291"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:24",
+      "sequence": 16979,
+      "chapter_label": "PRO 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "A man’s steps are from the LORD; how then can man understand his way?",
+      "ko": "사람의 걸음은 여호와께로서 말미암나니 사람이 어찌 자기의 길을 알 수 있으랴",
+      "source_text_hash": "b3398ca0909b390749904418f2426ebc476c088a3db3d2ffa3c25790d80eb8f6",
+      "translation_text_hash": "4b149f3c5392f6808c8574f18d9bf6445f5f8e8c81b9c119db1de829b38843a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 걸음은 여호와께로서 말미암나니 사람이 어찌 자기의 길을 알 수 있으랴"
+      ],
+      "raw_text_hashes": [
+        "4b149f3c5392f6808c8574f18d9bf6445f5f8e8c81b9c119db1de829b38843a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:25",
+      "sequence": 16980,
+      "chapter_label": "PRO 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "It is a snare to a man to make a rash dedication, then later to consider his vows.",
+      "ko": "함부로 이 물건을 거룩하다 하여 서원하고 그 후에 살피면 그것이 그물이 되느니라",
+      "source_text_hash": "825ca5899ad4f27dee5810ebba159d9e2ffb8f94230e1c03f7cb0a3d62a5c850",
+      "translation_text_hash": "ae6a41db7bb5a45c2470279fe8013dfb37afe0e51a29ce6b51e88c7b9da7059d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함부로 이 물건을 거룩하다 하여 서원하고 그 후에 살피면 그것이 그물이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "ae6a41db7bb5a45c2470279fe8013dfb37afe0e51a29ce6b51e88c7b9da7059d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:26",
+      "sequence": 16981,
+      "chapter_label": "PRO 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "A wise king winnows out the wicked, and drives the threshing wheel over them.",
+      "ko": "지혜로운 왕은 악인을 키질 하며 타작하는 바퀴로 그 위에 굴리느니라",
+      "source_text_hash": "6310e25725bdd81a3d101f9655482c2095b37c77c858d5510bae89e17a071b00",
+      "translation_text_hash": "184bc1cdb573d38cd8161a6381c85f5df9161e48896cb81f359a2523dc92b123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜로운 왕은 악인을 키질 하며 타작하는 바퀴로 그 위에 굴리느니라"
+      ],
+      "raw_text_hashes": [
+        "184bc1cdb573d38cd8161a6381c85f5df9161e48896cb81f359a2523dc92b123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:27",
+      "sequence": 16982,
+      "chapter_label": "PRO 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "The spirit of man is the LORD’s lamp, searching all his innermost parts.",
+      "ko": "사람의 영혼은 여호와의 등불이라 사람의 깊은 속을 살피느니라",
+      "source_text_hash": "982d830a322e11588610c2f121754bf7d5f9504a79b51102134036faa4e2bf69",
+      "translation_text_hash": "c59e3b3073abcba057c2ac0ac5eff7d91cd282b03340da4edca69a68e3d88984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 영혼은 여호와의 등불이라 사람의 깊은 속을 살피느니라"
+      ],
+      "raw_text_hashes": [
+        "c59e3b3073abcba057c2ac0ac5eff7d91cd282b03340da4edca69a68e3d88984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:28",
+      "sequence": 16983,
+      "chapter_label": "PRO 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "Love and faithfulness keep the king safe. His throne is sustained by love.",
+      "ko": "왕은 인자와 진리로 스스로 보호하고 그 위도 인자함으로 말미암아 견고하니라",
+      "source_text_hash": "b7ca8146ec9615e088e626397bdfc51df8943f3aced9aa116560167d21bd78bd",
+      "translation_text_hash": "6393cfcc6b8187f012474a80237e07b6498c800f292dec2d313e07397b0775da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 인자와 진리로 스스로 보호하고 그 위도 인자함으로 말미암아 견고하니라"
+      ],
+      "raw_text_hashes": [
+        "6393cfcc6b8187f012474a80237e07b6498c800f292dec2d313e07397b0775da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:29",
+      "sequence": 16984,
+      "chapter_label": "PRO 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "The glory of young men is their strength. The splendor of old men is their gray hair.",
+      "ko": "젊은 자의 영화는 그 힘이요 늙은 자의 아름다운 것은 백발이니라",
+      "source_text_hash": "0211adcefc69c0f9c52c8d2527030d4b50370debf7fc3f2a1b564cc090b40fd0",
+      "translation_text_hash": "d23071603b10ac9d56bb9f3184e3ddf9cbd9730fba7688ae6dbf9530adef615b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 자의 영화는 그 힘이요 늙은 자의 아름다운 것은 백발이니라"
+      ],
+      "raw_text_hashes": [
+        "d23071603b10ac9d56bb9f3184e3ddf9cbd9730fba7688ae6dbf9530adef615b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:20:30",
+      "sequence": 16985,
+      "chapter_label": "PRO 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "Wounding blows cleanse away evil, and beatings purge the innermost parts.",
+      "ko": "상하게 때리는 것이 악을 없이 하나니 매는 사람의 속에 깊이 들어가느니라",
+      "source_text_hash": "5f2ea30e7a1d826e1d375dabbf64f07edf65b5691e57db7be32a8a75d0641ae2",
+      "translation_text_hash": "5e8750288c8b3ccbd42bbef19af3d2f018879b85d5a1c5ae4ffb7eb711e23e36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상하게 때리는 것이 악을 없이 하나니 매는 사람의 속에 깊이 들어가느니라"
+      ],
+      "raw_text_hashes": [
+        "5e8750288c8b3ccbd42bbef19af3d2f018879b85d5a1c5ae4ffb7eb711e23e36"
+      ]
+    }
+  ]
+}
