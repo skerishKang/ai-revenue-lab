@@ -6,7 +6,10 @@ without requiring another product-specific model/provider live evaluation.
 """
 from __future__ import annotations
 
+import asyncio
+import os
 import re
+import time
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse
@@ -14,6 +17,89 @@ from starlette.responses import JSONResponse
 from padiem_control_plane.owner_model_name_parts import google_owner_name_parts
 from .member_grade_access import selected_grade_denial, selected_admin_denial
 from .model_policy import ADMIN_B14_MODEL_ID
+
+
+#: The B14 roster is read-only catalog data. One Claw screen load asked for
+#: it repeatedly and every request paid a fresh upstream read (#6460 4-1,
+#: second round). The window is deliberately short and switchable: an
+#: administrator change becomes visible within it, and nothing user-specific
+#: is stored -- the per-tier filtering below still runs on every request.
+ROSTER_CACHE_TTL_ENV = "PADIEM_CHAT_MODEL_ROSTER_CACHE_SECONDS"
+_ROSTER_CACHE_TTL_DEFAULT = 30.0
+_ROSTER_CACHE_TTL_MAX = 300.0
+#: Entries hold the resolver itself, so a recycled ``id`` can never hand one
+#: request (or one test) another resolver's rows.
+_ROSTER_CACHE: dict[int, tuple[float, tuple[tuple[str, str], ...], object]] = {}
+_ROSTER_LOCKS: dict[int, tuple[object, asyncio.Lock]] = {}
+
+
+def roster_cache_ttl() -> float:
+    raw = os.getenv(ROSTER_CACHE_TTL_ENV)
+    if raw is None or not raw.strip():
+        return _ROSTER_CACHE_TTL_DEFAULT
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return _ROSTER_CACHE_TTL_DEFAULT
+    if value != value or value < 0 or value > _ROSTER_CACHE_TTL_MAX:
+        return _ROSTER_CACHE_TTL_DEFAULT
+    return value
+
+
+def clear_roster_cache() -> None:
+    _ROSTER_CACHE.clear()
+
+
+def _roster_owner(list_fn) -> object:
+    # Bound methods are compared by the resolver they belong to, so a test or a
+    # redeployed client never reads another instance's rows.
+    return getattr(list_fn, "__self__", list_fn)
+
+
+def _validated_models(models: object) -> tuple[tuple[str, str], ...]:
+    """B14 model rows, validated once; raises ``ValueError`` on any bad row."""
+    if not isinstance(models, list) or len(models) > 256:
+        raise ValueError("invalid B14 model roster")
+    rows: list[tuple[str, str]] = []
+    seen: set[str] = set()
+    for model in models:
+        if not isinstance(model, dict):
+            raise ValueError("invalid B14 model row")
+        model_id, name = model.get("model_id"), model.get("name")
+        if (not isinstance(model_id, str)
+                or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id) is None
+                or model_id in seen
+                or not isinstance(name, str) or not (0 < len(name) <= 100)):
+            raise ValueError("invalid B14 model identity")
+        seen.add(model_id)
+        rows.append((model_id, name))
+    return tuple(rows)
+
+
+async def _model_roster(list_fn) -> tuple[tuple[str, str], ...]:
+    """The B14 roster inside the short shared window, single-flight per resolver."""
+    owner = _roster_owner(list_fn)
+    key = id(owner)
+    ttl = roster_cache_ttl()
+    now = time.monotonic()
+    if ttl > 0:
+        cached = _ROSTER_CACHE.get(key)
+        if cached is not None and cached[0] > now and cached[2] is owner:
+            return cached[1]
+    entry = _ROSTER_LOCKS.get(key)
+    if entry is None or entry[0] is not owner:
+        entry = (owner, asyncio.Lock())
+        _ROSTER_LOCKS[key] = entry
+    async with entry[1]:
+        now = time.monotonic()
+        if ttl > 0:
+            cached = _ROSTER_CACHE.get(key)
+            if cached is not None and cached[0] > now and cached[2] is owner:
+                return cached[1]
+        rows = _validated_models(await list_fn())
+        if ttl > 0:
+            _ROSTER_CACHE[key] = (now + ttl, rows, owner)
+        return rows
 
 
 async def owner_model_name_preview(request: Request) -> JSONResponse:
@@ -105,21 +191,9 @@ async def claw_verified_model_choices(request: Request) -> JSONResponse:
     else:
         allowed_ids = None
     try:
-        models = await list_fn()
-        if not isinstance(models, list) or len(models) > 256:
-            raise ValueError("invalid B14 model roster")
+        roster = await _model_roster(list_fn)
         rows = []
-        seen = set()
-        for model in models:
-            if not isinstance(model, dict):
-                raise ValueError("invalid B14 model row")
-            model_id, name = model.get("model_id"), model.get("name")
-            if (not isinstance(model_id, str)
-                    or re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}", model_id) is None
-                    or model_id in seen
-                    or not isinstance(name, str) or not (0 < len(name) <= 100)):
-                raise ValueError("invalid B14 model identity")
-            seen.add(model_id)
+        for model_id, name in roster:
             if allowed_ids is not None and model_id not in allowed_ids:
                 continue
             rows.append({
