@@ -570,11 +570,18 @@ class EnrollmentRedemptionRequest:
     session fields — the server derives scope from its own canonical session
     and reads consent from its own durable record. A request carrying any such
     field must be rejected by the server and is never built here.
+
+    ``client_version`` is the Connector's own product version (the same string
+    the tray displays, ``CONNECT_VERSION``), self-reported so the owner's
+    device directory can show a version-compatibility notice. It is not an
+    authority field: the server validates the shape and drops anything it does
+    not recognize, so an old Connector that omits it stays UNKNOWN.
     """
 
     challenge_id: str
     device_id: str
     proof_ref: str
+    client_version: str | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -582,9 +589,12 @@ class EnrollmentRedemptionRequest:
         )
         object.__setattr__(self, "device_id", _safe_ref(self.device_id, "device_id"))
         object.__setattr__(self, "proof_ref", _proof_ref(self.proof_ref))
+        version = self.client_version
+        if version is not None and (not isinstance(version, str) or not version.strip()):
+            object.__setattr__(self, "client_version", None)
 
     def safe_dict(self) -> dict[str, Any]:
-        return {
+        payload = {
             "challenge_id": self.challenge_id,
             "device_id": self.device_id,
             "proof_ref": self.proof_ref,
@@ -594,6 +604,9 @@ class EnrollmentRedemptionRequest:
             "password_transmitted": False,
             "cookie_transmitted": False,
         }
+        if self.client_version is not None:
+            payload["client_version"] = self.client_version
+        return payload
 
 
 @dataclass(frozen=True, slots=True)
@@ -1096,8 +1109,14 @@ class ConnectorEnrollment:
         proof_ref = build_enrollment_proof_ref(
             challenge_id=challenge_id, device_id=device_id, pairing_code=pairing_code
         )
+        # The tray's product version rides along as self-reported presentation
+        # data (see EnrollmentRedemptionRequest). It is imported here lazily so
+        # the dataclass module stays free of the package's display constants.
+        from . import CONNECT_VERSION as CONNECT_PRODUCT_VERSION
+
         request = EnrollmentRedemptionRequest(
-            challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref
+            challenge_id=challenge_id, device_id=device_id, proof_ref=proof_ref,
+            client_version=CONNECT_PRODUCT_VERSION,
         )
         try:
             response = server.redeem_enrollment(request, now=now)

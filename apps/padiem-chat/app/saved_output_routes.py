@@ -10,6 +10,8 @@ from .bounded_request_body import RequestBodyTooLarge, read_bounded_request_body
 from .history import HistoryStore, validate_conversation_id, validate_project_id
 from .history import PRODUCT_SCOPE_CHAT
 from .saved_outputs import (
+    MAX_OUTPUT_LIST,
+    ListCursorError,
     SavedOutputStore,
     validate_output_content,
     validate_output_id,
@@ -102,11 +104,49 @@ async def outputs_collection(request: Request) -> JSONResponse:
         return _unavailable()
 
     if request.method == "GET":
+        # #5882: 목록은 페이지로 이어진다. 커서 없는 호출은 예전 그대로 첫 페이지(100건)를
+        # 받고, 추가 키 next_cursor 는 모르는 클라이언트가 그냥 무시한다.
+        raw_limit = request.query_params.get("limit")
+        limit = MAX_OUTPUT_LIST
+        if raw_limit is not None:
+            try:
+                limit = int(raw_limit)
+            except (TypeError, ValueError):
+                return JSONResponse(
+                    {"error": {"code": "invalid_limit", "message": "limit 은 정수여야 합니다."}},
+                    status_code=400,
+                )
+            if limit < 1:
+                return JSONResponse(
+                    {"error": {"code": "invalid_limit", "message": "limit 은 1 이상이어야 합니다."}},
+                    status_code=400,
+                )
+        raw_cursor = request.query_params.get("cursor")
+        cursor = raw_cursor.strip() if isinstance(raw_cursor, str) else None
+        if not cursor:
+            cursor = None
+        page_fn = getattr(output_store, "list_outputs_page", None)
         try:
-            outputs = await output_store.list_outputs(uid)
+            if callable(page_fn):
+                outputs, next_cursor = await page_fn(uid, limit=limit, cursor=cursor)
+            else:
+                outputs, next_cursor = await output_store.list_outputs(uid), None
+        except ListCursorError:
+            return JSONResponse(
+                {
+                    "error": {
+                        "code": "invalid_cursor",
+                        "message": "목록을 이어 볼 위치가 올바르지 않습니다. 처음부터 다시 열어 주세요.",
+                    }
+                },
+                status_code=400,
+            )
         except Exception:
             return _unavailable()
-        return JSONResponse({"outputs": [item.summary_dict() for item in outputs]})
+        return JSONResponse({
+            "outputs": [item.summary_dict() for item in outputs],
+            "next_cursor": next_cursor,
+        })
 
     try:
         raw = await _json_body(request)

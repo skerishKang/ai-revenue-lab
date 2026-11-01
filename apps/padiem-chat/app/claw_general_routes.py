@@ -31,12 +31,14 @@ from __future__ import annotations
 from .file_lane import file_resolver
 
 import asyncio
+import hashlib
 import inspect
 import json
 import time
 from .native_calendar_intent import parse_native_calendar_intent, latest_user_text as latest_native_calendar_text
 from .native_calendar_adapter import execute_native_calendar_plan
 import re
+import secrets
 from typing import Any
 
 from starlette.requests import Request

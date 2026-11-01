@@ -979,6 +979,7 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
+    setProjectsListNote("");
     if (projectsNavButton) {
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
@@ -1076,6 +1077,16 @@
     }
     if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
   }
+  // #6645: a stale cursor used to report through the composer note, which the
+  // glass desktop frame hides (display: none). The notice belongs next to the
+  // list it is about, so it is always painted.
+  function setProjectsListNote(text) {
+    const note = document.getElementById("projectsListNote");
+    if (!note) return;
+    const copy = typeof text === "string" ? text : "";
+    note.textContent = copy;
+    note.hidden = !copy;
+  }
   async function loadMoreProjects() {
     if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
     const epoch = authViewEpoch;
@@ -1093,7 +1104,7 @@
         // drop it and show what is already on screen with a plain Korean notice.
         if (response.status === 400) {
           projectsNextCursor = null;
-          setNote(uiT("projects-more-stale"));
+          setProjectsListNote(uiT("projects-more-stale"));
         }
         return false;
       }
@@ -1102,6 +1113,7 @@
         && typeof item.name === "string" && !seen.has(item.id));
       projects = projects.concat(fresh);
       projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      setProjectsListNote("");
       return true;
     } catch (_) {
       return false;
@@ -2282,6 +2294,21 @@
       const raw = window.location.search || "";
       const match = /[?&]handoff=([A-Za-z0-9_.-]{1,1024})(?:&|$)/.exec(raw);
       return match ? match[1] : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  // #6659: the usage guide offers example sentences as ./?say=<text>. One press
+  // brings the words here, typed but unsent, on the screen the person already
+  // uses. Read once at load like the reset link below, and the address is
+  // cleaned so a refresh cannot re-type over what the person has since written.
+  function examplePromptFromLocation() {
+    try {
+      const raw = window.location.search || "";
+      const match = /[?&]say=([^&]{1,2048})(?:&|$)/.exec(raw);
+      if (!match) return "";
+      return String(decodeURIComponent(match[1].replace(/\+/g, " "))).slice(0, 400);
     } catch (_) {
       return "";
     }
@@ -6517,6 +6544,16 @@
   setNote(idleNote());
   renderProjectState();
   updateComposer();
+  // A guide example arrives as text only: it fills the composer, sends nothing,
+  // and leaves no query in the address bar for the next refresh to replay.
+  const exampleOnLoad = examplePromptFromLocation();
+  if (exampleOnLoad) {
+    input.value = exampleOnLoad;
+    updateComposer();
+    try {
+      window.history.replaceState(null, "", window.location.pathname);
+    } catch (_) {}
+  }
   // #5481: a mailed one-time link opens the reset confirm view directly, so
   // the member lands on the "set a new password" step without signing in.
   const resetLinkOnLoad = passwordResetTokenFromLocation();
@@ -6918,6 +6955,17 @@
         if (!memory || typeof memory.memory_id !== "string") return;
         clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
       });
+      // #5882: when the server returns a next cursor, append "load more" and keep the cursor on the button.
+      if (clawApprovedList && typeof data.next_cursor === "string" && data.next_cursor) {
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "recent-item memory-more";
+        more.id = "clawApprovedMore";
+        more.dataset.cursor = data.next_cursor;
+        more.textContent = uiT("projects-more");
+        more.addEventListener("click", () => { void loadMoreApprovedMemories(more.dataset.cursor); });
+        clawApprovedList.appendChild(more);
+      }
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
@@ -6929,6 +6977,40 @@
     approvedMemoryInFlight = true;
     try {
       await fetchApprovedMemoryList();
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  async function loadMoreApprovedMemories(cursor) {
+    if (!cursor || approvedMemoryInFlight || !clawApprovedList) return;
+    approvedMemoryInFlight = true;
+    const more = document.getElementById("clawApprovedMore");
+    if (more) more.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/memory?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 400) {
+        // Expired or forged cursor: stop, remove the button and show a notice.
+        if (more) more.remove();
+        setApprovedMemoryStatus(uiT("projects-more-stale"), "error");
+        return;
+      }
+      if (!response.ok || !data || !Array.isArray(data.memories)) return;
+      data.memories.forEach((memory) => {
+        if (!memory || typeof memory.memory_id !== "string") return;
+        clawApprovedList.appendChild(renderApprovedMemoryCard(memory));
+      });
+      const next = typeof data.next_cursor === "string" ? data.next_cursor : "";
+      if (more && next) {
+        more.dataset.cursor = next;
+        more.disabled = false;
+      } else if (more) {
+        more.remove();
+      }
     } finally {
       approvedMemoryInFlight = false;
     }

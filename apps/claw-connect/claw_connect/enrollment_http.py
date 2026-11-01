@@ -303,12 +303,16 @@ class HttpsEnrollmentServerPort(EnrollmentServerPort):
         if not isinstance(request, EnrollmentRedemptionRequest):
             raise EnrollmentTransportError("enrollment_request_shape_mismatch")
         # Closed wire key set: exactly what the central route accepts. S2's
-        # local negative-assertion flags are never sent.
+        # local negative-assertion flags are never sent. The self-reported
+        # client_version is sent only when the request carries one, so an old
+        # build keeps today's exact wire shape.
         wire = {
             "challenge_id": request.challenge_id,
             "device_id": request.device_id,
             "proof_ref": request.proof_ref,
         }
+        if request.client_version is not None:
+            wire["client_version"] = request.client_version
         body = json.dumps(wire, separators=(",", ":"), sort_keys=True).encode("utf-8")
         connection = None
         try:

@@ -26,6 +26,14 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
+from .history import (
+    ProjectCursorError as ListCursorError,
+    decode_project_cursor as decode_list_cursor,
+    encode_project_cursor as encode_list_cursor,
+)
+
+# 목록 한 페이지 크기. 전체 상한이 아니다 — 더 있으면 next_cursor 로 이어 받는다
+# (#5882). 승인 개수 자체를 이 수로 막지 않는다.
 MAX_APPROVED_MEMORIES = 30
 MAX_MEMORY_TYPE_CHARS = 64
 MAX_MEMORY_NAME_CHARS = 120
@@ -166,6 +174,7 @@ def _public_projection(row: dict[str, Any]) -> dict[str, Any]:
 class ApprovedMemoryStore(Protocol):
     async def approve_memory(self, *, user_id: str, workspace_id: str, proposal: CanonicalApprovedProposal) -> dict[str, Any]: ...
     async def list_approved_memories(self, *, user_id: str, workspace_id: str, limit: int = MAX_APPROVED_MEMORIES) -> list[dict[str, Any]]: ...
+    async def list_approved_memories_page(self, *, user_id: str, workspace_id: str, limit: int = MAX_APPROVED_MEMORIES, cursor: str | None = None) -> tuple[list[dict[str, Any]], str | None]: ...
     async def get_approved_memory(self, *, user_id: str, workspace_id: str, memory_id: str) -> dict[str, Any] | None: ...
 
 
@@ -218,13 +227,41 @@ class D1ApprovedMemoryStore:
         return _public_projection(row)
 
     async def list_approved_memories(self, *, user_id: str, workspace_id: str, limit: int = MAX_APPROVED_MEMORIES) -> list[dict[str, Any]]:
-        bounded = max(1, min(int(limit), MAX_APPROVED_MEMORIES))
+        """첫 페이지. 예전 호출자는 이대로 30건을 받는다."""
+
+        page, _ = await self.list_approved_memories_page(
+            user_id=user_id, workspace_id=workspace_id, limit=limit,
+        )
+        return page
+
+    async def list_approved_memories_page(
+        self, *, user_id: str, workspace_id: str,
+        limit: int = MAX_APPROVED_MEMORIES, cursor: str | None = None,
+    ) -> tuple[list[dict[str, Any]], str | None]:
+        """최근 순 한 페이지와 다음 위치(없으면 None).
+
+        정렬은 지금 목록과 같은 생성 시각 내림차순이고, 같은 시각은 id 로 동점을
+        끊는다. 계정·워크스페이스 조건은 이어 받기에서도 똑같이 들어간다.
+        """
+
+        bounded = MAX_APPROVED_MEMORIES if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1 else min(limit, MAX_APPROVED_MEMORIES)
+        where = "user_id=? AND workspace_id=?"
+        params: list[Any] = [user_id, workspace_id]
+        if cursor is not None:
+            created_at, memory_id = decode_list_cursor(cursor)
+            where += " AND (created_at < ? OR (created_at = ? AND id < ?))"
+            params.extend([created_at, created_at, memory_id])
         rows = await self._all(
             "SELECT id, workspace_id, memory_type, name, note, source_channel, status, created_at, updated_at "
-            "FROM claw_approved_memory WHERE user_id=? AND workspace_id=? ORDER BY created_at DESC LIMIT ?",
-            user_id, workspace_id, bounded,
+            f"FROM claw_approved_memory WHERE {where} ORDER BY created_at DESC, id DESC LIMIT ?",
+            *params, bounded + 1,
         )
-        return [_public_projection(row) for row in rows]
+        page = rows[:bounded]
+        next_cursor = None
+        if len(rows) > bounded and page:
+            last = page[-1]
+            next_cursor = encode_list_cursor(str(last["created_at"]), str(last["id"]))
+        return [_public_projection(row) for row in page], next_cursor
 
     async def get_approved_memory(self, *, user_id: str, workspace_id: str, memory_id: str) -> dict[str, Any] | None:
         validated = validate_memory_id(memory_id)
