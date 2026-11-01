@@ -206,6 +206,11 @@
   let activeRequestController = null;
   let activeRequestArticle = null;
   let activeRequestCancelReason = null;
+  // #6460 step 3: the server run id of the live Claw turn, when the transport
+  // reported one. Pressing the composer stop button sends it to the server
+  // stop route, which records the stop time and refuses any PC action created
+  // after it.
+  let activeClawRunId = null;
   // Latest successfully completed answer request, for the one-click
   // regenerate action. Replays through requestAnswer with the exact stored
   // routing snapshot, so model lane, tier, auth and approval conditions are
@@ -1368,6 +1373,7 @@
       activeRequestController = null;
       activeRequestArticle = null;
     }
+    activeClawRunId = null;
     inFlight = false;
     // #2505: a new conversation always starts a new one, on either screen: the
     // single shared conversation is cleared. Server-owned records are never
@@ -3261,6 +3267,8 @@
     const pcProgressRunId = window.PadiemPcBrowserSurface?.runIdForProgress?.(
       response, payload, clawGeneralRequest
     ) ?? (clawGeneralRequest ? null : payload.pc_run_id);
+    activeClawRunId = clawGeneralRequest && typeof pcProgressRunId === "string"
+      ? pcProgressRunId : null;
 
     let answer = "";
     let paragraph = null;
@@ -3471,8 +3479,24 @@
   function cancelActiveStream() {
     if (!inFlight || !activeRequestController || !activeRequestArticle) return;
     activeRequestCancelReason = "user_cancel";
+    const runId = activeClawRunId;
+    if (runId) {
+      // The stop is a server-side fact, not only a dropped stream: the server
+      // records the stop time and refuses any PC action created after it, so
+      // an action the loop had not sent yet is never sent, and an action that
+      // was already sent is never sent again.
+      fetch("/api/pc/cancel", {
+        method: "POST", credentials: "same-origin", cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ run_id: runId }),
+      }).then((response) => (response.ok ? response.json() : null))
+        .then((data) => {
+          setNote(uiT(data && data.ok === true ? "pc-stop-sent" : "pc-stop-failed"), "status");
+        })
+        .catch(() => setNote(uiT("pc-stop-failed"), "status"));
+    }
     activeRequestController.abort();
-    setNote(uiT("answer-cancelled-note"), "error");
+    if (!runId) setNote(uiT("answer-cancelled-note"), "error");
   }
 
   // #4317: product-capabilities.js is loaded AFTER app.js and owns the tier
@@ -3657,6 +3681,7 @@
         activeRequestController = null;
         activeRequestArticle = null;
         activeRequestCancelReason = null;
+        activeClawRunId = null;
         inFlight = false;
         updateComposer();
         input.focus();

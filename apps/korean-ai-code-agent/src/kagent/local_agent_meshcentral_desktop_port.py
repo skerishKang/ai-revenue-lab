@@ -113,7 +113,14 @@ def parse_key_combo(spec: str) -> tuple[tuple[int, int, bool], ...]:
         if code in codes:
             raise MeshCentralDesktopRefused("duplicate key modifier")
         codes.append(code)
-    if "+".join(parts) in _RESERVED_COMBOS:
+    # The chord is refused by its canonical spelling, so an alias
+    # (control/meta) cannot slip past the name check.
+    canonical = [
+        "ctrl" if part in ("ctrl", "control")
+        else "win" if part in ("win", "meta") else part
+        for part in parts
+    ]
+    if "+".join(canonical) in _RESERVED_COMBOS:
         raise MeshCentralDesktopRefused("the secure attention sequence is reserved")
     extended = keycode in _EXTENDED_KEYCODES
     down, up = (5, 4) if extended else (1, 2)

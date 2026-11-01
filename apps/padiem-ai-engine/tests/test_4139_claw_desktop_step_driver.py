@@ -106,10 +106,13 @@ def test_admitted_owner_tool_runtime_calls_signed_chat():
                         },
                     })),
                 )
-            assert set(body) == {"subject_id", "run_id", "device_id", "desktop_op"}
+            assert set(body) == {
+                "subject_id", "run_id", "device_id", "desktop_op", "call_ref",
+            }
             assert body == {
                 "subject_id": "sub_verified", "run_id": "run_verified",
                 "device_id": "device_verified", "desktop_op": "desktop:capture",
+                "call_ref": "desktop-step-1",
             }
             seen.append(body)
             return SimpleNamespace(
@@ -127,7 +130,8 @@ def test_admitted_owner_tool_runtime_calls_signed_chat():
     )
     authority = binding.resolve_authority(DESKTOP_AGENT_ID)
     invocation = ToolInvocation(
-        tool_id=DESKTOP_CAPTURE_ID, arguments={"device_id": "device_verified"}
+        tool_id=DESKTOP_CAPTURE_ID,
+        arguments={"device_id": "device_verified", "call_ref": "desktop-step-1"},
     )
     token = _ENGINE_DESKTOP_OWNER.set(("sub_verified", "run_verified"))
     try:
@@ -165,7 +169,10 @@ def test_unadmitted_owner_cannot_trigger_chat_transport():
             asyncio.run(binding.tool_runtime.execute(
                 ToolInvocation(
                     tool_id=DESKTOP_CAPTURE_ID,
-                    arguments={"device_id": "device_verified"},
+                    arguments={
+                        "device_id": "device_verified",
+                        "call_ref": "desktop-step-1",
+                    },
                 ),
                 authority.compiled.runtime_profile, authority.authorization,
             ))
@@ -198,6 +205,15 @@ def test_production_desktop_driver_feeds_jpeg_to_b14_and_selects_pc_input():
 
     class Chat:
         async def fetch(self, request):
+            if json.loads(request.body).get("mode") == "run_status":
+                return SimpleNamespace(
+                    status=200,
+                    text=lambda: asyncio.sleep(0, result=json.dumps({
+                        "ok": True,
+                        "run": {"run_id": "run_current", "state": "running",
+                                "updated_at": "2026-11-02T00:00:00Z"},
+                    })),
+                )
             assert json.loads(request.body) == {
                 "mode": "image", "dispatch_id": "dispatch_current",
                 "run_id": "run_current", "subject_id": "subject_current",
@@ -250,7 +266,9 @@ def test_production_desktop_driver_feeds_jpeg_to_b14_and_selects_pc_input():
     finally:
         _ENGINE_DESKTOP_OWNER.reset(token)
     assert decision.invocation.tool_id == "claw.desktop.click"
-    assert decision.invocation.arguments_copy() == {"x": 32, "y": 56}
+    assert decision.invocation.arguments_copy() == {
+        "x": 32, "y": 56, "call_ref": "desktop-step-1",
+    }
     assert len(requests) == 1
 
 
@@ -291,6 +309,12 @@ def test_engine_service_composes_real_desktop_driver_with_model_choice_and_reobs
         async def fetch(self, request):
             payload = json.loads(request.body)
             mode = payload.get("mode")
+            if mode == "run_status":
+                return Response({
+                    "ok": True,
+                    "run": {"run_id": payload["run_id"], "state": "running",
+                            "updated_at": "2026-11-02T00:00:00Z"},
+                })
             if mode == "image":
                 assert dispatched[payload["dispatch_id"]] == "desktop:capture"
                 return Response({})
@@ -345,7 +369,7 @@ def test_engine_service_composes_real_desktop_driver_with_model_choice_and_reobs
         runtime_factory=lambda _: NoGenericRuntime(),
         b14_service_bound=True,
         tool_binding_resolver=lambda app: binding if app == CLAW_APP_ID else None,
-        desktop_step_driver_factory=lambda model_id, model_policy, task_type, optimize_for: build_live_desktop_driver(
+        desktop_step_driver_factory=lambda model_id, model_policy, task_type, optimize_for, tool_arguments=None: build_live_desktop_driver(
             b14_client=model, chat_service=chat, request_factory=Request,
             secret="s" * 32, model_id=model_id, model_policy=model_policy,
             task_type=task_type, optimize_for=optimize_for,
@@ -449,7 +473,7 @@ def test_registered_type_and_keys_are_signed_and_never_replayed():
                         },
                     })),
                 )
-            seen.append(row["desktop_op"])
+            seen.append((row["desktop_op"], row.get("desktop_text"), row.get("call_ref")))
             return SimpleNamespace(
                 status=200,
                 text=lambda: asyncio.sleep(0, result=json.dumps({
@@ -467,8 +491,8 @@ def test_registered_type_and_keys_are_signed_and_never_replayed():
     token = _ENGINE_DESKTOP_OWNER.set(("verified_subject", "verified_run"))
     try:
         for name, args in (
-            ("type", {"text": "PADIEM-GUI-E2E-261017-OK"}),
-            ("keys", {"combo": "ctrl+s"}),
+            ("type", {"text": "PADIEM-GUI-E2E-261017-OK", "call_ref": "desktop-step-1"}),
+            ("keys", {"combo": "ctrl+s", "call_ref": "desktop-step-2"}),
         ):
             result = asyncio.run(binding.tool_runtime.execute(
                 ToolInvocation(tool_id="claw.desktop." + name, arguments=args),
@@ -478,8 +502,12 @@ def test_registered_type_and_keys_are_signed_and_never_replayed():
             assert result.output_copy()["execution_confirmed"] is True
     finally:
         _ENGINE_DESKTOP_OWNER.reset(token)
-    assert seen == ["desktop:type\nPADIEM-GUI-E2E-261017-OK",
-                    "desktop:keys\nctrl+s"]
+    # The typed value travels beside the op, never inside the dispatch body
+    # that Chat stages and records; a key combo keeps its reviewed grammar.
+    assert seen == [
+        ("desktop:type", "PADIEM-GUI-E2E-261017-OK", "desktop-step-1"),
+        ("desktop:keys\nctrl+s", None, "desktop-step-2"),
+    ]
 
 
 def test_secret_store_binding_is_resolved_for_the_desktop_driver():

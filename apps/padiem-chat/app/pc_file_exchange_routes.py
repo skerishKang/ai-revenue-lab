@@ -919,8 +919,41 @@ async def pc_file_exchange_cancel(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_dispatch_unavailable")
     if not isinstance(stopped, int) or stopped < 0:
         return _error(503, "oracle_mesh_dispatch_unavailable")
+    stopped_at = datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+    # #6460 step 3: the stop is the run's own state too. The model-driven
+    # desktop loop asks for it before choosing another action, so a stop that
+    # arrived between two dispatches — with nothing left in the queue — still
+    # stops the next send; the dispatch guard refuses any action created after
+    # this instant.
+    marked = False
+    marker = getattr(store, "update_claw_run_status", None)
+    if callable(marker):
+        try:
+            marked = await marker(uid, run[0], "cancelled") is True
+        except Exception:
+            marked = False
+    # The stop time itself is the record. It lands in the run's own
+    # conversation as the one message this button writes, once per run.
+    notice = getattr(store, "append_step_result_message", None)
+    if marked and callable(notice):
+        try:
+            await notice(
+                user_id=uid, run_id=run[0],
+                message_id=result_message_id(
+                    conversation_id=run[1], command_id=run[0],
+                    revision_ref="owner_stop",
+                ),
+                content=(
+                    "그만 요청을 받았습니다. 이 시각(" + stopped_at + ") 이후로는 "
+                    "PC에서 다음 동작을 보내지 않습니다. 이미 보낸 동작은 다시 "
+                    "보내지 않습니다."
+                ),
+            )
+        except Exception:
+            pass
     return _response({"ok": True, "state": "cancelled", "run_id": run[0],
-                      "stopped": stopped, "poll_seconds": RESULT_POLL_SECONDS})
+                      "stopped": stopped, "stopped_at": stopped_at,
+                      "poll_seconds": RESULT_POLL_SECONDS})
 
 
 async def pc_file_exchange_fetch(request: Request) -> JSONResponse:

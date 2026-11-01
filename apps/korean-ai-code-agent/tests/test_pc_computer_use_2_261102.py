@@ -29,7 +29,8 @@ def test_the_combo_vocabulary_is_open(spec):
 
 
 @pytest.mark.parametrize("spec", [
-    "ctrl+alt+del", "ctrl+alt+delete", "hyper+a", "ctrl+ctrl+a", "ctrl+",
+    "ctrl+alt+del", "ctrl+alt+delete", "control+alt+delete",
+    "hyper+a", "ctrl+ctrl+a", "ctrl+",
     "+a", "a+b", "ctrl+alt+shift+win+a",
 ])
 def test_unknown_names_and_the_sas_chord_stay_refused(spec):
