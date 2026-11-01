@@ -23,7 +23,8 @@
       padiem-council-style 에 따로 저장한다. 사진·폰트 모두 이 앱의 정적 자산만 쓴다.
   -->
   <link rel="stylesheet" href="/padiem-themes.css" />
-  <link rel="stylesheet" href="./static/council-app.css" />
+  <link rel="stylesheet" href="./static/council-app.css?v=034473f3" />
+  <script type="application/json" id="padiem-asset-versions">{"assets/ATTRIBUTION.md":"1fe36dfc","assets/IMAGE-SLOTS.md":"8580da1a","assets/fonts/LICENSE-MaruBuri-NAVER.txt":"189897dc","assets/fonts/LICENSE-PlayfairDisplay-OFL-1.1.txt":"484852ec","assets/fonts/LICENSE-Pretendard-OFL-1.1.txt":"64ec3882","assets/fonts/MaruBuri-Bold.woff2":"c8af5b6f","assets/fonts/MaruBuri-Regular.woff2":"e57ef6cc","assets/fonts/PlayfairDisplay-Bold-latin.woff2":"e90a9418","assets/fonts/Pretendard-Bold.woff2":"2d1cd41d","assets/fonts/Pretendard-Medium.woff2":"faae7e3f","assets/fonts/Pretendard-Regular.woff2":"5f473645","assets/fonts/Pretendard-SemiBold.woff2":"dae60b27","assets/meeting-card.jpg":"7a63c4af","assets/parliament-fr-hero.jpg":"6d938045","assets/parliament-hero.jpg":"9f5a06e5","assets/parliament-uk-hero.jpg":"c6f02283","assets/parliament-us-hero.jpg":"46393697","assets/sns-card.jpg":"b350d00a","assets/speech-card.jpg":"b3abc302","council-app.css":"034473f3","council-app.js":"a23d05ee","pc-file-exchange.css":"d3b94f06","pc-file-exchange.js":"64a1ae9e","photo-resize.js":"5247c51b"}</script>
 </head>
 <body class="council-body">
   <a class="council-skip" href="#councilMain">본문 바로가기</a>
@@ -35,7 +36,27 @@
       </span>
       <span class="council-brand-name">PADIEM 의원3종</span>
     </div>
+    <nav class="council-nav" aria-label="주요 화면">
+      <!-- 시안(04) 상단 메뉴의 자리. 항목은 실제 있는 화면으로만 연결한다:
+           홈·업무 도구·도구 3종. 화면이 없는 시안의 나머지 항목은 죽은 컨트롤이
+           되므로 만들지 않았다(계약: test_no_dead_control). -->
+      <button type="button" class="council-nav-item" data-nav="home">홈</button>
+      <button type="button" class="council-nav-item" data-nav="tools">업무 도구</button>
+      <button type="button" class="council-nav-item" data-nav="speech">축사·인사말</button>
+      <button type="button" class="council-nav-item" data-nav="sns">SNS 홍보</button>
+      <button type="button" class="council-nav-item" data-nav="meeting">회의정리·활동집</button>
+    </nav>
     <div class="council-topbar-actions">
+      <div class="council-tool-search-wrap">
+        <form class="council-tool-search" id="councilSearchForm" role="search">
+          <input type="search" id="councilSearch" class="council-tool-search-input"
+                 placeholder="어떤 점 도와드릴까요?" aria-label="업무 도구 검색" />
+          <button type="submit" class="council-tool-search-go" aria-label="검색">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="6" /><path d="M15.6 15.6 20 20" /></svg>
+          </button>
+        </form>
+        <p class="council-tool-search-status" id="councilSearchStatus" role="status" aria-live="polite" hidden></p>
+      </div>
       <button type="button" class="council-badge-action" id="councilAuthAction" hidden>로그인</button>
       <!-- 시안의 두 축 전환은 우상단 아이콘 하나. 값은 스크린리더에만 남긴다. -->
       <span class="council-theme" id="councilTheme">
@@ -119,7 +140,7 @@
             <h2 id="councilSpeechTitle">축사·인사말</h2>
             <p>행사 정보를 입력하면 축사·인사말 초안을 준비합니다.</p>
             <button type="button" class="council-card-select" data-tool="speech"
-                    aria-controls="councilSpeechBody" aria-expanded="false">열기</button>
+                    aria-controls="councilSpeechBody" aria-expanded="false">바로 시작하기 →</button>
             <div class="council-card-body" id="councilSpeechBody" hidden></div>
           </section>
           <section class="council-card" id="council-sns" data-tool="sns" aria-labelledby="councilSnsTitle">
@@ -131,7 +152,7 @@
             <h2 id="councilSnsTitle">SNS 홍보</h2>
             <p>행사 소식을 블로그·페이스북·인스타그램 게시글 초안으로 준비합니다.</p>
             <button type="button" class="council-card-select" data-tool="sns"
-                    aria-controls="councilSnsBody" aria-expanded="false">열기</button>
+                    aria-controls="councilSnsBody" aria-expanded="false">바로 시작하기 →</button>
             <div class="council-card-body" id="councilSnsBody" hidden></div>
           </section>
           <section class="council-card" id="council-meeting" data-tool="meeting" aria-labelledby="councilMeetingTitle">
@@ -143,7 +164,7 @@
             <h2 id="councilMeetingTitle">회의정리·활동집</h2>
             <p>회의 내용을 요약·기록으로 남기고, 선택한 기록으로 활동집 초안을 만듭니다.</p>
             <button type="button" class="council-card-select" data-tool="meeting"
-                    aria-controls="councilMeetingBody" aria-expanded="false">열기</button>
+                    aria-controls="councilMeetingBody" aria-expanded="false">바로 시작하기 →</button>
             <div class="council-card-body" id="councilMeetingBody" hidden></div>
           </section>
         </nav>
@@ -210,6 +231,6 @@
       </p>
     </footer>
   </main>
-  <script src="./static/council-app.js" defer></script>
+  <script src="./static/council-app.js?v=a23d05ee" defer></script>
 </body>
 </html>

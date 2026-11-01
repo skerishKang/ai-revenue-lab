@@ -2132,3 +2132,155 @@ html.council-in-workspace .council-card.active .council-card-select::after { con
   .council-card { outline: var(--pa-hair) solid var(--work-ink); }
   .council-theme-panel, .council-card.active { border-width: 2px; }
 }
+
+/* ── 시안(04) 상단 메뉴·검색 상자 + 작업실 시네마틱 머리(2026-11-01) ────────── */
+
+/* 상단 메뉴·검색은 데스크톱(≥901px)에서만 연다. 모바일 헤더 계약(#6065 S0)이
+   지킨 한 줄 배치를 건드리지 않기 위해서다 — 좁은 화면에서는 카드가 곧 메뉴다. */
+.council-nav { display: none; }
+.council-tool-search-wrap { display: none; }
+@media (min-width: 901px) {
+  .council-nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 22px);
+    min-width: 0;
+  }
+  .council-nav-item {
+    font: inherit;
+    font-size: 15px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--council-muted);
+    background: none;
+    border: 0;
+    padding: 0 2px;
+    min-height: 44px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .council-nav-item:hover,
+  .council-nav-item:focus-visible { color: var(--council-accent); }
+  .council-tool-search-wrap { position: relative; display: block; }
+  .council-tool-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 6px 0 14px;
+    border: 1px solid var(--council-border);
+    border-radius: 999px;
+    background: var(--council-bg);
+  }
+  .council-tool-search:focus-within { border-color: var(--council-accent); }
+  .council-tool-search-input {
+    font: inherit;
+    font-size: 16px;
+    border: 0;
+    background: none;
+    color: var(--council-text);
+    width: clamp(140px, 14vw, 220px);
+    min-height: 42px;
+    padding: 0;
+  }
+  .council-tool-search-input:focus { outline: none; }
+  .council-tool-search-go {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--council-muted);
+    cursor: pointer;
+  }
+  .council-tool-search-go svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+  .council-tool-search-go:hover { color: var(--council-accent); }
+  .council-tool-search-status {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 60;
+    max-width: 300px;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--council-border);
+    border-radius: 12px;
+    background: var(--council-surface);
+    color: var(--council-text);
+    font-size: 13.5px;
+    line-height: 1.5;
+    box-shadow: var(--shadow);
+  }
+}
+
+/* 작업실(도구 화면) 머리가 열린 카드의 색·사진을 이어받는다 — 시안 04의 시네마틱
+   어휘. 입력 양식은 그대로다: 글씨 16px, 버튼 44px, 읽기 쉬운 패널 불변. */
+html[data-active-tool="speech"] .council-workspace-bar {
+  --band-face: var(--work-1);
+  --band-ink: var(--work-1-text);
+  --band-image: var(--card-image-1);
+  --band-position: var(--card-position-1);
+}
+html[data-active-tool="sns"] .council-workspace-bar {
+  --band-face: var(--work-2);
+  --band-ink: var(--work-2-text);
+  --band-image: var(--card-image-2);
+  --band-position: var(--card-position-2);
+}
+html[data-active-tool="meeting"] .council-workspace-bar {
+  --band-face: var(--work-3);
+  --band-ink: var(--work-3-text);
+  --band-image: var(--card-image-3);
+  --band-position: var(--card-position-3);
+}
+html.council-in-workspace .council-workspace-bar {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: clamp(88px, 12vw, 132px);
+  margin-top: 10px;
+  padding: 12px clamp(20px, 4.85vw, 70px);
+  align-items: center;
+  border: 0;
+  border-radius: var(--pa-radius-lg);
+  background: var(--band-face, var(--panel));
+  color: var(--band-ink, var(--text));
+}
+html.council-in-workspace .council-workspace-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: var(--band-image, none);
+  background-size: var(--card-fit, cover);
+  background-position: var(--band-position, 50% 50%);
+  background-repeat: no-repeat;
+  opacity: var(--card-photo-op);
+}
+html.council-in-workspace .council-workspace-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(96deg, var(--band-face, transparent) 0%, var(--band-face, transparent) 42%, transparent 84%);
+}
+.council-workspace-bar .council-back {
+  color: inherit;
+  border-color: currentColor;
+  background: transparent;
+}
+.council-workspace-bar .council-workspace-title {
+  color: inherit;
+  font-size: clamp(17px, 1.39vw, 20px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
