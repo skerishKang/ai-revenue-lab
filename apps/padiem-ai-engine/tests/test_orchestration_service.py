@@ -1363,7 +1363,13 @@ async def test_pc_tools_on_general_turn_use_one_native_stream_and_no_classifier(
     )
     lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
     assert len(model.requests) == 1 and fallback.call_count == 0
-    assert [d.name for d in model.requests[0].tools] == ["query_drives","files_list","files"]
+    # #6460: the same turn also offers the local search tools, and #6552 adds
+    # the remote job/output tools after them.
+    assert [d.name for d in model.requests[0].tools] == [
+        "query_drives", "files_list", "files", "search_files", "search_contents",
+        "read_output", "search_output", "start_job", "job_status", "job_output",
+        "batch", "recall_context",
+    ]
     assert model.requests[0].tool_choice == "auto"
     assert [x["text_delta"]["delta"] for x in lines if "text_delta" in x] == ["ordinary ","answer"]
     assert lines[-1]["orchestration"]["execution"]["answer"] == "ordinary answer"
@@ -1442,7 +1448,13 @@ async def test_native_pc_list_call_consumes_declared_plan_without_reclassificati
     lines = [item async for item in decode_orchestration_ndjson(source())]
     assert "orchestration" in lines[-1], chunks
     assert pc.ops == ["list"]  # model's follow-up read attempt never dispatches
-    assert all(claim["ops"] == ["list"] and claim["source"] == "declared" for claim in pc.claims)
+    # A files_list admission reports both capabilities of that scope (listing
+    # and the file-name search), while the run itself still dispatched only the
+    # listing the caller declared.
+    assert all(
+        claim["ops"] == ["list", "search_name"] and claim["source"] == "declared"
+        for claim in pc.claims
+    )
     assert captured == [{"action":"tool","tool_id":"claw.pc.list_files","arguments":{"path":"."}}]
     assert len(model.requests) == 1
     assert len(followups.prompts) == 2  # post-tool decision, then refusal observation; no classifier

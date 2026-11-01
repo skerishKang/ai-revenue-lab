@@ -1,0 +1,35 @@
+.pc-delegation-settings > p {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: var(--text-secondary, var(--text));
+  overflow-wrap: anywhere;
+}
+.pc-delegation-send-note { font-size: .88rem; }
+.pc-delegation-status { min-height: 1.5em; }
+.pc-delegation-toolbar { margin: 12px 0; }
+.pc-delegation-list { display: grid; gap: 10px; margin: 0 0 18px; padding: 0; list-style: none; }
+.pc-delegation-rule { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border, #ccd2d8); border-radius: 12px; }
+.pc-delegation-rule-copy { flex: 1 1 180px; min-width: 0; }
+.pc-delegation-rule-copy > * { display: block; margin: 3px 0; overflow-wrap: anywhere; }
+.pc-delegation-rule-copy small { color: var(--text-secondary, var(--text)); }
+.pc-delegation-rule[data-enabled="false"] { opacity: .7; }
+.pc-delegation-editor { display: grid; gap: 9px; }
+.pc-delegation-editor > input,
+.pc-delegation-editor > select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid var(--border, #ccd2d8);
+  border-radius: 9px;
+  color: var(--text);
+  background: var(--surface, transparent);
+  font: inherit;
+}
+.pc-delegation-editor fieldset { display: flex; flex-wrap: wrap; gap: 12px; margin: 8px 0; padding: 12px; border: 1px solid var(--border, #ccd2d8); border-radius: 9px; }
+.pc-delegation-editor fieldset label { display: flex; align-items: center; gap: 6px; }
+.pc-delegation-editor input[type="checkbox"] { width: 18px; height: 18px; margin: 0; }
+.pc-delegation-editor > small { line-height: 1.5; color: var(--text-secondary, var(--text)); }
+.pc-delegation-settings button { min-height: 40px; }
+.pc-delegation-settings :focus-visible { outline: 2px solid var(--accent, #487bb5); outline-offset: 3px; }

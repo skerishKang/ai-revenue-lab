@@ -29,6 +29,7 @@ from padiem_ai_core.b14_upstream import (
 )
 
 from app.b14_service_proof import service_proof_headers
+from app.pc_work_metrics_reporter import PC_WORK_METRICS_PATH
 # #4379: the model request body has no PADIEM aggregate ceiling. The request is
 # read in full and the total is never refused; the platform's own request limit
 # and the provider's context window are the real bounds.
@@ -36,6 +37,7 @@ _ALLOWED_B14_PATHS = frozenset(
     {
         B14_CHAT_COMPLETIONS_PATH,
         B14_STREAM_PREVIEW_PATH,
+        PC_WORK_METRICS_PATH,
     }
 )
 
@@ -150,8 +152,20 @@ class CloudflareReadableByteStream(httpx.AsyncByteStream):
 
 def _correlation_header() -> dict[str, str]:
     from app.stack_telemetry import active_request_id
+    from app.pc_work_metrics import current_pc_work_metrics
+
     value = active_request_id()
-    return {"X-Request-Id": value} if value is not None else {}
+    headers = {"X-Request-Id": value} if value is not None else {}
+    collector = current_pc_work_metrics()
+    identity = getattr(collector, "ledger_identity", None)
+    if isinstance(identity, dict):
+        for key, header in (("product", "X-Padiem-Product"),
+                            ("subject_ref", "X-Padiem-Subject-Ref"),
+                            ("session_ref", "X-Padiem-Session-Ref")):
+            item = identity.get(key)
+            if isinstance(item, str) and item:
+                headers[header] = item
+    return headers
 
 
 def _workers_runtime_active() -> bool:
@@ -321,7 +335,8 @@ class CloudflareB14ServiceBindingTransport(httpx.AsyncBaseTransport):
         try:
             self._validate_target(request.url)
             raw_body = await self._read_request_body(request)
-            raw_body = b14_body(raw_body)
+            if request.url.path != PC_WORK_METRICS_PATH:
+                raw_body = b14_body(raw_body)
             body_text = raw_body.decode("utf-8")
         except httpx.RequestError:
             raise

@@ -141,6 +141,10 @@ def test_license_navigation_is_exact_url_and_file_scoped():
     notice = "apps/padiem-chat/static/third-party-licenses.html"
     allowed = {
         "https://github.com/NousResearch/hermes-agent/blob/9a76ac8e4f612c081e12008923893077f10f2ec7/tools/tool_output_truncate.py",
+        "https://github.com/pymupdf/PyMuPDF",
+        "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
+        "https://www.gnu.org/licenses/agpl-3.0.html",
+        "https://github.com/anomalyco/opencode",
     }
     assert audit.LICENSE_NOTICE_URLS == allowed
     for url in allowed:
@@ -149,6 +153,10 @@ def test_license_navigation_is_exact_url_and_file_scoped():
             "apps/padiem-chat/static/index.html", url)
     for url in ("https://github.com/unreviewed/repo",
                 "https://github.com/NousResearch/hermes-agent?tracking=1",
-                "https://github.com/NousResearch/hermes-agent"):
+                "https://github.com/NousResearch/hermes-agent",
+                "https://github.com/pymupdf/PyMuPDF?tracking=1",
+                "https://www.gnu.org/other",
+                "https://github.com/anomalyco/opencode?tracking=1"):
         assert not audit.license_notice_url_allowed(notice, url)
     assert "github.com" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
+    assert "www.gnu.org" not in audit.ALLOWED_LITERAL_HTTP_HOSTS

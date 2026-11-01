@@ -97,6 +97,8 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
         "declared_plan",
         "pc_tools",
         "pc_action_context",
+        "pc_delegation",
+        "pc_gateway",
         "agent_plan",
         "tool_arguments",
         "recovery_policy",
@@ -214,6 +216,8 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "agent_plan": "SUPPORTED_AND_MAPPED",
         "declared_plan": "PC_REQUEST_SCOPE_DECLARATION_ONLY",
         "pc_action_context": "PC_ROLE_EVIDENCE_ONLY",
+        "pc_delegation": "PC_OWNER_SETTINGS_ONLY",
+        "pc_gateway": "PC_SERVER_EXTERNAL_SOURCE_ONLY",
         "recovery_policy": "SUPPORTED_AND_MAPPED",
         "max_retries": "SUPPORTED_AND_MAPPED",
         "require_evidence": "SUPPORTED_AND_MAPPED",
@@ -432,6 +436,138 @@ def _pc_action_context(value: Any) -> list[dict[str, Any]]:
     return records
 
 
+# The client stays dependency-free. This closed schema mirrors
+# padiem_ai_core.pc_delegation; parity tests cover normalization and rejection.
+_PC_DELEGATION_ACTIONS = frozenset({"write", "move", "delete"})
+_PC_DELEGATION_RULE_KEYS = {"id", "device_id", "folder", "actions", "mode", "enabled"}
+
+
+def _pc_delegation_path(value: Any) -> str:
+    """Normalize path spelling without resolving, widening or guessing a root."""
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("PC delegation folder is required")
+    path = value.strip().replace("\\", "/")
+    if any(ord(char) < 32 or ord(char) == 127 for char in path) or any(char in path for char in '*?"<>|'):
+        raise ValueError("PC delegation folder is invalid")
+    prefix = ""
+    if re.match(r"^[A-Za-z]:", path):
+        if len(path) > 2 and path[2] != "/":
+            raise ValueError("Drive-relative delegation folders are ambiguous")
+        prefix, path = path[0].upper() + ":/", path[2:].lstrip("/")
+    elif path.startswith("//"):
+        prefix, path = "//", path[2:]
+    elif path.startswith("/"):
+        prefix, path = "/", path[1:]
+    if ":" in path:
+        raise ValueError("PC delegation folder is invalid")
+    parts = [part for part in path.split("/") if part not in {"", "."}]
+    if ".." in parts:
+        raise ValueError("PC delegation folder cannot traverse parents")
+    if prefix == "//" and len(parts) < 2:
+        raise ValueError("A network delegation folder needs a server and share")
+    # Windows aliases with trailing spaces/dots would make lexical boundaries
+    # disagree with the filesystem; ask for their unambiguous spelling instead.
+    if any(part != part.rstrip(" .") for part in parts):
+        raise ValueError("PC delegation folder spelling is ambiguous")
+    return prefix + "/".join(parts) if prefix or parts else "."
+
+
+def _pc_delegation_identifier(value: Any) -> str:
+    if not isinstance(value, str) or not value or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in value):
+        raise ValueError("PC delegation identity is invalid")
+    return value
+
+
+def _parse_pc_delegation(value: Any) -> dict[str, Any] | None:
+    """Validate a snapshot; ``available`` is reserved for the server loader.
+
+    A missing snapshot or a real empty configuration retains the existing
+    behavior. A failed store read is explicitly ``available=False`` and must
+    never be converted into an empty/default configuration by a caller.
+    """
+    if value is None:
+        return None
+    if (not isinstance(value, Mapping) or not {"version", "rules"} <= set(value)
+            or set(value) - {"version", "rules", "available"}
+            or type(value["version"]) is not int or value["version"] != 1
+            or not isinstance(value["rules"], (list, tuple))):
+        raise ValueError("PC delegation snapshot is invalid")
+    result: dict[str, Any] = {"version": 1, "rules": []}
+    if "available" in value:
+        if type(value["available"]) is not bool:
+            raise ValueError("PC delegation availability is invalid")
+        result["available"] = value["available"]
+    seen = set()
+    for rule in value["rules"]:
+        if not isinstance(rule, Mapping) or set(rule) != _PC_DELEGATION_RULE_KEYS:
+            raise ValueError("PC delegation rule is invalid")
+        identifier = _pc_delegation_identifier(rule["id"])
+        if identifier in seen:
+            raise ValueError("PC delegation rule identifiers must be unique")
+        seen.add(identifier)
+        actions = rule["actions"]
+        if (not isinstance(actions, (list, tuple)) or not actions
+                or any(not isinstance(action, str) or action not in _PC_DELEGATION_ACTIONS for action in actions)
+                or len(set(actions)) != len(actions)):
+            raise ValueError("Only PC file actions can be delegated")
+        if not isinstance(rule["mode"], str) or rule["mode"] not in {"allow", "ask"} or type(rule["enabled"]) is not bool:
+            raise ValueError("PC delegation rule mode is invalid")
+        result["rules"].append({
+            "id": identifier, "device_id": _pc_delegation_identifier(rule["device_id"]),
+            "folder": _pc_delegation_path(rule["folder"]),
+            "actions": list(actions), "mode": rule["mode"], "enabled": rule["enabled"],
+        })
+    return result
+
+
+def _pc_delegation(value: Any) -> dict[str, Any]:
+    try:
+        if value is None:
+            raise ValueError("An explicit policy must be an object")
+        return _parse_pc_delegation(value)
+    except (TypeError, ValueError):
+        raise PadiemAiEngineClientError(
+            "invalid_engine_request", "PC delegation policy is invalid",
+        ) from None
+
+
+# Dependency-free mirror of padiem_ai_core.pc_gateway.
+_PC_GATEWAY_TOOLS = {
+    "claw.pc.list_files": {"path"},
+    "claw.pc.read_file": {"path"},
+    "claw.pc.write_file": {"path", "content"},
+    "claw.pc.move_file": {"path", "destination"},
+    "claw.pc.delete_file": {"path"},
+}
+_PC_GATEWAY_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@-]{0,127}$")
+
+
+def _parse_pc_gateway(value):
+    if value is None:
+        return None
+    required = {"version", "source", "token_id", "request_id", "tool_id", "arguments"}
+    if (not isinstance(value, Mapping) or not required <= set(value)
+            or set(value) - required - {"approval_id", "search_query"}
+            or type(value["version"]) is not int or value["version"] != 1
+            or value["source"] != "mcp"):
+        raise ValueError("Invalid PC gateway provenance")
+    for key in ("token_id", "request_id", "approval_id"):
+        if key in value and (not isinstance(value[key], str) or not _PC_GATEWAY_ID.fullmatch(value[key])):
+            raise ValueError("Invalid PC gateway reference")
+    tool = value["tool_id"]
+    args = value["arguments"]
+    if (not isinstance(tool, str) or tool not in _PC_GATEWAY_TOOLS
+            or not isinstance(args, Mapping) or set(args) != _PC_GATEWAY_TOOLS[tool]
+            or any(not isinstance(item, str) for item in args.values())
+            or not args["path"].strip()
+            or ("destination" in args and not args["destination"].strip())):
+        raise ValueError("Invalid PC gateway tool arguments")
+    if "search_query" in value and (tool != "claw.pc.list_files"
+            or not isinstance(value["search_query"], str) or not value["search_query"].strip()):
+        raise ValueError("Invalid PC gateway search")
+    return {**dict(value), "arguments": dict(args)}
+
+
 def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[str, Any]:
     if not isinstance(request, Mapping):
         raise PadiemAiEngineClientError("invalid_engine_request", "Engine request must be an object")
@@ -498,6 +634,36 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         payload["pc_tools"] = _pc_tools_context(data, app_id)
     if "pc_action_context" in data:
         payload["pc_action_context"] = _pc_action_context(data["pc_action_context"])
+    if "pc_delegation" in data:
+        plan = data.get("agent_plan")
+        steps = plan.get("steps") if isinstance(plan, Mapping) else None
+        shape = tuple((step.get("step_id"), step.get("tool_id")) for step in steps) if (
+            isinstance(steps, list) and all(isinstance(step, Mapping) for step in steps)
+        ) else None
+        agent_id = {"padiem-chat": "agent:padiem:chat-pc-query@1",
+                    "b54-padiem-claw": "agent:padiem:claw-pc-query@1"}.get(app_id)
+        if "pc_tools" not in payload and not (
+            agent_id is not None and isinstance(plan, Mapping) and plan.get("agent_id") == agent_id
+            and shape in _PC_PLAN_STEPS.values()
+        ):
+            raise PadiemAiEngineClientError("invalid_engine_request", "PC delegation requires a canonical PC request")
+        payload["pc_delegation"] = _pc_delegation(data["pc_delegation"])
+    if "pc_gateway" in data:
+        plan = data.get("agent_plan")
+        steps = plan.get("steps") if isinstance(plan, Mapping) else None
+        shape = tuple((step.get("step_id"), step.get("tool_id")) for step in steps) if (
+            isinstance(steps, list) and all(isinstance(step, Mapping) for step in steps)
+        ) else None
+        try:
+            gateway = _parse_pc_gateway(data["pc_gateway"])
+            if (app_id != "padiem-chat" or data.get("pc_action_context") != [] or "pc_tools" in data
+                    or not isinstance(plan, Mapping) or plan.get("agent_id") != "agent:padiem:chat-pc-query@1"
+                    or shape not in _PC_PLAN_STEPS.values() or gateway is None
+                    or gateway["tool_id"] not in {item[1] for item in shape}):
+                raise ValueError("Invalid gateway lane")
+            payload["pc_gateway"] = gateway
+        except (TypeError, ValueError):
+            raise PadiemAiEngineClientError("invalid_engine_request", "PC gateway request is invalid") from None
     if "execution_context" in data:
         payload["execution_context"] = _execution_context(data["execution_context"])
     if "decision" in data:

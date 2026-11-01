@@ -48,6 +48,11 @@ CHAT_PC_DRIVE_COMMAND = (
 CHAT_PC_QUERY_AGENT_ID = "agent:padiem:chat-pc-query@1"
 CHAT_PC_QUERY_TOOL_ID = "claw.pc.query_drives"
 CHAT_PC_RUN_PREFIX = "chat_pcq_"
+# #6554: a Gemma route may declare native tools (function calling), but the PC
+# tool set stays off it. PC-tool exposure is an owner decision bound to the
+# Gemini routes; a Gemma allowance would be a separate decision, never a side
+# effect of the tools capability.
+PC_TOOL_EXCLUDED_MODEL_PREFIXES = ("google/gemma-",)
 
 _SUBJECT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/-]{0,127}$")
 
@@ -613,6 +618,8 @@ async def chat_pc_route_declares_tools(request: Request, model_id: str) -> bool:
     the declaration, a disabled or owner-excluded route withholds it, and no
     model/provider policy is copied here.
     """
+    if not isinstance(model_id, str) or model_id.startswith(PC_TOOL_EXCLUDED_MODEL_PREFIXES):
+        return False
     state = request.app.state
     rows: Any = None
     for name in ("b14_model_choice_resolver", "b14_catalog_source"):
@@ -975,6 +982,11 @@ async def _execute_chat_pc_files_lane(
             "대화 기록을 현재 사용할 수 없습니다.",
         ) from exc
     tool_arguments = _tool_arguments_for_plan(agent_plan, device_id)
+    from .pc_delegation_routes import load_pc_delegation
+
+    # This owner was authenticated before staging the PC run. Browser-supplied
+    # settings never travel on the Engine wire; load the stored snapshot here.
+    pc_delegation = await load_pc_delegation(request, uid)
     engine_text = (
         execution_user_text
         if isinstance(execution_user_text, str) and execution_user_text.strip()
@@ -995,6 +1007,7 @@ async def _execute_chat_pc_files_lane(
             tool_arguments=tool_arguments,
             pc_action_context=(pc_action_context if pc_action_context is not None else
                                [{"role": "user", "content": user_text}]),
+            pc_delegation=pc_delegation,
         )
     except B62OrchestrationError as exc:
         await _append_lane_notice(

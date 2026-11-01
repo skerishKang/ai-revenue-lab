@@ -89,6 +89,12 @@ class _Scripted:
     def start_channel_watchdog(self):
         return None
 
+    def start_drive_reporting(self, source):
+        # The real executor starts the drive reporter when a queue origin is
+        # configured; this loop test only needs the call to be accepted.
+        self.drive_source = source
+        return None
+
     def line_observations(self):
         return {"line_blocked_total": 0, "line_cleared_total": 0}
 
@@ -355,7 +361,7 @@ def _assert_main_real_factory_and_real_loop_honor_environment_cap(tmp_path):
             self.send_header("Content-Length", str(len(body)))
             self.end_headers()
             self.wfile.write(body)
-            if len(observed) >= 4:
+            if sum(1 for path, _ in observed if path == POLL_PATH) >= 4:
                 ready.set()
 
         def log_message(self, *_args):
@@ -378,7 +384,13 @@ def _assert_main_real_factory_and_real_loop_honor_environment_cap(tmp_path):
         "ORACLE_MESH_PASSWORD_FILE": str(password),
         "ORACLE_MESH_WORK_DIR": str(tmp_path),
         "ORACLE_MESH_IDLE_POLL_MAX_SECONDS": "2",
-        "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src"),
+        # Keep the repository packages the child needs (Core's drive-inventory
+        # validation) beside the kagent source path this test already sets.
+        "PYTHONPATH": os.pathsep.join(filter(None, (
+            str(Path(__file__).resolve().parents[1] / "src"),
+            str(Path(__file__).resolve().parents[3] / "packages" / "padiem-ai-core"),
+            env.get("PYTHONPATH", ""),
+        ))),
     })
     env.pop("MESH_FAILOVER_DEVICE_ID", None)
     process = subprocess.Popen(
@@ -388,8 +400,10 @@ def _assert_main_real_factory_and_real_loop_honor_environment_cap(tmp_path):
     )
     try:
         assert ready.wait(12), "real loop did not reach four local polls"
-        assert all(path == POLL_PATH for path, _ in observed[:4])
-        gaps = [observed[i + 1][1] - observed[i][1] for i in range(3)]
+        # The drive reporter shares this channel and posts its own targets read,
+        # so the backoff is measured across the poll requests only.
+        polls = [at for path, at in observed if path == POLL_PATH]
+        gaps = [polls[i + 1] - polls[i] for i in range(3)]
         assert 0.7 <= gaps[0] < 3.5
         assert all(1.6 <= gap < 3.5 for gap in gaps[1:]), gaps
     finally:

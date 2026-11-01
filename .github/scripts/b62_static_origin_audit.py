@@ -39,6 +39,10 @@ DRIVE_REVOKE_NAVIGATION_HOSTS = {
 LICENSE_NOTICE_PATH = "apps/padiem-chat/static/third-party-licenses.html"
 LICENSE_NOTICE_URLS = frozenset({
     "https://github.com/NousResearch/hermes-agent/blob/9a76ac8e4f612c081e12008923893077f10f2ec7/tools/tool_output_truncate.py",
+    "https://github.com/pymupdf/PyMuPDF",
+    "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
+    "https://www.gnu.org/licenses/agpl-3.0.html",
+    "https://github.com/anomalyco/opencode",
 })
 
 

@@ -475,6 +475,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)
+    from app.pc_work_metrics_reporter import PcWorkMetricsReporter
+    pc_work_metrics_reporter = PcWorkMetricsReporter(
+        transport=transport, base_url=completed_config.base_url,
+    )
     idempotency_adapter = _idempotency_adapter_for_env(env)
 
     def runtime_factory(app_id: str) -> ExecutionRuntime:
@@ -502,6 +506,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=OrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_work_metrics_reporter=pc_work_metrics_reporter,
             pc_streaming_runtime_factory=streaming_runtime_factory,
             pc_tools_capability=CatalogToolCapabilities(binding, Request),
             b14_service_bound=True,

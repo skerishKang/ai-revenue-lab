@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from datetime import date, datetime
 import json
+import base64
+import hashlib
 import logging
 import re
 import time
@@ -44,6 +46,7 @@ QUEUE_USER_AGENT = "PadiemChat-Queue/1.0"
 #: purpose: the over-budget original lives in private R2 and the delivered answer in the
 #: conversation, and both stay with this Worker.
 QUEUE_DISPATCH_METHODS = frozenset({
+    "get_pc_output_dispatch_for_owner",
     "get_oracle_mesh_dispatch_pin",
     "get_oracle_mesh_run_correlation",
     "get_oracle_mesh_run_command",
@@ -88,6 +91,10 @@ QUEUE_PAIRING_METHODS = frozenset({
 
 QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
 QUEUE_DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
+QUEUE_PC_OUTPUT_METHODS = frozenset({
+    "begin_pc_output", "append_pc_output", "finish_pc_output",
+    "read_pc_output", "search_pc_output",
+})
 
 __all__ = [
     "INTERNAL_STORE_PATH", "build_queue_client", "QUEUE_BACKEND_COM2", "QUEUE_BACKEND_D1",
@@ -211,7 +218,8 @@ class QueueStoreClient:
         # Only declared operation names are observable. Never log arguments,
         # origins, headers, body bytes or exception messages/tracebacks.
         safe_method = method if method in (
-            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS | QUEUE_DRIVE_METHODS
+            QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
+            | QUEUE_DRIVE_METHODS | QUEUE_PC_OUTPUT_METHODS
         ) else "other"
 
         def record(outcome, reason, exception="none", transport_phase="none"):
@@ -365,6 +373,31 @@ class QueueForwardingHistoryStore:
         setter = getattr(inner, "set_dispatch_authority", None)
         if callable(setter):
             setter(self)
+
+    async def store_pc_output(self, *, user_id, subject_id, run_id, device_id,
+                              content, dispatch_id="", source="pc_tool"):
+        if not isinstance(content, str):
+            raise QueueUnavailable("output must be text")
+        owner = dict(user_id=user_id, subject_id=subject_id, run_id=run_id,
+                     device_id=device_id)
+        raw = content.encode("utf-8")
+        begin = await self._client.call(
+            "begin_pc_output", **owner, source=source, size=len(raw),
+            sha256=hashlib.sha256(raw).hexdigest(), dispatch_id=dispatch_id)
+        if isinstance(begin, dict) and "output_ref" in begin:
+            return begin["output_ref"]
+        upload_id = begin["upload_id"]
+        for offset in range(0, len(raw), 65536):
+            await self._client.call(
+                "append_pc_output", **owner, upload_id=upload_id, offset=offset,
+                data=base64.b64encode(raw[offset:offset + 65536]).decode("ascii"))
+        return await self._client.call("finish_pc_output", **owner, upload_id=upload_id)
+
+    async def read_pc_output(self, **arguments):
+        return await self._client.call("read_pc_output", **arguments)
+
+    async def search_pc_output(self, **arguments):
+        return await self._client.call("search_pc_output", **arguments)
 
     def __getattr__(self, name: str) -> Any:
         if name.startswith("_"):

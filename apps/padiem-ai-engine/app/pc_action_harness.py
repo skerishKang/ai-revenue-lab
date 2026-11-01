@@ -16,6 +16,43 @@ _ROLES = {"user", "assistant", "tool_result"}
 _SOURCES = {"list", "file", "web", "mail", "unknown"}
 _KEYS = {"role", "content", "source", "visible", "paths"}
 _OPS = {"claw.pc.delete_file": "delete", "claw.pc.move_file": "move", "claw.pc.write_file": "write"}
+# These tools return source material even when their names omit "read".
+# A handle or a compacted-source recall never turns that material into intent.
+_EXTERNAL_MATERIAL_TOOLS = frozenset({
+    "claw.pc.read_file", "claw.pc.read_output", "claw.pc.search_output",
+    "claw.pc.job_output", "claw.pc.recall_context",
+})
+
+
+def _external_material_tool(tool_id) -> bool:
+    return isinstance(tool_id, str) and tool_id != "claw.pc.list_files" and (
+        tool_id in _EXTERNAL_MATERIAL_TOOLS
+        or any(word in tool_id.lower() for word in ("web", "mail", "fetch", "read"))
+    )
+
+
+_BATCH_NON_MATERIAL_TOOLS = frozenset({
+    "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.write_file",
+    "claw.pc.move_file", "claw.pc.delete_file",
+})
+
+
+def _external_material_observation(record) -> bool:
+    if not isinstance(record, Mapping):
+        return False
+    if record.get("tool_id") != "claw.pc.batch":
+        return _external_material_tool(record.get("tool_id"))
+    output = record.get("output")
+    source_ids = output.get("source_tool_ids") if isinstance(output, Mapping) else None
+    # A composite result preserves attempted child IDs. Missing/malformed or
+    # unknown provenance cannot conceal a source read behind the batch wrapper.
+    return not (
+        isinstance(source_ids, (list, tuple)) and source_ids
+        and all(isinstance(tool_id, str) and tool_id in _BATCH_NON_MATERIAL_TOOLS
+                for tool_id in source_ids)
+    )
+
+
 _VERBS = {"delete": "지울까요", "move": "옮길까요", "write": "저장할까요"}
 _INTENT = {
     "delete": re.compile(r"(?:지워|지우|지울|삭제|제거|\b(?:delete|remove|erase)\b)", re.I),
@@ -167,7 +204,7 @@ class PcActionHarness:
     def __init__(self, records=()):
         self.records = parse_pc_action_context(records)
 
-    def question(self, tool_id: str, arguments: Mapping[str, Any], *, observations=()) -> str | None:
+    def question(self, tool_id: str, arguments: Mapping[str, Any], *, observations=(), preceding_tool_ids=()) -> str | None:
         op = _OPS.get(tool_id)
         if op is None:
             return None
@@ -196,14 +233,23 @@ class PcActionHarness:
             re.escape(_VERBS[op]) + r"\s*\?", assistant["content"].splitlines()[0]))
         if _YES.fullmatch(speech) and len(choices) == 1 and question_intent:
             selected = choices[0]
+        from app.pc_action_delegation import confirmed_delegation_action
+
+        delegation_confirmation = confirmed_delegation_action(tool_id, arguments, self.records)
+        if delegation_confirmation:
+            # A new user reply can confirm the exact two-path move question.
+            # Current-turn tool material is still checked below before acting.
+            selected, question_intent = path, True
         intent = _intent(op, speech) or (selected is not None and question_intent)
         if not intent:
             return self._ask(op, candidates, path if _mentions(speech, path) else None)
 
         # Current-turn material cannot escalate an authorized read into a write.
         external = any(row["role"] == "tool_result" and row.get("source") != "list" for row in self.records[index + 1:])
-        external = external or any(isinstance(row, Mapping) and row.get("tool_id") != "claw.pc.list_files"
-            and (row.get("tool_id") == "claw.pc.read_file" or any(word in str(row.get("tool_id", "")).lower() for word in ("web", "mail", "fetch", "read"))) for row in observations)
+        external = external or any(_external_material_observation(row) for row in observations)
+        # Composite preflight checks planned reads before any step runs. These
+        # IDs express ordering, never a claim that a tool has already executed.
+        external = external or any(_external_material_tool(tool) for tool in preceding_tool_ids)
         if external:
             return f"읽은 자료에 이어 `{path}` 파일을 {_VERBS[op]}?"
 
@@ -227,6 +273,8 @@ class PcActionHarness:
         if (len(relevant) > 1 and selected is None and op != "move") or (len(matching) > 1 and not named_exactly):
             return self._ask(op, relevant if len(relevant) > 1 else matching)
         if op == "move":
+            if delegation_confirmation:
+                return None
             destination = arguments.get("destination")
             destination_match = _mention(speech, destination) if isinstance(destination, str) else None
             if destination_match is None:

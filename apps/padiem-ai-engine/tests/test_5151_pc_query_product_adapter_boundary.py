@@ -20,6 +20,7 @@ import ast
 from pathlib import Path
 
 import pytest
+from kagent.pc_remote_tools import REMOTE_TOOL_IDS, REMOTE_CANONICAL_IDS
 
 from padiem_ai_core.agent_tool_result_ledger import InMemoryToolResultLedger
 
@@ -103,7 +104,7 @@ def test_engine_module_re_exports_the_same_contract_objects() -> None:
     assert engine_driver._plan_step_arguments is product_adapter.plan_step_arguments
 
 
-def test_engine_binding_registers_the_same_six_tools() -> None:
+def test_engine_binding_registers_the_same_closed_pc_tools() -> None:
     binding = build_claw_pc_query_tool_binding(
         service=_FakeService(), request_factory=lambda *a, **k: None,
         secret="s" * 64,
@@ -116,7 +117,10 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         engine_driver.PC_WRITE_FILE_TOOL_ID, engine_driver.PC_MOVE_FILE_TOOL_ID,
         engine_driver.PC_DELETE_FILE_TOOL_ID,
-    }
+        engine_driver.PC_SEARCH_FILES_TOOL_ID,
+        engine_driver.PC_SEARCH_CONTENT_TOOL_ID,
+        engine_driver.PC_READ_CHUNK_TOOL_ID,
+    } | REMOTE_TOOL_IDS
     canonical = {entry.canonical_tool_id for entry in binding.registry.entries}
     assert canonical == {
         product_adapter.PC_DRIVES_CANONICAL_TOOL_ID,
@@ -125,7 +129,10 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         product_adapter.PC_MOVE_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_DELETE_FILE_CANONICAL_TOOL_ID,
         product_adapter.PC_READ_FILE_CANONICAL_TOOL_ID,
-    }
+        product_adapter.PC_SEARCH_FILES_CANONICAL_TOOL_ID,
+        product_adapter.PC_SEARCH_CONTENT_CANONICAL_TOOL_ID,
+        product_adapter.PC_READ_CHUNK_CANONICAL_TOOL_ID,
+    } | set(REMOTE_CANONICAL_IDS.values())
     authority = binding.authorities[product_adapter.PC_QUERY_AGENT_ID]
     assert authority.authorization.granted_auth_scopes == (
         product_adapter.PC_QUERY_SCOPE,
@@ -134,7 +141,10 @@ def test_engine_binding_registers_the_same_six_tools() -> None:
         product_adapter.PC_WRITE_FILE_SCOPE,
         product_adapter.PC_MOVE_FILE_SCOPE,
         product_adapter.PC_DELETE_FILE_SCOPE,
-    )
+        product_adapter.PC_SEARCH_FILES_SCOPE,
+        product_adapter.PC_SEARCH_CONTENT_SCOPE,
+        product_adapter.PC_READ_CHUNK_SCOPE,
+    ) + tuple(sorted(REMOTE_TOOL_IDS))
 
 
 def test_step_policy_uses_the_trusted_plan_target_and_refuses_a_model_device() -> None:

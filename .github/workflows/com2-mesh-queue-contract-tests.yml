@@ -46,7 +46,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     env:
-      PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane
+      # The drive-refresh end-to-end test composes the real Chat app, whose
+      # worker-orchestration module imports the Engine client package.
+      PYTHONPATH: apps/padiem-chat:packages/padiem-ai-core:packages/padiem-control-plane:apps/korean-ai-code-agent/src:apps/padiem-ai-engine/clients/python
     steps:
       - uses: actions/checkout@v4
 

@@ -892,8 +892,13 @@ def _requested_natural_pc_query(user_text: str) -> tuple[bool, str | None]:
     return True, command
 
 
-_PC_FILE_NOUNS = ("파일", "폴더", "디렉터리", "디렉토리", "txt", "문서")
-_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어")
+# #6460: a document kind is a file noun too, so "내 PC에서 견적 들어간 엑셀
+# 찾아줘" reaches the PC file tools instead of ordinary chat.
+_PC_FILE_NOUNS = (
+    "파일", "폴더", "디렉터리", "디렉토리", "txt", "문서", "엑셀", "xlsx",
+    "워드", "docx", "한글", "hwpx", "pdf", "csv", "스프레드시트", "프레젠테이션",
+)
+_PC_FILE_VERBS = ("목록", "리스트", "보여", "읽", "내용", "설명", "찾", "열어", "검색")
 
 
 def _requested_natural_pc_files(user_text: str) -> bool:
@@ -2040,6 +2045,13 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             pc_action_context.append({
                 "role": "tool_result", "content": content, "source": source,
             })
+    pc_delegation = None
+    if initial_pc_drive_query or pc_files_requested:
+        from .pc_delegation_routes import load_pc_delegation
+
+        # stage_uid is the authenticated owner whose PC run was just staged.
+        # No browser delegation field participates in this decision snapshot.
+        pc_delegation = await load_pc_delegation(request, stage_uid)
 
     if live_requested:
         from .claw_live_events import live_claw_sse
@@ -2061,6 +2073,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             live_args["pc_files_device_id"] = pc_files_device_id
         if initial_pc_drive_query or pc_files_requested:
             live_args["pc_action_context"] = pc_action_context
+            live_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
@@ -2116,6 +2129,7 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
             dispatch_args["pc_files_device_id"] = pc_files_device_id
         if initial_pc_drive_query or pc_files_requested:
             dispatch_args["pc_action_context"] = pc_action_context
+            dispatch_args["pc_delegation"] = pc_delegation
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:

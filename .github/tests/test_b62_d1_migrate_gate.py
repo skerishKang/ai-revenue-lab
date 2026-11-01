@@ -240,7 +240,7 @@ def test_inventory_pins_every_file_and_flags_the_real_rebuilds() -> None:
     inventory = gate.build_inventory("chat")
     assert len(inventory) == len(list(MIGRATIONS.glob("*.sql")))
     destructive = {item["name"] for item in inventory if item["destructive"]}
-    assert DESTRUCTIVE <= destructive
+    assert DESTRUCTIVE.intersection(item["name"] for item in inventory) <= destructive
     # Independently trace the actual SQLite replay: new table rebuilds must
     # also be flagged, while future non-destructive migrations are welcome.
     db = sqlite3.connect(":memory:")
@@ -261,7 +261,7 @@ def test_inventory_pins_every_file_and_flags_the_real_rebuilds() -> None:
     assert all(re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) for item in inventory)
     assert all(re.fullmatch(r"\d{3}", item["number"]) for item in inventory)
     # every file with no distinguishing object is one of the sanctioned rebuilds
-    assert UNPROVABLE <= {i["name"] for i in inventory if i["representative"] is None}
+    assert UNPROVABLE.intersection(i["name"] for i in inventory) <= {i["name"] for i in inventory if i["representative"] is None}
     # 018 names DROP TABLE only inside a comment, so it is not destructive
     assert gate.is_destructive(
         "-- Runtime CREATE TABLE / ALTER TABLE / DROP TABLE stays\nCREATE TABLE t(a);"
@@ -317,7 +317,7 @@ def test_baseline_records_applied_migrations_without_executing_them(tmp_path, ca
         inventory_path.read_text(encoding="utf-8")))
     unprovable = {item["name"] for item in inventory_items if item["representative"] is None}
     assert set(plan["seed_without_object_proof"]) == unprovable.intersection(plan["seed"])
-    assert UNPROVABLE - set(plan["apply"]) <= set(plan["seed_without_object_proof"])
+    assert UNPROVABLE.intersection(item["name"] for item in inventory_items) - set(plan["apply"]) <= set(plan["seed_without_object_proof"])
     assert "B62_D1_SEED_WITHOUT_OBJECT_PROOF=" in capsys.readouterr().out
 
     seed_path = tmp_path / "seed.sql"

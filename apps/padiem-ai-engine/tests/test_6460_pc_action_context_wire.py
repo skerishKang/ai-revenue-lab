@@ -238,7 +238,11 @@ def test_native_write_scope_selects_specific_delete_before_action_guard(monkeypa
     assert execution["metadata"]["status"] == "completed"
     assert len(native.requests) == 1
     assert native.requests[0].messages[-1]["content"] == payload["messages"][-1]["content"]
-    assert [definition.name for definition in native.requests[0].tools] == ["files_write"]
+    from kagent.pc_remote_tools import REMOTE_NAMES
+
+    assert [definition.name for definition in native.requests[0].tools] == [
+        "files_write", *REMOTE_NAMES,
+    ]
     if user_evidence:
         assert pc.ops == ["delete"]
         assert pc.dispatches[0]["path"] == TARGET

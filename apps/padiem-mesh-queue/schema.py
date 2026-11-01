@@ -230,6 +230,36 @@ def _require_shape(connection: Any) -> None:
         )
 
 
+def _ensure_background_metadata(connection) -> None:
+    # Queue-only execution mode. D1 state-copy imports only pairing/presence;
+    # VACUUM INTO backups include this table with the dispatch it references.
+    # Keep it out of QUEUE_TABLES: that tuple detects legacy pre-ledger tables,
+    # and adding a new table there would prevent safe ledger backfill.
+    table = "queue_background_dispatch"
+    if table not in _table_names(connection):
+        connection.execute(
+            "CREATE TABLE queue_background_dispatch ("
+            "dispatch_id TEXT PRIMARY KEY NOT NULL "
+            "REFERENCES oracle_mesh_dispatch(dispatch_id) ON DELETE CASCADE, "
+            "background INTEGER NOT NULL CHECK(background IN (0,1)), "
+            "job_operation_json TEXT CHECK(job_operation_json IS NULL OR "
+            "(json_valid(job_operation_json) AND json_type(job_operation_json)='object')))"
+        )
+        _settle(connection)
+    columns = {str(row[1]) for row in connection.execute(
+        "PRAGMA table_info(queue_background_dispatch)"
+    )}
+    if not {"dispatch_id", "background"} <= columns:
+        raise QueueSchemaIncomplete("queue background metadata is incomplete")
+    if "job_operation_json" not in columns:
+        connection.execute(
+            "ALTER TABLE queue_background_dispatch ADD COLUMN job_operation_json TEXT "
+            "CHECK(job_operation_json IS NULL OR "
+            "(json_valid(job_operation_json) AND json_type(job_operation_json)='object'))"
+        )
+        _settle(connection)
+
+
 def apply(connection, *, migrations: tuple[str, ...] = QUEUE_MIGRATIONS) -> None:
     texts: dict[str, str] = {}
     for name in migrations:
@@ -280,6 +310,7 @@ def apply(connection, *, migrations: tuple[str, ...] = QUEUE_MIGRATIONS) -> None
             raise
         _settle(connection)
 
+    _ensure_background_metadata(connection)
     _require_shape(connection)
 
 

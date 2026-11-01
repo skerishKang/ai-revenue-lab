@@ -193,7 +193,7 @@ def test_a_binary_payload_over_the_old_total_is_not_refused_for_its_size() -> No
 
 
 def test_encrypted_and_scanned_only_pdf_fail_with_safe_specific_messages() -> None:
-    with pytest.raises(AttachmentValidationError, match="암호화된 PDF"):
+    with pytest.raises(AttachmentValidationError, match="암호화된 문서라 열 수 없습니다"):
         parse_attachments([_binary_item("locked.pdf", PDF_MIME, _blank_pdf(encrypted=True))])
 
     with pytest.raises(AttachmentValidationError, match="OCR은 아직 지원하지 않습니다"):

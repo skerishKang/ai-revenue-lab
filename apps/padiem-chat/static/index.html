@@ -33,6 +33,8 @@
   <link rel="stylesheet" href="./capability-nav.css" />
   <link rel="stylesheet" href="./pc-pairing-card.css" />
   <link rel="stylesheet" href="./pc-connect-flow.css" />
+  <link rel="stylesheet" href="./pc-delegation-settings.css" />
+  <link rel="stylesheet" href="./mcp-gateway-settings.css" />
   <link rel="stylesheet" href="./claw-manual-intake.css" />
   <link rel="stylesheet" href="./claw-workspace.css" />
   <link rel="stylesheet" href="./util-menu.css" />
@@ -50,6 +52,7 @@
   <link rel="stylesheet" href="./padiem-chat-ui-polish.css" />
   <link rel="stylesheet" href="./calendar.css" />
   <link rel="stylesheet" href="./library.css" />
+  <link rel="stylesheet" href="./quick-launch.css" />
   <link rel="stylesheet" href="./claw-task-hub.css" />
   <link rel="stylesheet" href="./padiem-shared-ui.css" />
   <link rel="stylesheet" href="./claw-connection-guide.css" />
@@ -131,6 +134,19 @@
       <nav class="side-nav" aria-label="도구 및 연결">
         <button class="side-item" id="connectorsNavButton" type="button" aria-current="false" aria-controls="connectorsView"><span class="side-icon" aria-hidden="true">⇄</span><span data-locale-key="nav-connectors">연결</span></button>
       </nav>
+      <section class="recent-section quick-launch" aria-labelledby="quickLaunchTitle">
+        <h2 id="quickLaunchTitle" data-locale-key="quick-launch-title">빠른 실행</h2>
+        <div class="quick-launch-tools">
+          <button type="button" data-quick-util="speech" data-locale-key="quick-speech">축사</button>
+          <button type="button" data-quick-util="sns" data-locale-key="quick-sns">SNS</button>
+          <button type="button" data-quick-util="meeting" data-locale-key="quick-meeting">회의정리</button>
+          <button type="button" data-quick-util="claw-quote" data-locale-key="quick-quote">견적</button>
+          <button type="button" data-quick-util="pdfmd" data-locale-key="quick-pdfmd">PDF → MD</button>
+        </div>
+        <h3 data-locale-key="quick-recent-files">최근 프로젝트 파일</h3>
+        <div id="quickRecentFiles" class="quick-recent-files" aria-live="polite"></div>
+        <button type="button" id="quickAllFiles" data-locale-key="quick-all-files">파일 더 보기</button>
+      </section>
       <section class="recent-section project-section" id="projectsSection" aria-labelledby="projectsTitle" hidden>
         <div class="section-heading-row">
           <h2 id="projectsTitle" data-locale-key="projects">프로젝트</h2>
@@ -148,7 +164,7 @@
         <div id="historyList"></div>
         <p class="history-empty" id="historyEmpty" data-locale-key="history-empty" hidden>저장된 대화가 없습니다.</p>
       </section>
-      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span></div>
+      <div class="sidebar-footer"><span class="preview-dot" aria-hidden="true"></span><span data-locale-key="footer">편하게 질문해 보세요</span> <a href="./third-party-licenses.html">오픈소스 고지</a></div>
       <div class="sidebar-bottom" data-locale-aria-label="account-settings" aria-label="서비스, 계정 및 설정">
         <button class="settings-button" id="settingsButton" type="button" aria-haspopup="dialog" aria-controls="settingsDialog" aria-expanded="false" hidden><span aria-hidden="true">⚙</span><span id="settingsButtonLabel" data-locale-key="settings">설정</span></button>
         <div class="sidebar-account account-controls">
@@ -268,6 +284,65 @@
               <button type="button" class="language-option" data-locale-value="ko" aria-pressed="true">KR</button>
               <button type="button" class="language-option" data-locale-value="en" aria-pressed="false">EN</button>
             </div>
+          </section>
+          <section class="settings-section pc-delegation-settings" id="pcDelegationSettings" aria-labelledby="pcDelegationTitle">
+            <h3 id="pcDelegationTitle" data-locale-key="pc-delegation-title">PC에 맡길 일</h3>
+            <p data-locale-key="pc-delegation-help">요청한 일 중 정한 폴더와 행동에 맞는 작업을 맡깁니다. 파일이나 웹 안의 지시가 작업 허락이 되지는 않습니다.</p>
+            <p class="pc-delegation-send-note" data-locale-key="pc-delegation-send-note">메일·메시지 보내기와 외부 서비스에 기록하기는 항상 확인합니다.</p>
+            <p id="pcDelegationStatus" class="pc-delegation-status" role="status" aria-live="polite"></p>
+            <div class="pc-delegation-toolbar">
+              <button type="button" class="settings-action" id="pcDelegationRefresh" data-locale-key="pc-delegation-refresh">목록 새로 보기</button>
+            </div>
+            <ul class="pc-delegation-list" id="pcDelegationList" data-locale-aria-label="pc-delegation-list" aria-label="현재 맡긴 일"></ul>
+            <div class="pc-delegation-editor" id="pcDelegationEditor">
+              <label for="pcDelegationDevice" data-locale-key="pc-delegation-device">어느 PC인가요?</label>
+              <select id="pcDelegationDevice" disabled></select>
+              <label for="pcDelegationFolder" data-locale-key="pc-delegation-folder">어느 폴더인가요?</label>
+              <input id="pcDelegationFolder" type="text" autocomplete="off" spellcheck="false" data-locale-placeholder="pc-delegation-folder-placeholder" placeholder="예: C:/Users/me/Documents" aria-describedby="pcDelegationFolderHelp" disabled />
+              <small id="pcDelegationFolderHelp" data-locale-key="pc-delegation-folder-help">이 폴더와 그 안의 폴더에 적용합니다. 이동은 출발·도착 폴더가 모두 범위 안이어야 합니다.</small>
+              <fieldset id="pcDelegationActions" disabled>
+                <legend data-locale-key="pc-delegation-actions">어떤 일을 맡길까요?</legend>
+                <label><input id="pcDelegationWrite" type="checkbox" value="write" /><span data-locale-key="pc-delegation-write">파일 저장·수정</span></label>
+                <label><input id="pcDelegationMove" type="checkbox" value="move" /><span data-locale-key="pc-delegation-move">파일 정리·이동</span></label>
+                <label><input id="pcDelegationDelete" type="checkbox" value="delete" /><span data-locale-key="pc-delegation-delete">파일 삭제</span></label>
+              </fieldset>
+              <label for="pcDelegationMode" data-locale-key="pc-delegation-mode">어떻게 처리할까요?</label>
+              <select id="pcDelegationMode" disabled>
+                <option value="allow" data-locale-key="pc-delegation-allow">이 범위에서는 다시 묻지 않기</option>
+                <option value="ask" data-locale-key="pc-delegation-ask">항상 물어보기</option>
+              </select>
+              <button type="button" class="settings-action" id="pcDelegationAdd" data-locale-key="pc-delegation-add" disabled>규칙 저장</button>
+            </div>
+          </section>
+          <section class="settings-section mcp-gateway-settings" id="mcpGatewaySettings" aria-labelledby="mcpGatewayTitle">
+            <h3 id="mcpGatewayTitle" data-locale-key="mcp-settings-title">외부 AI 연결</h3>
+            <p data-locale-key="mcp-settings-help">MCP를 지원하는 외부 AI에 연결한 PC의 작업을 맡깁니다. PC에서 허용한 범위와 ‘PC에 맡길 일’ 설정이 그대로 적용됩니다.</p>
+            <label for="mcpGatewayEndpoint" data-locale-key="mcp-settings-endpoint">MCP 연결 주소</label>
+            <input id="mcpGatewayEndpoint" type="url" readonly spellcheck="false" />
+            <p data-locale-key="mcp-settings-client-help">개인 토큰(Bearer)을 지원하는 AI 도구에서 연결 주소와 토큰을 입력하세요.</p>
+            <p id="mcpGatewayStatus" class="mcp-settings-status" role="status" aria-live="polite"></p>
+            <button type="button" class="settings-action" id="mcpGatewayRefresh" data-locale-key="mcp-settings-refresh">목록 새로 보기</button>
+            <h4 data-locale-key="mcp-settings-connections">발급한 연결</h4>
+            <ul class="mcp-settings-list" id="mcpGatewayList" data-locale-aria-label="mcp-settings-connections" aria-label="발급한 연결"></ul>
+            <div class="mcp-settings-editor" id="mcpGatewayEditor">
+              <label for="mcpGatewayName" data-locale-key="mcp-settings-name">어떤 AI에서 쓸까요?</label>
+              <input id="mcpGatewayName" type="text" autocomplete="off" data-locale-placeholder="mcp-settings-name-placeholder" placeholder="예: 내 개발 도구" disabled />
+              <label for="mcpGatewayDevice" data-locale-key="mcp-settings-device">연결할 PC</label>
+              <select id="mcpGatewayDevice" disabled></select>
+              <button type="button" class="settings-action" id="mcpGatewayIssue" data-locale-key="mcp-settings-issue" disabled>개인 토큰 발급</button>
+            </div>
+            <div class="mcp-settings-issued" id="mcpGatewayIssued" hidden>
+              <label for="mcpGatewayToken" data-locale-key="mcp-settings-token">새 개인 토큰</label>
+              <input id="mcpGatewayToken" type="text" readonly autocomplete="off" spellcheck="false" aria-describedby="mcpGatewayTokenHelp" />
+              <p id="mcpGatewayTokenHelp" data-locale-key="mcp-settings-once">이 토큰은 지금 한 번만 볼 수 있습니다. 설정을 닫거나 새로 고치면 다시 표시하지 않습니다. 사용할 AI 도구에 복사해 주세요.</p>
+              <div class="mcp-settings-actions">
+                <button type="button" class="settings-action" id="mcpGatewayCopy" data-locale-key="mcp-settings-copy">토큰 복사</button>
+                <button type="button" class="settings-action" id="mcpGatewayHide" data-locale-key="mcp-settings-hide">복사했어요 · 숨기기</button>
+              </div>
+            </div>
+            <h4 data-locale-key="mcp-settings-approvals">확인이 필요한 작업</h4>
+            <p data-locale-key="mcp-settings-approval-help">아래 PC와 파일 경로, 저장할 내용 등 작업 전체를 확인해 주세요. 승인은 표시된 작업 한 번에만 적용됩니다.</p>
+            <ul class="mcp-settings-list" id="mcpGatewayApprovals" data-locale-aria-label="mcp-settings-approvals" aria-label="확인이 필요한 작업"></ul>
           </section>
           <section class="settings-section" aria-labelledby="adminSettingsTitle" id="adminSettingsSection" hidden>
             <p class="settings-label">ADMIN</p>
@@ -1374,6 +1449,8 @@
   <script src="./claw-device-manager.js"></script>
   <script src="./pc-pairing-card.js"></script>
   <script src="./pc-connect-flow.js"></script>
+  <script src="./pc-delegation-settings.js"></script>
+  <script src="./mcp-gateway-settings.js"></script>
   <!-- The composer computer connection status. It is a view over the snapshot
        the existing device directory module published and it opens the existing
        management panel; it adds no endpoint, no pairing and no polling loop. -->

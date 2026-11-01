@@ -7,6 +7,7 @@ path, and the store's own exception text is not ours to publish.
 from __future__ import annotations
 
 import asyncio
+import importlib.util
 import json
 import pathlib
 import sqlite3
@@ -20,8 +21,21 @@ sys.path.insert(0, str(QUEUE))
 
 from app.pc_device_pairing_store import D1PcPairingStore  # noqa: E402
 from schema import apply  # noqa: E402
-from service import create_app  # noqa: E402
 from internal_store import INTERNAL_STORE_PATH, QUEUE_SERVICE_SECRET_HEADER  # noqa: E402
+
+
+def _load_queue_service():
+    # Another suite may already have a top-level ``service`` module cached (the
+    # broker owns one too), so this helper loads the queue's own file by path.
+    spec = importlib.util.spec_from_file_location(
+        "padiem_mesh_queue_service_under_test", QUEUE / "service.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+create_app = _load_queue_service().create_app
 
 SECRET = "queue-channel-secret-value-261029"
 SERVICE_SECRET = "queue-service-secret-value-261029"

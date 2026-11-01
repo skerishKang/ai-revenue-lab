@@ -192,8 +192,14 @@ def test_scope_manifest_matches_current_worker_identity_and_is_non_authoritative
     assert manifest["worker_service_name"] == wrangler["name"] == "ai-revenue-korean-ai-platform"
     assert manifest["repository_root"] == "apps/korean-ai-platform"
     assert manifest["cloudflare_root_directory"] == "apps/korean-ai-platform"
-    assert manifest["repository_relative_watch_paths"] == ["apps/korean-ai-platform/*"]
-    assert manifest["shared_monorepo_dependency_paths"] == []
+    # B14 shares Core's pc_work_metrics, so the Worker build must watch that
+    # package and the manifest must declare it (the actual Cloudflare Build
+    # Watch Paths live outside this repository).
+    assert manifest["repository_relative_watch_paths"] == [
+        "apps/korean-ai-platform/*",
+        "packages/padiem-ai-core/*",
+    ]
+    assert manifest["shared_monorepo_dependency_paths"] == ["packages/padiem-ai-core"]
     assert manifest["watch_path_authority"] == "external_cloudflare_workers_builds"
     assert manifest["repository_guard_only"] is True
     assert manifest["production_deploy_authority"] is False

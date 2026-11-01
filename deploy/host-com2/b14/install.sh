@@ -3,7 +3,9 @@
 #
 # Written by the authorized COM2 operator, never by CI and never by this
 # repository: this script copies reviewed template files into their host
-# locations. It does not enable, start, restart, or reload a running service
+# locations, plus one canonical shared PC metrics module beside the operator's
+# staged B14 app. Configuration files keep the foreign-target protection below.
+# It does not enable, start, restart, or reload a running service
 # unless --reload is passed, and it refuses to overwrite a file it did not
 # place there. Setting B14_UPSTREAM_MODE and deploying Chat/Engine is a separate,
 # gated act recorded in docs/operations/B14_COM2_RUNBOOK.md, not something this
@@ -44,6 +46,27 @@ if ! command -v systemctl >/dev/null 2>&1; then fail "systemd_missing"; fi
 [ -d "$APP_ROOT/app" ] || fail "app_dir_missing"
 [ -f "$APP_ROOT/app/asgi.py" ] || fail "asgi_entry_missing"
 [ -x "$APP_ROOT/venv/bin/python" ] || fail "venv_python_missing"
+
+# The operator still stages B14's application checkout. Its one shared PC
+# metrics contract must come from the same reviewed repository revision;
+# copying the whole Core package is neither needed nor this installer's job.
+PC_METRICS_SOURCE="$SRC_DIR/../../../packages/padiem-ai-core/padiem_ai_core/pc_work_metrics.py"
+PC_METRICS_PACKAGE="$APP_ROOT/app/padiem_ai_core"
+[ -f "$PC_METRICS_SOURCE" ] || fail "pc_metrics_source_missing"
+if $DRY_RUN; then
+  note "would_stage:pc_work_metrics"
+else
+  install -d -o root -g root -m 0755 "$PC_METRICS_PACKAGE"
+  if [ ! -e "$PC_METRICS_PACKAGE/__init__.py" ]; then
+    printf '%s\n' '"""Deployment-staged canonical Core modules."""' > "$PC_METRICS_PACKAGE/__init__.py"
+    chmod 0644 "$PC_METRICS_PACKAGE/__init__.py"
+  fi
+  install -o root -g root -m 0644 "$PC_METRICS_SOURCE" "$PC_METRICS_PACKAGE/pc_work_metrics.py"
+  (cd "$APP_ROOT/app" && "$APP_ROOT/venv/bin/python" -c \
+    'from padiem_ai_core.pc_work_metrics import validate_pc_work_metrics') \
+    || fail "pc_metrics_import_failed"
+  note "staged:pc_work_metrics"
+fi
 
 write_staged() {
   # Copy only when the destination is absent or already identical. A foreign

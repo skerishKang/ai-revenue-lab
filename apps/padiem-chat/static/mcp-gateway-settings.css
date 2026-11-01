@@ -1,0 +1,20 @@
+.mcp-gateway-settings > p { margin: 8px 0; line-height: 1.6; color: var(--text-secondary, var(--text)); }
+.mcp-gateway-settings h4 { margin: 20px 0 10px; }
+.mcp-settings-status { min-height: 1.5em; }
+.mcp-settings-list { display: grid; gap: 12px; padding: 0; list-style: none; }
+.mcp-settings-card { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border, #ccd2d8); border-radius: 12px; }
+.mcp-settings-detail { flex: 1 1 180px; min-width: 0; }
+.mcp-settings-field { display: grid; gap: 3px; margin: 6px 0; min-width: 0; }
+.mcp-settings-field strong { color: var(--text-secondary, var(--text)); font-size: .85rem; }
+.mcp-settings-field span { white-space: pre-wrap; overflow-wrap: anywhere; }
+.mcp-settings-editor { display: grid; gap: 9px; }
+.mcp-gateway-settings input, .mcp-gateway-settings select { box-sizing: border-box; width: 100%; min-width: 0; min-height: 42px; padding: 9px 11px; border: 1px solid var(--border, #ccd2d8); border-radius: 9px; color: var(--text); background: var(--surface, transparent); font: inherit; }
+.mcp-settings-issued { margin: 14px 0; padding: 12px; border: 1px solid var(--accent, #487bb5); border-radius: 12px; }
+.mcp-settings-issued p { line-height: 1.6; }
+.mcp-settings-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.mcp-settings-approval { display: block; }
+.mcp-settings-arguments { margin-top: 12px; }
+.mcp-settings-arguments summary { cursor: pointer; }
+.mcp-settings-arguments pre { max-height: 24rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; padding: 10px; background: var(--bg, transparent); border-radius: 8px; }
+.mcp-gateway-settings button { min-height: 40px; }
+.mcp-gateway-settings :focus-visible { outline: 2px solid var(--accent, #487bb5); outline-offset: 3px; }

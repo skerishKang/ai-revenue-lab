@@ -97,7 +97,7 @@ def _upload(name: str, media_type: str, payload: bytes):
 def test_an_encrypted_docx_is_named_encrypted_not_corrupt(name: str, payload: bytes) -> None:
     with pytest.raises(AttachmentValidationError) as refused:
         _upload(name, DOCX_MIME, payload)
-    assert str(refused.value) == "암호화된 DOCX는 현재 첨부할 수 없습니다."
+    assert str(refused.value) == "암호화된 문서라 열 수 없습니다. 암호를 풀고 다시 올려 주세요."
     assert "안전하게 읽지 못했습니다" not in str(refused.value)
 
 

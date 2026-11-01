@@ -20,6 +20,9 @@ dependencies = [
 dev = [
   "pytest>=8.3,<9",
   "pytest-asyncio>=0.24,<1",
+  # The PC work-metrics end-to-end test mounts the real route on Starlette, the
+  # same framework the Engine's host composition uses.
+  "starlette>=0.37,<1",
   "workers-py>=1.16.2,<2",
   "workers-runtime-sdk>=1.6.3",
   "uv==0.13.5",

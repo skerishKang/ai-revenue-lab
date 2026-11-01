@@ -89,3 +89,44 @@ def test_large_output_is_stored_for_owner_and_returns_handle():
 def test_unbound_executor_fails_closed():
     with pytest.raises(RuntimeError, match="not bound"):
         run_batch([step("read")], owner="alice", total_timeout=1)
+
+
+def test_no_deadline_runs_existing_executor_and_shared_runner_identity():
+    from padiem_ai_core.pc_batch import run_batch as shared_run_batch
+    assert shared_run_batch is run_batch
+    executor, store = Executor(), Store()
+    with bind_batch_services(executor, store):
+        result = run_batch([step("read")], owner="alice", total_timeout=None)
+    assert result["completed"] == 1
+
+
+def test_confirmed_batch_checks_whole_batch_before_first_pc_operation():
+    events = []
+    class ConfirmedExecutor(Executor):
+        def confirm_batch(self, steps, *, owner):
+            events.append(("confirm", [item["op"] for item in steps], owner))
+            return True
+
+        def execute_authorized(self, op, args, *, owner):
+            events.append(("execute", op, owner))
+            return super().execute_authorized(op, args, owner=owner)
+
+    executor = ConfirmedExecutor()
+    with bind_batch_services(executor, Store()):
+        result = run_batch([step("read"), step("write")], owner="alice", total_timeout=None)
+    assert result["completed"] == 2
+    assert events == [("confirm", ["read", "write"], "alice"),
+                      ("execute", "read", "alice"), ("execute", "write", "alice")]
+
+
+@pytest.mark.parametrize("answer", [False, None, 1, "approved"])
+def test_confirmation_must_be_trusted_exact_true_and_precedes_even_reads(answer):
+    class UnconfirmedExecutor(Executor):
+        def confirm_batch(self, steps, *, owner):
+            return answer
+    executor, store = UnconfirmedExecutor(), Store()
+    with bind_batch_services(executor, store):
+        result = run_batch([step("read"), step("delete")], owner="alice", total_timeout=None)
+    assert result["requires_confirmation"] is True
+    assert executor.calls == []
+    assert store.saved == []

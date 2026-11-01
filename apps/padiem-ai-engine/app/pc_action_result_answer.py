@@ -45,14 +45,12 @@ def append_pc_action_facts(answer: str, observations) -> str:
     success on another file cannot hide an unverified action.
     """
     latest = {}
-    for index, observation in enumerate(observations):
-        if not isinstance(observation, Mapping):
-            continue
-        operation = _MUTATIONS.get(observation.get("tool_id"))
+    pending_jobs = {}
+
+    def remember(tool_id, verification, index):
+        operation = _MUTATIONS.get(tool_id)
         if operation is None:
-            continue
-        output = observation.get("output")
-        verification = output.get("action_verification") if isinstance(output, Mapping) else None
+            return
         if not isinstance(verification, Mapping):
             verification = {"status": "unavailable", "reason": "evidence_missing"}
         status = verification.get("status")
@@ -66,6 +64,44 @@ def append_pc_action_facts(answer: str, observations) -> str:
         )
         latest[identity] = (operation, status, reason, path)
 
+    for index, observation in enumerate(observations):
+        if not isinstance(observation, Mapping):
+            continue
+        tool_id = observation.get("tool_id")
+        output = observation.get("output")
+        output = output if isinstance(output, Mapping) else {}
+        if tool_id in _MUTATIONS:
+            remember(tool_id, output.get("action_verification"), index)
+        elif tool_id == "claw.pc.batch":
+            # Only canonical-handler attestations copied to the wrapper's
+            # top-level fields count. Never parse a result string or summary.
+            verifications = output.get("action_verifications")
+            covered = set()
+            if isinstance(verifications, (list, tuple)):
+                for child_index, child in enumerate(verifications):
+                    if not isinstance(child, Mapping):
+                        continue
+                    source = child.get("tool_id")
+                    if isinstance(source, str) and source in _MUTATIONS:
+                        covered.add(source)
+                        remember(source, child.get("action_verification"), (index, child_index))
+            sources = output.get("source_tool_ids")
+            if isinstance(sources, (list, tuple)):
+                for child_index, source in enumerate(sources):
+                    if isinstance(source, str) and source in _MUTATIONS and source not in covered:
+                        remember(source, None, (index, "missing", child_index))
+        elif tool_id in {"claw.pc.start_job", "claw.pc.job_status", "claw.pc.job_output"}:
+            job_id = output.get("job_id")
+            identity = job_id if isinstance(job_id, str) and job_id else ("missing", index)
+            state = output.get("state")
+            if state in {"done", "failed"} and tool_id != "claw.pc.start_job":
+                pending_jobs.pop(identity, None)
+                remember(output.get("source_tool_id"), output.get("action_verification"), (index, "job"))
+            else:
+                # A receipt/poll cannot become completion because the model
+                # says so. Only the same job's terminal record clears it.
+                pending_jobs[identity] = True
+
     notes = []
     for operation, status, reason, path in latest.values():
         if status == "verified":
@@ -75,4 +111,7 @@ def append_pc_action_facts(answer: str, observations) -> str:
             fact = f"파일 {json.dumps(path, ensure_ascii=False)}: {fact}"
         if fact not in answer and fact not in notes:
             notes.append(fact)
+    pending_note = "PC 작업은 아직 진행 중입니다. 완료 여부는 작업 상태에서 확인할 수 있습니다."
+    if pending_jobs and pending_note not in answer:
+        notes.append(pending_note)
     return answer if not notes else answer.rstrip() + "\n\n" + "\n".join(notes)

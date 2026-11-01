@@ -193,6 +193,8 @@ class OrchestrationRequest:
     # Server-authored conversation provenance for the PC execution guard.
     # Separate from model messages/additional_system_context; never a prompt.
     pc_action_context: tuple[Mapping[str, Any], ...] = ()
+    # Owner settings travel outside the model prompt and cannot add tools.
+    pc_delegation: Mapping[str, Any] | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.execution_request, ExecutionRequest):

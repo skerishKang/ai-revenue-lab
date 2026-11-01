@@ -31,6 +31,11 @@ with sync_playwright() as p:
  for width,height in ((1920,1080),(1440,900),(900,900),(820,1180),(390,844)):
   page=b.new_page(viewport={"width":width,"height":height})
   page.goto(BASE,wait_until="domcontentloaded",timeout=20000)
+  # Measure only after the webfonts have resolved a line box: the row-height
+  # comparison below is text-metric sensitive, and a font that swaps in after
+  # the fixed delay moved the measured height by up to 2.5px on a loaded
+  # runner. This waits for the document's own promise; no tolerance changed.
+  page.evaluate("() => document.fonts.ready.then(() => true)")
   page.wait_for_timeout(450)
   def metrics():
    return page.evaluate("""() => {
@@ -68,6 +73,7 @@ with sync_playwright() as p:
   chat=metrics()
   if width<=920:page.locator("#mobileMenu").click()
   page.locator("#clawNavButton").click()
+  page.evaluate("() => document.fonts.ready.then(() => true)")
   page.wait_for_timeout(300)
   claw=metrics()
   # Both surfaces are on the same page contract, and the band opens no
