@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <meta name="robots" content="noindex" />
+  <title>PADIEM 컴퓨터 연결 설치 안내</title>
+  <link rel="icon" href="data:," />
+  <!--
+    #6659 2 — the PC connect program install guide. Every step, path, file name
+    and control below is taken from the code that performs it:
+
+      scripts/pc_pairing/connect-exe/PadiemPcConnect.cs        (the program)
+      apps/padiem-chat/app/pc_pairing_agent_install.py         (agent install)
+      apps/padiem-chat/static/pc-pairing-card.js               (the card steps)
+      scripts/pc_pairing/*/..                                  (build)
+      docs/operations/PC_CONNECT_EXE_20261028.md               (measured run)
+      apps/claw-connect/claw_connect/menu_model.py             (tray items)
+      install-standalone.ps1 / install.ps1                     (uninstall)
+
+    The page is a document: no script, no network dependency, and no claim the
+    code does not make. Where the tray and the web differ, both are said.
+  -->
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="./help.css" />
+</head>
+<body class="chat-help-body chat-install-body">
+  <a class="chat-help-skip" href="#installMain">본문으로 건너뛰기</a>
+
+  <header class="chat-help-header">
+    <div class="chat-help-brand">
+      <span class="chat-help-brand-mark" aria-hidden="true">P</span>
+      <span class="chat-help-brand-name">PADIEM 컴퓨터 연결 설치 안내</span>
+    </div>
+    <a class="chat-help-back" href="./help.html">사용 안내로 돌아가기</a>
+  </header>
+
+  <main id="installMain" class="chat-help-main">
+    <h1>컴퓨터 연결 프로그램 설치 안내</h1>
+    <p class="chat-help-lede">
+      PADIEM Chat과 Claw에서 내 PC로 작업하려면 그 PC에 <strong>연결 프로그램</strong>을 한 번
+      설치합니다. 설치 파일은 Chat의 <strong>내 컴퓨터</strong> 카드에서
+      <strong>이 PC 연결하기</strong>를 눌러 내려받고, 받은 파일을 두 번 눌러 실행하면 됩니다.
+      이 페이지는 실제로 동작하는 순서만 적었습니다.
+    </p>
+
+    <section class="chat-help-policy" aria-labelledby="installPolicyTitle">
+      <h2 id="installPolicyTitle">설치하면 이렇게 동작해요</h2>
+      <p>
+        설치를 마치면 그 PC는 <strong>이 계정에 자동으로 연결</strong>됩니다. 코드를 입력하거나
+        다시 로그인하지 않습니다. 연결된 PC에서는 사전에 맡긴 범위(이 PC의 드라이브와 등록한
+        폴더) 안의 작업이 바로 진행됩니다.
+      </p>
+      <p>
+        <strong>끄기·일시중지·연결 해제</strong>는 언제든 할 수 있습니다. 연결 목록의
+        <strong>잠시 멈춤</strong>과 <strong>연결 끊기</strong>가 웹에 있고, PADIEM Connector
+        트레이를 설치한 PC에서는 트레이에서도 같은 제어를 합니다.
+        <strong>프로그램 제거</strong>는 트레이와 웹에 버튼이 없어, 아래
+        <a href="#installRemove">제거</a> 순서로 합니다.
+      </p>
+      <p>
+        덮어쓰기·이동·삭제 앞에서는 원본을 먼저 백업하고, 메일·메시지 보내기는 보내기 전에 한 번
+        확인합니다. 비밀번호·쿠키 같은 비밀 정보는 입력하지 않습니다.
+      </p>
+    </section>
+
+    <nav class="chat-help-toc" aria-label="설치 안내 목차">
+      <ul>
+        <li><a href="#installBefore">시작하기 전에</a></li>
+        <li><a href="#installSteps">설치 순서</a></li>
+        <li><a href="#installLeft">PC에 남는 것</a></li>
+        <li><a href="#installControl">설치 뒤 제어</a></li>
+        <li><a href="#installTrouble">자주 막히는 곳</a></li>
+        <li><a href="#installUpdate">업데이트·다시 설치</a></li>
+        <li><a href="#installRemove">제거</a></li>
+        <li><a href="#installSecure">보안·개인정보</a></li>
+      </ul>
+    </nav>
+
+    <section class="chat-help-section" id="installBefore" aria-labelledby="installBeforeTitle">
+      <h2 id="installBeforeTitle">시작하기 전에</h2>
+      <ul class="chat-help-list">
+        <li><strong>Windows 10 또는 11</strong> PC에서 진행하세요.</li>
+        <li>설치 중 <strong>관리자 권한 승인</strong>을 한 번 요청합니다. 승인은 PC에 연결
+          프로그램을 두고 Windows 서비스로 등록하기 위해서입니다.</li>
+        <li>실행할 때 <strong>인터넷 연결</strong>이 필요합니다. 프로그램이 PADIEM이 지정한
+          서버에서 연결 에이전트를 내려받기 때문입니다.</li>
+        <li>내려받는 파일 이름은 <code>padiem-pc-connect.exe</code>입니다. 이 파일에는 전자
+          서명이 없어 Windows가 게시자를 확인하지 못합니다. 설치 순서에서 이 경고를 넘기는
+          방법을 그대로 안내합니다.</li>
+        <li>이미 연결된 PC가 있으면 그 PC는 목록에 이름으로 나옵니다. 여러 PC를 쓸 때는
+          요청에서 PC 이름을 말하면 대상이 정해집니다.</li>
+      </ul>
+    </section>
+
+    <section class="chat-help-section" id="installSteps" aria-labelledby="installStepsTitle">
+      <h2 id="installStepsTitle">설치 순서</h2>
+      <ol class="chat-help-steps">
+        <li class="chat-help-step">
+          <h3>1. 카드에서 설치 파일 받기</h3>
+          <p class="chat-help-desc">
+            Chat 또는 Claw의 <strong>내 컴퓨터</strong> 카드에서
+            <strong>이 PC 연결하기</strong>를 누릅니다. 화면에
+            <em>PC 연결 파일을 준비하고 있습니다</em>가 잠깐 보인 뒤 파일이 내려받아지고,
+            그 아래에 <em>이렇게 실행하세요</em> 순서가 나타납니다.
+          </p>
+          <p class="chat-help-detail">
+            화면에 <em>PC 설치 파일은 아직 준비 중</em>이라고 나오면, 이 배포에 설치 파일이 아직
+            연결되지 않은 상태입니다. 파일이 준비된 뒤 같은 버튼으로 다시 받으면 됩니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>2. 받은 파일 실행</h3>
+          <p class="chat-help-desc">
+            내려받은 <code>padiem-pc-connect.exe</code>를 <strong>두 번 눌러</strong> 실행합니다.
+            검은 콘솔 창이 열리고 진행 문장이 한 줄씩 표시됩니다. 창은 결과를 읽을 수 있도록
+            끝에서 닫히지 않고 기다립니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>3. 게시자 경고 넘기기</h3>
+          <p class="chat-help-desc">
+            Windows가 <strong>알 수 없는 게시자</strong> 창을 보여 주면
+            <strong>[추가 정보]</strong>를 누른 뒤 <strong>[실행]</strong>을 누릅니다.
+            창에는 파일 이름 대신 제품 이름 <strong>PADIEM</strong>과
+            <strong>PADIEM PC 연결</strong>이 표시됩니다.
+          </p>
+          <p class="chat-help-caution">
+            주의: 이 경고는 오류가 아니라 서명이 없다는 안내입니다. SmartScreen 설정이나 회사
+            보안 정책에 따라 이 창이 아예 뜨지 않는 PC도 있고, 반대로 [추가 정보]를 눌러도
+            [실행]이 나타나지 않는 PC도 있습니다. [실행]이 나타나지 않으면 카드의
+            <strong>다른 설치 방법 → 설치 파일로 받기 (.ps1)</strong>을 사용하세요.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>4. 관리자 권한 승인</h3>
+          <p class="chat-help-desc">
+            프로그램이 관리자 권한을 요청하면 <strong>[예]</strong>를 누릅니다. 승인 창에서
+            [아니요]를 누르면 아무것도 설치되지 않고 창이 닫힙니다. 그때는 카드에서 같은 파일을
+            다시 받아 실행하면 됩니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>5. 설치와 연결이 한 번에 진행</h3>
+          <p class="chat-help-desc">
+            프로그램이 PADIEM이 지정한 서버에서 연결 에이전트를 내려받아
+            <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>에 놓고,
+            <strong>Mesh Agent</strong>라는 Windows 서비스를 등록한 뒤 시작합니다. 콘솔 창에
+            <em>연결 진행 중 - 서버가 이 PC를 확인하면 PADIEM의 '내 PC 연결'에 자동으로
+            나타납니다</em>가 표시됩니다.
+          </p>
+          <p class="chat-help-detail">
+            이 PC에 이미 설치되어 있으면 같은 서비스를 <strong>갱신 설치</strong>합니다.
+            서비스는 하나이고 중복으로 만들어지지 않습니다. 진행 중에는 창을 닫지 마세요.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>6. 카드에서 연결 확인</h3>
+          <p class="chat-help-desc">
+            설치하는 동안 카드가 몇 초마다 서버에 다시 물어봅니다. 서버가 이 PC를 확인하면
+            카드가 <strong>연결됨 ✓ (PC 이름)</strong>으로 바뀝니다. 새로 고치지 않아도 됩니다.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="chat-help-section" id="installLeft" aria-labelledby="installLeftTitle">
+      <h2 id="installLeftTitle">PC에 남는 것</h2>
+      <ul class="chat-help-list">
+        <li><strong>연결 프로그램 파일 하나</strong> — <code>%ProgramFiles%\PADIEM\MeshAgent.exe</code>와
+          이를 실행하는 <strong>Mesh Agent</strong> Windows 서비스입니다.</li>
+        <li>내려받는 데 쓴 임시 파일은 실행 직후 삭제됩니다. 연결 표식과 설치 주소는 실행 중인
+          프로그램 안에만 있고, PC의 파일이나 레지스트리에 코드로 저장되지 않습니다.</li>
+        <li><strong>PC 작업의 백업</strong> — PC의 파일을 덮어쓰기·이동·삭제할 때 원본을
+          같은 드라이브의 숨김 폴더에 먼저 복사합니다.
+          위치는 <code>&lt;드라이브&gt;:\.padiem-backup\&lt;날짜&gt;\&lt;시각&gt;-&lt;GUID 8자&gt;-&lt;원래 이름&gt;</code>
+          이고, 답변에도 그 경로가 적힙니다. 백업이 실패하면 그 변경은 일어나지 않습니다.</li>
+        <li>백업 폴더는 연결 프로그램을 제거해도 지워지지 않습니다. 원본이 들어 있으니 필요한
+          동안은 직접 보관하세요.</li>
+      </ul>
+    </section>
+
+    <section class="chat-help-section" id="installControl" aria-labelledby="installControlTitle">
+      <h2 id="installControlTitle">설치 뒤 제어</h2>
+      <h3>웹의 내 컴퓨터 목록</h3>
+      <ul class="chat-help-list">
+        <li><strong>이름 바꾸기</strong> — 요청에서 부를 PC 이름을 정합니다.</li>
+        <li><strong>잠시 멈춤 / 다시 시작</strong> — 멈춘 동안에는 이 PC로 작업이 전달되지
+          않습니다.</li>
+        <li><strong>연결 끊기</strong> — 이 계정에서 이 PC의 연결 권한이 사라지고, 함께 등록한
+          폴더 범위도 사라집니다. 다시 연결하려면 그 PC에서 설치 파일을 다시 실행합니다.</li>
+      </ul>
+      <h3>PADIEM Connector 트레이 (별도 데스크톱 프로그램)</h3>
+      <p class="chat-help-desc">
+        PADIEM Connector를 설치한 PC에서는 트레이 메뉴에서 다음을 쓸 수 있습니다:
+        연결 상태와 버전, <strong>PADIEM Chat 열기</strong>, <strong>상태 보기</strong>,
+        <strong>로그 폴더 열기</strong>, <strong>일시중지 / 다시 시작</strong>,
+        <strong>다시 연결</strong>, <strong>Windows 자동 시작 켜기 / 끄기</strong>,
+        <strong>연결 해제</strong>, <strong>종료</strong>. 등록이 끝나면 Windows 자동 시작이
+        기본으로 켜지고, 트레이에서 끄면 다시 켜지 않는 한 유지됩니다.
+      </p>
+      <p class="chat-help-caution">
+        주의: 트레이에는 <strong>제거</strong> 항목이 없습니다. PADIEM Connector의 설치·등록은
+        아직 정식 공개 전이며, 제거는 아래 <a href="#installRemove">제거</a> 절차로 합니다.
+      </p>
+    </section>
+
+    <section class="chat-help-section" id="installTrouble" aria-labelledby="installTroubleTitle">
+      <h2 id="installTroubleTitle">자주 막히는 곳</h2>
+
+      <h3>연결이 안 될 때</h3>
+      <p>
+        카드가 <strong>연결됨</strong>으로 바뀌지 않으면 순서대로 확인하세요.
+        ① 콘솔 창에 오류 문장이 있었는지 봅니다. ② 관리자 권한 승인 창에서 [예]를 눌렀는지
+        확인합니다. ③ 인터넷이 되는지 확인합니다(에이전트를 내려받는 단계입니다).
+        ④ Windows 서비스 목록(<code>services.msc</code>)에 <strong>Mesh Agent</strong>가
+        있는지 봅니다. ⑤ 카드를 닫았다 다시 열어 목록을 새로 읽습니다. 그래도 안 되면 서비스를
+        다시 시작한 뒤 카드를 새로 고칩니다.
+      </p>
+
+      <h3>여러 PC를 쓸 때</h3>
+      <p>
+        PC마다 그 PC에서 설치 파일을 한 번씩 실행합니다. 연결되면 카드에 PC 이름이 나오고,
+        요청에서는 <strong>시험PC-A의 파일 목록 보여줘</strong>처럼 PC 이름을 말해 대상을
+        정합니다. 이름은 목록의 <strong>더 보기 → 이름 바꾸기</strong>로 바꿀 수 있습니다.
+        설치 프로그램은 이 PC의 드라이브 문자를 연결 이름에 함께 보내므로, 연결되면 그 PC의
+        드라이브가 기본 범위로 잡힙니다.
+      </p>
+
+      <h3>회사 보안이 실행을 막을 때</h3>
+      <p>
+        <code>.exe</code> 실행이 차단되면 카드의 <strong>다른 설치 방법</strong>에서
+        <strong>설치 파일로 받기 (.ps1)</strong>를 내려받아, 그 파일을
+        <strong>우클릭 → PowerShell로 실행</strong>으로 진행합니다. 설치 순서와 결과는 같습니다.
+      </p>
+    </section>
+
+    <section class="chat-help-section" id="installUpdate" aria-labelledby="installUpdateTitle">
+      <h2 id="installUpdateTitle">업데이트·다시 설치</h2>
+      <p>
+        업데이트도 같은 방법입니다. 카드에서 <strong>이 PC 연결하기</strong>를 다시 눌러 새 파일을
+        받고 실행하면, 기존 서비스를 멈추고 같은 <strong>Mesh Agent</strong> 서비스로 갱신
+        설치합니다. 중복 서비스는 생기지 않습니다. 다시 설치해도 폴더 범위와 PC 이름은 그대로
+        남습니다.
+      </p>
+      <p class="chat-help-detail">
+        내려받은 파일은 받은 뒤 오래 두지 말고 바로 실행하세요. 파일에 담긴 연결 표식은 짧은
+        시간이 지나면 만료되어, 실행해도 연결이 완료되지 않을 수 있습니다. 그때는 카드에서
+        새 파일을 다시 받으면 됩니다. 내려받기만 하고 실행하지 않은 것은 실패가 아닙니다.
+      </p>
+    </section>
+
+    <section class="chat-help-section" id="installRemove" aria-labelledby="installRemoveTitle">
+      <h2 id="installRemoveTitle">제거</h2>
+      <p class="chat-help-desc">
+        제거는 두 단계입니다. 먼저 웹에서 이 계정과의 연결을 끊고, 다음으로 PC에서 프로그램을
+        지웁니다. 웹의 <strong>연결 끊기</strong>만으로는 PC에 설치된 프로그램 파일이 남습니다.
+      </p>
+      <ol class="chat-help-steps">
+        <li class="chat-help-step">
+          <h3>1. 웹에서 연결 끊기</h3>
+          <p>
+            내 컴퓨터 목록에서 그 PC의 <strong>더 보기 → 연결 끊기</strong>를 누릅니다.
+            서버 쪽 연결 권한과 폴더 범위가 사라집니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>2. PC에서 프로그램 제거</h3>
+          <p>
+            그 PC에서 관리자 권한 PowerShell을 열고 아래 두 줄을 실행합니다.
+          </p>
+          <pre class="chat-help-command"><code>&amp; "$env:ProgramFiles\PADIEM\MeshAgent.exe" -uninstall
+Remove-Item -LiteralPath "$env:ProgramFiles\PADIEM" -Recurse -Force</code></pre>
+          <p class="chat-help-detail">
+            예전에 다른 방법으로 설치한 PC라면 서비스 기록이 다른 폴더를 가리킬 수 있습니다.
+            <code>Get-CimInstance Win32_Service -Filter "Name='Mesh Agent'" | Select-Object -ExpandProperty PathName</code>
+            으로 실제 파일 위치를 확인한 뒤 그 폴더를 지웁니다.
+          </p>
+        </li>
+        <li class="chat-help-step">
+          <h3>PADIEM Connector를 설치한 경우</h3>
+          <p>
+            Connector는 설치에 쓴 파일을 <code>-Uninstall</code> 옵션으로 다시 실행해 제거합니다.
+            Windows 설정의 앱 목록에는 등록되지 않습니다. 제거해도 등록 정보와 사용자가 직접 끈
+            자동 시작 설정은 지워지지 않습니다.
+          </p>
+        </li>
+      </ol>
+      <p class="chat-help-caution">
+        주의: <code>.padiem-backup</code> 폴더는 PC 작업이 만든 백업이라 제거와 함께 지우지
+        않습니다. 지우기 전에 필요한 원본이 없는지 확인하세요.
+      </p>
+    </section>
+
+    <section class="chat-help-section" id="installSecure" aria-labelledby="installSecureTitle">
+      <h2 id="installSecureTitle">보안·개인정보</h2>
+      <ul class="chat-help-list">
+        <li>설치 파일에는 전자 서명이 없습니다. 서명 도입은 대표 결정으로 미뤄졌고, 그래서
+          Windows가 게시자 경고를 띄울 수 있습니다. 경고를 넘기는 방법은 위 3단계와 같습니다.</li>
+        <li>연결 코드를 직접 입력하지 않습니다. 계정의 연결 표식이 내려받은 파일 뒤에 붙어
+          있고, 설치 뒤에는 PC 이름과 드라이브 문자, 연결 표식만 서버가 확인합니다.</li>
+        <li>연결 표식은 비밀번호가 아닙니다. 다른 사람에게 파일을 그대로 전달하지 마세요.
+          표식은 짧은 시간이 지나면 만료됩니다.</li>
+        <li>설치 프로그램은 PADIEM이 지정한 서버에서만 에이전트를 내려받습니다. 주소는 파일을
+          내려줄 때 서버가 정하며, 브라우저나 사용자가 바꿀 수 없습니다.</li>
+      </ul>
+    </section>
+
+    <p class="chat-help-foot">
+      이 페이지는 실제로 동작하는 것만 적습니다. 화면이나 동작이 바뀌면 이 문서도 함께
+      고칩니다. <a href="./help.html">사용 안내로 돌아가기</a>
+    </p>
+  </main>
+</body>
+</html>
