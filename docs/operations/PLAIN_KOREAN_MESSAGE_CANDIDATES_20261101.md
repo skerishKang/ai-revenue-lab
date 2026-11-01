@@ -4,12 +4,12 @@
 
 | 위치 | 검색된 코드 |
 | --- | --- |
-| apps/padiem-chat/static/admin-models.js:493 | "실행 경로 원장을 사용할 수 없습니다. (" + String(err.message) + ")", "placeholder")); |
-| apps/padiem-chat/static/admin-models.js:565 | alertMessage("실행 경로 저장 실패: " + String(err.message)); |
-| apps/padiem-chat/static/admin-models.js:601 | throw new Error(typeof data?.error?.code === "string" ? data.error.code : "http_" + response.status); |
-| apps/padiem-chat/static/admin-models.js:744 | root.replaceChildren(node("small", "이력 조회 불가: " + String(err.message))); |
-| apps/padiem-chat/static/admin-models.js:765 | alertMessage("정책 저장 실패: " + String(err.message)); |
-| apps/padiem-chat/static/admin-models.js:786 | alertMessage("롤백 미리보기 실패: " + String(err.message)); |
+| apps/padiem-chat/static/admin-models.js:500 | appendErrorReference(warning, err?.message); |
+| apps/padiem-chat/static/admin-models.js:573 | alertMessage("실행 경로를 저장하지 못했습니다. 다시 시도해 주세요.", "error", err?.message); |
+| apps/padiem-chat/static/admin-models.js:609 | throw new Error(typeof data?.error?.code === "string" ? data.error.code : "http_" + response.status); |
+| apps/padiem-chat/static/admin-models.js:751 | appendErrorReference(warning, err?.message); |
+| apps/padiem-chat/static/admin-models.js:773 | alertMessage("정책을 저장하지 못했습니다. 다시 시도해 주세요.", "error", err?.message); |
+| apps/padiem-chat/static/admin-models.js:794 | alertMessage("되돌릴 내용을 미리 볼 수 없습니다. 다시 시도해 주세요.", "error", err?.message); |
 | apps/padiem-chat/static/app.js:305 | return error && error.code === "upstream_timeout" ? MESSAGE_LIFECYCLE.TIMED_OUT : MESSAGE_LIFECYCLE.FAILED; |
 | apps/padiem-chat/static/app.js:895 | setNote(error instanceof Error ? error.message : uiT("file-read-failed"), "error"); |
 | apps/padiem-chat/static/app.js:1119 | projectFormError.textContent = error instanceof Error ? error.message : uiT("project-files-load-failed"); |
@@ -65,7 +65,7 @@
 | apps/padiem-chat/static/claw-web-xlsx-sources.js:1102 | report(error.message); |
 | apps/padiem-chat/static/claw-web-xlsx-sources.js:1144 | report(error.message); |
 | apps/padiem-chat/static/councillor/councillor.js:666 | fail(error && error.message ? error.message : String(error)); |
-| apps/padiem-chat/static/file-lane.js:35 | if (!ticketResponse.ok \|\| !ticket?.ok) throw new Error(ticket?.error?.message \|\| "파일 업로드를 준비하지 못했습니다."); |
+| apps/padiem-chat/static/file-lane.js:32 | const code = data?.error?.code; |
 | apps/padiem-chat/static/meeting-capture.js:307 | catch (error) { say(error.message === "live_transcription_not_supported" ? "이 브라우저는 실시간 받아쓰기를 지원하지 않습니다." : statuses.meeting_start_failed); } |
 | apps/padiem-chat/static/meeting-capture.js:368 | throw new Error((data && data.error && data.error.code) \|\| "ledger_unavailable"); |
 | apps/padiem-chat/static/meeting-capture.js:558 | const code = error?.code \|\| ""; |
