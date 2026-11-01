@@ -62,8 +62,10 @@ STAGED_PATHS = {
     f"{ENTRY_PREFIX}/static/assets/speech-card.jpg",
     f"{ENTRY_PREFIX}/static/council-app.css",
     f"{ENTRY_PREFIX}/static/council-app.js",
-    # 2026-11-01: the council app ships its own browser photo resizer so a big
-    # SNS photo is shrunk before the upload (same rule as this app's copy).
+    # 2026-11-01: the council app ships its own browser photo resizer and its
+    # own copy of the PC file exchange (same rule as this app's copies).
+    f"{ENTRY_PREFIX}/static/pc-file-exchange.css",
+    f"{ENTRY_PREFIX}/static/pc-file-exchange.js",
     f"{ENTRY_PREFIX}/static/photo-resize.js",
     f"{ENTRY_PREFIX}/index.html",
 }

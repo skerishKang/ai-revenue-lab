@@ -174,7 +174,7 @@ def test_the_tools_touch_only_the_existing_endpoints() -> None:
     observed = run("generate")
     exact = {
         "GET /api/auth/status",
-        "POST /api/chat",
+        "POST /api/chat/stream",
         "GET /api/projects",
         "GET /api/projects/p1/files",
         "POST /api/projects/p1/files",
@@ -188,7 +188,7 @@ def test_the_tools_touch_only_the_existing_endpoints() -> None:
         "PUT /api/projects/p1/files/",
     )
     endpoints = set(observed["endpoints"])
-    assert "POST /api/chat" in endpoints
+    assert "POST /api/chat/stream" in endpoints
     for endpoint in endpoints:
         assert endpoint in exact or endpoint.startswith(prefixes), endpoint
     assert not observed["pageErrors"], observed["pageErrors"]

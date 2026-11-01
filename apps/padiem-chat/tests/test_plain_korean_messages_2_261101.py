@@ -42,17 +42,18 @@ def test_reference_codes_are_separate_and_bounded():
         assert "[a-z0-9_]{0,63}" in text
 
 
-def test_util_does_not_display_arbitrary_server_error_text():
-    source = (CHAT / "util-menu.js").read_text(encoding="utf-8")
-    api = source.split("async function apiChat(", 1)[1].split("async function getProjects(", 1)[0]
+def test_the_council_app_does_not_display_arbitrary_server_error_text():
+    # 2026-11-01: generation moved to /apps/council/; the same rule holds there.
+    source = (ROOT / "apps" / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
+    api = source.split("async function apiChat(", 1)[1].split("// ── 저장 프로젝트", 1)[0]
     assert "data?.error?.message" not in api
     assert 'error.code = typeof data?.error?.code === "string"' in api
     assert "GEN_ERROR_COPY[res.status]" in api
 
 
-def test_util_generation_does_not_show_reference_codes():
-    source = (CHAT / "util-menu.js").read_text(encoding="utf-8")
-    failure = source.split("function showGenerationFailure(", 1)[1].split("function retryButton(", 1)[0]
+def test_the_council_app_generation_does_not_show_reference_codes():
+    source = (ROOT / "apps" / "padiem-council-apps" / "static" / "council-app.js").read_text(encoding="utf-8")
+    failure = source.split("function generationFailureText(", 1)[1].split("function emptyResult(", 1)[0]
     assert "참고 코드" not in failure
     assert "error.code" not in failure
-    assert "generationFailureText(error)" in failure
+    assert "GEN_ERROR_COPY[error.status]" in failure

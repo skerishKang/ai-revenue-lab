@@ -20,8 +20,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from _5785_util_runner import run
-
 ROOT = Path(__file__).resolve().parents[1]
 INDEX_HTML = ROOT / "static/index.html"
 UTIL_MENU_JS = ROOT / "static/util-menu.js"
@@ -36,7 +34,7 @@ def _html() -> str:
 
 def _grid() -> str:
     html = _html()
-    return html[html.index('id="utilToolGrid"') : html.index('id="utilSpeechPanel"')]
+    return html[html.index('id="utilToolGrid"') : html.index('id="calendarView"')]
 
 
 def _card_button_label(key: str) -> str:
@@ -108,26 +106,8 @@ def test_css_uses_the_measured_contrast_token_and_44px_touch_target() -> None:
     button = css[css.index(".util-tool-open {") : css.index(".util-tool-open:hover")]
     assert "min-height: 44px" in button
     # The glass CTA colour keeps the shared composer rule: the toolbox button
-    # is listed with .util-generate/.pdfmd-btn-primary, not a new colour.
-    glass = css[css.index('html[data-theme="padiem-glass"] .util-generate') :]
+    # is listed with .pdfmd-btn-primary, not a new colour.
+    glass = css[css.index('html[data-theme="padiem-glass"] .util-tool-open') :]
     glass_block = glass[: glass.index("}") + 1]
-    assert ".util-tool-open" in glass_block
-
-
-# ── real-module routing (Node harness) ──────────────────────────────────────
-
-
-def test_tools_scenario_routes_the_six_cards() -> None:
-    obs = run("tools")
-    assert obs["keys"] == list(TOOL_KEYS)
-    # The speech card lands on the speech panel and highlights the same
-    # submenu row the sidebar drives — one switch, one highlight owner.
-    assert obs["visibleAfterSpeech"] == ["utilSpeechPanel"]
-    assert obs["activeSubAfterSpeech"] == ["speech"]
-    # The paused pdfmd card still lands on the existing pdfmd panel.
-    assert obs["visibleAfterPdfmd"] == ["utilPdfmdPanel"]
-    # 견적서 card: Claw workspace + the existing quote chip, once.
-    assert obs["afterQuote"] == {"clawNav": 1, "chip": 1}
-    # Excel card: Claw workspace only — the conversation flow stays the owner.
-    assert obs["afterExcel"] == {"clawNav": 2, "chip": 1}
-    assert obs["pageErrors"] == []
+    assert ".pdfmd-btn-primary" in glass_block
+    assert "#355977" in glass_block

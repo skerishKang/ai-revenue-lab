@@ -5,7 +5,7 @@ from pathlib import Path
 
 from starlette.applications import Starlette
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from starlette.routing import Mount, Route
 from starlette.staticfiles import StaticFiles
 
@@ -425,6 +425,16 @@ from .workspace_storage import (
 )
 
 STATIC_DIR = Path(__file__).resolve().parent.parent / "static"
+
+
+# 2026-11-01: the old councillor profile wrapper is retired. Its one product
+# surface is the independent council app; the alias answers here so both the
+# Worker and the COM2 host redirect, and no second profile screen is served.
+COUNCILLOR_REDIRECT_PATH = "/councillor/"
+
+
+async def councillor_redirect(request: Request) -> RedirectResponse:
+    return RedirectResponse("/apps/council/", status_code=302)
 
 
 async def health(request: Request) -> JSONResponse:
@@ -976,6 +986,7 @@ def create_app(
         Route(PC_REFERENCE_PATH, pc_file_exchange_reference, methods=["POST"]),
         Route(PC_RESULT_PATH, pc_file_exchange_result, methods=["GET"]),
         Route(PC_FILE_PATH, pc_file_exchange_file, methods=["GET"]),
+        Route(COUNCILLOR_REDIRECT_PATH, councillor_redirect, methods=["GET"]),
         Mount("/", app=StaticFiles(directory=str(STATIC_DIR), html=True), name="static"),
     ]
     # #4139: append the owner-only consent/challenge routes before the catch-all

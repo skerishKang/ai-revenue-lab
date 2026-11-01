@@ -65,7 +65,12 @@ def test_boot_restores_both_routes() -> None:
     # automation restore must stay a strict equality test so an unknown or
     # tampered fragment restores nothing.
     assert src.count("openClawAutomation();") == 1
-    assert src.count("openClawWorkspace();\n  automationDestinationReady") == 1
+    # 2026-11-01: the council app's connect button adds a third restorable
+    # route (Connectors). Every restore still happens before the ready flag.
+    assert "else if (window.location.hash === CONNECTORS_ROUTE_HASH) openConnectorsView();" in src
+    restore = src.split("if (window.location.hash === AUTOMATION_ROUTE_HASH)", 1)[1]
+    assert restore.index("openClawWorkspace();") < restore.index("openConnectorsView();")
+    assert restore.index("openConnectorsView();") < restore.index("automationDestinationReady = true;")
 
 
 def test_route_carries_no_identity_or_storage() -> None:

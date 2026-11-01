@@ -35,6 +35,7 @@ ALLOWED_ENDPOINTS = {
     "/api/chat",
     "/api/projects",
     "/api/projects/",
+    "/api/pc/",
     "/api/auth/status",
     "/api/auth/password/login",
 }
@@ -109,7 +110,7 @@ def test_the_browser_module_keeps_the_session_cookie_contract() -> None:
 
 def test_the_entry_page_gates_the_tools_on_sign_in_and_declares_independence() -> None:
     source = COUNCIL_JS.read_text(encoding="utf-8")
-    # fail-closed like councillor.js: builders attach only when authenticated.
+    # fail-closed like the retired councillor screen: builders attach only when authenticated.
     assert 'data.authenticated === true' in source
     assert "fail-closed" in source
     html = INDEX_HTML.read_text(encoding="utf-8")

@@ -27,10 +27,12 @@ for required in \
   apps/padiem-chat/app/local_cpython.py \
   apps/padiem-chat/app/local_server.py \
   apps/padiem-chat/app/local_bootstrap.py \
-  apps/padiem-chat/static/councillor/councillor.html \
   apps/padiem-council-apps/static/index.html \
   apps/padiem-council-apps/static/council-app.css \
   apps/padiem-council-apps/static/council-app.js \
+  apps/padiem-council-apps/static/photo-resize.js \
+  apps/padiem-council-apps/static/pc-file-exchange.js \
+  apps/padiem-council-apps/static/pc-file-exchange.css \
   apps/padiem-chat/migrations \
   packages/padiem-ai-core/padiem_ai_core \
   packages/padiem-auth-verify/verify.py \

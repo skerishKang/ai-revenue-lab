@@ -123,8 +123,11 @@ def test_one_card_click_opens_exactly_one_tool_and_the_next_closes_it() -> None:
     assert switched["speechHidden"] is True
     assert switched["activeCards"] == 1
     # Selecting a tool is a UI state: no API call beyond what init already made.
+    # Opening a tool also reads the PC pairing once (the calm "connect your
+    # computer" guidance); selecting never writes anything.
     assert set(run("selection")["endpoints"]) <= {
         "GET /api/auth/status", "GET /api/projects", "GET /api/projects/p1/files",
+        "GET /api/pc/pairings",
     }
 
 
@@ -174,7 +177,8 @@ def test_the_login_uses_the_existing_credential_contract_and_nothing_more() -> N
         "POST /api/auth/password/login",
         "GET /api/projects",
         "GET /api/projects/p1/files",
-        "POST /api/chat",
+        "POST /api/chat/stream",
+        "GET /api/pc/pairings",
     }
     # identifier + password: the shipped login body. No token, no provider field,
     # no second session shape.
