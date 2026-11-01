@@ -7,8 +7,6 @@ session, provider key or client-provided application identity authorizes a call.
 from __future__ import annotations
 
 from dataclasses import dataclass
-import hashlib
-import hmac
 import json
 import re
 import time
@@ -25,10 +23,10 @@ from .local_engine_transport import (
     LocalEngineHttpTransport, LocalEngineTransportError, MAX_ENGINE_REQUEST_BYTES,
 )
 from .local_p01_engine import local_p01_engine_config_from_env
+from .com2_hmac import signature_matches, signature_time_error
 
 APPS_AI_PATH = "/api/apps/ai"
 POLICY_ENV = "PADIEM_APPS_AI_POLICY_JSON"
-SIGNATURE_WINDOW_SECONDS = 300
 # Finish before the Pages caller (60s) and front proxy (65s) budgets.
 APPS_AI_TIMEOUT_SECONDS = 55.0
 DEFAULT_MODEL = "google/gemini-3.1-flash-lite"
@@ -36,7 +34,6 @@ _SUBJECTS = {
     "sub_app_storymemory": ("storymemory", "STORYMEMORY_COM2_AI_SECRET"),
     "sub_app_bookai": ("bookai", "BOOKAI_COM2_AI_SECRET"),
 }
-_SIGNATURE = re.compile(r"^[0-9a-f]{64}$")
 _THOUGHT = re.compile(r"<(/?)thought\b[^>]*>", re.IGNORECASE)
 
 
@@ -152,10 +149,9 @@ class AppsAIService:
             return _error("apps_ai_not_configured", 503)
         timestamp = request.headers.get("x-bookai-timestamp", "")
         signature = request.headers.get("x-bookai-signature", "")
-        if not re.fullmatch(r"[0-9]{1,12}", timestamp) or not _SIGNATURE.fullmatch(signature):
-            return _error("invalid_app_signature", 401)
-        if abs(self._clock() - int(timestamp)) > SIGNATURE_WINDOW_SECONDS:
-            return _error("app_signature_expired", 401)
+        error = signature_time_error(timestamp, signature, now=self._clock())
+        if error:
+            return _error(error, 401)
         if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
             return _error("unsupported_media_type", 415)
         body = bytearray()
@@ -163,9 +159,8 @@ class AppsAIService:
             body.extend(chunk)
             if len(body) > policy.max_body_bytes:
                 return _error("request_too_large", 413)
-        canonical = "\n".join(("POST", APPS_AI_PATH, timestamp, subject, hashlib.sha256(body).hexdigest()))
-        expected = hmac.new(secret.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256).hexdigest()
-        if not hmac.compare_digest(expected, signature):
+        if not signature_matches(secret=secret, method="POST", path=APPS_AI_PATH,
+                                 timestamp=timestamp, subject=subject, body=body, signature=signature):
             return _error("invalid_app_signature", 401)
         try:
             payload = json.loads(body.decode("utf-8"))

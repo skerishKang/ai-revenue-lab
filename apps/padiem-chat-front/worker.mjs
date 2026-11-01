@@ -136,6 +136,8 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     // Completed app AI replies wait for model response headers, unlike SSE.
     // Keep the ordinary proxy deadline and CPU-light forwarding unchanged.
     const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
+    // BookAI records live only on COM2, including reads during an outage.
+    const bookAIRecords = url.pathname === "/api/bookai/records";
     const timeoutMs = appsAI
       ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
       : numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
@@ -145,7 +147,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       if (response === SIGNING_FAILED) return maintenanceResponse("write_refused");
       if (response) return response;
       markFailure(origin.toString());
-      if (canonicalWrites || appsAI) return maintenanceResponse("write_com2_canonical_refused");
+      if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
     }
 
@@ -159,6 +161,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       if (response && (!healthProbe || (response.status >= 200 && response.status < 300))) return response;
       markFailure(origin.toString());
     }
+    if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable");
     return fallback(request, env, false);
   };
 }

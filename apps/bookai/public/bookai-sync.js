@@ -45,7 +45,9 @@
         {method:'GET'}, id, generation);
       if (!Array.isArray(data.records) || !Number.isSafeInteger(data.next_since) ||
           data.next_since < since || typeof data.more !== 'boolean') throw Error('invalid_sync_response');
-      if (data.more && data.next_since <= since) throw Error('sync_cursor_not_advancing');
+      // Timestamp zero is valid for legacy records; the overlap/doubling loop
+      // below can finish that bucket without requiring a negative cursor.
+      if (data.more && !data.records.length) throw Error('sync_cursor_not_advancing');
       assertSession(id, generation);
       await db.merge(id, data.records);
       assertSession(id, generation);
