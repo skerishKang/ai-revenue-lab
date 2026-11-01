@@ -76,6 +76,10 @@ def main():
     args = parser.parse_args()
     code = args.ai_code if re.fullmatch(r"[a-z][a-z0-9_]{0,80}", args.ai_code) else "unknown"
     rows = checks(args.base_url, args.chat_db, ai_status=args.ai_status, ai_code=code)
+    from com2_fixture_probe import run_probes
+    fixture_names = {"암호 문서 안내", "HWPX 본문 추출", "PDF→MD 변환", "견적 XLSX→PDF"}
+    rows = [row for row in rows if row[0] not in fixture_names]
+    rows.extend(run_probes(args.base_url))
     print("| 점검 | 결과 | 이유 |")
     print("| --- | --- | --- |")
     for name, status, reason in rows:
