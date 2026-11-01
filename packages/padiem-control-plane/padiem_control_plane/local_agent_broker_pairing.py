@@ -322,6 +322,7 @@ class BrokerPairingAuthorityPort(Protocol):
         device_id: str,
         proof_ref: str,
         now: datetime,
+        client_version: str | None = None,
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         ...
 
@@ -354,6 +355,7 @@ class BrokerPairingAuthorityPort(Protocol):
         account_ref: str,
         workspace_ref: str,
         now: datetime,
+        client_version: str | None = None,
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         ...
 
@@ -620,6 +622,7 @@ class InMemoryBrokerPairingAuthority:
         device_id: str,
         proof_ref: str,
         now: datetime,
+        client_version: str | None = None,
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         challenge_id = _ref(challenge_id, "challenge_id")
         device_id = _ref(device_id, "device_id")
@@ -645,6 +648,7 @@ class InMemoryBrokerPairingAuthority:
             proof_ref=proof_ref,
             pending=pending,
             now=now,
+            client_version=client_version,
         )
 
     def _pending_challenge(self, challenge_id: str) -> _PendingBrokerPairingChallenge:
@@ -664,6 +668,7 @@ class InMemoryBrokerPairingAuthority:
         proof_ref: str,
         pending: _PendingBrokerPairingChallenge,
         now: datetime,
+        client_version: str | None = None,
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         """The canonical redemption primitive: consume, then register.
 
@@ -724,6 +729,7 @@ class InMemoryBrokerPairingAuthority:
             credential=credential,
             now=now,
             credential_ttl_seconds=self._credential_ttl_seconds,
+            client_version=client_version,
         )
         enrollment = BrokerPairingEnrollment(
             binding_ref=binding.binding_ref,
@@ -879,6 +885,7 @@ class InMemoryBrokerPairingAuthority:
         account_ref: str,
         workspace_ref: str,
         now: datetime,
+        client_version: str | None = None,
     ) -> tuple[BrokerPairingEnrollment, bytes]:
         """#4139 S1 — redeem an enrollment challenge under its exact binding.
 
@@ -928,6 +935,7 @@ class InMemoryBrokerPairingAuthority:
             proof_ref=proof_ref,
             pending=pending,
             now=now,
+            client_version=client_version,
         )
 
     def safe_dict(self) -> dict[str, Any]:

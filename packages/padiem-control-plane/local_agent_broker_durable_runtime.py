@@ -515,6 +515,11 @@ class LocalAgentBrokerDurableRuntime:
             "session": None,
             "heartbeat_last_seen_at": None,
         }
+        # The Connector's self-reported product version rides the binding fact
+        # (#6011 follow-up). Absent when no Connector ever reported one — the
+        # device directory omits the notice for that row, today's exact shape.
+        if binding.client_version is not None:
+            facts["client_version"] = binding.client_version
         if session is not None:
             facts["session"] = {
                 "session_id": session.session_id,
