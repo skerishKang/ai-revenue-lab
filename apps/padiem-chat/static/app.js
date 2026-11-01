@@ -3202,7 +3202,13 @@
       resolvedPcRuns.add(runId);
       return renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
     }
-    if (first.kind !== "pending") return false;
+    if (first.kind !== "pending") {
+      // A 404 means the server has no such result. Forget this run here and
+      // now, so a retry over the same handle skips the check and renders its
+      // own failure instead of reading a gone run again.
+      if (first.gone === true) resolvedPcRuns.add(runId);
+      return false;
+    }
     if (first.conversationId) {
       conversationState.setConversationId(first.conversationId, contextSnapshot.product);
     }
@@ -3227,6 +3233,7 @@
         window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
+      if (result.gone === true) resolvedPcRuns.add(runId);
       if (article.isConnected && !signal.aborted) {
         renderStreamError(article, uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
       }
@@ -3628,7 +3635,8 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord) {
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
+          && !error?.submissionRejected) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,
@@ -4396,7 +4404,15 @@
   // payload snapshot is stored, so a stale request cannot be replayed. Nothing
   // in this block submits on a timer; the ticker only re-renders copy and
   // control state. No auto-retry, no provider retry, no server policy change.
-  const CLAW_RETRY_AFTER_MAX_SECONDS = 900; // documented UI ceiling; larger server values clamp here
+  // The bound lives on the SERVER, not here (#5882 A-15). app/usage_gate.py is
+  // the only producer of Retry-After on these routes and it emits a fixed
+  // integer — 60s for the minute bucket — while quota_exhausted and
+  // service_limit_reached carry no header at all (claw_routes.py:270 guards the
+  // emission). A second 900s client re-clamp could therefore never bind; it only
+  // risked disagreeing with the server and blocking this form for a ceiling the
+  // server is not enforcing. The parsed seconds are used exactly as sent, and
+  // the closed parse below is what fails closed on malformed/negative/HTTP-date
+  // values instead of a ceiling.
 
   function clawRetryRemaining() {
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
@@ -4451,15 +4467,16 @@
     setClawButtonsBusy(clawInFlight);
   }
 
-  // Closed parse: integer seconds only, positive, clamped to one documented
-  // ceiling. Missing, non-integer, zero and negative values make no countdown claim.
+  // Closed parse: integer seconds only, positive. Missing, non-integer, zero,
+  // negative and HTTP-date (RFC 7231) values make no countdown claim — the copy
+  // then falls back to the safe rate-limit sentence with no fabricated number.
   function parseClawRetryAfter(value) {
     if (typeof value !== "string") return null;
     const raw = value.trim();
     if (!/^[0-9]+$/.test(raw)) return null;
     const seconds = Number.parseInt(raw, 10);
     if (!Number.isFinite(seconds) || seconds < 1) return null;
-    return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);
+    return seconds;
   }
 
   function clawRetryAfterFromResponse(response) {

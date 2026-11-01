@@ -137,12 +137,15 @@
   // #6012: the shared "내 PC에서 가져오기·저장하기" part. It is loaded the first
   // time this menu uses it, so a page that never opens the menu touches no
   // script and no PC endpoint (#6034).
+  // Same guidance the council app shows (#6591/#6607): one sentence naming the
+  // computer, one action that opens the existing Connectors computer card.
   const PC_COPY = {
     pick: "내 PC에서 가져오기",
     ready: "준비 중",
     checking: "확인 중",
-    noPc: "PC를 연결하면 내 PC 문서를 바로 변환할 수 있습니다.",
-    connect: "이 PC 연결",
+    noPc: "컴퓨터를 연결하면 내 PC의 PDF를 가져올 수 있습니다.",
+    saveNoPc: "컴퓨터를 연결하면 내 PC에 저장할 수 있습니다.",
+    connect: "컴퓨터 연결하기",
     save: "내 PC에 저장",
     saving: "내 PC에 저장하는 중...",
     saved: "내 PC에 저장했습니다.",
@@ -287,7 +290,6 @@
     drop.appendChild(dropSub);
     drop.appendChild(dropCta);
     drop.setAttribute("aria-describedby", "pdfmdDropHint");
-    panel.appendChild(drop);
     if (workBlocked) {
       drop.removeAttribute("role");
       drop.removeAttribute("tabindex");
@@ -308,21 +310,40 @@
     fileInput.disabled = workBlocked;
     panel.appendChild(fileInput);
 
-    // #6012: the same documents, taken straight from the owner's own PC.
+    // #6012: the same documents, taken straight from the owner's own PC. The
+    // shared part (#6620 import, #6607 save) is the only dialog; the pick sits
+    // beside the upload field so the two ways in read as one choice.
     const pcPick = el("button", "pdfmd-btn pdfmd-pc-pick", PC_COPY.pick);
     pcPick.type = "button";
     pcPick.id = "pdfmdPcPick";
-    panel.appendChild(pcPick);
+    const uploadRow = el("div", "pdfmd-upload-row");
+    uploadRow.appendChild(drop);
+    uploadRow.appendChild(pcPick);
+    panel.appendChild(uploadRow);
 
     const pcNote = el("p", "pdfmd-status pdfmd-pc-note", "");
     pcNote.id = "pdfmdPcNote";
     pcNote.hidden = true;
+    const pcNoteText = el("span", null, PC_COPY.noPc + " ");
     const pcConnect = el("button", "pdfmd-link", PC_COPY.connect);
     pcConnect.type = "button";
     pcConnect.addEventListener("click", openPcConnect);
-    pcNote.appendChild(el("span", null, PC_COPY.noPc + " "));
+    pcNote.appendChild(pcNoteText);
     pcNote.appendChild(pcConnect);
     panel.appendChild(pcNote);
+
+    // One place shows the no-computer guidance, so an import attempt and a save
+    // attempt say the same thing the council app says.
+    function showPcNote(message) {
+      pcNoteText.textContent = (message || PC_COPY.noPc) + " ";
+      pcNote.hidden = false;
+      if (typeof pcNote.scrollIntoView === "function") {
+        try { pcNote.scrollIntoView({ block: "nearest" }); } catch (_) {}
+      }
+      if (typeof pcConnect.focus === "function") {
+        try { pcConnect.focus({ preventScroll: true }); } catch (_) {}
+      }
+    }
 
     const uploadStatus = el("div", "pdfmd-status", "");
     uploadStatus.id = "pdfmdStatus";
@@ -479,6 +500,9 @@
       pcPick.textContent = PC_COPY.pick + " · " + (PDFMD_NEW_WORK_DISABLED ? PC_COPY.ready : PC_COPY.checking);
     } else {
       pcPick.addEventListener("click", async () => {
+        // An unlinked computer gets the same sentence the council app shows,
+        // never a dialog that can only fail inside.
+        if (await pcLinked() !== true) { showPcNote(); return; }
         let component;
         try {
           component = await loadPcExchange();
@@ -682,6 +706,7 @@
           pcSaveBtn.type = "button";
           pcSaveBtn.setAttribute("aria-label", item.name + " " + PC_COPY.save);
           pcSaveBtn.addEventListener("click", async () => {
+            if (await pcLinked() !== true) { showPcNote(PC_COPY.saveNoPc); return; }
             let component;
             try {
               component = await loadPcExchange();

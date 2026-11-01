@@ -4733,7 +4733,13 @@ document.getElementById('pageTurnNext').onclick=()=>animateReaderPageTurn(1);
 function animateReaderPageTurn(step){return window.StoryMemoryReaderViewRuntimeV1.animateReaderPageTurn.apply(this,arguments);}
 __smInitialReaderSetup=true;
 try{setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});}finally{__smInitialReaderSetup=false;}
-requestAnimationFrame(()=>{try{renderTodayHome()}catch(_){}});
+/* First run has no session to restore, so nothing ever recorded the bundled entities of this
+   recommended passage: the home counted 0 while the second load counted 3. Record the context
+   now that the initial setup guard is down, so the first paint already carries the same number.
+   It runs inside this frame (before the store-existence check below in the next callback): a
+   scheduleUnifiedPersist timer queued earlier could otherwise create the store first frame and
+   send boot down the session-restore path on a fresh install. */
+requestAnimationFrame(()=>{try{recordCurrentContextEntityLedger();renderTodayHome()}catch(_){}});
 
 requestAnimationFrame(()=>{
   try{
