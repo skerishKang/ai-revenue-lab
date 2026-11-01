@@ -1772,7 +1772,16 @@
     if (!started) return;
 
     const statusHost = $("templateClonerStatus");
-    if (statusHost) statusHost.textContent = TemplateUi.buildClonerStatusText(TemplateCloner, clonerSession);
+    if (statusHost) {
+      statusHost.textContent = TemplateUi.buildClonerStatusText(TemplateCloner, clonerSession);
+      const code = clonerSession.status === "failed" && clonerSession.error && clonerSession.error.code;
+      if (typeof code === "string" && /^[a-z][a-z0-9_]{0,63}$/.test(code)) {
+        const note = document.createElement("small");
+        note.className = "error-code";
+        note.textContent = "참고 코드: " + code;
+        statusHost.appendChild(note);
+      }
+    }
 
     const reviewHost = $("templateReview");
     const reviewModel = clonerSession.candidate && TemplateCandidate

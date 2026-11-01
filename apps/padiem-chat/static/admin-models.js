@@ -718,7 +718,10 @@
       alertMessage(code === "authentication_required" ? "로그인 후 이용할 수 있습니다." :
         code === "global_model_admin_forbidden" ? "중앙 관리자 권한이 없습니다." :
         code === "central_admin_not_configured" ? "중앙 관리자 권한이 아직 설정되지 않았습니다." :
-        "관리 데이터를 불러오지 못했습니다. (" + code + ")");
+        "관리 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+      if (/^[a-z][a-z0-9_]{0,63}$/.test(code)) {
+        $("accessNotice").appendChild(node("small", "참고 코드: " + code, "error-code"));
+      }
     }
   }
 
