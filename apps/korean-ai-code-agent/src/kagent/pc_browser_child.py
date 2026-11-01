@@ -49,6 +49,15 @@ def run(request: object, *, session: PcBrowserSession | None = None) -> dict[str
                 int(arguments.get("length", 0)),
             )}
         data = validate_arguments(str(tool_id), arguments)
+        # #3782: every browser step is its own console process, so a read, a
+        # capture or an act must land on the page the *server* remembered. The
+        # address arrives from the dispatch, never from model text, and it is
+        # only ever used to reopen that public page first.
+        page_url = request.get("url")
+        if page_url is not None and tool_id != BROWSER_OPEN_TOOL_ID:
+            if not isinstance(page_url, str) or not page_url or len(page_url) > 2048:
+                return _refused("browser_url_rejected")
+            active.open(page_url)
         if tool_id == BROWSER_OPEN_TOOL_ID:
             result = active.open(str(data.get("url", "")))
         elif tool_id == BROWSER_READ_TOOL_ID:
