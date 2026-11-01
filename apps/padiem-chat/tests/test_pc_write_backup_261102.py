@@ -51,7 +51,7 @@ def run_pc(command: str, timeout: int = 240) -> dict:
 
 def write_command(root: Path, relative: str, content: bytes) -> str:
     return _pc_write_command(
-        op="write", target=str(root / relative), relative=relative,
+        op="write", root=str(root), target=str(root / relative), relative=relative,
         backup_dir=_pc_backup_dir(str(root) + "\\", TODAY),
         content_b64=base64.b64encode(content).decode("ascii"),
     )
@@ -116,7 +116,7 @@ def test_failed_backup_stops_the_change():
     blocker = SANDBOX / "backup-blocker-file"
     blocker.write_bytes(b"not a directory")
     command = _pc_write_command(
-        op="write", target=str(target), relative="백업실패.txt",
+        op="write", root=str(ROOT), target=str(target), relative="백업실패.txt",
         backup_dir=str(blocker),
         content_b64=base64.b64encode("새 내용".encode("utf-8")).decode("ascii"),
     )
@@ -135,7 +135,7 @@ def test_failed_backup_stops_the_change():
 
 def _move_command(root: Path, relative: str, destination: str) -> str:
     return _pc_write_command(
-        op="move", target=str(root / relative), relative=relative,
+        op="move", root=str(root), target=str(root / relative), relative=relative,
         backup_dir=_pc_backup_dir(str(root) + "\\", TODAY),
         destination=str(root / destination),
     )
@@ -171,7 +171,7 @@ def test_delete_backs_up_then_removes_and_is_restorable():
     content = "삭제해도 백업으로 돌아올 수 있는 내용".encode("utf-8")
     target.write_bytes(content)
     account = run_pc(_pc_write_command(
-        op="delete", target=str(target), relative="삭제되는 파일.txt",
+        op="delete", root=str(ROOT), target=str(target), relative="삭제되는 파일.txt",
         backup_dir=_pc_backup_dir(str(ROOT) + "\\", TODAY)))
     assert account["ok"] is True
     assert account["verification"]["source_exists"] is False   # 원본 자리는 비었다
@@ -214,38 +214,116 @@ def test_8_3_and_case_variants_stay_inside_the_grant():
     assert short.read_bytes() == b"case"  # 대소문자 변형은 같은 루트 안
 
 
-@pytest.mark.xfail(reason=(
-    "결함 D3(중간): 허용 루트 안의 정션/링크를 통한 루트 밖 쓰기가 차단되지 않는다 — "
-    "서버 경계(_pc_files_relative_path)는 문자층이라 정션을 모르고, _pc_write_command "
-    "(app/oracle_mesh_read_return_routes.py:3698)의 집행문에도 링크(reparse point) "
-    "검사가 없어 Copy-Item/Move-Item이 대상을 따라간다. 재현: 루트 안 정션을 만들고 "
-    "link/escape.txt 쓰기 → 허용 루트 밖(대상 폴더)에 파일이 생긴다. 수정은 CTO 배정"
-    " (명령에 LinkType 검사 추가 또는 PC 자식 검증)."
-), strict=True)
-def test_junction_escape_is_refused_by_the_command():
-    """정션으로 허용 루트 밖에 쓰기 — 결함 D3(중간) xfail 관측.
+def _junction(link: Path, target: Path) -> bool:
+    if link.exists() or link.is_symlink():
+        subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True)
+    result = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)],
+                            capture_output=True)
+    return result.returncode == 0
 
-    서버 경계는 문자층이라 정션을 모르고, 명령도 링크 검사 없이 Copy/Move를
-    집행한다. 정션 대상은 샌드박스 안의 통제된 폴더로 두어 실제 밖 파일을 만들지
-    않는다. 수정은 CTO 배정(명령에 링크 검사 추가 또는 PC 자식 검증).
-    """
+
+def test_junction_escape_is_refused_and_changes_nothing():
+    """D3 수정: 허용 루트 안의 정션을 통한 쓰기는 거부되고 아무것도 바뀌지 않는다."""
     outside = SANDBOX / "outside-sim"
     outside.mkdir(exist_ok=True)
     link = ROOT / "link"
-    if not link.exists():
-        subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(outside)],
-                       capture_output=True, check=True)
-    escaped = link / "escape.txt"
+    assert _junction(link, outside) is True
     try:
         account = run_pc(write_command(ROOT, "link/escape.txt", "탈출".encode("utf-8")))
-        assert account["ok"] is False            # 결함: 현재는 True로 통과한다
-        assert escaped.exists() is False
+        assert account["ok"] is False
+        assert "바로가기 폴더" in account["reason"]
+        assert account["backup"] is None
+        assert escaped_exists(escaped_path(outside)) is False
+        assert account["verification"]["source_exists"] in (None, False, True)
     finally:
-        if escaped.exists():
-            escaped.unlink()
-        if link.exists():
-            link.rmtree = None
-            subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True)
+        cleanup_link_and_escape(link, outside, "escape.txt")
+
+
+def test_mid_folder_junction_is_refused_for_deep_writes():
+    outside = SANDBOX / "outside-sim"
+    outside.mkdir(exist_ok=True)
+    mid = ROOT / "mid"
+    assert _junction(mid, outside) is True
+    try:
+        account = run_pc(write_command(ROOT, "mid/deep/x.txt", "깊은 탈출".encode("utf-8")))
+        assert account["ok"] is False
+        assert "바로가기 폴더" in account["reason"]
+        assert not (outside / "deep" / "x.txt").exists()
+        assert not (outside / "deep").exists()
+    finally:
+        cleanup_link_and_escape(mid, outside, "deep/x.txt")
+
+
+def test_move_destination_junction_is_refused_and_source_stays():
+    outside = SANDBOX / "outside-sim"
+    outside.mkdir(exist_ok=True)
+    mid = ROOT / "mid2"
+    assert _junction(mid, outside) is True
+    source = ROOT / "이동시킬파일.txt"
+    source.write_bytes("이동 전 내용".encode("utf-8"))
+    try:
+        account = run_pc(_move_command(ROOT, "이동시킬파일.txt", "mid2/x.txt"))
+        assert account["ok"] is False
+        assert "바로가기 폴더" in account["reason"]
+        assert source.read_bytes() == "이동 전 내용".encode("utf-8")  # 원본 온전
+        assert not (outside / "x.txt").exists()
+    finally:
+        cleanup_link_and_escape(mid, outside, "x.txt")
+
+
+def test_delete_target_junction_is_refused_and_contents_survive():
+    outside = SANDBOX / "outside-sim"
+    outside.mkdir(exist_ok=True)
+    (outside / "남아야할내용.txt").write_bytes("정션 안 내용".encode("utf-8"))
+    link = ROOT / "삭제대상링크"
+    assert _junction(link, outside) is True
+    try:
+        account = run_pc(_pc_write_command(
+            op="delete", root=str(ROOT), target=str(link), relative="삭제대상링크",
+            backup_dir=_pc_backup_dir(str(ROOT) + "\\", TODAY)))
+        assert account["ok"] is False
+        assert "바로가기 폴더" in account["reason"]
+        assert (outside / "남아야할내용.txt").exists()   # 정션 대상 내용 온전
+        assert link.exists()                              # 정션도 온전
+    finally:
+        subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True)
+
+
+def test_symbolic_link_escape_is_refused_when_creatable():
+    """심볼릭 링크(개발자 모드·관리자 권한이 필요) — 만들 수 없으면 판단 불가로
+    건너뛴다(정션과 같은 ReparsePoint 속성이라 가드는 동일하게 동작)."""
+    outside = SANDBOX / "outside-sim"
+    outside.mkdir(exist_ok=True)
+    sym = ROOT / "symlink"
+    result = subprocess.run(["cmd", "/c", "mklink", "/D", str(sym), str(outside)],
+                            capture_output=True)
+    if result.returncode != 0:
+        pytest.skip("symbolic link creation requires admin or developer mode")
+    try:
+        account = run_pc(write_command(ROOT, "symlink/escape.txt", "탈출".encode("utf-8")))
+        assert account["ok"] is False
+        assert "바로가기 폴더" in account["reason"]
+        assert not (outside / "escape.txt").exists()
+    finally:
+        if (outside / "escape.txt").exists():
+            (outside / "escape.txt").unlink()
+        subprocess.run(["cmd", "/c", "rmdir", str(sym)], capture_output=True)
+
+
+def escaped_exists(path: Path) -> bool:
+    return path.exists()
+
+
+def escaped_path(outside: Path) -> Path:
+    return outside / "escape.txt"
+
+
+def cleanup_link_and_escape(link: Path, outside: Path, relative: str):
+    target = outside / relative
+    if target.is_file():
+        target.unlink()
+    if link.exists() or link.is_symlink():
+        subprocess.run(["cmd", "/c", "rmdir", str(link)], capture_output=True)
 
 
 # ── 크기 ────────────────────────────────────────────────────────────────────
