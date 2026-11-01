@@ -1,0 +1,6 @@
+# Cloudflare deployment excludes — documentation and tests are not site assets.
+docs/
+tests/
+README.md
+static/images/README.md
+static/fonts/README.md

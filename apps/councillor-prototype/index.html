@@ -4,7 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("theme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-theme", saved);
+        }
+      } catch (error) { /* 저장소를 쓸 수 없으면 밝은 테마 기본값을 유지합니다. */ }
+    })();
+  </script>
   <title>임미란 의원 — 의정활동 정보</title>
+  <meta name="description" content="남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요." />
+  <link rel="canonical" href="https://councillor-prototype-v2.pages.dev/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:site_name" content="임미란 의원" />
+  <meta property="og:title" content="임미란 의원 — 의정활동 정보" />
+  <meta property="og:description" content="남구 제1선거구 임미란 의원(전남광주통합특별시의회)의 의정활동 기록과 소식, 사진·영상 자료, 의원실 연락처를 한 곳에서 확인하세요." />
+  <meta property="og:url" content="https://councillor-prototype-v2.pages.dev/" />
+  <meta property="og:image" content="https://councillor-prototype-v2.pages.dev/static/images/og-card.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="임미란 의원 프로필 사진과 이름" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <link rel="preload" href="./static/fonts/maruburi/MaruBuri-Bold.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="./static/fonts/maruburi.css" />
   <link rel="stylesheet" href="./static/fonts/pretendard/pretendard-variable-dynamic-subset.css" />
   <link rel="stylesheet" href="./static/styles.css" />
@@ -13,13 +41,13 @@
   <a class="skip-link" href="#main">본문으로 건너뛰기</a>
 
   <header class="topbar">
-    <div class="brand">
+    <a class="brand" href="./index.html">
       <span class="brand-mark" aria-hidden="true">임</span>
       <span class="brand-text">
         <span class="brand-name">임미란 의원</span>
         <span class="brand-tagline">전남광주통합특별시의회 · 남구 제1선거구</span>
       </span>
-    </div>
+    </a>
     <nav class="top-nav" aria-label="주요 메뉴">
       <a href="./index.html" class="active">홈</a>
       <a href="./about.html">의원 소개</a>
@@ -40,9 +68,10 @@
     <section class="hero" aria-labelledby="heroName">
       <div class="hero-bg" aria-hidden="true"></div>
       <img class="hero-portrait"
-           src="./static/images/profile-portrait.png"
-           alt="임미란 의원 프로필 사진" width="500" height="641" decoding="async"
-           onerror="this.onerror=null;this.src='https://assem.jeonnam-gwangju.go.kr/data/6130000/fileupload/memberPicture/2026/06/10/%EB%82%A8%EA%B5%AC1_%EB%AF%BC%EC%A3%BC%EB%8B%B9_%EC%9E%84%EB%AF%B8%EB%9E%80.png';" />
+           src="./static/images/profile-portrait.webp"
+           srcset="./static/images/profile-portrait-390.webp 420w, ./static/images/profile-portrait.webp 500w"
+           sizes="(max-width: 760px) 260px, 44vw"
+           alt="임미란 의원 프로필 사진" width="500" height="641" decoding="async" />
       <div class="hero-inner">
         <div class="hero-copy">
           <p class="hero-eyebrow">전남광주통합특별시의회 · 남구 제1선거구</p>
@@ -52,8 +81,9 @@
           </h1>
           <p class="hero-lead">남구에서 전남광주통합특별시까지. 의원이 걸어온 길과 최근 의정활동 기록을 한 곳에서 보실 수 있습니다.</p>
           <div class="hero-actions">
-            <a class="btn primary" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
-            <a class="btn secondary" href="./about.html">의원 소개 <span aria-hidden="true">→</span></a>
+            <a class="btn primary" href="tel:062-613-5133">의원실 연락·민원 <span class="btn-sub">062-613-5133</span></a>
+            <a class="btn secondary" href="./activity.html">의정활동 보기 <span aria-hidden="true">→</span></a>
+            <a class="btn secondary" href="https://council.gwangju.go.kr/index.do?PID=133" target="_blank" rel="noopener">광주시의회 민원 <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </div>
@@ -92,7 +122,7 @@
       <div class="section-inner">
         <div class="section-head">
           <div class="section-head-main">
-            <p class="section-eyebrow">Recent Activity</p>
+            <p class="section-eyebrow">최근 기록</p>
             <h2 class="section-title" id="keyActTitle">주요 의정활동</h2>
           </div>
           <p class="section-lead">의회 공개 자료로 확인한 최근 기록입니다. 카드를 누르면 상세 내용을 볼 수 있습니다.</p>
@@ -152,15 +182,25 @@
         <span>전남광주통합특별시의회 · 남구 제1선거구</span>
       </div>
       <nav class="footer-nav" aria-label="바닥글 메뉴">
+        <a href="./index.html">홈</a>
         <a href="./about.html">의원 소개</a>
         <a href="./activity.html">의정활동</a>
         <a href="./policy.html">정책자료</a>
         <a href="./media.html">미디어</a>
         <a href="https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList" target="_blank" rel="noopener">의회 공식 페이지</a>
+        <a class="footer-login" href="https://chat.padiem.net/apps/council/" target="_blank" rel="noopener">의원실 로그인 · 의원3종</a>
       </nav>
-      <p class="footer-note">이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.<br />자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>
+      <p class="footer-note">자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)<br />사진: 영산강 전경 — Saigen Jiro, Wikimedia Commons (CC0). 의정활동 사진 — 광주광역시의회 공개 사진자료실.</p>
     </div>
   </footer>
+
+  <nav class="mobile-tabbar" aria-label="모바일 메뉴">
+    <a href="./index.html" class="active">홈</a>
+    <a href="./about.html">의원 소개</a>
+    <a href="./activity.html">의정활동</a>
+    <a href="./policy.html">정책자료</a>
+    <a href="./media.html">미디어</a>
+  </nav>
 
   <script src="./static/app.js"></script>
   <script src="./static/home.js"></script>

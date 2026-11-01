@@ -134,8 +134,8 @@
   function renderMediaColumn() {
     const list = document.getElementById("homeMedia");
     if (!list) return;
-    const video = MEDIA.filter(m => m.kind === "영상")[0];
-    const picks = [MEDIA[1], MEDIA[2], video].filter(Boolean);
+    // Only tiles that own an image: the video links have no thumbnail of their own.
+    const picks = MEDIA.filter(m => m.thumb).slice(1, 4);
     list.innerHTML = picks.map(m =>
       "<li>" +
         '<a class="col-item" href="' + m.url + '" target="_blank" rel="noopener">' +

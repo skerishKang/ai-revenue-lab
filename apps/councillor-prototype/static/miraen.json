@@ -3,17 +3,16 @@
   "name": "임미란",
   "pageTitle": "임미란 의원",
   "mark": "임",
-  "stage": "시제품",
   "hero": {
     "mediaKind": "CONFIRMED",
     "eyebrow": "전남광주통합특별시의회 · 남구 제1선거구",
-    "lead": "시민의 일상을 바꾸는 의정활동. 남구에서 전남광주통합특별시까지, 의원이 걸어온 길과 최근 활동, 영상과 사진을 한 곳에서 보실 수 있습니다.",
+    "lead": "남구에서 전남광주통합특별시까지. 의원이 걸어온 길과 최근 의정활동 기록을 한 곳에서 보실 수 있습니다.",
     "videoSources": [
       "https://media.padiem.net/councillor/miraen/hero/hero-2025-v1.mp4"
     ],
     "poster": "https://media.padiem.net/councillor/miraen/hero/poster-2025-v1.jpg",
     "posterAlt": "임미란 의원 소개 영상 장면",
-    "credit": "첫 화면 영상·포스터: 의원실 제공 자료",
+    "credit": "영상: 의원실 제공 자료",
     "facts": [
       {
         "label": "현직",
@@ -120,12 +119,101 @@
     "source": "본회의 발언과 사진은 의회가 공개한 공식 페이지에서 보실 수 있습니다.",
     "tiles": [
       {
-        "kind": "포토",
-        "title": "의정활동 사진 자료실",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "kind": "프로필",
+        "title": "임미란 의원 공식 프로필 사진",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=003",
+        "thumb": "./static/images/profile-portrait.webp",
         "notes": [
-          "제8·9대 광주광역시의회 의정활동 사진",
-          "새 의회 기록은 의회 의원 소개 페이지에서 확인됩니다"
+          "광주광역시의회 공식 페이지 제공",
+          "출처: council.gwangju.go.kr"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제1차 산업건설위원회",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-01.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-15"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제46주년 5·18민주화운동 기념 민주평화대행진",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-02.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-05-17"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제344회 임시회 제3차 본회의",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-03.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-22"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "6·25전쟁 제76주년 기념식",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-04.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-25"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제344회 임시회 제1차 본회의(개회)",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-05.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-15"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제71회 현충일 추념식",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-06.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-06"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제1차 산업건설위원회 (2)",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-07.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-06-15"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "제46주년 5·18민주화운동 전야제",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=014",
+        "thumb": "./static/images/media-08.jpg",
+        "notes": [
+          "의회 공개 사진자료실",
+          "2026-05-17"
+        ]
+      },
+      {
+        "kind": "포토",
+        "title": "의정스케치",
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=010",
+        "notes": [
+          "의회 공개 사진자료실"
         ]
       },
       {
@@ -134,60 +222,60 @@
         "url": "https://council.gwangju.go.kr/9imr/index.do?PID=017",
         "notes": [
           "본회의 발언·현장 기록 영상",
-          "첫 화면과 소개 영상과 같은 출처의 공식 기록"
+          "의회가 공개한 공식 기록"
         ]
-      }
-    ],
-    "links": [
-      {
-        "kind": "포토",
-        "title": "의정스케치",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=010"
       },
       {
         "kind": "영상",
         "title": "영상인사말",
-        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=029"
+        "url": "https://council.gwangju.go.kr/9imr/index.do?PID=029",
+        "notes": [
+          "영상 인사말"
+        ]
       },
       {
         "kind": "본회의",
         "title": "제316회 교육행정질문",
-        "url": "https://www.youtube.com/watch?v=8vdllvPwRAY"
+        "url": "https://www.youtube.com/watch?v=8vdllvPwRAY",
+        "notes": [
+          "유튜브"
+        ]
       },
       {
         "kind": "본회의",
         "title": "제325회 제1차 정례회 시정질문",
-        "url": "https://www.youtube.com/watch?v=8QYTXpxW6pA"
+        "url": "https://www.youtube.com/watch?v=8QYTXpxW6pA",
+        "notes": [
+          "유튜브"
+        ]
       },
       {
         "kind": "5분발언",
         "title": "제327회 교육행정 5분자유발언",
-        "url": "https://www.youtube.com/watch?v=rc87So2Dgcs"
+        "url": "https://www.youtube.com/watch?v=rc87So2Dgcs",
+        "notes": [
+          "유튜브"
+        ]
       },
       {
         "kind": "채널",
         "title": "광주광역시의회 유튜브",
-        "url": "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw"
+        "url": "https://www.youtube.com/channel/UCvQfeQB_3OQwgclBaqamidw",
+        "notes": [
+          "공식 채널"
+        ]
       },
       {
         "kind": "의회",
         "title": "전남광주통합특별시의회 의원 소개",
-        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList"
+        "url": "https://council.jeonnam-gwangju.go.kr/jngjassem/contents/lawmakerList",
+        "notes": [
+          "공식 페이지"
+        ]
       }
     ]
   },
-  "notes": [
-    {
-      "date": "2026-10-25",
-      "title": "의정소식 안내",
-      "body": "이 페이지에는 의원실에서 확인한 공식 소식만 올립니다. 새 소식은 의회 공식 페이지와 같은 기준으로 정리되어 표시됩니다."
-    },
-    {
-      "date": "2026-10-25",
-      "title": "자료 기준",
-      "body": "표시한 직위·상임위원회·학력·당선 기록은 전남광주통합특별시의회 의원 소개와 중앙선거관리위원회 공개 자료에 맞췄습니다. 2025년 소개 영상은 촬영 시점의 직위를 담고 있어 현재 직위 표기와 구분됩니다."
-    }
-  ],
+  "notes": [],
   "sns": {
     "source": "의원이 직접 운영하는 공개 채널과 의회 공식 채널입니다.",
     "channels": [
@@ -208,6 +296,5 @@
       }
     ]
   },
-  "prototypeNotice": "이 페이지는 시제품이며 의원실 공식 웹사이트가 아닙니다.",
   "sourceNotice": "자료 출처: 중앙선거관리위원회 공개 자료, 광주광역시의회·전남광주통합특별시의회 공식 페이지 (2026-10-25 확인)"
 }

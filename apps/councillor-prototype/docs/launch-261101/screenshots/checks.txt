@@ -1,0 +1,161 @@
+PASS  390 index no js errors
+PASS  390 index no horizontal overflow
+PASS  390 index local images load
+PASS  390 index no text below 14px
+PASS  390 index every control >=44px
+PASS  390 index MaruBuri is the heading face
+PASS  390 index tab bar visible
+PASS  390 index header nav hidden
+PASS  390 index tab bar has 5 tabs
+PASS  390 index tab bar sits on the bottom edge
+PASS  390 index tab links >=44px
+PASS  390 index body clears the tab bar
+PASS  390 hero lead is 16px
+PASS  390 hero h1 is a name
+PASS  390 index body copy is 16px
+PASS  390 index screenshot
+PASS  390 about no js errors
+PASS  390 about no horizontal overflow
+PASS  390 about local images load
+PASS  390 about no text below 14px
+PASS  390 about every control >=44px
+PASS  390 about MaruBuri is the heading face
+PASS  390 about tab bar visible
+PASS  390 about header nav hidden
+PASS  390 about tab bar has 5 tabs
+PASS  390 about tab bar sits on the bottom edge
+PASS  390 about tab links >=44px
+PASS  390 about body clears the tab bar
+PASS  390 about body copy is 16px
+PASS  390 about screenshot
+PASS  390 activity no js errors
+PASS  390 activity no horizontal overflow
+PASS  390 activity local images load
+PASS  390 activity no text below 14px
+PASS  390 activity every control >=44px
+PASS  390 activity MaruBuri is the heading face
+PASS  390 activity tab bar visible
+PASS  390 activity header nav hidden
+PASS  390 activity tab bar has 5 tabs
+PASS  390 activity tab bar sits on the bottom edge
+PASS  390 activity tab links >=44px
+PASS  390 activity body clears the tab bar
+PASS  390 activity body copy is 16px
+PASS  390 activity screenshot
+PASS  390 policy no js errors
+PASS  390 policy no horizontal overflow
+PASS  390 policy local images load
+PASS  390 policy no text below 14px
+PASS  390 policy every control >=44px
+PASS  390 policy MaruBuri is the heading face
+PASS  390 policy tab bar visible
+PASS  390 policy header nav hidden
+PASS  390 policy tab bar has 5 tabs
+PASS  390 policy tab bar sits on the bottom edge
+PASS  390 policy tab links >=44px
+PASS  390 policy body clears the tab bar
+PASS  390 policy body copy is 16px
+PASS  390 policy screenshot
+PASS  390 media no js errors
+PASS  390 media no horizontal overflow
+PASS  390 media local images load
+PASS  390 media no text below 14px
+PASS  390 media every control >=44px
+PASS  390 media MaruBuri is the heading face
+PASS  390 media tab bar visible
+PASS  390 media header nav hidden
+PASS  390 media tab bar has 5 tabs
+PASS  390 media tab bar sits on the bottom edge
+PASS  390 media tab links >=44px
+PASS  390 media body clears the tab bar
+PASS  390 media gallery columns
+PASS  390 media tiles pair up
+PASS  390 media body copy is 16px
+PASS  390 media screenshot
+PASS  390 404 no js errors
+PASS  390 404 no horizontal overflow
+PASS  390 404 local images load
+PASS  390 404 no text below 14px
+PASS  390 404 every control >=44px
+PASS  390 404 MaruBuri is the heading face
+PASS  390 404 tab bar visible
+PASS  390 404 header nav hidden
+PASS  390 404 tab bar has 5 tabs
+PASS  390 404 tab bar sits on the bottom edge
+PASS  390 404 tab links >=44px
+PASS  390 404 body clears the tab bar
+PASS  390 404 body copy is 16px
+PASS  390 404 screenshot
+PASS  390 tab bar navigates
+PASS  390 saved theme applies before paint
+PASS  390 theme toggle reflects dark
+PASS  390 theme toggle writes storage
+PASS  390 reduced motion disables transitions
+PASS  1440 index no js errors
+PASS  1440 index no horizontal overflow
+PASS  1440 index local images load
+PASS  1440 index no text below 14px
+PASS  1440 index every control >=44px
+PASS  1440 index MaruBuri is the heading face
+PASS  1440 index tab bar hidden
+PASS  1440 index header nav visible
+PASS  1440 hero lead is 16px
+PASS  1440 hero h1 is a name
+PASS  1440 index body copy is 16px
+PASS  1440 index screenshot
+PASS  1440 about no js errors
+PASS  1440 about no horizontal overflow
+PASS  1440 about local images load
+PASS  1440 about no text below 14px
+PASS  1440 about every control >=44px
+PASS  1440 about MaruBuri is the heading face
+PASS  1440 about tab bar hidden
+PASS  1440 about header nav visible
+PASS  1440 about body copy is 16px
+PASS  1440 about screenshot
+PASS  1440 activity no js errors
+PASS  1440 activity no horizontal overflow
+PASS  1440 activity local images load
+PASS  1440 activity no text below 14px
+PASS  1440 activity every control >=44px
+PASS  1440 activity MaruBuri is the heading face
+PASS  1440 activity tab bar hidden
+PASS  1440 activity header nav visible
+PASS  1440 activity body copy is 16px
+PASS  1440 activity screenshot
+PASS  1440 policy no js errors
+PASS  1440 policy no horizontal overflow
+PASS  1440 policy local images load
+PASS  1440 policy no text below 14px
+PASS  1440 policy every control >=44px
+PASS  1440 policy MaruBuri is the heading face
+PASS  1440 policy tab bar hidden
+PASS  1440 policy header nav visible
+PASS  1440 policy body copy is 16px
+PASS  1440 policy screenshot
+PASS  1440 media no js errors
+PASS  1440 media no horizontal overflow
+PASS  1440 media local images load
+PASS  1440 media no text below 14px
+PASS  1440 media every control >=44px
+PASS  1440 media MaruBuri is the heading face
+PASS  1440 media tab bar hidden
+PASS  1440 media header nav visible
+PASS  1440 media gallery columns
+PASS  1440 media tiles pair up
+PASS  1440 media body copy is 16px
+PASS  1440 media screenshot
+PASS  1440 404 no js errors
+PASS  1440 404 no horizontal overflow
+PASS  1440 404 local images load
+PASS  1440 404 no text below 14px
+PASS  1440 404 every control >=44px
+PASS  1440 404 MaruBuri is the heading face
+PASS  1440 404 tab bar hidden
+PASS  1440 404 header nav visible
+PASS  1440 404 body copy is 16px
+PASS  1440 404 screenshot
+PASS  1440 saved theme applies before paint
+PASS  1440 theme toggle reflects dark
+PASS  1440 theme toggle writes storage
+PASS  1440 reduced motion disables transitions
