@@ -227,11 +227,16 @@ with_service_stopped() {
   if unit_active "$unit"; then "$systemctl_bin" stop "$unit" || return 1; fi
 }
 
-# A listening check against the real `ss -ltn` output shape. The grep consumes
+# A listening check against the real `ss -ltn` output shape:
+#   LISTEN 0 2048 127.0.0.1:8798 0.0.0.0:*
+# The local address is followed by the peer column, so the port must be matched
+# as a whole token followed by whitespace — never anchored at end of line
+# (11-02: a `$` anchor never matched, so every LISTEN wait timed out and every
+# RELEASED wait passed at once, rolling back healthy deploys). The grep consumes
 # the whole stream on purpose: with pipefail, an early -q exit would turn a
 # clean match into a SIGPIPE failure.
 port_listening() {
-  "$ss_bin" -ltn 2>/dev/null | grep -E "[:.]${1}\$" > /dev/null
+  "$ss_bin" -ltn 2>/dev/null | grep -E "[:.]${1}[[:space:]]" > /dev/null
 }
 
 # Stage a — the unit must reach active before anything else is probed.
