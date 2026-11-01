@@ -53,8 +53,14 @@ def checks(base, db_path, *, ai_status, ai_code="none", opener=None):
         ("견적 XLSX→PDF", "SKIP", "가상 양식 왕복 점검 미구현"),
         ("LibreOffice", "PASS" if shutil.which("soffice") or shutil.which("libreoffice") else "FAIL",
          "-" if shutil.which("soffice") or shutil.which("libreoffice") else "실행 파일 없음"),
-        ("북AI 기록 API", "SKIP", "API 경로 미확인"),
     ])
+    bookai = page_status(opener, base.rstrip("/") + "/api/bookai/records")
+    if bookai == 401:
+        result.append(("북AI 기록 API", "PASS", "-"))
+    elif bookai == 404:
+        result.append(("북AI 기록 API", "SKIP", "해당 없음 — 미배포"))
+    else:
+        result.append(("북AI 기록 API", "FAIL", "http_" + str(bookai)))
     applied = applied_migrations(db_path)
     result.append(("마이그레이션", "PASS" if applied is not None else "FAIL",
                    ", ".join(applied) if applied else ("적용 없음" if applied is not None else "원장 읽기 실패")))
@@ -70,6 +76,10 @@ def main():
     args = parser.parse_args()
     code = args.ai_code if re.fullmatch(r"[a-z][a-z0-9_]{0,80}", args.ai_code) else "unknown"
     rows = checks(args.base_url, args.chat_db, ai_status=args.ai_status, ai_code=code)
+    from com2_fixture_probe import run_probes
+    fixture_names = {"암호 문서 안내", "HWPX 본문 추출", "PDF→MD 변환", "견적 XLSX→PDF"}
+    rows = [row for row in rows if row[0] not in fixture_names]
+    rows.extend(run_probes(args.base_url))
     print("| 점검 | 결과 | 이유 |")
     print("| --- | --- | --- |")
     for name, status, reason in rows:
