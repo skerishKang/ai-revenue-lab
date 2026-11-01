@@ -18,8 +18,16 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 import app.pc_file_exchange_routes as exchange                      # noqa: E402
 import test_5895_pc_file_exchange as pc                             # noqa: E402
-from app.binary_documents import guidance_for_reason_code           # noqa: E402
+from app.binary_documents import (                                  # noqa: E402
+    BinaryDocumentValidationError,
+    guidance_for_reason_code,
+    parse_binary_document_item,
+    parse_binary_document_item_async,
+)
 
+import pytest                                                       # noqa: E402
+
+HWPX_MIME = "application/hwp+zip"
 OLE_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
 
 
@@ -101,3 +109,59 @@ def test_a_hwp_that_is_neither_ole_nor_zip_stays_unreadable(monkeypatch):
     )))
 
     assert status == 422 and body["error"]["code"] == "pc_reference_unreadable", body
+
+
+# --- the app parse authority (#6126, ported from the retired Core-suite pins) ---
+# The Core document_normalization module is frozen, so the byte judge lives at
+# the app's own parse authority (app.binary_documents) and its project-file
+# convergence point (save_binary_project_file, pinned over the tus lane in
+# tests/test_tus_project_upload_261101.py). The same three facts are pinned
+# here against the item-parse entry points every attachment resolver shares.
+
+
+def _hwp_item(name: str, payload: bytes, *, media_type: str = HWPX_MIME) -> dict:
+    return {"type": "document", "name": name, "media_type": media_type, "raw_bytes": payload}
+
+
+def test_a_hwp_name_needs_the_hwpx_media_type_at_the_parse_authority() -> None:
+    # The mislabeled-but-real-HWPX case stays representable only through the
+    # HWPX media type; any other media type refuses as before (#6126 adds no
+    # second answer for it).
+    with pytest.raises(BinaryDocumentValidationError) as refused:
+        parse_binary_document_item(
+            _hwp_item("예전 문서.hwp", OLE_MAGIC, media_type="application/x-hwp")
+        )
+    assert "legacy" not in str(refused.value)
+
+
+@pytest.mark.asyncio
+async def test_ole_bytes_on_the_hwpx_item_carry_one_guidance_code() -> None:
+    payload = OLE_MAGIC + b"\x00" * 64
+    with pytest.raises(BinaryDocumentValidationError) as refused:
+        await parse_binary_document_item_async(_hwp_item("작년 축사.hwp", payload))
+    # The one sentence, never a generic error badge.
+    assert str(refused.value) == guidance_for_reason_code(
+        "legacy_hwp_unsupported", HWPX_MIME
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_mislabeled_real_hwpx_item_keeps_its_words_and_name() -> None:
+    attachment = await parse_binary_document_item_async(
+        _hwp_item("보고서.hwp", _hwpx_zip("HWPX로 저장한 첫 문단", "둘째 문단"))
+    )
+    assert attachment.name == "보고서.hwp"
+    assert attachment.media_type == HWPX_MIME
+    assert "HWPX로 저장한 첫 문단" in attachment.text
+    assert "둘째 문단" in attachment.text
+
+
+def test_other_document_kinds_do_not_grow_a_legacy_refusal() -> None:
+    # A .hwp name with a plain binary media type keeps the ordinary
+    # extension/media refusal — the legacy sentence answers only the OLE2
+    # bytes on the HWPX lane.
+    with pytest.raises(BinaryDocumentValidationError) as refused:
+        parse_binary_document_item(
+            _hwp_item("legacy.hwp", OLE_MAGIC, media_type="application/pdf")
+        )
+    assert "다른 이름으로 저장" not in str(refused.value)

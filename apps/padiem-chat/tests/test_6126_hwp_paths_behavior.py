@@ -12,12 +12,12 @@ sample matrix on the two browser-owned paths:
   with the HWPX note;
 - Project file: OLE2 .hwp -> the save-as-HWPX guidance as the panel status
   note (never the red error row), zero uploads;
-- Project file: mislabeled real HWPX (ZIP) -> the same raw binary upload the
+- Project file: mislabeled real HWPX (ZIP) -> the same shared tus upload the
   .hwpx extension uses (HWPX media type, original file name);
 - control: a real .hwpx keeps the exact same binary upload contract.
 
 The PC-import path (signature sniff + one guidance code end to end) is owned
-by ``test_6126_legacy_hwp_guidance.py`` and the Core suite, which need no DOM.
+by ``test_6126_legacy_hwp_guidance.py``, which needs no DOM.
 """
 from __future__ import annotations
 
@@ -32,6 +32,8 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
 DOCUMENT_BINARY_JS = ROOT / "static/document-binary.js"
+TUS_UPLOAD_JS = ROOT / "static/tus-upload.js"
+PROJECT_UPLOAD_JS = ROOT / "static/project-file-upload.js"
 
 OLE_BYTES = [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1, 0x00, 0x11]
 ZIP_BYTES = [0x50, 0x4B, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00, 0x28, 0x00]
@@ -42,6 +44,8 @@ const vm = require("vm");
 const APP = fs.readFileSync(process.argv[2], "utf8");
 const CAPS = fs.readFileSync(process.argv[3], "utf8");
 const DOCBIN = fs.readFileSync(process.argv[4], "utf8");
+const TUSLIB = fs.readFileSync(process.argv[5], "utf8");
+const TUSMODULE = fs.readFileSync(process.argv[6], "utf8");
 
 const OLE_BYTES = Uint8Array.from([0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1, 0x00, 0x11]);
 const ZIP_BYTES = Uint8Array.from([0x50, 0x4B, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00, 0x28, 0x00]);
@@ -145,41 +149,106 @@ class FileReader {
 }
 
 // #6126: the sniff reads the file's own first bytes, so the shim must expose
-// the same slice(0, 8).arrayBuffer() surface a real browser File has.
+// the same slice(0, 8).arrayBuffer() surface a real browser File has, and the
+// shared tus client reads chunk slices by length/_bytes (the #2342 shape).
 function makeFile(name, type, bytes, text) {
   const u8 = Uint8Array.from(bytes);
   return {
     name, type, size: u8.length, _bytes: u8, _text: text,
     slice(start, end) {
-      const part = u8.slice(start, end);
-      return { async arrayBuffer() { return part.slice().buffer; } };
+      const from = start || 0;
+      const to = end === undefined ? u8.length : Math.min(end, u8.length);
+      const part = u8.slice(from, to);
+      return { length: part.length, _bytes: part, async arrayBuffer() { return part.slice().buffer; } };
     },
     async arrayBuffer() { return u8.slice().buffer; },
   };
 }
 
 const requests = [];
-let postSeq = 0;
+let fileSeq = 0;
+let tusResult = { status: 201, name: "이름 없음", media_type: "extracted/hwpx" };
+const tusCreates = [];
+const tusPatches = [];
+const uploads = new Map();
+let uploadSeq = 0;
+let tusOptions = 0;
+
+function headerMap(values) {
+  const lower = {};
+  Object.keys(values || {}).forEach((k) => { lower[String(k).toLowerCase()] = String(values[k]); });
+  return { get: (k) => (Object.prototype.hasOwnProperty.call(lower, String(k).toLowerCase())
+    ? lower[String(k).toLowerCase()] : null) };
+}
+function decodeMetadata(raw) {
+  const out = {};
+  String(raw || "").split(",").forEach((pair) => {
+    const at = pair.indexOf(" ");
+    if (at < 0) return;
+    out[pair.slice(0, at)] = Buffer.from(pair.slice(at + 1), "base64").toString("utf8");
+  });
+  return out;
+}
+function uploadState(u) {
+  const path = String(u).replace(/^[a-z]+:\/\/[^/]+/i, "");
+  return uploads.get(path) || null;
+}
 function jsonResponse(status, obj) { return { ok: status >= 200 && status < 300, status, json: async () => obj }; }
 async function fetchImpl(url, opts) {
   opts = opts || {};
   const method = (opts.method || "GET").toUpperCase();
   const u = String(url);
-  const raw = opts.headers?.["Content-Type"] === "application/octet-stream";
-  const body = raw ? opts.body : (opts.body ? JSON.parse(opts.body) : null);
-  requests.push({ url: u, method, body, headers: opts.headers });
+  const isTextFilePost = method === "POST" && /\/api\/projects\/[^/]+\/files$/.test(u);
+  requests.push({ url: u, method, body: isTextFilePost ? (opts.body ? JSON.parse(opts.body) : null) : opts.body, headers: opts.headers });
   if (u.startsWith("/api/auth/status")) return jsonResponse(200, { ready: true, authenticated: true, user: { name: "owner" }, history_ready: true, project_files_ready: true });
-  if (method === "POST" && /\/api\/projects\/[^/]+\/files$/.test(u)) {
-    postSeq += 1;
-    const declared = opts.headers["X-Padiem-Media-Type"];
-    const projection = {
-      id: "file_" + postSeq, project_id: "p1",
-      name: raw ? decodeURIComponent(opts.headers["X-Padiem-Filename"]) : body.name,
-      media_type: raw ? (declared === "application/pdf" ? "extracted/pdf"
-        : declared === "application/hwp+zip" ? "extracted/hwpx" : "extracted/docx") : body.media_type,
-      content_chars: 120, created_at: "2026-11-01T00:00:00Z", updated_at: "2026-11-01T00:00:00Z",
+  // The shared tus client runs for real; the server side of the protocol is
+  // answered here exactly like the #2342 harness does.
+  const tusCollection = /\/api\/projects\/[^/]+\/files\/tus$/.test(u);
+  const tusItem = /\/api\/projects\/[^/]+\/files\/tus\/[^/]+$/.test(u);
+  if (method === "OPTIONS" && tusCollection) {
+    tusOptions += 1;
+    return {
+      ok: true, status: 204, json: async () => ({}),
+      headers: headerMap({ "tus-max-size": "1073741824", "x-padiem-tus-chunk-max": "94371840" }),
     };
-    return jsonResponse(201, { file: projection });
+  }
+  if (method === "POST" && tusCollection) {
+    const meta = decodeMetadata(opts.headers && opts.headers["Upload-Metadata"]);
+    const length = Number(opts.headers && opts.headers["Upload-Length"]);
+    const location = "/api/projects/p1/files/tus/stub-" + (++uploadSeq);
+    tusCreates.push({ endpoint: u, length, filename: meta.filename, media_type: meta.filetype });
+    uploads.set(location, { offset: 0, total: length });
+    return { ok: true, status: 201, json: async () => ({ upload_id: "stub-" + uploadSeq }),
+      headers: headerMap({ location }) };
+  }
+  if (method === "PATCH" && tusItem) {
+    const state = uploadState(u);
+    const body = opts.body;
+    const bytes = body && typeof body.length === "number" ? body.length : 0;
+    state.offset += bytes;
+    tusPatches.push({ url: u, offset: Number(opts.headers["Upload-Offset"]), bytes });
+    return { ok: true, status: 204, json: async () => ({}),
+      headers: headerMap({ "upload-offset": String(state.offset) }) };
+  }
+  if (method === "HEAD" && tusItem) {
+    const state = uploadState(u);
+    return { ok: true, status: 200, json: async () => ({}),
+      headers: headerMap({ "upload-offset": String(state ? state.offset : 0) }) };
+  }
+  if (method === "GET" && tusItem) {
+    if (tusResult.status !== 201) return jsonResponse(tusResult.status, tusResult.body);
+    fileSeq += 1;
+    return jsonResponse(201, { file: {
+      id: "file_tus_" + fileSeq, project_id: "p1", name: tusResult.name, media_type: tusResult.media_type,
+      content_chars: 120, created_at: "2026-11-01T00:00:00Z", updated_at: "2026-11-01T00:00:00Z",
+    } });
+  }
+  if (isTextFilePost) {
+    const body = requests[requests.length - 1].body;
+    return jsonResponse(201, { file: {
+      id: "file_text_" + (++fileSeq), project_id: "p1", name: body.name, media_type: body.media_type,
+      content_chars: 120, created_at: "2026-09-11T00:00:00Z", updated_at: "2026-09-11T00:00:00Z",
+    } });
   }
   if (method === "GET" && /\/api\/projects\/[^/]+\/files$/.test(u)) return jsonResponse(200, { files: [] });
   if (u.startsWith("/api/projects")) return jsonResponse(200, { projects: [{ id: "p1", name: "테스트 프로젝트", instructions: "", created_at: "2026-09-10T00:00:00Z", updated_at: "2026-09-10T00:00:00Z" }] });
@@ -192,6 +261,7 @@ const sandbox = {
   fetch: fetchImpl,
   FileReader,
   btoa: (binary) => Buffer.from(binary, "latin1").toString("base64"),
+  TextEncoder,
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeURL() {} },
   setTimeout, clearTimeout, console,
@@ -214,6 +284,12 @@ sandbox.PadiemAttachmentCapabilities.setBinarySupport(true);
 vm.runInContext(DOCBIN, sandbox, { filename: "document-binary.js" });
 if (!sandbox.PadiemBinaryDocuments || typeof sandbox.PadiemBinaryDocuments.headerFamily !== "function") {
   console.log(JSON.stringify({ ok: false, error: "SNIFF_HELPER_NOT_LOADED" }));
+  process.exit(0);
+}
+vm.runInContext(TUSLIB, sandbox, { filename: "tus-upload.js" });
+vm.runInContext(TUSMODULE, sandbox, { filename: "project-file-upload.js" });
+if (!sandbox.PadiemProjectFileUpload) {
+  console.log(JSON.stringify({ ok: false, error: "TUS_MODULE_NOT_LOADED" }));
   process.exit(0);
 }
 vm.runInContext(APP, sandbox, { filename: "app.js" });
@@ -244,6 +320,9 @@ function pickProjectFile(file) {
   (byId.projectFileInput.listeners.change || []).forEach((fn) => fn({ target: byId.projectFileInput }));
 }
 function filePosts() { return requests.filter((r) => r.method === "POST" && /\/api\/projects\/[^/]+\/files$/.test(r.url)); }
+function octetStreamPosts() {
+  return filePosts().filter((r) => r.headers && r.headers["Content-Type"] === "application/octet-stream");
+}
 function laneCalls() { return requests.filter((r) => r.url.includes("/api/files/")); }
 
 (async () => {
@@ -300,30 +379,31 @@ function laneCalls() { return requests.filter((r) => r.url.includes("/api/files/
   if (projectOle.errorHidden !== true) fail("PROJECT_OLE_ERROR_ROW_SHOWN");
   if (projectOle.posts !== 0) fail("PROJECT_OLE_ISSUED_UPLOAD");
 
-  // 4) Project file, mislabeled real HWPX (ZIP): the .hwpx binary contract,
-  //    original file name preserved.
+  // 4) Project file, mislabeled real HWPX (ZIP): the shared tus upload the
+  //    .hwpx extension uses — HWPX media, original file name, own bytes.
+  tusResult = { status: 201, name: "보고서.hwp", media_type: "extracted/hwpx" };
   pickProjectFile(makeFile("보고서.hwp", "", ZIP_BYTES, null));
-  await tick(80);
-  const posts = filePosts();
-  if (posts.length !== 1) fail("PROJECT_ZIP_POST_COUNT:" + posts.length);
-  const post = posts[0];
-  if (post.headers["Content-Type"] !== "application/octet-stream") fail("PROJECT_ZIP_NOT_BINARY");
-  if (post.headers["X-Padiem-Media-Type"] !== "application/hwp+zip") fail("PROJECT_ZIP_MEDIA");
-  if (decodeURIComponent(post.headers["X-Padiem-Filename"]) !== "보고서.hwp") fail("PROJECT_ZIP_FILENAME");
-  if (post.body._bytes.length !== ZIP_BYTES.length) fail("PROJECT_ZIP_BODY_MISMATCH");
+  await tick(120);
+  if (tusCreates.length !== 1) fail("PROJECT_ZIP_TUS_COUNT:" + tusCreates.length);
+  const zipCreate = tusCreates[0];
+  if (zipCreate.endpoint !== "/api/projects/p1/files/tus") fail("PROJECT_ZIP_TUS_ENDPOINT");
+  if (zipCreate.filename !== "보고서.hwp") fail("PROJECT_ZIP_FILENAME");
+  if (zipCreate.media_type !== "application/hwp+zip") fail("PROJECT_ZIP_MEDIA");
+  if (zipCreate.length !== ZIP_BYTES.length) fail("PROJECT_ZIP_LENGTH_MISMATCH");
+  if (tusPatches.length !== 1 || tusPatches[0].bytes !== ZIP_BYTES.length) fail("PROJECT_ZIP_CHUNK_SHAPE");
+  if (octetStreamPosts().length !== 0) fail("PROJECT_ZIP_DIRECT_POST_RETURNED");
 
-  // 5) Control: a real .hwpx keeps the exact same upload contract.
+  // 5) Control: a real .hwpx keeps the exact same tus upload contract.
   pickProjectFile(makeFile("sample.hwpx", "application/hwp+zip", ZIP_BYTES, null));
-  await tick(80);
-  const allPosts = filePosts();
-  if (allPosts.length !== 2) fail("HWPX_CONTROL_POST_COUNT:" + allPosts.length);
-  if (allPosts[1].headers["X-Padiem-Media-Type"] !== "application/hwp+zip") fail("HWPX_CONTROL_MEDIA");
+  await tick(120);
+  if (tusCreates.length !== 2) fail("HWPX_CONTROL_TUS_COUNT:" + tusCreates.length);
+  if (tusCreates[1].media_type !== "application/hwp+zip") fail("HWPX_CONTROL_MEDIA");
+  if (tusCreates[1].filename !== "sample.hwpx") fail("HWPX_CONTROL_FILENAME");
 
   console.log(JSON.stringify({ ok: true, chatOle, chatZip, projectOle,
-    projectZip: { mediaType: post.headers["X-Padiem-Media-Type"],
-      filename: decodeURIComponent(post.headers["X-Padiem-Filename"]),
-      bytes: post.body._bytes.length },
-    posts: allPosts.length }));
+    projectZip: { mediaType: zipCreate.media_type, filename: zipCreate.filename,
+      bytes: zipCreate.length },
+    uploads: tusCreates.length }));
 })().catch((e) => { console.log(JSON.stringify({ ok: false, error: String((e && e.stack) || e) })); });
 """
 
@@ -338,7 +418,8 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS)],
+            [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS),
+             str(TUS_UPLOAD_JS), str(PROJECT_UPLOAD_JS)],
             capture_output=True,
             text=True,
             timeout=60,
@@ -376,4 +457,4 @@ def test_project_file_paths_match_the_decision() -> None:
     assert payload["projectOle"]["posts"] == 0
     assert payload["projectZip"]["mediaType"] == "application/hwp+zip"
     assert payload["projectZip"]["filename"] == "보고서.hwp"
-    assert payload["posts"] == 2
+    assert payload["uploads"] == 2

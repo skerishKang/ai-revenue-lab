@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+from dataclasses import replace
 from typing import Any
 
 from padiem_ai_core.document_normalization import (
@@ -255,7 +256,7 @@ def parse_binary_document_item(item: Any) -> DocumentAttachment:
     if view is not item:
         # #6126: the mislabeled .hwp parsed under its real HWPX identity; the
         # owner's original file name rides on the answer unchanged.
-        attachment.name = str(item.get("name"))
+        attachment = replace(attachment, name=str(item.get("name")))
     return attachment
 
 
@@ -276,5 +277,5 @@ async def parse_binary_document_item_async(item: Any) -> DocumentAttachment:
     if view is not item:
         # #6126: the mislabeled .hwp parsed under its real HWPX identity; the
         # owner's original file name rides on the answer unchanged.
-        attachment.name = str(item.get("name"))
+        attachment = replace(attachment, name=str(item.get("name")))
     return attachment
