@@ -377,3 +377,14 @@ def test_confirmed_items_never_overwrite_template_or_formulas():
                                          "D5": 100, "D6": 200}}
     overflow = json.dumps({"values": {"item": ["가상1", "가상2", "가상3"]}})
     assert quote_pc._confirmed_value_mapping(overflow, confirmed, structure) is None
+
+
+def test_analysis_response_caps_nonempty_cells_and_marks_truncation():
+    cells = [{"cell": "A" + str(n), "text": "Label", "formula": n == 1}
+             for n in range(1, 5003)]
+    cells.append({"cell": "B1", "text": "", "formula": False})
+    result = forms._analysis_structure({"sheets": [{"name": "가상", "merged": ["C1:D1"], "cells": cells}]})
+    assert result["truncated"] is True
+    assert len(result["sheets"][0]["cells"]) == 5000
+    assert result["sheets"][0]["cells"][0]["formula"] is True
+    assert result["sheets"][0]["merged"] == ["C1:D1"]

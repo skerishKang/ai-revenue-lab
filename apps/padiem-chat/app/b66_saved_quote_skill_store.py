@@ -461,6 +461,7 @@ def _public_projection(row: dict[str, Any], *, include_skill: bool) -> dict[str,
     if kind == SKILL_KIND_PC_FORM:
         form = payload.get("form") if payload else None
         form = form if isinstance(form, dict) else {}
+        projected["form_mapping_confirmed"] = bool(form.get("mapping"))
         projected["form_path"] = form.get("path") if isinstance(form.get("path"), str) else ""
         projected["form_filename"] = (
             form.get("filename") if isinstance(form.get("filename"), str) else ""

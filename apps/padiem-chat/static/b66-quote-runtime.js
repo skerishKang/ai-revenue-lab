@@ -384,6 +384,112 @@
       review.append(el("p", "b66-quote-pcform-review-note", pcCopy().reviewTotals));
       review.hidden = false;
     };
+    const text = (key) => window.__padiemLocale?.text?.(key) || key;
+    const roleKeys = ["item", "quantity", "unit_price", "amount", "subtotal", "tax", "total", "date", "recipient"];
+    let selection = 0;
+    async function reviewTemplate(picked, generation) {
+      say(text("quote-map-loading"));
+      nodes.make.hidden = true;
+      nodes.mapping.replaceChildren();
+      nodes.mapping.hidden = false;
+      try {
+        const res = await readJson("/api/b66/pc-quote/forms", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ file_id: picked.fileId, name: (picked.name || "Form").replace(/\.xlsx$/i, "") || "Form", analyze_only: true }),
+        });
+        if (generation !== selection) return;
+        if (!res.response.ok || !res.data?.analysis || !res.data?.structure) throw new Error("analysis");
+        const {analysis, structure} = res.data;
+        const missing = roleKeys.filter((role) => !(analysis[role]?.candidates || []).length);
+        let ai = {};
+        if (missing.length) {
+          const tier = window.PadiemTierSelection?.get?.() || "free";
+          const prompt = "Find the cell addresses for these roles only: " + JSON.stringify(missing) +
+            ". Return JSON object mapping each role to {sheet,cell}; omit unknown roles. Workbook: " + JSON.stringify(structure);
+          try {
+            const reply = await nativeFetch("/api/chat", { method:"POST", credentials:"same-origin",
+              headers:{"Content-Type":"application/json"}, body:JSON.stringify({messages:[{role:"user",content:prompt}],tier}) });
+            const json = await reply.json();
+            const answer = String(json?.answer || "");
+            const begin = answer.indexOf("{"), end = answer.lastIndexOf("}");
+            if (reply.ok && begin >= 0 && end > begin) ai = JSON.parse(answer.slice(begin, end + 1));
+          } catch (_) { ai = {}; }
+        }
+        if (generation !== selection) return;
+        const heading = el("h4", "", text("quote-map-title"));
+        nodes.mapping.append(heading);
+        if (structure.truncated) nodes.mapping.append(el("p", "", text("quote-map-truncated")));
+        const mapping = {};
+        const resolved = new Set();
+        const names = new Set((structure.sheets || []).map((sheet) => sheet.name));
+        roleKeys.forEach((role) => {
+          const item = analysis[role] || {candidates:[], requires_confirmation:true};
+          const candidates = Array.isArray(item.candidates) ? item.candidates : [];
+          const proposed = candidates[0] || ai[role];
+          const safe = proposed && names.has(proposed.sheet) && /^[A-Z]{1,3}[1-9][0-9]*$/.test(proposed.cell);
+          const line = el("div", "b66-quote-map-row");
+          const label = text("quote-map-" + role);
+          if (!item.requires_confirmation && safe && !structure.truncated) {
+            mapping[role] = {sheet:proposed.sheet, cell:proposed.cell};
+            resolved.add(role);
+            line.append(el("span", "", "✓ " + label + " · " + proposed.sheet + "!" + proposed.cell));
+          } else {
+            line.append(el("p", "", text("quote-map-confirm").replace("{role}", label)));
+            const sheet = document.createElement("select");
+            sheet.setAttribute("aria-label", label + " " + text("quote-map-sheet"));
+            (structure.sheets || []).forEach((entry) => {
+              const option = document.createElement("option");
+              option.value = entry.name; option.textContent = entry.name; sheet.append(option);
+            });
+            if (safe) sheet.value = proposed.sheet;
+            const address = document.createElement("input");
+            address.setAttribute("aria-label", label + " " + text("quote-map-cell"));
+            address.value = safe ? proposed.cell : "";
+            const yes = el("button", "", text("quote-map-yes")); yes.type = "button";
+            const other = el("button", "", text("quote-map-other")); other.type = "button";
+            const none = el("button", "", text("quote-map-none")); none.type = "button";
+            const status = el("span", "", "");
+            yes.addEventListener("click", () => {
+              if (!names.has(sheet.value) || !/^[A-Z]{1,3}[1-9][0-9]*$/.test(address.value.trim())) {
+                status.textContent = text("quote-map-choose"); return;
+              }
+              mapping[role] = {sheet:sheet.value, cell:address.value.trim()};
+              resolved.add(role);
+              status.textContent = "✓";
+            });
+            none.addEventListener("click", () => { delete mapping[role]; resolved.add(role); status.textContent = text("quote-map-none"); });
+            other.addEventListener("click", () => { delete mapping[role]; resolved.delete(role); status.textContent = ""; address.focus(); });
+            address.addEventListener("input", () => { delete mapping[role]; resolved.delete(role); status.textContent = ""; });
+            sheet.addEventListener("change", () => { delete mapping[role]; resolved.delete(role); status.textContent = ""; });
+            line.append(sheet, address, yes, other, none, status);
+          }
+          nodes.mapping.append(line);
+        });
+        const save = el("button", "", text("quote-map-save")); save.type = "button";
+        save.addEventListener("click", async () => {
+          if (roleKeys.some((role) => !resolved.has(role)) || !Object.keys(mapping).length) { say(text("quote-map-choose")); return; }
+          save.disabled = true;
+          try {
+            const result = await readJson("/api/b66/pc-quote/forms", {
+              method:"POST", headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({file_id:picked.fileId, name:(picked.name || "Form").replace(/\.xlsx$/i, "") || "Form", mapping}),
+            });
+            if (!result.response.ok || !result.data?.form?.saved_skill_id) throw new Error("save");
+            if (generation !== selection) return;
+            savedFormId = result.data.form.saved_skill_id;
+            nodes.mapping.hidden = true;
+            nodes.make.hidden = false;
+            say("");
+            void refresh();
+          } catch (_) { say(text("quote-map-failed")); }
+          finally { save.disabled = false; }
+        });
+        nodes.mapping.append(save);
+        say("");
+      } catch (_) {
+        if (generation === selection) say(text("quote-map-failed"));
+      }
+    }
     nodes.pick.addEventListener("click", async () => {
       say(pcCopy().choosing);
       let component = null;
@@ -409,14 +515,24 @@
           };
           filled = null;
           savedFormId = null;
+          const generation = ++selection;
           nodes.save.hidden = true;
           nodes.pdf.hidden = true;
           if (nodes.remember) nodes.remember.hidden = true;
           clearReview();
           nodes.chosen.textContent = pcCopy().chosen + " " + template.name;
           nodes.chosen.hidden = false;
-          nodes.make.hidden = false;
-          say("");
+          const previous = skills.find((skill) => isPcForm(skill) && skill.form_mapping_confirmed === true
+            && String(skill.form_path).replace(/\\/g, "/") === template.path.replace(/\\/g, "/"));
+          if (previous) {
+            savedFormId = previous.saved_skill_id;
+            nodes.mapping.hidden = true;
+            nodes.make.hidden = false;
+            say("");
+          } else {
+            nodes.make.hidden = true;
+            void reviewTemplate(picked, generation);
+          }
         },
       });
     });
@@ -433,7 +549,7 @@
         const response = await nativeFetch(PC_QUOTE_FILL_PATH, {
           method: "POST", credentials: "same-origin", cache: "no-store",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ file_id: template.fileId, request }),
+          body: JSON.stringify({ file_id: template.fileId, request, ...(savedFormId ? {form_id: savedFormId} : {}) }),
         });
         const body = await response.json().catch(() => null);
         if (!response.ok || !body || body.ok !== true || typeof body.filled_file_id !== "string") {
@@ -741,6 +857,9 @@
     pcMake.id = "b66QuotePcMake";
     pcMake.type = "button";
     pcMake.hidden = true;
+    const pcMapping = el("section", "b66-quote-pcform-mapping");
+    pcMapping.id = "b66QuotePcMapping";
+    pcMapping.hidden = true;
     const pcReview = el("section", "b66-quote-pcform-review");
     pcReview.id = "b66QuotePcReview";
     pcReview.setAttribute("aria-live", "polite");
@@ -762,12 +881,12 @@
     pcFormStatus.setAttribute("role", "status");
     pcFormStatus.setAttribute("aria-live", "polite");
     pcFormStatus.hidden = true;
-    pcForm.append(pcPick, pcChosen, pcNote, pcMake, pcReview, pcRemember, pcSave, pcPdf, pcFormStatus);
+    pcForm.append(pcPick, pcChosen, pcNote, pcMapping, pcMake, pcReview, pcRemember, pcSave, pcPdf, pcFormStatus);
     // #5895: the section rides the form's own append below. Calling after() on
     // the still-detached pair was a per-DOM no-op, so the dialog shipped
     // without the PC form its launcher promises.
     pcFormBridge = wirePcForm({
-      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave, pdf: pcPdf,
+      pick: pcPick, chosen: pcChosen, note: pcNote, make: pcMake, save: pcSave, pdf: pcPdf, mapping: pcMapping,
       review: pcReview, remember: pcRemember, status: pcFormStatus,
       request: () => message.value,
     });

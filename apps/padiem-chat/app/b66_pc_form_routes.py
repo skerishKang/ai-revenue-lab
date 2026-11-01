@@ -55,6 +55,26 @@ def _mint_skill_id() -> str:
     return "pcform_" + uuid.uuid4().hex
 
 
+def _analysis_structure(structure: dict, *, cell_limit: int = 5000) -> dict:
+    """Bound the owner-scoped nonempty workbook cells sent to the browser."""
+    remaining = cell_limit
+    truncated = False
+    sheets = []
+    for sheet in structure.get("sheets", []):
+        cells = []
+        for cell in sheet.get("cells", []):
+            if not isinstance(cell, dict) or not str(cell.get("text", "")).strip():
+                continue
+            if remaining <= 0:
+                truncated = True
+                continue
+            cells.append({"cell": cell.get("cell"), "text": cell.get("text"),
+                          "formula": cell.get("formula") is True})
+            remaining -= 1
+        sheets.append({"name": sheet.get("name"), "merged": sheet.get("merged", []), "cells": cells})
+    return {"sheets": sheets, "truncated": truncated}
+
+
 async def pc_quote_form_register(request: Request) -> JSONResponse:
     """Register one finished PC read's workbook as the owner's saved quote form."""
 
@@ -114,8 +134,9 @@ async def pc_quote_form_register(request: Request) -> JSONResponse:
 
     if body.get("analyze_only") is True:
         from .b66_quote_form_analysis import analyze_quote_form
+        bounded = _analysis_structure(structure)
         return JSONResponse(
-            {"ok": True, "analysis": analyze_quote_form(structure)},
+            {"ok": True, "analysis": analyze_quote_form(bounded), "structure": bounded},
             headers={"Cache-Control": "no-store, max-age=0"},
         )
     if "analyze_only" in body and body["analyze_only"] is not False:
