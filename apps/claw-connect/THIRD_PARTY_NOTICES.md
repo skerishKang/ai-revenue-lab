@@ -6,6 +6,8 @@ The batch tool-calling approach in `claw_connect/batch_runner.py` is adapted
 from Hermes Agent's programmatic tool execution:
 https://github.com/NousResearch/hermes-agent/blob/9a76ac8e4f612c081e12008923893077f10f2ec7/website/docs/user-guide/features/code-execution.md
 
+Background process management design: https://github.com/NousResearch/hermes-agent
+
 MIT License
 
 Copyright (c) 2025 Nous Research

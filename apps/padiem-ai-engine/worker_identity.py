@@ -1100,6 +1100,10 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
     )
     b14_client = B14ExecutionClient(completed_config, transport=transport)
     b14_stream_client = B14StreamingClient(stream_config, transport=transport)
+    from app.pc_work_metrics_reporter import PcWorkMetricsReporter
+    pc_work_metrics_reporter = PcWorkMetricsReporter(
+        transport=transport, base_url=completed_config.base_url,
+    )
     continuation_store = _continuation_store_for_env(env)
     idempotency_adapter = legacy_worker._idempotency_adapter_for_env(env)
     admission_adapter = _admission_adapter_for_env(
@@ -1254,6 +1258,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             )
         except (ValueError, TypeError):
             web_xlsx_owner_grant = None
+    pc_catalog = CatalogToolCapabilities(binding, Request)
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -1266,8 +1271,9 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
         ),
         orchestration=AdmissionBoundOrchestrationEngineService(
             runtime_factory=runtime_factory,
+            pc_work_metrics_reporter=pc_work_metrics_reporter,
             pc_streaming_runtime_factory=streaming_runtime_factory,
-            pc_tools_capability=CatalogToolCapabilities(binding, Request),
+            pc_tools_capability=pc_catalog,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
@@ -1296,6 +1302,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         secret=desktop_secret,
                         tool_arguments=tool_arguments,
                         initial_decision=initial_decision,
+                        compaction_budget_resolver=pc_catalog.context_budget,
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None

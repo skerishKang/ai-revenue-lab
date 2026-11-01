@@ -23,7 +23,8 @@ def unavailable_action(operation: str, path: str, *, destination: str | None = N
 
 def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
                      account: Mapping[str, Any] | None, state: str,
-                     termination: Any, exit_code: Any) -> dict[str, Any]:
+                     termination: Any, exit_code: Any,
+                     expected_content: Mapping[str, Any] | None = None) -> dict[str, Any]:
     """Return a factual observation, including when a check is unavailable."""
     result = unavailable_action(operation, path, destination=extra.get("destination"))
 
@@ -82,14 +83,24 @@ def verify_pc_action(*, operation: str, path: str, extra: Mapping[str, str],
         if (type(size) is not int or size < 0 or not isinstance(digest, str)
                 or re.fullmatch(r"[a-fA-F0-9]{64}", digest) is None):
             return finish("unavailable", "evidence_invalid")
-        content = extra.get("content")
-        if not isinstance(content, str):
-            return finish("unavailable", "evidence_invalid")
-        encoded = content.encode("utf-8")
-        expected_hash = hashlib.sha256(encoded).hexdigest()
-        result.update(expected_bytes=len(encoded), actual_bytes=size,
+        if expected_content is None:
+            content = extra.get("content")
+            if not isinstance(content, str):
+                return finish("unavailable", "evidence_invalid")
+            encoded = content.encode("utf-8")
+            expected_size, expected_hash = len(encoded), hashlib.sha256(encoded).hexdigest()
+        else:
+            # Only the authenticated queue's original job metadata supplies this
+            # projection; no model argument schema accepts these fields.
+            expected_size = expected_content.get("expected_bytes")
+            expected_hash = expected_content.get("expected_sha256")
+            if (type(expected_size) is not int or expected_size < 0
+                    or not isinstance(expected_hash, str)
+                    or re.fullmatch(r"[a-f0-9]{64}", expected_hash) is None):
+                return finish("unavailable", "evidence_invalid")
+        result.update(expected_bytes=expected_size, actual_bytes=size,
                       expected_sha256=expected_hash, actual_sha256=digest.lower())
-        if size != len(encoded) or digest.lower() != expected_hash:
+        if size != expected_size or digest.lower() != expected_hash:
             return finish("failed", "content_mismatch")
 
     # A matching state does not turn a refused/failed command into a completed

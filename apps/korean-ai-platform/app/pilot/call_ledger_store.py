@@ -22,9 +22,11 @@ from __future__ import annotations
 
 from contextvars import ContextVar, Token
 from collections.abc import Mapping
+import json
 from typing import Any
 
-from app.pilot.call_ledger import CallLedgerError, CallRecord
+from app.pilot.call_ledger import CallLedgerError, CallRecord, _clean_ref, utc_now_iso
+from padiem_ai_core.pc_work_metrics import validate_pc_work_metrics
 
 CALL_TABLE = "b14_model_call"
 ATTEMPT_TABLE = "b14_model_call_attempt"
@@ -236,6 +238,93 @@ class CallLedgerStore:
             "ORDER BY calls DESC LIMIT ?"
         )
         return await self._all(sql, *params, bounded)
+
+    async def annotate_pc_work_metrics(
+        self, *, product: str, subject_ref: str, session_ref: str,
+        metrics: Mapping[str, Any],
+    ) -> dict[str, str]:
+        """Attach final counters once to a real model-call row, without billing.
+
+        The final report may race B14's deferred insert. In that case the caller
+        gets ledger_pending and can retry; no synthetic consumption row is made.
+        An existing annotation wins even if an older deferred row arrives later.
+        """
+        if product not in {"chat", "claw"}:
+            raise CallLedgerError("PC metrics require a Chat or Claw product")
+        subject = _clean_ref("subject_ref", subject_ref)
+        session = _clean_ref("session_ref", session_ref)
+        normalized = validate_pc_work_metrics(metrics)
+        if (not subject or not session or session != normalized["turn_id"]
+                or normalized["outcome"] == "running"):
+            raise CallLedgerError("PC metrics require a matching completed turn identity")
+        encoded = json.dumps(normalized, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        scope = (product, subject, session)
+        # One SQL statement is the immutable annotation boundary. A second
+        # report cannot pick another model call in this same turn while the
+        # first report is being recorded.
+        await self._run(
+            f"UPDATE {CALL_TABLE} SET pc_work_metrics_json=?, pc_work_metrics_recorded_at=? "
+            f"WHERE log_id=(SELECT log_id FROM {CALL_TABLE} "
+            "WHERE product=? AND subject_ref=? AND session_ref=? "
+            "ORDER BY started_at ASC, log_id ASC LIMIT 1) "
+            "AND pc_work_metrics_json IS NULL "
+            f"AND NOT EXISTS (SELECT 1 FROM {CALL_TABLE} "
+            "WHERE product=? AND subject_ref=? AND session_ref=? "
+            "AND pc_work_metrics_json IS NOT NULL)",
+            encoded, utc_now_iso(), *scope, *scope,
+        )
+        row = await self._first(
+            f"SELECT log_id, pc_work_metrics_json FROM {CALL_TABLE} "
+            "WHERE product=? AND subject_ref=? AND session_ref=? "
+            "AND pc_work_metrics_json IS NOT NULL LIMIT 1", *scope,
+        )
+        if row is None:
+            return {"status": "ledger_pending"}
+        if row["pc_work_metrics_json"] != encoded:
+            return {"status": "metrics_conflict"}
+        return {"status": "recorded", "log_id": row["log_id"]}
+
+    async def recent_pc_work_metrics(
+        self, *, filters: Mapping[str, Any] | None = None,
+        since: str | None = None, until: str | None = None,
+        limit: int = DEFAULT_PAGE_LIMIT,
+    ) -> list[dict[str, Any]]:
+        """The latest N PC turns, including turns without a final report.
+
+        Existing model rows prove that a turn started. Absence of a final
+        annotation cannot distinguish running, disconnected or a lost report;
+        those rows stay visible as not_finalized, never inferred abandoned.
+        """
+        clause, params = self._where(filters, since, until)
+        clause += (" AND " if clause else " WHERE ") + (
+            "product IN ('chat','claw') AND subject_ref IS NOT NULL "
+            "AND length(session_ref)=71 AND substr(session_ref,1,7)='pcturn_' "
+            "AND substr(session_ref,8) NOT GLOB '*[^0-9a-f]*'"
+        )
+        bounded = max(1, min(int(limit), MAX_PAGE_LIMIT))
+        rows = await self._all(
+            "WITH matching_turns AS (SELECT DISTINCT product,subject_ref,session_ref "
+            f"FROM {CALL_TABLE}{clause}), "
+            "turns AS (SELECT log_id, product, subject_ref, session_ref, origin_request_id, "
+            "started_at, pc_work_metrics_json, pc_work_metrics_recorded_at "
+            ",ROW_NUMBER() OVER (PARTITION BY product,subject_ref,session_ref "
+            "ORDER BY CASE WHEN pc_work_metrics_json IS NOT NULL THEN 0 ELSE 1 END, "
+            "started_at ASC,log_id ASC) AS turn_rank, "
+            "MAX(COALESCE(pc_work_metrics_recorded_at,finished_at,started_at)) "
+            "OVER (PARTITION BY product,subject_ref,session_ref) AS last_activity_at "
+            f"FROM {CALL_TABLE} AS candidate WHERE EXISTS (SELECT 1 FROM matching_turns AS matched "
+            "WHERE matched.product=candidate.product AND matched.subject_ref=candidate.subject_ref "
+            "AND matched.session_ref=candidate.session_ref)) "
+            "SELECT log_id,product,subject_ref,session_ref,origin_request_id,started_at, "
+            "pc_work_metrics_json,pc_work_metrics_recorded_at FROM turns "
+            "WHERE turn_rank=1 ORDER BY last_activity_at DESC,log_id DESC LIMIT ?",
+            *params, bounded,
+        )
+        for row in rows:
+            raw = row.pop("pc_work_metrics_json")
+            row["metrics"] = validate_pc_work_metrics(json.loads(raw)) if raw is not None else None
+            row["metrics_status"] = "finalized" if raw is not None else "not_finalized"
+        return rows
 
     @staticmethod
     def _where(

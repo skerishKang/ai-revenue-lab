@@ -74,7 +74,8 @@ from starlette.responses import JSONResponse
 from starlette.routing import Route
 
 from app.d1_sqlite import SqliteD1
-from app.history import D1HistoryStore
+from background_history import QueueHistoryStore
+from pc_output_store import PcOutputStore, PC_OUTPUT_METHODS
 from app.mesh_device_presence_store import D1MeshDevicePresenceStore
 from app.mesh_device_drive_store import D1MeshDeviceDriveStore
 from app.mesh_device_drive_routes import (
@@ -155,6 +156,8 @@ def store_resolvers():
         table[name] = by_holder("mesh_device_presence_store")
     for name in DRIVE_METHODS:
         table[name] = by_holder("mesh_device_drive_store")
+    for name in PC_OUTPUT_METHODS:
+        table[name] = by_holder("pc_output_store")
     return table
 
 
@@ -178,7 +181,7 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
                ownership_map: str | None = None, mode: str = "mesh",
                service_secret: str | None = None, watch_secret: str | None = None,
                connection: Any = None, legacy_map_lane: bool = True,
-               request_log: str = "off") -> Starlette:
+               request_log: str = "off", output_directory: str | None = None) -> Starlette:
     """Assemble the queue app on the real route functions, with the store on SQLite."""
 
     if not isinstance(channel_secret, str) or not 16 <= len(channel_secret) <= 256:
@@ -245,11 +248,14 @@ def create_app(*, db_path: str | None = None, channel_secret: str,
         Route(ORACLE_MESH_READ_LANE_STATUS_PATH, oracle_mesh_read_lane_status,
               methods=["POST"]),
     ])
-    app.state.history_store = D1HistoryStore(database, run_ownership=_forwarded_run_ownership)
+    app.state.history_store = QueueHistoryStore(database, run_ownership=_forwarded_run_ownership)
     app.state.mesh_device_presence_store = D1MeshDevicePresenceStore(database)
     app.state.mesh_device_drive_store = D1MeshDeviceDriveStore(database)
     app.state.pc_device_pairing_store = D1PcPairingStore(database)
     app.state.queue_database = database
+    output_root = output_directory or os.environ.get("PADIEM_OUTPUT_STORE_DIR") or str(
+        pathlib.Path(db_path or DEFAULT_DB_PATH).parent / "pc-outputs")
+    app.state.pc_output_store = PcOutputStore(output_root, history_store=app.state.history_store)
     # The same composition the Worker root performs, run once here from files. An
     # unusable secret or map leaves the source None, and every channel route then
     # answers its documented 503 rather than serving an unauthenticated claim.

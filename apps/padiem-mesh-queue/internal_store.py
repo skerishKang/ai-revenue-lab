@@ -45,6 +45,7 @@ MOMENT_ARGUMENTS = frozenset({"now", "issued_at", "received_at"})
 #: over-budget original lives in private R2 and the delivered answer lives in the
 #: conversation, both of which stay with the Chat Worker.
 DISPATCH_METHODS = frozenset({
+    "get_pc_output_dispatch_for_owner",
     "claim_oracle_mesh_dispatch",
     "cancel_oracle_mesh_dispatches_for_run",
     "consume_oracle_mesh_dispatch",

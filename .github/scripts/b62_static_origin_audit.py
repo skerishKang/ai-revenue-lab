@@ -42,6 +42,7 @@ LICENSE_NOTICE_URLS = frozenset({
     "https://github.com/pymupdf/PyMuPDF",
     "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
     "https://www.gnu.org/licenses/agpl-3.0.html",
+    "https://github.com/anomalyco/opencode",
 })
 
 

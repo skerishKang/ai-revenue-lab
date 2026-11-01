@@ -144,6 +144,7 @@ def test_license_navigation_is_exact_url_and_file_scoped():
         "https://github.com/pymupdf/PyMuPDF",
         "https://github.com/skerishKang/ai-revenue-lab/tree/main/apps/b66-pdf-renderer",
         "https://www.gnu.org/licenses/agpl-3.0.html",
+        "https://github.com/anomalyco/opencode",
     }
     assert audit.LICENSE_NOTICE_URLS == allowed
     for url in allowed:
@@ -154,7 +155,8 @@ def test_license_navigation_is_exact_url_and_file_scoped():
                 "https://github.com/NousResearch/hermes-agent?tracking=1",
                 "https://github.com/NousResearch/hermes-agent",
                 "https://github.com/pymupdf/PyMuPDF?tracking=1",
-                "https://www.gnu.org/other"):
+                "https://www.gnu.org/other",
+                "https://github.com/anomalyco/opencode?tracking=1"):
         assert not audit.license_notice_url_allowed(notice, url)
     assert "github.com" not in audit.ALLOWED_LITERAL_HTTP_HOSTS
     assert "www.gnu.org" not in audit.ALLOWED_LITERAL_HTTP_HOSTS

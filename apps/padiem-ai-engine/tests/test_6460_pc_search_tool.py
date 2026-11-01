@@ -402,10 +402,13 @@ def test_native_pc_tools_offer_search_inside_the_existing_scopes():
     assert "search_contents" not in listing_names
     assert {"search_files", "search_contents"} <= set(files_names)
 
+    from kagent.pc_remote_tools import REMOTE_NAMES
+
     listing_defs = {d.name: d for d in pc_tools_turn.definitions(listing)}
     files_defs = {d.name: d for d in pc_tools_turn.definitions(files)}
-    assert set(listing_defs) == {"files_list", "search_files"}
-    assert {"files_list", "files", "search_files", "search_contents"} <= set(files_defs)
+    remote = set(REMOTE_NAMES)
+    assert set(listing_defs) == {"files_list", "search_files"} | remote
+    assert {"files_list", "files", "search_files", "search_contents"} | remote <= set(files_defs)
     schema = listing_defs["search_files"].parameters
     assert tuple(schema["required"]) == ("query",)
     assert set(schema["properties"]) == {"query", "path"}
