@@ -1566,7 +1566,9 @@ def _scope_allowed_tool_ids(tool_arguments: Any) -> frozenset[str] | None:
     if len(keys) != 1:
         return None
     key = next(iter(keys))
-    if key not in ("files_list", "files", "query_drives"):
+    # #3782: the browser scope carries its own four-tool ceiling, so a
+    # `browser` hint admits exactly the browser tools and no file tool.
+    if key not in ("files_list", "files", "query_drives", "browser"):
         return None
     # One table owns which tools each admitted scope offers, so the ceiling the
     # Engine enforces and the one the product advertises cannot drift apart.

@@ -104,6 +104,18 @@ PC_BROWSER_TOOL_IDS = frozenset({
     PC_BROWSER_OPEN_TOOL_ID, PC_BROWSER_READ_TOOL_ID,
     PC_BROWSER_SCREENSHOT_TOOL_ID, PC_BROWSER_ACT_TOOL_ID,
 })
+#: #3782: the claim vocabulary one browser step needs. It mirrors the file ops
+#: above so the signed scope claim and the Chat verifier share one table.
+PC_BROWSER_OPS = {
+    PC_BROWSER_OPEN_TOOL_ID: "browser_open",
+    PC_BROWSER_READ_TOOL_ID: "browser_read",
+    PC_BROWSER_SCREENSHOT_TOOL_ID: "browser_screenshot",
+    PC_BROWSER_ACT_TOOL_ID: "browser_act",
+}
+#: One scope per browser tool, exactly like `read_file_chunk` above: the
+#: granted scope string IS the runtime tool id, so `configure_request_scope`
+#: intersects the plan ceiling with the server's real grants without a second
+#: vocabulary. `browser_act` is the only writing tool of the four.
 PC_QUERY_SCOPE = "claw.pc.query_drives"
 PC_LIST_FILES_SCOPE = "claw.pc.list_files"
 PC_READ_FILE_SCOPE = "claw.pc.read_file"
@@ -164,6 +176,11 @@ PC_REQUEST_SCOPE_TOOLS = {
     "files": PC_FILE_TOOL_IDS | PC_SEARCH_TOOL_IDS | frozenset({PC_READ_CHUNK_TOOL_ID}),
     "files_write": PC_FILE_WRITE_TOOL_IDS,
     "query_drives": frozenset({PC_DRIVES_TOOL_ID}),
+    # #3782: one public page opened, read and captured in the dedicated work
+    # profile. Opening, reading and capturing are reads; `browser_act` is the
+    # only writing step, and it still asks in the ordinary conversation before
+    # login, payment, posting or sending.
+    "browser": PC_BROWSER_TOOL_IDS,
     "none": frozenset(),
 }
 
@@ -732,6 +749,10 @@ class StructuredPCQueryStepDriver:
                 PC_SEARCH_FILES_TOOL_ID: "files_list",
                 PC_SEARCH_CONTENT_TOOL_ID: "files",
                 PC_READ_CHUNK_TOOL_ID: "files",
+                PC_BROWSER_OPEN_TOOL_ID: "browser",
+                PC_BROWSER_READ_TOOL_ID: "browser",
+                PC_BROWSER_SCREENSHOT_TOOL_ID: "browser",
+                PC_BROWSER_ACT_TOOL_ID: "browser",
             }.get(first_tool) if decision.get("action") == "tool" and isinstance(first_tool, str) else None
             if proposed is None and isinstance(first_tool, str):
                 proposed = remote_requested_scope(first_tool, decision.get("arguments"))
@@ -749,7 +770,11 @@ class StructuredPCQueryStepDriver:
                     ("write", PC_WRITE_FILE_TOOL_ID), ("move", PC_MOVE_FILE_TOOL_ID),
                     ("delete", PC_DELETE_FILE_TOOL_ID),
                     ("search_name", PC_SEARCH_FILES_TOOL_ID),
-                    ("search_content", PC_SEARCH_CONTENT_TOOL_ID))
+                    ("search_content", PC_SEARCH_CONTENT_TOOL_ID),
+                    ("browser_open", PC_BROWSER_OPEN_TOOL_ID),
+                    ("browser_read", PC_BROWSER_READ_TOOL_ID),
+                    ("browser_screenshot", PC_BROWSER_SCREENSHOT_TOOL_ID),
+                    ("browser_act", PC_BROWSER_ACT_TOOL_ID))
                     if tool in self._allowed_tool_ids],
         }
 
