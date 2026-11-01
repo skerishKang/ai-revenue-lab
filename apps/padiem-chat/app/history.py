@@ -77,7 +77,6 @@ def _merge_run_result_summaries(stored: object, addition: str) -> str:
 #: encode. R2 keys stay server-derived (conversation + deterministic result
 #: id); a browser can never choose an object key.
 ORACLE_MESH_ORIGINAL_MAX_BYTES = 6_000_000
-ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20_000_000
 
 
 def _oracle_mesh_original_max_bytes(
@@ -87,7 +86,13 @@ def _oracle_mesh_original_max_bytes(
     # argument or model value. Other reads retain the 6MB guard; only command
     # results can use the host-configured limit.
     if row.get("kind") == "read" and row.get("root_ref") == "pc_files_read":
-        return ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES
+        # #5882 A: the PC read lane has no product store cap of its own. These
+        # bytes were verified against the dispatch pin (size + digest) just
+        # above, and what actually bounds them is the connector's read
+        # envelope — a smaller store number only refused a read that had
+        # already succeeded. A file larger than one answer is paged by the
+        # Engine from its first range instead.
+        return None
     if row.get("kind") == "command":
         return command_max_bytes
     return ORACLE_MESH_ORIGINAL_MAX_BYTES

@@ -110,12 +110,10 @@ PC_WRITE_ACCOUNT_PREFIX = "PADIEM_PC_ACCOUNT="
 #: The closed reason namespace one change may report. Anything else is the
 #: generic failure, so a PC-side message never becomes part of a refusal code.
 PC_WRITE_REASONS = frozenset({"backup_failed", "target_exists", "path_invalid", "failed"})
-#: 플랫폼 메모리 보호(2026-10-28 소유자 결정): Chat 읽기 레인 자체의 읽기
-#: 상한(oracle_mesh_read_return_routes.PC_FILES_READ_MAX_BYTES = 20MB,
-#: history.ORACLE_MESH_PC_READ_ORIGINAL_MAX_BYTES = 20MB)과 같은 숫자다.
-#: Engine은 읽기 본문을 텍스트 + UTF-8 사본으로 통째로 메모리에 두므로
-#: (read 검증의 ``output.encode("utf-8")`` 참조) 이보다 큰 본문은 이 경로의
-#: 정당한 읽기가 아니고, 큰 파일은 컴2 파일 레인 처리 예정(경로 미구현).
+#: 한 번의 읽기 답이 담는 양(#5882 A). 파일 전체 크기 제한이 아니라 한
+#: 답의 크기다: 이보다 큰 파일은 read_file이 첫 구간 + 전체 크기 +
+#: next_offset을 돌려주고 read_file_chunk로 이어진다. Chat 읽기 레인과
+#: 설치된 커넥터의 읽기 봉투가 같은 숫자를 쓴다.
 PC_FILES_READ_MAX_BYTES = 20_000_000
 #: One whole drive, in any spelling the model repeats back: `C:`, `C:\`, `C:/Users`.
 #: It became a granted root shape when the Owner made a connected PC work over its
@@ -692,9 +690,9 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
             )
 
         async def _first_chunk_fallback() -> dict[str, Any]:
+            # #6541의 첫 구간 경로를 그대로 쓴다: 첫 구간 + 전체 크기 +
+            # next_offset. 새 읽기 방식을 만들지 않는다.
             chunk = await first_chunk({"path": path, "offset": 0})
-            # The read cap is one answer's size, not the file's: the model
-            # continues from next_offset, or asks search for a match position.
             chunk["continued"] = True
             chunk["why"] = "file_over_single_read_cap"
             return chunk
@@ -801,11 +799,14 @@ def _make_pc_file_handler(*, tool_id: str, op: str, service, request_factory, se
                         content_bytes > PC_FILES_READ_MAX_BYTES
                         or len(encoded) > PC_FILES_READ_MAX_BYTES
                     ):
-                        # 플랫폼 메모리 보호(임의 상한 아님): Worker 메모리는 128MB,
-                        # 이 본문은 base64(4/3) + Chat 텍스트 + Engine의 UTF-8 사본 +
-                        # JSON 오버헤드로 동시에 메모리에 있다. 20MB는 한 번에 보내는
-                        # 양의 상한이고 파일 전체 크기 제한이 아니다: 더 큰 파일은
-                        # read_file 이 첫 구간을 돌려주고 read_file_chunk 로 이어진다.
+                        # #5882 A: 20MB는 한 번에 보내는 양의 상한이고 파일 전체
+                        # 크기 제한이 아니다. 넘는 본문을 거절하지 않고 #6541의
+                        # 구간 읽기로 넘긴다 — 모델은 첫 구간 + 전체 크기 +
+                        # next_offset을 받고 read_file_chunk로 이어 읽는다.
+                        # 구간 읽기 통로가 없는 호출만 기존 경계 오류로 남는다.
+                        if first_chunk is not None:
+                            emit_progress("result")
+                            return await _first_chunk_fallback()
                         raise ToolHandlerError(
                             "pc_files_output_too_large",
                             "파일이 커서 한 번에 읽지 못했습니다 — 구간 읽기로 이어서 읽으세요",
