@@ -28,12 +28,12 @@ test('app AI keeps signed request intact and uses model response deadline',async
 test('other API keeps ordinary response deadline',async()=>{
   const handle=createFront({sign,fetchImpl:delayed});
   const response=await handle(new Request('https://chat.padiem.net/api/other',{method:'POST',body:'{}'}),env);
-  assert.equal(response.status,503);
+  assert.equal(response.status,504);
 });
 test('app AI never dispatches to the Cloudflare Chat backup on COM2 outage',async()=>{
   let backup=0;
   const handle=createFront({sign,fetchImpl:async()=>{throw Error('offline');}});
   const response=await handle(new Request('https://chat.padiem.net/api/apps/ai',{method:'POST',body:'{}'}),
     {...env,COM2_CANONICAL:'off',FALLBACK_MODE:'service',CHAT_WORKER:{fetch:async()=>{backup++;return new Response('wrong');}}});
-  assert.equal(response.status,503);assert.equal(backup,0);
+  assert.equal(response.status,502);assert.equal(backup,0);
 });

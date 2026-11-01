@@ -24,6 +24,7 @@ contract applies to both.
 from __future__ import annotations
 
 import json
+import os
 import logging
 import re
 import time
@@ -83,6 +84,20 @@ MAX_RESPONSE_BYTES = 10 * 1024 * 1024
 # genuinely unbounded free-form model text.
 MAX_COMPLETED_RESPONSE_BYTES = 32 * 1024 * 1024
 MAX_ERROR_BODY_CHARS = 500
+
+
+def _completed_response_cap() -> int | None:
+    # The isolate budget does not apply to the loopback COM2 host. An operator
+    # may set a positive byte limit; error bodies and SSE frames stay bounded.
+    if os.environ.get("B14_HOST") not in ("127.0.0.1", "::1"):
+        return MAX_COMPLETED_RESPONSE_BYTES
+    name = "B14_COMPLETED_RESPONSE_MAX_BYTES"
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return None
+    if not raw.isascii() or not raw.isdecimal() or int(raw) < 1:
+        raise ValueError(name + " must be a positive integer")
+    return int(raw)
 
 # All Providers share one phase policy. A Pyodide/Fetch ConnectTimeout
 # label alone does not prove a native TCP handshake delay.
@@ -325,7 +340,7 @@ def _require_free_candidate_excluded(
         )
 
 
-async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONSE_BYTES) -> bytes:
+async def _read_bounded_body(response: httpx.Response, *, cap: int | None = MAX_RESPONSE_BYTES) -> bytes:
     """Collect a completed response body with a pre-decode byte cap (#4379).
 
     Byte resource guard, not a model output ceiling: healthy answers under the
@@ -338,13 +353,13 @@ async def _read_bounded_body(response: httpx.Response, *, cap: int = MAX_RESPONS
     declared = response.headers.get("content-length")
     if declared is not None:
         try:
-            if int(declared.strip()) > cap:
+            if cap is not None and int(declared.strip()) > cap:
                 raise UpstreamResponseTooLarge(cap)
         except ValueError:
             pass  # untrusted header; enforce on actual bytes instead
     buf = bytearray()
     async for chunk in response.aiter_bytes():
-        if len(chunk) > cap - len(buf):
+        if cap is not None and len(chunk) > cap - len(buf):
             raise UpstreamResponseTooLarge(cap)
         buf += chunk
     return bytes(buf)
@@ -580,7 +595,7 @@ async def call_platform_chat_completions(
                     _raise_upstream_error(
                         response.status_code, platform_provider_id, error_body, model_id=model_id
                     )
-                body_bytes = await _read_bounded_body(response, cap=MAX_COMPLETED_RESPONSE_BYTES)
+                body_bytes = await _read_bounded_body(response, cap=_completed_response_cap())
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, platform_provider_id, exc, "completed")
         raise UpstreamTimeout() from exc
@@ -965,7 +980,7 @@ async def call_user_credential_chat_completions(
                         error_bytes.decode("utf-8", "replace"), model_id=model_id,
                     )
                 body_bytes = await _read_bounded_body(
-                    response, cap=MAX_COMPLETED_RESPONSE_BYTES
+                    response, cap=_completed_response_cap()
                 )
     except httpx.TimeoutException as exc:
         log_provider_timeout(logger, credential.provider_id, exc, "completed")

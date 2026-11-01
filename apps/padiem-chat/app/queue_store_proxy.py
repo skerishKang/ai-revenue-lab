@@ -17,6 +17,7 @@ from __future__ import annotations
 from datetime import date, datetime
 import json
 import logging
+import re
 import time
 from typing import Any, Callable
 from urllib.parse import urlsplit
@@ -145,6 +146,19 @@ def _loopback_http_root_origin(value: Any) -> str:
     return f"http://{parsed.netloc}"
 
 
+def _exception_diagnostic(exc: BaseException, stage: str) -> tuple[str, str]:
+    """Return a bounded exception class and transport phase, never its text."""
+    name = type(exc).__name__
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]{0,63}", name):
+        name = "InvalidExceptionName"
+    lower = name.lower()
+    phase = next((item for item in ("connect", "read", "write", "pool")
+                  if lower.startswith(item)), "unknown")
+    if phase == "unknown" and stage == "body_read":
+        phase = "read"
+    return name, phase
+
+
 class QueueStoreClient:
     """One call shape: a declared name, its keyword arguments, its answer."""
 
@@ -199,11 +213,11 @@ class QueueStoreClient:
             QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
         ) else "other"
 
-        def record(outcome, reason, exception="none"):
+        def record(outcome, reason, exception="none", transport_phase="none"):
             log = logger.info if outcome == "ok" else logger.warning
-            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s run_hash=%s dispatch_id=%s",
+            log("pc_queue_call method=%s stage=%s status=%s outcome=%s reason=%s elapsed_ms=%s exception=%s transport_phase=%s run_hash=%s dispatch_id=%s",
                 safe_method, stage, status, outcome, reason,
-                int((time.perf_counter() - started) * 1000), exception, trace_run or "none", trace_dispatch or "none")
+                int((time.perf_counter() - started) * 1000), exception, transport_phase, trace_run or "none", trace_dispatch or "none")
 
         try:
             async with factory(**client_options) as client:
@@ -231,17 +245,14 @@ class QueueStoreClient:
         except (httpx.HTTPError, ValueError, TypeError) as exc:
             reason = ("transport_error" if isinstance(exc, httpx.HTTPError)
                       else "invalid_json" if stage == "json_decode" else "invalid_response")
-            kind = type(exc).__name__
-            if kind not in {"HTTPError", "RequestError", "ConnectError", "ReadError", "ReadTimeout", "ProtocolError", "JSONDecodeError", "UnicodeDecodeError", "ValueError", "TypeError"}:
-                kind = "other"
-            record("error", reason, kind)
+            kind, phase = _exception_diagnostic(exc, stage)
+            record("error", reason, kind, phase)
             raise QueueUnavailable("the queue could not be reached") from None
         except Exception as exc:
             # Never include exception text: it can contain URLs or credentials.
-            # The fixed allowlist makes a missing API observable without logging
-            # arbitrary attacker-controlled class names.
-            kind = "AttributeError" if isinstance(exc, AttributeError) else "other"
-            record("error", "unexpected_" + kind, kind)
+            kind, phase = _exception_diagnostic(exc, stage)
+            reason = "unexpected_AttributeError" if isinstance(exc, AttributeError) else "unexpected_other"
+            record("error", reason, kind, phase)
             raise QueueUnavailable("the queue could not be reached") from None
         stage = "envelope"
         if not isinstance(body, dict) or body.get("ok") is not True or "result" not in body:

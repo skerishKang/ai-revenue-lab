@@ -77,7 +77,7 @@ async def register_completed_web_quote_revision(
             return False
 
         item = await _await(documents.get_for_tenant(
-            tenant_id=workspace_id, document_id=doc_id))
+            tenant_id=workspace_id, document_id=doc_id, user_id=owner_id))
         if not isinstance(item, tuple) or len(item) != 2:
             return False
         metadata, persisted = item

@@ -10,17 +10,19 @@ from app.workspace_storage import ClawDocumentMetadata, DOCX_MEDIA_TYPE, Workspa
 
 _PAYLOAD = b"PK-worker-r2-objectbody-probe"
 _TENANT = "tenant_worker_r2_probe"
+_USER = "user_worker_r2_probe"
 _DOC_ID = "doc_" + "a" * 32
 _NOW = datetime(2026, 9, 17, 0, 0, tzinfo=timezone.utc)
 
 
 class _MetadataStore:
-    async def get_active(self, document_id):
-        if document_id != _DOC_ID:
+    async def get_active_owned(self, document_id, user_id):
+        if document_id != _DOC_ID or user_id != _USER:
             return None
         return ClawDocumentMetadata(
             document_id=_DOC_ID,
             tenant_id=_TENANT,
+            user_id=_USER,
             object_key="synthetic/private/object",
             filename="probe.docx",
             media_type=DOCX_MEDIA_TYPE,
@@ -84,6 +86,7 @@ class Default(WorkerEntrypoint):
             metadata, payload = await store.get_for_tenant(
                 tenant_id=_TENANT,
                 document_id=_DOC_ID,
+                user_id=_USER,
                 now=_NOW,
             )
             del metadata

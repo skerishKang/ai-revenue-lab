@@ -121,7 +121,7 @@ async def claw_conversation_artifact_adopt(request: Request) -> Response:
 
     try:
         item = await store.get_for_tenant(
-            tenant_id=workspace, document_id=artifact_id,
+            tenant_id=workspace, document_id=artifact_id, user_id=owner,
         )
     except Exception:
         return _error(503, "artifact_bytes_unavailable")

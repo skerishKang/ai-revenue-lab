@@ -20,11 +20,12 @@ binding = "ASSETS"
 FRONT_ORIGIN = "https://chat-com2.padiem.net"
 # "static" → 503 maintenance page; "service" → padiem-chat Python Worker.
 FALLBACK_MODE = "static"
-# "off" while the Python Worker is still canonical for writes; "writes" after
-# the data cutover — writes then never fall back to the Python Worker.
-COM2_CANONICAL = "off"
+# COM2 is canonical for writes; never send them to the Python fallback.
+COM2_CANONICAL = "writes"
 HEALTH_TTL_MS = "10000"
 UPSTREAM_TIMEOUT_MS = "8000"
+# Normal API reads can wait through COM2 load without affecting host health.
+API_READ_TIMEOUT_MS = "30000"
 
 # Read-path fallback target. Declared here so the binding exists in both modes;
 # static mode simply never calls it.

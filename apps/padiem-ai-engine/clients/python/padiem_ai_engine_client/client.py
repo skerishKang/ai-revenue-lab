@@ -96,6 +96,7 @@ _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
         "user_credential_ref",
         "declared_plan",
         "pc_tools",
+        "pc_action_context",
         "agent_plan",
         "tool_arguments",
         "recovery_policy",
@@ -180,7 +181,7 @@ def _trusted_pc_tool_arguments(agent_plan: Any, tool_arguments: Any) -> bool:
         return False
     if agent_plan.get("agent_id") not in _PC_PLAN_AGENT_IDS:
         return False
-    if set(tool_arguments) not in ({"query_drives"}, {"files"}, {"files_list"}):
+    if set(tool_arguments) not in ({"query_drives"}, {"files"}, {"files_list"}, {"files_write"}):
         return False
     key = next(iter(tool_arguments))
     steps = agent_plan.get("steps")
@@ -212,6 +213,7 @@ ORCHESTRATION_FIELD_PARITY = MappingProxyType(
         "subject_id": "SUPPORTED_AND_MAPPED",
         "agent_plan": "SUPPORTED_AND_MAPPED",
         "declared_plan": "PC_REQUEST_SCOPE_DECLARATION_ONLY",
+        "pc_action_context": "PC_ROLE_EVIDENCE_ONLY",
         "recovery_policy": "SUPPORTED_AND_MAPPED",
         "max_retries": "SUPPORTED_AND_MAPPED",
         "require_evidence": "SUPPORTED_AND_MAPPED",
@@ -392,10 +394,42 @@ def _pc_tools_context(data, app_id):
         raise PadiemAiEngineClientError("invalid_engine_request", "PC tools context is invalid")
     scopes = value["allowed_scopes"]
     if (not isinstance(scopes, list) or not scopes or len(scopes) > 3
-        or any(not isinstance(v, str) or v not in {"query_drives", "files_list", "files"} for v in scopes)
+        or any(not isinstance(v, str) or v not in {"query_drives", "files_list", "files", "files_write"} for v in scopes)
         or len(set(scopes)) != len(scopes)):
         raise PadiemAiEngineClientError("invalid_engine_request", "PC tools scopes are invalid")
     return {"device_id": value["device_id"], "allowed_scopes": list(scopes)}
+
+
+def _pc_action_context(value: Any) -> list[dict[str, Any]]:
+    """Preserve product-supplied roles without importing the Engine runtime."""
+    invalid = PadiemAiEngineClientError("invalid_engine_request", "PC action context is invalid")
+    if not isinstance(value, (list, tuple)):
+        raise invalid
+    records = []
+    for record in value:
+        if (
+            not isinstance(record, Mapping) or not {"role", "content"} <= set(record)
+            or set(record) - {"role", "content", "source", "visible", "paths"}
+            or not isinstance(record.get("role"), str)
+            or record.get("role") not in {"user", "assistant", "tool_result"}
+            or not isinstance(record.get("content"), str)
+            or ("source" in record and (
+                not isinstance(record["source"], str)
+                or record["source"] not in {"list", "file", "web", "mail", "unknown"}
+            ))
+            or ("visible" in record and type(record["visible"]) is not bool)
+        ):
+            raise invalid
+        if "paths" in record and (
+            not isinstance(record["paths"], (list, tuple))
+            or any(not isinstance(path, str) or not path.strip() for path in record["paths"])
+        ):
+            raise invalid
+        copied = dict(record)
+        if "paths" in copied:
+            copied["paths"] = list(copied["paths"])
+        records.append(copied)
+    return records
 
 
 def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[str, Any]:
@@ -462,6 +496,8 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         payload["user_credential_ref"] = ref
     if "pc_tools" in data:
         payload["pc_tools"] = _pc_tools_context(data, app_id)
+    if "pc_action_context" in data:
+        payload["pc_action_context"] = _pc_action_context(data["pc_action_context"])
     if "execution_context" in data:
         payload["execution_context"] = _execution_context(data["execution_context"])
     if "decision" in data:

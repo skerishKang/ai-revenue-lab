@@ -549,3 +549,26 @@ def test_stream_runtime_tool_finish_without_a_call_keeps_empty_answer_rejection(
         run(collect(runtime, request(tools=(ToolDefinition(name="pc_files"),))))
     assert exc.value.code == "empty_upstream_answer"
     assert client.closed == 1
+
+
+@pytest.mark.parametrize(("chunks", "expected"), [
+    (["<tho", "ught>secret</tho", "ught>Answer"], "Answer"),
+    (["A", "<thin", "king>secret</thinking>", "B"], "AB"),
+    (["Normal ", "answer"], "Normal answer"),
+    (["Normal <", "3"], "Normal <3"),
+])
+def test_stream_filters_thought_across_chunks(chunks, expected):
+    events = [B14StreamEvent(delta_content=chunk, route=ROUTE) for chunk in chunks]
+    events.append(B14StreamEvent(route=ROUTE, done=True))
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=FakeStreamClient(events))
+    result = run(collect(runtime, request()))
+    assert "".join(e.delta_content or "" for e in result) == expected
+    assert result[-1].answer == expected
+
+
+def test_stream_unclosed_thought_fails_without_leaking():
+    events = [B14StreamEvent(delta_content="<thought>secret", route=ROUTE), B14StreamEvent(route=ROUTE, done=True)]
+    runtime = StreamingExecutionRuntime(app_id="test-app", b14_stream_client=FakeStreamClient(events))
+    with pytest.raises(ExecutionRuntimeError) as exc:
+        run(collect(runtime, request()))
+    assert exc.value.code == "empty_upstream_answer"

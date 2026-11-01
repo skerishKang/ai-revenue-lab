@@ -25,6 +25,10 @@ fail() { echo "CHAT_COM2_INSTALL=$1" >&2; exit 1; }
 [[ ${EUID} -eq 0 ]] || fail ROOT_REQUIRED
 for required in \
   apps/padiem-chat/app/local_cpython.py \
+  apps/padiem-chat/static/councillor/councillor.html \
+  apps/padiem-council-apps/static/index.html \
+  apps/padiem-council-apps/static/council-app.css \
+  apps/padiem-council-apps/static/council-app.js \
   apps/padiem-chat/migrations \
   packages/padiem-ai-core/padiem_ai_core \
   packages/padiem-auth-verify/verify.py \
