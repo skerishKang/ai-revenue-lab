@@ -58,8 +58,9 @@ def test_a_failed_read_never_creates_a_project() -> None:
 
 # ── A2. 생성 흐름 ───────────────────────────────────────────────────────────
 
-def test_generation_aborts_after_120_seconds_and_never_prints_raw_json() -> None:
-    assert "GEN_TIMEOUT_MS = 120000" in JS
+def test_generation_aborts_after_300_seconds_and_never_prints_raw_json() -> None:
+    # 2026-11-02 한도 감사 4번: 임시 완화 120초 → 300초. 근본은 진행 중+경과 표시 전환.
+    assert "GEN_TIMEOUT_MS = 300000" in JS
     assert "controller.abort()" in JS
     assert "signal: controller.signal" in JS
     # The old fallback dumped the response body into the draft area.

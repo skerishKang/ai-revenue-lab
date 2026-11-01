@@ -1,4 +1,4 @@
-"""The 10 MiB boundary on the web XLSX lane, and the streaming store beneath it.
+"""The 50 MiB boundary on the web XLSX lane, and the streaming store beneath it.
 
 Owner's decision: at or below ``WEB_XLSX_INLINE_MAX_BYTES`` the existing
 in-memory store call stays; above it the archive is judged from the file and the

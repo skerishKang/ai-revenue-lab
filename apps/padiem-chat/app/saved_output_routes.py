@@ -16,7 +16,8 @@ from .saved_outputs import (
     validate_output_title,
 )
 
-MAX_OUTPUT_BODY_BYTES = 96_000
+# 행 한도(saved_outputs.MAX_OUTPUT_ROW_BYTES = 2MB, D1 2MiB 정합)와 정렬 — 2026-11-02 한도 감사 "바로 바꿔도 되는 것" 1번.
+MAX_OUTPUT_BODY_BYTES = 2_000_000
 
 
 def _unavailable() -> JSONResponse:
