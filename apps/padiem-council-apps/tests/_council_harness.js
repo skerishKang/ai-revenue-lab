@@ -377,6 +377,7 @@ const downloadDetails = [];
 const binaryUploads = [];
 const pcSavesPosted = [];
 let binaryUploadFail = false;
+let pcSaveFails = false;
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -1825,6 +1826,18 @@ const SCENARIOS = {
     const outputB = find(B, "councilSpeechOutput").value;
     await find(B, "councilSpeechPcSave").dispatch("click");
     await sleep(30);
+    // 2026-11-02: a document save first asks which format to write. The
+    // 텍스트 choice keeps the original text flow, so the dated-name contract
+    // below is still exercised through the shipped chooser.
+    const saveChooserLine = find(B, "councilSpeechNotice");
+    const saveChooser = {
+      text: text(saveChooserLine),
+      choices: saveChooserLine.querySelectorAll("button").map((b) => text(b)),
+    };
+    const textChoice = saveChooserLine.querySelectorAll("button")
+      .find((b) => text(b) === "텍스트");
+    await textChoice.dispatch("click");
+    await sleep(30);
     const saveNoticeB = text(find(B, "councilSpeechNotice"));
     const savedB = pcSaves.length ? pcSaves[pcSaves.length - 1] : null;
     const storedNameB = storedFiles.map((f) => f.name);
@@ -1851,7 +1864,7 @@ const SCENARIOS = {
     return {
       noPc, importedB,
       speechPrompt: promptB && promptB.messages && promptB.messages[0] ? promptB.messages[0].content : "",
-      outputB, saveNoticeB, savedB,
+      outputB, saveChooser, saveNoticeB, savedB,
       savedIsNewName: savedB ? !storedNameB.includes(savedB.fileName) : false,
       pcDispatch: pcDispatches.slice(),
       photoCount, photoNames, photoUpload,
@@ -2105,6 +2118,7 @@ const SCENARIOS = {
     binaryUploads.length = 0;
     pcSavesPosted.length = 0;
     binaryUploadFail = false;
+    pcSaveFails = false;
     authState = { authenticated: true, user: { name: "테스트 사용자" } };
     pcLinks = [{
       link_id: "pclink_" + "1".repeat(32), label: "내 PC", state: "active",
@@ -2120,6 +2134,10 @@ const SCENARIOS = {
           body: JSON.stringify({ path: "문서/2026", file_id: options.fileId }),
         }).then(async (res) => {
           const body = await res.json();
+          // The real dialog completes only on ok — a refused save never calls
+          // onSave, so the notice line can never claim a success that did not
+          // happen (the same contract chat's pc_file_exchange_harness pins).
+          if (body.ok !== true) return;
           if (options.onSave) options.onSave(body.saved || {}, "문서");
         });
       },
@@ -2155,12 +2173,31 @@ const SCENARIOS = {
     await find(A, "councilSpeechPcSave").dispatch("click");
     await sleep(20);
     const retryChooser = find(A, "councilSpeechNotice");
-    await retryChooser.querySelectorAll("button")[0].dispatch("click");
+    await retryChooser.querySelectorAll("button")
+      .find((b) => text(b) === "한글").dispatch("click");
     await sleep(40);
     out.uploadFail = {
       notice: text(retryChooser),
       hasRetry: retryChooser.querySelectorAll("button").some((b) => text(b) === "다시 시도"),
     };
+
+    // pc/save 실패 → 실제 대화상자의 계약(실패 시 onSave 없음)에 따라 성공
+    // 문장이 오지 않는다. 대화상자 자체의 실패 문구는 chat 쪽
+    // test_5895_pc_file_exchange_component가 같은 계약으로 고정하므로, 여기선
+    // 의원 앱 알림이 거짓 성공하지 않는 것만 고정한다.
+    binaryUploadFail = false;
+    pcSaveFails = true;
+    await find(A, "councilSpeechPcSave").dispatch("click");
+    await sleep(20);
+    const failChooser = find(A, "councilSpeechNotice");
+    await failChooser.querySelectorAll("button")
+      .find((b) => text(b) === "한글").dispatch("click");
+    await sleep(60);
+    out.saveFail = {
+      notice: text(failChooser),
+      savesAfter: pcSavesPosted.length,
+    };
+    pcSaveFails = false;
 
     // PC 연결 없음 → 기존 '컴퓨터 연결하기' 안내(업로드 없이).
     binaryUploadFail = false;
@@ -2171,6 +2208,33 @@ const SCENARIOS = {
       notice: text(find(A, "councilSpeechNotice")),
       uploadsAfter: binaryUploads.length,
       savesAfter: pcSavesPosted.length,
+    };
+
+    // 워드(DOCX)도 같은 흐름이다 — SNS 게시글은 결과 종류(sns)로 묶인다.
+    pcLinks = [{
+      link_id: "pclink_" + "1".repeat(32), label: "내 PC", state: "active",
+      mesh_node_id: "node/meshdomain1/qa-pc",
+      roots: [{ state: "active", path: "C:/Users/qa" }],
+    }];
+    const uploadsBeforeDocx = binaryUploads.length;
+    const savesBeforeDocx = pcSavesPosted.length;
+    await A.ctx.window.PadiemCouncilApps.select("sns", false);
+    await sleep(40);
+    find(A, "councilSnsOutput").value = "오늘 주민 감사의 밤을 함께했습니다.";
+    await find(A, "councilSnsPcSave").dispatch("click");
+    await sleep(20);
+    const snsChooser = find(A, "councilSnsNotice");
+    await snsChooser.querySelectorAll("button")
+      .find((b) => text(b) === "워드").dispatch("click");
+    await sleep(60);
+    out.docx = {
+      upload: binaryUploads[uploadsBeforeDocx] ? {
+        name: binaryUploads[uploadsBeforeDocx].name,
+        mediaType: binaryUploads[uploadsBeforeDocx].mediaType,
+        docKind: binaryUploads[uploadsBeforeDocx].docKind,
+      } : null,
+      savePosted: pcSavesPosted.length === savesBeforeDocx + 1,
+      notice: text(snsChooser),
     };
     return out;
   },
