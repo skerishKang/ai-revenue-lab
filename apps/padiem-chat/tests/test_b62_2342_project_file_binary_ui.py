@@ -3,15 +3,16 @@
 Static string assertions alone do not prove behavior, so this file also runs a
 Node harness that executes the REAL attachment-capabilities.js +
 document-binary.js + project-file-upload.js + app.js in one vm context against
-a minimal DOM shim with a recording fetch. The tus wire protocol itself is a
-stub double (recording construction options, emitting progress/error/success),
-so the harness proves the real client code end to end:
+a minimal DOM shim with a recording fetch. The harness answers the tus
+protocol on that fetch, so the real shared client (static/tus-upload.js) runs
+end to end:
 
 - BINARY uploads go through window.PadiemProjectFileUpload (tus) only — the old
   direct octet-stream POST is gone from app.js
-- tus construction: endpoint /api/projects/{id}/files/tus, RAW metadata values
-  (tus-js-client encodes them itself — pre-encoding would double-encode),
-  bounded chunkSize, retryDelays, onShouldRetry policy
+- tus protocol: OPTIONS limits from the server, POST create with an
+  Upload-Length and base64(UTF-8) Upload-Metadata the server decodes back to the
+  raw name, PATCH chunks with Upload-Offset, HEAD offset reconcile on a dropped
+  connection, and one result GET
 - limits come from the server's OPTIONS answer (Tus-Max-Size), never a constant
 - TEXT_POST_KEYS_EXACT {name, media_type, text} preserved byte-for-byte
 - PROJECT_PICKER_SUBSET: PPTX rejected with zero network request
@@ -39,8 +40,7 @@ APP_JS = ROOT / "static/app.js"
 CAPABILITIES_JS = ROOT / "static/attachment-capabilities.js"
 DOCUMENT_BINARY_JS = ROOT / "static/document-binary.js"
 TUS_MODULE_JS = ROOT / "static/project-file-upload.js"
-TUS_VENDOR_JS = ROOT / "static/tus-js-client-4.3.1.min.js"
-TUS_LICENSE_TXT = ROOT / "static/tus-js-client-4.3.1.LICENSE.txt"
+TUS_UPLOAD_JS = ROOT / "static/tus-upload.js"
 LICENSES_HTML = ROOT / "static/third-party-licenses.html"
 INDEX_HTML = ROOT / "static/index.html"
 DOCUMENTS_CSS = ROOT / "static/documents.css"
@@ -69,17 +69,17 @@ def test_project_file_picker_accepts_text_pdf_docx_hwpx() -> None:
 
 
 def test_tus_wiring_static_contracts() -> None:
-    # index.html loads the vendored library and the shared module before app.js.
+    # index.html loads the shared module once, before its lanes and app.js.
     html = INDEX_HTML.read_text(encoding="utf-8")
-    assert '<script src="./tus-js-client-4.3.1.min.js"></script>' in html
+    assert html.count('src="./tus-upload.js"') == 1
     assert '<script src="./project-file-upload.js"></script>' in html
-    assert html.index("tus-js-client-4.3.1.min.js") < html.index("project-file-upload.js") < html.index('src="./app.js"')
-    # The vendored pair is really there, with the license beside it and an entry
-    # on the notices page.
-    assert TUS_VENDOR_JS.exists() and TUS_VENDOR_JS.stat().st_size > 10_000
-    license_text = TUS_LICENSE_TXT.read_text(encoding="utf-8")
-    assert "MIT License" in license_text and "tus - Resumable File Uploads" in license_text
-    assert "tus-js-client 4.3.1" in LICENSES_HTML.read_text(encoding="utf-8")
+    assert html.index('src="./tus-upload.js"') < html.index("project-file-upload.js") < html.index('src="./app.js"')
+    # No vendored client ships: its resume fingerprint lives in localStorage,
+    # which the browser persistence audit refuses outright.
+    assert not (ROOT / "static/tus-js-client-4.3.1.min.js").exists()
+    assert not (ROOT / "static/tus-js-client-4.3.1.LICENSE.txt").exists()
+    licenses = LICENSES_HTML.read_text(encoding="utf-8")
+    assert "tus-js-client" not in licenses
 
 
 def test_binary_uploads_only_through_the_shared_tus_module() -> None:
@@ -95,17 +95,19 @@ def test_binary_uploads_only_through_the_shared_tus_module() -> None:
     assert "body: file" not in source
 
     module = TUS_MODULE_JS.read_text(encoding="utf-8")
-    assert "new tus.Upload(" in module
+    assert "new tus.Upload(" not in module
     assert '"/api/projects/" + encodeURIComponent(projectId) + "/files/tus"' in module
-    # Limits follow the server's answer; retries are policy-driven.
-    assert "Tus-Max-Size" in module and "X-Padiem-Tus-Chunk-Max" in module
-    assert "retryDelays" in module and "onShouldRetry" in module
-    # RAW metadata values — tus-js-client base64-encodes them itself; encoding
-    # here a second time would hand the server an unreadable filename.
-    assert "filename: file.name" in module
-    assert "utf8Base64" not in module
+    # The transport lives in the shared module: server-answered limits, the
+    # three protocol verbs and the offset arithmetic are written once there.
+    shared = TUS_UPLOAD_JS.read_text(encoding="utf-8")
+    for needle in ("Tus-Max-Size", "X-Padiem-Tus-Chunk-Max", "Upload-Length",
+                   "Upload-Metadata", "Upload-Offset", "application/offset+octet-stream"):
+        assert needle in shared, needle
+    # No browser persistence primitive anywhere in the uploader.
+    for forbidden in ("localStorage", "sessionStorage", "indexedDB", "document.cookie"):
+        assert forbidden not in shared, forbidden
     # First-party Korean guidance only; the server body survives as a code.
-    assert "uiMessageSafe" in module
+    assert "uiMessageSafe" in module and "uiMessageSafe" in shared
 
 
 def test_no_console_logging_and_no_leftover_removed_symbol() -> None:
@@ -129,7 +131,8 @@ const vm = require("vm");
 const APP = fs.readFileSync(process.argv[2], "utf8");
 const CAPS = fs.readFileSync(process.argv[3], "utf8");
 const DOCBIN = fs.readFileSync(process.argv[4], "utf8");
-const TUSMODULE = fs.readFileSync(process.argv[5], "utf8");
+const TUSLIB = fs.readFileSync(process.argv[5], "utf8");
+const TUSMODULE = fs.readFileSync(process.argv[6], "utf8");
 
 const PDF_BYTES = Uint8Array.from([0x25, 0x50, 0x44, 0x46, 0x2D, 0x31, 0x2E, 0x34, 0x0A, 0x31, 0x2C, 0x30, 0x20, 0x6F]);
 const DOCX_BYTES = Uint8Array.from([0x50, 0x4B, 0x03, 0x04, 0x14, 0x00, 0x06, 0x00, 0x42, 0x42]);
@@ -233,8 +236,13 @@ class FileReader {
 }
 
 function makeFile(name, type, bytes, text) {
+  const slice = (start, end) => {
+    const from = start || 0;
+    const to = end === undefined ? bytes.length : Math.min(end, bytes.length);
+    return { length: Math.max(0, to - from), _bytes: bytes.slice(from, to) };
+  };
   return {
-    name, type, size: bytes.length, _bytes: bytes, _text: text,
+    name, type, size: bytes.length, _bytes: bytes, _text: text, slice,
     async arrayBuffer() { return Uint8Array.from(bytes).buffer; },
   };
 }
@@ -250,34 +258,31 @@ let tusDrop = false;     // one simulated connection drop — onShouldRetry must
 let resumed = 0;
 let tusResult = { status: 201, name: "이름 없음", media_type: "extracted/pdf" };
 
-const tusCalls = [];
-class StubUpload {
-  constructor(file, options) { this.file = file; this.options = options; this.url = null; this.attempt = 0; tusCalls.push(this); }
-  start() {
-    const o = this.options;
-    this.url = "/api/projects/p1/files/tus/stub-" + tusCalls.length + "-" + (++this.attempt);
-    const size = this.file.size || 0;
-    if (o.onProgress) { o.onProgress(Math.floor(size / 2), size); o.onProgress(size, size); }
-    percentDuringUpload.push(byId.projectFileStatus.hidden === false && /%$/.test(byId.projectFileStatus.textContent));
-    busyDuringUpload.push(byId.projectFilesPanel.getAttribute("aria-busy"));
-    statusDuringUpload.push(byId.projectFileStatus.hidden === false && byId.projectFileStatus.textContent.length > 0);
-    setTimeout(() => {
-      if (tusDrop) {
-        tusDrop = false;
-        resumed += 1;
-        const err = { originalResponse: { getStatus: () => 0, getBody: () => "" } };
-        if (o.onShouldRetry && o.onShouldRetry(err, 0)) { setTimeout(() => this.start(), 0); return; }
-        if (o.onError) o.onError(err);
-        return;
-      }
-      if (tusFailure) {
-        const f = tusFailure; tusFailure = null;
-        if (o.onError) o.onError({ originalResponse: { getStatus: () => f.status, getBody: () => JSON.stringify(f.body) } });
-        return;
-      }
-      if (o.onSuccess) o.onSuccess();
-    }, 0);
-  }
+const tusCreates = [];
+const tusPatches = [];
+const tusHeads = [];
+const uploads = new Map();
+let uploadSeq = 0;
+let tusOptions = 0;
+
+function headerMap(values) {
+  const lower = {};
+  Object.keys(values || {}).forEach((k) => { lower[String(k).toLowerCase()] = String(values[k]); });
+  return { get: (k) => (Object.prototype.hasOwnProperty.call(lower, String(k).toLowerCase())
+    ? lower[String(k).toLowerCase()] : null) };
+}
+function decodeMetadata(raw) {
+  const out = {};
+  String(raw || "").split(",").forEach((pair) => {
+    const at = pair.indexOf(" ");
+    if (at < 0) return;
+    out[pair.slice(0, at)] = Buffer.from(pair.slice(at + 1), "base64").toString("utf8");
+  });
+  return out;
+}
+function uploadState(u) {
+  const path = String(u).replace(/^[a-z]+:\/\/[^/]+/i, "");
+  return uploads.get(path) || null;
 }
 
 function jsonResponse(status, obj) { return { ok: status >= 200 && status < 300, status, json: async () => obj }; }
@@ -288,14 +293,56 @@ async function fetchImpl(url, opts) {
   const isTextFilePost = method === "POST" && /\/api\/projects\/[^/]+\/files$/.test(u);
   requests.push({ url: u, method, body: isTextFilePost ? (opts.body ? JSON.parse(opts.body) : null) : opts.body, headers: opts.headers });
   if (u.startsWith("/api/auth/status")) return jsonResponse(200, { ready: true, authenticated: true, user: { name: "owner" }, history_ready: true, project_files_ready: true });
-  if (method === "OPTIONS" && /\/api\/projects\/[^/]+\/files\/tus$/.test(u)) {
+  const tusCollection = /\/api\/projects\/[^/]+\/files\/tus$/.test(u);
+  const tusItem = /\/api\/projects\/[^/]+\/files\/tus\/[^/]+$/.test(u);
+  if (method === "OPTIONS" && tusCollection) {
+    tusOptions += 1;
     return {
       ok: true, status: 204, json: async () => ({}),
-      headers: { get: (k) => ({ "tus-max-size": "1073741824", "x-padiem-tus-chunk-max": "94371840" }[String(k).toLowerCase()] || null) },
+      headers: headerMap({ "tus-max-size": "1073741824", "x-padiem-tus-chunk-max": "94371840" }),
     };
   }
-  if (method === "GET" && /\/api\/projects\/[^/]+\/files\/tus\/.+/.test(u)) {
+  if (method === "POST" && tusCollection) {
+    const meta = decodeMetadata(opts.headers && opts.headers["Upload-Metadata"]);
+    const length = Number(opts.headers && opts.headers["Upload-Length"]);
+    const location = "/api/projects/p1/files/tus/stub-" + (++uploadSeq);
+    tusCreates.push({ endpoint: u, length, filename: meta.filename, media_type: meta.filetype,
+      raw_metadata: opts.headers && opts.headers["Upload-Metadata"] });
+    uploads.set(location, { offset: 0, total: length });
+    return { ok: true, status: 201, json: async () => ({ upload_id: "stub-" + uploadSeq }),
+      headers: headerMap({ location }) };
+  }
+  if (method === "PATCH" && tusItem) {
+    if (tusDrop) {
+      tusDrop = false;
+      resumed += 1;
+      throw new TypeError("network down");
+    }
+    if (tusFailure) {
+      const f = tusFailure; tusFailure = null;
+      return jsonResponse(f.status, f.body);
+    }
+    const state = uploadState(u);
+    const body = opts.body;
+    const bytes = body && typeof body.length === "number" ? body.length : 0;
+    state.offset += bytes;
+    tusPatches.push({ url: u, offset: Number(opts.headers["Upload-Offset"]), bytes });
+    return { ok: true, status: 204, json: async () => ({}),
+      headers: headerMap({ "upload-offset": String(state.offset) }) };
+  }
+  if (method === "HEAD" && tusItem) {
+    const state = uploadState(u);
+    tusHeads.push(u);
+    return { ok: true, status: 200, json: async () => ({}),
+      headers: headerMap({ "upload-offset": String(state ? state.offset : 0) }) };
+  }
+  if (method === "GET" && tusItem) {
     if (tusResult.status !== 201) return jsonResponse(tusResult.status, tusResult.body);
+    // The last chunk's progress paints the status line before the result
+    // pickup, so that is the moment the UI contract applies to.
+    percentDuringUpload.push(byId.projectFileStatus.hidden === false && /%$/.test(byId.projectFileStatus.textContent));
+    busyDuringUpload.push(byId.projectFilesPanel.getAttribute("aria-busy"));
+    statusDuringUpload.push(byId.projectFileStatus.hidden === false && byId.projectFileStatus.textContent.length > 0);
     fileSeq += 1;
     const projection = {
       id: "file_tus_" + fileSeq, project_id: "p1", name: tusResult.name, media_type: tusResult.media_type,
@@ -322,6 +369,7 @@ const sandbox = {
   fetch: fetchImpl,
   FileReader,
   btoa: (binary) => Buffer.from(binary, "latin1").toString("base64"),
+  TextEncoder,
   AbortController: class { constructor() { this.signal = {}; } abort() {} },
   URL: { createObjectURL: () => "blob:x", revokeURL() {} },
   setTimeout, clearTimeout, console,
@@ -334,11 +382,11 @@ const sandbox = {
   PadiemChatTransport: { requestCompleted: async () => ({}), requestStreaming: async () => ({}), readSseEvents: async () => {}, errorFor: () => new Error("x") },
   PadiemChatConversationState: { reset() {}, setConversationId() {}, getConversationId() { return null; }, outboundWithUser: () => [], commitAssistant() {}, setSkill() {}, getSkill: () => "auto" },
 };
-sandbox.tus = { Upload: StubUpload };
 sandbox.window = sandbox;
 vm.createContext(sandbox);
 vm.runInContext(CAPS, sandbox, { filename: "attachment-capabilities.js" });
 vm.runInContext(DOCBIN, sandbox, { filename: "document-binary.js" });
+vm.runInContext(TUSLIB, sandbox, { filename: "tus-upload.js" });
 vm.runInContext(TUSMODULE, sandbox, { filename: "project-file-upload.js" });
 if (!sandbox.PadiemBinaryDocuments) { console.log(JSON.stringify({ ok: false, error: "BINARY_HELPER_NOT_LOADED" })); process.exit(0); }
 if (!sandbox.PadiemProjectFileUpload) { console.log(JSON.stringify({ ok: false, error: "TUS_MODULE_NOT_LOADED" })); process.exit(0); }
@@ -380,7 +428,7 @@ function pickAndUpload(file) {
 }
 
 (async () => {
-  const fail = (m) => { console.log(JSON.stringify({ ok: false, error: m, tusUploads: tusCalls.length, directPosts: directFilePosts().length })); process.exit(0); };
+  const fail = (m) => { console.log(JSON.stringify({ ok: false, error: m, tusUploads: tusCreates.length, directPosts: directFilePosts().length })); process.exit(0); };
   const tick = (ms) => new Promise((r) => setTimeout(r, ms));
   await tick(60);
 
@@ -401,20 +449,21 @@ function pickAndUpload(file) {
   const textKeys = Object.keys(posts[0].body).sort().join(",");
   if (textKeys !== "media_type,name,text") fail("TEXT_POST_KEYS_NOT_EXACT:" + textKeys);
   if (posts[0].body.media_type !== "text/markdown") fail("TEXT_POST_MEDIA_TYPE");
-  if (tusCalls.length !== 0) fail("TEXT_USED_TUS");
+  if (tusCreates.length !== 0) fail("TEXT_USED_TUS");
 
   // 2) PDF: constructed on the tus endpoint with RAW metadata and server limits.
   tusResult = { status: 201, name: "positive.pdf", media_type: "extracted/pdf" };
   pickAndUpload(makeFile("positive.pdf", "application/pdf", PDF_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 1) fail("PDF_TUS_NOT_USED");
-  const pdfOptions = tusCalls[0].options;
-  if (pdfOptions.endpoint !== "/api/projects/p1/files/tus") fail("PDF_TUS_ENDPOINT");
-  if (pdfOptions.uploadMetadata.filename !== "positive.pdf") fail("PDF_METADATA_NOT_RAW");
-  if (pdfOptions.uploadMetadata.filetype !== "application/pdf") fail("PDF_METADATA_TYPE");
-  if (typeof pdfOptions.chunkSize !== "number" || pdfOptions.chunkSize <= 0 || pdfOptions.chunkSize > 94371840) fail("PDF_CHUNK_SIZE");
-  if (!Array.isArray(pdfOptions.retryDelays) || pdfOptions.retryDelays.length === 0) fail("PDF_RETRY_DELAYS");
-  if (typeof pdfOptions.onShouldRetry !== "function") fail("PDF_ON_SHOULD_RETRY");
+  if (tusCreates.length !== 1) fail("PDF_TUS_NOT_USED");
+  const pdfCreate = tusCreates[0];
+  if (pdfCreate.endpoint !== "/api/projects/p1/files/tus") fail("PDF_TUS_ENDPOINT");
+  if (pdfCreate.filename !== "positive.pdf") fail("PDF_METADATA_NOT_RAW");
+  if (pdfCreate.media_type !== "application/pdf") fail("PDF_METADATA_TYPE");
+  if (pdfCreate.length !== PDF_BYTES.length) fail("PDF_UPLOAD_LENGTH");
+  if (tusOptions !== 1) fail("LIMITS_NOT_FROM_SERVER");
+  if (tusPatches.length !== 1 || tusPatches[0].offset !== 0
+      || tusPatches[0].bytes !== PDF_BYTES.length || tusPatches[0].bytes > 94371840) fail("PDF_CHUNK_SHAPE");
   if (octetStreamPosts().length !== 0) fail("OCTET_STREAM_DIRECT_POST_RETURNED");
   if (busyDuringUpload[0] !== "true") fail("ARIA_BUSY_NOT_SET_DURING_TUS");
   if (statusDuringUpload[0] !== true) fail("STATUS_LINE_NOT_VISIBLE_DURING_TUS");
@@ -427,13 +476,13 @@ function pickAndUpload(file) {
   tusResult = { status: 201, name: "report.docx", media_type: "extracted/docx" };
   pickAndUpload(makeFile("report.docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", DOCX_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 2) fail("DOCX_TUS_NOT_USED");
-  if (tusCalls[1].options.uploadMetadata.filetype !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") fail("DOCX_METADATA_TYPE");
+  if (tusCreates.length !== 2) fail("DOCX_TUS_NOT_USED");
+  if (tusCreates[1].media_type !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") fail("DOCX_METADATA_TYPE");
 
   // 4) PPTX is outside the project subset: rejected client-side, ZERO new requests.
   pickAndUpload(makeFile("deck.pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation", [1, 2, 3], null));
   await tick(80);
-  if (tusCalls.length !== 2) fail("PPTX_ISSUED_TUS");
+  if (tusCreates.length !== 2) fail("PPTX_ISSUED_TUS");
   if (byId.projectFormError.hidden !== false) fail("PPTX_ERROR_NOT_VISIBLE");
 
   // 5) Oversize follows the server's Tus-Max-Size answer, not a client constant.
@@ -444,7 +493,7 @@ function pickAndUpload(file) {
   bigFile.size = 2 * 1073741824;
   pickAndUpload(bigFile);
   await tick(80);
-  if (tusCalls.length !== 2) fail("OVERSIZE_REACHED_TUS");
+  if (tusCreates.length !== 2) fail("OVERSIZE_REACHED_TUS");
   if (byId.projectFormError.hidden !== false) fail("OVERSIZE_ERROR_NOT_VISIBLE");
   if (!byId.projectFormError.textContent.includes("너무 커요")) fail("OVERSIZE_KOREAN_GUIDANCE_MISSING");
 
@@ -453,8 +502,8 @@ function pickAndUpload(file) {
   tusResult = { status: 201, name: "second.pdf", media_type: "extracted/pdf" };
   pickAndUpload(makeFile("second.pdf", "application/pdf", PDF_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 3) fail("SERVER_ERROR_TUS_COUNT");
-  if (byId.projectFormError.textContent !== "이 형식은 프로젝트 파일로 올릴 수 없어요.") fail("FIRST_PARTY_GUIDANCE_NOT_SHOWN:" + byId.projectFormError.textContent);
+  if (tusCreates.length !== 3) fail("SERVER_ERROR_TUS_COUNT");
+  if (byId.projectFormError.textContent !== "이 형식은 올릴 수 없어요.") fail("FIRST_PARTY_GUIDANCE_NOT_SHOWN:" + byId.projectFormError.textContent);
   const reference = byId.projectFormError.children.find((child) => child.className === "error-code");
   if (!reference || reference.textContent !== "error-code-reference: invalid_document") fail("REFERENCE_CODE_NOT_SHOWN");
   if (collectText(byId.projectFormError).includes("SERVER_REJECT_MARKER_2342")) fail("RAW_SERVER_ERROR_SHOWN");
@@ -466,7 +515,7 @@ function pickAndUpload(file) {
   tusFailure = null;
   pickAndUpload(makeFile("second.pdf", "application/pdf", PDF_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 4) fail("RETRY_DID_NOT_ISSUE_SECOND_TUS");
+  if (tusCreates.length !== 4) fail("RETRY_DID_NOT_ISSUE_SECOND_TUS");
   if (findRowText("second.pdf") === null) fail("RETRY_ROW_NOT_RENDERED");
   if (byId.projectFormError.hidden !== true) fail("ERROR_NOT_CLEARED_ON_RETRY");
 
@@ -475,8 +524,9 @@ function pickAndUpload(file) {
   tusResult = { status: 201, name: "resumed.pdf", media_type: "extracted/pdf" };
   pickAndUpload(makeFile("resumed.pdf", "application/pdf", PDF_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 5) fail("DROP_TUS_COUNT");
+  if (tusCreates.length !== 5) fail("DROP_TUS_COUNT");
   if (resumed !== 1) fail("DROP_NOT_RETRIED");
+  if (tusHeads.length !== 1) fail("DROP_DID_NOT_RECONCILE_OFFSET");
   if (findRowText("resumed.pdf") === null) fail("RESUMED_ROW_NOT_RENDERED");
 
   // 9) base64 must never appear in rendered dialog text.
@@ -487,9 +537,9 @@ function pickAndUpload(file) {
   tusResult = { status: 201, name: "sample.hwpx", media_type: "extracted/hwpx" };
   pickAndUpload(makeFile("sample.hwpx", "application/hwp+zip", DOCX_BYTES, null));
   await tick(80);
-  if (tusCalls.length !== 6) fail("HWPX_TUS_COUNT");
-  if (tusCalls[5].options.uploadMetadata.filetype !== "application/hwp+zip") fail("HWPX_METADATA_TYPE");
-  if (tusCalls[5].options.uploadMetadata.filename !== "sample.hwpx") fail("HWPX_METADATA_NOT_RAW");
+  if (tusCreates.length !== 6) fail("HWPX_TUS_COUNT");
+  if (tusCreates[5].media_type !== "application/hwp+zip") fail("HWPX_METADATA_TYPE");
+  if (tusCreates[5].filename !== "sample.hwpx") fail("HWPX_METADATA_NOT_RAW");
 
   function findRowText(name) {
     const rows = byId.projectFilesList.children || [];
@@ -500,7 +550,7 @@ function pickAndUpload(file) {
   const getFiles = requests.filter((r) => r.method === "GET" && /\/files$/.test(r.url)).length;
   console.log(JSON.stringify({
     ok: true,
-    tusUploads: tusCalls.length,
+    tusUploads: tusCreates.length,
     directPosts: directFilePosts().length,
     octetStreamPosts: octetStreamPosts().length,
     getFiles,
@@ -522,7 +572,8 @@ def _run_harness() -> dict:
     harness_path.write_text(_HARNESS, encoding="utf-8")
     try:
         result = subprocess.run(
-            [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS), str(TUS_MODULE_JS)],
+            [node, str(harness_path), str(APP_JS), str(CAPABILITIES_JS), str(DOCUMENT_BINARY_JS),
+             str(TUS_UPLOAD_JS), str(TUS_MODULE_JS)],
             capture_output=True,
             text=True,
             timeout=60,

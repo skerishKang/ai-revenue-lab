@@ -19,27 +19,36 @@ def _read(name: str) -> str:
     return (STATIC / name).read_text(encoding="utf-8")
 
 
-def test_only_the_shared_module_constructs_a_tus_upload():
+def test_only_the_shared_module_speaks_the_tus_protocol():
     shared = _read(SHARED)
-    assert "new window.tus.Upload" in shared
+    for verb in ('method: "OPTIONS"', 'method: "POST"', 'method: "PATCH"', 'method: "HEAD"'):
+        assert verb in shared, verb
+    assert 'application/offset+octet-stream' in shared
     for name in LANES:
         text = _read(name)
         assert "new window.tus.Upload" not in text, name
         assert "new tus.Upload" not in text, name
+        assert 'application/offset+octet-stream' not in text, name
 
 
-def test_shared_module_is_loaded_once_after_the_vendored_client():
+def test_shared_module_is_the_only_script_and_carries_no_persistence():
     html = _read("index.html")
     assert html.count('src="./tus-upload.js"') == 1
-    assert html.index('src="./tus-js-client-4.3.1.min.js"') < html.index('src="./tus-upload.js"')
+    # no vendored client ships: resume fingerprints are never written to the
+    # browser's storage, which the persistence audit refuses outright
+    assert "tus-js-client" not in html
+    shared = _read(SHARED)
+    for forbidden in ("localStorage", "sessionStorage", "indexedDB",
+                      "document.cookie", "serviceWorker", "CacheStorage"):
+        assert forbidden not in shared, forbidden
 
 
 def test_shared_module_keeps_progress_resume_and_first_party_korean_copy():
     shared = _read(SHARED)
     # 진행률(%)과 이어 올리기 판단, 자동 재시도 지연이 한 곳에 있다.
     assert "percent" in shared
-    assert "onShouldRetry" in shared
-    assert "retryDelays" in shared
+    assert "RETRY_DELAYS_MS" in shared
+    assert "reconcile()" in shared
     assert "resuming" in shared
     # 화면이 서버 본문 문구를 그대로 노출하지 않는다(1차 한국어 안내만).
     for phrase in ("다시 시도", "올릴 수 없어요", "끊겼어요"):

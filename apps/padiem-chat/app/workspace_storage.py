@@ -493,7 +493,7 @@ class WorkspaceDocumentStore:
         """
         from pathlib import Path
 
-        from padiem_ai_core.document_normalization import validate_ooxml_archive_path
+        from padiem_ai_core.ooxml_archive_path import validate_ooxml_archive_path
 
         from .local_r2 import put_stream
 

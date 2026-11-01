@@ -14,8 +14,8 @@ import pytest
 from padiem_ai_core.document_normalization import (
     DocumentNormalizationError,
     validate_ooxml_archive,
-    validate_ooxml_archive_path,
 )
+from padiem_ai_core.ooxml_archive_path import validate_ooxml_archive_path
 
 
 def _package(members: dict[str, bytes]) -> bytes:

@@ -25,11 +25,11 @@ from app.config import Settings
 from app.history import ProjectProfile, UserProfile
 from app.main import create_app
 from app.project_files import ProjectFileRecord
-from app.tus_project_upload import (
+from app.tus_core import (
     _DATA_NAME,
     _META_NAME,
-    _upload_root,
     sweep_expired_uploads,
+    upload_root as _upload_root,
 )
 
 SESSION_SECRET = "tus-test-session-secret-0123456789abcdef0123456789abcdef"

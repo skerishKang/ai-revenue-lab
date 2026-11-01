@@ -4,8 +4,8 @@
 // 한 곳에서 맡는다. 이 파일은 프로젝트 파일 레인만의 것을 갖는다: 엔드포인트,
 // 그리고 "201 파일 응답"이라는 이 레인의 결과 모양 검증.
 //
-// 클라이언트 라이브러리: tus-js-client 4.3.1 (MIT) — static/tus-js-client-4.3.1.min.js,
-// 라이선스 전문 static/tus-js-client-4.3.1.LICENSE.txt, 고지 static/third-party-licenses.html.
+// tus 프로토콜은 공용 모듈(static/tus-upload.js)이 직접 구현한다 — 외부 클라이언트의
+// 브라우저 저장소 사용 없이 생성·조각·재개·결과 확인만 한다.
 (function () {
   "use strict";
 
