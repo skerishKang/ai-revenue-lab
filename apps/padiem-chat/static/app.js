@@ -208,8 +208,9 @@
   // identical to the original send. Cleared on conversation reset.
   let lastCompletedAnswerRequest = null;
   let conversationEpoch = 0;
-  // #261102 다중 첨부: 한 메시지가 운반할 첨부 칩 목록. 파일별 거부 상태는
-  // 그 칩이 직접 들고, 유효한 칩만 전송 페이로드에 실린다.
+  // #261102 multi-attachment: the attachment chip list one message carries.
+  // Each chip holds its own rejection state; only valid chips reach the
+  // send payload.
   let selectedAttachments = [];
   let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
@@ -927,9 +928,10 @@
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
   async function addAttachmentFiles(files) {
-    // #261102 다중 첨부: 여러 파일을 한 번에 고르거나 끌어다 놓아도 각 파일은
-    // 독립한 칩이 된다. 파일별 거부(구형 hwp 안내 등)는 그 칩에만 표시되고,
-    // 유효한 칩들만 전송 페이로드에 실린다.
+    // #261102 multi-attachment: picking or dropping several files at once
+    // turns each file into an independent chip. A per-file refusal (e.g. the
+    // legacy hwp guidance) shows on that chip only, and only valid chips
+    // reach the send payload.
     const list = Array.from(files || []);
     if (!list.length) return;
     const limit = attachmentCountLimit();
@@ -956,8 +958,9 @@
         } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
         else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
         else next = await readDocumentFile(file);
-        // 사진·브라우저에서 읽은 원본 문서는 하나의 요청 프레임에만 실을 수 있으므로
-        // 단독 첨부만 허용한다. 문서(tus/텍스트) 여러 개는 자유롭게 조합된다.
+        // Photos and original documents read by the browser fit only one
+        // request frame, so a single attachment alone is allowed. Multiple
+        // documents (tus/text) combine freely.
         const rawByteAttachment = Boolean(next.file);
         const mixedWithExisting = validCount > 0;
         if (mixedWithExisting && (rawByteAttachment
@@ -972,7 +975,7 @@
           key: `att-${attachmentKeyCounter}`,
           invalid: true,
           type: "document",
-          name: file && file.name ? file.name : "파일",
+          name: file && file.name ? file.name : "file",
           byteSize: file && typeof file.size === "number" ? file.size : 0,
           error: error instanceof Error ? error.message : uiT("file-read-failed"),
         });
@@ -3829,7 +3832,7 @@
     const files = Array.from(attachmentFileInput.files || []);
     if (files.length) void addAttachmentFiles(files);
   });
-  // #261102: 끌어다 놓기로도 여러 파일을 한 번에 첨부한다.
+  // #261102: drag and drop also attaches several files at once.
   const composerForm = document.getElementById("composerForm");
   if (composerForm) {
     composerForm.addEventListener("dragover", (event) => {

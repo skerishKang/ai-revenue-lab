@@ -101,7 +101,7 @@ let activeRequestCancelReason = null;
 let activeRequestArticle = null;
 let activeRequestController = null;
 let conversationEpoch = 0;
-let selectedAttachment = null;
+let selectedAttachments = [];
 let activeProject = null;
 
 const conversationState = {

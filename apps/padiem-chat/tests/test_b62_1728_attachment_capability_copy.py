@@ -34,7 +34,9 @@ def test_capability_projection_loads_before_copy_and_attachment_consumers():
 
 
 def test_composer_does_not_hard_code_format_truth_in_html():
-    assert '<input id="attachmentFileInput" type="file" hidden />' in INDEX_HTML
+    # #261102: the composer input accepts several files at once; the shipped
+    # capability projection remains the only format truth.
+    assert '<input id="attachmentFileInput" type="file" multiple hidden />' in INDEX_HTML
     assert 'id="documentFormatsToggle"' in INDEX_HTML
     assert 'id="documentFormatsPanel"' in INDEX_HTML
     # The empty "formats will be announced later" promise is gone; the shipped
