@@ -48,6 +48,91 @@
     return Number.isSafeInteger(size) && size > INLINE_MAX_BYTES && size <= MAX_BYTES;
   }
 
+  // #6460 3장: the quote form joins the "from my PC" menu chain. The shared
+  // part (static/pc-file-exchange.js, #6012) is only ever consumed here — it
+  // has no extension filter of its own, so this screen refuses anything that
+  // is not an Excel form before a single byte moves.
+  const PC_EXCHANGE_SCRIPT = "./pc-file-exchange.js";
+  const PC_EXCHANGE_CSS = "./pc-file-exchange.css";
+  const PC_PICK_RE = /\.(?:xlsx|xls|xlsm)$/i;
+  const PC_PAIRINGS = "/api/pc/pairings";
+  const PC_FILE_FETCH = "/api/pc/file";
+  const XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  const PC_COPY = {
+    pick: "내 PC에서 가져오기",
+    connect: "이 PC 연결",
+    importing: "가져오는 중…",
+    noFile: "PC에서 가져온 파일을 읽지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    notExcel: "엑셀 양식(.xlsx·.xls·.xlsm) 파일만 가져올 수 있습니다.",
+    // PDF·MD와 같은 문구 키: 공용 부품의 첫 마디(pc-exchange-no-pc)를 그대로 쓴다.
+    noPcFallback: "아직 연결된 PC가 없어요. PC를 연결한 뒤 다시 시도해 주세요.",
+  };
+
+  function pcExchangeCopy(key, fallback) {
+    const locale = window.__padiemLocale;
+    if (locale && typeof locale.text === "function") {
+      try {
+        const value = locale.text(key);
+        if (value && value !== key) return value;
+      } catch (_) {}
+    }
+    return fallback;
+  }
+
+  let pcExchangeLoading = null;
+  function loadPcExchange() {
+    if (window.PadiemPcFileExchange) return Promise.resolve(window.PadiemPcFileExchange);
+    if (pcExchangeLoading) return pcExchangeLoading;
+    pcExchangeLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      if (head && !document.querySelector('link[href="' + PC_EXCHANGE_CSS + '"]')) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = PC_EXCHANGE_CSS;
+        head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = PC_EXCHANGE_SCRIPT;
+      script.addEventListener("load", () => {
+        if (window.PadiemPcFileExchange) resolve(window.PadiemPcFileExchange);
+        else reject(new Error("pc_exchange_unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("pc_exchange_unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return pcExchangeLoading;
+  }
+
+  async function pcLinked() {
+    // PDF·MD와 같은 판정: 서버의 pairings 기록만이 연결을 말할 수 있다.
+    if (window.PadiemAuthGate?.authenticated() === false) return null;
+    try {
+      const response = await fetch(PC_PAIRINGS, {
+        credentials: "same-origin", cache: "no-store", headers: { Accept: "application/json" },
+      });
+      if (!response.ok) return null;
+      const body = await response.json().catch(() => null);
+      const links = body && Array.isArray(body.links) ? body.links : [];
+      return links.some((link) => link && link.state === "active");
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function openPcConnect() {
+    // The Connectors surface owns the computer card: no second pairing screen.
+    const flow = window.PadiemPcConnectFlow;
+    if (flow && typeof flow.open === "function") { void flow.open(); return; }
+    const opener = document.getElementById("connectorsNavButton");
+    if (!opener) return;
+    opener.click();
+    const card = document.getElementById("connectorComputerCard");
+    if (!card) return;
+    if (!card.hasAttribute("tabindex")) card.setAttribute("tabindex", "-1");
+    if (typeof card.focus === "function") card.focus({ preventScroll: true });
+    if (typeof card.scrollIntoView === "function") card.scrollIntoView({ block: "nearest" });
+  }
+
   function validateSelection(body, source) {
     const selected = body?.selection;
     return Boolean(source && validFile(source)
@@ -218,6 +303,10 @@
     const requestStart = $("clawWebXlsxP01Start");
     const approve = $("clawWebXlsxP01Approve");
     const deny = $("clawWebXlsxP01Deny");
+    // #6460 3장: the PC-import button and its connection note are optional
+    // nodes — an older cached page must never lose the direct picker over them.
+    const pcPick = $("clawWebXlsxPcPick");
+    const pcNote = $("clawWebXlsxPcNote");
     const workcopyLink = root.createElement("a");
     workcopyLink.hidden = true;
     workcopyLink.textContent = "승인된 작업 사본 다운로드 (XLSX)";
@@ -1094,6 +1183,72 @@
       }
     }
 
+    // #6460 3장: a form picked on the owner's PC rides the SAME save() flow as
+    // a browser pick — one validation, one size ceiling, one tus/inline split
+    // (static/tus-upload.js since #6584), one web-source ledger. No second
+    // upload route exists for this screen.
+    async function importFromPc(picked) {
+      if (!picked || !picked.fileId) return;
+      const name = typeof picked.name === "string" ? picked.name : "";
+      if (!PC_PICK_RE.test(name)) {
+        report(PC_COPY.notExcel);
+        return;
+      }
+      report(name + " " + PC_COPY.importing);
+      let blob;
+      try {
+        const response = await fetch(
+          PC_FILE_FETCH + "?dispatch_id=" + encodeURIComponent(picked.fileId),
+          { credentials: "same-origin", cache: "no-store" },
+        );
+        if (!response.ok) throw new Error("pc_file_" + response.status);
+        blob = await response.blob();
+      } catch (_) {
+        report(PC_COPY.noFile);
+        return;
+      }
+      await save(new window.File([blob], name, { type: XLSX_MEDIA_TYPE }));
+    }
+
+    function wirePcImport() {
+      if (!pcPick || !pcNote) return;
+      const pcText = root.createElement("span");
+      pcText.textContent = pcExchangeCopy("pc-exchange-no-pc", PC_COPY.noPcFallback) + " ";
+      const connect = root.createElement("button");
+      connect.type = "button";
+      connect.textContent = PC_COPY.connect;
+      connect.addEventListener("click", () => openPcConnect());
+      pcPick.addEventListener("click", async () => {
+        let component = null;
+        try {
+          component = await loadPcExchange();
+        } catch (_) {
+          component = null;
+        }
+        if (!component || typeof component.open !== "function") {
+          report(PC_COPY.noFile);
+          return;
+        }
+        component.open({
+          mode: "import",
+          onSelect: (picked) => { void importFromPc(picked); },
+        });
+      });
+      // Only the server's pairing answer may reveal or hide the button: an
+      // unlinked owner keeps the direct picker and gets the same words the
+      // shared part says everywhere else, never a guess.
+      void pcLinked().then((linked) => {
+        if (linked === true) {
+          pcPick.hidden = false;
+          pcNote.hidden = true;
+        } else if (linked === false) {
+          pcPick.hidden = true;
+          pcNote.replaceChildren(pcText, connect);
+          pcNote.hidden = false;
+        }
+      });
+    }
+
     async function reload(force = false) {
       // See selectSource: `force` keeps the caller-owned page latch held.
       if (busy && !force) return;
@@ -1154,9 +1309,12 @@
       return body;
     }
 
-    async function save() {
+    async function save(fileOverride) {
       if (busy) return;
-      const file = input.files?.[0];
+      // fileOverride: a form fetched from the owner's PC (#6460 3장) rides the
+      // exact same validation, size ceilings and tus/inline split as a browser
+      // pick — there is no second upload path for this screen.
+      const file = fileOverride || input.files?.[0];
       if (!file || !file.name.toLowerCase().endsWith(".xlsx")) {
         report("XLSX 파일 하나를 먼저 선택해 주세요.");
         return;
@@ -1208,6 +1366,7 @@
     panel.addEventListener("toggle", () => {
       if (panel.open && !loaded) void reload();
     });
+    wirePcImport();
     const instance = {
       adoptFromArtifact,
       getState: () => ({

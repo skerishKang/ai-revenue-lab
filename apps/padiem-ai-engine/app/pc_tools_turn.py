@@ -22,7 +22,8 @@ from padiem_ai_core.tool_channel import ToolDefinition
 from padiem_ai_core.pc_device_identity import is_pc_device_id
 from app.service import ServiceContractError
 
-SCOPES = ("query_drives", "files_list", "files", "files_write")
+SCOPES = ("query_drives", "files_list", "files", "files_write", "browser")
+BROWSER_NAMES = ("browser_open", "browser_read", "browser_screenshot", "browser_act")
 
 #: A native-tool refusal from the provider or the B14 wire. It happens before
 #: any tool ran, so the existing prompt/plan lane can answer the same turn.
@@ -112,7 +113,7 @@ def parse_pc_tools(payload: Mapping[str, Any]) -> dict[str, Any] | None:
         raise ServiceContractError("invalid_pc_tools", "PC tools context is invalid.", status_code=422)
     scopes = data["allowed_scopes"]
     if (
-        not isinstance(scopes, list) or not scopes or len(scopes) > 3
+        not isinstance(scopes, list) or not scopes or len(scopes) > len(SCOPES)
         or any(not isinstance(s, str) or s not in SCOPES for s in scopes)
         or len(set(scopes)) != len(scopes)
     ):
@@ -132,7 +133,7 @@ def _base_tool_names(context):
     allowed = set(context["allowed_scopes"])
     if "files" in allowed:
         allowed.add("files_list")
-    names = [s for s in SCOPES if s in allowed]
+    names = [s for s in SCOPES if s in allowed and s != "browser"]
     names.extend(
         name for name, scope in SEARCH_TOOL_SCOPES.items() if scope in allowed
     )
@@ -167,6 +168,10 @@ def _allowed_remote_operations(context):
 def _remote_definitions(context):
     from kagent.pc_remote_tools import remote_tool_specs
     operations = _allowed_remote_operations(context)
+    # Browser-only authority never exposes file/job/output wrappers. Browser
+    # retained command results are resolved by its signed Chat callback.
+    if not _base_tool_names(context):
+        return ()
     result = []
     for spec in remote_tool_specs():
         name = spec.id.removeprefix("claw.pc.")
@@ -183,8 +188,19 @@ def _remote_definitions(context):
     return tuple(result)
 
 
+def _browser_definitions(context):
+    if "browser" not in context["allowed_scopes"]:
+        return ()
+    from kagent.pc_browser_tools import tool_specs
+    return tuple(ToolDefinition(
+        name=spec.id.removeprefix("claw.pc."), description=spec.description,
+        parameters=spec.to_public_dict()["input_schema"],
+    ) for spec in tool_specs())
+
+
 def tool_names(context):
-    return _base_tool_names(context) + tuple(tool.name for tool in _remote_definitions(context))
+    return _base_tool_names(context) + tuple(
+        tool.name for tool in _remote_definitions(context) + _browser_definitions(context))
 
 
 def definitions(context):
@@ -214,7 +230,7 @@ def definitions(context):
     existing = tuple(ToolDefinition(
         name=name, description=descriptions[name], parameters=parameters(name),
     ) for name in _base_tool_names(context))
-    return existing + _remote_definitions(context)
+    return existing + _remote_definitions(context) + _browser_definitions(context)
 
 
 def _native_remote_scope(context, tool_id, arguments):
@@ -396,7 +412,7 @@ class PcToolsTurnRuntime:
         raw_args = getattr(call, "arguments", None)
         # Only the no-argument tool accepts absent/empty arguments. Never turn
         # other malformed values into a device grant or a file path.
-        if call.name == "query_drives" and (
+        if call.name in {"query_drives", "browser_read", "browser_screenshot"} and (
             raw_args is None or (isinstance(raw_args, str) and not raw_args.strip())
         ):
             args = {}
@@ -406,11 +422,19 @@ class PcToolsTurnRuntime:
             args = None
         from kagent.pc_remote_tools import REMOTE_NAMES, validate_remote_arguments
         remote = call.name in REMOTE_NAMES
+        browser = call.name in BROWSER_NAMES
         if remote:
             try:
                 args = validate_remote_arguments("claw.pc." + call.name, args)
                 valid_args = True
             except (TypeError, ValueError):
+                valid_args = False
+        elif browser:
+            from kagent.pc_browser_tools import PcBrowserError, validate_arguments
+            try:
+                args = validate_arguments("claw.pc." + call.name, args)
+                valid_args = True
+            except (PcBrowserError, TypeError, ValueError):
                 valid_args = False
         elif call.name in SEARCH_TOOL_SCOPES:
             valid_args = (
@@ -449,7 +473,7 @@ class PcToolsTurnRuntime:
                     + json.dumps(observation, ensure_ascii=False)},),
             ), tool_results=[observation])
         scope = (_native_remote_scope(self.context, "claw.pc." + call.name, args)
-                 if remote else SEARCH_TOOL_SCOPES.get(call.name, call.name))
+                 if remote else "browser" if browser else SEARCH_TOOL_SCOPES.get(call.name, call.name))
         steps = (
             [{"step_id": "query_drives", "tool_id": "claw.pc.query_drives", "objective": "Query PC drives"}]
             if scope == "query_drives" else
@@ -463,7 +487,10 @@ class PcToolsTurnRuntime:
                 {"step_id": "move_file", "tool_id": "claw.pc.move_file", "objective": "Move requested file"},
                 {"step_id": "delete_file", "tool_id": "claw.pc.delete_file", "objective": "Delete requested file"},
             ]
-        tool_id = "claw.pc." + call.name if remote else {
+        if scope == "browser":
+            steps = [{"step_id": name, "tool_id": "claw.pc." + name,
+                      "objective": "Use the delegated PC browser"} for name in BROWSER_NAMES]
+        tool_id = "claw.pc." + call.name if remote or browser else {
             "query_drives": "claw.pc.query_drives", "files_list": "claw.pc.list_files",
             "files": "claw.pc.read_file", "files_write": "claw.pc.write_file",
             "search_files": "claw.pc.search_files",

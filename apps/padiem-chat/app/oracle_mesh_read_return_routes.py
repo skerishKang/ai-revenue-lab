@@ -4644,8 +4644,14 @@ async def _engine_pc_files_call(request: Request, *, product: str) -> JSONRespon
         return _error(404, "oracle_mesh_run_unavailable")
     if scope_claim is not None and kind == "read" and "read" not in scope_claim["ops"]:
         return _error(403, "pc_scope_denied")
-    if new_mode and dispatch.get("device_id") != device_id:
-        return _error(404, "oracle_mesh_run_unavailable")
+    if new_mode:
+        # The public row carries no device binding; the owner-scoped private
+        # read is where it lives.
+        private_reader = getattr(history_store, "get_pc_output_dispatch_for_owner", None)
+        private = await private_reader(user_id=uid, dispatch_id=dispatch_id) if callable(private_reader) else None
+        bound = private.get("device_id") if isinstance(private, dict) else dispatch.get("device_id")
+        if bound != device_id:
+            return _error(404, "oracle_mesh_run_unavailable")
     state = dispatch.get("state")
     if state not in {"pending", "received", "store_failed", "done", "failed"}:
         return _error(503, "oracle_mesh_dispatch_unavailable")

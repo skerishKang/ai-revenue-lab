@@ -528,7 +528,12 @@ class _RecordingEngineBridge(B62EngineOrchestrationBridge):
             events.append(value)
             return {"event": value}
         yield event("run_started", 1)
-        tools = [SimpleNamespace(name=name) for name in fields["pc_tools"]["allowed_scopes"]] if self.tools_declared else []
+        # The real client offers the product's closed tool table, in its
+        # declaration order, not in whatever order the scope list arrived.
+        order = ("query_drives", "files_list", "files", "browser", "files_write")
+        scopes = fields["pc_tools"]["allowed_scopes"]
+        tools = ([SimpleNamespace(name=name) for name in order if name in scopes]
+                 if self.tools_declared else [])
         answer, selected = "", None
         async for chunk in self.b14.stream_text_auto(fields["messages"], skill=fields["skill"],
                 additional_system_context=fields.get("additional_system_context"),
@@ -945,7 +950,7 @@ def _assert_b14_tool_calls(harness: _PcHarness, count: int = 1) -> dict[str, Any
     """The PC turn was decided by the model on the one declared tool set."""
     assert len(harness.b14.calls) == count, harness.b14.calls
     call = harness.b14.calls[-1]
-    assert call["tools"] == ["query_drives", "files_list", "files"], call["tools"]
+    assert call["tools"] == ["query_drives", "files_list", "files", "browser"], call["tools"]
     assert call["tool_choice"] == "auto", call
     assert harness.b14.emitted[-1] == "files", harness.b14.emitted
     return call
@@ -1021,7 +1026,7 @@ def test_pc_list_turn_runs_one_lane_call_with_the_saved_target_and_completes() -
     call = harness.bridge.requests[0]
     assert call["user_id"] == OWNER and call["subject_id"] == SUBJECT_ID
     assert call["session_id"] == minted
-    assert call["pc_tools"] == {"device_id": DEVICE_ID, "allowed_scopes": ["query_drives", "files_list", "files"]}
+    assert call["pc_tools"] == {"device_id": DEVICE_ID, "allowed_scopes": ["query_drives", "browser", "files_list", "files"]}
     assert "agent_plan" not in call and "tool_arguments" not in call
     assert call["conversation_id"] == step["conversation_id"]
     assert step["events"] == ["pc_progress"] * 4 + ["delta", "done"]
@@ -1082,7 +1087,7 @@ def test_general_turn_keeps_ordinary_route_without_pc_work(
     assert step["events"] == ["delta", "delta", "done"]
     call = harness.b14.calls[0]
     assert call["messages"][-1]["content"] == GENERAL_5574_TEXT
-    assert call["tools"] == (["query_drives", "files_list", "files"] if tools_declared else [])
+    assert call["tools"] == (["query_drives", "files_list", "files", "browser"] if tools_declared else [])
 
 
 def test_followup_reuses_conversation_and_leaves_more_prior_turns_in_the_call() -> None:

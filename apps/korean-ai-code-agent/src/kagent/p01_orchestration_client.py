@@ -318,6 +318,7 @@ class P01EngineOrchestrationClient:
         request: OrchestrationRequest,
         *,
         on_event: Callable[[OrchestrationEvent], Awaitable[None]] | None = None,
+        on_pc_progress: Callable[[dict[str, Any]], Awaitable[None]] | None = None,
     ) -> OrchestrationResult | P01PausedWireResult:
         """Opt-in, canonical P01 Engine event consumer (#3930).
 
@@ -352,12 +353,26 @@ class P01EngineOrchestrationClient:
                 failure_detail=P01_FAILURE_DETAIL_CONTRACT,
             )
 
-        stream_iterator = stream_method(payload)
+        stream_iterator = (stream_method(payload, pc_progress=True)
+                           if on_pc_progress is not None else stream_method(payload))
         try:
             async for record in stream_iterator:
                 if not isinstance(record, dict) or len(record) != 1:
                     raise fail("p01_stream_invalid_record")
-                if "event" in record and terminal_raw is None:
+                if ("pc_progress" in record or "heartbeat" in record) and terminal_raw is None:
+                    if on_pc_progress is None or not stream_events or stream_events[-1].kind in terminal_kinds:
+                        raise fail("p01_stream_invalid_record")
+                    value = next(iter(record.values()))
+                    if not isinstance(value, dict):
+                        raise fail("p01_stream_invalid_record")
+                    if "pc_progress" in record:
+                        if value.get("pc_run_id") != payload.get("session_id"):
+                            raise fail("p01_stream_correlation_mismatch")
+                    elif (value.get("run_id") != stream_run_id
+                          or value.get("trace_id") != request.context.trace_id):
+                        raise fail("p01_stream_correlation_mismatch")
+                    await on_pc_progress(record)
+                elif "event" in record and terminal_raw is None:
                     try:
                         event = orchestration_event_from_public(record["event"])
                     except (OrchestrationEventError, ValueError, TypeError) as exc:
@@ -580,7 +595,7 @@ class P01EngineOrchestrationClient:
         return payload
 
     def _is_trusted_pc_query_request(self, request: OrchestrationRequest) -> bool:
-        """Exact Claw-owned PC plan: drive inventory or bounded list+read.
+        """Exact Claw-owned PC plan: drives, list+read, or dedicated browser.
 
         Mirrors ``_is_trusted_capture_request``: a canonical plan with no
         caller-supplied command. Both plans may carry only their closed
@@ -610,11 +625,17 @@ class P01EngineOrchestrationClient:
             and plan.steps[1].tool_id == "claw.pc.read_file"
         ):
             target_key = "files"
+        elif tuple((step.step_id, step.tool_id) for step in plan.steps) == tuple(
+            (op, "claw.pc." + op) for op in (
+                "browser_open", "browser_read", "browser_screenshot", "browser_act",
+            )
+        ):
+            target_key = "browser"
         else:
             return False
         arguments = request.tool_arguments
         if arguments is None:
-            return True
+            return target_key != "browser"
         if not isinstance(arguments, dict) or set(arguments) != {target_key}:
             return False
         target = arguments.get(target_key)
