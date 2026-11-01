@@ -92,14 +92,16 @@ class WalkHitTests(unittest.TestCase):
 class ExecutorSourceContractTests(unittest.TestCase):
     """실행기 소스가 가드를 읽기 포트보다 먼저 부르는지 소스로 고정한다."""
 
-    def test_the_read_leg_walks_the_guard_before_the_port(self):
+    def test_the_read_leg_sends_the_guard_through_the_command_channel(self):
         executor_file = _ROOT / "apps" / "korean-ai-code-agent" / "src" / "kagent"             / "local_agent_oracle_mesh_executor.py"
         source = executor_file.read_text(encoding="utf-8")
-        assert "reparse_guard" in source, "가드 모듈을 적재해야 한다"
-        walk_call = source.index("reparse_walk_hit(")
+        assert "_pc_reparse_check(" in source, "명령 채널 검사 메서드"
+        check_call = source.index("_pc_reparse_check(")
         port_call = source.index("self._read_port.read_bytes(")
-        assert walk_call < port_call, "가드가 포트보다 먼저여야 한다"
+        assert check_call < port_call, "가드가 다운로드보다 먼저여야 한다"
+        assert "PADIEM_PC_REPARSE" in source, "PC 검사 결과 마커"
         assert "link_refused" in source, "거부 마커가 계약에 있어야 한다"
+        assert "self._command_port.run_command(" in source, "명령 채널로 PC 검사"
 
     def test_the_guard_module_is_dependency_free(self):
         source = _GUARD_FILE.read_text(encoding="utf-8")
