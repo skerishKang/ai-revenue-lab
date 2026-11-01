@@ -434,6 +434,84 @@
     URL.revokeObjectURL(url);
   }
 
+  // 2026-11-01: 한글(HWPX)·워드(DOCX) 내려받기 — 결과 텍스트를 문서 구조로
+  // 옮겨 브라우저에서 바로 만든다(static/document-export.js, 서버 왕복 없음).
+  // 텍스트 규칙(파일명·내용)은 그대로다.
+  let documentExportLoading = null;
+  function loadDocumentExport() {
+    if (window.PadiemDocumentExport) return Promise.resolve(window.PadiemDocumentExport);
+    if (documentExportLoading) return documentExportLoading;
+    documentExportLoading = new Promise((resolve, reject) => {
+      const head = document.head || document.body;
+      const script = document.createElement("script");
+      script.src = "./static/document-export.js";
+      // ?v=<content hash> from the served map; the bare URL stays the fallback.
+      script.src = versionedAsset(script.src);
+      script.addEventListener("load", () => {
+        if (window.PadiemDocumentExport) resolve(window.PadiemDocumentExport);
+        else reject(new Error("document-export-unavailable"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("document-export-unavailable")), { once: true });
+      head.appendChild(script);
+    });
+    return documentExportLoading;
+  }
+
+  function downloadBytes(bytes, filename, mime) {
+    const blob = new Blob([bytes], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    // The harness export test reads the payload the anchor would deliver.
+    a.__exportBytes = bytes;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function resultExportBlocks(kind, text, meta) {
+    const lib = window.PadiemDocumentExport;
+    if (kind === "book") {
+      // 활동집: 첫 줄이 제목(북 파일명 규칙과 같은 줄), "N."·"제N장" 줄은
+      // 소제목으로, 나머지는 문단으로 — 초안의 구조를 살린다.
+      return lib.blocksFromText(text, { firstLineTitle: true, headings: true });
+    }
+    const blocks = [{ kind: "title", text: meta.title }];
+    String(text || "").replace(/\r\n?/g, "\n").split("\n").forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed) {
+        if (blocks.length && blocks[blocks.length - 1].kind !== "blank") blocks.push({ kind: "blank" });
+        return;
+      }
+      blocks.push({ kind: "para", text: trimmed });
+    });
+    return blocks;
+  }
+
+  function wireResultDownloads(options) {
+    const wire = (format, button) => {
+      if (!button) return;
+      button.addEventListener("click", async () => {
+        const text = options.text();
+        if (!text) return;
+        let lib;
+        try { lib = await loadDocumentExport(); }
+        catch (_) { return; }
+        const blocks = resultExportBlocks(options.kind, text, { title: options.title() });
+        const titleBlock = blocks.find((block) => block.kind === "title");
+        const docTitle = (titleBlock && titleBlock.text) || options.title() || "문서";
+        const bytes = format === "hwpx"
+          ? lib.buildHwpx({ title: docTitle, creator: "PADIEM 의원3종", blocks })
+          : lib.buildDocx({ title: docTitle, blocks });
+        downloadBytes(bytes, options.baseName() + "." + format, lib.MIME[format]);
+      });
+    };
+    wire("hwpx", options.hwpxBtn);
+    wire("docx", options.docxBtn);
+  }
+
   function el(tag, cls, text) {
     const n = document.createElement(tag);
     if (cls) n.className = cls;
@@ -527,10 +605,13 @@
   }
   /** The book file name comes from the draft's own first line, so an edited
    *  title re-saves under the edited name; unsafe characters are dropped. */
-  function bookFileName(text) {
+  function bookBaseName(text) {
     const firstLine = String(text || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "").trim();
     const safe = firstLine.replace(/[\\/:*?"<>|]/g, "").replace(/\.*$/, "").slice(0, 40).trim();
-    return BOOK_PREFIX + (safe || "제목 미정") + ".txt";
+    return BOOK_PREFIX + (safe || "제목 미정");
+  }
+  function bookFileName(text) {
+    return bookBaseName(text) + ".txt";
   }
 
   // ── 한 줄 안내와 결과 상자 ────────────────────────────────────────────────
@@ -572,7 +653,16 @@
     const saveBtn = el("button", "council-save", options.saveLabel || "저장");
     saveBtn.type = "button";
     saveBtn.id = options.saveId;
-    const dlBtn = el("button", null, "텍스트 다운로드");
+    // [한글(HWPX)] [워드(DOCX)] [텍스트] — 2026-11-01부터 세 가지.
+    const dlHwpxBtn = el("button", null, "한글(HWPX)");
+    dlHwpxBtn.type = "button";
+    dlHwpxBtn.id = options.downloadHwpxId;
+    dlHwpxBtn.setAttribute("aria-label", "한글(HWPX) 파일로 내려받기");
+    const dlDocxBtn = el("button", null, "워드(DOCX)");
+    dlDocxBtn.type = "button";
+    dlDocxBtn.id = options.downloadDocxId;
+    dlDocxBtn.setAttribute("aria-label", "워드(DOCX) 파일로 내려받기");
+    const dlBtn = el("button", null, "텍스트");
     dlBtn.type = "button";
     dlBtn.id = options.downloadId;
     // #5895: the same draft can go to the owner's own PC, through the shared
@@ -580,9 +670,9 @@
     const pcSaveBtn = el("button", null, PC_REF_COPY.save);
     pcSaveBtn.type = "button";
     pcSaveBtn.id = options.pcSaveId;
-    actions.append(copyBtn, saveBtn, dlBtn, pcSaveBtn);
+    actions.append(copyBtn, saveBtn, dlHwpxBtn, dlDocxBtn, dlBtn, pcSaveBtn);
     result.appendChild(actions);
-    return { result, output, copyBtn, saveBtn, dlBtn, pcSaveBtn, actions };
+    return { result, output, copyBtn, saveBtn, dlHwpxBtn, dlDocxBtn, dlBtn, pcSaveBtn, actions };
   }
 
   function wireCopy(button, output) {
@@ -604,12 +694,16 @@
     const pad = (n) => (n < 10 ? "0" + n : String(n));
     return now.getFullYear() + "-" + pad(now.getMonth() + 1) + "-" + pad(now.getDate());
   }
-  /** 축사_행사명_날짜.txt — the event and date the form already carries. */
-  function speechFileName(form) {
+  /** 축사_행사명_날짜 — the event and date the form already carries. The
+   *  download buttons append the extension; .txt keeps the original rule. */
+  function speechBaseName(form) {
     const d = new FormData(form);
     const event = fileNamePart(d.get("event")) || "행사";
     const date = String(d.get("date") || "").trim() || todayStamp();
-    return "축사_" + event + "_" + date + ".txt";
+    return "축사_" + event + "_" + date;
+  }
+  function speechFileName(form) {
+    return speechBaseName(form) + ".txt";
   }
 
   // #5728: the browser does the shrinking (static/photo-resize.js in THIS app
@@ -1113,9 +1207,10 @@
         id: "councilSpeechResult", outputId: "councilSpeechOutput", rows: 12,
         title: "생성 결과", copyId: "councilSpeechCopy",
         saveId: "councilSpeechSave", downloadId: "councilSpeechDownload",
+        downloadHwpxId: "councilSpeechDownloadHwpx", downloadDocxId: "councilSpeechDownloadDocx",
         pcSaveId: "councilSpeechPcSave",
       });
-      const { result, output, copyBtn, saveBtn, dlBtn, pcSaveBtn } = panel;
+      const { result, output, copyBtn, saveBtn, dlHwpxBtn, dlDocxBtn, dlBtn, pcSaveBtn } = panel;
       host.appendChild(result);
 
       // #5731 contract: the stored speech history is listed on tool re-entry
@@ -1224,6 +1319,15 @@
       dlBtn.addEventListener("click", () => {
         const text = String(output.value || "").trim();
         if (text) downloadText(text, speechFileName(form));
+      });
+      wireResultDownloads({
+        hwpxBtn: dlHwpxBtn, docxBtn: dlDocxBtn, kind: "speech",
+        baseName: () => speechBaseName(form),
+        title: () => {
+          const event = form.querySelector("[name=event]");
+          return fileNamePart(event ? event.value : "") || "행사";
+        },
+        text: () => String(output.value || "").trim(),
       });
       wirePcSave(pcSaveBtn, output, notice, () => {
         const event = form.querySelector("[name=event]");
@@ -1681,9 +1785,10 @@
         id: "councilSnsResult", outputId: "councilSnsOutput", rows: 12,
         titleNode: title, afterOutput: previewBox, copyId: "councilSnsCopy",
         saveId: "councilSnsSave", downloadId: "councilSnsDownload",
+        downloadHwpxId: "councilSnsDownloadHwpx", downloadDocxId: "councilSnsDownloadDocx",
         pcSaveId: "councilSnsPcSave",
       });
-      const { result, output, copyBtn: copyB, saveBtn, dlBtn: dlB, pcSaveBtn } = panel;
+      const { result, output, copyBtn: copyB, saveBtn, dlHwpxBtn: dlHwpxB, dlDocxBtn: dlDocxB, dlBtn: dlB, pcSaveBtn } = panel;
 
       // 저장한 SNS 글도 다시 열 수 있다 — 축사 목록과 같은 프로젝트 파일 규칙.
       const savedList = el("div", "council-saved-list");
@@ -1847,6 +1952,12 @@
         const text = String(output.value || "").trim();
         if (text) downloadText(text, "SNS_" + (title.textContent || "게시글") + "_" + todayStamp() + ".txt");
       });
+      wireResultDownloads({
+        hwpxBtn: dlHwpxB, docxBtn: dlDocxB, kind: "sns",
+        baseName: () => "SNS_" + (title.textContent || "게시글") + "_" + todayStamp(),
+        title: () => title.textContent || "게시글",
+        text: () => String(output.value || "").trim(),
+      });
       wirePcSave(pcSaveBtn, output, notice, () => {
         const event = form.querySelector("[name=event]");
         return "SNS_" + (fileNamePart(event ? event.value : "") || title.textContent || "게시글");
@@ -1961,9 +2072,10 @@
         id: "councilMeetingResult", outputId: "councilMeetingOutput", rows: 12,
         title: "회의 요약", copyId: "councilMeetingCopy",
         saveId: "councilMeetingSave", downloadId: "councilMeetingDownload",
+        downloadHwpxId: "councilMeetingDownloadHwpx", downloadDocxId: "councilMeetingDownloadDocx",
         pcSaveId: "councilMeetingPcSave",
       });
-      const { result, output, copyBtn: copyB, saveBtn: formSaveB, dlBtn: dlB, pcSaveBtn } = panel;
+      const { result, output, copyBtn: copyB, saveBtn: formSaveB, dlHwpxBtn: dlHwpxB, dlDocxBtn: dlDocxB, dlBtn: dlB, pcSaveBtn } = panel;
 
       const archive = el("div", "council-archive");
       archive.id = "councilMeetingArchive";
@@ -2011,6 +2123,15 @@
         const text = String(output.value || "").trim();
         const titlePart = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
         if (text) downloadText(text, "회의_" + titlePart + "_" + todayStamp() + ".txt");
+      });
+      wireResultDownloads({
+        hwpxBtn: dlHwpxB, docxBtn: dlDocxB, kind: "meeting",
+        baseName: () => {
+          const titlePart = fileNamePart(form.querySelector("[name=title]")?.value) || "회의";
+          return "회의_" + titlePart + "_" + todayStamp();
+        },
+        title: () => fileNamePart(form.querySelector("[name=title]")?.value) || "회의",
+        text: () => String(output.value || "").trim(),
       });
       wirePcSave(pcSaveBtn, output, notice, () => {
         const title = form.querySelector("[name=title]");
@@ -2073,13 +2194,21 @@
         const bookSave = el("button", "council-save", "활동집 저장");
         bookSave.type = "button";
         bookSave.id = "councilBookSave";
-        const bookDl = el("button", null, "텍스트 다운로드");
+        const bookHwpx = el("button", null, "한글(HWPX)");
+        bookHwpx.type = "button";
+        bookHwpx.id = "councilBookDownloadHwpx";
+        bookHwpx.setAttribute("aria-label", "한글(HWPX) 파일로 내려받기");
+        const bookDocx = el("button", null, "워드(DOCX)");
+        bookDocx.type = "button";
+        bookDocx.id = "councilBookDownloadDocx";
+        bookDocx.setAttribute("aria-label", "워드(DOCX) 파일로 내려받기");
+        const bookDl = el("button", null, "텍스트");
         bookDl.type = "button";
         bookDl.id = "councilBookDownload";
         const bookPcSave = el("button", null, PC_REF_COPY.save);
         bookPcSave.type = "button";
         bookPcSave.id = "councilBookPcSave";
-        bookActions.append(bookCopy, bookSave, bookDl, bookPcSave);
+        bookActions.append(bookCopy, bookSave, bookHwpx, bookDocx, bookDl, bookPcSave);
         bookResult.appendChild(bookActions);
 
         const bookBtn = el("button", "council-generate", "선택 기록으로 활동집 초안 생성");
@@ -2280,6 +2409,12 @@
         bookDl.addEventListener("click", () => {
           const text = String(bookOutput.value || "").trim();
           if (text) downloadText(text, bookFileName(text));
+        });
+        wireResultDownloads({
+          hwpxBtn: bookHwpx, docxBtn: bookDocx, kind: "book",
+          baseName: () => bookBaseName(bookOutput.value),
+          title: () => fileNamePart(String(bookOutput.value || "").split("\n", 1)[0].replace(/^[0-9]+\.\s*/, "")) || "활동집",
+          text: () => String(bookOutput.value || "").trim(),
         });
 
         // The draft is a product, not scratch: it persists through the same

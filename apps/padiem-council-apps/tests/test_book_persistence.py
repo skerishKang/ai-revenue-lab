@@ -78,7 +78,9 @@ def test_the_book_editor_keeps_copy_and_download_next_to_the_new_save() -> None:
     source = Path(__file__).resolve().parents[1].joinpath("static/council-app.js").read_text(
         encoding="utf-8"
     )
-    for control in ('"복사"', '"텍스트 다운로드"', "활동집 저장"):
+    # 2026-11-01: the download control is the three formats
+    # [한글(HWPX)] [워드(DOCX)] [텍스트], next to copy and save as before.
+    for control in ('"복사"', '"한글(HWPX)"', '"워드(DOCX)"', '"텍스트"', "활동집 저장"):
         assert control in source, control
     # The naming rule is the Chat util's, so a book saved from either surface
     # lists in both instead of becoming a second, incompatible family.
