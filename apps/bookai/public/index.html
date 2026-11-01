@@ -7029,7 +7029,8 @@ if(document.getElementById('openBook'))document.getElementById('openBook').oncli
 storyMemorySyncLibraryContinueCard();
 
 // Bible index continue card shares the same latest Bible master record instead of a hardcoded chapter.
-// #1706: with no genuine master record the static card is an explicit DEMO preview, never a fake resume.
+// #1706: with no genuine master record the static card only previews what the
+// product shows once real content exists — it never claims a resume that did not happen.
 function storyMemorySyncBibleIndexResume(){
   const content=storyMemoryResolveContent('성경');
   const record=content?storyMemoryInferResumeRecord(content):null;
