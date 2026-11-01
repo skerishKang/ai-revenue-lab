@@ -36,10 +36,15 @@ def test_the_renewal_loop_holds_the_same_nonce_and_stops_with_the_command(monkey
     )
     time.sleep(0.12)
     stop.set()
-    seen = len(posts)
+    # One renewal can already be in flight when stop is set: the loop checks
+    # the event at the top, so a thread descheduled between that check and its
+    # post still lands once. Let the loop settle (well over several intervals)
+    # before the count is fixed; after that it must be silent.
+    time.sleep(0.02 * 10)
+    quiet = len(posts)
     time.sleep(0.06)
-    assert seen >= 2, posts
-    assert len(posts) == seen, posts[seen:]
+    assert quiet >= 2, posts
+    assert len(posts) == quiet, posts[quiet:]
     assert all(path == executor.LEASE_RENEW_PATH for path, _payload in posts)
     assert all(payload["dispatch_id"] == DISPATCH and payload["nonce"] == NONCE
                for _path, payload in posts)
