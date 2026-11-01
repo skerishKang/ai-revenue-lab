@@ -163,6 +163,10 @@ from .claw_web_xlsx_source_routes import (
     web_xlsx_sources, web_xlsx_download,
     web_xlsx_upload_ticket, web_xlsx_register,
 )
+from .tus_web_xlsx_upload import (
+    WEB_XLSX_TUS_COLLECTION_PATH, WEB_XLSX_TUS_ITEM_PATH,
+    web_xlsx_tus_collection, web_xlsx_tus_item,
+)
 from .claw_web_xlsx_selection_routes import (
     WEB_SELECTIONS_PATH, WEB_SELECTION_PATH,
     web_xlsx_selections, web_xlsx_selection_detail,
@@ -849,6 +853,9 @@ def create_app(
         Route(WEB_SOURCE_UPLOAD_TICKET_PATH, web_xlsx_upload_ticket, methods=["POST"]),
         Route(WEB_SOURCE_REGISTER_PATH, web_xlsx_register, methods=["POST"]),
         Route(WEB_SOURCE_DOWNLOAD_PATH, web_xlsx_download, methods=["GET"]),
+        # #6579 step 2: a 1 GiB original arrives as <=90 MiB tus chunks.
+        Route(WEB_XLSX_TUS_COLLECTION_PATH, web_xlsx_tus_collection, methods=["POST", "OPTIONS"]),
+        Route(WEB_XLSX_TUS_ITEM_PATH, web_xlsx_tus_item, methods=["HEAD", "PATCH", "GET"]),
         Route(WEB_SELECTIONS_PATH, web_xlsx_selections, methods=["GET", "POST"]),
         Route(WEB_SELECTION_PATH, web_xlsx_selection_detail, methods=["GET"]),
         Route(WEB_XLSX_REQUEST_P01_PATH, web_xlsx_request_p01, methods=["POST"]),

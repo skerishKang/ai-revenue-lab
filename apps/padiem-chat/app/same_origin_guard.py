@@ -306,11 +306,17 @@ class SameOriginGuardMiddleware:
         # bytes to the project file path. The exact Origin, cookie and
         # route-local owner checks above still apply; only the JSON body rule
         # is waived for the append verb on the one tus route shape.
+        # #6579 step 2 puts the web XLSX lane on the same protocol, so the
+        # waiver is keyed to the reviewed tus route shapes (never to the media
+        # type alone): the append verb carries raw offset+octet-stream bytes.
+        # The exact Origin, cookie and route-local owner checks above still run.
         if (
             scope.get("method") == "PATCH"
             and media_type == "application/offset+octet-stream"
-            and path.startswith("/api/projects/")
-            and "/files/tus/" in path
+            and (
+                (path.startswith("/api/projects/") and "/files/tus/" in path)
+                or path.startswith("/api/claw/office/web-sources/tus/")
+            )
         ):
             return None
         # #5568 PDF/ZIP originals for the Markdown utility are raw binary on one

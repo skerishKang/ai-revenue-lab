@@ -359,3 +359,64 @@ def test_unconfigured_pc_and_automation_lanes_fail_closed():
     created = a_client.post("/api/claw/automation/rules", json={"title": "x"})
     assert created.status_code in (403, 503), created.status_code
     assert getattr(app.state, "claw_automation_execution_target_authority", None) is None
+
+
+# ── 웹 엑셀 조각 업로드(tus): 남의 업로드 URL은 없는 것과 같다 ─────────────────
+
+
+def test_web_xlsx_tus_upload_is_per_account():
+    """#6579 2단계 — 조각 업로드도 계정 경계를 넘지 못한다.
+
+    A가 만든 업로드의 진행 상태·결과·추가 전송을 B가 시도하면 셋 다 404다
+    (존재 부정). B는 업로드 ID를 알아도 A의 것이 진행 중인지조차 알 수 없다.
+    """
+    import base64
+
+    from app.tus_web_xlsx_upload import (
+        WEB_XLSX_TUS_COLLECTION_PATH, WEB_XLSX_TUS_ITEM_PATH,
+    )
+    from app.workspace_storage import XLSX_MEDIA_TYPE
+
+    app, a_client, b_client, _a, _b = clients()
+
+    class _Store:
+        """Finalize-only stand-in: this test owns the lane's ownership rule.
+
+        The sweep harness binds no workspace document store, and the XLSX
+        store itself is covered elsewhere. What this test has to prove is that
+        the *upload* belongs to one account, so only the hand-off call is
+        needed here.
+        """
+
+        async def put_web_xlsx(self, **kwargs):
+            return {"document_id": "doc_" + "a" * 32,
+                    "filename": kwargs["filename"],
+                    "size_bytes": len(kwargs["body"])}
+
+    app.state.workspace_document_store = _Store()
+    metadata = ("filename " + base64.b64encode("A보고서.xlsx".encode()).decode()
+                + ",filetype " + base64.b64encode(XLSX_MEDIA_TYPE.encode()).decode())
+    created = a_client.post(WEB_XLSX_TUS_COLLECTION_PATH, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Length": "8", "Upload-Metadata": metadata,
+    })
+    assert created.status_code == 201, created.text
+    upload_id = created.json()["upload_id"]
+    path = WEB_XLSX_TUS_ITEM_PATH.replace("{upload_id}", upload_id)
+
+    # A는 자기 업로드를 이어 올릴 수 있다.
+    assert a_client.patch(path, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Offset": "0",
+        "Content-Type": "application/offset+octet-stream",
+    }, content=b"PK\x03\x04").status_code == 204
+    assert a_client.head(path).headers["Upload-Offset"] == "4"
+
+    # B는 같은 URL에서 정확히 같은 404만 본다.
+    for method in ("HEAD", "GET"):
+        assert b_client.request(method, path).status_code == 404, method
+    assert b_client.patch(path, headers={
+        "Tus-Resumable": "1.0.0", "Upload-Offset": "4",
+        "Content-Type": "application/offset+octet-stream",
+    }, content=b"PK\x03\x04").status_code == 404
+    assert b_client.head(
+        WEB_XLSX_TUS_ITEM_PATH.replace("{upload_id}", "guessed-upload-id"),
+    ).status_code == 404
