@@ -1083,6 +1083,11 @@ def create_app(
                 oracle_mesh_engine_desktop_call,
                 oracle_mesh_read_result,
             )
+            from .claw_pc_browser_routes import (
+                BROWSER_CAPTURE_PATH, browser_capture,
+                oracle_mesh_engine_claw_browser_call,
+                oracle_mesh_engine_chat_browser_call,
+            )
             # #5997: the executor renews a live claim while a long command runs.
             from .oracle_mesh_lease_renew_routes import (
                 ORACLE_MESH_READ_RENEW_PATH,
@@ -1093,8 +1098,11 @@ def create_app(
                 Route("/internal/claw/engine-desktop", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route("/internal/claw/engine-pc-drive", oracle_mesh_engine_desktop_call, methods=["POST"]),
                 Route("/internal/claw/engine-pc-files", oracle_mesh_engine_claw_files_call, methods=["POST"]),
+                Route("/internal/claw/engine-pc-browser", oracle_mesh_engine_claw_browser_call, methods=["POST"]),
                 Route("/internal/chat/engine-pc-drive", oracle_chat_engine_pc_drive_call, methods=["POST"]),
                 Route("/internal/chat/engine-pc-files", oracle_mesh_engine_chat_files_call, methods=["POST"]),
+                Route("/internal/chat/engine-pc-browser", oracle_mesh_engine_chat_browser_call, methods=["POST"]),
+                Route(BROWSER_CAPTURE_PATH, browser_capture, methods=["GET"]),
                 Route(ORACLE_MESH_READ_POLL_PATH, oracle_mesh_read_poll, methods=["POST"]),
                 Route(ORACLE_MESH_READ_RESULT_PATH, oracle_mesh_read_result, methods=["POST"]),
                 Route(ORACLE_MESH_READ_CANCEL_PATH, oracle_mesh_read_cancel_check, methods=["POST"]),

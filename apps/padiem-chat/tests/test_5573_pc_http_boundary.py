@@ -254,7 +254,7 @@ async def test_a_pc_capable_turn_uses_one_engine_stream_with_server_context(monk
     assert response.text.count('"delta":"ok"') == 1
     assert len(bridge.requests) == 1
     assert bridge.requests[0]["pc_tools"] == {
-        "device_id": DEVICE, "allowed_scopes": ["query_drives", "files_list", "files"],
+        "device_id": DEVICE, "allowed_scopes": ["query_drives", "browser", "files_list", "files"],
     }
     assert bridge.requests[0]["session_id"] == PC_RUN
     assert store.staged == []
@@ -400,7 +400,7 @@ async def test_the_pc_named_in_the_turn_runs_on_the_stream_lane(monkeypatch, tex
     assert len(bridge.requests) == 1
     assert bridge.requests[0]["pc_tools"]["device_id"] == SECOND
     assert bridge.requests[0]["pc_tools"]["allowed_scopes"] == [
-        "query_drives", "files_list", "files",
+        "query_drives", "browser", "files_list", "files",
     ]
 
 

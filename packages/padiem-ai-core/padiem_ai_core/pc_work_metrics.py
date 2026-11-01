@@ -15,6 +15,7 @@ PC_METRIC_TOOL_IDS = frozenset({
     "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
     "claw.pc.read_output", "claw.pc.search_output", "claw.pc.start_job",
     "claw.pc.job_status", "claw.pc.job_output", "claw.pc.batch", "claw.pc.recall_context",
+    "claw.pc.browser_open", "claw.pc.browser_read", "claw.pc.browser_screenshot", "claw.pc.browser_act",
 })
 PC_METRIC_COUNTERS = (
     "calls", "pc_round_trips", "truncation_count", "truncated_bytes_known",

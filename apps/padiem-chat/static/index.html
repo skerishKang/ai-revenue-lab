@@ -928,9 +928,11 @@
             <div class="claw-web-office-actions">
               <label for="clawWebXlsxInput">XLSX 파일 선택</label>
               <input type="file" id="clawWebXlsxInput" />
+              <button type="button" id="clawWebXlsxPcPick" hidden>내 PC에서 가져오기</button>
               <button type="button" id="clawWebXlsxSave">원본 보관</button>
               <button type="button" id="clawWebXlsxRefresh">보관한 원본 조회</button>
             </div>
+            <p class="claw-web-office-pc-note" id="clawWebXlsxPcNote" role="status" hidden></p>
             <p role="status" aria-live="polite" id="clawWebXlsxNotice">파일을 선택하면 원본을 보존하며, 읽기·수정 승인은 별도로 진행합니다.</p>
             <ul id="clawWebXlsxList" aria-label="보관된 웹 Excel 원본"></ul>
             <section id="clawWebXlsxP01Panel" class="claw-web-office-approval" aria-label="선택한 Excel 원본의 P01 승인" hidden>
@@ -1323,6 +1325,7 @@
   <script src="./claw-recovery-truth.js"></script>
   <script src="./claw-pdf-preview.js"></script>
   <script src="./claw-mesh-capture.js"></script>
+  <script src="./pc-browser-progress.js"></script>
   <script src="./calendar.js"></script>
   <script src="./claw-conversation-artifact-context.js"></script>
 <script src="./voice-live-transcript-turn.js"></script>
