@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://councillor-prototype-v2.pages.dev/sitemap.xml
+Sitemap: __BASE_URL__/sitemap.xml
