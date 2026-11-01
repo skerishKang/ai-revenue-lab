@@ -164,7 +164,7 @@ def _no_duplicate_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def _binding_wire(value: BrokerDeviceBinding) -> dict[str, Any]:
-    return {
+    payload = {
         "binding_ref": value.binding_ref,
         "device_id": value.device_id,
         "account_ref": value.account_ref,
@@ -175,6 +175,11 @@ def _binding_wire(value: BrokerDeviceBinding) -> dict[str, Any]:
         "credential_expires_at": _iso(value.credential_expires_at),
         "state": value.state.value,
     }
+    if value.client_version is not None:
+        # Additive presentation metadata: written only when a Connector
+        # reported one, so pre-version snapshots stay byte-compatible.
+        payload["client_version"] = value.client_version
+    return payload
 
 
 def _session_wire(value: BrokerDeviceSession) -> dict[str, Any]:
@@ -270,8 +275,20 @@ class LocalAgentBrokerStateJsonCodec:
         authority_ref = _text(top["authority_ref"], "authority_ref", maximum=256)
 
         bindings: list[BrokerDeviceBinding] = []
+        # Two accepted shapes: the pre-version nine-key record and the
+        # client_version-carrying record that follows it. Old snapshots keep
+        # decoding unchanged; new snapshots carry the additive key.
+        binding_shapes = (
+            _BINDING_KEYS,
+            _BINDING_KEYS | frozenset({"client_version"}),
+        )
         for raw in _array(top["bindings"], "bindings"):
-            item = _closed(raw, _BINDING_KEYS, "broker binding wire")
+            if type(raw) is not dict or frozenset(raw) not in binding_shapes:
+                raise _wire_error(
+                    "invalid_local_agent_broker_state_wire",
+                    "broker binding wire schema mismatch",
+                )
+            item = raw
             try:
                 state = BrokerBindingState(_text(item["state"], "binding state", maximum=32))
             except ValueError as exc:
@@ -287,6 +304,7 @@ class LocalAgentBrokerStateJsonCodec:
                     issued_at=_utc(item["issued_at"], "binding issued_at"),
                     credential_expires_at=_utc(item["credential_expires_at"], "credential_expires_at"),
                     state=state,
+                    client_version=item.get("client_version"),
                 )
             )
 
