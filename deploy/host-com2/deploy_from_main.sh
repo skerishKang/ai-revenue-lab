@@ -126,7 +126,7 @@ main() {
 # the only COM2 service that imports it.
 service_for_path() {
   case "$1" in
-    apps/padiem-chat/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
+    apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
     apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
     apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
   esac

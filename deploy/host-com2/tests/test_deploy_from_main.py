@@ -92,6 +92,7 @@ BASE_FILES = {
 # The second commit decides which service the change belongs to.
 CHANGES = {
     "chat": ("apps/padiem-chat/app/chat_marker.py", "CHAT = 2\n"),
+    "council": ("apps/padiem-council-apps/static/index.html", "council update\n"),
     "p01": ("apps/padiem-ai-engine/asgi.py", "# engine 2\n"),
     "b14": ("apps/korean-ai-platform/asgi.py", "# b14 2\n"),
     "migration": (
@@ -420,6 +421,19 @@ class ChatScenarioTest(DeployHarness):
         self.assertIn("CHAT_DB_UNREADABLE", result.stderr)
         self.assertEqual(self._head(), self.first)
         self.assertEqual(self._calls(), [])
+
+
+class CouncilAssetScenarioTest(DeployHarness):
+    scenario = "council"
+
+    def test_council_asset_change_selects_chat_deploy(self):
+        result = self._run_main(
+            self.second, "--ops-checkout", self.ops.as_posix(),
+            "--state-dir", self.state.as_posix(), "--chat-db", self.db.as_posix(),
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_SERVICES=chat", result.stdout)
+        self.assertIn("COM2_DEPLOY_SUMMARY=chat:WOULD_DEPLOY", result.stdout)
 
 
 class MigrationScenarioTest(DeployHarness):

@@ -25,8 +25,11 @@ from typing import Any
 
 import httpx
 from padiem_control_plane import AuthSessionSnapshot, SubjectType
+from starlette.responses import FileResponse
+from starlette.routing import Mount, Route
+from starlette.staticfiles import StaticFiles
 
-from .app_factory import create_app
+from .app_factory import STATIC_DIR, create_app
 from .b66_b14_free_first_resolver import B66ExplicitQuoteModelResolver
 from .config import ConfigError, Settings
 from .control_plane_identity import IdentityBridgeError, PADIEM_CHAT_PRODUCT_ID
@@ -265,7 +268,24 @@ def build_app():
         b66_pdf_renderer_client=pdf_renderer,
     )
 
-    # Reuse the Worker's D1-backed stores on the local SQLite facade.
+    # Match the Worker's staged entry layout while keeping the council app as
+    # the sole source. The installer checks the checkout contains these assets.
+    council_static = Path(__file__).resolve().parents[2] / "padiem-council-apps" / "static"
+
+    async def council_entry(request):
+        return FileResponse(council_static / "index.html")
+
+    async def councillor_entry(request):
+        return FileResponse(STATIC_DIR / "councillor" / "councillor.html")
+
+    static_index = next(i for i, route in enumerate(app.router.routes)
+                        if isinstance(route, Mount) and route.name == "static")
+    app.router.routes[static_index:static_index] = [
+        Route("/apps/council/", council_entry, methods=["GET"]),
+        Mount("/apps/council/static", app=StaticFiles(directory=str(council_static)), name="council-assets"),
+        Route("/councillor/", councillor_entry, methods=["GET"]),
+    ]
+
     # The explicit COM2 queue below replaces them when that backend is selected.
     from .mesh_device_presence_store import D1MeshDevicePresenceStore
     from .pc_device_pairing_store import D1PcPairingStore
