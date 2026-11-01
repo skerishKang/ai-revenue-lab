@@ -223,8 +223,8 @@
   let clawConversationLabelsRead = null;
   let projects = [];
   let projectsReady = false;
-  // #5882: 서버가 준 다음 페이지 위치. 있으면 목록 끝에 "더 보기"가 붙고,
-  // 없으면(마지막 페이지) 버튼도 없다 — 예전처럼 50개에서 조용히 멈추지 않는다.
+  // #5882: next-page cursor from the server. When present a "load more" button is
+  // appended; on the last page there is none, so the list no longer stops silently at 50.
   let projectsNextCursor = null;
   let projectsLoadingMore = false;
   let activeProject = null;
