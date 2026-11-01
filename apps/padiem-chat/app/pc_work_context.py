@@ -19,6 +19,7 @@ No idle polling is added: one request makes at most one read of each authority.
 """
 from __future__ import annotations
 
+import asyncio
 import inspect
 import re
 from dataclasses import dataclass, replace
@@ -331,19 +332,32 @@ async def _resolve_connector_scope_now(
     request: Any, *, owner_id: str, workspace_id: str,
 ) -> PcConnectorScope:
     """One uncached resolution; every check below still fails closed."""
-    resolved_workspace, b62_session = await _resolve_owner_session(request, owner_id)
-    if resolved_workspace != workspace_id or b62_session is None:
-        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
     state = getattr(getattr(request, "app", None), "state", None)
     authority = getattr(state, "control_plane_identity_authority", None)
     from padiem_control_plane.b54_identity_bridge import (
         resolve_current_b54_canonical_session,
     )
-    try:
-        bridged = await resolve_current_b54_canonical_session(authority, owner_id)
-        b54_session = bridged.auth_session
-    except Exception:
+    # #6460 4-1: the B62 session (with its shadow refresh) and the B54
+    # canonical session are two identity RPCs keyed by the same owner id —
+    # neither consumes the other's result — so they run together; the
+    # connector-scope port stays sequential because only it needs the B54
+    # session id. The verdict is unchanged: both reads must still succeed and
+    # agree on subject and tenant, and any failure is the same
+    # owner-unavailable refusal.
+    b62_result, b54_result = await asyncio.gather(
+        _resolve_owner_session(request, owner_id),
+        resolve_current_b54_canonical_session(authority, owner_id),
+        return_exceptions=True,
+    )
+    if isinstance(b62_result, BaseException):
+        resolved_workspace, b62_session = None, None
+    else:
+        resolved_workspace, b62_session = b62_result
+    if resolved_workspace != workspace_id or b62_session is None:
         return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    if isinstance(b54_result, BaseException):
+        return PcConnectorScope(status=_PC_SCOPE_OWNER_UNAVAILABLE)
+    b54_session = b54_result.auth_session
     # Matching user ids are not enough: both server-provided canonical
     # sessions must resolve to the same subject and tenant. Never accept a
     # browser-provided tenant or mint a replacement grant.
