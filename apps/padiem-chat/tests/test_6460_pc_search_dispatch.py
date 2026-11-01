@@ -201,23 +201,30 @@ def test_signed_claim_accepts_the_search_operations():
     assert error is None and parsed == files
 
 
-def test_a_stale_listing_claim_without_a_name_search_is_refused():
+def test_a_legacy_claim_still_verifies_and_blocks_the_new_operation():
+    # A claim minted before the search capability existed names a real subset
+    # of its admitted scope; Chat accepts it (rolling deploy) and the dispatch
+    # still refuses the operation that claim never offered.
     stale = _claim(admitted="files_list", ops=["list"])
-    _, error = routes._engine_pc_scope_claim(
+    parsed, error = routes._engine_pc_scope_claim(
         _request_for(stale), b'{"mode":"context"}', product="claw",
     )
-    assert error is not None and error.status_code == 422
+    assert error is None and parsed == stale
+    assert routes._pc_files_claim_op("search", "name") not in parsed["ops"]
+    assert routes._pc_files_claim_op("list", None) in parsed["ops"]
 
 
-def test_a_name_search_cannot_ride_a_content_only_claim():
-    # The ceiling names one operation; a claim that never offered name search
-    # can not be widened by the dispatch's mode argument.
-    only_content = _claim(
-        admitted="files", requested="files",
-        ops=["list", "read", "search_content"],
-    )
+def test_a_claim_can_never_offer_more_than_its_scope():
+    # files_list never offers a content search, whatever the ops list says.
+    over = _claim(admitted="files_list", ops=["list", "search_content"])
     _, error = routes._engine_pc_scope_claim(
-        _request_for(only_content), b'{"mode":"context"}', product="claw",
+        _request_for(over), b'{"mode":"context"}', product="claw",
+    )
+    assert error is not None and error.status_code == 422
+    # A duplicated op is a malformed ceiling, not a second grant.
+    duplicated = _claim(admitted="files", requested="files", ops=["list", "list"])
+    _, error = routes._engine_pc_scope_claim(
+        _request_for(duplicated), b'{"mode":"context"}', product="claw",
     )
     assert error is not None and error.status_code == 422
 

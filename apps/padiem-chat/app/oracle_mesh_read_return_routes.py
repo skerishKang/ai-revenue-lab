@@ -3474,8 +3474,15 @@ def _engine_pc_scope_claim(request: Request, raw: bytes, *, product: str):
         or type(claim["version"]) is not int or claim["version"] != 1
         or not isinstance(claim["requested"], str) or claim["requested"] not in scopes
         or not isinstance(claim["admitted"], str) or claim["admitted"] not in scopes
-        or claim["ops"] != scopes[claim["admitted"]]
+        # The ops list is a ceiling, not an inventory: a claim produced by an
+        # Engine that predates a capability still names a real subset of the
+        # admitted scope, and the dispatch below refuses any op it did not
+        # name. Requiring the full list would fail every file call during a
+        # rolling deploy whose Chat side shipped one capability earlier.
+        or not set(claim["ops"]).issubset(scopes[claim["admitted"]])
         or not set(claim["ops"]).issubset(scopes[claim["requested"]])
+        or len(set(claim["ops"])) != len(claim["ops"])
+        or claim["source"] not in ("declared", "decision", "missing")
         or claim["source"] not in ("declared", "decision", "missing")
         or claim["app_id"] != ("padiem-chat" if product == "chat" else "b54-padiem-claw")
     ):
