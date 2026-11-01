@@ -266,8 +266,10 @@ def build_documents_context(
     def total() -> int:
         return header_bytes + sum(sizes)
 
-    if max_total_bytes is not None and total() > budget:
+    if total() > budget:
         # 큰 파일부터: 전체 본문을 요약 블록으로 바꿔 합계를 봉투 안으로 되돌린다.
+        # 기본 경로(인자 없음)도 같은 예산을 강제한다 — 6MB 봉투 보호가 이
+        # 함수의 존재 이유이므로 명시적 인자에만 적용하는 것은 결함이다.
         for index in sorted(range(len(docs)), key=lambda i: sizes[i], reverse=True):
             blocks[index] = (
                 f"[첨부 파일 {index + 1}/{len(docs)}]\n"
