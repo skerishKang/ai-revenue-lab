@@ -76,6 +76,7 @@ apply=1
 ops_checkout=$OPS_CHECKOUT
 state_dir=$STATE_DIR
 chat_db=$CHAT_DB
+chat_db_user=
 p01_root=$P01_ROOT
 b14_app=$B14_APP
 queue_root=$QUEUE_ROOT
@@ -136,7 +137,7 @@ CHANGES = {
     "queue": ("apps/padiem-mesh-queue/service.py", "# queue 2\n"),
     "migration": (
         "apps/padiem-chat/migrations/002_new_owner.sql",
-        "ALTER TABLE a ADD COLUMN b TEXT;\n",
+        "CREATE TABLE IF NOT EXISTS new_owner (id INTEGER);\n",
     ),
 }
 
@@ -589,14 +590,25 @@ class CouncilAssetScenarioTest(DeployHarness):
 class MigrationScenarioTest(DeployHarness):
     scenario = "migration"
 
-    def test_a_new_migration_stops_before_any_code_moves(self) -> None:
+    def test_a_new_migration_is_applied_after_a_backup_then_the_run_continues(self) -> None:
         result = self._run_apply()
-        self.assertEqual(result.returncode, 3, result.stderr)
-        self.assertIn("COM2_DEPLOY_MIGRATION_FIRST=YES", result.stderr)
-        self.assertIn("마이그레이션 먼저", result.stderr)
-        self.assertIn("002_new_owner.sql", result.stderr)
-        self.assertEqual(self._head(), self.first)
-        self.assertEqual(self._calls(), [])
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("COM2_DEPLOY_CHAT_MIGRATION_APPLIED=002_new_owner.sql", result.stdout)
+        self.assertNotIn("COM2_DEPLOY_MIGRATION_FIRST=YES", result.stderr)
+        backups = sorted(self.db.parent.glob(self.db.name + ".pre-deploy-*"))
+        self.assertEqual(len(backups), 1, backups)
+
+        def ledger_names(path: Path) -> set[str]:
+            con = sqlite3.connect("file:%s?mode=ro" % path.as_posix(), uri=True)
+            try:
+                return {row[0] for row in con.execute(
+                    "SELECT name FROM padiem_local_migration_ledger")}
+            finally:
+                con.close()
+
+        self.assertNotIn("002_new_owner.sql", ledger_names(backups[0]))
+        self.assertIn("002_new_owner.sql", ledger_names(self.db))
+        self.assertIn("systemctl is-enabled", self.log.read_text(encoding="utf-8"))
 
 
 class P01ScenarioTest(DeployHarness):

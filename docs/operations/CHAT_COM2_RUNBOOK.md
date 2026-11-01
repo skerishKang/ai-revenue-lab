@@ -134,3 +134,16 @@ sudo systemctl stop padiem-chat-com2.service   # 병행 호스트만 멈춘다
 - Cloudflare 무료 요금제는 요청 본문이 최대 100MB다(공식 한도).
   `chat.padiem.net`을 거치는 업로드는 100MB를 넘길 수 없다.
 - 1GB 업로드를 내려면 앞단을 우회하는 구조가 필요하다. 아직 착수 전이다.
+
+### 8-6. 배포 스크립트의 두 규칙
+
+- 대상 유닛 확인: `deploy_from_main.sh --apply`는 코드를 옮기기 전에 diff가 고른
+  유닛이 모두 `enabled`인지 보고, `enabled`인데 `inactive`면 먼저 `start`한 뒤
+  health 검사를 통과해야 진행한다. install.sh는 "설치 전에 켜져 있던" 유닛만
+  재시작하므로, 꺼진 채로 배포하면 새 코드가 기동되지 않고 health 실패로 롤백된다
+  (2026-11-01 B14 사례).
+- Chat 마이그레이션 자동 적용: 대기 중인 마이그레이션이 있으면 `--apply`는 DB 옆에
+  `chat.sqlite3.pre-deploy-<timestamp>` 백업을 만들고(`PRAGMA integrity_check` 확인),
+  대기 파일만 `padiem_local_migration_ledger`에 기록하며 적용한 뒤 배포를 계속한다.
+  `--dry-run`은 예전처럼 `MIGRATION_FIRST`로 멈춘다. 적용 주체는
+  `PADIEM_COM2_CHAT_DB_USER`(기본 `padiem-chat`).

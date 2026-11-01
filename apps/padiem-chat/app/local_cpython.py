@@ -299,16 +299,34 @@ def build_app():
 
     # Match the Worker's staged entry layout while keeping the council app as
     # the sole source. The installer checks the checkout contains these assets.
+    # Caching (2026-11-01, Owner-approved): the entry answers no-cache so the
+    # next load always revalidates, and its assets are addressed with
+    # content-hashed URLs by the council app itself (app/asset_versions.py), so
+    # a year of immutable caching is safe — a deploy changes the URL, not the
+    # file, and no edge cache can mask a new deploy (the 2026-11-01 incident).
     council_static = Path(__file__).resolve().parents[2] / "padiem-council-apps" / "static"
 
     async def council_entry(request):
-        return FileResponse(council_static / "index.html")
+        return FileResponse(council_static / "index.html",
+                            headers={"Cache-Control": "no-cache"})
+
+    class CouncilLongCacheStaticFiles(StaticFiles):
+        """/apps/council/static/* files are content-hashed, so a long, immutable
+        cache is safe; 404s keep Starlette's own (header-free) answer."""
+
+        async def get_response(self, path: str, scope):
+            response = await super().get_response(path, scope)
+            if response.status_code == 200:
+                response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+            return response
 
     static_index = next(i for i, route in enumerate(app.router.routes)
                         if isinstance(route, Mount) and route.name == "static")
     app.router.routes[static_index:static_index] = [
         Route("/apps/council/", council_entry, methods=["GET"]),
-        Mount("/apps/council/static", app=StaticFiles(directory=str(council_static)), name="council-assets"),
+        Mount("/apps/council/static",
+              app=CouncilLongCacheStaticFiles(directory=str(council_static)),
+              name="council-assets"),
     ]
 
     # The explicit COM2 queue below replaces them when that backend is selected.

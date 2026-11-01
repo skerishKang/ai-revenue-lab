@@ -73,3 +73,11 @@ deploy/host-com2/identity/*-staging.env.example text eol=lf
 
 # Android Gradle wrapper is stored with CRLF.
 apps/padiem-android-connector/gradlew.bat whitespace=trailing,cr-at-eol,blank-at-eof,space-before-tab
+
+# 2026-11-01 (#6578): the council app bakes content hashes (?v=) of this tree
+# into its own entry HTML. asset_versions.py hashes LF-canonical (NUL-free
+# files normalized), and this pin additionally keeps a Windows checkout from
+# materializing the text assets CRLF in the first place, so the baked entry,
+# a Windows worktree and the Linux CI checkout agree byte for byte. text=auto
+# keeps the photography and fonts byte-exact (git's binary detection).
+apps/padiem-council-apps/static/** text=auto eol=lf
