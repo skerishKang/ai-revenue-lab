@@ -31,12 +31,14 @@ from __future__ import annotations
 from .file_lane import file_resolver
 
 import asyncio
+import hashlib
 import inspect
 import json
 import time
 from .native_calendar_intent import parse_native_calendar_intent, latest_user_text as latest_native_calendar_text
 from .native_calendar_adapter import execute_native_calendar_plan
 import re
+import secrets
 from typing import Any
 
 from starlette.requests import Request
@@ -995,6 +997,101 @@ def _requested_read_only_screen_view(user_text: str) -> bool:
     return any(word in lowered for word in _SCREEN_CAPTURE_WORDS)
 
 
+#: #6460: the closed key combos the executor already reviewed (kagent
+#: ``_KEY_SEQUENCES``). Anything else stays on the explicit backtick grammar.
+_DESKTOP_KEY_PHRASES = (
+    (("엔터", "enter", "리턴"), "enter"),
+    (("이스케이프", "esc", "탈출"), "esc"),
+    (("탭 키", "탭키", "tab"), "tab"),
+    (("백스페이스", "backspace"), "backspace"),
+    (("delete 키", "딜리트", "삭제 키", "삭제키"), "delete"),
+    (("ctrl+s", "컨트롤 s", "저장 키", "저장키"), "ctrl+s"),
+    (("ctrl+c", "컨트롤 c", "복사 키", "복사키"), "ctrl+c"),
+    (("ctrl+v", "컨트롤 v", "붙여넣기"), "ctrl+v"),
+    (("ctrl+a", "컨트롤 a", "전체 선택"), "ctrl+a"),
+)
+#: #6460 step 2: free text may be typed, but only when the sentence itself
+#: carries the value, and the value never enters the dispatch row.
+_DESKTOP_TYPING_WORDS = (
+    "입력", "타이핑", "type", "타이프",
+)
+_QUOTED_TEXT_RE = re.compile(r"['\"“”‘’]([^'\"“”‘’\x00\r]{1,20000})['\"“”‘’]")
+_MAX_TYPED_CHARS = 20000
+
+#: A request that names one of these is not executed from this lane: the owner
+#: is asked first, in the conversation, exactly once.
+_DESKTOP_EXCEPTION_WORDS = (
+    "비밀번호", "패스워드", "password", "카드 번호", "카드번호", "otp", "인증번호",
+    "계정 변경", "계정 설정", "권한 변경", "관리자 권한",
+    "삭제", "포맷", "초기화", "되돌릴 수 없는",
+    "보내기", "보내 줘", "발송", "게시", "전송", "메일 보내", "메시지 보내",
+)
+_COORDINATE_RE = re.compile(r"(\d{1,5})\s*[,，]\s*(\d{1,5})")
+
+
+def _desktop_exception_question(user_text: str) -> str | None:
+    """The one conversational check the owner asked for (#6460).
+
+    Credential entry, account/permission changes, irreversible destruction and
+    anything that sends outside the PC are never started from a plain sentence.
+    Everything else runs on the pre-delegated authority without a button.
+    """
+    lowered = user_text.lower()
+    if not any(word in lowered for word in _DESKTOP_EXCEPTION_WORDS):
+        return None
+    return (
+        "이 작업은 비밀번호·계정 변경·되돌릴 수 없는 삭제·외부 발송 중 하나에 해당할 수 있어 "
+        "바로 실행하지 않았습니다. 정확히 무엇을 실행하면 될지 한 번만 알려 주세요."
+    )
+
+
+def _requested_desktop_control(user_text: str) -> tuple[bool, str | None]:
+    """Plain-language single desktop action for the verified owner PC (#6460).
+
+    Only what the sentence itself fully determines: one reviewed key combo, or
+    one click at coordinates the owner wrote. An action that needs the screen
+    (``메모장 열고 …``) is not guessed here — it belongs to the model-driven
+    desktop lane. Free text is typed only when the sentence quotes the value:
+    the value travels once through the one-shot store and the audit row
+    keeps a length and a digest prefix, never the text.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return False, None
+    if "`" in user_text:
+        return False, None
+    lowered = user_text.lower()
+    compact = "".join(lowered.split())
+    wants_typing = any(word in lowered for word in _DESKTOP_TYPING_WORDS)
+    if _requested_natural_pc_files(user_text) or _requested_local_txt_path(user_text)[0]:
+        return False, None
+    if _requested_natural_pc_query(user_text)[0]:
+        return False, None
+    from .pc_browser_intent import requested_pc_browser
+    if requested_pc_browser(user_text):
+        return False, None
+    has_pc = any(marker in compact for marker in _NATURAL_PC_QUERY_MARKERS)
+    wants_click = any(word in lowered for word in ("클릭", "click", "눌러"))
+    match = _COORDINATE_RE.search(user_text)
+    if wants_click and match is not None:
+        x, y = int(match.group(1)), int(match.group(2))
+        if not (0 <= x <= 65535 and 0 <= y <= 65535):
+            return False, None
+        return True, "desktop:click\n%d,%d" % (x, y)
+    if wants_typing:
+        # A value the sentence quotes needs no PC marker: in this lane the PC
+        # is the one connected computer, and the value itself is the request.
+        quoted = _QUOTED_TEXT_RE.search(user_text)
+        if quoted is not None and 0 < len(quoted.group(1)) <= _MAX_TYPED_CHARS:
+            return True, "desktop:type\n" + quoted.group(1)
+        return False, None
+    if not has_pc:
+        return False, None
+    for phrases, combo in _DESKTOP_KEY_PHRASES:
+        if any(phrase in lowered for phrase in phrases):
+            return True, "desktop:keys\n" + combo
+    return False, None
+
+
 def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
     """Explicit, delimited desktop op for the verified owner PC.
 
@@ -1038,12 +1135,12 @@ def _requested_local_desktop(user_text: str) -> tuple[bool, str | None]:
 #: refusal the existing desktop dispatch already answers with.
 _SCREEN_VIEW_FAILURE_COPY = {
     401: "로그인이 필요합니다.",
-    403: "연결된 PC에서 화면을 가져올 권한이 없습니다. 컴퓨터 연결과 권한을 확인해 주세요.",
-    404: "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요.",
-    409: "PC 화면 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
-    413: "화면 캡처 요청이 허용 크기를 넘었습니다.",
-    422: "PC 화면 요청 형식이 올바르지 않습니다.",
-    503: "PC 화면 보기를 지금 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
+    403: "연결된 PC에서 요청한 작업을 실행할 권한이 없습니다. 컴퓨터 연결과 권한을 확인해 주세요.",
+    404: "PC 작업 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요.",
+    409: "PC 작업 요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    413: "PC 작업 요청이 허용 크기를 넘었습니다.",
+    422: "PC 작업 요청 형식이 올바르지 않습니다.",
+    503: "PC 작업을 지금 사용할 수 없습니다. 잠시 후 다시 시도해 주세요.",
 }
 
 
@@ -1058,18 +1155,59 @@ def _screen_view_failure_copy(dispatched: JSONResponse) -> str:
     except Exception:
         code = ""
     if code == "oracle_mesh_run_unavailable":
-        sentence = "PC 화면을 가져올 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요."
+        sentence = "PC 작업 대상을 확인하지 못했습니다. 컴퓨터 연결 상태를 확인해 주세요."
     else:
         sentence = _SCREEN_VIEW_FAILURE_COPY.get(
             dispatched.status_code,
-            "PC 화면을 가져오지 못했습니다. 컴퓨터가 연결되어 있는지 확인해 주세요.",
+            "요청한 PC 작업을 실행하지 못했습니다. 컴퓨터가 연결되어 있는지 확인해 주세요.",
         )
     return sentence + (" (" + code + ")" if code else "")
 
 
+def _redact_typed_value(user_text: str) -> str:
+    """The user's own sentence with the typed value replaced, for storage.
+
+    The value is what the PC receives; the conversation keeps the request. A
+    password the owner pasted must not sit in the thread for ever.
+    """
+    if not isinstance(user_text, str) or not user_text:
+        return user_text
+    return _QUOTED_TEXT_RE.sub(lambda match: match.group(0)[0] + "…" + match.group(0)[-1],
+                               user_text, count=1)
+
+
+def _typed_text_marker(text: str) -> str:
+    """Length plus eight hex digits of the digest: no way back to the text."""
+    return "%d:%s" % (len(text), hashlib.sha256(text.encode("utf-8")).hexdigest()[:8])
+
+
+async def _deposit_typed_text(request: Request, text: str) -> str | None:
+    """Give the PC-bound value to the one-shot store and return the marker.
+
+    None means the value could not be handed over safely. The caller then does
+    not create a dispatch at all: a typed value that would have to sit in the
+    audit row is refused rather than recorded.
+    """
+    if (not isinstance(text, str) or not text or len(text) > _MAX_TYPED_CHARS
+            or "\x00" in text or "\r" in text):
+        return None
+    client = getattr(request.app.state, "queue_client", None)
+    call = getattr(client, "call", None)
+    if not callable(call):
+        return None
+    ref = secrets.token_hex(16)
+    try:
+        deposited = await call("deposit_desktop_text", ref=ref, text=text)
+    except Exception:
+        return None
+    if deposited is not True:
+        return None
+    return "desktop:type\n#" + _typed_text_marker(text) + ":" + ref
+
+
 async def _dispatch_user_desktop_request(
     request: Request, *, user_text: str, desktop_op: str, data: dict[str, Any],
-    pending_copy: str | None = None, screen_view: bool = False,
+    pending_copy: str | None = None, failure_guidance: bool = False,
 ) -> JSONResponse | Response:
     """Claw composer -> one desktop dispatch on the pinned PC.
 
@@ -1097,14 +1235,32 @@ async def _dispatch_user_desktop_request(
         workspace = None
     if not isinstance(workspace, str) or not workspace:
         return _error(503, "command_workspace_unavailable", "대화 범위를 확인할 수 없습니다.")
-    run = create_claw_run("padiem-chat", user_text, model_only_text=True)
+    stored_user_text = user_text
+    if desktop_op.startswith("desktop:type\n"):
+        stored_user_text = _redact_typed_value(user_text)
+    run = create_claw_run("padiem-chat", stored_user_text, model_only_text=True)
     try:
         cid = await stage(
             user_id=uid, run_id=run.run_id, workspace_id=workspace,
-            user_text=user_text, conversation_id=conversation_id,
+            user_text=stored_user_text, conversation_id=conversation_id,
         )
     except Exception:
         return _error(503, "command_history_unavailable", "대화 저장에 실패했습니다.")
+    if desktop_op.startswith("desktop:type\n"):
+        prepared = await _deposit_typed_text(request, desktop_op.split("\n", 1)[1])
+        if prepared is None:
+            mark_failed = getattr(history, "update_claw_run_status", None)
+            if callable(mark_failed):
+                try:
+                    await mark_failed(uid, run.run_id, "failed")
+                except Exception:
+                    pass
+            return _claw_general_sse(
+                "입력값을 PC로 안전하게 보내는 통로를 지금 사용할 수 없어 실행하지 않았습니다. "
+                "잠시 후 다시 시도해 주세요.",
+                conversation_id=cid,
+            )
+        desktop_op = prepared
     selected = data.get("device_id")
     dispatched = await dispatch_oracle_mesh_desktop_intent(
         request,
@@ -1122,7 +1278,7 @@ async def _dispatch_user_desktop_request(
                 await mark_failed(uid, run.run_id, "failed")
             except Exception:
                 pass
-        if screen_view:
+        if failure_guidance:
             # A read-only view never leaves a raw error body in the composer:
             # the owner gets one Korean sentence explaining what to check.
             return _claw_general_sse(
@@ -1535,7 +1691,27 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         return await _dispatch_user_desktop_request(
             request, user_text=user_text, desktop_op="desktop:capture", data=data,
             pending_copy="PC 화면을 한 장 가져오는 중입니다. 완료되면 이 대화에 표시됩니다.",
-            screen_view=True,
+            failure_guidance=True,
+        )
+
+    # #6460: a plain-language single desktop action. Pre-delegated: the server
+    # re-verifies owner, device and the command grant on every send, and no
+    # per-action button exists. The four exception families are asked once in
+    # the conversation and never start from this lane.
+    control_requested, control_op = _requested_desktop_control(user_text)
+    if control_requested and control_op is not None:
+        if attachment_conflict is not None:
+            return attachment_conflict
+        question = _desktop_exception_question(user_text)
+        if question is not None:
+            conversation_id, denial = await _resolve_intake_session_reference(request, data)
+            if denial is not None:
+                return denial
+            return _claw_general_sse(question, conversation_id=conversation_id)
+        return await _dispatch_user_desktop_request(
+            request, user_text=user_text, desktop_op=control_op, data=data,
+            pending_copy="요청한 PC 동작을 보내는 중입니다. 결과는 이 대화에 표시됩니다.",
+            failure_guidance=True,
         )
 
     # One owner-requested initial observation runs through P01/Engine ToolRuntime

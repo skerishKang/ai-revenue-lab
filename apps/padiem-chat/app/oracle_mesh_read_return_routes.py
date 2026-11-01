@@ -1909,6 +1909,18 @@ async def _record_mesh_presence(
             logging.getLogger(__name__).warning("oracle_mesh_presence=store_failed")
 
 
+#: #6460 step 2 — the audit row names a typed value only by length, digest
+#: prefix and an unguessable reference; the value itself is taken once here.
+_DESKTOP_TYPE_MARKER = re.compile(r"\Adesktop:type\n#\d{1,6}:[0-9a-f]{8}:([0-9a-f]{32})\Z")
+
+
+def _desktop_text_ref(command_text: Any) -> str | None:
+    if not isinstance(command_text, str):
+        return None
+    match = _DESKTOP_TYPE_MARKER.fullmatch(command_text)
+    return match.group(1) if match else None
+
+
 async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
     """Executor poll: channel-secret proof, one claimed dispatch, one nonce."""
     mesh_source = _channel_source(request)
@@ -1962,6 +1974,18 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
         return _error(503, "oracle_mesh_dispatch_unavailable")
     if claimed is not True:
         return _response({"ok": True, "dispatch": None})
+    # #6460 step 2: a typed value is taken exactly once, for this claim only.
+    # A missing value is not an error here - the executor refuses the op itself.
+    desktop_text = None
+    text_ref = _desktop_text_ref(pending.get("command_text"))
+    if text_ref is not None:
+        text_store = getattr(request.app.state, "desktop_text_store", None)
+        taker = getattr(text_store, "take_desktop_text", None)
+        if callable(taker):
+            try:
+                desktop_text = await taker(ref=text_ref)
+            except Exception:
+                desktop_text = None
     return _response({
         "ok": True,
         "dispatch": {
@@ -1984,6 +2008,7 @@ async def oracle_mesh_read_poll(request: Request) -> JSONResponse:
             "request_fingerprint": pending["request_fingerprint"],
             "kind": pending.get("kind") or "read",
             "command_text": pending.get("command_text"),
+            **({"desktop_text": desktop_text} if desktop_text is not None else {}),
             "max_bytes": _oracle_mesh_poll_max_bytes(pending),
             **({"background": True, "owner_ref": pending["user_id"]}
                if pending.get("background") is True else {}),

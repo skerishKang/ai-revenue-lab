@@ -234,6 +234,9 @@ class OracleMeshDispatch:
     #: #5015: server-computed read bound. Only the poll response may set it;
     #: a missing value keeps the shared 6 MB read envelope for older servers.
     max_bytes: int | None = None
+    #: #6460 step 2: the typed value, delivered once by the poll that
+    #: claimed this dispatch. Kept off every persisted record here.
+    desktop_text: str | None = None
     # Only the authenticated queue projection may set these fields.
     background: bool = False
     owner_ref: str | None = None
@@ -297,6 +300,24 @@ def _step_timeout_seconds(env: dict[str, str]) -> int:
             "ORACLE_MESH_READ_TIMEOUT_SECONDS must be a positive integer"
         )
     return value
+
+
+def _desktop_dispatch_text(dispatch: "OracleMeshDispatch") -> str | None:
+    """The typed value for a type op, and only from the claim that carried it.
+
+    A missing value is None: the caller refuses the op rather than typing the
+    marker or a value remembered from an earlier dispatch.
+    """
+    try:
+        from .local_agent_meshcentral_desktop_port import parse_desktop_op
+
+        op, _arg = parse_desktop_op(dispatch.command_text or "")
+    except Exception:
+        return None
+    if op != "type":
+        return None
+    text = dispatch.desktop_text
+    return text if isinstance(text, str) and text else None
 
 
 class OracleMeshExecutor:
@@ -680,6 +701,17 @@ class OracleMeshExecutor:
                         "chat channel returned an unbounded read limit", leg=leg,
                     )
                 max_bytes = supplied
+        desktop_text = None
+        if kind == "desktop":
+            supplied_text = dispatch.get("desktop_text")
+            if supplied_text is not None:
+                if (not isinstance(supplied_text, str) or not supplied_text
+                        or len(supplied_text) > 20000
+                        or "\x00" in supplied_text or "\r" in supplied_text):
+                    raise OracleMeshChannelRefused(
+                        "chat channel returned an unusable typed value", leg=leg,
+                    )
+                desktop_text = supplied_text
         background = dispatch.get("background", False)
         if type(background) is not bool or (background and kind not in ("read", "command")):
             raise OracleMeshChannelRefused("invalid background dispatch", leg=leg)
@@ -701,6 +733,7 @@ class OracleMeshExecutor:
             request_id=request_id,
             kind=kind,
             command_text=command_text,
+            desktop_text=desktop_text,
             max_bytes=max_bytes,
             background=background,
             owner_ref=owner_ref,
@@ -1029,6 +1062,17 @@ class OracleMeshExecutor:
                 termination="not_executed", exit_code=None, body=b"",
                 note="the desktop op was refused before the PC was asked",
             )
+        if op == "type":
+            # The row names the value, never carries it. A claim without the
+            # one-shot delivery is refused: typing a marker or a stale string
+            # would be worse than not acting.
+            text = _desktop_dispatch_text(dispatch)
+            if text is None:
+                return OracleMeshExecutionOutcome(
+                    termination="not_executed", exit_code=None, body=b"",
+                    note="the typed text was not delivered",
+                )
+            arg = text
         try:
             desktop_timeout: dict[str, Any] = {}
             if self._timeout is not None:

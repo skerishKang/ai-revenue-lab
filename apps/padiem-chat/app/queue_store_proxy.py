@@ -94,6 +94,8 @@ QUEUE_PAIRING_METHODS = frozenset({
 
 QUEUE_PRESENCE_METHODS = frozenset({"upsert", "load"})
 QUEUE_DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
+#: #6460 step 2 — typed text deposited once and taken once by the executor.
+QUEUE_DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
 QUEUE_PC_OUTPUT_METHODS = frozenset({
     "begin_pc_output", "append_pc_output", "finish_pc_output",
     "read_pc_output", "search_pc_output",
@@ -101,7 +103,8 @@ QUEUE_PC_OUTPUT_METHODS = frozenset({
 
 __all__ = [
     "INTERNAL_STORE_PATH", "build_queue_client", "QUEUE_BACKEND_COM2", "QUEUE_BACKEND_D1",
-    "QUEUE_DISPATCH_METHODS", "QUEUE_DRIVE_METHODS", "QUEUE_PAIRING_METHODS", "QUEUE_PRESENCE_METHODS",
+    "QUEUE_DESKTOP_TEXT_METHODS", "QUEUE_DISPATCH_METHODS", "QUEUE_DRIVE_METHODS",
+    "QUEUE_PAIRING_METHODS", "QUEUE_PRESENCE_METHODS",
     "QUEUE_SERVICE_SECRET_HEADER", "QueueForwardingHistoryStore", "QueueStoreClient",
     "QueueUnavailable", "queue_backend",
 ]
@@ -254,7 +257,7 @@ class QueueStoreClient:
         # origins, headers, body bytes or exception messages/tracebacks.
         safe_method = method if method in (
             QUEUE_DISPATCH_METHODS | QUEUE_PAIRING_METHODS | QUEUE_PRESENCE_METHODS
-            | QUEUE_DRIVE_METHODS | QUEUE_PC_OUTPUT_METHODS
+            | QUEUE_DRIVE_METHODS | QUEUE_PC_OUTPUT_METHODS | QUEUE_DESKTOP_TEXT_METHODS
         ) else "other"
 
         def record(outcome, reason, exception="none", transport_phase="none"):
