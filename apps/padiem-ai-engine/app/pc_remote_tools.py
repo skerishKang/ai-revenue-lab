@@ -10,7 +10,8 @@ import threading
 
 from kagent.pc_query_adapter import PC_QUERY_OWNER, PC_QUERY_RUN_SCOPE, PC_REQUEST_SCOPE_TOOLS
 from kagent.pc_remote_tools import (
-    REMOTE_TOOL_IDS, OP_TO_TOOL, operation_actions, remote_tool_allowed, validate_remote_arguments,
+    REMOTE_TOOL_IDS, OP_TO_TOOL, TOOL_TO_OP, operation_actions, remote_tool_allowed,
+    validate_remote_arguments,
 )
 from padiem_ai_core.tool_runtime import ToolHandlerError
 
@@ -159,8 +160,7 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
 
         from padiem_ai_core.pc_batch import bind_batch_services, run_batch
         actions = operation_actions(arguments, batch=True)
-        reverse = {value: key for key, value in OP_TO_TOOL.items()}
-        steps = [{"op": reverse[action], "args": data} for action, data in actions]
+        steps = [{"op": TOOL_TO_OP[action], "args": data} for action, data in actions]
         owner_key = json.dumps(owner, separators=(",", ":"))
         loop, context = asyncio.get_running_loop(), copy_context()
         attempted, action_verifications = [], []
@@ -196,6 +196,10 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
                 operation_actions({"operation": {"op": op, **args}})
                 attempted.append(child)
                 result = submit(file_handlers[child](args))
+                if result.get("ok") is False and isinstance(result.get("stage"), str):
+                    # A refused step keeps its own closed reason code, so a batch
+                    # reports why that step failed, not one generic failure.
+                    result["error"] = result["stage"]
                 if op in {"write", "move", "delete"}:
                     from app.pc_action_verification import unavailable_action
                     verification = result.get("action_verification")
@@ -226,6 +230,14 @@ def make_remote_handler(tool_id, *, service, request_factory, secret, signed_cal
                 for future in tuple(pending):
                     future.cancel()
             raise
+        finally:
+            # Whatever of the batch actually reached the PC replaced its own
+            # model turn, including on a cancellation mid-batch.
+            from app.pc_work_metrics import current_pc_work_metrics
+            steps_run = len(attempted)
+            metrics = current_pc_work_metrics()
+            if metrics is not None and steps_run:
+                metrics.mark_batch(steps_run)
         result["source_tool_ids"] = attempted
         result["action_verifications"] = action_verifications
         return result
