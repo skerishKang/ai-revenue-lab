@@ -85,6 +85,8 @@
   margin-top: 10px;
 }
 
+/* The row the sidebar's project opener just selected. */
+.project-file-row.quick-selected-file { outline: 3px solid #7c74f0; outline-offset: -3px; border-radius: 8px; }
 .project-file-row {
   display: flex;
   align-items: center;
