@@ -10,6 +10,8 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener
 
 MIGRATIONS = ("080", "080a", "081", "082", "083", "084")
+TUS_COLLECTION_PATH = "/api/chat/attachments/tus"
+DEFAULT_CHAT_UNIT = "padiem-chat-com2.service"
 
 
 def page_status(opener, url):
@@ -20,6 +22,35 @@ def page_status(opener, url):
         return exc.code
     except (URLError, OSError, TimeoutError):
         return 0
+
+
+def chat_process_count(cgroup_procs_path):
+    """One number: the app processes systemd currently runs in Chat's cgroup.
+
+    The single-process contract (#6563 edge, #6604 tus, #6610 replay) is only
+    real if the cgroup holds exactly one PID. A missing cgroup path answers
+    ``None`` so the caller can report an honest SKIP instead of a guess.
+    """
+    try:
+        lines = Path(cgroup_procs_path).read_text(encoding="utf-8").split()
+    except (OSError, ValueError):
+        return None
+    return len(lines)
+
+
+def tus_capability(opener, base):
+    """The public tus creation endpoint answers OPTIONS with its byte ceiling."""
+    url = base.rstrip("/") + TUS_COLLECTION_PATH
+    try:
+        with opener.open(Request(url, method="OPTIONS"), timeout=15) as response:
+            status = response.status
+            headers = getattr(response, "headers", {})
+            maximum = str(headers.get("Tus-Max-Size", "") or "")
+    except HTTPError as exc:
+        return exc.code, ""
+    except (URLError, OSError, TimeoutError, AttributeError):
+        return 0, ""
+    return status, maximum
 
 
 def applied_migrations(path):
@@ -39,7 +70,9 @@ def applied_migrations(path):
     return [number for number in MIGRATIONS if number in found]
 
 
-def checks(base, db_path, *, ai_status, ai_code="none", opener=None):
+def checks(base, db_path, *, ai_status, ai_code="none", opener=None,
+           chat_cgroup_procs=Path("/sys/fs/cgroup/system.slice")
+                             / DEFAULT_CHAT_UNIT / "cgroup.procs"):
     opener = opener or build_opener()
     result = [("AI 답변", ai_status, ai_code if ai_status == "FAIL" else "-")]
     # 2026-11-01: /councillor/ is a redirect to the council app; the opener
@@ -48,6 +81,23 @@ def checks(base, db_path, *, ai_status, ai_code="none", opener=None):
         status = page_status(opener, base.rstrip("/") + route)
         result.append((name, "PASS" if status == 200 else "FAIL",
                        "-" if status == 200 else "http_" + str(status)))
+    # 11-02: two real workers ran on COM2 and the single-process contracts
+    # (#6563 edge, #6604 tus, #6610 replay) turned healthy requests into 403s.
+    processes = chat_process_count(chat_cgroup_procs)
+    if processes is None:
+        result.append(("Chat 앱 프로세스 수", "SKIP", "cgroup 경로 없음"))
+    elif processes == 1:
+        result.append(("Chat 앱 프로세스 수", "PASS", "-"))
+    else:
+        result.append(("Chat 앱 프로세스 수", "FAIL", f"프로세스 {processes}개"))
+    status, maximum = tus_capability(opener, base)
+    if status == 204 and maximum.isdigit() and int(maximum) > 0:
+        result.append(("tus 이어올리기", "PASS", f"Tus-Max-Size={maximum}"))
+    else:
+        result.append(("tus 이어올리기", "FAIL", f"http_{status}" if status else "응답 없음"))
+    # The mail channels expose no read-only status surface (app.state only),
+    # so this row stays a manual check until one exists.
+    result.append(("메일 알림 채널", "SKIP", "상태 경로 없음 — 수동 확인"))
     result.extend([
         ("암호 문서 안내", "SKIP", "실사용 파일 점검 미구현"),
         ("HWPX 본문 추출", "SKIP", "실사용 파일 점검 미구현"),
@@ -75,9 +125,12 @@ def main():
     parser.add_argument("--chat-db", required=True)
     parser.add_argument("--ai-status", choices=("PASS", "FAIL", "SKIP"), default="SKIP")
     parser.add_argument("--ai-code", default="none")
+    parser.add_argument("--chat-unit", default=DEFAULT_CHAT_UNIT)
     args = parser.parse_args()
     code = args.ai_code if re.fullmatch(r"[a-z][a-z0-9_]{0,80}", args.ai_code) else "unknown"
-    rows = checks(args.base_url, args.chat_db, ai_status=args.ai_status, ai_code=code)
+    cgroup = Path("/sys/fs/cgroup/system.slice") / args.chat_unit / "cgroup.procs"
+    rows = checks(args.base_url, args.chat_db, ai_status=args.ai_status, ai_code=code,
+                  chat_cgroup_procs=cgroup)
     from com2_fixture_probe import run_probes
     fixture_names = {"암호 문서 안내", "HWPX 본문 추출", "PDF→MD 변환", "견적 XLSX→PDF"}
     rows = [row for row in rows if row[0] not in fixture_names]
