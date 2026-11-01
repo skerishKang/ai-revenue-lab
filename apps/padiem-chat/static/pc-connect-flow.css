@@ -205,6 +205,24 @@
   color: var(--muted, #6f7079);
 }
 
+/* The one action out of the popover into the device manager's drive list. */
+.pc-connect-popover-drives {
+  min-height: 40px;
+  padding: 4px 10px;
+  border: 1px solid var(--line, #e3e3e9);
+  border-radius: 9px;
+  background: var(--surface, #f7f8fa);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  color: inherit;
+  cursor: pointer;
+}
+
+.pc-connect-popover-drives[hidden] {
+  display: none;
+}
+
 /* -- the composer chip's connect affordance -------------------------------- */
 .pc-connect-chip-action {
   margin-left: 6px;
