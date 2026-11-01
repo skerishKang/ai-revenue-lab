@@ -1363,7 +1363,10 @@ async def test_pc_tools_on_general_turn_use_one_native_stream_and_no_classifier(
     )
     lines = [json.loads(line) async for line in service.iter_ndjson(prepared)]
     assert len(model.requests) == 1 and fallback.call_count == 0
-    assert [d.name for d in model.requests[0].tools] == ["query_drives","files_list","files"]
+    assert [d.name for d in model.requests[0].tools] == [
+        "query_drives", "files_list", "files", "read_output", "search_output", "start_job",
+        "job_status", "job_output", "batch", "recall_context",
+    ]
     assert model.requests[0].tool_choice == "auto"
     assert [x["text_delta"]["delta"] for x in lines if "text_delta" in x] == ["ordinary ","answer"]
     assert lines[-1]["orchestration"]["execution"]["answer"] == "ordinary answer"

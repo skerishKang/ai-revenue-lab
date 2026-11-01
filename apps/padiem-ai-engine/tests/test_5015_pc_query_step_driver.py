@@ -2,6 +2,7 @@ import asyncio
 from types import SimpleNamespace
 
 import pytest
+from kagent.pc_remote_tools import REMOTE_TOOL_IDS, REMOTE_CANONICAL_IDS
 
 from app.claw_pc_query_step_driver import (
     CHAT_APP_ID,
@@ -241,11 +242,11 @@ def test_drive_binding_registers_core_toolruntime_contract():
         PC_WRITE_FILE_CANONICAL_TOOL_ID,
         PC_MOVE_FILE_CANONICAL_TOOL_ID,
         PC_DELETE_FILE_CANONICAL_TOOL_ID,
-    }
+    } | set(REMOTE_CANONICAL_IDS.values())
     assert set(binding.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
-    }
+    } | REMOTE_TOOL_IDS
 
 
 def test_chat_binding_shares_contract_under_chat_product_only():
@@ -263,11 +264,11 @@ def test_chat_binding_shares_contract_under_chat_product_only():
         PC_WRITE_FILE_CANONICAL_TOOL_ID,
         PC_MOVE_FILE_CANONICAL_TOOL_ID,
         PC_DELETE_FILE_CANONICAL_TOOL_ID,
-    }
+    } | set(REMOTE_CANONICAL_IDS.values())
     assert set(chat.tool_runtime.registered_tool_ids) == set(claw.tool_runtime.registered_tool_ids) == {
         PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
         PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
-    }
+    } | REMOTE_TOOL_IDS
     # Distinct product authority: Chat binding never carries the Claw app or
     # agent identity, and Claw never carries the Chat one.
     assert chat.app_id == CHAT_APP_ID == "padiem-chat"
@@ -279,7 +280,7 @@ def test_chat_binding_shares_contract_under_chat_product_only():
     assert chat_auth.granted_auth_scopes == (
         PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
         PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE,
-    )
+    ) + tuple(sorted(REMOTE_TOOL_IDS))
     assert CLAW_ENGINE_PC_DRIVE_URL != CHAT_ENGINE_PC_DRIVE_URL
     assert CHAT_ENGINE_PC_DRIVE_URL.endswith("/internal/chat/engine-pc-drive")
 

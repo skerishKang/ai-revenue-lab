@@ -106,10 +106,18 @@ def _is_loopback_channel_origin(origin: Any) -> bool:
     if not isinstance(origin, str) or not origin.startswith("http://"):
         return False
     try:
-        host = urllib.parse.urlsplit(origin).hostname
+        parsed = urllib.parse.urlsplit(origin)
+        host = parsed.hostname
+        # urlsplit.hostname alone accepts [::1].outside.example as ::1.
+        # Validate the complete authority and the parsed port, not a prefix.
+        parsed.port
     except ValueError:
         return False
-    return isinstance(host, str) and host.lower() in LOOPBACK_CHANNEL_HOSTS
+    return bool(
+        isinstance(host, str) and host.lower() in LOOPBACK_CHANNEL_HOSTS
+        and re.fullmatch(r"(?:localhost|127\.0\.0\.1|\[::1\])(?::[0-9]+)?", parsed.netloc, re.I)
+        and not parsed.path and not parsed.query and not parsed.fragment
+    )
 
 
 #: #5553: bound shared with the Chat poll route's presence envelope.
@@ -219,6 +227,9 @@ class OracleMeshDispatch:
     #: #5015: server-computed read bound. Only the poll response may set it;
     #: a missing value keeps the shared 6 MB read envelope for older servers.
     max_bytes: int | None = None
+    # Only the authenticated queue projection may set these fields.
+    background: bool = False
+    owner_ref: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -373,6 +384,9 @@ class OracleMeshExecutor:
         #: real field instead of a text match. A held result is NOT in here: the work
         #: on the PC already finished, so that PC's console is free.
         self._active_by_node: dict[str, str] = {}
+        self._active_background: dict[str, str] = {}
+        self._node_execution_locks: dict[str, threading.Lock] = {}
+        self._background_jobs = None
         self._active_lock = threading.Lock()
         #: Line-blockage observations, counted here so the journal and the report can
         #: say how often a PC needed clearing without anyone being asked.
@@ -655,6 +669,14 @@ class OracleMeshExecutor:
                         "chat channel returned an unbounded read limit", leg=leg,
                     )
                 max_bytes = supplied
+        background = dispatch.get("background", False)
+        if type(background) is not bool or (background and kind not in ("read", "command")):
+            raise OracleMeshChannelRefused("invalid background dispatch", leg=leg)
+        owner_ref = dispatch.get("owner_ref")
+        if background:
+            owner_ref = _require_text(owner_ref, "owner_ref")
+        else:
+            owner_ref = None
         request_id = dispatch.get("request_id")
         if request_id is not None:
             request_id = _require_text(request_id, "request_id")
@@ -669,6 +691,8 @@ class OracleMeshExecutor:
             kind=kind,
             command_text=command_text,
             max_bytes=max_bytes,
+            background=background,
+            owner_ref=owner_ref,
         )
 
     def execute(self, dispatch: OracleMeshDispatch) -> OracleMeshExecutionOutcome:
@@ -881,7 +905,7 @@ class OracleMeshExecutor:
         return probe
 
     def _execute_command(
-        self, dispatch: OracleMeshDispatch
+        self, dispatch: OracleMeshDispatch, *, additional_cancel_probe=None
     ) -> OracleMeshExecutionOutcome:
         """#4139 terminal lane: run the command the server put in the dispatch.
 
@@ -901,6 +925,10 @@ class OracleMeshExecutor:
         def phase(phase_name: str) -> None:
             self._trace_command(dispatch, phase_name, started)
 
+        owner_cancel = self._cancel_probe(dispatch)
+        def cancelled():
+            return (callable(additional_cancel_probe) and additional_cancel_probe()) or owner_cancel()
+
         try:
             observed = self._command_port.run_command(
                 node_ref=dispatch.node_ref,
@@ -911,7 +939,7 @@ class OracleMeshExecutor:
                 # server between read slices whether this dispatch was cancelled.
                 timeout_seconds=None,
                 phase_observer=phase,
-                cancel_probe=self._cancel_probe(dispatch),
+                cancel_probe=cancelled,
                 # The marker the PC-side stop needs: this command's own dispatch.
                 dispatch_id=getattr(dispatch, "dispatch_id", None),
                 # What the console sweep may never touch: the dispatches this
@@ -1127,6 +1155,8 @@ class OracleMeshExecutor:
             "kind": dispatch.kind,
             "command_text": dispatch.command_text,
             "max_bytes": dispatch.max_bytes,
+            "background": dispatch.background,
+            "owner_ref": dispatch.owner_ref,
             "termination": outcome.termination,
             "exit_code": outcome.exit_code,
             "note": outcome.note if isinstance(outcome.note, str) else "",
@@ -1351,6 +1381,8 @@ class OracleMeshExecutor:
                 kind=meta.get("kind") or "read",
                 command_text=meta.get("command_text"),
                 max_bytes=meta.get("max_bytes"),
+                background=meta.get("background", False),
+                owner_ref=meta.get("owner_ref"),
             )
             if dispatch.kind not in ("read", "command", "desktop"):
                 raise ValueError("pending kind is unknown")
@@ -1607,7 +1639,9 @@ class OracleMeshExecutor:
     def active_dispatch_id(self, node_ref: str) -> Optional[str]:
         """The dispatch this connector is running on that PC right now, or None."""
         with self._active_lock:
-            return self._active_by_node.get(node_ref)
+            return self._active_by_node.get(node_ref) or next(
+                (job for job, node in self._active_background.items() if node == node_ref), None
+            )
 
     def active_dispatch_ids(self) -> tuple[str, ...]:
         """Every dispatch this connector is running, on any PC.
@@ -1616,7 +1650,7 @@ class OracleMeshExecutor:
         transcript or a log line, so a PC cannot talk its way out of being skipped.
         """
         with self._active_lock:
-            return tuple(self._active_by_node.values())
+            return tuple(self._active_by_node.values()) + tuple(self._active_background)
 
     def line_observations(self) -> dict[str, int]:
         """How often a held console line was found, and how often it was freed.
@@ -1636,21 +1670,106 @@ class OracleMeshExecutor:
         if not node_ref or not dispatch_id:
             return
         with self._active_lock:
-            self._active_by_node[node_ref] = dispatch_id
+            if dispatch.background:
+                self._active_background[dispatch_id] = node_ref
+            else:
+                self._active_by_node[node_ref] = dispatch_id
 
     def _clear_active(self, dispatch: OracleMeshDispatch) -> None:
         node_ref = str(getattr(dispatch, "node_ref", "") or "")
         with self._active_lock:
+            self._active_background.pop(dispatch.dispatch_id, None)
             if self._active_by_node.get(node_ref) == str(
                 getattr(dispatch, "dispatch_id", "") or ""
             ):
                 self._active_by_node.pop(node_ref, None)
 
+    @staticmethod
+    def _background_owner(dispatch):
+        if not dispatch.background or not dispatch.owner_ref:
+            raise OracleMeshChannelRefused("background owner is required")
+        return json.dumps([dispatch.owner_ref, dispatch.node_ref, dispatch.run_id], separators=(",", ":"))
+
+    def _background_manager(self):
+        if self._background_jobs is None:
+            import os
+            from padiem_ai_core.pc_background import RemoteBackgroundJobs
+            directory = self._pending_dir_path()
+            if directory is None:
+                raise OracleMeshChannelRefused("background receipt directory is not configured")
+            self._background_jobs = RemoteBackgroundJobs(
+                os.path.join(directory, "background-jobs"), runner=self._run_background_dispatch
+            )
+        return self._background_jobs
+
+    def _node_execution_lock(self, dispatch):
+        with self._active_lock:
+            return self._node_execution_locks.setdefault(dispatch.node_ref, threading.Lock())
+
+    def _run_background_dispatch(self, payload, *, cancel_probe):
+        dispatch = OracleMeshDispatch(**payload)
+        renewer = self.start_lease_renewal(dispatch)
+        lock = self._node_execution_lock(dispatch)
+        acquired = False
+        try:
+            # Keep this claim alive while another command owns the same PC.
+            # Other PCs have independent locks and can continue executing.
+            while not acquired:
+                acquired = lock.acquire(timeout=0.2)
+                if not acquired and (cancel_probe() or self._cancel_probe(dispatch)()):
+                    return {"termination": "cancelled", "exit_code": None, "body": b""}
+            if cancel_probe() or self._cancel_probe(dispatch)():
+                return {"termination": "cancelled", "exit_code": None, "body": b""}
+            self._mark_active(dispatch)
+            if dispatch.kind == "command":
+                outcome = self._execute_command(dispatch, additional_cancel_probe=cancel_probe)
+            else:
+                outcome = self._execute_read(dispatch)
+            return {"termination": outcome.termination, "exit_code": outcome.exit_code,
+                    "body": outcome.body}
+        finally:
+            self._clear_active(dispatch)
+            if acquired:
+                lock.release()
+            if renewer is not None:
+                renewer.set()
+
+    def _ack_background_delivery(self, dispatch):
+        if dispatch.background and self._pending is None:
+            self._background_manager().acknowledge(
+                dispatch.dispatch_id, owner=self._background_owner(dispatch)
+            )
+
+    def _completed_background(self):
+        import os
+        directory = self._pending_dir_path()
+        if self._background_jobs is None and not (
+            directory and os.path.isdir(os.path.join(directory, "background-jobs"))
+        ):
+            return None
+        for record, body in self._background_manager().pending_results():
+            dispatch = OracleMeshDispatch(**record["dispatch"])
+            outcome = OracleMeshExecutionOutcome(
+                termination=record["termination"], exit_code=record["exit_code"], body=body
+            )
+            return dispatch, outcome
+        return None
+
     def run_once(self) -> Optional[dict[str, Any]]:
         """Retry a held result if any; otherwise poll, execute and submit."""
         if self._pending is not None:
             self.last_round = ROUND_SKIPPED
-            return self.resend_pending_result()
+            dispatch = self._pending[0]
+            report = self.resend_pending_result()
+            self._ack_background_delivery(dispatch)
+            return report
+        completed = self._completed_background()
+        if completed is not None:
+            self.last_round = ROUND_WORKED
+            dispatch, outcome = completed
+            report = self._with_line_observations(self.submit(dispatch, outcome))
+            self._ack_background_delivery(dispatch)
+            return report
         # #5462: a held result is still resent while this host is not the
         # active one — the bytes the PC really produced must reach the
         # server exactly once. Only a NEW claim is gated, because claiming
@@ -1666,10 +1785,17 @@ class OracleMeshExecutor:
         # ends an idle stretch. Set before the work, not after the submission, so a
         # round that dies mid-command still says the queue was not empty.
         self.last_round = ROUND_WORKED
+        if dispatch.background:
+            from dataclasses import asdict
+            started = self._background_manager().start(
+                asdict(dispatch), owner=self._background_owner(dispatch)
+            )
+            return {"ok": True, "background": True, **started}
         renewer = self.start_lease_renewal(dispatch)
         self._mark_active(dispatch)
         try:
-            outcome = self.execute(dispatch)
+            with self._node_execution_lock(dispatch):
+                outcome = self.execute(dispatch)
         finally:
             # The PC owns its console again the moment the console has answered,
             # not when the result is finally accepted: a held result is bytes this

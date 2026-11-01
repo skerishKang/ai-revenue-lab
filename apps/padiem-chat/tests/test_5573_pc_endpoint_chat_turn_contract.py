@@ -112,9 +112,12 @@ def test_every_pc_endpoint_accepts_a_pending_chat_tool_turn(
         if mode == "context":
             assert body["run_id"] == db.RUN
             assert body["device"]["device_id"] == DEVICE
-            # (A): a context names the owner's folders, never the real path.
+            # Public/model context still names folders without absolute paths.
+            # The independently verified guard mapping is server-only (#6460).
             assert body["roots"] == [{"label": "padiem"}]
-            assert "C:/padiem" not in json.dumps(body)
+            public_context = {key: body[key] for key in ("roots", "device", "tools")}
+            assert "C:/padiem" not in json.dumps(public_context)
+            assert body["delegation_roots"] == [{"label": "padiem", "path": "C:/padiem"}]
             assert not rows
         else:
             assert len(rows) == 1

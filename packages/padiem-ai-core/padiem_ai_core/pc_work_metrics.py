@@ -13,10 +13,16 @@ from typing import Any
 PC_METRIC_TOOL_IDS = frozenset({
     "claw.pc.query_drives", "claw.pc.list_files", "claw.pc.read_file",
     "claw.pc.write_file", "claw.pc.move_file", "claw.pc.delete_file",
+    "claw.pc.read_output", "claw.pc.search_output", "claw.pc.start_job",
+    "claw.pc.job_status", "claw.pc.job_output", "claw.pc.batch", "claw.pc.recall_context",
 })
 PC_METRIC_COUNTERS = (
     "calls", "pc_round_trips", "truncation_count", "truncated_bytes_known",
     "truncated_bytes_unknown_count", "timeout_count",
+)
+# Version 2 counts successful lifecycle events separately from tool invocations.
+PC_METRIC_LIFECYCLE_COUNTERS = (
+    "stored_output_count", "compaction_count", "background_job_count",
 )
 PC_METRIC_OUTCOMES = frozenset({
     "running", "completed", "failed", "cancelled", "abandoned", "confirmation_required",
@@ -26,12 +32,14 @@ PC_METRIC_REASONS = frozenset({
     "tool_failed", "model_failed", "execution_failed", "cancelled", "client_disconnected",
     "abandoned",
 })
-PC_METRIC_KEYS = frozenset(PC_METRIC_COUNTERS) | {
+PC_METRIC_KEYS_V1 = frozenset(PC_METRIC_COUNTERS) | {
     "schema_version", "turn_id", "tool_calls", "truncated_bytes", "model_calls",
     "model_input_tokens", "model_input_tokens_observed", "model_input_tokens_missing_calls",
     "model_input_tokens_estimated", "tool_result_tokens_estimated", "tool_result_input_ratio",
     "token_ratio_basis", "outcome", "outcome_reason",
 }
+
+PC_METRIC_KEYS = PC_METRIC_KEYS_V1 | frozenset(PC_METRIC_LIFECYCLE_COUNTERS)
 
 
 class PcWorkMetricsError(ValueError):
@@ -56,10 +64,14 @@ def _number(value: Any) -> float:
 
 def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
     """Return a normalized snapshot after exact-field and total validation."""
-    if not isinstance(value, Mapping) or set(value) != PC_METRIC_KEYS:
+    if not isinstance(value, Mapping):
         raise PcWorkMetricsError("invalid PC metric fields")
-    if type(value["schema_version"]) is not int or value["schema_version"] != 1:
+    version = value.get("schema_version")
+    if type(version) is not int or version not in {1, 2}:
         raise PcWorkMetricsError("invalid PC metric version")
+    expected_keys = PC_METRIC_KEYS_V1 if version == 1 else PC_METRIC_KEYS
+    if set(value) != expected_keys:
+        raise PcWorkMetricsError("invalid PC metric fields")
     turn_id = value["turn_id"]
     if not isinstance(turn_id, str) or not re.fullmatch(r"pcturn_[a-f0-9]{64}", turn_id):
         raise PcWorkMetricsError("invalid PC turn reference")
@@ -76,6 +88,10 @@ def validate_pc_work_metrics(value: Any) -> dict[str, Any]:
             raise PcWorkMetricsError("inconsistent PC tool counters")
         normalized_tools[tool_id] = row
     result = dict(value)
+    # Keep v1 evidence unchanged: an unmeasured lifecycle counter is not zero.
+    if version == 2:
+        for key in PC_METRIC_LIFECYCLE_COUNTERS:
+            result[key] = _count(value[key])
     result["tool_calls"] = normalized_tools
     for key in PC_METRIC_COUNTERS:
         result[key] = _count(value[key])

@@ -45,6 +45,9 @@ class PcWorkMetricsCollector:
         self.ledger_identity = None  # Server identity for the reporter, never in snapshot.
         self._tools: dict[str, dict[str, int]] = {}
         self._dispatches: set[str] = set()
+        self._stored_outputs: set[str] = set()
+        self._background_jobs: set[str] = set()
+        self._compactions = 0
         self._models: list[dict[str, Any]] = []
         self._confirmation = False
         self._failure_reason = None
@@ -88,6 +91,21 @@ class PcWorkMetricsCollector:
         if type(count) is int and count >= 0:
             model["usage"] = count
 
+    def mark_stored_output(self, output_id):
+        """Count a successfully stored object once per turn; never report its ID."""
+        if self._outcome == "running" and isinstance(output_id, str) and output_id:
+            self._stored_outputs.add(output_id)
+
+    def mark_compaction(self):
+        """Called after one actual context compaction succeeds."""
+        if self._outcome == "running":
+            self._compactions += 1
+
+    def mark_background_job(self, job_id):
+        """Count accepted jobs, excluding repeated polling or replay of a job."""
+        if self._outcome == "running" and isinstance(job_id, str) and job_id:
+            self._background_jobs.add(job_id)
+
     def mark_confirmation_required(self):
         if self._outcome == "running":
             self._confirmation = True
@@ -123,7 +141,10 @@ class PcWorkMetricsCollector:
         input_estimate = sum(model["input"] for model in self._models)
         result_estimate = sum(model["results"] for model in self._models)
         return validate_pc_work_metrics({
-            "schema_version": 1, "turn_id": self.turn_id, "tool_calls": tools, **totals,
+            "schema_version": 2, "turn_id": self.turn_id, "tool_calls": tools, **totals,
+            "stored_output_count": len(self._stored_outputs),
+            "compaction_count": self._compactions,
+            "background_job_count": len(self._background_jobs),
             "truncated_bytes": None if totals["truncated_bytes_unknown_count"] else totals["truncated_bytes_known"],
             "model_calls": len(self._models), "model_input_tokens": None if missing else observed,
             "model_input_tokens_observed": observed, "model_input_tokens_missing_calls": missing,

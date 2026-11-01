@@ -25,6 +25,7 @@ _COUNTERS = (
     "model_calls", "model_input_tokens", "model_input_tokens_observed",
     "model_input_tokens_missing_calls", "model_input_tokens_estimated",
     "tool_result_tokens_estimated", "tool_result_input_ratio",
+    "stored_output_count", "compaction_count", "background_job_count",
 )
 _TOOL_COUNTERS = (
     "calls", "pc_round_trips", "truncation_count", "truncated_bytes_known",
@@ -72,7 +73,7 @@ def summarize_pc_work_metrics(turns: list[dict[str, Any]]) -> dict[str, Any]:
     unfinished = len(turns) - len(metrics)
     counters = {}
     for key in _COUNTERS:
-        values = [row[key] for row in metrics if row[key] is not None]
+        values = [row[key] for row in metrics if row.get(key) is not None]
         counters[key] = {
             "average": sum(values) / len(values) if values else None,
             "max": max(values) if values else None,

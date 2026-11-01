@@ -877,6 +877,9 @@ class OrchestrationEngineService:
                 exec_req.agent.task_type, exec_req.agent.optimize_for,
                 tool_arguments=tool_arguments, **driver_options,
         )
+        configure_messages = getattr(driver, "configure_messages", None)
+        if callable(configure_messages):
+            configure_messages(exec_req.messages)
         configure_scope = getattr(driver, "configure_request_scope", None)
         if callable(configure_scope):
             # Keep legacy driver calls identical when no declaration is sent.

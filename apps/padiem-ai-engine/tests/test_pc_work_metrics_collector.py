@@ -293,3 +293,80 @@ def test_validator_rejects_private_fields_and_inconsistent_measurements(mutate):
     mutate(row)
     with pytest.raises(PcWorkMetricsError):
         validate_pc_work_metrics(row)
+
+
+def test_lifecycle_events_deduplicate_per_turn_and_freeze_after_finish():
+    collector = PcWorkMetricsCollector(TURN)
+    for output in ("object-one", "object-one", "object-two", "", None):
+        collector.mark_stored_output(output)
+    for job in ("job-one", "job-one", "", None):
+        collector.mark_background_job(job)
+    collector.mark_compaction()
+    collector.mark_compaction()
+    collector.finish("completed", "completed")
+    result = collector.snapshot()
+    assert result["schema_version"] == 2
+    assert result["stored_output_count"] == 2
+    assert result["compaction_count"] == 2
+    assert result["background_job_count"] == 1
+    assert "object-one" not in json.dumps(result)
+    assert "job-one" not in json.dumps(result)
+    collector.mark_stored_output("late-object")
+    collector.mark_background_job("late-job")
+    collector.mark_compaction()
+    assert collector.snapshot() == result
+
+    another = PcWorkMetricsCollector("pcturn_" + "b" * 64)
+    another.mark_stored_output("object-one")
+    another.mark_background_job("job-one")
+    fresh = another.snapshot()
+    assert fresh["stored_output_count"] == fresh["background_job_count"] == 1
+    assert fresh["compaction_count"] == 0
+
+
+def test_legacy_snapshot_remains_unmeasured_instead_of_zero_lifecycle_counters():
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    row["schema_version"] = 1
+    for key in ("stored_output_count", "compaction_count", "background_job_count"):
+        row.pop(key)
+    assert validate_pc_work_metrics(row) == row
+
+
+@pytest.mark.parametrize("key", ["stored_output_count", "compaction_count", "background_job_count"])
+@pytest.mark.parametrize("invalid", [-1, True, 1.5, "1", None])
+def test_lifecycle_counter_schema_rejects_invalid_measurements(key, invalid):
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    row[key] = invalid
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+
+
+def test_v2_requires_all_lifecycle_counters_and_v1_cannot_claim_them():
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    del row["compaction_count"]
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+    row = PcWorkMetricsCollector(TURN).snapshot()
+    row["schema_version"] = 1
+    with pytest.raises(PcWorkMetricsError):
+        validate_pc_work_metrics(row)
+
+
+@pytest.mark.parametrize("tool_id", [
+    "claw.pc.read_output", "claw.pc.search_output", "claw.pc.start_job",
+    "claw.pc.job_status", "claw.pc.job_output", "claw.pc.batch", "claw.pc.recall_context",
+])
+def test_remote_context_and_job_tools_are_observed(tool_id):
+    async def run():
+        collector = PcWorkMetricsCollector(TURN)
+        token = set_pc_work_metrics(collector)
+        async def handler(arguments):
+            return {"ok": True}
+        try:
+            await observe_pc_handler(handler, tool_id=tool_id)({})
+            result = collector.snapshot()
+        finally:
+            reset_pc_work_metrics(token)
+        assert result["calls"] == 1
+        assert result["tool_calls"][tool_id]["calls"] == 1
+    asyncio.run(run())

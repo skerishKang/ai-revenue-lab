@@ -327,3 +327,31 @@ def test_0003_upgrades_existing_b14_without_new_usage_store(tmp_path):
     assert tables == {"b14_model_call", "b14_model_call_attempt", "b14_local_migration"}
     assert current.connect().execute("SELECT total_tokens FROM b14_model_call").fetchone()[0] == 120
     current.close()
+
+
+def test_v2_lifecycle_counters_persist_and_v1_remains_missing_in_summary(backed_client):
+    client, store, db = backed_client
+    insert(store, suffix="legacy", turn=TURN)
+    insert(store, suffix="lifecycle", turn=SECOND)
+    legacy = metrics(TURN)
+    measured = metrics(
+        SECOND, schema_version=2, stored_output_count=3,
+        compaction_count=2, background_job_count=1,
+    )
+    for turn, snapshot in ((TURN, legacy), (SECOND, measured)):
+        assert client.post(REPORT, json=envelope(turn, measurement=snapshot)).status_code == 200
+    # The same v2 report remains idempotent in the existing immutable ledger.
+    assert client.post(REPORT, json=envelope(SECOND, measurement=measured)).status_code == 200
+    response = client.get(RECENT)
+    assert response.status_code == 200
+    result = response.json()
+    turns = {row["session_ref"]: row["metrics"] for row in result["turns"]}
+    assert turns[TURN] == legacy
+    assert turns[SECOND] == measured
+    for key, count in (
+        ("stored_output_count", 3), ("compaction_count", 2), ("background_job_count", 1)
+    ):
+        assert result["summary"]["counters"][key] == {
+            "average": count, "max": count, "observed_turns": 1, "missing_turns": 1,
+        }
+    assert db.connect().execute("SELECT COUNT(*) FROM b14_model_call").fetchone()[0] == 2

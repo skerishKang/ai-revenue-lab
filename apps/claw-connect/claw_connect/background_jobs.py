@@ -1,7 +1,7 @@
 """Persistent background receipts for the existing Windows command authority.
 
 Inspired by Hermes Agent background process management (MIT, Nous Research).
-This module is deliberately not wired to the resident, queue or engine.
+The portable remote backend is shared with the existing Mesh executor below.
 """
 from __future__ import annotations
 
@@ -218,3 +218,7 @@ class BackgroundJobs:
                 except (KeyError, OSError, ValueError, TypeError):
                     continue
             return sorted(results, key=lambda row: row['started_at'])
+
+
+# Compatibility: the remote backend is shared with the COM2 executor.
+from padiem_ai_core.pc_background import RemoteBackgroundJobs

@@ -39,7 +39,7 @@ case "$QUEUE_SRC/" in
   "$ROOT/"*) echo "MESH_QUEUE_STEP=source_nested_refused"; exit 1 ;;
 esac
 rsync -a --delete \
-  --exclude /src --exclude venv --exclude '__pycache__' --exclude '*.sqlite3*' \
+  --exclude /src --exclude /pc-outputs --exclude venv --exclude '__pycache__' --exclude '*.sqlite3*' \
   --exclude 'queue.env' --exclude 'service-secret.txt' --exclude 'ownership-map.json' \
   --exclude 'watch-read-secret.txt' \
   "$QUEUE_SRC/" "$ROOT/"

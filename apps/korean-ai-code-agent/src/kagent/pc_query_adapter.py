@@ -336,9 +336,19 @@ def make_query_drives_handler(*, service, request_factory, secret, endpoint_url:
                         raise ToolHandlerError("pc_query_output_missing", "Verified PC outcome is incomplete")
                 elif isinstance(exit_code, bool) or not isinstance(exit_code, int):
                     raise ToolHandlerError("pc_query_output_missing", "Verified PC outcome is incomplete")
-                return {"dispatch_id": dispatch_id, "output": final["output"],
+                result = {"dispatch_id": dispatch_id, "output": final["output"],
                     "result_sha256": final.get("result_sha256"), "execution_confirmed": True,
                     "termination": termination, "exit_code": exit_code}
+                ref = final.get("output_ref")
+                if ref is not None:
+                    if (not isinstance(ref, dict) or set(ref) != {"handle", "size", "head", "tail", "truncated"}
+                            or not isinstance(ref.get("handle"), str) or re.fullmatch(r"[0-9a-f]{64}", ref["handle"]) is None
+                            or type(ref.get("size")) is not int or ref["size"] < 0
+                            or not isinstance(ref.get("head"), str) or not isinstance(ref.get("tail"), str)
+                            or type(ref.get("truncated")) is not bool or final.get("content_bytes") != ref["size"]):
+                        raise ToolHandlerError("pc_query_output_missing", "Stored PC outcome is incomplete")
+                    result["output_ref"] = dict(ref)
+                return result
             if row.get("state") not in ("pending", "received", "store_failed"):
                 raise ToolHandlerError("pc_query_result_unknown", "PC result state unknown; do not replay")
 
@@ -454,7 +464,7 @@ def pc_query_agent_definition(agent_id: str) -> BoundedAgentDefinition:
         output_contract_ref="output:text@1",
         allowed_tool_ids=(PC_DRIVES_CANONICAL_TOOL_ID, PC_LIST_FILES_CANONICAL_TOOL_ID,
                           PC_READ_FILE_CANONICAL_TOOL_ID, PC_WRITE_FILE_CANONICAL_TOOL_ID,
-                          PC_MOVE_FILE_CANONICAL_TOOL_ID, PC_DELETE_FILE_CANONICAL_TOOL_ID),
+                          PC_MOVE_FILE_CANONICAL_TOOL_ID, PC_DELETE_FILE_CANONICAL_TOOL_ID) + tuple(REMOTE_CANONICAL_IDS.values()),
         execution_budget=AgentExecutionBudget())
 
 
@@ -469,17 +479,18 @@ def pc_query_agent_policy() -> TrustedAgentRuntimePolicy:
             ToolRuntimeBinding(canonical_tool_id=PC_WRITE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_WRITE_FILE_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_MOVE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_MOVE_FILE_TOOL_ID),
             ToolRuntimeBinding(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID, runtime_tool_id=PC_DELETE_FILE_TOOL_ID),
-        ))
+        ) + tuple(ToolRuntimeBinding(canonical_tool_id=REMOTE_CANONICAL_IDS[spec.id], runtime_tool_id=spec.id)
+                  for spec in remote_tool_specs()))
 
 
 def pc_query_authorization(app_id: str, compiled: CompiledAgentProfile) -> ToolAuthorizationContext:
     return ToolAuthorizationContext(app_id=app_id, agent_id=compiled.runtime_profile.id,
         granted_auth_scopes=(PC_QUERY_SCOPE, PC_LIST_FILES_SCOPE, PC_READ_FILE_SCOPE,
-            PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE),
+            PC_WRITE_FILE_SCOPE, PC_MOVE_FILE_SCOPE, PC_DELETE_FILE_SCOPE) + tuple(sorted(REMOTE_TOOL_IDS)),
         externally_authorized_tools=frozenset({
             PC_DRIVES_TOOL_ID, PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
             PC_WRITE_FILE_TOOL_ID, PC_MOVE_FILE_TOOL_ID, PC_DELETE_FILE_TOOL_ID,
-        }))
+        }) | REMOTE_TOOL_IDS)
 
 
 def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
@@ -496,7 +507,8 @@ def pc_query_registry_entries() -> tuple[RegisteredTool, ...]:
                                  runtime_spec=pc_move_file_tool_spec()),
         RegisteredTool.from_spec(canonical_tool_id=PC_DELETE_FILE_CANONICAL_TOOL_ID,
                                  runtime_spec=pc_delete_file_tool_spec()),
-    )
+    ) + tuple(RegisteredTool.from_spec(canonical_tool_id=REMOTE_CANONICAL_IDS[spec.id], runtime_spec=spec)
+              for spec in remote_tool_specs())
 
 
 @dataclass(frozen=True, slots=True)
@@ -547,6 +559,12 @@ def register_pc_query_drives_tool(
     )
 
 
+from .pc_remote_tools import (
+    REMOTE_TOOL_IDS, REMOTE_CANONICAL_IDS, remote_tool_specs,
+    validate_remote_arguments, remote_tool_allowed, remote_requested_scope,
+)
+
+
 class StructuredPCQueryStepDriver:
     """The product step policy: which tool may run with which arguments."""
 
@@ -567,6 +585,7 @@ class StructuredPCQueryStepDriver:
         # Legacy drive/list calls may omit it; a read requires an admitted ceiling.
         self._allowed_tool_ids = allowed_tool_ids
         self._request_scope_enabled = False
+        self._remote_tool_ids = frozenset()
         self.scope_state: dict[str, Any] = {}
         self.request_context = ""
         self.declared_plan: str | None = None
@@ -586,6 +605,7 @@ class StructuredPCQueryStepDriver:
             self.declared_plan = declared_plan
         scopes = getattr(authorization, "granted_auth_scopes", ())
         external = getattr(authorization, "externally_authorized_tools", frozenset())
+        self._remote_tool_ids = REMOTE_TOOL_IDS & frozenset(scopes) & frozenset(external)
         ceiling = ceiling_tool_ids if ceiling_tool_ids is not None else self._allowed_tool_ids
         self._allowed_tool_ids = frozenset(
             tool for tool in (ceiling or ())
@@ -612,6 +632,8 @@ class StructuredPCQueryStepDriver:
                 PC_MOVE_FILE_TOOL_ID: "files_write",
                 PC_DELETE_FILE_TOOL_ID: "files_write",
             }.get(first_tool) if decision.get("action") == "tool" and isinstance(first_tool, str) else None
+            if proposed is None and isinstance(first_tool, str):
+                proposed = remote_requested_scope(first_tool, decision.get("arguments"))
         if not isinstance(proposed, str) or proposed not in PC_REQUEST_SCOPE_TOOLS or proposed == "none":
             proposed, source = "none", "missing"
         allowed = PC_REQUEST_SCOPE_TOOLS[proposed] & (self._allowed_tool_ids or frozenset())
@@ -694,6 +716,16 @@ class StructuredPCQueryStepDriver:
                 arguments = {}
             if not isinstance(tool_id, str):
                 raise PCQueryStepError("model tool selection is invalid or unauthorized", detail="tool_selection_invalid")
+            if tool_id in REMOTE_TOOL_IDS:
+                try:
+                    normalized = validate_remote_arguments(tool_id, arguments)
+                    if tool_id not in self._remote_tool_ids or not remote_tool_allowed(
+                        tool_id, normalized, self._allowed_tool_ids):
+                        raise ValueError("PC wrapper exceeds the admitted file scope")
+                except (TypeError, ValueError):
+                    raise PCQueryStepError("PC remote tool is invalid or unauthorized",
+                                           detail="tool_scope_denied") from None
+                return AgentStepDecision.use_tool(ToolInvocation(tool_id=tool_id, arguments=normalized))
             if (
                 (self._allowed_tool_ids is not None
                  and tool_id not in self._allowed_tool_ids)

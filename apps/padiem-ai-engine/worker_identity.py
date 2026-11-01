@@ -1258,6 +1258,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             )
         except (ValueError, TypeError):
             web_xlsx_owner_grant = None
+    pc_catalog = CatalogToolCapabilities(binding, Request)
     return EngineServices(
         completed=EngineService(
             runtime_factory=runtime_factory,
@@ -1272,7 +1273,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
             runtime_factory=runtime_factory,
             pc_work_metrics_reporter=pc_work_metrics_reporter,
             pc_streaming_runtime_factory=streaming_runtime_factory,
-            pc_tools_capability=CatalogToolCapabilities(binding, Request),
+            pc_tools_capability=pc_catalog,
             b14_service_bound=True,
             idempotency_adapter=idempotency_adapter,
             continuation_store=continuation_store,
@@ -1301,6 +1302,7 @@ async def _engine_services_for_env(env: Any) -> EngineServices:
                         secret=desktop_secret,
                         tool_arguments=tool_arguments,
                         initial_decision=initial_decision,
+                        compaction_budget_resolver=pc_catalog.context_budget,
                     ))
                 if chat_service is not None and isinstance(desktop_secret, str)
                 and len(desktop_secret) >= 32 else None
