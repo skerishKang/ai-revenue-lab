@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Awaitable, Callable, Mapping
+from collections.abc import Awaitable, Callable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
 import re
-from typing import Protocol
+from typing import Any, Protocol
 
 from padiem_ai_core import (
     AgentProfile,
@@ -491,6 +491,7 @@ class P01RequestFactory:
         selected_model_id: str | None = None,
         central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
+        pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
@@ -651,6 +652,7 @@ class P01RequestFactory:
             subject_id=subject_id,
             agent_plan=desktop_plan,
             tool_arguments=desktop_arguments,
+            pc_action_context=tuple(dict(item) for item in (pc_action_context or ())),
         )
         return P01RequestBundle(
             execution_request=execution_request,
@@ -890,6 +892,7 @@ class P01CoreOrchestrationAdapter:
         selected_model_id: str | None = None,
         central_route_model_id: str | None = None,
         additional_system_context: str | None = None,
+        pc_action_context: Sequence[Mapping[str, Any]] | None = None,
         desktop_capture: bool = False,
         desktop_device_id: str | None = None,
         pc_drive_query: bool = False,
@@ -907,6 +910,7 @@ class P01CoreOrchestrationAdapter:
                 selected_model_id=selected_model_id,
                 central_route_model_id=central_route_model_id,
                 additional_system_context=additional_system_context,
+                pc_action_context=pc_action_context,
                 desktop_capture=desktop_capture,
                 desktop_device_id=desktop_device_id,
                 pc_drive_query=pc_drive_query,

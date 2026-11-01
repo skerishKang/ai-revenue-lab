@@ -372,6 +372,13 @@ async def _owner_claw_context(
     request: Request, conversation_id: str | None, latest: str,
 ) -> str:
     """Bounded history from the SAME signed owner; no browser-provided prior turns."""
+    # The existing model transcript stays byte-for-byte unchanged. Keep the
+    # original roles separately at the trusted read boundary for the PC guard;
+    # never reconstruct user authority from that flattened transcript.
+    action_context = [{"role": "user", "content": latest}]
+    state = getattr(request, "state", None)
+    if state is not None:
+        state.claw_pc_action_context = action_context
     if conversation_id is None:
         return latest
     uid = current_user_id(request) if auth_ready(request) else None
@@ -403,6 +410,7 @@ async def _owner_claw_context(
             raise HistoryContextIncomplete("full owner conversation history not available")
         item = ("사용자: " if row["role"] == "user" else "AI: ") + content.strip()
         excerpts.append(item)
+        action_context.insert(-1, {"role": row["role"], "content": content.strip()})
     if not excerpts:
         return latest
     return (
@@ -2018,6 +2026,20 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
     combined_system_context = _combine_system_context(
         grounding_context, document_context, pc_work_text,
     )
+    # This side channel is assembled only from the signed owner's saved rows,
+    # the actual latest user message and server-read external data. Browser
+    # history and browser pc_action_context fields are never copied into it.
+    pc_action_context = list(getattr(request.state, "claw_pc_action_context", (
+        {"role": "user", "content": user_text},
+    )))
+    for content, source in (
+        (grounding_context, "file" if drive_context is not None else "web"),
+        (document_context, "file"),
+    ):
+        if content:
+            pc_action_context.append({
+                "role": "tool_result", "content": content, "source": source,
+            })
 
     if live_requested:
         from .claw_live_events import live_claw_sse
@@ -2037,6 +2059,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if pc_files_requested:
             live_args["pc_files_query"] = True
             live_args["pc_files_device_id"] = pc_files_device_id
+        if initial_pc_drive_query or pc_files_requested:
+            live_args["pc_action_context"] = pc_action_context
         if selected_model_id is not None:
             live_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
@@ -2090,6 +2114,8 @@ async def claw_general_execute(request: Request) -> JSONResponse | Response:
         if pc_files_requested:
             dispatch_args["pc_files_query"] = True
             dispatch_args["pc_files_device_id"] = pc_files_device_id
+        if initial_pc_drive_query or pc_files_requested:
+            dispatch_args["pc_action_context"] = pc_action_context
         if selected_model_id is not None:
             dispatch_args["selected_model_id"] = selected_model_id
         if central_route_model_id is not None:
