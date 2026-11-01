@@ -66,6 +66,18 @@ class ServiceProofConfigError(ConfigError):
     """A local-mode service origin/secret is missing or malformed."""
 
 
+class ServiceRpcHttpError(RuntimeError):
+    """Closed diagnostic code; no URL, proof, request or response body."""
+
+    def __init__(self, status: int):
+        self.code = {
+            401: 'service_rpc_unauthorized', 403: 'service_rpc_forbidden',
+            404: 'service_rpc_not_found', 409: 'service_rpc_replay_rejected',
+            429: 'service_rpc_rate_limited',
+        }.get(status, 'service_rpc_http_failed')
+        super().__init__(self.code)
+
+
 def _require_https_origin(value: str | None, *, name: str) -> str:
     raw = "" if value is None else str(value).strip()
     parsed = httpx.URL(raw) if raw else None
@@ -175,7 +187,11 @@ class HttpRpcBinding:
             response = None
             attempts = RPC_MAX_ATTEMPTS if self._sign_request_id else 1
             for _ in range(attempts):
-                headers = {"Content-Type": "application/json", "Accept": "application/json"}
+                # The identity lookup after OAuth exchange crosses Cloudflare
+                # too. Keep the same product agent as the token call (#6528),
+                # rather than the library default rejected by integrity checks.
+                headers = {"Content-Type": "application/json", "Accept": "application/json",
+                           "User-Agent": "PADIEM-Chat/1.0 (+https://chat.padiem.net)"}
                 headers.update(service_proof_headers(
                     self._secret, method="POST", path=path, body=body,
                     service_id=new_service_id() if self._sign_request_id else None,
@@ -194,7 +210,7 @@ class HttpRpcBinding:
             # A target that keeps refusing the id means this side is sending the
             # same request more than it is allowed to; the cap is what stops it.
             if response.status_code != 200:
-                raise RuntimeError("service RPC answered a non-success status")
+                raise ServiceRpcHttpError(response.status_code)
             data = response.json()
             if not isinstance(data, dict):
                 raise RuntimeError("service RPC answered a non-object envelope")
