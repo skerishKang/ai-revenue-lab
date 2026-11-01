@@ -62,24 +62,68 @@ _OP_TYPE = "type"
 _OP_KEYS = "keys"
 _OP_CLICK = "click"
 _DESKTOP_OPS = (_OP_CAPTURE, _OP_TYPE, _OP_KEYS, _OP_CLICK)
-#: Key combos with a fixed, reviewed meaning. Anything else is refused rather
-#: than guessed at: a wrong guess would press keys the owner never ordered.
-_KEY_SEQUENCES: dict[str, tuple[tuple[int, int, bool], ...]] = {
-    # (action, keycode, extended) with action 1=DOWN 2=UP, extended as the
-    # browser's SendKeyMsgKC extendedKey flag.
-    "enter": ((1, 13, False), (2, 13, False)),
-    "esc": ((1, 27, False), (2, 27, False)),
-    "tab": ((1, 9, False), (2, 9, False)),
-    "backspace": ((1, 8, False), (2, 8, False)),
-    "delete": ((1, 46, False), (2, 46, False)),
-    "ctrl+s": ((1, 17, False), (1, 83, False), (2, 83, False), (2, 17, False)),
-    "ctrl+c": ((1, 17, False), (1, 67, False), (2, 67, False), (2, 17, False)),
-    "ctrl+v": ((1, 17, False), (1, 86, False), (2, 86, False), (2, 17, False)),
-    "ctrl+a": ((1, 17, False), (1, 65, False), (2, 65, False), (2, 17, False)),
-    "alt+f4": ((1, 18, False), (1, 115, False), (2, 115, False), (2, 18, False)),
-    "win+r": ((5, 91, False), (1, 82, False), (2, 82, False), (4, 91, False)),
-    "win": ((5, 91, False), (4, 91, False)),
+#: #6460 step 2: the owner's highest authority is the default, so the combo
+#: list is no longer closed. What stays closed is the *vocabulary*: a key name
+#: from this table, at most three modifiers, and never the SAS chord. Anything
+#: else is refused before the PC is asked rather than guessed at.
+_KEY_NAMES: dict[str, int] = {
+    "enter": 13, "esc": 27, "escape": 27, "tab": 9, "backspace": 8,
+    "delete": 46, "space": 32, "insert": 45, "home": 36, "end": 35,
+    "pageup": 33, "pagedown": 34, "left": 37, "up": 38, "right": 39, "down": 40,
 }
+_KEY_NAMES.update({chr(code): code - 32 for code in range(ord("a"), ord("z") + 1)})
+_KEY_NAMES.update({str(digit): 48 + digit for digit in range(10)})
+_KEY_NAMES.update({"f%d" % n: 0x70 + n - 1 for n in range(1, 13)})
+_MODIFIER_KEYS: dict[str, int] = {
+    "ctrl": 17, "control": 17, "alt": 18, "shift": 16, "win": 91, "meta": 91,
+}
+#: Extended keys travel with the extended action codes, exactly as the relay's
+#: own client sends them.
+_EXTENDED_KEYCODES = frozenset({33, 34, 35, 36, 37, 38, 39, 40, 45, 46, 91})
+#: The secure attention sequence is owned by Windows; a program cannot and must
+#: not synthesize it. Refused by name, not by a hidden side effect.
+_RESERVED_COMBOS = frozenset({"ctrl+alt+del", "ctrl+alt+delete"})
+
+
+def parse_key_combo(spec: str) -> tuple[tuple[int, int, bool], ...]:
+    """One reviewed combo -> the exact down/up sequence, or a refusal.
+
+    Grammar: ``modifier+...+key`` with at most three distinct modifiers from
+    ``ctrl``/``alt``/``shift``/``win`` and one key name. Unknown names, empty
+    parts and the SAS chord are refused here; the PC is never contacted.
+    """
+    if not isinstance(spec, str) or not spec or len(spec) > 64:
+        raise MeshCentralDesktopRefused("key combo is malformed")
+    parts = [part.strip().lower() for part in spec.split("+")]
+    if any(not part for part in parts) or len(parts) > 4:
+        raise MeshCentralDesktopRefused("key combo is malformed")
+    modifiers, key = parts[:-1], parts[-1]
+    keycode = _KEY_NAMES.get(key)
+    if keycode is None:
+        # The Win key alone is a real press (it opens Start), exactly as the
+        # previous closed list had it. Any other lone modifier is not a key name.
+        if key not in ("win", "meta") or modifiers:
+            raise MeshCentralDesktopRefused("unknown key name")
+        keycode = _MODIFIER_KEYS[key]
+    codes = []
+    for modifier in modifiers:
+        code = _MODIFIER_KEYS.get(modifier)
+        if code is None:
+            raise MeshCentralDesktopRefused("unknown key modifier")
+        if code in codes:
+            raise MeshCentralDesktopRefused("duplicate key modifier")
+        codes.append(code)
+    if "+".join(parts) in _RESERVED_COMBOS:
+        raise MeshCentralDesktopRefused("the secure attention sequence is reserved")
+    extended = keycode in _EXTENDED_KEYCODES
+    down, up = (5, 4) if extended else (1, 2)
+    sequence = [(down, code, False) for code in codes]
+    sequence.append((down, keycode, extended))
+    sequence.append((up, keycode, extended))
+    sequence.extend((up, code, False) for code in reversed(codes))
+    return tuple(sequence)
+
+
 #: The wire mouse field is two bytes: the format's own range, not a product
 #: rule. Negative or wider coordinates are refused, never wrapped.
 _MAX_WIRE_COORD = 65535
@@ -164,8 +208,7 @@ def parse_desktop_op(command_text: Any) -> tuple[str, str | None]:
         return op, arg
     if op == _OP_KEYS:
         spec = arg.strip().lower()
-        if spec not in _KEY_SEQUENCES:
-            raise MeshCentralDesktopRefused("unknown key combo")
+        parse_key_combo(spec)
         return op, spec
     # click: two unsigned wire-range integers, nothing else.
     match = re.fullmatch(r"(\d{1,5}),(\d{1,5})", arg)
@@ -1112,6 +1155,18 @@ class _DesktopSession:
         """Send unicode down+up per code unit; returns units sent."""
         count = 0
         for char in text:
+            if char == "\n":
+                # A line break is the Enter key: a bare U+000A is not accepted
+                # as a newline by most windowed applications.
+                try:
+                    self._relay.send_binary(msc_key(_KEY_DOWN, 13, False))
+                    self._relay.send_binary(msc_key(_KEY_UP, 13, False))
+                except Exception as exc:
+                    raise MeshCentralDesktopRefused(
+                        "key delivery uncertain; do not replay"
+                    ) from exc
+                count += 1
+                continue
             encoded = char.encode("utf-16-be")
             for i in range(0, len(encoded), 2):
                 unit = int.from_bytes(encoded[i:i + 2], "big")
@@ -1127,7 +1182,7 @@ class _DesktopSession:
         return count
 
     def press_keys(self, spec: str) -> None:
-        sequence = _KEY_SEQUENCES.get(spec, ())
+        sequence = parse_key_combo(spec)
         for action, keycode, extended in sequence:
             try:
                 self._relay.send_binary(msc_key(action, keycode, extended))

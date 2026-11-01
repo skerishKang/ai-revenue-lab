@@ -12,7 +12,7 @@ WorkingDirectory=/opt/padiem/identity-staging
 EnvironmentFile=/opt/padiem/identity-staging/.env
 Environment=PYTHONPATH=/opt/padiem/identity-staging/host:/opt/padiem/identity-staging/src:/opt/padiem/identity-staging/broker
 ExecCondition=/opt/padiem/identity-staging/venv/bin/python /opt/padiem/identity-staging/check_config.py
-ExecStart=/opt/padiem/identity-staging/venv/bin/python -m uvicorn --factory com2_identity_entrypoint:build_app --host 127.0.0.1 --port 8802 --no-server-header
+ExecStart=/opt/padiem/identity-staging/venv/bin/python -m uvicorn --factory com2_identity_entrypoint:build_app --host 127.0.0.1 --port 8802 --no-server-header --timeout-keep-alive 75
 UMask=0077
 NoNewPrivileges=true
 ProtectSystem=strict

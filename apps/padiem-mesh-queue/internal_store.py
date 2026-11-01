@@ -95,6 +95,8 @@ PAIRING_METHODS = frozenset({
 })
 
 PRESENCE_METHODS = frozenset({"upsert", "load"})
+#: #6460 step 2 — typed text travels once and is never written to the row.
+DESKTOP_TEXT_METHODS = frozenset({"deposit_desktop_text", "take_desktop_text"})
 DRIVE_METHODS = frozenset({"upsert_drives", "load_drives"})
 
 _NO_STORE = {"Cache-Control": "no-store"}
@@ -131,7 +133,8 @@ def log_line(path: str, rpc: str, status: int, elapsed_ms: int, proof: str, run_
         path, rpc, status, elapsed_ms, proof, run_hash, dispatch_id)
 
 __all__ = [
-    "DISPATCH_METHODS", "DRIVE_METHODS", "MOMENT_ARGUMENTS", "INTERNAL_STORE_PATH", "PAIRING_METHODS",
+    "DESKTOP_TEXT_METHODS", "DISPATCH_METHODS", "DRIVE_METHODS", "MOMENT_ARGUMENTS",
+    "INTERNAL_STORE_PATH", "PAIRING_METHODS",
     "PRESENCE_METHODS", "QUEUE_SERVICE_SECRET_HEADER", "STORE_FAILURE_CLASSES",
     "STORE_FAILURE_PREFIX", "TXN_RECOVERY_PREFIX", "make_internal_handler",
 ]

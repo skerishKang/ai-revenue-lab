@@ -37,7 +37,7 @@
   // Presentation-only variants. These never assert server truth on their own:
   // they are only reachable from a canonical CONNECTED projection and are
   // reported to the server truth via `deviceState` which stays canonical.
-  const PRESENTATION_VARIANTS = Object.freeze(["UPDATE_REQUIRED"]);
+  const PRESENTATION_VARIANTS = Object.freeze(["UPDATE_REQUIRED", "UPDATE_AVAILABLE"]);
 
   const SAFE_FALLBACK_STATE = "ACTION_REQUIRED";
 
@@ -482,6 +482,7 @@
       "claw-local-state-action_required": "연결을 다시 확인해야 합니다.",
       "claw-local-state-unknown": "연결 상태를 확인하는 중입니다.",
       "claw-local-state-update_required": "업데이트가 필요합니다.",
+      "claw-local-state-update_available": "새 버전이 있어요.",
       "claw-local-approval-title": "승인이 필요합니다",
       "claw-local-approval-pending": "이 작업을 진행하려면 먼저 승인이 필요합니다.",
       "claw-local-approval-decided": "승인 결과가 반영되었습니다.",
@@ -507,6 +508,7 @@
       "claw-local-state-action_required": "The connection needs to be checked again.",
       "claw-local-state-unknown": "Checking the connection status.",
       "claw-local-state-update_required": "An update is needed.",
+      "claw-local-state-update_available": "A new version is available.",
       "claw-local-approval-title": "Approval needed",
       "claw-local-approval-pending": "This task needs your approval before it continues.",
       "claw-local-approval-decided": "The approval decision has been applied.",
@@ -563,6 +565,11 @@
     }
     if (viewModel.device.variant === "UPDATE_REQUIRED") {
       return t["claw-local-state-update_required"];
+    }
+    if (viewModel.device.variant === "UPDATE_AVAILABLE") {
+      // Non-blocking notice: the device stays CONNECTED and usable; only the
+      // state line changes to the "새 버전이 있어요." copy.
+      return t["claw-local-state-update_available"];
     }
     return t[`claw-local-state-${viewModel.device.state.toLowerCase()}`] || t["claw-local-state-unknown"];
   }

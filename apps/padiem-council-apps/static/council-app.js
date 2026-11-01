@@ -2538,7 +2538,15 @@
             li.appendChild(check);
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            // 좁은 화면에서 이름이 글자 중간에서 끊기지 않도록 이름과 글자 수를 나눈다.
+            // 이름은 한 줄 말줄임, 글자 수는 오른쪽 고정 — 전체 이름은 버튼의
+            // 텍스트와 aria-label 에 그대로 남아 화면 낭독기와 조사관이 읽는다.
+            const nameSpan = el("span", "council-archive-name", f.name + " ");
+            const countSpan = el("span", "council-archive-count",
+                                 "(" + (f.content_chars || 0) + "자)");
+            btn.append(nameSpan, countSpan);
+            btn.setAttribute("aria-label",
+                             f.name + " (" + (f.content_chars || 0) + "자)");
             btn.addEventListener("click", async () => {
               const content = await fetchProjectFile(pid, f.id);
               if (typeof content === "string") {
@@ -2550,6 +2558,12 @@
                   form.querySelector("[name=when]").value = "";
                   output.value = content;
                 }
+                // 다시 열기는 본문만이 아니라 회의명까지 되돌린다. 제목 칸을 비워 두면
+                // 내보내기 기본 이름이 "회의_회의_날짜"가 되고, 이어서 저장하면 이미 있는
+                // 기록과 겹쳐 엉뚱한 이름을 묻는다. 저장 이름은 <회의명>.txt 이므로
+                // 확장자만 떼어 그대로 제목 칸에 되돌린다.
+                const titleField = form.querySelector("[name=title]");
+                if (titleField) titleField.value = storedName(f).replace(/\.txt$/i, "");
                 result.hidden = false;
                 failed = false;
                 setNotice(notice, f.name + "를 열었습니다. 같은 이름으로 저장하면 새 이름/덮어쓰기를 묻습니다.", "info");
@@ -2938,9 +2952,12 @@
     const body = bodies[tool];
     const field = body ? body.querySelector("input") : null;
     if (field && typeof field.focus === "function") field.focus();
-    const section = host("council-" + tool);
-    if (section && typeof section.scrollIntoView === "function") {
-      try { section.scrollIntoView({ block: "start" }); } catch (_) {}
+    // 좁은 화면에서는 상단 nav가 숨고(901px부터 열린다) 카드가 곧 메뉴다. 그때 카드
+    // 틀을 화면 맨 위로 올리면 방금 연 도구의 첫 입력이 접힌 아래로 밀려, 카드를
+    // 눌러도 "아무 일도 없었다"로 보인다. 스크롤 기준은 카드가 아니라 연 도구 본문이다.
+    const panel = body && typeof body.scrollIntoView === "function" ? body : host("council-" + tool);
+    if (panel && typeof panel.scrollIntoView === "function") {
+      try { panel.scrollIntoView({ block: "start" }); } catch (_) {}
     }
   }
 

@@ -223,6 +223,10 @@
   let clawConversationLabelsRead = null;
   let projects = [];
   let projectsReady = false;
+  // #5882: next-page cursor from the server. When present a "load more" button is
+  // appended; on the last page there is none, so the list no longer stops silently at 50.
+  let projectsNextCursor = null;
+  let projectsLoadingMore = false;
   let activeProject = null;
   let activeProjectFileCount = 0;
   let editingProjectId = null;
@@ -970,6 +974,7 @@
     projectsList.replaceChildren();
     projectsSection.hidden = true;
     projectsEmpty.hidden = true;
+    setProjectsListNote("");
     if (projectsNavButton) {
       projectsNavButton.disabled = true;
       projectsNavButton.setAttribute("aria-disabled", "true");
@@ -1051,7 +1056,66 @@
       row.append(button, manage);
       projectsList.appendChild(row);
     });
+    if (projectsNextCursor && projectsReady) {
+      const moreRow = document.createElement("div");
+      moreRow.className = "project-row project-more-row";
+      const more = document.createElement("button");
+      more.type = "button";
+      more.className = "recent-item project-more";
+      more.id = "projectsMore";
+      more.textContent = uiT("projects-more");
+      more.setAttribute("aria-label", uiT("projects-more-aria"));
+      more.disabled = projectsLoadingMore;
+      more.addEventListener("click", () => { void loadMoreProjects(); });
+      moreRow.appendChild(more);
+      projectsList.appendChild(moreRow);
+    }
     if (projectsBadge) projectsBadge.textContent = projects.length ? String(projects.length) : uiT("create-new");
+  }
+  // #6645: a stale cursor used to report through the composer note, which the
+  // glass desktop frame hides (display: none). The notice belongs next to the
+  // list it is about, so it is always painted.
+  function setProjectsListNote(text) {
+    const note = document.getElementById("projectsListNote");
+    if (!note) return;
+    const copy = typeof text === "string" ? text : "";
+    note.textContent = copy;
+    note.hidden = !copy;
+  }
+  async function loadMoreProjects() {
+    if (!projectsNextCursor || projectsLoadingMore || !authState.authenticated) return false;
+    const epoch = authViewEpoch;
+    const cursor = projectsNextCursor;
+    projectsLoadingMore = true;
+    renderProjects();
+    try {
+      const response = await fetch(
+        `/api/projects?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (epoch !== authViewEpoch || !authState.authenticated || !response.ok || !data || !Array.isArray(data.projects)) {
+        // A cursor this server no longer accepts is answered 400. Refuse to loop:
+        // drop it and show what is already on screen with a plain Korean notice.
+        if (response.status === 400) {
+          projectsNextCursor = null;
+          setProjectsListNote(uiT("projects-more-stale"));
+        }
+        return false;
+      }
+      const seen = new Set(projects.map((item) => item.id));
+      const fresh = data.projects.filter((item) => item && typeof item.id === "string"
+        && typeof item.name === "string" && !seen.has(item.id));
+      projects = projects.concat(fresh);
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
+      setProjectsListNote("");
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      projectsLoadingMore = false;
+      if (epoch === authViewEpoch) renderProjects();
+    }
   }
   async function loadProjects() {
     if (!authState.authenticated || !authState.history_ready) {
@@ -1070,6 +1134,7 @@
       if (epoch !== authViewEpoch || !authState.authenticated) return false;
       if (!response.ok || !data || !Array.isArray(data.projects)) throw new Error("projects unavailable");
       projects = data.projects.filter((item) => item && typeof item.id === "string" && typeof item.name === "string");
+      projectsNextCursor = typeof data.next_cursor === "string" && data.next_cursor ? data.next_cursor : null;
       projectsReady = true;
       if (projectsNavButton) {
         projectsNavButton.disabled = false;
@@ -3137,7 +3202,13 @@
       resolvedPcRuns.add(runId);
       return renderStoredPcAnswer(article, first, outboundMessages, contextSnapshot);
     }
-    if (first.kind !== "pending") return false;
+    if (first.kind !== "pending") {
+      // A 404 means the server has no such result. Forget this run here and
+      // now, so a retry over the same handle skips the check and renders its
+      // own failure instead of reading a gone run again.
+      if (first.gone === true) resolvedPcRuns.add(runId);
+      return false;
+    }
     if (first.conversationId) {
       conversationState.setConversationId(first.conversationId, contextSnapshot.product);
     }
@@ -3162,6 +3233,7 @@
         window.PadiemChatLifecycle?.applyRuntimeLabel?.(article, uiT("pc-processing-note"), "status");
         return;
       }
+      if (result.gone === true) resolvedPcRuns.add(runId);
       if (article.isConnected && !signal.aborted) {
         renderStreamError(article, uiT("stream-incomplete"), outboundMessages, skill, contextSnapshot, false);
       }
@@ -3563,7 +3635,8 @@
       }
       if (requestEpoch !== conversationEpoch) return false;
       handleCustomRequestFailure(error);
-      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord) {
+      if (!clawGeneralRequest && contextSnapshot?.pcRunId && !error?.terminalRecord
+          && !error?.submissionRejected) {
         try {
           const recovered = await recoverStoredPcResult(
             article, contextSnapshot, outboundMessages, skill, controller.signal,
@@ -4331,7 +4404,15 @@
   // payload snapshot is stored, so a stale request cannot be replayed. Nothing
   // in this block submits on a timer; the ticker only re-renders copy and
   // control state. No auto-retry, no provider retry, no server policy change.
-  const CLAW_RETRY_AFTER_MAX_SECONDS = 900; // documented UI ceiling; larger server values clamp here
+  // The bound lives on the SERVER, not here (#5882 A-15). app/usage_gate.py is
+  // the only producer of Retry-After on these routes and it emits a fixed
+  // integer — 60s for the minute bucket — while quota_exhausted and
+  // service_limit_reached carry no header at all (claw_routes.py:270 guards the
+  // emission). A second 900s client re-clamp could therefore never bind; it only
+  // risked disagreeing with the server and blocking this form for a ceiling the
+  // server is not enforcing. The parsed seconds are used exactly as sent, and
+  // the closed parse below is what fails closed on malformed/negative/HTTP-date
+  // values instead of a ceiling.
 
   function clawRetryRemaining() {
     return clawRetrySeconds > 0 ? clawRetrySeconds : 0;
@@ -4386,15 +4467,16 @@
     setClawButtonsBusy(clawInFlight);
   }
 
-  // Closed parse: integer seconds only, positive, clamped to one documented
-  // ceiling. Missing, non-integer, zero and negative values make no countdown claim.
+  // Closed parse: integer seconds only, positive. Missing, non-integer, zero,
+  // negative and HTTP-date (RFC 7231) values make no countdown claim — the copy
+  // then falls back to the safe rate-limit sentence with no fabricated number.
   function parseClawRetryAfter(value) {
     if (typeof value !== "string") return null;
     const raw = value.trim();
     if (!/^[0-9]+$/.test(raw)) return null;
     const seconds = Number.parseInt(raw, 10);
     if (!Number.isFinite(seconds) || seconds < 1) return null;
-    return Math.min(seconds, CLAW_RETRY_AFTER_MAX_SECONDS);
+    return seconds;
   }
 
   function clawRetryAfterFromResponse(response) {
@@ -6823,6 +6905,17 @@
         if (!memory || typeof memory.memory_id !== "string") return;
         clawApprovedList?.appendChild(renderApprovedMemoryCard(memory));
       });
+      // #5882: when the server returns a next cursor, append "load more" and keep the cursor on the button.
+      if (clawApprovedList && typeof data.next_cursor === "string" && data.next_cursor) {
+        const more = document.createElement("button");
+        more.type = "button";
+        more.className = "recent-item memory-more";
+        more.id = "clawApprovedMore";
+        more.dataset.cursor = data.next_cursor;
+        more.textContent = uiT("projects-more");
+        more.addEventListener("click", () => { void loadMoreApprovedMemories(more.dataset.cursor); });
+        clawApprovedList.appendChild(more);
+      }
     } catch (error) {
       if (clawApprovedLoading) clawApprovedLoading.hidden = true;
       setApprovedMemoryStatus(safeLocalUiMessage(error, clawT("claw-memory-error-generic")), "error", error?.code);
@@ -6834,6 +6927,40 @@
     approvedMemoryInFlight = true;
     try {
       await fetchApprovedMemoryList();
+    } finally {
+      approvedMemoryInFlight = false;
+    }
+  }
+
+  async function loadMoreApprovedMemories(cursor) {
+    if (!cursor || approvedMemoryInFlight || !clawApprovedList) return;
+    approvedMemoryInFlight = true;
+    const more = document.getElementById("clawApprovedMore");
+    if (more) more.disabled = true;
+    try {
+      const response = await fetch(
+        `/api/claw/memory?cursor=${encodeURIComponent(cursor)}`,
+        { headers: { "Accept": "application/json" }, cache: "no-store" },
+      );
+      const data = await response.json().catch(() => null);
+      if (response.status === 400) {
+        // Expired or forged cursor: stop, remove the button and show a notice.
+        if (more) more.remove();
+        setApprovedMemoryStatus(uiT("projects-more-stale"), "error");
+        return;
+      }
+      if (!response.ok || !data || !Array.isArray(data.memories)) return;
+      data.memories.forEach((memory) => {
+        if (!memory || typeof memory.memory_id !== "string") return;
+        clawApprovedList.appendChild(renderApprovedMemoryCard(memory));
+      });
+      const next = typeof data.next_cursor === "string" ? data.next_cursor : "";
+      if (more && next) {
+        more.dataset.cursor = next;
+        more.disabled = false;
+      } else if (more) {
+        more.remove();
+      }
     } finally {
       approvedMemoryInFlight = false;
     }

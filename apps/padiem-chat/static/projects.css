@@ -26,6 +26,15 @@
   outline: none;
 }
 
+/* #6645: a stale-cursor notice has to be visible on every theme frame, so it
+   lives with the project list instead of the hidden composer note. */
+.project-list-note {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #a23434;
+}
+
 .project-row {
   display: flex;
   align-items: stretch;
