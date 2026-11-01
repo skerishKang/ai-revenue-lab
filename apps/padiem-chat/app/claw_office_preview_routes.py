@@ -47,8 +47,11 @@ _SIGNATURES = {
 }
 
 
-def _refuse(status: int, code: str) -> JSONResponse:
-    return JSONResponse({"ok": False, "error": {"code": code}},
+def _refuse(status: int, code: str, message: str | None = None) -> JSONResponse:
+    error: dict[str, object] = {"code": code}
+    if message:
+        error["message"] = message
+    return JSONResponse({"ok": False, "error": error},
                         status_code=status, headers=_HEADERS)
 
 
@@ -80,6 +83,10 @@ async def _staged(reader, *, owner_id: str, run_id: str, kind: str):
     except Exception:
         # Never disclose missing run vs foreign owner, device, Drive or Broker.
         return _refuse(404, f"office_{kind}_unavailable")
+    if isinstance(output, VerifiedOfficeBinary) and output.kind == kind and len(output.content) > MAX_OFFICE_BYTES:
+        # The size bound is a Worker memory protection (#5895-C), so an over-bound
+        # file deserves its own honest reason instead of the generic invalid code.
+        return _refuse(503, f"office_{kind}_too_large", "파일이 너무 커서 이 미리보기를 준비하지 못했습니다.")
     signature = _SIGNATURES[kind]
     if (not isinstance(output, VerifiedOfficeBinary) or output.kind != kind
             or not isinstance(output.content, bytes)
