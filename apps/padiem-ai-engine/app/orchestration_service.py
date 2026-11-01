@@ -807,6 +807,7 @@ class OrchestrationEngineService:
              ("move_file", "claw.pc.move_file"),
              ("delete_file", "claw.pc.delete_file")): "files_write",
         }.get(shape)
+        scope_tools = None
         if ceiling is not None:
             # The admitted plan fixes the ceiling even when the owner has no
             # explicit device hint. This internal marker is never a target or
@@ -814,6 +815,12 @@ class OrchestrationEngineService:
             tool_arguments = {ceiling: dict(
                 (tool_arguments or {}).get(ceiling, {}),
             )}
+            # The scope's own tool set, not the plan's literal steps: a scope
+            # may offer a second step over the same authority (a name search
+            # beside a listing, #6460), and the plan shape already fixed which
+            # scope this run is. Server grants are still intersected on top.
+            from kagent.pc_query_adapter import PC_REQUEST_SCOPE_TOOLS
+            scope_tools = frozenset(PC_REQUEST_SCOPE_TOOLS[ceiling])
         driver_options = {"initial_decision": initial_decision} if initial_decision is not None else {}
         from app.byok_passthrough import core_model_policy
         driver = self._pc_query_step_driver_factory(
@@ -826,7 +833,10 @@ class OrchestrationEngineService:
             # Keep legacy driver calls identical when no declaration is sent.
             scope_options = {"declared_plan": declared_plan} if declared_plan is not None else {}
             configure_scope(orch_req.tool_authorization,
-                ceiling_tool_ids=frozenset(step.tool_id for step in orch_req.agent_plan.steps),
+                ceiling_tool_ids=(
+                    scope_tools if scope_tools is not None
+                    else frozenset(step.tool_id for step in orch_req.agent_plan.steps)
+                ),
                 request_context=exec_req.additional_system_context, **scope_options)
         elif declared_plan is not None:
             return _service_error(

@@ -11,12 +11,18 @@ from kagent.pc_query_adapter import (
     PC_LIST_FILES_TOOL_ID,
     PC_QUERY_OWNER,
     PC_READ_FILE_TOOL_ID,
+    PC_SEARCH_CONTENT_TOOL_ID,
+    PC_SEARCH_FILES_TOOL_ID,
     PCQueryStepError,
     StructuredPCQueryStepDriver,
 )
 
-LIST_ONLY = frozenset({PC_LIST_FILES_TOOL_ID})
-LIST_AND_READ = frozenset({PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID})
+# #6460: the admitted scopes carry their search step beside the read step.
+LIST_ONLY = frozenset({PC_LIST_FILES_TOOL_ID, PC_SEARCH_FILES_TOOL_ID})
+LIST_AND_READ = frozenset({
+    PC_LIST_FILES_TOOL_ID, PC_READ_FILE_TOOL_ID,
+    PC_SEARCH_FILES_TOOL_ID, PC_SEARCH_CONTENT_TOOL_ID,
+})
 
 
 def _context():
