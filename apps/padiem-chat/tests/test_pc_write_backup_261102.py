@@ -24,12 +24,13 @@ from pathlib import Path
 import pytest
 
 import shutil as _shutil
+import sys
 
 # These scenarios run the real PowerShell command bytes against a sandbox folder,
 # so they only run where PowerShell exists (Windows lanes); Linux CI skips them.
 pytestmark = pytest.mark.skipif(
-    _shutil.which("powershell") is None and _shutil.which("pwsh") is None,
-    reason="needs Windows PowerShell",
+    sys.platform != "win32",
+    reason="runs real Windows PowerShell and cmd (junctions); Linux CI has neither",
 )
 
 from app.oracle_mesh_read_return_routes import (
