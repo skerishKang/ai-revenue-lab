@@ -172,6 +172,32 @@
           <button disabled>Disable</button><button disabled>Revoke</button><button disabled>Delete</button>
         </div>
       </article>
+      <article class="card" data-device-card data-status="online" data-compatibility="update_available">
+        <div class="card-top">
+          <div><h3>Studio Windows · Synthetic</h3><p class="sub">device_id: device_demo_2 · paired account: account_demo_1</p></div>
+          <span class="badge ok">ONLINE · UPDATE AVAILABLE</span>
+        </div>
+        <dl>
+          <dt>OS / Arch</dt><dd>Windows · x86_64</dd>
+          <dt>Client</dt><dd>0.2.0 · 새 버전이 있어요 (차단 아님)</dd>
+          <dt>Last seen</dt><dd>2026-11-02 09:00 KST · synthetic</dd>
+          <dt>Default policy</dt><dd>read ALLOW · mutation/execute ASK · network/admin DENY</dd>
+          <dt>Update notice</dt><dd data-update-notice="update_available">새 버전이 있어요 · 지금처럼 계속 작업할 수 있습니다</dd>
+        </dl>
+      </article>
+      <article class="card" data-device-card data-status="online" data-compatibility="update_required">
+        <div class="card-top">
+          <div><h3>Lab Windows · Synthetic</h3><p class="sub">device_id: device_demo_3 · paired account: account_demo_1</p></div>
+          <span class="badge warn">ONLINE · UPDATE REQUIRED</span>
+        </div>
+        <dl>
+          <dt>OS / Arch</dt><dd>Windows · x86_64</dd>
+          <dt>Client</dt><dd>0.1.0 · 업데이트가 필요합니다</dd>
+          <dt>Last seen</dt><dd>2026-11-02 08:40 KST · synthetic</dd>
+          <dt>Default policy</dt><dd>read ALLOW · mutation/execute ASK · network/admin DENY</dd>
+          <dt>Update notice</dt><dd data-update-notice="update_required">업데이트가 필요합니다 · 커넥터를 최신 버전으로 업데이트해 주세요</dd>
+        </dl>
+      </article>
     </section>
 
     <section aria-labelledby="escalation-title">
