@@ -154,13 +154,19 @@ def test_the_workspace_exit_is_korean_and_the_close_control_is_legible() -> None
 
 def test_copy_save_and_download_are_the_row_directly_under_the_result() -> None:
     order = run("generate")["actionOrder"]
+    # 2026-11-01: one download control became the three formats
+    # [한글(HWPX)] [워드(DOCX)] [텍스트] — same row, same order otherwise.
     assert order["speech"] == ["councilSpeechCopy", "councilSpeechSave",
+                               "councilSpeechDownloadHwpx", "councilSpeechDownloadDocx",
                                "councilSpeechDownload", "councilSpeechPcSave"]
     assert order["sns"] == ["councilSnsCopy", "councilSnsSave",
+                            "councilSnsDownloadHwpx", "councilSnsDownloadDocx",
                             "councilSnsDownload", "councilSnsPcSave"]
     assert order["meeting"] == ["councilMeetingCopy", "councilMeetingSave",
+                                "councilMeetingDownloadHwpx", "councilMeetingDownloadDocx",
                                 "councilMeetingDownload", "councilMeetingPcSave"]
     assert order["book"] == ["councilBookCopy", "councilBookSave",
+                             "councilBookDownloadHwpx", "councilBookDownloadDocx",
                              "councilBookDownload", "councilBookPcSave"]
     # The primary action is the copy control.
     assert "council-primary" in JS
@@ -239,7 +245,7 @@ def test_the_screen_strings_are_korean() -> None:
                     "PEOPLE &middot; DEMOCRACY", "TXT 다운로드"):
         assert english not in HTML + JS, english
     assert "국회 AI 업무 스튜디오" in HTML and "AI 업무 도구" in HTML
-    assert "텍스트 다운로드" in JS
+    assert "한글(HWPX)" in JS and "워드(DOCX)" in JS and '"텍스트"' in JS
 
 
 def test_the_activity_book_is_named_활동집_on_screen() -> None:

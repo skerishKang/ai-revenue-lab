@@ -358,6 +358,7 @@ async function fetch(url, init) {
 const pageErrors = [];
 const alerts = [];
 const downloads = [];
+const downloadDetails = [];
 
 // ── one council-app.js execution against a fresh fake DOM ──────────────────
 class FakeFormData {
@@ -369,7 +370,11 @@ class FakeFormData {
   }
 }
 
-function FakeBlob() {}
+function FakeBlob(parts, options) {
+  // 2026-11-01: the export tests read the bytes a download would carry.
+  this.parts = Array.isArray(parts) ? parts : (parts === undefined ? [] : [parts]);
+  this.type = (options && options.type) || "";
+}
 class FakeFile extends FakeBlob {
   constructor(parts, name, options) {
     super();
@@ -527,7 +532,15 @@ function spawnSession(windowState = {}) {
         // The download control builds an <a download>; record the file name the
         // user would actually receive, then let the click resolve.
         if (String(tag).toLowerCase() === "a") {
-          node.click = async function () { downloads.push(String(this.download || "")); };
+          node.click = async function () {
+            const name = String(this.download || "");
+            downloads.push(name);
+            // 2026-11-01: only byte-carrying downloads (HWPX/DOCX) land here —
+            // the export tests read the payload with the name.
+            if (this.__exportBytes) {
+              downloadDetails.push({ download: name, bytes: this.__exportBytes });
+            }
+          };
         }
         return node;
       },
@@ -547,11 +560,17 @@ function spawnSession(windowState = {}) {
     Blob: FakeBlob,
     File: FakeFile,
     TextDecoder,
+    TextEncoder,
     FileReader: FakeFileReader,
     URL: { createObjectURL: () => "blob:fixture", revokeObjectURL() {} },
     FormData: FakeFormData,
   };
   vm.createContext(ctx);
+  // The page loads document-export.js alongside the app (defer); the sandbox
+  // does the same so the export buttons exercise the real byte builders.
+  vm.runInContext(
+    fs.readFileSync(councilPath.replace(/council-app\.js$/, "document-export.js"), "utf8"),
+    ctx, { filename: "document-export.js" });
   vm.runInContext(fs.readFileSync(councilPath, "utf8"), ctx, { filename: "council-app.js" });
   return { root, byId, ctx };
 }
@@ -2000,6 +2019,63 @@ const SCENARIOS = {
     await formOff.dispatch("submit");
     await sleep(40);
     out.signedOut.searchSns = snapshotState(off);
+    return out;
+  },
+  async export() {
+    // 2026-11-01: 한글(HWPX)·워드(DOCX)·텍스트 내려받기. 실제 버튼 클릭이
+    // 만드는 바이트와 파일 이름을 그대로 관찰한다. 활동집은 초안의 구조
+    // (제목·기간·회의별 소제목·본문)가 문서로 옮겨지는지 함께 본다.
+    downloads.length = 0;
+    downloadDetails.length = 0;
+    const s = spawnSession({ authenticated: true, user: { name: "테스트 사용자" } });
+    const api = s.ctx.window.PadiemCouncilApps;
+    await api.init();
+    await sleep(30);
+    const out = {};
+
+    // 축사: 폼의 행사명·날짜가 문서 제목과 파일명에 그대로 간다.
+    const speechForm = find(s, "councilSpeechForm");
+    speechForm.querySelector("[name=event]").value = "주민 감사의 밤";
+    speechForm.querySelector("[name=date]").value = "2026-11-01";
+    find(s, "councilSpeechOutput").value =
+      "존경하는 시민 여러분,\n\n함께 감사를 나누는 자리였습니다.\n감사합니다.";
+    await find(s, "councilSpeechDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilSpeechDownloadDocx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilSpeechDownload").dispatch("click");
+    await sleep(20);
+    out.speech = {
+      hwpx: downloadDetails[0], docx: downloadDetails[1], txt: downloads[2],
+    };
+
+    // 활동집: "1. 제목" 첫 줄·기간 줄·"제N장" 소제목·본문 — 구조 보존 확인.
+    find(s, "councilBookOutput").value = [
+      "1. 10월 활동집",
+      "기간: 2026-10-01 ~ 2026-10-31",
+      "제1장 주민 간담회",
+      "관내 주민 40명이 참석해 정자 조성을 논의했다.",
+      "",
+      "제2장 현장 방문",
+      "함께 현장을 살폈다.",
+    ].join("\n");
+    await find(s, "councilBookDownloadHwpx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownloadDocx").dispatch("click");
+    await sleep(20);
+    await find(s, "councilBookDownload").dispatch("click");
+    await sleep(20);
+    out.book = {
+      hwpx: downloadDetails[2], docx: downloadDetails[3], txt: downloads[5],
+    };
+    const toB64 = (detail) => ({
+      download: detail.download,
+      bytes: detail.bytes ? Buffer.from(detail.bytes).toString("base64") : null,
+    });
+    out.speech.hwpx = toB64(out.speech.hwpx);
+    out.speech.docx = toB64(out.speech.docx);
+    out.book.hwpx = toB64(out.book.hwpx);
+    out.book.docx = toB64(out.book.docx);
     return out;
   },
 };
