@@ -135,8 +135,12 @@ class _ReadPort:
 
     _NOT_SENT = object()
 
-    def __init__(self, *, result=None, error=None):
+    def __init__(self, *, result=None, results=None, error=None):
         self.result = result
+        # ``results`` pages one answer per call (a fixed ``result`` repeats
+        # every call) — the #6606 shape, where a big file arrives as one
+        # bounded read per range.
+        self.results = list(results) if results is not None else None
         self.error = error
         self.calls: list[dict] = []
 
@@ -149,14 +153,17 @@ class _ReadPort:
         self.calls.append(recorded)
         if self.error is not None:
             raise self.error
+        if self.results is not None:
+            return self.results.pop(0)
         return self.result
 
 
-def _executor(read_port) -> OracleMeshExecutor:
+def _executor(read_port, **overrides) -> OracleMeshExecutor:
     return OracleMeshExecutor(
         chat_origin="https://chat.padiem.net",
         channel_secret=SECRET,
         read_port=read_port,
+        **overrides,
     )
 
 
@@ -341,10 +348,13 @@ def test_other_read_consumers_keep_the_shared_six_mb_default():
     # No per-call bound is sent, so the port's 6 MB envelope applies.
     assert "max_bytes" not in port.calls[0]
     assert MAX_READ_BYTES == 6_000_000
-    assert MAX_READ_BYTES_ENVELOPE == 20_000_000
+    # #6606 report follow-up: the read envelope is no product bound — the same
+    # owner decision MAX_COMMAND_BYTES already carries. The server's
+    # per-dispatch bound is the only limit one read call has.
+    assert MAX_READ_BYTES_ENVELOPE is None
 
 
-def test_poll_parses_and_rejects_an_unbounded_server_value():
+def test_poll_takes_any_positive_server_bound_and_refuses_malformed_values():
     payload = {
         "ok": True,
         "dispatch": {
@@ -363,9 +373,17 @@ def test_poll_parses_and_rejects_an_unbounded_server_value():
     assert dispatch is not None
     assert dispatch.max_bytes == 1_000_000
 
-    payload["dispatch"]["max_bytes"] = MAX_READ_BYTES_ENVELOPE + 1
-    with pytest.raises(OracleMeshChannelRefused):
-        executor.poll_once()
+    payload["dispatch"]["max_bytes"] = 20_000_001
+    dispatch = executor.poll_once()
+    assert dispatch is not None
+    assert dispatch.max_bytes == 20_000_001
+
+    # The shape checks survive the envelope's removal: a bool, zero, a
+    # negative, a float and a string are all still refused outright.
+    for malformed in (True, 0, -1, 1.5, "20000000"):
+        payload["dispatch"]["max_bytes"] = malformed
+        with pytest.raises(OracleMeshChannelRefused):
+            executor.poll_once()
 
 
 def test_marker_constants_are_the_engine_prefix():
@@ -395,3 +413,58 @@ def test_twenty_mb_explicit_read_bound_survives_execution_and_restart(tmp_path):
     assert restored._pending[1].body == raw
     too_large = _executor(_ReadPort(result=raw + b"a")).execute(dispatch)
     assert too_large.body == PC_FILE_TOO_LARGE_MARKER.encode()
+
+
+def test_a_read_bound_above_the_old_envelope_reaches_the_port_unchanged():
+    """#6606 report follow-up: the server's bound travels to the port unclamped."""
+    port = _ReadPort(result=b"y" * 32)
+    outcome = _executor(port).execute(_dispatch(max_bytes=64_000_000))
+    assert outcome.exit_code == 0
+    assert port.calls[0]["max_bytes"] == 64_000_000
+
+
+def test_pending_restart_keeps_a_bound_above_the_old_envelope(tmp_path):
+    raw = b"b" * 64
+    port = _ReadPort(result=raw)
+    executor = _executor(port, pending_dir=str(tmp_path))
+    dispatch = _dispatch(max_bytes=64_000_000)
+    outcome = executor.execute(dispatch)
+    assert outcome.body == raw
+    assert executor.submit(dispatch, outcome)["retryable"] is True
+    restored = _executor(port, pending_dir=str(tmp_path))
+    assert restored.load_pending() is True
+    assert restored._pending[0].max_bytes == 64_000_000
+    assert restored._pending[1].body == raw
+
+
+def test_a_paged_large_file_arrives_as_per_call_bounded_range_reads():
+    """#6606 alignment: the server pages a file bigger than one answer
+    (#6541 first range + read_file_chunk), so a large read reaches this
+    executor as per-call bounded requests — one dispatch per range, each
+    carrying only that call's server bound. Every arriving call runs
+    independently: the port sees exactly that dispatch's max_bytes, no range
+    is judged against a whole-file envelope, and the ranges concatenate back
+    to the whole file."""
+    range_bound = 20_000_000  # routes.PC_FILES_READ_MAX_BYTES — the per-call
+    # bound Chat puts on every pc_files_read dispatch (first range and every
+    # continuation chunk alike): the connector envelope, not a file cap.
+    last_bound = 5_000_000
+    ranges = [b"a" * range_bound, b"b" * range_bound, b"c" * last_bound]
+    port = _ReadPort(results=ranges)
+    executor = _executor(port)
+    for index, (bound, expected) in enumerate(
+        [(range_bound, ranges[0]), (range_bound, ranges[1]),
+         (last_bound, ranges[2])],
+    ):
+        dispatch = _dispatch(dispatch_id=f"dsp-page-{index}", max_bytes=bound)
+        outcome = executor.execute(dispatch)
+        assert outcome.exit_code == 0
+        assert outcome.body == expected
+    # 45 MB crossed the lane in three bounded calls. Each port call carried
+    # only its own dispatch's bound — never a whole-file size — and no range
+    # was refused against the removed whole-file envelope.
+    whole_file = sum(len(piece) for piece in ranges)
+    assert whole_file > range_bound
+    assert [call["max_bytes"] for call in port.calls] == [
+        range_bound, range_bound, last_bound,
+    ]
