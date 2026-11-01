@@ -369,3 +369,63 @@ def test_twenty_mb_original_storage_is_bound_to_the_verified_pc_read_row(tmp_pat
         user_id=FOREIGN, dispatch_id=row["dispatch_id"],
         conversation_id=CONVERSATION, message_id=MID,
     )) is None
+
+
+@pytest.mark.parametrize("method", ["store_oracle_mesh_original", "store_oracle_mesh_command_result"])
+def test_com2_command_over_six_mb_is_stored_and_returned(tmp_path, method):
+    store, bucket = fixture(tmp_path)
+    store.mesh_command_output_max_bytes = None
+    dispatch_id = _stage(store)
+    raw = "가" * 2_000_001
+    body = raw.encode("utf-8")
+    assert len(body) > 6_000_000
+    digest = _pin(store, dispatch_id, body)
+    fields = dict(user_id=OWNER, dispatch_id=dispatch_id, conversation_id=CONVERSATION,
+                  message_id=MID, raw=raw, expected_sha256=digest, expected_bytes=len(body))
+    asyncio.run(getattr(store, method)(**fields))
+    payload, pinned = asyncio.run(store.read_oracle_mesh_original(
+        user_id=OWNER, dispatch_id=dispatch_id, conversation_id=CONVERSATION, message_id=MID))
+    assert payload == body
+    assert pinned == digest
+    assert len(bucket.objects) == 1
+    with pytest.raises(HistoryForbidden):
+        asyncio.run(getattr(store, method)(**{**fields, "user_id": FOREIGN}))
+
+
+def test_com2_command_limit_can_be_configured_without_changing_pc_read_bound():
+    from app.history import _oracle_mesh_original_max_bytes
+    assert _oracle_mesh_original_max_bytes({"kind": "command"}, None) is None
+    assert _oracle_mesh_original_max_bytes({"kind": "command"}, 8_000_000) == 8_000_000
+    assert _oracle_mesh_original_max_bytes({"kind": "read", "root_ref": "pc_files_read"}, None) == 20_000_000
+    assert _oracle_mesh_original_max_bytes({"kind": "read", "root_ref": "other"}, None) == 6_000_000
+
+
+def test_com2_command_limit_environment(monkeypatch):
+    from app.config import ConfigError
+    from app.local_cpython import _mesh_command_output_limit
+    name = "PADIEM_CHAT_PC_COMMAND_OUTPUT_MAX_BYTES"
+    monkeypatch.delenv(name, raising=False)
+    assert _mesh_command_output_limit() is None
+    monkeypatch.setenv(name, "8000000")
+    assert _mesh_command_output_limit() == 8_000_000
+    for invalid in ("0", "-1", "abc"):
+        monkeypatch.setenv(name, invalid)
+        with pytest.raises(ConfigError):
+            _mesh_command_output_limit()
+
+
+def test_com2_large_command_round_trip_through_local_disk(tmp_path):
+    from app.local_r2 import ThreadedLocalDiskR2
+    store = D1HistoryStore(_D1(tmp_path / "local.sqlite3"),
+                           full_context_bucket=ThreadedLocalDiskR2(tmp_path / "objects"),
+                           mesh_command_output_max_bytes=None)
+    dispatch_id = _stage(store)
+    raw = "가" * 2_000_001
+    body = raw.encode()
+    digest = _pin(store, dispatch_id, body)
+    asyncio.run(store.store_oracle_mesh_original(
+        user_id=OWNER, dispatch_id=dispatch_id, conversation_id=CONVERSATION,
+        message_id=MID, raw=raw, expected_sha256=digest, expected_bytes=len(body)))
+    payload, _ = asyncio.run(store.read_oracle_mesh_original(
+        user_id=OWNER, dispatch_id=dispatch_id, conversation_id=CONVERSATION, message_id=MID))
+    assert payload == body

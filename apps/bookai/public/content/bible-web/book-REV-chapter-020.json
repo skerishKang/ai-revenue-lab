@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:020",
+  "unit_ordinal": 1187,
+  "unit_label": "REV 20",
+  "book_code": "REV",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:20:1",
+      "sequence": 31036,
+      "chapter_label": "REV 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "I saw an angel coming down out of heaven, having the key of the abyss and a great chain in his hand.",
+      "ko": "또 내가 보매 천사가 무저갱 열쇠와 큰 쇠사슬을 그 손에 가지고 하늘로서 내려와서",
+      "source_text_hash": "6f9edb4b2803250b0c70cc6a4ff78142396887d4d4dcd8d110fb1e2511c4f327",
+      "translation_text_hash": "31e0e952f7f29a1d41c05e9fb179aaa5e95db8810b41a62e25e2c20790dda8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보매 천사가 무저갱 열쇠와 큰 쇠사슬을 그 손에 가지고 하늘로서 내려와서"
+      ],
+      "raw_text_hashes": [
+        "31e0e952f7f29a1d41c05e9fb179aaa5e95db8810b41a62e25e2c20790dda8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:2",
+      "sequence": 31037,
+      "chapter_label": "REV 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "He seized the dragon, the old serpent, who is the devil and Satan, who deceives the whole inhabited earth, and bound him for a thousand years,",
+      "ko": "용을 잡으니 곧 옛 뱀이요 마귀요 사단이라 잡아 일천년 동안 결박하여",
+      "source_text_hash": "c4a8b44afa41783168c9194abe502cae9bc32a20dec27178ff150003e923d549",
+      "translation_text_hash": "00ed08b78ab238360874e1ad5f55d3df78187447ef5703d5fadeb9572eba6b02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용을 잡으니 곧 옛 뱀이요 마귀요 사단이라 잡아 일천년 동안 결박하여"
+      ],
+      "raw_text_hashes": [
+        "00ed08b78ab238360874e1ad5f55d3df78187447ef5703d5fadeb9572eba6b02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:3",
+      "sequence": 31038,
+      "chapter_label": "REV 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "and cast him into the abyss, and shut it and sealed it over him, that he should deceive the nations no more until the thousand years were finished. After this, he must be freed for a short time.",
+      "ko": "무저갱에 던져 잠그고 그 위에 인봉하여 천년이 차도록 다시는 만국을 미혹하지 못하게 하였다가 그 후에는 반드시 잠간 놓이리라",
+      "source_text_hash": "3b12d41e8bac40cb29a581e8078116cca53e6c7bd10894551db9bf7b9225a9e2",
+      "translation_text_hash": "1e96ef43a34b15c92b5c5f67a08421a7cdf314465461ad4f051164f41e31dc22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무저갱에 던져 잠그고 그 위에 인봉하여 천년이 차도록 다시는 만국을 미혹하지 못하게 하였다가 그 후에는 반드시 잠간 놓이리라"
+      ],
+      "raw_text_hashes": [
+        "1e96ef43a34b15c92b5c5f67a08421a7cdf314465461ad4f051164f41e31dc22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:4",
+      "sequence": 31039,
+      "chapter_label": "REV 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "I saw thrones, and they sat on them, and judgment was given to them. I saw the souls of those who had been beheaded for the testimony of Jesus and for the word of God, and such as didn’t worship the beast nor his image, and didn’t receive the mark on their forehead and on their hand. They lived and reigned with Christ for a thousand years.",
+      "ko": "또 내가 보좌들을 보니 거기 앉은 자들이 있어 심판하는 권세를 받았더라 또 내가 보니 예수의 증거와 하나님의 말씀을 인하여 목 베임을 받은 자의 영혼들과 또 짐승과 그의 우상에게 경배하지도 아니하고 이마와 손에 그의 표를 받지도 아니한 자들이 살아서 그리스도로 더불어 천년 동안 왕노릇 하니",
+      "source_text_hash": "7c4a091e49ddae075ccc1f54752b1a367a841130652d34ff1fd824845f92ed5c",
+      "translation_text_hash": "a21d1f495df9e4367e30fedd2ccbef22147fed516afa519f37c28dfa9e9f87a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보좌들을 보니 거기 앉은 자들이 있어 심판하는 권세를 받았더라 또 내가 보니 예수의 증거와 하나님의 말씀을 인하여 목 베임을 받은 자의 영혼들과 또 짐승과 그의 우상에게 경배하지도 아니하고 이마와 손에 그의 표를 받지도 아니한 자들이 살아서 그리스도로 더불어 천년 동안 왕노릇 하니"
+      ],
+      "raw_text_hashes": [
+        "a21d1f495df9e4367e30fedd2ccbef22147fed516afa519f37c28dfa9e9f87a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:5",
+      "sequence": 31040,
+      "chapter_label": "REV 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "The rest of the dead didn’t live until the thousand years were finished. This is the first resurrection.",
+      "ko": "(그 나머지 죽은 자들은 그 천년이 차기까지 살지 못하더라) 이는 첫째 부활이라",
+      "source_text_hash": "d316583499495dcc63d30af8c1f15d56a531685aaf3080a3ad35cd0d7b76c199",
+      "translation_text_hash": "e7b8cd710eef18188f6248f58e4e74c6c68a32d795d09171c9da581a281b975b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(그 나머지 죽은 자들은 그 천년이 차기까지 살지 못하더라) 이는 첫째 부활이라"
+      ],
+      "raw_text_hashes": [
+        "e7b8cd710eef18188f6248f58e4e74c6c68a32d795d09171c9da581a281b975b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:6",
+      "sequence": 31041,
+      "chapter_label": "REV 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "Blessed and holy is he who has part in the first resurrection. Over these, the second death has no power, but they will be priests of God and of Christ, and will reign with him one thousand years.",
+      "ko": "이 첫째 부활에 참예하는 자들은 복이 있고 거룩하도다 둘째 사망이 그들을 다스리는 권세가 없고 도리어 그들이 하나님과 그리스도의 제사장이 되어 천년 동안 그리스도로 더불어 왕노릇 하리라",
+      "source_text_hash": "856ad0a6f4330f0071d870ac71f26818794fdf9fdac35dd940948edc1a5a3f57",
+      "translation_text_hash": "36be7fd6766c2c884f0554534cd29211141d889f2890c76c0cd55c16ece96074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 첫째 부활에 참예하는 자들은 복이 있고 거룩하도다 둘째 사망이 그들을 다스리는 권세가 없고 도리어 그들이 하나님과 그리스도의 제사장이 되어 천년 동안 그리스도로 더불어 왕노릇 하리라"
+      ],
+      "raw_text_hashes": [
+        "36be7fd6766c2c884f0554534cd29211141d889f2890c76c0cd55c16ece96074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:7",
+      "sequence": 31042,
+      "chapter_label": "REV 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "And after the thousand years, Satan will be released from his prison",
+      "ko": "천년이 차매 사단이 그 옥에서 놓여",
+      "source_text_hash": "df63ca81c22b60ba4a6825488096c86d3ba0b6a80910352e3f24e30cb2131c7d",
+      "translation_text_hash": "63353e011cb177d9812a96341423fdafd22708d16124f5435d6c6d4bd941d89c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천년이 차매 사단이 그 옥에서 놓여"
+      ],
+      "raw_text_hashes": [
+        "63353e011cb177d9812a96341423fdafd22708d16124f5435d6c6d4bd941d89c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:8",
+      "sequence": 31043,
+      "chapter_label": "REV 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "and he will come out to deceive the nations which are in the four corners of the earth, Gog and Magog, to gather them together to the war, whose number is as the sand of the sea.",
+      "ko": "나와서 땅의 사방 백성 곧 곡과 마곡을 미혹하고 모아 싸움을 붙이리니 그 수가 바다 모래 같으리라",
+      "source_text_hash": "cc53fe13337d264bcf086b253ff4a7e02772b03aac3005bdc16bee6a518cedb6",
+      "translation_text_hash": "936a12eed039e6c630de76eec2358c97000ec3bd6b855637915763d52cf158cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와서 땅의 사방 백성 곧 곡과 마곡을 미혹하고 모아 싸움을 붙이리니 그 수가 바다 모래 같으리라"
+      ],
+      "raw_text_hashes": [
+        "936a12eed039e6c630de76eec2358c97000ec3bd6b855637915763d52cf158cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:9",
+      "sequence": 31044,
+      "chapter_label": "REV 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "They went up over the width of the earth and surrounded the camp of the saints and the beloved city. Fire came down out of heaven from God and devoured them.",
+      "ko": "저희가 지면에 널리 퍼져 성도들의 진과 사랑하시는 성을 두르매 하늘에서 불이 내려와 저희를 소멸하고",
+      "source_text_hash": "8763976def8ed60447fb5e3804e36300a819ca989e797e1d55ce5da6ea216b1b",
+      "translation_text_hash": "01a27e0e5084a74a748988f11aa1df8e2e6cf0dda82152ed0922e49e78169559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 지면에 널리 퍼져 성도들의 진과 사랑하시는 성을 두르매 하늘에서 불이 내려와 저희를 소멸하고"
+      ],
+      "raw_text_hashes": [
+        "01a27e0e5084a74a748988f11aa1df8e2e6cf0dda82152ed0922e49e78169559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:10",
+      "sequence": 31045,
+      "chapter_label": "REV 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "The devil who deceived them was thrown into the lake of fire and sulfur, where the beast and the false prophet are also. They will be tormented day and night forever and ever.",
+      "ko": "또 저희를 미혹하는 마귀가 불과 유황 못에 던지우니 거기는 그 짐승과 거짓 선지자도 있어 세세토록 밤낮 괴로움을 받으리라",
+      "source_text_hash": "001ceb1f0edfc671226eecca1cd0a8b7334eb14eff1cb882df4bafbcdac5d3de",
+      "translation_text_hash": "9d1917ce3d7bbec9d5d38917305d947363680f223d06b6af9ecd485f7bf8d6dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희를 미혹하는 마귀가 불과 유황 못에 던지우니 거기는 그 짐승과 거짓 선지자도 있어 세세토록 밤낮 괴로움을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "9d1917ce3d7bbec9d5d38917305d947363680f223d06b6af9ecd485f7bf8d6dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:11",
+      "sequence": 31046,
+      "chapter_label": "REV 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "I saw a great white throne and him who sat on it, from whose face the earth and the sky fled away. There was found no place for them.",
+      "ko": "또 내가 크고 흰 보좌와 그 위에 앉으신 자를 보니 땅과 하늘이 그 앞에서 피하여 간데 없더라",
+      "source_text_hash": "70d8289493f189d5fbc9c1e27b14e552db7a078cb432dd7bfbf244730899554e",
+      "translation_text_hash": "134e94b770818112615b261dd91e79d63001e21ff446bafff268d1ea9d3b4c36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 크고 흰 보좌와 그 위에 앉으신 자를 보니 땅과 하늘이 그 앞에서 피하여 간데 없더라"
+      ],
+      "raw_text_hashes": [
+        "134e94b770818112615b261dd91e79d63001e21ff446bafff268d1ea9d3b4c36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:12",
+      "sequence": 31047,
+      "chapter_label": "REV 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "I saw the dead, the great and the small, standing before the throne, and they opened books. Another book was opened, which is the book of life. The dead were judged out of the things which were written in the books, according to their works.",
+      "ko": "또 내가 보니 죽은 자들이 무론 대소하고 그 보좌 앞에 섰는데 책들이 펴 있고 또 다른 책이 펴졌으니 곧 생명책이라 죽은 자들이 자기 행위를 따라 책들에 기록된대로 심판을 받으니",
+      "source_text_hash": "692c40b95465adb6a5ab86ada5d99ced88ab0fbaecfed5242c4726521e2a6ce3",
+      "translation_text_hash": "7ac99c8f8292a1707fa0a4206ebc21d66a66ddb00fe384f144377e1983ed2584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보니 죽은 자들이 무론 대소하고 그 보좌 앞에 섰는데 책들이 펴 있고 또 다른 책이 펴졌으니 곧 생명책이라 죽은 자들이 자기 행위를 따라 책들에 기록된대로 심판을 받으니"
+      ],
+      "raw_text_hashes": [
+        "7ac99c8f8292a1707fa0a4206ebc21d66a66ddb00fe384f144377e1983ed2584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:13",
+      "sequence": 31048,
+      "chapter_label": "REV 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "The sea gave up the dead who were in it. Death and Hades gave up the dead who were in them. They were judged, each one according to his works.",
+      "ko": "바다가 그 가운데서 죽은 자들을 내어주고 또 사망과 음부도 그 가운데서 죽은 자들을 내어주매 각 사람이 자기의 행위대로 심판을 받고",
+      "source_text_hash": "8bb1d65bb45fa8d588c2e6709bffb0eb89204ab3491e721467c9a3de9b027981",
+      "translation_text_hash": "175f723988064ede714eee13760f84dcc5e7535a855ad151cab82fdb842c24d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다가 그 가운데서 죽은 자들을 내어주고 또 사망과 음부도 그 가운데서 죽은 자들을 내어주매 각 사람이 자기의 행위대로 심판을 받고"
+      ],
+      "raw_text_hashes": [
+        "175f723988064ede714eee13760f84dcc5e7535a855ad151cab82fdb842c24d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:14",
+      "sequence": 31049,
+      "chapter_label": "REV 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Death and Hades were thrown into the lake of fire. This is the second death, the lake of fire.",
+      "ko": "사망과 음부도 불못에 던지우니 이것은 둘째 사망 곧 불못이라",
+      "source_text_hash": "1eaa7ad9115b2dd7fc5174f0be4e0535e0f742bd6f725bc0a3f4217a2adb9b75",
+      "translation_text_hash": "137420ba97d66d4f7eae5fce8bc11c20f78961e664deb83aea8dd9cfbc7a30bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망과 음부도 불못에 던지우니 이것은 둘째 사망 곧 불못이라"
+      ],
+      "raw_text_hashes": [
+        "137420ba97d66d4f7eae5fce8bc11c20f78961e664deb83aea8dd9cfbc7a30bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:20:15",
+      "sequence": 31050,
+      "chapter_label": "REV 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "If anyone was not found written in the book of life, he was cast into the lake of fire.",
+      "ko": "누구든지 생명책에 기록되지 못한 자는 불못에 던지우더라",
+      "source_text_hash": "95154c058ad4e7221a02f9ba998de06203536106a289d33c862efc373c073e83",
+      "translation_text_hash": "9a4920f0f22aafb5c228f6f1136a38c1e08b742681e3ad0562bcb01677954a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 생명책에 기록되지 못한 자는 불못에 던지우더라"
+      ],
+      "raw_text_hashes": [
+        "9a4920f0f22aafb5c228f6f1136a38c1e08b742681e3ad0562bcb01677954a13"
+      ]
+    }
+  ]
+}

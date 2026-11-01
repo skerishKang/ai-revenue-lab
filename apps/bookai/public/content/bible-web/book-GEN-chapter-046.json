@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:046",
+  "unit_ordinal": 46,
+  "unit_label": "GEN 46",
+  "book_code": "GEN",
+  "chapter_number": 46,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:46:1",
+      "sequence": 1388,
+      "chapter_label": "GEN 46",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 1
+        }
+      ],
+      "en": "Israel traveled with all that he had, and came to Beersheba, and offered sacrifices to the God of his father, Isaac.",
+      "ko": "이스라엘이 모든 소유를 이끌고 발행하여 브엘세바에 이르러 그 아비 이삭의 하나님께 희생을 드리니",
+      "source_text_hash": "de9a021dba0c25b5bfe8dc0046563ca65238f79afb338c63c3ae01b3593ba172",
+      "translation_text_hash": "d84a0a6c7cc89408a688f172bd2579e84e06d740097cc1f7b9d4ef6b1ce044bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 모든 소유를 이끌고 발행하여 브엘세바에 이르러 그 아비 이삭의 하나님께 희생을 드리니"
+      ],
+      "raw_text_hashes": [
+        "d84a0a6c7cc89408a688f172bd2579e84e06d740097cc1f7b9d4ef6b1ce044bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:2",
+      "sequence": 1389,
+      "chapter_label": "GEN 46",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 2
+        }
+      ],
+      "en": "God spoke to Israel in the visions of the night, and said, “Jacob, Jacob!” He said, “Here I am.”",
+      "ko": "밤에 하나님이 이상 중에 이스라엘에게 나타나시고 불러 가라사대 야곱아 야곱아 하시는지라 야곱이 가로되 내가 여기 있나이다 하매",
+      "source_text_hash": "2735b77536be13b1b2dcdaf617032e15980e4ae4b676f33fc44432bced38b2cf",
+      "translation_text_hash": "ef7ae96bb79d75f352f4d04da37ede87c552f83c00116c00dd7ae9a90b7de618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 하나님이 이상 중에 이스라엘에게 나타나시고 불러 가라사대 야곱아 야곱아 하시는지라 야곱이 가로되 내가 여기 있나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "ef7ae96bb79d75f352f4d04da37ede87c552f83c00116c00dd7ae9a90b7de618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:3",
+      "sequence": 1390,
+      "chapter_label": "GEN 46",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 3
+        }
+      ],
+      "en": "He said, “I am God, the God of your father. Don’t be afraid to go down into Egypt, for there I will make of you a great nation.",
+      "ko": "하나님이 가라사대 나는 하나님이라 네 아비의 하나님이니 애굽으로 내려가기를 두려워 말라 내가 거기서 너로 큰 민족을 이루게 하리라",
+      "source_text_hash": "78fafcbb3a8c13e4b3f6136fda8f9043e08ed01b33f32797d42d6cf505a3ad33",
+      "translation_text_hash": "14610f8fe5094c5610e1ed8cf29db2bbb19150ddc9db12c8ebe2770973b59988",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 나는 하나님이라 네 아비의 하나님이니 애굽으로 내려가기를 두려워 말라 내가 거기서 너로 큰 민족을 이루게 하리라"
+      ],
+      "raw_text_hashes": [
+        "14610f8fe5094c5610e1ed8cf29db2bbb19150ddc9db12c8ebe2770973b59988"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:4",
+      "sequence": 1391,
+      "chapter_label": "GEN 46",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 4
+        }
+      ],
+      "en": "I will go down with you into Egypt. I will also surely bring you up again. Joseph’s hand will close your eyes.”",
+      "ko": "내가 너와 함께 애굽으로 내려가겠고 정녕 너를 인도하여 다시 올라올 것이며 요셉이 그 손으로 네 눈을 감기리라 하셨더라",
+      "source_text_hash": "e61360496437ea6c58bb04396451967a1ca4fa9bfa03bb561e0ad4c8d334f68e",
+      "translation_text_hash": "2cf7130b696f92b5d7a6b6d9a64903fe0f9e5c5adbe8d00907206d1239083351",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 함께 애굽으로 내려가겠고 정녕 너를 인도하여 다시 올라올 것이며 요셉이 그 손으로 네 눈을 감기리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "2cf7130b696f92b5d7a6b6d9a64903fe0f9e5c5adbe8d00907206d1239083351"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:5",
+      "sequence": 1392,
+      "chapter_label": "GEN 46",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 5
+        }
+      ],
+      "en": "Jacob rose up from Beersheba, and the sons of Israel carried Jacob, their father, their little ones, and their wives, in the wagons which Pharaoh had sent to carry him.",
+      "ko": "야곱이 브엘세바에서 발행할쌔 이스라엘의 아들들이 바로의 태우려고 보낸 수레에 자기들의 아비 야곱과 자기들의 처자들을 태웠고",
+      "source_text_hash": "793cbf2130d6cd938f14a2232988283c0ce795073b8fd94c37c8ae72ce64961b",
+      "translation_text_hash": "06b0781741bd024f73e3ffd09889bb1ef9a7b18925ec80587bca254c520ff3e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 브엘세바에서 발행할쌔 이스라엘의 아들들이 바로의 태우려고 보낸 수레에 자기들의 아비 야곱과 자기들의 처자들을 태웠고"
+      ],
+      "raw_text_hashes": [
+        "06b0781741bd024f73e3ffd09889bb1ef9a7b18925ec80587bca254c520ff3e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:6",
+      "sequence": 1393,
+      "chapter_label": "GEN 46",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 6
+        }
+      ],
+      "en": "They took their livestock, and their goods, which they had gotten in the land of Canaan, and came into Egypt—Jacob, and all his offspring with him,",
+      "ko": "그 생축과 가나안 땅에서 얻은 재물을 이끌었으며 야곱과 그 자손들이 다함께 애굽으로 갔더라",
+      "source_text_hash": "32cff2c4bcc65e0a90fd51c6466ba79d167b2d723fcfabfe332402c18ba2cd56",
+      "translation_text_hash": "2661bee32ea5977e1be55f8af7f1f4489ff17fec14613c3d957a191252805287",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 생축과 가나안 땅에서 얻은 재물을 이끌었으며 야곱과 그 자손들이 다함께 애굽으로 갔더라"
+      ],
+      "raw_text_hashes": [
+        "2661bee32ea5977e1be55f8af7f1f4489ff17fec14613c3d957a191252805287"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:7",
+      "sequence": 1394,
+      "chapter_label": "GEN 46",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 7
+        }
+      ],
+      "en": "his sons, and his sons’ sons with him, his daughters, and his sons’ daughters, and he brought all his offspring with him into Egypt.",
+      "ko": "이와 같이 야곱이 그 아들들과 손자들과 딸들과 손녀들 곧 그 모든 자손을 데리고 애굽으로 갔더라",
+      "source_text_hash": "72fb396deaa839c1794f2e980b0917b90dfda73cfebd0d246ac4c74a042436d2",
+      "translation_text_hash": "b937936b39cc22e89e87d63d42a26ccabbc851571ae08503836925297fdf39ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 야곱이 그 아들들과 손자들과 딸들과 손녀들 곧 그 모든 자손을 데리고 애굽으로 갔더라"
+      ],
+      "raw_text_hashes": [
+        "b937936b39cc22e89e87d63d42a26ccabbc851571ae08503836925297fdf39ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:8",
+      "sequence": 1395,
+      "chapter_label": "GEN 46",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 8
+        }
+      ],
+      "en": "These are the names of the children of Israel, who came into Egypt, Jacob and his sons: Reuben, Jacob’s firstborn.",
+      "ko": "애굽으로 내려간 이스라엘 가족의 이름이 이러하니 야곱과 그 아들들 곧 야곱의 맏아들 르우벤과",
+      "source_text_hash": "ebab84ccfc138fc5bcaeac63f3088869a0f053b39b8770f188bd11fc7c111bc0",
+      "translation_text_hash": "1bc3af5954e3fa1c28cf54698c21831faa67b272c844862d1fb89ddd1eb957dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽으로 내려간 이스라엘 가족의 이름이 이러하니 야곱과 그 아들들 곧 야곱의 맏아들 르우벤과"
+      ],
+      "raw_text_hashes": [
+        "1bc3af5954e3fa1c28cf54698c21831faa67b272c844862d1fb89ddd1eb957dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:9",
+      "sequence": 1396,
+      "chapter_label": "GEN 46",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 9
+        }
+      ],
+      "en": "The sons of Reuben: Hanoch, Pallu, Hezron, and Carmi.",
+      "ko": "르우벤의 아들 하녹과 발루와 헤스론과 갈미요",
+      "source_text_hash": "4160ba7f7e813fff6b59d7440a418a3a505e10eca88619d3a8f10dd735c47c66",
+      "translation_text_hash": "2f9eda97cc5d4921836e2a4edea4ae0bcd6237e56af377cb71359c6a023ec68a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤의 아들 하녹과 발루와 헤스론과 갈미요"
+      ],
+      "raw_text_hashes": [
+        "2f9eda97cc5d4921836e2a4edea4ae0bcd6237e56af377cb71359c6a023ec68a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:10",
+      "sequence": 1397,
+      "chapter_label": "GEN 46",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 10
+        }
+      ],
+      "en": "The sons of Simeon: Jemuel, Jamin, Ohad, Jachin, Zohar, and Shaul the son of a Canaanite woman.",
+      "ko": "시므온의 아들 곧 여무엘과 야민과 오핫과 야긴과 스할과 가나안 여인의 소생 사울이요",
+      "source_text_hash": "ae73097e9078b0137ac24f911836034845356169970c7ff96e318242a1bdb096",
+      "translation_text_hash": "5b2f02d8e24fda2f12fff94962101cc5c771009086732e234e6160b410b55b99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온의 아들 곧 여무엘과 야민과 오핫과 야긴과 스할과 가나안 여인의 소생 사울이요"
+      ],
+      "raw_text_hashes": [
+        "5b2f02d8e24fda2f12fff94962101cc5c771009086732e234e6160b410b55b99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:11",
+      "sequence": 1398,
+      "chapter_label": "GEN 46",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 11
+        }
+      ],
+      "en": "The sons of Levi: Gershon, Kohath, and Merari.",
+      "ko": "레위의 아들 곧 게르손과 그핫과 므라리요",
+      "source_text_hash": "f0d255e4b9978f73512129777a835fd7d2e32a863ae6ff1f336fda45032f1d94",
+      "translation_text_hash": "9d1ddbf0b905fed96fd8c28926d209d5d26f18077de17bdb446042e7dce63e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들 곧 게르손과 그핫과 므라리요"
+      ],
+      "raw_text_hashes": [
+        "9d1ddbf0b905fed96fd8c28926d209d5d26f18077de17bdb446042e7dce63e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:12",
+      "sequence": 1399,
+      "chapter_label": "GEN 46",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 12
+        }
+      ],
+      "en": "The sons of Judah: Er, Onan, Shelah, Perez, and Zerah; but Er and Onan died in the land of Canaan. The sons of Perez were Hezron and Hamul.",
+      "ko": "유다의 아들 곧 엘과 오난과 셀라와 베레스와 세라니 엘과 오난은 가나안 땅에서 죽었고 또 베레스의 아들 곧 헤스론과 하물이요",
+      "source_text_hash": "bd505771187c1fc68779630ca2d1076885b3a389af78617a91ed664c5fc36d66",
+      "translation_text_hash": "0a41190e22ca28588c1fa1fb579ef063632169ab47d029680bdce28b6fee4087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들 곧 엘과 오난과 셀라와 베레스와 세라니 엘과 오난은 가나안 땅에서 죽었고 또 베레스의 아들 곧 헤스론과 하물이요"
+      ],
+      "raw_text_hashes": [
+        "0a41190e22ca28588c1fa1fb579ef063632169ab47d029680bdce28b6fee4087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:13",
+      "sequence": 1400,
+      "chapter_label": "GEN 46",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 13
+        }
+      ],
+      "en": "The sons of Issachar: Tola, Puvah, Iob, and Shimron.",
+      "ko": "잇사갈의 아들 곧 돌라와 부와와 욥과 시므론이요",
+      "source_text_hash": "80785c43c6502cdf352a739b5aa33a1291f93b1742ed29d61ab8dc11ba706794",
+      "translation_text_hash": "cfb7f24b7282bad9906203f0ce11baaebf1ecb7b978d44abc9e665a5518c0414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈의 아들 곧 돌라와 부와와 욥과 시므론이요"
+      ],
+      "raw_text_hashes": [
+        "cfb7f24b7282bad9906203f0ce11baaebf1ecb7b978d44abc9e665a5518c0414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:14",
+      "sequence": 1401,
+      "chapter_label": "GEN 46",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 14
+        }
+      ],
+      "en": "The sons of Zebulun: Sered, Elon, and Jahleel.",
+      "ko": "스불론의 아들 곧 세렛과 엘론과 얄르엘이니",
+      "source_text_hash": "8a35f09fddc0e9b64c30a15d02acdc621530e38fb36096db4cfa2f8fea2d03de",
+      "translation_text_hash": "962246bf7a06afef6089281609b877b549a3b4c8142b077bc9c4e4da167548c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론의 아들 곧 세렛과 엘론과 얄르엘이니"
+      ],
+      "raw_text_hashes": [
+        "962246bf7a06afef6089281609b877b549a3b4c8142b077bc9c4e4da167548c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:15",
+      "sequence": 1402,
+      "chapter_label": "GEN 46",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 15
+        }
+      ],
+      "en": "These are the sons of Leah, whom she bore to Jacob in Paddan Aram, with his daughter Dinah. All the souls of his sons and his daughters were thirty-three.",
+      "ko": "이들은 레아가 밧단아람에서 야곱에게 낳은 자손들이라 그 딸 디나를 합하여 남자와 여자가 삼십 삼명이며",
+      "source_text_hash": "acfabec554c33c9a7582c074b3980c1376db81f3eba783659a5222571fb53deb",
+      "translation_text_hash": "74448a715544c8964ead06154de601c556e2e37c9a0ccb18dbd6ab079b3a561c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 레아가 밧단아람에서 야곱에게 낳은 자손들이라 그 딸 디나를 합하여 남자와 여자가 삼십 삼명이며"
+      ],
+      "raw_text_hashes": [
+        "74448a715544c8964ead06154de601c556e2e37c9a0ccb18dbd6ab079b3a561c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:16",
+      "sequence": 1403,
+      "chapter_label": "GEN 46",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 16
+        }
+      ],
+      "en": "The sons of Gad: Ziphion, Haggi, Shuni, Ezbon, Eri, Arodi, and Areli.",
+      "ko": "갓의 아들 곧 시뵨과 학기와 수니와 에스본과 에리와 아로디와 아렐리요",
+      "source_text_hash": "3e3f30cf77f9641c8012bfede640fa8b8be23cd9d21d403e8f824135cff19d27",
+      "translation_text_hash": "8a13f0ddaf0bdb992c6f781e8ac169860917a2913225ead3f810440db5de18b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓의 아들 곧 시뵨과 학기와 수니와 에스본과 에리와 아로디와 아렐리요"
+      ],
+      "raw_text_hashes": [
+        "8a13f0ddaf0bdb992c6f781e8ac169860917a2913225ead3f810440db5de18b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:17",
+      "sequence": 1404,
+      "chapter_label": "GEN 46",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 17
+        }
+      ],
+      "en": "The sons of Asher: Imnah, Ishvah, Ishvi, Beriah, and Serah their sister. The sons of Beriah: Heber and Malchiel.",
+      "ko": "아셀의 아들 곧 임나와 이스와와 이스위와 브리아와 그들의 누이 세라며 또 브리아의 아들 곧 헤벨과 말기엘이니",
+      "source_text_hash": "6d972cad3ee613b964ce2abc4657eede1e73c5a207e0713ed5e8c32e8cac4694",
+      "translation_text_hash": "d8c40ae4bc7037c1d5544ecc5c0d7984db92b884f06d986b9f1c9748dad76aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀의 아들 곧 임나와 이스와와 이스위와 브리아와 그들의 누이 세라며 또 브리아의 아들 곧 헤벨과 말기엘이니"
+      ],
+      "raw_text_hashes": [
+        "d8c40ae4bc7037c1d5544ecc5c0d7984db92b884f06d986b9f1c9748dad76aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:18",
+      "sequence": 1405,
+      "chapter_label": "GEN 46",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 18
+        }
+      ],
+      "en": "These are the sons of Zilpah, whom Laban gave to Leah, his daughter, and these she bore to Jacob, even sixteen souls.",
+      "ko": "이들은 라반이 그 딸 레아에게 준 실바가 야곱에게 낳은 자손들이라 합 십 륙명이요",
+      "source_text_hash": "0ba588b00fb581ef108d4a761088150eea31e4fb470bee008fb3e678f9b9ab68",
+      "translation_text_hash": "7c54f05df9308c96fbf910940639e223b5a7f18b8f48192f414094c8fd5e0120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 라반이 그 딸 레아에게 준 실바가 야곱에게 낳은 자손들이라 합 십 륙명이요"
+      ],
+      "raw_text_hashes": [
+        "7c54f05df9308c96fbf910940639e223b5a7f18b8f48192f414094c8fd5e0120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:19",
+      "sequence": 1406,
+      "chapter_label": "GEN 46",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Rachel, Jacob’s wife: Joseph and Benjamin.",
+      "ko": "야곱의 아내 라헬의 아들 곧 요셉과 베냐민이요",
+      "source_text_hash": "2530edd3ada2382959aa115e0d2938dd43c451fab42b0655c57261d8010e8f61",
+      "translation_text_hash": "6353ddff69263fcd69b4527b7425ac6b4435053f2253ceb3bd88fe6d4113e971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱의 아내 라헬의 아들 곧 요셉과 베냐민이요"
+      ],
+      "raw_text_hashes": [
+        "6353ddff69263fcd69b4527b7425ac6b4435053f2253ceb3bd88fe6d4113e971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:20",
+      "sequence": 1407,
+      "chapter_label": "GEN 46",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 20
+        }
+      ],
+      "en": "To Joseph in the land of Egypt were born Manasseh and Ephraim, whom Asenath, the daughter of Potiphera, priest of On, bore to him.",
+      "ko": "애굽 땅에서 온 제사장 보디베라의 딸 아스낫이 요셉에게 낳은 므낫세와 에브라임이요",
+      "source_text_hash": "eeb6a81ad5472a963b96b639429c3e7ebf85ee20f059c07a55dc10dc01aa680a",
+      "translation_text_hash": "39d93ff2fb5ef6fd4d79a084e4fda59a3e5ac9be243a457bc141339d0f788233",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에서 온 제사장 보디베라의 딸 아스낫이 요셉에게 낳은 므낫세와 에브라임이요"
+      ],
+      "raw_text_hashes": [
+        "39d93ff2fb5ef6fd4d79a084e4fda59a3e5ac9be243a457bc141339d0f788233"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:21",
+      "sequence": 1408,
+      "chapter_label": "GEN 46",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Benjamin: Bela, Becher, Ashbel, Gera, Naaman, Ehi, Rosh, Muppim, Huppim, and Ard.",
+      "ko": "베냐민의 아들 곧 벨라와 베겔과 아스벨과 게라와 나아만과 에히와 로스와 뭅빔과 훕빔과 아릇이니",
+      "source_text_hash": "425268db394f74973083d16fc0d04fdf5179eefbdd4b38870a07d03637b9eb3b",
+      "translation_text_hash": "00027654bde179d5ca10a6f33ed8041b1ae7703e63e6085910bce5faaedf4455",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민의 아들 곧 벨라와 베겔과 아스벨과 게라와 나아만과 에히와 로스와 뭅빔과 훕빔과 아릇이니"
+      ],
+      "raw_text_hashes": [
+        "00027654bde179d5ca10a6f33ed8041b1ae7703e63e6085910bce5faaedf4455"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:22",
+      "sequence": 1409,
+      "chapter_label": "GEN 46",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 22
+        }
+      ],
+      "en": "These are the sons of Rachel, who were born to Jacob: all the souls were fourteen.",
+      "ko": "이들은 라헬이 야곱에게 낳은 자손이라 합 십 사명이요",
+      "source_text_hash": "ed6fd1be6fc6700329bfb5100495ec9118442ea398620d797f8a86df01a65d38",
+      "translation_text_hash": "a17c8144baa29c7462f542c145e7272737d082bd11cdc729c4d5a96d4c926dea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 라헬이 야곱에게 낳은 자손이라 합 십 사명이요"
+      ],
+      "raw_text_hashes": [
+        "a17c8144baa29c7462f542c145e7272737d082bd11cdc729c4d5a96d4c926dea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:23",
+      "sequence": 1410,
+      "chapter_label": "GEN 46",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 23
+        }
+      ],
+      "en": "The son of Dan: Hushim.",
+      "ko": "단의 아들 후심이요",
+      "source_text_hash": "20b2e55aeefc2bea09814722ed719c698474c67f5122a731610afd50efdb18e4",
+      "translation_text_hash": "5caf2a2409623ad5804d869775be21f1031f3b430b738598c7400cf97cc980ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단의 아들 후심이요"
+      ],
+      "raw_text_hashes": [
+        "5caf2a2409623ad5804d869775be21f1031f3b430b738598c7400cf97cc980ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:24",
+      "sequence": 1411,
+      "chapter_label": "GEN 46",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 24
+        }
+      ],
+      "en": "The sons of Naphtali: Jahzeel, Guni, Jezer, and Shillem.",
+      "ko": "납달리의 아들 곧 야스엘과 구니와 예셀과 실렘이라",
+      "source_text_hash": "bad839f11c61054434a888508c0aa04cdce93f618d95f8ef7c805025160e7c19",
+      "translation_text_hash": "4d15d4b444dd8d87503eb17630c54545e933c7a4870e6a664083d337519f3079",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리의 아들 곧 야스엘과 구니와 예셀과 실렘이라"
+      ],
+      "raw_text_hashes": [
+        "4d15d4b444dd8d87503eb17630c54545e933c7a4870e6a664083d337519f3079"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:25",
+      "sequence": 1412,
+      "chapter_label": "GEN 46",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 25
+        }
+      ],
+      "en": "These are the sons of Bilhah, whom Laban gave to Rachel, his daughter, and these she bore to Jacob: all the souls were seven.",
+      "ko": "이들은 라반이 그 딸 라헬에게 준 빌하가 야곱에게 낳은 자손이니 합이 칠명이라",
+      "source_text_hash": "54222f7fc05f184dfffb6a9b1c3bfcd0d0dd0fcc4df1acd7fb6d0e968c450bfa",
+      "translation_text_hash": "e0d7273a8409af1c68a477dc6c5b1a5bb5afc2bb19c1e60199a833b3e0b1d924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 라반이 그 딸 라헬에게 준 빌하가 야곱에게 낳은 자손이니 합이 칠명이라"
+      ],
+      "raw_text_hashes": [
+        "e0d7273a8409af1c68a477dc6c5b1a5bb5afc2bb19c1e60199a833b3e0b1d924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:26",
+      "sequence": 1413,
+      "chapter_label": "GEN 46",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 26
+        }
+      ],
+      "en": "All the souls who came with Jacob into Egypt, who were his direct offspring, in addition to Jacob’s sons’ wives, all the souls were sixty-six.",
+      "ko": "야곱과 함께 애굽에 이른 자는 야곱의 자부 외에 육십 륙명이니 이는 다 야곱의 몸에서 나온 자며",
+      "source_text_hash": "0ecff9fbbe15965c31dbf59579deb6e84e9859b90d7b76be43c50be6306a159e",
+      "translation_text_hash": "d909f0f485642ccb9bfb1fcd924ea6fdb8f5a570a9e358b0ec50eb21b9ed92b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱과 함께 애굽에 이른 자는 야곱의 자부 외에 육십 륙명이니 이는 다 야곱의 몸에서 나온 자며"
+      ],
+      "raw_text_hashes": [
+        "d909f0f485642ccb9bfb1fcd924ea6fdb8f5a570a9e358b0ec50eb21b9ed92b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:27",
+      "sequence": 1414,
+      "chapter_label": "GEN 46",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 27
+        }
+      ],
+      "en": "The sons of Joseph, who were born to him in Egypt, were two souls. All the souls of the house of Jacob, who came into Egypt, were seventy.",
+      "ko": "애굽에서 요셉에게 낳은 아들이 두 명이니 야곱의 집 사람으로 애굽에 이른 자의 도합이 칠십명이었더라",
+      "source_text_hash": "d823648e87f3dfdf3e7923bc28e443dd08ce42f7a99ad735a3c4524443a223c4",
+      "translation_text_hash": "e976d72e52a52745feaa9a0d586cc17746aad5e12b84a388fe5657e9616a17f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 요셉에게 낳은 아들이 두 명이니 야곱의 집 사람으로 애굽에 이른 자의 도합이 칠십명이었더라"
+      ],
+      "raw_text_hashes": [
+        "e976d72e52a52745feaa9a0d586cc17746aad5e12b84a388fe5657e9616a17f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:28",
+      "sequence": 1415,
+      "chapter_label": "GEN 46",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 28
+        }
+      ],
+      "en": "Jacob sent Judah before him to Joseph, to show the way before him to Goshen, and they came into the land of Goshen.",
+      "ko": "야곱이 유다를 요셉에게 미리 보내어 자기를 고센으로 인도하게 하고 다 고센 땅에 이르니",
+      "source_text_hash": "5212fa425f05ad3b2bc21b553010f244da83fb43110e8987f45a2c44b18e9a3f",
+      "translation_text_hash": "e09544e5a87970aef8d88348ec695d33c88132369048077b7c0bd58cff2c408f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 유다를 요셉에게 미리 보내어 자기를 고센으로 인도하게 하고 다 고센 땅에 이르니"
+      ],
+      "raw_text_hashes": [
+        "e09544e5a87970aef8d88348ec695d33c88132369048077b7c0bd58cff2c408f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:29",
+      "sequence": 1416,
+      "chapter_label": "GEN 46",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 29
+        }
+      ],
+      "en": "Joseph prepared his chariot, and went up to meet Israel, his father, in Goshen. He presented himself to him, and fell on his neck, and wept on his neck a good while.",
+      "ko": "요셉이 수레를 갖추고 고센으로 올라가서 아비 이스라엘을 맞으며 그에게 보이고 그 목을 어긋맞겨 안고 얼마 동안 울매",
+      "source_text_hash": "4cb4b1ec3cad70b8fb1da9ea69bf966dc2e21de39b552acbad52e3c720099d6d",
+      "translation_text_hash": "2f80705849bbb52b1c261bd67133f399f348be0fe170ef5b8415e5b61912634a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 수레를 갖추고 고센으로 올라가서 아비 이스라엘을 맞으며 그에게 보이고 그 목을 어긋맞겨 안고 얼마 동안 울매"
+      ],
+      "raw_text_hashes": [
+        "2f80705849bbb52b1c261bd67133f399f348be0fe170ef5b8415e5b61912634a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:30",
+      "sequence": 1417,
+      "chapter_label": "GEN 46",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 30
+        }
+      ],
+      "en": "Israel said to Joseph, “Now let me die, since I have seen your face, that you are still alive.”",
+      "ko": "이스라엘이 요셉에게 이르되 네가 지금까지 살아 있고 내가 네 얼굴을 보았으니 지금 죽어도 가하도다",
+      "source_text_hash": "31a699723b45d423dd05d37d622ab783f504fda95fd07487a02af3f7a86f43bc",
+      "translation_text_hash": "926a962f8235785ad7855be4c166525644a8a177896473bb187f4fa80a72a4b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 요셉에게 이르되 네가 지금까지 살아 있고 내가 네 얼굴을 보았으니 지금 죽어도 가하도다"
+      ],
+      "raw_text_hashes": [
+        "926a962f8235785ad7855be4c166525644a8a177896473bb187f4fa80a72a4b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:31",
+      "sequence": 1418,
+      "chapter_label": "GEN 46",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 31
+        }
+      ],
+      "en": "Joseph said to his brothers, and to his father’s house, “I will go up, and speak with Pharaoh, and will tell him, ‘My brothers, and my father’s house, who were in the land of Canaan, have come to me.",
+      "ko": "요셉이 그 형들과 아비의 권속에게 이르되 내가 올라가서 바로에게 고하여 이르기를 가나안 땅에 있던 내 형들과 내 아비의 권속이 내게로 왔는데",
+      "source_text_hash": "9591ce845615969810730887be7fe65904a6e60c097e8a2f4f47f2e5e760ae92",
+      "translation_text_hash": "68f046ad697cc0f880f5061a4a579b732f056078abe85bf97190659ab940a081",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 형들과 아비의 권속에게 이르되 내가 올라가서 바로에게 고하여 이르기를 가나안 땅에 있던 내 형들과 내 아비의 권속이 내게로 왔는데"
+      ],
+      "raw_text_hashes": [
+        "68f046ad697cc0f880f5061a4a579b732f056078abe85bf97190659ab940a081"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:32",
+      "sequence": 1419,
+      "chapter_label": "GEN 46",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 32
+        }
+      ],
+      "en": "These men are shepherds, for they have been keepers of livestock, and they have brought their flocks, and their herds, and all that they have.’",
+      "ko": "그들은 목자라 목축으로 업을 삼으므로 그 양과 소와 모든 소유를 이끌고 왔나이다 하리니",
+      "source_text_hash": "dd3480cf74a32101268fabcc9efb1b12cf548eded73830d1a10335e587839fcc",
+      "translation_text_hash": "d3582331767082db7c5197acb06d9e4f58d7d1bff0a3517b788379227d95a796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 목자라 목축으로 업을 삼으므로 그 양과 소와 모든 소유를 이끌고 왔나이다 하리니"
+      ],
+      "raw_text_hashes": [
+        "d3582331767082db7c5197acb06d9e4f58d7d1bff0a3517b788379227d95a796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:33",
+      "sequence": 1420,
+      "chapter_label": "GEN 46",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 33
+        }
+      ],
+      "en": "It will happen, when Pharaoh summons you, and will say, ‘What is your occupation?’",
+      "ko": "바로가 당신들을 불러서 너희의 업이 무엇이냐 묻거든",
+      "source_text_hash": "e9fa5425844b201ca3851e0b1aa638735d8fd8a18a7c6fc36f04d135818b827f",
+      "translation_text_hash": "0aabba61909d3e4436602e10f3585d104074d37ef3b23557519ce9813f4a80b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 당신들을 불러서 너희의 업이 무엇이냐 묻거든"
+      ],
+      "raw_text_hashes": [
+        "0aabba61909d3e4436602e10f3585d104074d37ef3b23557519ce9813f4a80b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:46:34",
+      "sequence": 1421,
+      "chapter_label": "GEN 46",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 46,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 46,
+          "verse": 34
+        }
+      ],
+      "en": "that you shall say, ‘Your servants have been keepers of livestock from our youth even until now, both we, and our fathers:’ that you may dwell in the land of Goshen; for every shepherd is an abomination to the Egyptians.”",
+      "ko": "당신들은 고하기를 주의 종들은 어렸을 때부터 지금까지 목축하는 자이온데 우리와 우리 선조가 다 그러하니이다 하소서 애굽 사람은 다 목축을 가증히 여기나니 당신들이 고센 땅에 거하게 되리이다",
+      "source_text_hash": "2705de4a8e0c3704892194b6846db75f4dc16bc8f5e8fbb1bdff0cb296fee543",
+      "translation_text_hash": "e1020fb881cde1746048203182fa80adfad7363207476cba1332427bc3095f1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 고하기를 주의 종들은 어렸을 때부터 지금까지 목축하는 자이온데 우리와 우리 선조가 다 그러하니이다 하소서 애굽 사람은 다 목축을 가증히 여기나니 당신들이 고센 땅에 거하게 되리이다"
+      ],
+      "raw_text_hashes": [
+        "e1020fb881cde1746048203182fa80adfad7363207476cba1332427bc3095f1d"
+      ]
+    }
+  ]
+}

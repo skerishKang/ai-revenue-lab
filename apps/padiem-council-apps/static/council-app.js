@@ -960,6 +960,7 @@
     prompt += "2. 목차 (5-8장)\n";
     prompt += "3. 각 장별 원고 초안 (200-400자)\n";
     prompt += "4. 마무리 인사\n\n";
+    prompt += "목차, 월별 활동, 주요 발언, 성과 요약을 각각 포함하세요. 발언과 성과는 기록에 근거가 있을 때만 작성하세요.\n\n";
     prompt += "주의: 원본 기록에 없는 사건, 날짜, 발언을 사실처럼 추가하지 마세요. 근거가 있는 내용과 제안/해석을 구분하세요. 각 장 끝에 근거가 된 기록 파일명을 표시하세요.";
     return prompt;
   }
@@ -1042,7 +1043,9 @@
         const pid = await projects.ensure();
         if (!pid) { alert("프로젝트를 찾을 수 없습니다."); return; }
         const name = (form.querySelector("[name=title]")?.value || "회의").trim() + ".txt";
-        const file = await saveProjectFile(pid, name, text);
+        const when = (form.querySelector("[name=when]")?.value || "").trim();
+        const storedText = when ? "회의 일시: " + when + "\n\n" + text : text;
+        const file = await saveProjectFile(pid, name, storedText);
         if (file) {
           formSaveB.textContent = "저장됨";
           setTimeout(() => { formSaveB.textContent = "저장"; }, 1500);
@@ -1091,6 +1094,25 @@
         if (!meetingFiles.length) {
           arc.appendChild(el("p", "council-empty", "저장된 회의 기록이 없습니다."));
         } else {
+          const range = el("div", "council-book-period");
+          const startLabel = el("label", null, "시작일 ");
+          const start = document.createElement("input");
+          start.type = "date";
+          start.id = "councilBookStart";
+          startLabel.appendChild(start);
+          const endLabel = el("label", null, "종료일 ");
+          const end = document.createElement("input");
+          end.type = "date";
+          end.id = "councilBookEnd";
+          endLabel.appendChild(end);
+          const selectPeriod = el("button", null, "기간에 맞는 기록 선택");
+          selectPeriod.type = "button";
+          selectPeriod.id = "councilBookSelectPeriod";
+          const periodStatus = el("p", null, "기간을 선택하면 회의 일시가 있는 기록을 찾습니다. 날짜가 없는 기록은 직접 확인해 선택해 주세요.");
+          periodStatus.id = "councilBookPeriodStatus";
+          periodStatus.setAttribute("role", "status");
+          range.append(startLabel, endLabel, selectPeriod, periodStatus);
+          arc.appendChild(range);
           arc.appendChild(bookBtn);
           const ul = document.createElement("ul");
           meetingFiles.forEach((f) => {
@@ -1113,7 +1135,14 @@
             btn.addEventListener("click", async () => {
               const content = await fetchProjectFile(pid, f.id);
               if (typeof content === "string") {
-                output.value = content;
+                const savedDate = content.match(/^회의 일시: (\d{4}-\d{2}-\d{2}T\d{2}:\d{2})\n\n/);
+                if (savedDate) {
+                  form.querySelector("[name=when]").value = savedDate[1];
+                  output.value = content.slice(savedDate[0].length);
+                } else {
+                  form.querySelector("[name=when]").value = "";
+                  output.value = content;
+                }
                 result.hidden = false;
               } else {
                 alert("저장된 회의 기록의 본문을 읽을 수 없습니다.");
@@ -1123,6 +1152,33 @@
             ul.appendChild(li);
           });
           arc.appendChild(ul);
+          selectPeriod.addEventListener("click", async () => {
+            if (!start.value || !end.value || start.value > end.value) {
+              periodStatus.textContent = "시작일과 종료일을 올바르게 선택해 주세요.";
+              return;
+            }
+            selectPeriod.disabled = true;
+            periodStatus.textContent = "회의 날짜를 확인하는 중입니다.";
+            try {
+              const selected = [];
+              let undated = 0;
+              for (const file of meetingFiles) {
+                const content = await fetchProjectFile(pid, file.id);
+                if (typeof content !== "string") throw new Error("읽기 실패");
+                // Only an explicit meeting date counts; upload time and dates
+                // in a filename or discussion do not establish the meeting date.
+                const match = content.match(/(?:^|\n)\s*회의\s*일시\s*[:：]\s*(\d{4}-\d{2}-\d{2})/m);
+                if (!match) { undated += 1; continue; }
+                if (match[1] >= start.value && match[1] <= end.value) selected.push(file.id);
+              }
+              ul.querySelectorAll(".council-book-check").forEach((cb) => { cb.checked = selected.includes(cb.value); });
+              periodStatus.textContent = selected.length + "건을 선택했습니다. 날짜를 확인할 수 없는 " + undated + "건은 직접 확인해 선택해 주세요.";
+            } catch (_) {
+              periodStatus.textContent = "회의 기록을 읽지 못해 기간을 적용하지 못했습니다. 다시 시도해 주세요.";
+            } finally {
+              selectPeriod.disabled = false;
+            }
+          });
         }
         arc.appendChild(bookResult);
 

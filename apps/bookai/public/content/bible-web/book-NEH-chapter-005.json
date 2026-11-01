@@ -1,0 +1,621 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NEH:chapter:005",
+  "unit_ordinal": 418,
+  "unit_label": "NEH 5",
+  "book_code": "NEH",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NEH:5:1",
+      "sequence": 12384,
+      "chapter_label": "NEH 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Then there arose a great cry of the people and of their wives against their brothers the Jews.",
+      "ko": "때에 백성이 그 아내와 함께 크게 부르짖어 그 형제 유다 사람을 원망하는데",
+      "source_text_hash": "3155305f8af967078c5c99e01cdf78f501f44143bf069f83cd8b1a2c14a5aa98",
+      "translation_text_hash": "dc16b596e4765c93361bf7efe0f62df340607e25b3c27d0a21f8c44ad6691d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 백성이 그 아내와 함께 크게 부르짖어 그 형제 유다 사람을 원망하는데"
+      ],
+      "raw_text_hashes": [
+        "dc16b596e4765c93361bf7efe0f62df340607e25b3c27d0a21f8c44ad6691d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:2",
+      "sequence": 12385,
+      "chapter_label": "NEH 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "For there were some who said, “We, our sons and our daughters, are many. Let us get grain, that we may eat and live.”",
+      "ko": "혹은 말하기를 우리와 우리 자녀가 많으니 곡식을 얻어 먹고 살아야 하겠다 하고",
+      "source_text_hash": "9461dba8180b2a653a39f9d0aec0df89c617ff4805386f4099306cf3a3c4d792",
+      "translation_text_hash": "8c52bc1674f2236c6ce46ed3703cae1587afcc1ee10f2f664b077f113fec1bea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 말하기를 우리와 우리 자녀가 많으니 곡식을 얻어 먹고 살아야 하겠다 하고"
+      ],
+      "raw_text_hashes": [
+        "8c52bc1674f2236c6ce46ed3703cae1587afcc1ee10f2f664b077f113fec1bea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:3",
+      "sequence": 12386,
+      "chapter_label": "NEH 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "There were also some who said, “We are mortgaging our fields, our vineyards, and our houses. Let us get grain, because of the famine.”",
+      "ko": "혹은 말하기를 우리의 밭과 포도원과 집이라도 전당 잡히고 이 흉년을 위하여 곡식을 얻자 하고",
+      "source_text_hash": "6ad9c9f02eda597be89a37a1a2af56d6cbdba422006cd00d8632c3491e795c59",
+      "translation_text_hash": "bd36df2b44e9192fa3220e698755407099da2d0fc6b3ed19827e8256a3e155c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 말하기를 우리의 밭과 포도원과 집이라도 전당 잡히고 이 흉년을 위하여 곡식을 얻자 하고"
+      ],
+      "raw_text_hashes": [
+        "bd36df2b44e9192fa3220e698755407099da2d0fc6b3ed19827e8256a3e155c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:4",
+      "sequence": 12387,
+      "chapter_label": "NEH 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "There were also some who said, “We have borrowed money for the king’s tribute using our fields and our vineyards as collateral.",
+      "ko": "혹은 말하기를 우리는 밭과 포도원으로 돈을 빚내어 세금을 바쳤도다",
+      "source_text_hash": "e63c8330c754e96090ed71a6361b26470c70a154c051547686ed81f4131874fa",
+      "translation_text_hash": "dcf7cf8a31ed157e340a80885af69f87ab9d1387621f885f445f5ac8d69ccfa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 말하기를 우리는 밭과 포도원으로 돈을 빚내어 세금을 바쳤도다"
+      ],
+      "raw_text_hashes": [
+        "dcf7cf8a31ed157e340a80885af69f87ab9d1387621f885f445f5ac8d69ccfa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:5",
+      "sequence": 12388,
+      "chapter_label": "NEH 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Yet now our flesh is as the flesh of our brothers, our children as their children. Behold, we bring our sons and our daughters into bondage to be servants, and some of our daughters have been brought into bondage. It is also not in our power to help it, because other men have our fields and our vineyards.”",
+      "ko": "우리 육체도 우리 형제의 육체와 같고 우리 자녀도 저희 자녀 같거늘 이제 우리 자녀를 종으로 파는도다 우리 딸 중에 벌써 종된 자가 있으나 우리의 밭과 포도원이 이미 남의 것이 되었으니 속량할 힘이 없도다",
+      "source_text_hash": "bed7a643440f54dec72e67f6aa19570e0724ed166f48c09d57ff1ab5117f3eaa",
+      "translation_text_hash": "bdae41705544a3225a605cf863e68e279ace284825de14202a353863a2217bd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 육체도 우리 형제의 육체와 같고 우리 자녀도 저희 자녀 같거늘 이제 우리 자녀를 종으로 파는도다 우리 딸 중에 벌써 종된 자가 있으나 우리의 밭과 포도원이 이미 남의 것이 되었으니 속량할 힘이 없도다"
+      ],
+      "raw_text_hashes": [
+        "bdae41705544a3225a605cf863e68e279ace284825de14202a353863a2217bd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:6",
+      "sequence": 12389,
+      "chapter_label": "NEH 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "I was very angry when I heard their cry and these words.",
+      "ko": "내가 백성의 부르짖음과 이런 말을 듣고 크게 노하여",
+      "source_text_hash": "183c1687acb134a05351bf84ad29f89de29e80c8d624240ecf790c5530cf6b7a",
+      "translation_text_hash": "47d4bb900c938ac8824de6c41e3c849c8735b1137012a3c95cc3273e38a74314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 백성의 부르짖음과 이런 말을 듣고 크게 노하여"
+      ],
+      "raw_text_hashes": [
+        "47d4bb900c938ac8824de6c41e3c849c8735b1137012a3c95cc3273e38a74314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:7",
+      "sequence": 12390,
+      "chapter_label": "NEH 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Then I consulted with myself, and contended with the nobles and the rulers, and said to them, “You exact usury, everyone of his brother.” I held a great assembly against them.",
+      "ko": "중심에 계획하고 귀인과 민장을 꾸짖어 이르기를 너희가 각기 형제에게 취리를 하는도다 하고 대회를 열고 저희를 쳐서",
+      "source_text_hash": "466d2dba651182dfa6bf9fee50a1935e73d2b0662c2d42b46e25425872c38067",
+      "translation_text_hash": "7b5af68098df5d25112ab21ea24b2ec77a961afd5ee88d762c0867b74af131c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중심에 계획하고 귀인과 민장을 꾸짖어 이르기를 너희가 각기 형제에게 취리를 하는도다 하고 대회를 열고 저희를 쳐서"
+      ],
+      "raw_text_hashes": [
+        "7b5af68098df5d25112ab21ea24b2ec77a961afd5ee88d762c0867b74af131c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:8",
+      "sequence": 12391,
+      "chapter_label": "NEH 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "I said to them, “We, after our ability, have redeemed our brothers the Jews that were sold to the nations; and would you even sell your brothers, and should they be sold to us?” Then they held their peace, and found not a word to say.",
+      "ko": "이르기를 우리는 이방인의 손에 팔린 우리 형제 유다 사람들을 우리의 힘을 다하여 속량하였거늘 너희는 너희 형제를 팔고자 하느냐 더구나 우리의 손에 팔리게 하겠느냐 하매 저희가 잠잠하여 말이 없기로",
+      "source_text_hash": "c8505d35f11664c7ce708a267165c73315cdbd8863ebf74c46336f6394da0f11",
+      "translation_text_hash": "df6b9068c3e0f744d7e28083c6595adcdf9d636f4405e5418e079b00b93624eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 우리는 이방인의 손에 팔린 우리 형제 유다 사람들을 우리의 힘을 다하여 속량하였거늘 너희는 너희 형제를 팔고자 하느냐 더구나 우리의 손에 팔리게 하겠느냐 하매 저희가 잠잠하여 말이 없기로"
+      ],
+      "raw_text_hashes": [
+        "df6b9068c3e0f744d7e28083c6595adcdf9d636f4405e5418e079b00b93624eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:9",
+      "sequence": 12392,
+      "chapter_label": "NEH 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Also I said, “The thing that you do is not good. Shouldn’t you walk in the fear of our God because of the reproach of the nations, our enemies?",
+      "ko": "내가 또 이르기를 너희의 소위가 좋지 못하도다 우리 대적 이방 사람의 비방을 생각하고 우리 하나님을 경외함에 행할 것이 아니냐",
+      "source_text_hash": "d0482177731953636525653321e04336bd69717c5e3d07c853e331bf235508c2",
+      "translation_text_hash": "6aaae21c2756a72f4b4e77c5d8cfd9756605da51b796d92d6e6b137449fb6fbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 이르기를 너희의 소위가 좋지 못하도다 우리 대적 이방 사람의 비방을 생각하고 우리 하나님을 경외함에 행할 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "6aaae21c2756a72f4b4e77c5d8cfd9756605da51b796d92d6e6b137449fb6fbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:10",
+      "sequence": 12393,
+      "chapter_label": "NEH 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "I likewise, my brothers and my servants, lend them money and grain. Please let us stop this usury.",
+      "ko": "나와 내 형제와 종자들도 역시 돈과 곡식을 백성에게 취하여 주나니 우리가 그 이식 받기를 그치자",
+      "source_text_hash": "979ef38d2bf8620cefca84a15f3d51d9d8b2d08c0863826274f7f21ef7c8d937",
+      "translation_text_hash": "c114fff3848d7073529d33b4b38a2e44655518d1e72b83ccd9451d072e5f6a0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 내 형제와 종자들도 역시 돈과 곡식을 백성에게 취하여 주나니 우리가 그 이식 받기를 그치자"
+      ],
+      "raw_text_hashes": [
+        "c114fff3848d7073529d33b4b38a2e44655518d1e72b83ccd9451d072e5f6a0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:11",
+      "sequence": 12394,
+      "chapter_label": "NEH 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Please restore to them, even today, their fields, their vineyards, their olive groves, and their houses, also the hundredth part of the money, and of the grain, the new wine, and the oil, that you are charging them.”",
+      "ko": "그런즉 너희는 오늘이라도 그 밭과 포도원과 감람원과 집이며 취한바 돈이나 곡식이나 새 포도주나 기름의 백분지 일을 돌려 보내라 하였더니",
+      "source_text_hash": "4947bd87bf6457567895420ab20e6fea06a6e34dd12ce6a1c71b44eb913135cc",
+      "translation_text_hash": "89c9170d1d90486b9bfece40ed010c7bc1e7c7d8b2441f7e78f5d90dff7c21a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 오늘이라도 그 밭과 포도원과 감람원과 집이며 취한바 돈이나 곡식이나 새 포도주나 기름의 백분지 일을 돌려 보내라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "89c9170d1d90486b9bfece40ed010c7bc1e7c7d8b2441f7e78f5d90dff7c21a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:12",
+      "sequence": 12395,
+      "chapter_label": "NEH 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Then they said, “We will restore them, and will require nothing of them. We will do so, even as you say.” Then I called the priests, and took an oath of them, that they would do according to this promise.",
+      "ko": "저희가 말하기를 우리가 당신의 말씀대로 행하여 돌려 보내고 아무 것도 요구하지 아니하리이다 하기로 내가 제사장들을 불러 저희에게 그 말대로 행하리라는 맹세를 시키게 하고",
+      "source_text_hash": "e02792d118fe2600659b900cad7442696396685df44628405083ee61bdd243f7",
+      "translation_text_hash": "4687527e43824db209028584151950e164c568ad73a4007cce835b181a592f68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하기를 우리가 당신의 말씀대로 행하여 돌려 보내고 아무 것도 요구하지 아니하리이다 하기로 내가 제사장들을 불러 저희에게 그 말대로 행하리라는 맹세를 시키게 하고"
+      ],
+      "raw_text_hashes": [
+        "4687527e43824db209028584151950e164c568ad73a4007cce835b181a592f68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:13",
+      "sequence": 12396,
+      "chapter_label": "NEH 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Also I shook out my lap, and said, “So may God shake out every man from his house, and from his labor, that doesn’t perform this promise; even may he be shaken out and emptied like this.” All the assembly said, “Amen,” and praised the LORD. The people did according to this promise.",
+      "ko": "내가 옷자락을 떨치며 이르기를 이 말대로 행치 아니하는 자는 하나님이 또한 이와 같이 그 집과 산업에서 떨치실찌니 저는 곧 이렇게 떨쳐져 빌찌로다 하매 회중이 다 아멘 하고 여호와를 찬송하고 백성들이 그 말한대로 행하였느니라",
+      "source_text_hash": "4b841cbd75107427dae77181c64cc26e62dc13a9df35e2e69778a83587841b09",
+      "translation_text_hash": "51f15919182765d5627b044cf0a545f92def2baef9a2483192359400d98c38f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 옷자락을 떨치며 이르기를 이 말대로 행치 아니하는 자는 하나님이 또한 이와 같이 그 집과 산업에서 떨치실찌니 저는 곧 이렇게 떨쳐져 빌찌로다 하매 회중이 다 아멘 하고 여호와를 찬송하고 백성들이 그 말한대로 행하였느니라"
+      ],
+      "raw_text_hashes": [
+        "51f15919182765d5627b044cf0a545f92def2baef9a2483192359400d98c38f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:14",
+      "sequence": 12397,
+      "chapter_label": "NEH 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Moreover from the time that I was appointed to be their governor in the land of Judah, from the twentieth year even to the thirty-second year of Artaxerxes the king, that is, twelve years, I and my brothers have not eaten the bread of the governor.",
+      "ko": "내가 유다 땅 총독으로 세움을 받은 때 곧 아닥사스다왕 이십년부터 삼십 이년까지 십 이년 동안은 나와 내 형제가 총독의 녹을 먹지 아니하였느니라",
+      "source_text_hash": "66a5e91150cd74f701f7bccf20154ab287064f531a2fb1a64ec6b2340b7a76db",
+      "translation_text_hash": "222378428250405fd72536b868bf230d73cdc714326912811fead7d592ad1750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 유다 땅 총독으로 세움을 받은 때 곧 아닥사스다왕 이십년부터 삼십 이년까지 십 이년 동안은 나와 내 형제가 총독의 녹을 먹지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "222378428250405fd72536b868bf230d73cdc714326912811fead7d592ad1750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:15",
+      "sequence": 12398,
+      "chapter_label": "NEH 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "But the former governors who were before me were supported by the people, and took bread and wine from them, plus forty shekels of silver; yes, even their servants ruled over the people, but I didn’t do so, because of the fear of God.",
+      "ko": "이전 총독들은 백성에게 토색하여 양식과 포도주와 또 은 사십 세겔을 취하였고 그 종자들도 백성을 압제하였으나 나는 하나님을 경외하므로 이같이 행치 아니하고",
+      "source_text_hash": "6d91baa0b728d1cb26f78b482f98b17f3257e5f632f8c2f497280b26690cafd2",
+      "translation_text_hash": "6ef3d0ebb4c353bfe3459ee65bcb89984b08c012c637288a5005efa789fdd9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이전 총독들은 백성에게 토색하여 양식과 포도주와 또 은 사십 세겔을 취하였고 그 종자들도 백성을 압제하였으나 나는 하나님을 경외하므로 이같이 행치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "6ef3d0ebb4c353bfe3459ee65bcb89984b08c012c637288a5005efa789fdd9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:16",
+      "sequence": 12399,
+      "chapter_label": "NEH 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Yes, I also continued in the work of this wall. We didn’t buy any land. All my servants were gathered there to the work.",
+      "ko": "도리어 이 성 역사에 힘을 다하며 땅을 사지 아니하였고 나의 모든 종자도 모여서 역사를 하였으며",
+      "source_text_hash": "3afb66c86b90f4dfe645e1a03a047e87d696df5c5c33b04b87a5896dd879a3dd",
+      "translation_text_hash": "b587d3d7db7d0bce4e9a818346b5e5657ec928ce926c9f4f810705eae218b78c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 이 성 역사에 힘을 다하며 땅을 사지 아니하였고 나의 모든 종자도 모여서 역사를 하였으며"
+      ],
+      "raw_text_hashes": [
+        "b587d3d7db7d0bce4e9a818346b5e5657ec928ce926c9f4f810705eae218b78c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:17",
+      "sequence": 12400,
+      "chapter_label": "NEH 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Moreover there were at my table, of the Jews and the rulers, one hundred fifty men, in addition to those who came to us from among the nations that were around us.",
+      "ko": "또 내 상에는 유다 사람들과 민장들 일백 오십인이 있고 그 외에도 우리 사면 이방인 중에서 우리에게 나아온 자들이 있었는데",
+      "source_text_hash": "a0233a9028e7037a4f6dd5bdf1721783a14823f004a5fb23b01bc17a4a696a80",
+      "translation_text_hash": "274f0c20be34b035e76bafb50d360f2545b8a3b5643d8ddf657ddaf3b20b474d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내 상에는 유다 사람들과 민장들 일백 오십인이 있고 그 외에도 우리 사면 이방인 중에서 우리에게 나아온 자들이 있었는데"
+      ],
+      "raw_text_hashes": [
+        "274f0c20be34b035e76bafb50d360f2545b8a3b5643d8ddf657ddaf3b20b474d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:18",
+      "sequence": 12401,
+      "chapter_label": "NEH 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Now that which was prepared for one day was one ox and six choice sheep. Also fowls were prepared for me, and once in ten days a store of all sorts of wine. Yet for all this, I didn’t demand the governor’s pay, because the bondage was heavy on this people.",
+      "ko": "매일 나를 위하여 소 하나와 살진 양 여섯을 준비하며 닭도 많이 준비하고 열흘에 한번씩은 각종 포도주를 갖추었나니 비록 이같이 하였을찌라도 내가 총독의 녹을 요구하지 아니하였음은 백성의 부역이 중함이니라",
+      "source_text_hash": "73e18e008f13bff9b0b4ad82a4cd6a0f1732f2d90c3defcb8c52764674edf399",
+      "translation_text_hash": "5c547653139e3fc05cff6b2a055cb45e41c44fd20075c638fccfb9fc7a0d4200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매일 나를 위하여 소 하나와 살진 양 여섯을 준비하며 닭도 많이 준비하고 열흘에 한번씩은 각종 포도주를 갖추었나니 비록 이같이 하였을찌라도 내가 총독의 녹을 요구하지 아니하였음은 백성의 부역이 중함이니라"
+      ],
+      "raw_text_hashes": [
+        "5c547653139e3fc05cff6b2a055cb45e41c44fd20075c638fccfb9fc7a0d4200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NEH:5:19",
+      "sequence": 12402,
+      "chapter_label": "NEH 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "NEH",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NEH",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Remember me, my God, for all the good that I have done for this people.",
+      "ko": "내 하나님이여 내가 이 백성을 위하여 행한 모든 일을 생각하시고 내게 은혜를 베푸시옵소서",
+      "source_text_hash": "c0ff9f8d33da895cc3c6970c5b4293e2e4bd7c7fffd796de6761930df590ab7e",
+      "translation_text_hash": "3760ad9eda6738eca26efa379ce50a28555231bbe1a6a490938b57ef02313f5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님이여 내가 이 백성을 위하여 행한 모든 일을 생각하시고 내게 은혜를 베푸시옵소서"
+      ],
+      "raw_text_hashes": [
+        "3760ad9eda6738eca26efa379ce50a28555231bbe1a6a490938b57ef02313f5b"
+      ]
+    }
+  ]
+}

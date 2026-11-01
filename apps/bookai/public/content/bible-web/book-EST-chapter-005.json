@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:005",
+  "unit_ordinal": 431,
+  "unit_label": "EST 5",
+  "book_code": "EST",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:5:1",
+      "sequence": 12781,
+      "chapter_label": "EST 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Now on the third day, Esther put on her royal clothing and stood in the inner court of the king’s house, next to the king’s house. The king sat on his royal throne in the royal house, next to the entrance of the house.",
+      "ko": "제 삼일에 에스더가 왕후의 예복을 입고 왕궁 안 뜰 곧 어전 맞은편에 서니 왕이 어전에서 전 문을 대하여 보좌에 앉았다가",
+      "source_text_hash": "36a62221270fc88417b9320504ca6e00d77eb4242ae626dc586e21770e84070a",
+      "translation_text_hash": "5815209cf5a69d4792339bb971a515f156a59c30396c6ee6dd87521afbe5d4c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일에 에스더가 왕후의 예복을 입고 왕궁 안 뜰 곧 어전 맞은편에 서니 왕이 어전에서 전 문을 대하여 보좌에 앉았다가"
+      ],
+      "raw_text_hashes": [
+        "5815209cf5a69d4792339bb971a515f156a59c30396c6ee6dd87521afbe5d4c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:2",
+      "sequence": 12782,
+      "chapter_label": "EST 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "When the king saw Esther the queen standing in the court, she obtained favor in his sight; and the king held out to Esther the golden scepter that was in his hand. So Esther came near and touched the top of the scepter.",
+      "ko": "왕후 에스더가 뜰에 선 것을 본즉 심히 사랑스러우므로 손에 잡았던 금홀을 그에게 내어미니 에스더가 가까이 가서 금홀 끝을 만진지라",
+      "source_text_hash": "f79823ca7c8cb5943a0c0d7250bd1d2093868608b13548f4fd4c25dba8282309",
+      "translation_text_hash": "b843422e52030a02fbe59877a133aae7ac5fe7643408d6dc6dc56c543d54b4b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕후 에스더가 뜰에 선 것을 본즉 심히 사랑스러우므로 손에 잡았던 금홀을 그에게 내어미니 에스더가 가까이 가서 금홀 끝을 만진지라"
+      ],
+      "raw_text_hashes": [
+        "b843422e52030a02fbe59877a133aae7ac5fe7643408d6dc6dc56c543d54b4b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:3",
+      "sequence": 12783,
+      "chapter_label": "EST 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Then the king asked her, “What would you like, queen Esther? What is your request? It shall be given you even to the half of the kingdom.”",
+      "ko": "왕이 이르되 왕후 에스더여 그대의 소원이 무엇이며 요구가 무엇이뇨 나라의 절반이라도 그대에게 주겠노라",
+      "source_text_hash": "c0e9aa421ced4e356caad8e63a3c76e4b130afd7de0480aea4a50887369942b7",
+      "translation_text_hash": "2a5346597b8cc05cafcd8c6c42c722ed38e6cf35dfb9bc141e3c458f7bd4cd39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이르되 왕후 에스더여 그대의 소원이 무엇이며 요구가 무엇이뇨 나라의 절반이라도 그대에게 주겠노라"
+      ],
+      "raw_text_hashes": [
+        "2a5346597b8cc05cafcd8c6c42c722ed38e6cf35dfb9bc141e3c458f7bd4cd39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:4",
+      "sequence": 12784,
+      "chapter_label": "EST 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Esther said, “If it seems good to the king, let the king and Haman come today to the banquet that I have prepared for him.”",
+      "ko": "에스더가 가로되 오늘 내가 왕을 위하여 잔치를 베풀었사오니 왕이 선히 여기시거든 하만과 함께 임하소서",
+      "source_text_hash": "639c02d63594c95d271c5bd5603a176e5a528a82b9e79eff971d6ff8b1aab7cd",
+      "translation_text_hash": "37e0579c93d9f6b8bb6c3a3c18b830888dc2471c6e6741078375f0232a380673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 가로되 오늘 내가 왕을 위하여 잔치를 베풀었사오니 왕이 선히 여기시거든 하만과 함께 임하소서"
+      ],
+      "raw_text_hashes": [
+        "37e0579c93d9f6b8bb6c3a3c18b830888dc2471c6e6741078375f0232a380673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:5",
+      "sequence": 12785,
+      "chapter_label": "EST 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Then the king said, “Bring Haman quickly, so that it may be done as Esther has said.” So the king and Haman came to the banquet that Esther had prepared.",
+      "ko": "왕이 가로되 에스더의 말한대로 하도록 하만을 급히 부르라 하고 이에 왕이 하만과 함께 에스더의 베푼 잔치에 나아가니라",
+      "source_text_hash": "347feaf47b91db6047948f5d6dc1a3d6d60102a89d770c9630217614d24092ef",
+      "translation_text_hash": "7baf8b5d031b11e2a45d161f87ad30bec2536fc95f1380ad1dedd82c028b7012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 에스더의 말한대로 하도록 하만을 급히 부르라 하고 이에 왕이 하만과 함께 에스더의 베푼 잔치에 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "7baf8b5d031b11e2a45d161f87ad30bec2536fc95f1380ad1dedd82c028b7012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:6",
+      "sequence": 12786,
+      "chapter_label": "EST 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "The king said to Esther at the banquet of wine, “What is your petition? It shall be granted you. What is your request? Even to the half of the kingdom it shall be performed.”",
+      "ko": "잔치의 술을 마실 때에 왕이 에스더에게 이르되 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 나라의 절반이라 할찌라도 시행하겠노라",
+      "source_text_hash": "4ae16061d9bdc5bf8e7119a8e0a0c084625ba5b9aee3a21ec8eddc5fb512cccd",
+      "translation_text_hash": "45a7139e7eeb526611b863b52491796dc53a499475e09153ce9fd4dc99210a9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잔치의 술을 마실 때에 왕이 에스더에게 이르되 그대의 소청이 무엇이뇨 곧 허락하겠노라 그대의 요구가 무엇이뇨 나라의 절반이라 할찌라도 시행하겠노라"
+      ],
+      "raw_text_hashes": [
+        "45a7139e7eeb526611b863b52491796dc53a499475e09153ce9fd4dc99210a9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:7",
+      "sequence": 12787,
+      "chapter_label": "EST 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Then Esther answered and said, “My petition and my request is this.",
+      "ko": "에스더가 대답하여 가로되 나의 소청, 나의 요구가 이러하니이다",
+      "source_text_hash": "698bd9d283e475f2e0c5e3355407c8de45733a8965077881f2c2a89b5e861084",
+      "translation_text_hash": "eda1344d285637681fdc38c3b0109f3b034c635922e9b8aa3e4f220139d3f56f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스더가 대답하여 가로되 나의 소청, 나의 요구가 이러하니이다"
+      ],
+      "raw_text_hashes": [
+        "eda1344d285637681fdc38c3b0109f3b034c635922e9b8aa3e4f220139d3f56f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:8",
+      "sequence": 12788,
+      "chapter_label": "EST 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "If I have found favor in the sight of the king, and if it pleases the king to grant my petition and to perform my request, let the king and Haman come to the banquet that I will prepare for them, and I will do tomorrow as the king has said.”",
+      "ko": "내가 만일 왕의 목전에서 은혜를 입었고 왕이 내 소청을 허락하시며 내 요구를 시행하시기를 선히 여기시거든 내가 왕과 하만을 위하여 베푸는 잔치에 또 나아오소서 내일은 왕의 말씀대로 하리이다",
+      "source_text_hash": "91d1f989c3734201033575caf305f7519114f5bb9e90c3b8b938eaff491aa2da",
+      "translation_text_hash": "295d9004946bc159dd20a75cadb65492218f9628a10f36bfc43defd4d36f38e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 왕의 목전에서 은혜를 입었고 왕이 내 소청을 허락하시며 내 요구를 시행하시기를 선히 여기시거든 내가 왕과 하만을 위하여 베푸는 잔치에 또 나아오소서 내일은 왕의 말씀대로 하리이다"
+      ],
+      "raw_text_hashes": [
+        "295d9004946bc159dd20a75cadb65492218f9628a10f36bfc43defd4d36f38e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:9",
+      "sequence": 12789,
+      "chapter_label": "EST 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Then Haman went out that day joyful and glad of heart, but when Haman saw Mordecai in the king’s gate, that he didn’t stand up nor move for him, he was filled with wrath against Mordecai.",
+      "ko": "이 날에 하만이 마음이 기뻐 즐거이 나오더니 모르드개가 대궐 문에 있어 일어나지도 아니하고 몸을 움직이지도 아니하는 것을 보고 심히 노하나",
+      "source_text_hash": "14d5575875132a403b9507cbf3f112da6fb32f3d4a4713b03384a4e859eabcd0",
+      "translation_text_hash": "8623ebcbf1d32d117ba6fa6771b711950ff58c37d6af4cd7a493b11b1aa7fdc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 하만이 마음이 기뻐 즐거이 나오더니 모르드개가 대궐 문에 있어 일어나지도 아니하고 몸을 움직이지도 아니하는 것을 보고 심히 노하나"
+      ],
+      "raw_text_hashes": [
+        "8623ebcbf1d32d117ba6fa6771b711950ff58c37d6af4cd7a493b11b1aa7fdc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:10",
+      "sequence": 12790,
+      "chapter_label": "EST 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "Nevertheless Haman restrained himself, and went home. There, he sent and called for his friends and Zeresh his wife.",
+      "ko": "참고 집에 돌아와서 사람을 보내어 그 친구들과 그 아내 세레스를 청하여",
+      "source_text_hash": "55c97218f40c280d6f9e71c057c2c3d1200ac7b6ee88a8a50ebc18e7b4f72ec7",
+      "translation_text_hash": "2f8d9f70744e0be296a5915554acbb81c1553f42106f3655690e1bb3517976ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참고 집에 돌아와서 사람을 보내어 그 친구들과 그 아내 세레스를 청하여"
+      ],
+      "raw_text_hashes": [
+        "2f8d9f70744e0be296a5915554acbb81c1553f42106f3655690e1bb3517976ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:11",
+      "sequence": 12791,
+      "chapter_label": "EST 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Haman recounted to them the glory of his riches, the multitude of his children, all the things in which the king had promoted him, and how he had advanced him above the princes and servants of the king.",
+      "ko": "자기의 부성한 영광과 자녀가 많은 것과 왕이 자기를 들어 왕의 모든 방백이나 신복들보다 높인 것을 다 말하고",
+      "source_text_hash": "1fa24f760806180e55077c93bdea8c3c5a8e8e0a46e8b78cc66e4d52e3fd98df",
+      "translation_text_hash": "8bdc32654734b02d6e6bf9f4752f9c273e91d8e03d3c724409d8021acaaff264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 부성한 영광과 자녀가 많은 것과 왕이 자기를 들어 왕의 모든 방백이나 신복들보다 높인 것을 다 말하고"
+      ],
+      "raw_text_hashes": [
+        "8bdc32654734b02d6e6bf9f4752f9c273e91d8e03d3c724409d8021acaaff264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:12",
+      "sequence": 12792,
+      "chapter_label": "EST 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Haman also said, “Yes, Esther the queen let no man come in with the king to the banquet that she had prepared but myself; and tomorrow I am also invited by her together with the king.",
+      "ko": "또 가로되 왕후 에스더가 그 베푼 잔치에 왕과 함께 오기를 허락 받은 자는 나 밖에 없었고 내일도 왕과 함께 청함을 받았느니라",
+      "source_text_hash": "65f0660a9fcd59baed6ae79246996377f9611581e6d56e32a8eb19fcd48b1494",
+      "translation_text_hash": "99402ab54bee0baa1c0d55fbb11ad74d5ad4b272e6be7e3046ce5f6034af7d39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 왕후 에스더가 그 베푼 잔치에 왕과 함께 오기를 허락 받은 자는 나 밖에 없었고 내일도 왕과 함께 청함을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "99402ab54bee0baa1c0d55fbb11ad74d5ad4b272e6be7e3046ce5f6034af7d39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:13",
+      "sequence": 12793,
+      "chapter_label": "EST 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Yet all this avails me nothing, so long as I see Mordecai the Jew sitting at the king’s gate.”",
+      "ko": "그러나 유다 사람 모르드개가 대궐 문에 앉은 것을 보는 동안에는 이 모든 일이 만족하지 아니하도다",
+      "source_text_hash": "a66505f3dbdbc4d8642d252277e39d8d47b634d3181944376e57cf79d4453b76",
+      "translation_text_hash": "5301751aa0c1f55c7c7e7947165ca2ac495e2d7dd6ca5f061effd2c0f38e8e09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 유다 사람 모르드개가 대궐 문에 앉은 것을 보는 동안에는 이 모든 일이 만족하지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "5301751aa0c1f55c7c7e7947165ca2ac495e2d7dd6ca5f061effd2c0f38e8e09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:5:14",
+      "sequence": 12794,
+      "chapter_label": "EST 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Then Zeresh his wife and all his friends said to him, “Let a gallows be made fifty cubits high, and in the morning speak to the king about hanging Mordecai on it. Then go in merrily with the king to the banquet.” This pleased Haman, so he had the gallows made.",
+      "ko": "그 아내 세레스와 모든 친구가 이르되 오십 규빗이나 높은 나무를 세우고 내일 왕에게 모르드개를 그 나무에 달기를 구하고 왕과 함께 즐거이 잔치에 나아가소서 하만이 그 말을 선히 여기고 명하여 나무를 세우니라",
+      "source_text_hash": "6bca1f55ffeb3ea1cecc9146d727d5b9f604623b6fec52a4975a8db093da147b",
+      "translation_text_hash": "004ab322edea0b9effa29060003bd388bbb62fb848abff77e40ceab1a201019b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내 세레스와 모든 친구가 이르되 오십 규빗이나 높은 나무를 세우고 내일 왕에게 모르드개를 그 나무에 달기를 구하고 왕과 함께 즐거이 잔치에 나아가소서 하만이 그 말을 선히 여기고 명하여 나무를 세우니라"
+      ],
+      "raw_text_hashes": [
+        "004ab322edea0b9effa29060003bd388bbb62fb848abff77e40ceab1a201019b"
+      ]
+    }
+  ]
+}

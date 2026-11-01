@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:030",
+  "unit_ordinal": 147,
+  "unit_label": "NUM 30",
+  "book_code": "NUM",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:30:1",
+      "sequence": 4650,
+      "chapter_label": "NUM 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "Moses spoke to the heads of the tribes of the children of Israel, saying, “This is the thing which the LORD has commanded.",
+      "ko": "모세가 이스라엘 자손 지파의 두령들에게 일러 가로되 여호와의 명령이 이러하니라",
+      "source_text_hash": "d5e70d388c47864f7cd7dfb0946bbf8c312f31d309d382bffc22ab04f579386e",
+      "translation_text_hash": "70583d4e87833084426022438eda7b6564df2a70ee196a5b8983269fa9b30aea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손 지파의 두령들에게 일러 가로되 여호와의 명령이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "70583d4e87833084426022438eda7b6564df2a70ee196a5b8983269fa9b30aea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:2",
+      "sequence": 4651,
+      "chapter_label": "NUM 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "When a man vows a vow to the LORD, or swears an oath to bind his soul with a bond, he shall not break his word. He shall do according to all that proceeds out of his mouth.",
+      "ko": "사람이 여호와께 서원하였거나 마음을 제어하기로 서약하였거든 파약하지 말고 그 입에서 나온대로 다 행할 것이니라",
+      "source_text_hash": "6b6941a0d1a2ee4051df63afd2ca543c3965d0ae1643a6905a518d0a27ddcad4",
+      "translation_text_hash": "30dc2a0cc962286b2cbf8ee424b29967babcd2613f59cb1a2992b98cc98f5bf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 여호와께 서원하였거나 마음을 제어하기로 서약하였거든 파약하지 말고 그 입에서 나온대로 다 행할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "30dc2a0cc962286b2cbf8ee424b29967babcd2613f59cb1a2992b98cc98f5bf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:3",
+      "sequence": 4652,
+      "chapter_label": "NUM 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "“Also, when a woman vows a vow to the LORD and binds herself by a pledge, being in her father’s house, in her youth,",
+      "ko": "또 여자가 만일 어려서 그 아비 집에 있을 때에 여호와께 서원한 일이나 스스로 제어하려 한 일이 있다 하자",
+      "source_text_hash": "ff5310895ec9852c1fa623f18c40690478278a1c21a822b0e182033d71288203",
+      "translation_text_hash": "82788235e971dc47359ca4f97ea532dd68275a72cc3a03f803e83e6e3030353e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여자가 만일 어려서 그 아비 집에 있을 때에 여호와께 서원한 일이나 스스로 제어하려 한 일이 있다 하자"
+      ],
+      "raw_text_hashes": [
+        "82788235e971dc47359ca4f97ea532dd68275a72cc3a03f803e83e6e3030353e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:4",
+      "sequence": 4653,
+      "chapter_label": "NUM 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "and her father hears her vow and her pledge with which she has bound her soul, and her father says nothing to her, then all her vows shall stand, and every pledge with which she has bound her soul shall stand.",
+      "ko": "그 아비가 그의 서원이나 그 마음을 제어하려는 서약을 듣고도 그에게 아무 말이 없으면 그 모든 서원을 행할 것이요 그 마음을 제어하려는 서약을 지킬 것이니라",
+      "source_text_hash": "7b2c80486165a6701036ce6d95d7ccaeb5d6bf587aad1b6cd8addf6ab24e29b1",
+      "translation_text_hash": "62c6195145b84d2043714757939d7575bfed0591fbe291daf648b16c23fd01db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비가 그의 서원이나 그 마음을 제어하려는 서약을 듣고도 그에게 아무 말이 없으면 그 모든 서원을 행할 것이요 그 마음을 제어하려는 서약을 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "62c6195145b84d2043714757939d7575bfed0591fbe291daf648b16c23fd01db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:5",
+      "sequence": 4654,
+      "chapter_label": "NUM 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "But if her father forbids her in the day that he hears, none of her vows or of her pledges with which she has bound her soul, shall stand. The LORD will forgive her, because her father has forbidden her.",
+      "ko": "그러나 그 아비가 그것을 듣는 날에 허락지 아니하면 그 서원과 마음을 제어하려던 서약이 이루지 못할 것이니 그 아비가 허락지 아니하였은즉 여호와께서 사하시리라",
+      "source_text_hash": "b8dcfbba85f116aa1fad7f56b4be2e5d24e47c67d5bfa938f0c4a48176733e10",
+      "translation_text_hash": "c084aebb28c07baa7c5b9546d38e16dfd7afd6f1fe9266b67b6f8096516eb5c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 아비가 그것을 듣는 날에 허락지 아니하면 그 서원과 마음을 제어하려던 서약이 이루지 못할 것이니 그 아비가 허락지 아니하였은즉 여호와께서 사하시리라"
+      ],
+      "raw_text_hashes": [
+        "c084aebb28c07baa7c5b9546d38e16dfd7afd6f1fe9266b67b6f8096516eb5c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:6",
+      "sequence": 4655,
+      "chapter_label": "NUM 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "“If she has a husband, while her vows are on her, or the rash utterance of her lips with which she has bound her soul,",
+      "ko": "또 혹시 남편을 맞을 때에 서원이나 마음을 제어하려는 서약을 경솔히 그 입에서 발하였다 하자",
+      "source_text_hash": "89f7545474d2f8d343662dc625eb2bc72782e57992d5b507f468f04b9ee97edc",
+      "translation_text_hash": "28af9da22cb118dc31a4c9950091d3d2f57438596fd810cb2d37ab7b5ae9f796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 혹시 남편을 맞을 때에 서원이나 마음을 제어하려는 서약을 경솔히 그 입에서 발하였다 하자"
+      ],
+      "raw_text_hashes": [
+        "28af9da22cb118dc31a4c9950091d3d2f57438596fd810cb2d37ab7b5ae9f796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:7",
+      "sequence": 4656,
+      "chapter_label": "NUM 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "and her husband hears it, and says nothing to her in the day that he hears it; then her vows shall stand, and her pledges with which she has bound her soul shall stand.",
+      "ko": "그 남편이 그것을 듣고 그 듣는 날에 그에게 아무 말이 없으면 그 서원을 행할 것이요 그 마음을 제어하려는 서약을 지킬 것이니라",
+      "source_text_hash": "e3114d68429eb127549bd68e4ff3e0a3d402e2596328b28457463d430073db52",
+      "translation_text_hash": "7fe07dba84c848cab4500f8760a91b1c73c9e4993becc9842bdb7a164b9aba7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 그것을 듣고 그 듣는 날에 그에게 아무 말이 없으면 그 서원을 행할 것이요 그 마음을 제어하려는 서약을 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7fe07dba84c848cab4500f8760a91b1c73c9e4993becc9842bdb7a164b9aba7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:8",
+      "sequence": 4657,
+      "chapter_label": "NUM 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "But if her husband forbids her in the day that he hears it, then he makes void her vow which is on her and the rash utterance of her lips, with which she has bound her soul. The LORD will forgive her.",
+      "ko": "그러나 그 남편이 그것을 듣는 날에 허락지 아니하면 그 서원과 마음을 제어하려고 경솔히 입술에서 발한 서약이 무효될 것이니 여호와께서 그 여자를 사하시리라",
+      "source_text_hash": "439b33d0d1eb576a31ac7997c1c4c3a76b125aa67d1d8bee68698358b78df3ba",
+      "translation_text_hash": "a24c124f8c076abc21afbcdcf2d57836312a795192c2a2d2c107dfed572fec63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 남편이 그것을 듣는 날에 허락지 아니하면 그 서원과 마음을 제어하려고 경솔히 입술에서 발한 서약이 무효될 것이니 여호와께서 그 여자를 사하시리라"
+      ],
+      "raw_text_hashes": [
+        "a24c124f8c076abc21afbcdcf2d57836312a795192c2a2d2c107dfed572fec63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:9",
+      "sequence": 4658,
+      "chapter_label": "NUM 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "“But the vow of a widow, or of her who is divorced, everything with which she has bound her soul shall stand against her.",
+      "ko": "과부나 이혼 당한 여자의 서원이나 무릇 그 마음을 제어하려는 서약은 지킬 것이니라",
+      "source_text_hash": "8a6ecc9bf73b22ed844580aa121cb22e7477a208a1dd6db300fa177015277d6f",
+      "translation_text_hash": "dbae955ceefd84b4c1178224529344b100b4cfff2043b58a08aa24b083ecbfcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부나 이혼 당한 여자의 서원이나 무릇 그 마음을 제어하려는 서약은 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "dbae955ceefd84b4c1178224529344b100b4cfff2043b58a08aa24b083ecbfcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:10",
+      "sequence": 4659,
+      "chapter_label": "NUM 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "“If she vowed in her husband’s house or bound her soul by a bond with an oath,",
+      "ko": "부녀가 혹시 그 남편의 집에 있어 서원을 하였다든지 마음을 제어하려고 서약을 하였다 하자",
+      "source_text_hash": "6f758c7b7ec82da6317c8f51ff2e3dfcd312b8ea375c75c6419eb37d217b011b",
+      "translation_text_hash": "98bd12139d0a1c58f1f38309aec12c29f2ee7e6edd8fbd3086ac54319b79cba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부녀가 혹시 그 남편의 집에 있어 서원을 하였다든지 마음을 제어하려고 서약을 하였다 하자"
+      ],
+      "raw_text_hashes": [
+        "98bd12139d0a1c58f1f38309aec12c29f2ee7e6edd8fbd3086ac54319b79cba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:11",
+      "sequence": 4660,
+      "chapter_label": "NUM 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "and her husband heard it, and held his peace at her and didn’t disallow her, then all her vows shall stand, and every pledge with which she bound her soul shall stand.",
+      "ko": "그 남편이 그것을 듣고도 아무 말이 없고 금함이 없으면 그 서원은 무릇 행할 것이요 그 마음을 제어하려는 서약은 무릇 지킬 것이니라",
+      "source_text_hash": "995f5f7a46cbb2b7c33972b864d3ca1173682d329013759caddf4d90a555377e",
+      "translation_text_hash": "c795ec21af51ff6dfc84c2fafbb9336611c82af753555917712279186e9ec738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 그것을 듣고도 아무 말이 없고 금함이 없으면 그 서원은 무릇 행할 것이요 그 마음을 제어하려는 서약은 무릇 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c795ec21af51ff6dfc84c2fafbb9336611c82af753555917712279186e9ec738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:12",
+      "sequence": 4661,
+      "chapter_label": "NUM 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "But if her husband made them null and void in the day that he heard them, then whatever proceeded out of her lips concerning her vows, or concerning the bond of her soul, shall not stand. Her husband has made them void. The LORD will forgive her.",
+      "ko": "그러나 그 남편이 그것을 듣는 날에 무효케 하면 그 서원과 마음을 제어하려던 일에 대하여 입술에서 낸 것을 무엇이든지 이루지 못하나니 그 남편이 그것을 무효케 하였은즉 여호와께서 그 부녀를 사하시느니라",
+      "source_text_hash": "4e6fa40a63581d673e5c23c29cd5d6818ec94fb24b93df9d9c2fbc762147d3e1",
+      "translation_text_hash": "3e2ca7d23a3b5820a1bc6075d2310f8f57cb3f59fcbf9980743ce94c3b5aac57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 남편이 그것을 듣는 날에 무효케 하면 그 서원과 마음을 제어하려던 일에 대하여 입술에서 낸 것을 무엇이든지 이루지 못하나니 그 남편이 그것을 무효케 하였은즉 여호와께서 그 부녀를 사하시느니라"
+      ],
+      "raw_text_hashes": [
+        "3e2ca7d23a3b5820a1bc6075d2310f8f57cb3f59fcbf9980743ce94c3b5aac57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:13",
+      "sequence": 4662,
+      "chapter_label": "NUM 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "Every vow, and every binding oath to afflict the soul, her husband may establish it, or her husband may make it void.",
+      "ko": "무릇 서원과 무릇 마음을 괴롭게 하려는 서약은 그 남편이 그것을 지키게도 할 수 있고 무효케도 할 수 있나니",
+      "source_text_hash": "0db73acc1b615af2812c510ff1837b0c0da95b7816575257bf33028b0cf09456",
+      "translation_text_hash": "741e373e247546fa742eef5e5b16a14d780451629d03d0717f5dbefccb2c1574",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 서원과 무릇 마음을 괴롭게 하려는 서약은 그 남편이 그것을 지키게도 할 수 있고 무효케도 할 수 있나니"
+      ],
+      "raw_text_hashes": [
+        "741e373e247546fa742eef5e5b16a14d780451629d03d0717f5dbefccb2c1574"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:14",
+      "sequence": 4663,
+      "chapter_label": "NUM 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "But if her husband says nothing to her from day to day, then he establishes all her vows or all her pledges which are on her. He has established them, because he said nothing to her in the day that he heard them.",
+      "ko": "그 남편이 일향 말이 없으면 아내의 서원과 스스로 제어하려는 일을 지키게 하는 것이니 이는 그가 그것을 들을 때에 그 아내에게 아무 말도 아니하였으므로 지키게 됨이니라",
+      "source_text_hash": "09ca6e86a11928210fb06e720bd90978c67c6be31b7682b8b6c9120a07caa415",
+      "translation_text_hash": "8c5e094d6a035c4ed96643e4a7855a15c2d11efb2a2e071c689bf6debdc0d2f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 일향 말이 없으면 아내의 서원과 스스로 제어하려는 일을 지키게 하는 것이니 이는 그가 그것을 들을 때에 그 아내에게 아무 말도 아니하였으므로 지키게 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "8c5e094d6a035c4ed96643e4a7855a15c2d11efb2a2e071c689bf6debdc0d2f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:15",
+      "sequence": 4664,
+      "chapter_label": "NUM 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "But if he makes them null and void after he has heard them, then he shall bear her iniquity.”",
+      "ko": "그러나 그 남편이 들은지 얼마 후에 그것을 무효케 하면 그가 아내의 죄를 담당할 것이니라",
+      "source_text_hash": "4b4e062d551b013661bf4c08a6891f86f52927569335322dd0dccfcd11be5d7d",
+      "translation_text_hash": "5fe97f92447f69b161b6be197529b8655d5fc65a9c4e2f9ebd771dc95e9fd583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 남편이 들은지 얼마 후에 그것을 무효케 하면 그가 아내의 죄를 담당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "5fe97f92447f69b161b6be197529b8655d5fc65a9c4e2f9ebd771dc95e9fd583"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:30:16",
+      "sequence": 4665,
+      "chapter_label": "NUM 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "These are the statutes which the LORD commanded Moses, between a man and his wife, between a father and his daughter, being in her youth, in her father’s house.",
+      "ko": "이는 여호와께서 모세에게 명하신 율례니 남편이 아내에게, 아비가 자기 집에 있는 유년 여자에게 대한 것이니라",
+      "source_text_hash": "95f24e4157e89e894f83220bda5b5c31e040f73d44573e360c2ecd475ab92018",
+      "translation_text_hash": "d73948dc0b5d3996ce90de160593ef91560425fdae21c889eeeb3ba5b29b5fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와께서 모세에게 명하신 율례니 남편이 아내에게, 아비가 자기 집에 있는 유년 여자에게 대한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "d73948dc0b5d3996ce90de160593ef91560425fdae21c889eeeb3ba5b29b5fd2"
+      ]
+    }
+  ]
+}

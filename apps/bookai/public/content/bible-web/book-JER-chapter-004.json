@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:004",
+  "unit_ordinal": 749,
+  "unit_label": "JER 4",
+  "book_code": "JER",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:4:1",
+      "sequence": 19029,
+      "chapter_label": "JER 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "“If you will return, Israel,” says the LORD, “if you will return to me, and if you will put away your abominations out of my sight; then you will not be removed;",
+      "ko": "여호와께서 가라사대 이스라엘아 네가 돌아오려거든 내게로 돌아 오라 네가 만일 나의 목전에서 가증한 것을 버리고 마음이 요동치 아니하며",
+      "source_text_hash": "a8b623b0a1f77a518f8a880c14670a7ee63b8d2ef97c2ad27a21e20891b95a72",
+      "translation_text_hash": "ba1929f0a532a147b5f0de531f8a3cea7621b07055ab53cb10a5115d9630a99d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 이스라엘아 네가 돌아오려거든 내게로 돌아 오라 네가 만일 나의 목전에서 가증한 것을 버리고 마음이 요동치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "ba1929f0a532a147b5f0de531f8a3cea7621b07055ab53cb10a5115d9630a99d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:2",
+      "sequence": 19030,
+      "chapter_label": "JER 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "and you will swear, ‘As the LORD lives,’ in truth, in justice, and in righteousness. The nations will bless themselves in him, and they will glory in him.”",
+      "ko": "진실과 공평과 정의로 여호와의 삶을 가리켜 맹세하면 열방이 나로 인하여 스스로 복을 빌며 나로 인하여 자랑하리라",
+      "source_text_hash": "c3cab8012bfae232ce7051d2949a0518d30a88c8cf1b7897a545fd648e96db6c",
+      "translation_text_hash": "bdb29c1a0389e5de55cd16d2e267975fc239afb28ed9c3720e0711737530ce85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실과 공평과 정의로 여호와의 삶을 가리켜 맹세하면 열방이 나로 인하여 스스로 복을 빌며 나로 인하여 자랑하리라"
+      ],
+      "raw_text_hashes": [
+        "bdb29c1a0389e5de55cd16d2e267975fc239afb28ed9c3720e0711737530ce85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:3",
+      "sequence": 19031,
+      "chapter_label": "JER 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "For the LORD says to the men of Judah and to Jerusalem, “Break up your fallow ground, and don’t sow among thorns.",
+      "ko": "나 여호와가 유다와 예루살렘 사람에게 이같이 이르노라 너희 묵은 땅을 갈고 가시덤불 속에 파종하지 말라",
+      "source_text_hash": "8a09461d34891f13a7ad9e8eb48cddc54f4418f5be1d305376ceab78d34f2452",
+      "translation_text_hash": "129c9c8aa65e66d41c88823a05750d5b8f62d85026449e8788be35efe95e3522",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 유다와 예루살렘 사람에게 이같이 이르노라 너희 묵은 땅을 갈고 가시덤불 속에 파종하지 말라"
+      ],
+      "raw_text_hashes": [
+        "129c9c8aa65e66d41c88823a05750d5b8f62d85026449e8788be35efe95e3522"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:4",
+      "sequence": 19032,
+      "chapter_label": "JER 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Circumcise yourselves to the LORD, and take away the foreskins of your heart, you men of Judah and inhabitants of Jerusalem; lest my wrath go out like fire, and burn so that no one can quench it, because of the evil of your doings.",
+      "ko": "유다인과 예루살렘 거민들아 너희는 스스로 할례를 행하여 너희 마음 가죽을 베고 나 여호와께 속하라 그렇지 아니하면 너희 행악을 인하여 나의 분노가 불 같이 발하여 사르리니 그것을 끌 자가 없으리라",
+      "source_text_hash": "56692f22e9851e8deb78b4e9a9a9ccf1a2154802aef40b34b36e550b18345e64",
+      "translation_text_hash": "a8f06ec02850b7c4cf89be28bdd5596baf792cb6bad42faf5f9f56f6db693b06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다인과 예루살렘 거민들아 너희는 스스로 할례를 행하여 너희 마음 가죽을 베고 나 여호와께 속하라 그렇지 아니하면 너희 행악을 인하여 나의 분노가 불 같이 발하여 사르리니 그것을 끌 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "a8f06ec02850b7c4cf89be28bdd5596baf792cb6bad42faf5f9f56f6db693b06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:5",
+      "sequence": 19033,
+      "chapter_label": "JER 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Declare in Judah, and publish in Jerusalem; and say, ‘Blow the trumpet in the land!’ Cry aloud and say, ‘Assemble yourselves! Let’s go into the fortified cities!’",
+      "ko": "너희는 유다에 선포하며 예루살렘에 공포하여 이르기를 이 땅에서 나팔을 불라 하며 또 크게 외쳐 이르기를 너희는 모이라 우리가 견고한 성으로 들어가자 하고",
+      "source_text_hash": "4ea5b1682be243f1284e6dd4b5a520e0d4d4bcb6526d90e8c5c0ef577394c0d4",
+      "translation_text_hash": "c62b2c26b97759066772fd563c76dc0091237c0f0233f091f67fe06970fbb063",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유다에 선포하며 예루살렘에 공포하여 이르기를 이 땅에서 나팔을 불라 하며 또 크게 외쳐 이르기를 너희는 모이라 우리가 견고한 성으로 들어가자 하고"
+      ],
+      "raw_text_hashes": [
+        "c62b2c26b97759066772fd563c76dc0091237c0f0233f091f67fe06970fbb063"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:6",
+      "sequence": 19034,
+      "chapter_label": "JER 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Set up a standard toward Zion. Flee for safety! Don’t wait; for I will bring evil from the north, and a great destruction.”",
+      "ko": "시온을 향하여 기호를 세우라, 도피하라, 지체하지 말라, 내가 북방에서 재앙과 큰 멸망으로 이르게 할 것임이니라",
+      "source_text_hash": "c318d1c8cacf38220f9b77f82640323535124af83b2c96c6c72fc91386bfc6ea",
+      "translation_text_hash": "236eddac589f42a812180cb59023d28f7ce652a1da350737099299624f38ad5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온을 향하여 기호를 세우라, 도피하라, 지체하지 말라, 내가 북방에서 재앙과 큰 멸망으로 이르게 할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "236eddac589f42a812180cb59023d28f7ce652a1da350737099299624f38ad5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:7",
+      "sequence": 19035,
+      "chapter_label": "JER 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "A lion has gone up from his thicket, and a destroyer of nations. He is on his way. He has gone out from his place, to make your land desolate, that your cities be laid waste, without inhabitant.",
+      "ko": "사자가 그 수풀에서 올라왔으며 열방을 멸하는 자가 나아 왔으되 네 땅을 황폐케 하려고 이미 그 처소를 떠나 나왔은즉 네 성읍들이 황폐하여 거민이 없게 되리니",
+      "source_text_hash": "23c8e0872b5680a883a50611195e127346878a34c0701767264478151c1b4e94",
+      "translation_text_hash": "d9a1ab327ec6b51f45a4af4eba6d18748ab1c35a936fbb0b2a01a007c8365e9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 그 수풀에서 올라왔으며 열방을 멸하는 자가 나아 왔으되 네 땅을 황폐케 하려고 이미 그 처소를 떠나 나왔은즉 네 성읍들이 황폐하여 거민이 없게 되리니"
+      ],
+      "raw_text_hashes": [
+        "d9a1ab327ec6b51f45a4af4eba6d18748ab1c35a936fbb0b2a01a007c8365e9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:8",
+      "sequence": 19036,
+      "chapter_label": "JER 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "For this, clothe yourself with sackcloth, lament and wail; for the fierce anger of the LORD hasn’t turned back from us.",
+      "ko": "이를 인하여 너희는 굵은 베를 두르고 애곡하라 대저 여호와의 맹렬한 노가 아직 너희에게서 돌이키지 아니하였음이니라",
+      "source_text_hash": "eb98f8f06e883cb66d6b7880516ba1994379ba5d7aa02a3a4c4885657d29c6ec",
+      "translation_text_hash": "833e754e8895179a308b176c7a87bf24aebc2159c9f3c98f5008578aa5ca1272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 인하여 너희는 굵은 베를 두르고 애곡하라 대저 여호와의 맹렬한 노가 아직 너희에게서 돌이키지 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "833e754e8895179a308b176c7a87bf24aebc2159c9f3c98f5008578aa5ca1272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:9",
+      "sequence": 19037,
+      "chapter_label": "JER 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "“It will happen at that day,” says the LORD, “that the heart of the king will perish, along with the heart of the princes. The priests will be astonished, and the prophets will wonder.”",
+      "ko": "나 여호와가 말하노라 그 날에 왕과 방백들은 실심할 것이며 제사장들은 놀랄 것이며 선지자들은 깜짝 놀라리라",
+      "source_text_hash": "6af84a7277c56b1d31903c99b8e6af1a0756b64acd826136c136eb679b75e4dc",
+      "translation_text_hash": "4c9238c0bfdeca284ead823cbdfed094e49fab1e761a57fc196272e315c694e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그 날에 왕과 방백들은 실심할 것이며 제사장들은 놀랄 것이며 선지자들은 깜짝 놀라리라"
+      ],
+      "raw_text_hashes": [
+        "4c9238c0bfdeca284ead823cbdfed094e49fab1e761a57fc196272e315c694e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:10",
+      "sequence": 19038,
+      "chapter_label": "JER 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Then I said, “Ah, Lord GOD! Surely you have greatly deceived this people and Jerusalem, saying, ‘You will have peace;’ whereas the sword reaches to the heart.”",
+      "ko": "내가 가로되 슬프도소이다 주 여호와여 주께서 진실로 이 백성과 예루살렘을 크게 속이셨나이다 이르시기를 너희에게 평강이 있으리라 하시더니 칼이 생명에 미쳤나이다",
+      "source_text_hash": "1a3579be87729b1aa8dd39d50672f0347e24a14be9b2b19c85bdc37955a396a7",
+      "translation_text_hash": "4dec5bf34bfe5d97b5bc0a8ca17c2a2ec712159fa1cb3731d062c5017d528621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 슬프도소이다 주 여호와여 주께서 진실로 이 백성과 예루살렘을 크게 속이셨나이다 이르시기를 너희에게 평강이 있으리라 하시더니 칼이 생명에 미쳤나이다"
+      ],
+      "raw_text_hashes": [
+        "4dec5bf34bfe5d97b5bc0a8ca17c2a2ec712159fa1cb3731d062c5017d528621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:11",
+      "sequence": 19039,
+      "chapter_label": "JER 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "At that time it will be said to this people and to Jerusalem, “A hot wind blows from the bare heights in the wilderness toward the daughter of my people, not to winnow, nor to cleanse.",
+      "ko": "그 때에 이 백성과 예루살렘에 이를 자 있어서 뜨거운 바람이 광야 자산에서 내 딸 백성에게 불어온다 하리라 이는 키질하기 위함도 아니요 정결케 하려함도 아니며",
+      "source_text_hash": "b0e0b10783a64ec4baabf6508671b78121ec1f1582d326e2496c3c4d2bdfacd6",
+      "translation_text_hash": "35da7865bde30a6967b8d0335a874014c2d1dab69897ce35b6ff707889db1306",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이 백성과 예루살렘에 이를 자 있어서 뜨거운 바람이 광야 자산에서 내 딸 백성에게 불어온다 하리라 이는 키질하기 위함도 아니요 정결케 하려함도 아니며"
+      ],
+      "raw_text_hashes": [
+        "35da7865bde30a6967b8d0335a874014c2d1dab69897ce35b6ff707889db1306"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:12",
+      "sequence": 19040,
+      "chapter_label": "JER 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "A full wind from these will come for me. Now I will also utter judgments against them.”",
+      "ko": "이보다 더 강한 바람이 나를 위하여 오리니 이제 내가 그들에게 심판을 베풀 것이라",
+      "source_text_hash": "d94a1412e75839da1ce6e1c58f2e6f83c3c79f41455d3f1033776174ed53bcdf",
+      "translation_text_hash": "2ea0782aa3693c1d19c00944fe72df797495aaaa5a97529504a8e9af21094120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이보다 더 강한 바람이 나를 위하여 오리니 이제 내가 그들에게 심판을 베풀 것이라"
+      ],
+      "raw_text_hashes": [
+        "2ea0782aa3693c1d19c00944fe72df797495aaaa5a97529504a8e9af21094120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:13",
+      "sequence": 19041,
+      "chapter_label": "JER 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Behold, he will come up as clouds, and his chariots will be as the whirlwind. His horses are swifter than eagles. Woe to us! For we are ruined.",
+      "ko": "보라 그가 구름 같이 올라 오나니 그 병거는 회리바람 같고 그 말들은 독수리보다 빠르도다 우리에게 화 있도다 우리는 멸망하도다 하리라",
+      "source_text_hash": "4fb650c4aabb90c0c3dd2842f1d89e75afc8eb61715b2529739c048158b00667",
+      "translation_text_hash": "053e3aceeb35c83ad3b5fa2033ffc917af56a93a0d071bc16c9d053875c3fb55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 그가 구름 같이 올라 오나니 그 병거는 회리바람 같고 그 말들은 독수리보다 빠르도다 우리에게 화 있도다 우리는 멸망하도다 하리라"
+      ],
+      "raw_text_hashes": [
+        "053e3aceeb35c83ad3b5fa2033ffc917af56a93a0d071bc16c9d053875c3fb55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:14",
+      "sequence": 19042,
+      "chapter_label": "JER 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Jerusalem, wash your heart from wickedness, that you may be saved. How long will your evil thoughts lodge within you?",
+      "ko": "예루살렘아 네 마음의 악을 씻어 버리라 그리하면 구원을 얻으리라 네 악한 생각이 네 속에 얼마나 오래 머물겠느냐",
+      "source_text_hash": "b0daccb4bb006be642ed44c13a88054f6d448129dd7e5698c84084f7e2de8e5a",
+      "translation_text_hash": "b854c00cf83837e3ec94ef5fc6ee5e05023ad1420d5bc0fb1936310027ef5171",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 네 마음의 악을 씻어 버리라 그리하면 구원을 얻으리라 네 악한 생각이 네 속에 얼마나 오래 머물겠느냐"
+      ],
+      "raw_text_hashes": [
+        "b854c00cf83837e3ec94ef5fc6ee5e05023ad1420d5bc0fb1936310027ef5171"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:15",
+      "sequence": 19043,
+      "chapter_label": "JER 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "For a voice declares from Dan, and publishes evil from the hills of Ephraim:",
+      "ko": "단에서 소리를 선포하며 에브라임 산에서 재앙을 공포하는도다",
+      "source_text_hash": "2ef968bad4bde97450cdf16438d03353da02102a70880afabf6f02eb167f8b91",
+      "translation_text_hash": "1813baf1c384fea3f6e78654c8a6ba5dd4c4f3050d16d18ace9b49a86acca61f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단에서 소리를 선포하며 에브라임 산에서 재앙을 공포하는도다"
+      ],
+      "raw_text_hashes": [
+        "1813baf1c384fea3f6e78654c8a6ba5dd4c4f3050d16d18ace9b49a86acca61f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:16",
+      "sequence": 19044,
+      "chapter_label": "JER 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "“Tell the nations, behold, publish against Jerusalem, ‘Watchers come from a far country, and raise their voice against the cities of Judah.",
+      "ko": "너희는 열방에 고하며 또 예루살렘에 알게 하기를 에워싸고 치는 자들이 먼 땅에서부터 와서 유다 성읍들을 향하여 소리를 지른다 하라",
+      "source_text_hash": "99f0c6f1743e3540bd0d3e0946c46c7b640121c6cfded5ca75fd3f1ca5c5e38c",
+      "translation_text_hash": "cda5d5ad3f4c113c725a70c4d63905154f703a1c70a223cccf27863dc2f57e9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 열방에 고하며 또 예루살렘에 알게 하기를 에워싸고 치는 자들이 먼 땅에서부터 와서 유다 성읍들을 향하여 소리를 지른다 하라"
+      ],
+      "raw_text_hashes": [
+        "cda5d5ad3f4c113c725a70c4d63905154f703a1c70a223cccf27863dc2f57e9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:17",
+      "sequence": 19045,
+      "chapter_label": "JER 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "As keepers of a field, they are against her all around, because she has been rebellious against me,’” says the LORD.",
+      "ko": "그들이 밭을 지키는 자 같이 예루살렘을 에워싸나니 이는 그가 나를 거역한 연고니라 여호와의 말이니라",
+      "source_text_hash": "0594cbdb5aa1218d13db88e788ad72776cd9a9094ace926c83831588ff0b06e3",
+      "translation_text_hash": "da272ba0da5d209af73aa73225275ba0267b27d498334ca04f5aa9d03746bd4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 밭을 지키는 자 같이 예루살렘을 에워싸나니 이는 그가 나를 거역한 연고니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "da272ba0da5d209af73aa73225275ba0267b27d498334ca04f5aa9d03746bd4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:18",
+      "sequence": 19046,
+      "chapter_label": "JER 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "“Your way and your doings have brought these things to you. This is your wickedness, for it is bitter, for it reaches to your heart.”",
+      "ko": "네 길과 행사가 이 일들을 부르게 하였나니 이는 너의 악함이라 그 고통이 네 마음에까지 미치느니라",
+      "source_text_hash": "ec0b8778d382afa2c0a9037af5cc05641361bcf8f8d2808b5d7297403cb35cdf",
+      "translation_text_hash": "0b6ed8776b0ebcc8f2f25ee94378e81b0af805c2d86125f4453f7b3c891937ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 길과 행사가 이 일들을 부르게 하였나니 이는 너의 악함이라 그 고통이 네 마음에까지 미치느니라"
+      ],
+      "raw_text_hashes": [
+        "0b6ed8776b0ebcc8f2f25ee94378e81b0af805c2d86125f4453f7b3c891937ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:19",
+      "sequence": 19047,
+      "chapter_label": "JER 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "My anguish, my anguish! I am pained at my very heart! My heart trembles within me. I can’t hold my peace, because you have heard, O my soul, the sound of the trumpet, the alarm of war.",
+      "ko": "슬프고 아프다 내 마음 속이 아프고 내 마음이 답답하여 잠잠할 수 없으니 이는 나의 심령 네가 나팔소리와 전쟁의 경보를 들음이로다",
+      "source_text_hash": "cfbd64fb329dce3bf0288eef91fff587736c2f0066682ef7078d72dca5100f44",
+      "translation_text_hash": "4219bfe17738d12b9a227c8d44a4931c65d40fd7e30fe84a650c6054c1b0801c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프고 아프다 내 마음 속이 아프고 내 마음이 답답하여 잠잠할 수 없으니 이는 나의 심령 네가 나팔소리와 전쟁의 경보를 들음이로다"
+      ],
+      "raw_text_hashes": [
+        "4219bfe17738d12b9a227c8d44a4931c65d40fd7e30fe84a650c6054c1b0801c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:20",
+      "sequence": 19048,
+      "chapter_label": "JER 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Destruction on destruction is decreed, for the whole land is laid waste. Suddenly my tents are destroyed, and my curtains gone in a moment.",
+      "ko": "패망에 패망이 연속하여 온 땅이 탈취를 당하니 나의 천막은 홀연히 파멸되며 나의 휘장은 잠시간에 열파되도다",
+      "source_text_hash": "8b44a659ff2e38245d3204cc14421f117a423b12683f8dd41a98c1ec7097448c",
+      "translation_text_hash": "2909e92f7e5324874d7974f0299e3e5a6ab609cb60233effce9399d742de7318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "패망에 패망이 연속하여 온 땅이 탈취를 당하니 나의 천막은 홀연히 파멸되며 나의 휘장은 잠시간에 열파되도다"
+      ],
+      "raw_text_hashes": [
+        "2909e92f7e5324874d7974f0299e3e5a6ab609cb60233effce9399d742de7318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:21",
+      "sequence": 19049,
+      "chapter_label": "JER 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "How long will I see the standard and hear the sound of the trumpet?",
+      "ko": "내가 저 기호를 보며 나팔소리 듣기를 어느때까지 할꼬",
+      "source_text_hash": "dec0fd168b73a6d4ce26b6ad85c617db2cabaa569cd025c974254e33473b7d77",
+      "translation_text_hash": "dfbd9cc7eca4bf623de93051cbc2c7fbc6a478cb1ac80c55aaf9f7491e106a7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저 기호를 보며 나팔소리 듣기를 어느때까지 할꼬"
+      ],
+      "raw_text_hashes": [
+        "dfbd9cc7eca4bf623de93051cbc2c7fbc6a478cb1ac80c55aaf9f7491e106a7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:22",
+      "sequence": 19050,
+      "chapter_label": "JER 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "“For my people are foolish. They don’t know me. They are foolish children, and they have no understanding. They are skillful in doing evil, but they don’t know how to do good.”",
+      "ko": "내 백성은 나를 알지 못하는 우준한 자요 지각이 없는 미련한 자식이라 악을 행하기에는 지각이 있으나 선을 행하기에는 무지하도다",
+      "source_text_hash": "3dfc5f6407bdd3815c6bfb377a8edbc4b33b6634a89f708755f43b449f3d81b5",
+      "translation_text_hash": "71d6efdbebbf8f5dbbc2e5e9c6ed017d187fd221d4b18c1954e3ee1f7798c776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성은 나를 알지 못하는 우준한 자요 지각이 없는 미련한 자식이라 악을 행하기에는 지각이 있으나 선을 행하기에는 무지하도다"
+      ],
+      "raw_text_hashes": [
+        "71d6efdbebbf8f5dbbc2e5e9c6ed017d187fd221d4b18c1954e3ee1f7798c776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:23",
+      "sequence": 19051,
+      "chapter_label": "JER 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "I saw the earth and, behold, it was waste and void, and the heavens, and they had no light.",
+      "ko": "내가 땅을 본즉 혼돈하고 공허하며 하늘들을 우러른즉 거기 빛이 없으며",
+      "source_text_hash": "e9f24f2e02f5608a0467b50139e27984fab2fe3df23a34cb441cc23b2d4ca5b0",
+      "translation_text_hash": "85fdc94d47beecf84863345e1950cc462253153eed750eb30caa9601f8ff28e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅을 본즉 혼돈하고 공허하며 하늘들을 우러른즉 거기 빛이 없으며"
+      ],
+      "raw_text_hashes": [
+        "85fdc94d47beecf84863345e1950cc462253153eed750eb30caa9601f8ff28e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:24",
+      "sequence": 19052,
+      "chapter_label": "JER 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "I saw the mountains, and behold, they trembled, and all the hills moved back and forth.",
+      "ko": "내가 산들을 본즉 다 진동하며 작은 산들도 요동하며",
+      "source_text_hash": "bb54830f65dd409d6499b63fa8dd9541d89625b45d284ae8f11edc9b74078a3e",
+      "translation_text_hash": "5a4742f8a0c69a8bdf8582a5c7464ffef405aff0513ad4fc89f838ca48d646a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 산들을 본즉 다 진동하며 작은 산들도 요동하며"
+      ],
+      "raw_text_hashes": [
+        "5a4742f8a0c69a8bdf8582a5c7464ffef405aff0513ad4fc89f838ca48d646a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:25",
+      "sequence": 19053,
+      "chapter_label": "JER 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "I saw, and behold, there was no man, and all the birds of the sky had fled.",
+      "ko": "내가 본즉 사람이 없으며 공중의 새가 다 날아갔으며",
+      "source_text_hash": "1b5519a1b0f286a9fb3a0be1645ad57da0f587cadaa3356612654d5afcb5d26a",
+      "translation_text_hash": "1cd4a68d83865ece9f29aba4dea93e75511b4c3512d48d7c6aa24577cca87806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 사람이 없으며 공중의 새가 다 날아갔으며"
+      ],
+      "raw_text_hashes": [
+        "1cd4a68d83865ece9f29aba4dea93e75511b4c3512d48d7c6aa24577cca87806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:26",
+      "sequence": 19054,
+      "chapter_label": "JER 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "I saw, and behold, the fruitful field was a wilderness, and all its cities were broken down at the presence of the LORD, before his fierce anger.",
+      "ko": "내가 본즉 좋은 땅이 황무지가 되었으며 그 모든 성읍이 여호와의 앞 그 맹렬한 진노 앞에 무너졌으니",
+      "source_text_hash": "5c36d6316c390f7487f41f255c872e3db191936934339ee2b7960fb8fcaca7cf",
+      "translation_text_hash": "798ed4c70b6bde0fc41fe9f44f4eb208b4d5c95b703acff9cac971d1f7543be0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 좋은 땅이 황무지가 되었으며 그 모든 성읍이 여호와의 앞 그 맹렬한 진노 앞에 무너졌으니"
+      ],
+      "raw_text_hashes": [
+        "798ed4c70b6bde0fc41fe9f44f4eb208b4d5c95b703acff9cac971d1f7543be0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:27",
+      "sequence": 19055,
+      "chapter_label": "JER 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "For the LORD says, “The whole land will be a desolation; yet I will not make a full end.",
+      "ko": "이는 여호와의 말씀에 이 온 땅이 황폐할 것이나 내가 진멸하지는 아니할 것이며",
+      "source_text_hash": "24d5a8cde9998d45a18173a65d91586720a18188f3f94bc61bfcefb053bdeed3",
+      "translation_text_hash": "00fc0ab934cf93253a0b787cc35d4f077db2acdaf4e7237e72602a3ab394f2aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 말씀에 이 온 땅이 황폐할 것이나 내가 진멸하지는 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "00fc0ab934cf93253a0b787cc35d4f077db2acdaf4e7237e72602a3ab394f2aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:28",
+      "sequence": 19056,
+      "chapter_label": "JER 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "For this the earth will mourn, and the heavens above be black, because I have spoken it. I have planned it, and I have not repented, neither will I turn back from it.”",
+      "ko": "이로 인하여 땅이 슬퍼할 것이며 위의 하늘이 흑암할 것이라 내가 이미 말하였으며 작정하였고 후회하지 아니하였은즉 또한 돌이키지 아니하리라 하셨음이로다",
+      "source_text_hash": "0fa72e76b878b09b3e2321b4fdbb73bb1c653a6d26349409d41968b6c649ec9a",
+      "translation_text_hash": "2dc690b9fc848b88f85962566abf0cb45ea2519f3539c2a4b20086b452730de0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로 인하여 땅이 슬퍼할 것이며 위의 하늘이 흑암할 것이라 내가 이미 말하였으며 작정하였고 후회하지 아니하였은즉 또한 돌이키지 아니하리라 하셨음이로다"
+      ],
+      "raw_text_hashes": [
+        "2dc690b9fc848b88f85962566abf0cb45ea2519f3539c2a4b20086b452730de0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:29",
+      "sequence": 19057,
+      "chapter_label": "JER 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "Every city flees for the noise of the horsemen and archers. They go into the thickets and climb up on the rocks. Every city is forsaken, and not a man dwells therein.",
+      "ko": "기병과 활쏘는 자의 훤화로 인하여 모든 성읍이 도망하여 수풀에 들어가고 바위에 기어오르며 각 성읍이 버림을 당하여 거기 거하는 사람이 없나니",
+      "source_text_hash": "6b568f65124ed7a98ff4cc0647fe5929d147597ef394ad1f9440898c92fd8b51",
+      "translation_text_hash": "75e7a81ff2ff5b253a34857ea090883d2fbd1d1760c1b19f004e1c9ce91c5ea0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기병과 활쏘는 자의 훤화로 인하여 모든 성읍이 도망하여 수풀에 들어가고 바위에 기어오르며 각 성읍이 버림을 당하여 거기 거하는 사람이 없나니"
+      ],
+      "raw_text_hashes": [
+        "75e7a81ff2ff5b253a34857ea090883d2fbd1d1760c1b19f004e1c9ce91c5ea0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:30",
+      "sequence": 19058,
+      "chapter_label": "JER 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "You, when you are made desolate, what will you do? Though you clothe yourself with scarlet, though you deck yourself with ornaments of gold, though you enlarge your eyes with makeup, you make yourself beautiful in vain. Your lovers despise you. They seek your life.",
+      "ko": "멸망을 당한 자여 네가 어떻게 하려느냐 네가 붉은 옷을 입고 금장식으로 단장하고 눈을 그려 꾸밀찌라도 너의 화장한 것이 헛된 일이라 연인들이 너를 멸시하여 네 생명을 찾느니라",
+      "source_text_hash": "bfe50fc8e3f03f5504010747d16d259a8e96f77c199d958e059ece8c9752b9a2",
+      "translation_text_hash": "d4a4117623e7e2e442b872a2dd57ffc62e57c03d1333766b60a00f08f85dc9f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멸망을 당한 자여 네가 어떻게 하려느냐 네가 붉은 옷을 입고 금장식으로 단장하고 눈을 그려 꾸밀찌라도 너의 화장한 것이 헛된 일이라 연인들이 너를 멸시하여 네 생명을 찾느니라"
+      ],
+      "raw_text_hashes": [
+        "d4a4117623e7e2e442b872a2dd57ffc62e57c03d1333766b60a00f08f85dc9f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:4:31",
+      "sequence": 19059,
+      "chapter_label": "JER 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "For I have heard a voice as of a woman in travail, the anguish as of her who gives birth to her first child, the voice of the daughter of Zion, who gasps for breath, who spreads her hands, saying, “Woe is me now! For my soul faints before the murderers.”",
+      "ko": "내가 소리를 들은즉 여인의 해산하는 소리 같고 초산하는 자의 고통하는 소리 같으니 이는 딸 시온의 소리라 그가 헐떡이며 그 손을 펴고 이르기를 내게 화 있도다 살륙하는 자를 인하여 나의 심령이 피곤하도다 하는도다",
+      "source_text_hash": "d74f0b4d42df8c7f162f1d997565f241238738f27b2f800f4a7d918df2000ac0",
+      "translation_text_hash": "6b3242393089b618c39a1241c7a5ad2e367735571d520683f4d9c3e4a5c68635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 소리를 들은즉 여인의 해산하는 소리 같고 초산하는 자의 고통하는 소리 같으니 이는 딸 시온의 소리라 그가 헐떡이며 그 손을 펴고 이르기를 내게 화 있도다 살륙하는 자를 인하여 나의 심령이 피곤하도다 하는도다"
+      ],
+      "raw_text_hashes": [
+        "6b3242393089b618c39a1241c7a5ad2e367735571d520683f4d9c3e4a5c68635"
+      ]
+    }
+  ]
+}

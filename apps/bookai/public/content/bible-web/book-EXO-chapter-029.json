@@ -1,0 +1,1485 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:029",
+  "unit_ordinal": 79,
+  "unit_label": "EXO 29",
+  "book_code": "EXO",
+  "chapter_number": 29,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:29:1",
+      "sequence": 2338,
+      "chapter_label": "EXO 29",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 1
+        }
+      ],
+      "en": "“This is the thing that you shall do to them to make them holy, to minister to me in the priest’s office: take one young bull and two rams without defect,",
+      "ko": "너는 그들에게 나를 섬길 제사장 직분을 위임하여 그들로 거룩하게 할 일이 이러하니 곧 젊은 수소 하나와 흠 없는 수양 둘을 취하고",
+      "source_text_hash": "04fc99996b89a732ab4787560bbd349313e929595f2798c831c1499ef805f30e",
+      "translation_text_hash": "316f3d985140b33b424b267c4191618f92ec3d34438ca83eb2ecd5aeb4c14795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 나를 섬길 제사장 직분을 위임하여 그들로 거룩하게 할 일이 이러하니 곧 젊은 수소 하나와 흠 없는 수양 둘을 취하고"
+      ],
+      "raw_text_hashes": [
+        "316f3d985140b33b424b267c4191618f92ec3d34438ca83eb2ecd5aeb4c14795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:2",
+      "sequence": 2339,
+      "chapter_label": "EXO 29",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 2
+        }
+      ],
+      "en": "unleavened bread, unleavened cakes mixed with oil, and unleavened wafers anointed with oil. You shall make them of fine wheat flour.",
+      "ko": "무교병과 기름 섞인 무교 과자와 기름 바른 무교 전병을 모두 고운 밀가루로 만들고",
+      "source_text_hash": "93c36079bca783c6d31c57f166e71acb3f6f5d42b787f544d0352ac9d937240a",
+      "translation_text_hash": "bce75bd3930cd85aae4bd4decd0beb3056e4bd6f30a77530da54ff5d0e972bd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무교병과 기름 섞인 무교 과자와 기름 바른 무교 전병을 모두 고운 밀가루로 만들고"
+      ],
+      "raw_text_hashes": [
+        "bce75bd3930cd85aae4bd4decd0beb3056e4bd6f30a77530da54ff5d0e972bd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:3",
+      "sequence": 2340,
+      "chapter_label": "EXO 29",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 3
+        }
+      ],
+      "en": "You shall put them into one basket, and bring them in the basket, with the bull and the two rams.",
+      "ko": "그것들을 한 광주리에 담고 그것을 광주리에 담은채 그 송아지와 두 양과 함께 가져 오고",
+      "source_text_hash": "61c16d4c0e534046b98c5f72298ae3d2b4862ac7e9346c72488543f7e23e6efe",
+      "translation_text_hash": "88bd7121006cdcc4effc8ba13bd20e0fbf829318c506a3012ba1cd279d5596ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들을 한 광주리에 담고 그것을 광주리에 담은채 그 송아지와 두 양과 함께 가져 오고"
+      ],
+      "raw_text_hashes": [
+        "88bd7121006cdcc4effc8ba13bd20e0fbf829318c506a3012ba1cd279d5596ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:4",
+      "sequence": 2341,
+      "chapter_label": "EXO 29",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 4
+        }
+      ],
+      "en": "You shall bring Aaron and his sons to the door of the Tent of Meeting, and shall wash them with water.",
+      "ko": "너는 아론과 그 아들들을 회막 문으로 데려다가 물로 씻기고",
+      "source_text_hash": "5f82466b965baf14005bff3402ee82a59fdb6877068e8e833631fb758b677088",
+      "translation_text_hash": "01a15f687ee80d1c726cd9a5d425af65ec3bc3d7516a59fa96fe60c7f6d6411a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론과 그 아들들을 회막 문으로 데려다가 물로 씻기고"
+      ],
+      "raw_text_hashes": [
+        "01a15f687ee80d1c726cd9a5d425af65ec3bc3d7516a59fa96fe60c7f6d6411a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:5",
+      "sequence": 2342,
+      "chapter_label": "EXO 29",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 5
+        }
+      ],
+      "en": "You shall take the garments, and put on Aaron the tunic, the robe of the ephod, the ephod, and the breastplate, and clothe him with the skillfully woven band of the ephod.",
+      "ko": "의복을 가져다가 아론에게 속옷과 에봇 받침 겉옷과 에봇을 입히고 흉패를 달고 에봇에 공교히 짠 띠를 띠우고",
+      "source_text_hash": "676604e92114a9b13699f1d8e03f910c232ca7b36cdf7517f1eb60115b5f87f2",
+      "translation_text_hash": "10232edff2794aea2e223062915ddcf3514cab7117f72cf08cf6927bb0443c7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의복을 가져다가 아론에게 속옷과 에봇 받침 겉옷과 에봇을 입히고 흉패를 달고 에봇에 공교히 짠 띠를 띠우고"
+      ],
+      "raw_text_hashes": [
+        "10232edff2794aea2e223062915ddcf3514cab7117f72cf08cf6927bb0443c7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:6",
+      "sequence": 2343,
+      "chapter_label": "EXO 29",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 6
+        }
+      ],
+      "en": "You shall set the turban on his head, and put the holy crown on the turban.",
+      "ko": "그 머리에 관을 씌우고 그 위에 성패를 더하고",
+      "source_text_hash": "a303901fc8b61e0eb583142dbea9099df3a647807f1dfc90e67fbfda62e166fe",
+      "translation_text_hash": "38649afc6f27b08e112925cb0892b5353b9a5ea0a347a3776abb9d9c890f60fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 머리에 관을 씌우고 그 위에 성패를 더하고"
+      ],
+      "raw_text_hashes": [
+        "38649afc6f27b08e112925cb0892b5353b9a5ea0a347a3776abb9d9c890f60fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:7",
+      "sequence": 2344,
+      "chapter_label": "EXO 29",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 7
+        }
+      ],
+      "en": "Then you shall take the anointing oil, and pour it on his head, and anoint him.",
+      "ko": "관유를 가져다가 그 머리에 부어 바르고",
+      "source_text_hash": "ca8c8ac2a2a29effde9185292484eb2c4814518b1033ac0c65a72b666e8d26ff",
+      "translation_text_hash": "b9b0867696dc75bcb0bc76c7f4acc9014a072cd3f1e878b7bf9522f53e7444d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관유를 가져다가 그 머리에 부어 바르고"
+      ],
+      "raw_text_hashes": [
+        "b9b0867696dc75bcb0bc76c7f4acc9014a072cd3f1e878b7bf9522f53e7444d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:8",
+      "sequence": 2345,
+      "chapter_label": "EXO 29",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 8
+        }
+      ],
+      "en": "You shall bring his sons, and put tunics on them.",
+      "ko": "그 아들들을 데려다가 그들에게 속옷을 입히고",
+      "source_text_hash": "374c2ac038d91b066a999cdc18f14aa366efbea7a7cd4995355938ee7e1353b7",
+      "translation_text_hash": "dc4d1ca0884fbfa3b63d058f4ecb90ff32865e6478618d397198714c1d19ff39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들들을 데려다가 그들에게 속옷을 입히고"
+      ],
+      "raw_text_hashes": [
+        "dc4d1ca0884fbfa3b63d058f4ecb90ff32865e6478618d397198714c1d19ff39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:9",
+      "sequence": 2346,
+      "chapter_label": "EXO 29",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 9
+        }
+      ],
+      "en": "You shall clothe them with belts, Aaron and his sons, and bind headbands on them. They shall have the priesthood by a perpetual statute. You shall consecrate Aaron and his sons.",
+      "ko": "아론과 그 아들들에게 띠를 띠우며 관을 씌워서 제사장의 직분을 그들에게 맡겨 영원한 규례가 되게 하라 너는 이같이 아론과 그 아들들에게 위임하여 거룩하게 할찌니라",
+      "source_text_hash": "2b292f05dc1e11dada332017ff38e8753a5978f0f7ec75611f10b37587faf4f2",
+      "translation_text_hash": "fd1d043f71e315f70602c9fc4601d2c65d80ed83214db9ab57d8bd6092a2d9b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들에게 띠를 띠우며 관을 씌워서 제사장의 직분을 그들에게 맡겨 영원한 규례가 되게 하라 너는 이같이 아론과 그 아들들에게 위임하여 거룩하게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "fd1d043f71e315f70602c9fc4601d2c65d80ed83214db9ab57d8bd6092a2d9b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:10",
+      "sequence": 2347,
+      "chapter_label": "EXO 29",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 10
+        }
+      ],
+      "en": "“You shall bring the bull before the Tent of Meeting; and Aaron and his sons shall lay their hands on the head of the bull.",
+      "ko": "너는 수송아지를 회막 앞으로 끌어 오고 아론과 그 아들들은 그 송아지 머리에 안수할찌며",
+      "source_text_hash": "3e7bc73561b2792e2c1922389e3e512ecabb4ba5f90ae9db6eca4ea4e987bc27",
+      "translation_text_hash": "2d4a88f097dff15ad201ac2f46728c696baec9abba2420c00fab7a141cc38514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 수송아지를 회막 앞으로 끌어 오고 아론과 그 아들들은 그 송아지 머리에 안수할찌며"
+      ],
+      "raw_text_hashes": [
+        "2d4a88f097dff15ad201ac2f46728c696baec9abba2420c00fab7a141cc38514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:11",
+      "sequence": 2348,
+      "chapter_label": "EXO 29",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 11
+        }
+      ],
+      "en": "You shall kill the bull before the LORD at the door of the Tent of Meeting.",
+      "ko": "너는 회막문 여호와 앞에서 그 송아지를 잡고",
+      "source_text_hash": "f6833cfe9fa76702ecde8b478460e1a518e4393b82b336624299d55746be4b85",
+      "translation_text_hash": "5fd58b40261854b704ef908462c98f8c6cec935a3a3401b55f3794c603b31f07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 회막문 여호와 앞에서 그 송아지를 잡고"
+      ],
+      "raw_text_hashes": [
+        "5fd58b40261854b704ef908462c98f8c6cec935a3a3401b55f3794c603b31f07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:12",
+      "sequence": 2349,
+      "chapter_label": "EXO 29",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 12
+        }
+      ],
+      "en": "You shall take of the blood of the bull, and put it on the horns of the altar with your finger; and you shall pour out all the blood at the base of the altar.",
+      "ko": "그 피를 네 손가락으로 단 뿔들에 바르고 그 피 전부를 단 밑에 쏟을찌며",
+      "source_text_hash": "f1169b29176e1f95054334c85522e7efd6a7839a3b40b1b964ff54365813b0cb",
+      "translation_text_hash": "bff3fba7cb9d2480e4b1085171be6ac7b5f8db166fdb3d62ca26dd1f6aa686fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피를 네 손가락으로 단 뿔들에 바르고 그 피 전부를 단 밑에 쏟을찌며"
+      ],
+      "raw_text_hashes": [
+        "bff3fba7cb9d2480e4b1085171be6ac7b5f8db166fdb3d62ca26dd1f6aa686fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:13",
+      "sequence": 2350,
+      "chapter_label": "EXO 29",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 13
+        }
+      ],
+      "en": "You shall take all the fat that covers the innards, the cover of the liver, the two kidneys, and the fat that is on them, and burn them on the altar.",
+      "ko": "내장에 덮인 모든 기름과 간 위에 있는 꺼풀과 두 콩팥과 그 위의 기름을 취하여 단 위에 불사르고",
+      "source_text_hash": "2b253be637203f0a416e05f1f886fae5bd6211054466377eb64b1fea557eb420",
+      "translation_text_hash": "7d02e818daea14e257d14a8933d5136473f992fcda71fd3f551de060ef382362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내장에 덮인 모든 기름과 간 위에 있는 꺼풀과 두 콩팥과 그 위의 기름을 취하여 단 위에 불사르고"
+      ],
+      "raw_text_hashes": [
+        "7d02e818daea14e257d14a8933d5136473f992fcda71fd3f551de060ef382362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:14",
+      "sequence": 2351,
+      "chapter_label": "EXO 29",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 14
+        }
+      ],
+      "en": "But the meat of the bull, and its skin, and its dung, you shall burn with fire outside of the camp. It is a sin offering.",
+      "ko": "그 수소의 고기와 가죽과 똥을 진 밖에서 불사르라 이는 속죄제니라",
+      "source_text_hash": "6cea23fa78a8103caabb52ce5d49a46f41147ab260f3428b01f1410cfe8423d3",
+      "translation_text_hash": "d092942dcf675c07e22633d0431bbfbde3b2a55c14547156cf52b1b2cedf7d96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수소의 고기와 가죽과 똥을 진 밖에서 불사르라 이는 속죄제니라"
+      ],
+      "raw_text_hashes": [
+        "d092942dcf675c07e22633d0431bbfbde3b2a55c14547156cf52b1b2cedf7d96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:15",
+      "sequence": 2352,
+      "chapter_label": "EXO 29",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 15
+        }
+      ],
+      "en": "“You shall also take the one ram, and Aaron and his sons shall lay their hands on the head of the ram.",
+      "ko": "너는 또 수양 하나를 취하고 아론과 그 아들들은 그 수양의 머리 위에 안수할찌며",
+      "source_text_hash": "1214c28c0a94cf60e0eff2050428e60f817f9b1e5003130f7bb423b46188d4a8",
+      "translation_text_hash": "4cd57cfb4922d48050f9c74f3f82fbab4be32cce2ac1a718d8544e6b548cf2ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 수양 하나를 취하고 아론과 그 아들들은 그 수양의 머리 위에 안수할찌며"
+      ],
+      "raw_text_hashes": [
+        "4cd57cfb4922d48050f9c74f3f82fbab4be32cce2ac1a718d8544e6b548cf2ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:16",
+      "sequence": 2353,
+      "chapter_label": "EXO 29",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 16
+        }
+      ],
+      "en": "You shall kill the ram, and you shall take its blood, and sprinkle it around on the altar.",
+      "ko": "너는 그 수양을 잡고 그 피를 취하여 단 위의 주위에 뿌리고",
+      "source_text_hash": "3e9bdc9a245d3b37544b41eebf0cd7f333c8c70712b784ba2b8923017ab77567",
+      "translation_text_hash": "ee6562b5b3a12b9e7feef125b56f5a400db0fc3f0b77e05a38080a5e835ce409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 수양을 잡고 그 피를 취하여 단 위의 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "ee6562b5b3a12b9e7feef125b56f5a400db0fc3f0b77e05a38080a5e835ce409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:17",
+      "sequence": 2354,
+      "chapter_label": "EXO 29",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 17
+        }
+      ],
+      "en": "You shall cut the ram into its pieces, and wash its innards, and its legs, and put them with its pieces, and with its head.",
+      "ko": "그 수양의 각을 뜨고 그 장부와 다리는 씻어 각 뜬 고기와 그 머리와 함께 두고",
+      "source_text_hash": "f496e2cc7a7e30ef7a454454b4dc6f409cee9bb2df439fb5d7801baec3c0c91c",
+      "translation_text_hash": "4c6739c86a522bc820379e3dc15b641e83abf7598ea585633f298c5765cc0149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수양의 각을 뜨고 그 장부와 다리는 씻어 각 뜬 고기와 그 머리와 함께 두고"
+      ],
+      "raw_text_hashes": [
+        "4c6739c86a522bc820379e3dc15b641e83abf7598ea585633f298c5765cc0149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:18",
+      "sequence": 2355,
+      "chapter_label": "EXO 29",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 18
+        }
+      ],
+      "en": "You shall burn the whole ram on the altar: it is a burnt offering to the LORD; it is a pleasant aroma, an offering made by fire to the LORD.",
+      "ko": "그 수양의 전부를 단 위에 불사르라 이는 여호와께 드리는 번제요 이는 향기로운 냄새니 여호와께 드리는 화제니라",
+      "source_text_hash": "84a24f682c22f3563eabd6d559733611ec7220c294975d8b4552a989a3d91b7b",
+      "translation_text_hash": "ddf0ce7b348f52a6445f67b361760981f5596de229937428558c92b643b6239c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 수양의 전부를 단 위에 불사르라 이는 여호와께 드리는 번제요 이는 향기로운 냄새니 여호와께 드리는 화제니라"
+      ],
+      "raw_text_hashes": [
+        "ddf0ce7b348f52a6445f67b361760981f5596de229937428558c92b643b6239c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:19",
+      "sequence": 2356,
+      "chapter_label": "EXO 29",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 19
+        }
+      ],
+      "en": "“You shall take the other ram, and Aaron and his sons shall lay their hands on the head of the ram.",
+      "ko": "너는 다른 수양을 취하고 아론과 그 아들들은 그 수양의 머리 위에 안수할찌며",
+      "source_text_hash": "e7ad322feff6e24229fe0151f8accbb60355306a32a7c8a2e14900934b0eb2c3",
+      "translation_text_hash": "546dacbe446fca99bbfe79336ad03503bd172076f3bf2dbae49221b4cd0cf31b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 다른 수양을 취하고 아론과 그 아들들은 그 수양의 머리 위에 안수할찌며"
+      ],
+      "raw_text_hashes": [
+        "546dacbe446fca99bbfe79336ad03503bd172076f3bf2dbae49221b4cd0cf31b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:20",
+      "sequence": 2357,
+      "chapter_label": "EXO 29",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 20
+        }
+      ],
+      "en": "Then you shall kill the ram, and take some of its blood, and put it on the tip of the right ear of Aaron, and on the tip of the right ear of his sons, and on the thumb of their right hand, and on the big toe of their right foot; and sprinkle the blood around on the altar.",
+      "ko": "너는 그 수양을 잡고 그 피를 취하여 아론의 오른 귓부리와 그 아들들의 오른 귓부리에 바르고 그 오른손 엄지와 오른발 엄지에 바르고 그 피를 단 주위에 뿌리고",
+      "source_text_hash": "5023055814a6b78a364bbe2362c53b4f86fda73092957348cfc9b50affe14b83",
+      "translation_text_hash": "3fbeb8f4880cb5e60ba8074a1aec6df6e8103cd0c09bc440a56f79db4655854a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 수양을 잡고 그 피를 취하여 아론의 오른 귓부리와 그 아들들의 오른 귓부리에 바르고 그 오른손 엄지와 오른발 엄지에 바르고 그 피를 단 주위에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "3fbeb8f4880cb5e60ba8074a1aec6df6e8103cd0c09bc440a56f79db4655854a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:21",
+      "sequence": 2358,
+      "chapter_label": "EXO 29",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 21
+        }
+      ],
+      "en": "You shall take of the blood that is on the altar, and of the anointing oil, and sprinkle it on Aaron, and on his garments, and on his sons, and on the garments of his sons with him: and he shall be made holy, and his garments, and his sons, and his sons’ garments with him.",
+      "ko": "단 위의 피와 관유를 취하여 아론과 그 옷과 그 아들들과 그 아들들의 옷에 뿌리라 그와 그 옷과 그 아들들과 그 아들들의 옷이 거룩하리라",
+      "source_text_hash": "5a43ba1861e9a9fb4f97fddab91d67b7a79a26057ab2a13e1daae828fa415808",
+      "translation_text_hash": "f1f6af485408c6fcef5ba8f5f1842e30473eb87c42861ae8598821e23cb464a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 위의 피와 관유를 취하여 아론과 그 옷과 그 아들들과 그 아들들의 옷에 뿌리라 그와 그 옷과 그 아들들과 그 아들들의 옷이 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "f1f6af485408c6fcef5ba8f5f1842e30473eb87c42861ae8598821e23cb464a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:22",
+      "sequence": 2359,
+      "chapter_label": "EXO 29",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 22
+        }
+      ],
+      "en": "Also you shall take some of the ram’s fat, the fat tail, the fat that covers the innards, the cover of the liver, the two kidneys, the fat that is on them, and the right thigh (for it is a ram of consecration),",
+      "ko": "또 너는 그 수양의 기름과 기름진 꼬리와 그 내장에 덮인 기름과 간 위의 꺼풀과 두 콩팥과 그것들 위의 기름과 우편 넓적다리를 취하라 이는 위임식의 수양이며",
+      "source_text_hash": "827148b8c4b09e753f0251e024d72b6c0b7599e74f5cc9cded2761543d8ddb5f",
+      "translation_text_hash": "a960ee86756023d3fc6b2f09c836881982a27995f6cb652e424465138f0e82ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너는 그 수양의 기름과 기름진 꼬리와 그 내장에 덮인 기름과 간 위의 꺼풀과 두 콩팥과 그것들 위의 기름과 우편 넓적다리를 취하라 이는 위임식의 수양이며"
+      ],
+      "raw_text_hashes": [
+        "a960ee86756023d3fc6b2f09c836881982a27995f6cb652e424465138f0e82ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:23",
+      "sequence": 2360,
+      "chapter_label": "EXO 29",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 23
+        }
+      ],
+      "en": "and one loaf of bread, one cake of oiled bread, and one wafer out of the basket of unleavened bread that is before the LORD.",
+      "ko": "또 여호와 앞에 있는 무교병 광주리에서 떡 한 덩이와 기름 바른 과자 하나와 전병 하나를 취하고",
+      "source_text_hash": "e54dcc8b9ecfdc7575bf84a32c64deea77d7a72eb3c547bdddd0fa3c34c21ac2",
+      "translation_text_hash": "7c5f633ecbb8b2c34c004b4a3baf07b7f708fb2306fe2cfb9581f81591d0de3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와 앞에 있는 무교병 광주리에서 떡 한 덩이와 기름 바른 과자 하나와 전병 하나를 취하고"
+      ],
+      "raw_text_hashes": [
+        "7c5f633ecbb8b2c34c004b4a3baf07b7f708fb2306fe2cfb9581f81591d0de3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:24",
+      "sequence": 2361,
+      "chapter_label": "EXO 29",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 24
+        }
+      ],
+      "en": "You shall put all of this in Aaron’s hands, and in his sons’ hands, and shall wave them for a wave offering before the LORD.",
+      "ko": "그 전부를 아론의 손과 그 아들들의 손에 주고 그것을 흔들어 여호와 앞에 요제를 삼을찌며",
+      "source_text_hash": "a4fac85658528eec57fb466b073f886e17518ed6537e988f3476934d59794052",
+      "translation_text_hash": "387163b92ddd2049b28c30dbf0e861d5f450bcf0f479b80919a4dcb069783c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전부를 아론의 손과 그 아들들의 손에 주고 그것을 흔들어 여호와 앞에 요제를 삼을찌며"
+      ],
+      "raw_text_hashes": [
+        "387163b92ddd2049b28c30dbf0e861d5f450bcf0f479b80919a4dcb069783c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:25",
+      "sequence": 2362,
+      "chapter_label": "EXO 29",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 25
+        }
+      ],
+      "en": "You shall take them from their hands, and burn them on the altar on the burnt offering, for a pleasant aroma before the LORD: it is an offering made by fire to the LORD.",
+      "ko": "너는 그것을 그들의 손에서 취하여 단 위에서 번제물을 더하여 불사르라 이는 여호와 앞에 향기로운 냄새니 곧 여호와께 드리는 화제니라",
+      "source_text_hash": "4480d4cf13500d2252f3e13ca0b7c92ec11aff6b4985f9ad837948329fd0de78",
+      "translation_text_hash": "1bf6a580d0467c8e91e551e2f581bb16ef298eb3659f806481d50f8e6c7cbb66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그것을 그들의 손에서 취하여 단 위에서 번제물을 더하여 불사르라 이는 여호와 앞에 향기로운 냄새니 곧 여호와께 드리는 화제니라"
+      ],
+      "raw_text_hashes": [
+        "1bf6a580d0467c8e91e551e2f581bb16ef298eb3659f806481d50f8e6c7cbb66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:26",
+      "sequence": 2363,
+      "chapter_label": "EXO 29",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 26
+        }
+      ],
+      "en": "“You shall take the breast of Aaron’s ram of consecration, and wave it for a wave offering before the LORD. It shall be your portion.",
+      "ko": "너는 위임식 수양의 가슴을 취하여 여호와 앞에 흔들어 요제를 삼으라 이는 너의 분깃이니라",
+      "source_text_hash": "8cd5a50677f3b3e9f1fcc1c5279fb5599dbfde9cecc98d7c2fa3fa8425829250",
+      "translation_text_hash": "14637e9832866dd3d7f1967183fd797d44484a844dc5334c37be3ec520dad546",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 위임식 수양의 가슴을 취하여 여호와 앞에 흔들어 요제를 삼으라 이는 너의 분깃이니라"
+      ],
+      "raw_text_hashes": [
+        "14637e9832866dd3d7f1967183fd797d44484a844dc5334c37be3ec520dad546"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:27",
+      "sequence": 2364,
+      "chapter_label": "EXO 29",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 27
+        }
+      ],
+      "en": "You shall sanctify the breast of the wave offering and the thigh of the wave offering, which is waved, and which is raised up, of the ram of consecration, even of that which is for Aaron, and of that which is for his sons.",
+      "ko": "너는 그 흔든 요제물 곧 아론과 그 아들들의 위임식 수양의 가슴과 넓적다리를 거룩하게 하라",
+      "source_text_hash": "3920fcdba40db630f5919568a3e787e0e4164ee310026f766169454be0e15b74",
+      "translation_text_hash": "767f9aafa144c8b062b3eb171339fd08372a6b125f9746dafa4f7f758b318108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 흔든 요제물 곧 아론과 그 아들들의 위임식 수양의 가슴과 넓적다리를 거룩하게 하라"
+      ],
+      "raw_text_hashes": [
+        "767f9aafa144c8b062b3eb171339fd08372a6b125f9746dafa4f7f758b318108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:28",
+      "sequence": 2365,
+      "chapter_label": "EXO 29",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 28
+        }
+      ],
+      "en": "It shall be for Aaron and his sons as their portion forever from the children of Israel; for it is a wave offering. It shall be a wave offering from the children of Israel of the sacrifices of their peace offerings, even their wave offering to the LORD.",
+      "ko": "이는 이스라엘 자손이 아론과 그 자손에게 돌릴 영원한 분깃이요 거제물이니 곧 이스라엘 자손이 화목제의 희생 중에서 취한 거제물로서 여호와께 드리는 거제물이니라",
+      "source_text_hash": "6de0099f30b4536dee53ea243db129f10b8feb56f58f3ab5ac2cedb0d90f7d38",
+      "translation_text_hash": "aa36aab404275d02dbca1f2ef6e168b0aa15b69af7b0071d5a52e2e0f9098df5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 이스라엘 자손이 아론과 그 자손에게 돌릴 영원한 분깃이요 거제물이니 곧 이스라엘 자손이 화목제의 희생 중에서 취한 거제물로서 여호와께 드리는 거제물이니라"
+      ],
+      "raw_text_hashes": [
+        "aa36aab404275d02dbca1f2ef6e168b0aa15b69af7b0071d5a52e2e0f9098df5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:29",
+      "sequence": 2366,
+      "chapter_label": "EXO 29",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 29
+        }
+      ],
+      "en": "“The holy garments of Aaron shall be for his sons after him, to be anointed in them, and to be consecrated in them.",
+      "ko": "아론의 성의는 아론의 후에 그 아들들에게 돌릴찌니 그들이 그것을 입고 기름 부음으로 위임을 받을 것이며",
+      "source_text_hash": "18914cfbaa22d0b7bafc5c319b7e778185600fc28c646a5aa8aff29699fe1fe2",
+      "translation_text_hash": "4562880bae359e3d1cd0ee9b48f69c413c2af903a6e9a9419619e8dd1a72e953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 성의는 아론의 후에 그 아들들에게 돌릴찌니 그들이 그것을 입고 기름 부음으로 위임을 받을 것이며"
+      ],
+      "raw_text_hashes": [
+        "4562880bae359e3d1cd0ee9b48f69c413c2af903a6e9a9419619e8dd1a72e953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:30",
+      "sequence": 2367,
+      "chapter_label": "EXO 29",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 30
+        }
+      ],
+      "en": "Seven days shall the son who is priest in his place put them on, when he comes into the Tent of Meeting to minister in the holy place.",
+      "ko": "그를 이어 제사장이 되는 아들이 회막에 들어가서 성소에서 섬길 때에는 칠일 동안 그것을 입을찌니라",
+      "source_text_hash": "cbfe4f653813a512bce6139d262056ce62dd3514a02efa18700c7cf391b51023",
+      "translation_text_hash": "c0af119b90c75c93be10e5e1b0eadcb974763f05fb88b905a7a54dfa37f4ae29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 이어 제사장이 되는 아들이 회막에 들어가서 성소에서 섬길 때에는 칠일 동안 그것을 입을찌니라"
+      ],
+      "raw_text_hashes": [
+        "c0af119b90c75c93be10e5e1b0eadcb974763f05fb88b905a7a54dfa37f4ae29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:31",
+      "sequence": 2368,
+      "chapter_label": "EXO 29",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 31
+        }
+      ],
+      "en": "“You shall take the ram of consecration and boil its meat in a holy place.",
+      "ko": "너는 위임식 수양을 취하여 거룩한 곳에서 그 고기를 삶고",
+      "source_text_hash": "244cadfe035137149beea55bbd7f7facb56442e47e6b836331f130779a030aa7",
+      "translation_text_hash": "08254752d318ef2bdec3330e4b7648281822fdc047093fb183ffa1ce3d20a9ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 위임식 수양을 취하여 거룩한 곳에서 그 고기를 삶고"
+      ],
+      "raw_text_hashes": [
+        "08254752d318ef2bdec3330e4b7648281822fdc047093fb183ffa1ce3d20a9ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:32",
+      "sequence": 2369,
+      "chapter_label": "EXO 29",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 32
+        }
+      ],
+      "en": "Aaron and his sons shall eat the meat of the ram, and the bread that is in the basket, at the door of the Tent of Meeting.",
+      "ko": "아론과 그 아들들이 회막문에서 그 수양의 고기와 광주리에 있는 떡을 먹을찌라",
+      "source_text_hash": "54943c481a3642d7099f9769faec3ee84318d47764af7ca8742abab6aaac5b5d",
+      "translation_text_hash": "a1a8a93428db7da79ea974bf813f0b16cb90f41ce132767a983e58ec766b186e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론과 그 아들들이 회막문에서 그 수양의 고기와 광주리에 있는 떡을 먹을찌라"
+      ],
+      "raw_text_hashes": [
+        "a1a8a93428db7da79ea974bf813f0b16cb90f41ce132767a983e58ec766b186e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:33",
+      "sequence": 2370,
+      "chapter_label": "EXO 29",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 33
+        }
+      ],
+      "en": "They shall eat those things with which atonement was made, to consecrate and sanctify them; but a stranger shall not eat of it, because they are holy.",
+      "ko": "속죄물 곧 그들을 위임하며 그들을 거룩하게 하는데 쓰는 것은 그들은 먹되 타인은 먹지 못할찌니 이는 성물이 됨이며",
+      "source_text_hash": "8378bfb604d0b20fb0e100fb88db441fa221a8fdca7834ffc1ba11ac96a9df82",
+      "translation_text_hash": "583ba83e1e4225d78823e2a3ba9756d7c2b38703e6d6fe74a61ea52f1da7443c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속죄물 곧 그들을 위임하며 그들을 거룩하게 하는데 쓰는 것은 그들은 먹되 타인은 먹지 못할찌니 이는 성물이 됨이며"
+      ],
+      "raw_text_hashes": [
+        "583ba83e1e4225d78823e2a3ba9756d7c2b38703e6d6fe74a61ea52f1da7443c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:34",
+      "sequence": 2371,
+      "chapter_label": "EXO 29",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 34
+        }
+      ],
+      "en": "If anything of the meat of the consecration, or of the bread, remains to the morning, then you shall burn the remainder with fire. It shall not be eaten, because it is holy.",
+      "ko": "위임식 고기나 떡이 아침까지 남았으면 그것을 불에 사를찌니 이는 거룩한즉 먹지 못할찌니라",
+      "source_text_hash": "b707aabbd3bdaf05581e627a12859bc06a667cf637951a94f1b1ef69c1e604ad",
+      "translation_text_hash": "a39f5860242818abe1b87d295f887bdcba4387d0f4f17db35c7a1b6ea438c0cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위임식 고기나 떡이 아침까지 남았으면 그것을 불에 사를찌니 이는 거룩한즉 먹지 못할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a39f5860242818abe1b87d295f887bdcba4387d0f4f17db35c7a1b6ea438c0cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:35",
+      "sequence": 2372,
+      "chapter_label": "EXO 29",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 35
+        }
+      ],
+      "en": "“You shall do so to Aaron and to his sons, according to all that I have commanded you. You shall consecrate them seven days.",
+      "ko": "너는 내가 무릇 네게 명한대로 아론과 그 아들들에게 그같이 하여 칠일 동안 위임식을 행하되",
+      "source_text_hash": "f603815247832d48a7fbfcb79178ba0894d718673e07eab6feeb5c62634af69c",
+      "translation_text_hash": "791c81e7317796cff9091bd5899f35c3e1368239a0f612ae441279f3d169d6c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내가 무릇 네게 명한대로 아론과 그 아들들에게 그같이 하여 칠일 동안 위임식을 행하되"
+      ],
+      "raw_text_hashes": [
+        "791c81e7317796cff9091bd5899f35c3e1368239a0f612ae441279f3d169d6c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:36",
+      "sequence": 2373,
+      "chapter_label": "EXO 29",
+      "verse_label": "36",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 36
+        }
+      ],
+      "en": "Every day you shall offer the bull of sin offering for atonement. You shall cleanse the altar when you make atonement for it. You shall anoint it, to sanctify it.",
+      "ko": "매일 수송아지 하나로 속죄하기 위하여 속죄제를 드리며 또 단을 위하여 속죄하여 깨끗케 하고 그것에 기름을 부어 거룩하게 하라",
+      "source_text_hash": "14e5d3574cbf1f8fce93b806d6ee59753dbae811871cb4515c9f51e79255a5d5",
+      "translation_text_hash": "01dcf8a749a942d238b3567a9f81fe404cc81014ce6d3231a4620b1fc0d25d62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매일 수송아지 하나로 속죄하기 위하여 속죄제를 드리며 또 단을 위하여 속죄하여 깨끗케 하고 그것에 기름을 부어 거룩하게 하라"
+      ],
+      "raw_text_hashes": [
+        "01dcf8a749a942d238b3567a9f81fe404cc81014ce6d3231a4620b1fc0d25d62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:37",
+      "sequence": 2374,
+      "chapter_label": "EXO 29",
+      "verse_label": "37",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 37
+        }
+      ],
+      "en": "Seven days you shall make atonement for the altar, and sanctify it; and the altar shall be most holy. Whatever touches the altar shall be holy.",
+      "ko": "네가 칠일 동안 단을 위하여 속죄하여 거룩하게 하라 그리하면 지극히 거룩한 단이 되리니 무릇 단에 접촉하는 것이 거룩하리라",
+      "source_text_hash": "90c70b4f309eaec2e71f4c30426e46d2ce91adbf4e6475399d17585d83474dab",
+      "translation_text_hash": "d5b3c703397cf1248e2273c6c8eb3277e4f7605c06da1d747338534730a293d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 칠일 동안 단을 위하여 속죄하여 거룩하게 하라 그리하면 지극히 거룩한 단이 되리니 무릇 단에 접촉하는 것이 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "d5b3c703397cf1248e2273c6c8eb3277e4f7605c06da1d747338534730a293d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:38",
+      "sequence": 2375,
+      "chapter_label": "EXO 29",
+      "verse_label": "38",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 38
+        }
+      ],
+      "en": "“Now this is that which you shall offer on the altar: two lambs a year old day by day continually.",
+      "ko": "네가 단 위에 드릴 것은 이러하니라 매일 일년 된 어린 양 두 마리니",
+      "source_text_hash": "16ccd04a09118f19e552abb1dacfb52f3ddc3e9e8afe826c34f33eb5893c6cfd",
+      "translation_text_hash": "9ad773f9fa262b5a634e31059e1448b32ed57ebd45b8cdfac3c14eed2361e87b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 단 위에 드릴 것은 이러하니라 매일 일년 된 어린 양 두 마리니"
+      ],
+      "raw_text_hashes": [
+        "9ad773f9fa262b5a634e31059e1448b32ed57ebd45b8cdfac3c14eed2361e87b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:39",
+      "sequence": 2376,
+      "chapter_label": "EXO 29",
+      "verse_label": "39",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 39
+        }
+      ],
+      "en": "The one lamb you shall offer in the morning; and the other lamb you shall offer at evening;",
+      "ko": "한 어린 양은 아침에 드리고 한 어린 양은 저녁때에 드릴찌며",
+      "source_text_hash": "b28b71078271e9a4b9c995314bdfbd3dd76d46befc1092533980fd1c0f0d0ce7",
+      "translation_text_hash": "7621cf61fb73d6422eee3d33291c71f674cd41b2ceaf5ae1b2434cd0670bd5ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 어린 양은 아침에 드리고 한 어린 양은 저녁때에 드릴찌며"
+      ],
+      "raw_text_hashes": [
+        "7621cf61fb73d6422eee3d33291c71f674cd41b2ceaf5ae1b2434cd0670bd5ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:40",
+      "sequence": 2377,
+      "chapter_label": "EXO 29",
+      "verse_label": "40",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 40
+        }
+      ],
+      "en": "and with the one lamb a tenth part of an ephah of fine flour mixed with the fourth part of a hin of beaten oil, and the fourth part of a hin of wine for a drink offering.",
+      "ko": "한 어린 양에 고운 밀가루 에바 십분 일과 찧은 기름 힌의 사분 일을 더하고 또 전제로 포도주 힌의 사분 일을 더할찌며",
+      "source_text_hash": "6d731c0b74ad49a6423329b3799856bfc3fc5a1e0c428d77354118b10faa6e4d",
+      "translation_text_hash": "d14a0759eb3ed3869c7921b16634bbdcc9aae1d2461344ea04d3aae7123423b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 어린 양에 고운 밀가루 에바 십분 일과 찧은 기름 힌의 사분 일을 더하고 또 전제로 포도주 힌의 사분 일을 더할찌며"
+      ],
+      "raw_text_hashes": [
+        "d14a0759eb3ed3869c7921b16634bbdcc9aae1d2461344ea04d3aae7123423b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:41",
+      "sequence": 2378,
+      "chapter_label": "EXO 29",
+      "verse_label": "41",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 41
+        }
+      ],
+      "en": "The other lamb you shall offer at evening, and shall do to it according to the meal offering of the morning and according to its drink offering, for a pleasant aroma, an offering made by fire to the LORD.",
+      "ko": "한 어린 양은 저녁 때에 드리되 아침과 일반으로 소제와 전제를 그것과 함께 드려 향기로운 냄새가 되게하여 여호와께 화제를 삼을찌니",
+      "source_text_hash": "48b224636157388864294f2f8be46c43f48354015955174054e6cf6461959969",
+      "translation_text_hash": "7f894838d1662d18e1d8c0a7a8ba49035cd5f6f1f3e519e3ce8b451fd7008987",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 어린 양은 저녁 때에 드리되 아침과 일반으로 소제와 전제를 그것과 함께 드려 향기로운 냄새가 되게하여 여호와께 화제를 삼을찌니"
+      ],
+      "raw_text_hashes": [
+        "7f894838d1662d18e1d8c0a7a8ba49035cd5f6f1f3e519e3ce8b451fd7008987"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:42",
+      "sequence": 2379,
+      "chapter_label": "EXO 29",
+      "verse_label": "42",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 42
+        }
+      ],
+      "en": "It shall be a continual burnt offering throughout your generations at the door of the Tent of Meeting before the LORD, where I will meet with you, to speak there to you.",
+      "ko": "이는 너희가 대대로 여호와 앞 회막문에서 늘 드릴 번제라 내가 거기서 너희와 만나고 네게 말하리라",
+      "source_text_hash": "45bcb45a30e5a0482baaacfdf0039efd7e7943fa48c85961371f58046bcb6604",
+      "translation_text_hash": "720a9659d74e177f6f7ed38dc1f144aaa32638172560172ec5dc91e35ecd6613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 대대로 여호와 앞 회막문에서 늘 드릴 번제라 내가 거기서 너희와 만나고 네게 말하리라"
+      ],
+      "raw_text_hashes": [
+        "720a9659d74e177f6f7ed38dc1f144aaa32638172560172ec5dc91e35ecd6613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:43",
+      "sequence": 2380,
+      "chapter_label": "EXO 29",
+      "verse_label": "43",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 43
+        }
+      ],
+      "en": "There I will meet with the children of Israel; and the place shall be sanctified by my glory.",
+      "ko": "내가 거기서 이스라엘 자손을 만나리니 내 영광을 인하여 회막이 거룩하게 될찌라",
+      "source_text_hash": "49e75219f7769345c996bc8e654c11d77c19670b6d5e75c936a62fc7da2fba94",
+      "translation_text_hash": "0eee21e09eeb176c80ae0613c9f349b6df510e975aaa9455308bec1a43089040",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 거기서 이스라엘 자손을 만나리니 내 영광을 인하여 회막이 거룩하게 될찌라"
+      ],
+      "raw_text_hashes": [
+        "0eee21e09eeb176c80ae0613c9f349b6df510e975aaa9455308bec1a43089040"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:44",
+      "sequence": 2381,
+      "chapter_label": "EXO 29",
+      "verse_label": "44",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 44
+        }
+      ],
+      "en": "I will sanctify the Tent of Meeting and the altar. I will also sanctify Aaron and his sons to minister to me in the priest’s office.",
+      "ko": "내가 그 회막과 단을 거룩하게 하며 아론과 그 아들들도 거룩하게 하여 내게 제사장 직분을 행하게 하며",
+      "source_text_hash": "f0ecdf0a31bf40dcc68b30c065b3d052d04920ed7a61c2186f753db130705187",
+      "translation_text_hash": "cdd51962d5cace6c05c544a1f394c752a0bdff4f0fc934bafe8b888504b86948",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 회막과 단을 거룩하게 하며 아론과 그 아들들도 거룩하게 하여 내게 제사장 직분을 행하게 하며"
+      ],
+      "raw_text_hashes": [
+        "cdd51962d5cace6c05c544a1f394c752a0bdff4f0fc934bafe8b888504b86948"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:45",
+      "sequence": 2382,
+      "chapter_label": "EXO 29",
+      "verse_label": "45",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 45
+        }
+      ],
+      "en": "I will dwell among the children of Israel, and will be their God.",
+      "ko": "내가 이스라엘 자손 중에 거하여 그들의 하나님이 되리니",
+      "source_text_hash": "f09685c021ed0aa9b40e23e0fbce4ea45357033147d8538434db5fc4097bb1db",
+      "translation_text_hash": "b4b07db67dcc97185f94fdf40faded098782d48ae516d0faa6c7cd110b414390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손 중에 거하여 그들의 하나님이 되리니"
+      ],
+      "raw_text_hashes": [
+        "b4b07db67dcc97185f94fdf40faded098782d48ae516d0faa6c7cd110b414390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:29:46",
+      "sequence": 2383,
+      "chapter_label": "EXO 29",
+      "verse_label": "46",
+      "locator": {
+        "book": "EXO",
+        "chapter": 29,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 29,
+          "verse": 46
+        }
+      ],
+      "en": "They shall know that I am the LORD their God, who brought them out of the land of Egypt, that I might dwell among them: I am the LORD their God.",
+      "ko": "그들은 내가 그들의 하나님 여호와로서 그들 중에 거하려고 그들을 애굽 땅에서 인도하여 낸줄을 알리라 나는 그들의 하나님 여호와니라",
+      "source_text_hash": "985e8e92227c7822794bb8e48137f21347721d4eb65ea06ef1cf3452099b5223",
+      "translation_text_hash": "30a69e4b9ebb2f50e969c752999d73b5158c95ce7277b39d4ed6aca73f7b2872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 내가 그들의 하나님 여호와로서 그들 중에 거하려고 그들을 애굽 땅에서 인도하여 낸줄을 알리라 나는 그들의 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "30a69e4b9ebb2f50e969c752999d73b5158c95ce7277b39d4ed6aca73f7b2872"
+      ]
+    }
+  ]
+}

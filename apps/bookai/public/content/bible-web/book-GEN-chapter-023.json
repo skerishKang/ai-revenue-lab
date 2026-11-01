@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:023",
+  "unit_ordinal": 23,
+  "unit_label": "GEN 23",
+  "book_code": "GEN",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:23:1",
+      "sequence": 573,
+      "chapter_label": "GEN 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Sarah lived one hundred twenty-seven years. This was the length of Sarah’s life.",
+      "ko": "사라가 일백 이십 칠세를 살았으니 이것이 곧 사라의 향년이라",
+      "source_text_hash": "ae0005aae630d62229361123d0c6618053d85ef65caddc2aa5b50791553af459",
+      "translation_text_hash": "3c32844e800591370d50e8a650036a85518eb4d469d667612d2296087a9943db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 일백 이십 칠세를 살았으니 이것이 곧 사라의 향년이라"
+      ],
+      "raw_text_hashes": [
+        "3c32844e800591370d50e8a650036a85518eb4d469d667612d2296087a9943db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:2",
+      "sequence": 574,
+      "chapter_label": "GEN 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "Sarah died in Kiriath Arba (also called Hebron), in the land of Canaan. Abraham came to mourn for Sarah, and to weep for her.",
+      "ko": "사라가 가나안 땅 헤브론 곧 기럇아르바에서 죽으매 아브라함이 들어가서 사라를 위하여 슬퍼하며 애통하다가",
+      "source_text_hash": "5153ab0820011078b93f49dcd85a421d379badc03e911e40a2ed31c0a9e04c65",
+      "translation_text_hash": "271170af77e271c2c41d4842a8f91903518d90891525f3f14452bf29e3ecbbac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사라가 가나안 땅 헤브론 곧 기럇아르바에서 죽으매 아브라함이 들어가서 사라를 위하여 슬퍼하며 애통하다가"
+      ],
+      "raw_text_hashes": [
+        "271170af77e271c2c41d4842a8f91903518d90891525f3f14452bf29e3ecbbac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:3",
+      "sequence": 575,
+      "chapter_label": "GEN 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Abraham rose up from before his dead and spoke to the children of Heth, saying,",
+      "ko": "그 시체 앞에서 일어나 나가서 헷 족속에게 말하여 가로되",
+      "source_text_hash": "a8722897bbe52c3fd446366fcf47876f84e1e7882c317b09f88b04cd098d6c8f",
+      "translation_text_hash": "33d2e05d72d713decc4501926b682d242f65692086aa819e009a1f98510207cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시체 앞에서 일어나 나가서 헷 족속에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "33d2e05d72d713decc4501926b682d242f65692086aa819e009a1f98510207cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:4",
+      "sequence": 576,
+      "chapter_label": "GEN 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "“I am a stranger and a foreigner living with you. Give me a possession of a burying-place with you, that I may bury my dead out of my sight.”",
+      "ko": "나는 당신들 중에 나그네요 우거한 자니 청컨대 당신들 중에서 내게 매장지를 주어 소유를 삼아 나로 내 죽은 자를 내어 장사하게 하시오",
+      "source_text_hash": "1a837fda3f2a1eae7080d16ca425952afb33e945f37830cca932a8ce7d027cba",
+      "translation_text_hash": "c0e302c73cfb97015c3a79174ce1980627afd6ccbeb1b164df984d90223b0e98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 당신들 중에 나그네요 우거한 자니 청컨대 당신들 중에서 내게 매장지를 주어 소유를 삼아 나로 내 죽은 자를 내어 장사하게 하시오"
+      ],
+      "raw_text_hashes": [
+        "c0e302c73cfb97015c3a79174ce1980627afd6ccbeb1b164df984d90223b0e98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:5",
+      "sequence": 577,
+      "chapter_label": "GEN 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "The children of Heth answered Abraham, saying to him,",
+      "ko": "헷 족속이 아브라함에게 대답하여 가로되",
+      "source_text_hash": "cbb1015243dfbd77b9d06be3127d925894ae44a436ce277cc598c9f06c00e3a2",
+      "translation_text_hash": "5c5b7058924ed1c2f24147ef43ca597324cce24d97b27847a2b188032e2e19a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헷 족속이 아브라함에게 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "5c5b7058924ed1c2f24147ef43ca597324cce24d97b27847a2b188032e2e19a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:6",
+      "sequence": 578,
+      "chapter_label": "GEN 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "“Hear us, my lord. You are a prince of God among us. Bury your dead in the best of our tombs. None of us will withhold from you his tomb. Bury your dead.”",
+      "ko": "내 주여 들으소서 당신은 우리 중 하나님의 방백이시니 우리 묘실 중에서 좋은 것을 택하여 당신의 죽은 자를 장사하소서 우리 중에서 자기 묘실에 당신의 죽은 자 장사함을 금할 자가 없으리이다",
+      "source_text_hash": "de0b92af1a0c6b8e1b5e86caca8bf705f0c57fb8f1da49ed3648a5296c178af7",
+      "translation_text_hash": "a5e9fa307a34dcb7914bc6d5d0b3b80a810409aea354a863780dcaf7add3b20b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주여 들으소서 당신은 우리 중 하나님의 방백이시니 우리 묘실 중에서 좋은 것을 택하여 당신의 죽은 자를 장사하소서 우리 중에서 자기 묘실에 당신의 죽은 자 장사함을 금할 자가 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "a5e9fa307a34dcb7914bc6d5d0b3b80a810409aea354a863780dcaf7add3b20b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:7",
+      "sequence": 579,
+      "chapter_label": "GEN 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "Abraham rose up, and bowed himself to the people of the land, to the children of Heth.",
+      "ko": "아브라함이 일어나 그 땅 거민 헷 족속을 향하여 몸을 굽히고",
+      "source_text_hash": "4ff514212ab743ca88fb7b42c61ef53f7a6f9505b723e784169a1e601cf92076",
+      "translation_text_hash": "0451b8e7218fb0f10ce97aa67e236c1bf4388db3d4d05c1b33eba5bea6261b0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 일어나 그 땅 거민 헷 족속을 향하여 몸을 굽히고"
+      ],
+      "raw_text_hashes": [
+        "0451b8e7218fb0f10ce97aa67e236c1bf4388db3d4d05c1b33eba5bea6261b0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:8",
+      "sequence": 580,
+      "chapter_label": "GEN 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "He talked with them, saying, “If you agree that I should bury my dead out of my sight, hear me, and entreat for me to Ephron the son of Zohar,",
+      "ko": "그들에게 말하여 가로되 나로 나의 죽은 자를 내어 장사하게 하는 일이 당신들의 뜻일찐대 내 말을 듣고 나를 위하여 소할의 아들 에브론에게 구하여",
+      "source_text_hash": "82ea8e49deff3ef8b953e66e775417f07356a0bb903e720f08314936dcfd4733",
+      "translation_text_hash": "aa54fad517641bce7b638cd26c110689f0f2cf5aea2f8d34856008713e5498f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 말하여 가로되 나로 나의 죽은 자를 내어 장사하게 하는 일이 당신들의 뜻일찐대 내 말을 듣고 나를 위하여 소할의 아들 에브론에게 구하여"
+      ],
+      "raw_text_hashes": [
+        "aa54fad517641bce7b638cd26c110689f0f2cf5aea2f8d34856008713e5498f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:9",
+      "sequence": 581,
+      "chapter_label": "GEN 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "that he may sell me the cave of Machpelah, which he has, which is in the end of his field. For the full price let him sell it to me among you as a possession for a burial place.”",
+      "ko": "그로 그 밭머리에 있는 막벨라 굴을 내게 주게 하되 준가를 받고 그 굴을 내게 주어서 당신들 중에 내 소유 매장지가 되게하기를 원하노라",
+      "source_text_hash": "074225ad0bafa47e3c5a237c0a42a12f19a3d53e64d09ecb56cb0c40718f1836",
+      "translation_text_hash": "cc25efcd21dc05aba3ff062f9ec80beabdc0c545535224d8c129890e286dc29a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그로 그 밭머리에 있는 막벨라 굴을 내게 주게 하되 준가를 받고 그 굴을 내게 주어서 당신들 중에 내 소유 매장지가 되게하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "cc25efcd21dc05aba3ff062f9ec80beabdc0c545535224d8c129890e286dc29a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:10",
+      "sequence": 582,
+      "chapter_label": "GEN 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "Now Ephron was sitting in the middle of the children of Heth. Ephron the Hittite answered Abraham in the hearing of the children of Heth, even of all who went in at the gate of his city, saying,",
+      "ko": "때에 에브론이 헷 족속 중에 앉았더니 그가 헷 족속 곧 성문에 들어온 모든 자의 듣는데 아브라함에게 대답하여 가로되",
+      "source_text_hash": "83084f467bfbef272b3288a5501e47beede5431d0177ad3708df86e10757ee06",
+      "translation_text_hash": "1180c3394f80e4a30c05e34b8ef7c2842d237eb0a010ca3baa4ec7281eaaa8e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 에브론이 헷 족속 중에 앉았더니 그가 헷 족속 곧 성문에 들어온 모든 자의 듣는데 아브라함에게 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "1180c3394f80e4a30c05e34b8ef7c2842d237eb0a010ca3baa4ec7281eaaa8e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:11",
+      "sequence": 583,
+      "chapter_label": "GEN 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "“No, my lord, hear me. I give you the field, and I give you the cave that is in it. In the presence of the children of my people I give it to you. Bury your dead.”",
+      "ko": "내 주여 그리 마시고 내 말을 들으소서 내가 그 밭을 당신께 드리고 그 속의 굴도 내가 당신께 드리되 내가 내 동족 앞에서 당신께 드리오니 당신의 죽은 자를 장사하소서",
+      "source_text_hash": "3750474a24ad4b1f04c0d5ebad0cac03e8bf2e784fb8ee46f2f45a7c21acded0",
+      "translation_text_hash": "5c1acdb49f70abc8cbc708be75d974f02353f9ad7c17670420235dea27ec63ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주여 그리 마시고 내 말을 들으소서 내가 그 밭을 당신께 드리고 그 속의 굴도 내가 당신께 드리되 내가 내 동족 앞에서 당신께 드리오니 당신의 죽은 자를 장사하소서"
+      ],
+      "raw_text_hashes": [
+        "5c1acdb49f70abc8cbc708be75d974f02353f9ad7c17670420235dea27ec63ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:12",
+      "sequence": 584,
+      "chapter_label": "GEN 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "Abraham bowed himself down before the people of the land.",
+      "ko": "아브라함이 이에 그 땅 백성을 대하여 몸을 굽히고",
+      "source_text_hash": "a78f2827c4b4d4bbd31314a841d4c68f68a417cc8959140da7d8e04ec418bd68",
+      "translation_text_hash": "2245e9d0048535dd82dbf1308e97f5e3c52ee49e021dc4e9adc4f445283eb994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 이에 그 땅 백성을 대하여 몸을 굽히고"
+      ],
+      "raw_text_hashes": [
+        "2245e9d0048535dd82dbf1308e97f5e3c52ee49e021dc4e9adc4f445283eb994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:13",
+      "sequence": 585,
+      "chapter_label": "GEN 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "He spoke to Ephron in the audience of the people of the land, saying, “But if you will, please hear me. I will give the price of the field. Take it from me, and I will bury my dead there.”",
+      "ko": "그 땅 백성의 듣는데 에브론에게 말하여 가로되 당신이 합당히 여기면 청컨대 내 말을 들으시오 내가 그 밭값을 당신에게 주리니 당신은 내게서 받으시오 내가 나의 죽은 자를 거기 장사하겠노라",
+      "source_text_hash": "4f47b24c36c5b74e88a7558ef3944db249afc4d18eb33ff8962e0f09393351f0",
+      "translation_text_hash": "a9ca2f2fe1c7ca6b2cf74fa01831c4967735ac3e2559389328300b1c6091b90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅 백성의 듣는데 에브론에게 말하여 가로되 당신이 합당히 여기면 청컨대 내 말을 들으시오 내가 그 밭값을 당신에게 주리니 당신은 내게서 받으시오 내가 나의 죽은 자를 거기 장사하겠노라"
+      ],
+      "raw_text_hashes": [
+        "a9ca2f2fe1c7ca6b2cf74fa01831c4967735ac3e2559389328300b1c6091b90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:14",
+      "sequence": 586,
+      "chapter_label": "GEN 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "Ephron answered Abraham, saying to him,",
+      "ko": "에브론이 아브라함에게 대답하여 가로되",
+      "source_text_hash": "b88a610b063cf0c0f93393e7f61138fe1d09a771050f273e4ce0151699fa797e",
+      "translation_text_hash": "a80acbca36e6585405968fb00d7bcbbe70f6ad0d64c49f7f3e004d0f13a80923",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브론이 아브라함에게 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "a80acbca36e6585405968fb00d7bcbbe70f6ad0d64c49f7f3e004d0f13a80923"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:15",
+      "sequence": 587,
+      "chapter_label": "GEN 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "“My lord, listen to me. What is a piece of land worth four hundred shekels of silver between me and you? Therefore bury your dead.”",
+      "ko": "내 주여 내게 들으소서 땅값은 은 사백 세겔이나 나와 당신 사이에 어찌 교계하리이까 당신의 죽은 자를 장사하소서",
+      "source_text_hash": "d12073865bd9519123ea61cc7a67674593167101cadb8922e9e8628d738a0ec1",
+      "translation_text_hash": "95a4dadbd23feb6aa5b80ba4c61d6382d76a83c971136a9049e5f39d47a2ce10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주여 내게 들으소서 땅값은 은 사백 세겔이나 나와 당신 사이에 어찌 교계하리이까 당신의 죽은 자를 장사하소서"
+      ],
+      "raw_text_hashes": [
+        "95a4dadbd23feb6aa5b80ba4c61d6382d76a83c971136a9049e5f39d47a2ce10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:16",
+      "sequence": 588,
+      "chapter_label": "GEN 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "Abraham listened to Ephron. Abraham weighed to Ephron the silver which he had named in the hearing of the children of Heth, four hundred shekels of silver, according to the current merchants’ standard.",
+      "ko": "아브라함이 에브론의 말을 좇아 에브론이 헷 족속의 듣는데서 말한대로 상고의 통용하는 은 사백 세겔을 달아 에브론에게 주었더니",
+      "source_text_hash": "1ab9e956ebe5357d0866dc38ec967979e47b5718614da1bcc72db010f615743c",
+      "translation_text_hash": "fbee0c3fdeb1a4a857f0b599746b6bc64d39f87aec579fde509a2f82768ae4d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 에브론의 말을 좇아 에브론이 헷 족속의 듣는데서 말한대로 상고의 통용하는 은 사백 세겔을 달아 에브론에게 주었더니"
+      ],
+      "raw_text_hashes": [
+        "fbee0c3fdeb1a4a857f0b599746b6bc64d39f87aec579fde509a2f82768ae4d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:17",
+      "sequence": 589,
+      "chapter_label": "GEN 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "So the field of Ephron, which was in Machpelah, which was before Mamre, the field, the cave which was in it, and all the trees that were in the field, that were in all of its borders, were deeded",
+      "ko": "마므레 앞 막벨라에 있는 에브론의 밭을 바꾸어 그 속의 굴과 그 사방에 둘린 수목을 다",
+      "source_text_hash": "31afe6d61c0be826335ca86ae2eb1fe8dcdc315e490ac13211daaf2ea58ea184",
+      "translation_text_hash": "8af1c5362c041f2783aa675e66e8c879b3dd61fb7e5f61942adbe515c1c98fa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마므레 앞 막벨라에 있는 에브론의 밭을 바꾸어 그 속의 굴과 그 사방에 둘린 수목을 다"
+      ],
+      "raw_text_hashes": [
+        "8af1c5362c041f2783aa675e66e8c879b3dd61fb7e5f61942adbe515c1c98fa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:18",
+      "sequence": 590,
+      "chapter_label": "GEN 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "to Abraham for a possession in the presence of the children of Heth, before all who went in at the gate of his city.",
+      "ko": "성문에 들어온 헷 족속 앞에서 아브라함의 소유로 정한지라",
+      "source_text_hash": "1f7a797b839a454c36f5d23fe4c43ecb7b620347cf18a0f9b3753a7fea1787f1",
+      "translation_text_hash": "3cd720663f197445518e88ed49a688a6738a74447c1163ab5e06a1ee2735f3cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문에 들어온 헷 족속 앞에서 아브라함의 소유로 정한지라"
+      ],
+      "raw_text_hashes": [
+        "3cd720663f197445518e88ed49a688a6738a74447c1163ab5e06a1ee2735f3cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:19",
+      "sequence": 591,
+      "chapter_label": "GEN 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "After this, Abraham buried Sarah his wife in the cave of the field of Machpelah before Mamre (that is, Hebron), in the land of Canaan.",
+      "ko": "그 후에 아브라함이 그 아내 사라를 가나안 땅 마므레 앞 막벨라 밭 굴에 장사하였더라 (마므레는 곧 헤브론이라)",
+      "source_text_hash": "3ff77e066bedd578b59528da831e34a61130fb5f1f4fe4e2f827404802e665ec",
+      "translation_text_hash": "0658892d07df099c6b355dccdfe448a482aa401a0bdda534a96c2c285c97dafd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 아브라함이 그 아내 사라를 가나안 땅 마므레 앞 막벨라 밭 굴에 장사하였더라 (마므레는 곧 헤브론이라)"
+      ],
+      "raw_text_hashes": [
+        "0658892d07df099c6b355dccdfe448a482aa401a0bdda534a96c2c285c97dafd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:23:20",
+      "sequence": 592,
+      "chapter_label": "GEN 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "The field, and the cave that is in it, were deeded to Abraham by the children of Heth as a possession for a burial place.",
+      "ko": "이와 같이 그 밭과 그 속의 굴을 헷 족속이 아브라함 소유 매장지로 정하였더라",
+      "source_text_hash": "ffdd21cd4171b50af56fd1e50a5909b38f12351a67a1ebe05901453a84bdd9a0",
+      "translation_text_hash": "3e62a4252ca4348fda5675d93f08a7e3df2afbbad1bc6fd0ce4c00f1c595b2fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 그 밭과 그 속의 굴을 헷 족속이 아브라함 소유 매장지로 정하였더라"
+      ],
+      "raw_text_hashes": [
+        "3e62a4252ca4348fda5675d93f08a7e3df2afbbad1bc6fd0ce4c00f1c595b2fd"
+      ]
+    }
+  ]
+}

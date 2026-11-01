@@ -424,7 +424,7 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
     if "PROJECT_FILE_BINARY_PRIVATE_MARKER_2342" in body_text:
         raise AssertionError("extracted binary content leaked into visible UI")
 
-    # Server validation authority: a 422 message surfaces in role=alert, no row is added,
+    # Server validation authority: a 422 shows safe guidance and reference code, no row is added,
     # and re-picking the file after the server accepts it succeeds (accessible retry path).
     state.reject_next_uploads = 1
     await page.locator("#projectFileInput").set_input_files({
@@ -432,7 +432,12 @@ async def _run(page: Page, *, label: str, width: int, height: int, mobile: bool)
         "mimeType": PDF_MEDIA_TYPE,
         "buffer": PDF_BYTES,
     })
-    await _wait_text(page, "#projectFormError", SERVER_REJECT_MARKER)
+    await _wait_text(page, "#projectFormError", "프로젝트 파일을 저장하지 못했습니다.")
+    note = page.locator("#projectFormError .error-code")
+    if "invalid_project_file" not in await note.inner_text():
+        raise AssertionError("missing project file reference code")
+    if SERVER_REJECT_MARKER in await page.locator("#projectFormError").inner_text():
+        raise AssertionError("raw server error leaked into the project error")
     if await page.locator("#projectFilesList .project-file-row").count() != 2:
         raise AssertionError("rejected upload added a Project File row")
     if len(state.binary_posts) != 2:

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HEB:chapter:007",
+  "unit_ordinal": 1140,
+  "unit_label": "HEB 7",
+  "book_code": "HEB",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HEB:7:1",
+      "sequence": 30062,
+      "chapter_label": "HEB 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "For this Melchizedek, king of Salem, priest of God Most High, who met Abraham returning from the slaughter of the kings and blessed him,",
+      "ko": "이 멜기세덱은 살렘 왕이요 지극히 높으신 하나님의 제사장이라 여러 임금을 쳐서 죽이고 돌아오는 아브라함을 만나 복을 빈 자라",
+      "source_text_hash": "6ea51cc4e2a6d8ab00bfc2dbb9f050179db98edded9a9e67ff4b861298265f16",
+      "translation_text_hash": "92f26bfb0161f9acd536f00ed1e7354d9d13ae0200d36842d468c5c6b7a20eb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 멜기세덱은 살렘 왕이요 지극히 높으신 하나님의 제사장이라 여러 임금을 쳐서 죽이고 돌아오는 아브라함을 만나 복을 빈 자라"
+      ],
+      "raw_text_hashes": [
+        "92f26bfb0161f9acd536f00ed1e7354d9d13ae0200d36842d468c5c6b7a20eb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:2",
+      "sequence": 30063,
+      "chapter_label": "HEB 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "to whom also Abraham divided a tenth part of all (being first, by interpretation, “king of righteousness”, and then also “king of Salem”, which means “king of peace”,",
+      "ko": "아브라함이 일체 십분의 일을 그에게 나눠주니라 그 이름을 번역한즉 첫째 의의 왕이요 또 살렘 왕이니 곧 평강의 왕이요",
+      "source_text_hash": "0aafb148387024b14d6f126d058af339d20c4de8799e319df33ba3a4eef63d60",
+      "translation_text_hash": "73d9db2a044e9598271bc26f64c514a99632becb35c093276a99907a82a743de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 일체 십분의 일을 그에게 나눠주니라 그 이름을 번역한즉 첫째 의의 왕이요 또 살렘 왕이니 곧 평강의 왕이요"
+      ],
+      "raw_text_hashes": [
+        "73d9db2a044e9598271bc26f64c514a99632becb35c093276a99907a82a743de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:3",
+      "sequence": 30064,
+      "chapter_label": "HEB 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "without father, without mother, without genealogy, having neither beginning of days nor end of life, but made like the Son of God), remains a priest continually.",
+      "ko": "아비도 없고 어미도 없고 족보도 없고 시작한 날도 없고 생명의 끝도 없어 하나님 아들과 방불하여 항상 제사장으로 있느니라",
+      "source_text_hash": "26f68ae4d2a149d0faf28474c750a001faf7fde8c3c99214b09f242bafe0f385",
+      "translation_text_hash": "6a6d1ea2d8c6698e1f177b38eca37e5a428e8f00b17d436b9768796e1f47adf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비도 없고 어미도 없고 족보도 없고 시작한 날도 없고 생명의 끝도 없어 하나님 아들과 방불하여 항상 제사장으로 있느니라"
+      ],
+      "raw_text_hashes": [
+        "6a6d1ea2d8c6698e1f177b38eca37e5a428e8f00b17d436b9768796e1f47adf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:4",
+      "sequence": 30065,
+      "chapter_label": "HEB 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Now consider how great this man was, to whom even Abraham the patriarch gave a tenth out of the best plunder.",
+      "ko": "이 사람의 어떻게 높은 것을 생각하라 조상 아브라함이 노략물 중 좋은 것으로 십분의 일을 저에게 주었느니라",
+      "source_text_hash": "ceb7f5420a6fd8137d6934c5373c55553125d6b752429fe6dcc53f644c52dfb3",
+      "translation_text_hash": "a0035c43de0b2b03152a7feece664fb89633bce9e1ac2e2c3487900afba63778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람의 어떻게 높은 것을 생각하라 조상 아브라함이 노략물 중 좋은 것으로 십분의 일을 저에게 주었느니라"
+      ],
+      "raw_text_hashes": [
+        "a0035c43de0b2b03152a7feece664fb89633bce9e1ac2e2c3487900afba63778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:5",
+      "sequence": 30066,
+      "chapter_label": "HEB 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "They indeed of the sons of Levi who receive the priest’s office have a commandment to take tithes from the people according to the law, that is, of their brothers, though these have come out of the body of Abraham,",
+      "ko": "레위의 아들들 가운데 제사장의 직분을 받는 자들이 율법을 좇아 아브라함의 허리에서 난 자라도 자기 형제인 백성에게서 십분의 일을 취하라는 명령을 가졌으나",
+      "source_text_hash": "634ddc602aed49da0fb75ef6459ec6c105239f9611291575f8a7d1ba714cdeff",
+      "translation_text_hash": "d3b36eb524b4becc7cf14364048033d76012bf7bd374bfb4191c61347c037f4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들들 가운데 제사장의 직분을 받는 자들이 율법을 좇아 아브라함의 허리에서 난 자라도 자기 형제인 백성에게서 십분의 일을 취하라는 명령을 가졌으나"
+      ],
+      "raw_text_hashes": [
+        "d3b36eb524b4becc7cf14364048033d76012bf7bd374bfb4191c61347c037f4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:6",
+      "sequence": 30067,
+      "chapter_label": "HEB 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "but he whose genealogy is not counted from them has accepted tithes from Abraham, and has blessed him who has the promises.",
+      "ko": "레위 족보에 들지 아니한 멜기세덱은 아브라함에게서 십분의 일을 취하고 그 약속 얻은 자를 위하여 복을 빌었나니",
+      "source_text_hash": "d3ff1bb1a916a33bfcda77c39fb3f3e5e260664ebc7cacd525b6e02bae793c39",
+      "translation_text_hash": "bfa7fc74b99330afa6471c556c76629eb942fdccee2ed35faf9242eb4050fa52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 족보에 들지 아니한 멜기세덱은 아브라함에게서 십분의 일을 취하고 그 약속 얻은 자를 위하여 복을 빌었나니"
+      ],
+      "raw_text_hashes": [
+        "bfa7fc74b99330afa6471c556c76629eb942fdccee2ed35faf9242eb4050fa52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:7",
+      "sequence": 30068,
+      "chapter_label": "HEB 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "But without any dispute the lesser is blessed by the greater.",
+      "ko": "폐일언하고 낮은 자가 높은 자에게 복빎을 받느니라",
+      "source_text_hash": "301391a47e31f4136c23b35ae4eb9f95f165ecd4e5b54d207bd352fe95e69b2d",
+      "translation_text_hash": "e1755546371bbd6346de11523248c57cd86b2e82592b4742d6d631ba31fca3c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "폐일언하고 낮은 자가 높은 자에게 복빎을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "e1755546371bbd6346de11523248c57cd86b2e82592b4742d6d631ba31fca3c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:8",
+      "sequence": 30069,
+      "chapter_label": "HEB 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Here people who die receive tithes, but there one receives tithes of whom it is testified that he lives.",
+      "ko": "또 여기는 죽을 자들이 십분의 일을 받으나 저기는 산다고 증거를 얻은 자가 받았느니라",
+      "source_text_hash": "47b24f345af003b61c2d2352b4e92ac010fe539acacd14f4b07549a041b82482",
+      "translation_text_hash": "6f93edacbbc7d78a8a8c41876d33ed5a85c869c5128e12d21dc1e4a34b83a2ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여기는 죽을 자들이 십분의 일을 받으나 저기는 산다고 증거를 얻은 자가 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "6f93edacbbc7d78a8a8c41876d33ed5a85c869c5128e12d21dc1e4a34b83a2ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:9",
+      "sequence": 30070,
+      "chapter_label": "HEB 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "We can say that through Abraham even Levi, who receives tithes, has paid tithes,",
+      "ko": "또한 십분의 일을 받는 레위도 아브라함으로 말미암아 십분의 일을 바쳤다 할 수 있나니",
+      "source_text_hash": "4e402304bb42c476b592cb4cd1b309b713f46d661c1dc904021c461c4d8492af",
+      "translation_text_hash": "5671e49de37b33fe74624e4170042b01f4af1456d827f64ed0b4ff18f78e7f8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 십분의 일을 받는 레위도 아브라함으로 말미암아 십분의 일을 바쳤다 할 수 있나니"
+      ],
+      "raw_text_hashes": [
+        "5671e49de37b33fe74624e4170042b01f4af1456d827f64ed0b4ff18f78e7f8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:10",
+      "sequence": 30071,
+      "chapter_label": "HEB 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "for he was yet in the body of his father when Melchizedek met him.",
+      "ko": "이는 멜기세덱이 아브라함을 만날 때에 레위는 아직 자기 조상의 허리에 있었음이니라",
+      "source_text_hash": "62f79f6915276be778b1a1a75b2b213ab7da21e19eb62af0845a4dca179603d8",
+      "translation_text_hash": "5b631a41e4cd88608caca8582dde72de1ddc4bfa7ce13c8a6f2cc66139aa3a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 멜기세덱이 아브라함을 만날 때에 레위는 아직 자기 조상의 허리에 있었음이니라"
+      ],
+      "raw_text_hashes": [
+        "5b631a41e4cd88608caca8582dde72de1ddc4bfa7ce13c8a6f2cc66139aa3a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:11",
+      "sequence": 30072,
+      "chapter_label": "HEB 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Now if perfection was through the Levitical priesthood (for under it the people have received the law), what further need was there for another priest to arise after the order of Melchizedek, and not be called after the order of Aaron?",
+      "ko": "레위 계통의 제사 직분으로 말미암아 온전함을 얻을 수 있었으면 (백성이 그 아래서 율법을 받았으니) 어찌하여 아론의 반차를 좇지 않고 멜기세덱의 반차를 좇는 별다른 한 제사장을 세울 필요가 있느뇨",
+      "source_text_hash": "e4ae665f34d0b6fc1230adf229fbb1c7cd8134441949af5875c5af69271d9ef2",
+      "translation_text_hash": "966d7f49972fcb70cb707e51b32c90b0ffda4900e3ffb569fb32639458908fae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 계통의 제사 직분으로 말미암아 온전함을 얻을 수 있었으면 (백성이 그 아래서 율법을 받았으니) 어찌하여 아론의 반차를 좇지 않고 멜기세덱의 반차를 좇는 별다른 한 제사장을 세울 필요가 있느뇨"
+      ],
+      "raw_text_hashes": [
+        "966d7f49972fcb70cb707e51b32c90b0ffda4900e3ffb569fb32639458908fae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:12",
+      "sequence": 30073,
+      "chapter_label": "HEB 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "For the priesthood being changed, there is of necessity a change made also in the law.",
+      "ko": "제사 직분이 변역한즉 율법도 반드시 변역하리니",
+      "source_text_hash": "f7ee0eadb7a2ed2f3c7d3465ba48331489e8bb93ef472e43640ce2bd24bb97af",
+      "translation_text_hash": "a9a2a6f99703d8a853f2b84f7bd6c970776dba62e7d99a135633eced4ec2c5a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사 직분이 변역한즉 율법도 반드시 변역하리니"
+      ],
+      "raw_text_hashes": [
+        "a9a2a6f99703d8a853f2b84f7bd6c970776dba62e7d99a135633eced4ec2c5a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:13",
+      "sequence": 30074,
+      "chapter_label": "HEB 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "For he of whom these things are said belongs to another tribe, from which no one has officiated at the altar.",
+      "ko": "이것은 한 사람도 제단 일을 받들지 않는 다른 지파에 속한 자를 가리켜 말한 것이라",
+      "source_text_hash": "63a1d2c0a2dfbb27b6e1e816edc7f78f395a38ffeaa0ad0ef252e0b6e31e12b9",
+      "translation_text_hash": "7094664736eab870c6dd88e0bcc57cb21b995e63c231210734db858c3170eaef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 한 사람도 제단 일을 받들지 않는 다른 지파에 속한 자를 가리켜 말한 것이라"
+      ],
+      "raw_text_hashes": [
+        "7094664736eab870c6dd88e0bcc57cb21b995e63c231210734db858c3170eaef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:14",
+      "sequence": 30075,
+      "chapter_label": "HEB 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "For it is evident that our Lord has sprung out of Judah, about which tribe Moses spoke nothing concerning priesthood.",
+      "ko": "우리 주께서 유다로 좇아 나신 것이 분명하도다 이 지파에는 모세가 제사장들에 관하여 말한 것이 하나도 없고",
+      "source_text_hash": "3d7835570370b4fbbe39da9a783574f927d80b22be92073a2dfcc52e23df112e",
+      "translation_text_hash": "cdb1571a18347e70e4714c44cd75b3e31d4e6f1f56470dae1530ff82b89a196b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주께서 유다로 좇아 나신 것이 분명하도다 이 지파에는 모세가 제사장들에 관하여 말한 것이 하나도 없고"
+      ],
+      "raw_text_hashes": [
+        "cdb1571a18347e70e4714c44cd75b3e31d4e6f1f56470dae1530ff82b89a196b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:15",
+      "sequence": 30076,
+      "chapter_label": "HEB 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "This is yet more abundantly evident, if after the likeness of Melchizedek there arises another priest,",
+      "ko": "멜기세덱과 같은 별다른 한 제사장이 일어난 것을 보니 더욱 분명하도다",
+      "source_text_hash": "e720f304edde6997cdd45b050d75e47a4f665471b09b2bf579a710898b7c2cac",
+      "translation_text_hash": "f6b73142796a80ddf48bb80cda91049c4fcfb9a1200579f8f1fc1aa9f601ee54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멜기세덱과 같은 별다른 한 제사장이 일어난 것을 보니 더욱 분명하도다"
+      ],
+      "raw_text_hashes": [
+        "f6b73142796a80ddf48bb80cda91049c4fcfb9a1200579f8f1fc1aa9f601ee54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:16",
+      "sequence": 30077,
+      "chapter_label": "HEB 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "who has been made, not after the law of a fleshly commandment, but after the power of an endless life;",
+      "ko": "그는 육체에 상관된 계명의 법을 좇지 아니하고 오직 무궁한 생명의 능력을 좇아 된 것이니",
+      "source_text_hash": "fa353233f9785fe51c0329d1b4a8dcf1ace54580b7e70f5b50ece0977a52aa54",
+      "translation_text_hash": "25059e5e41bfd9a35e581c39a1afd36446b7760cdc95646f5df7dbd61d8841c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 육체에 상관된 계명의 법을 좇지 아니하고 오직 무궁한 생명의 능력을 좇아 된 것이니"
+      ],
+      "raw_text_hashes": [
+        "25059e5e41bfd9a35e581c39a1afd36446b7760cdc95646f5df7dbd61d8841c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:17",
+      "sequence": 30078,
+      "chapter_label": "HEB 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "for it is testified, “You are a priest forever, according to the order of Melchizedek.”",
+      "ko": "증거하기를 네가 영원히 멜기세덱의 반차를 좇는 제사장이라 하였도다",
+      "source_text_hash": "76ebb1e0987e279828b36786018fad3f77db1722cbbebeaf6b6b1ac649b0a7d9",
+      "translation_text_hash": "49dd34741a2f82d8f466034f67f4ed22dadc2043577ea211e1de1ef7e0de5508",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증거하기를 네가 영원히 멜기세덱의 반차를 좇는 제사장이라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "49dd34741a2f82d8f466034f67f4ed22dadc2043577ea211e1de1ef7e0de5508"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:18",
+      "sequence": 30079,
+      "chapter_label": "HEB 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "For there is an annulling of a foregoing commandment because of its weakness and uselessness",
+      "ko": "전엣 계명이 연약하며 무익하므로 폐하고",
+      "source_text_hash": "a0a7dfe5e553053a6335663f64000d7542071b27fb5340225c51ef39033d5ee4",
+      "translation_text_hash": "fcd77ac688e1353e0ffb9e34bde08c732e48da1890571da9ed8092564650a8be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전엣 계명이 연약하며 무익하므로 폐하고"
+      ],
+      "raw_text_hashes": [
+        "fcd77ac688e1353e0ffb9e34bde08c732e48da1890571da9ed8092564650a8be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:19",
+      "sequence": 30080,
+      "chapter_label": "HEB 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "(for the law made nothing perfect), and a bringing in of a better hope, through which we draw near to God.",
+      "ko": "(율법은 아무 것도 온전케 못할찌라) 이에 더 좋은 소망이 생기니 이것으로 우리가 하나님께 가까이 가느니라",
+      "source_text_hash": "44ebda21c29da092f3bed997f263f43410f1df2427606be22c61f86447259df4",
+      "translation_text_hash": "7c52ccd73d6f1f8eece9bb6f07554a04168872236b1c3432abd1bc1be7f656d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(율법은 아무 것도 온전케 못할찌라) 이에 더 좋은 소망이 생기니 이것으로 우리가 하나님께 가까이 가느니라"
+      ],
+      "raw_text_hashes": [
+        "7c52ccd73d6f1f8eece9bb6f07554a04168872236b1c3432abd1bc1be7f656d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:20",
+      "sequence": 30081,
+      "chapter_label": "HEB 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Inasmuch as he was not made priest without the taking of an oath",
+      "ko": "또 예수께서 제사장 된 것은 맹세 없이 된 것이 아니니",
+      "source_text_hash": "b6a6d5efa424d1f6e05ad2e02025e94958c7a4237539d646b0126199a65ca091",
+      "translation_text_hash": "9fb726837d87e3e76c110f0dffed38ff50a1e246494217fd6719728f9fa606eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예수께서 제사장 된 것은 맹세 없이 된 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "9fb726837d87e3e76c110f0dffed38ff50a1e246494217fd6719728f9fa606eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:21",
+      "sequence": 30082,
+      "chapter_label": "HEB 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "(for they indeed have been made priests without an oath), but he with an oath by him that says of him, “The Lord swore and will not change his mind, ‘You are a priest forever, according to the order of Melchizedek.’”",
+      "ko": "(저희는 맹세 없이 제사장이 되었으되 오직 예수는 자기에게 말씀하신 자로 말미암아 맹세로 되신 것이라 주께서 맹세하시고 뉘우치지 아니하시리니 네가 영원히 제사장이라 하셨도다)",
+      "source_text_hash": "43d2be58ff27f092628a0d14be31064a3164cf595279a4d057aa4b2963d8e8cf",
+      "translation_text_hash": "96797bbca2f57840dfb59249a0b1423eb94268d62606e4006e800b96345f4918",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(저희는 맹세 없이 제사장이 되었으되 오직 예수는 자기에게 말씀하신 자로 말미암아 맹세로 되신 것이라 주께서 맹세하시고 뉘우치지 아니하시리니 네가 영원히 제사장이라 하셨도다)"
+      ],
+      "raw_text_hashes": [
+        "96797bbca2f57840dfb59249a0b1423eb94268d62606e4006e800b96345f4918"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:22",
+      "sequence": 30083,
+      "chapter_label": "HEB 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "By so much, Jesus has become the guarantee of a better covenant.",
+      "ko": "이와 같이 예수는 더 좋은 언약의 보증이 되셨느니라",
+      "source_text_hash": "1be32f9cf585ce2f3dacc9668fea940d8ea0e8471fe6c57025f7fd443f2055f6",
+      "translation_text_hash": "2fa3708e207f6c0e25ba7b8e228a02701ae95385f514ca813d7d3630d4ca67f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 예수는 더 좋은 언약의 보증이 되셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2fa3708e207f6c0e25ba7b8e228a02701ae95385f514ca813d7d3630d4ca67f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:23",
+      "sequence": 30084,
+      "chapter_label": "HEB 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Many, indeed, have been made priests, because they are hindered from continuing by death.",
+      "ko": "저희 제사장 된 자의 수효가 많은 것은 죽음을 인하여 항상 있지 못함이로되",
+      "source_text_hash": "3022939d9da7763b4ef31e9c434b04bfb1cdf017f170da12be329afb7b861bd4",
+      "translation_text_hash": "b50753cb0b7f28dc8135701bc073d9896648dcbb5ed13d876ebe088ea390bde8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 제사장 된 자의 수효가 많은 것은 죽음을 인하여 항상 있지 못함이로되"
+      ],
+      "raw_text_hashes": [
+        "b50753cb0b7f28dc8135701bc073d9896648dcbb5ed13d876ebe088ea390bde8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:24",
+      "sequence": 30085,
+      "chapter_label": "HEB 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "But he, because he lives forever, has his priesthood unchangeable.",
+      "ko": "예수는 영원히 계시므로 그 제사 직분도 갈리지 아니하나니",
+      "source_text_hash": "24b738e428fd5df07bb9fde545f4edeaf3e3809482d8e5c45642cc4bc14e4791",
+      "translation_text_hash": "5d034c6f7f40d37b9cb04326e023b1c8b74afa286ab19ad9c34782ba476adaee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 영원히 계시므로 그 제사 직분도 갈리지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "5d034c6f7f40d37b9cb04326e023b1c8b74afa286ab19ad9c34782ba476adaee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:25",
+      "sequence": 30086,
+      "chapter_label": "HEB 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore he is also able to save to the uttermost those who draw near to God through him, seeing that he lives forever to make intercession for them.",
+      "ko": "그러므로 자기를 힘입어 하나님께 나아가는 자들을 온전히 구원하실 수 있으니 이는 그가 항상 살아서 저희를 위하여 간구하심이니라",
+      "source_text_hash": "92cebea1a6b1b9046433011ece4cd7c9863169c5b135d601661b42044448cc7e",
+      "translation_text_hash": "a8461274f1452b0430d1c61583bf254343de53b62c5c4f3c28a340f6b6c9ab52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 자기를 힘입어 하나님께 나아가는 자들을 온전히 구원하실 수 있으니 이는 그가 항상 살아서 저희를 위하여 간구하심이니라"
+      ],
+      "raw_text_hashes": [
+        "a8461274f1452b0430d1c61583bf254343de53b62c5c4f3c28a340f6b6c9ab52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:26",
+      "sequence": 30087,
+      "chapter_label": "HEB 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "For such a high priest was fitting for us: holy, guiltless, undefiled, separated from sinners, and made higher than the heavens;",
+      "ko": "이러한 대제사장은 우리에게 합당하니 거룩하고 악이 없고 더러움이 없고 죄인에게서 떠나 계시고 하늘보다 높이 되신 자라",
+      "source_text_hash": "47ccf35b9a2656ed0733cc601d8e8f2968b231e7c0ce7e8afad10b21dee94959",
+      "translation_text_hash": "d89c1bb503c6f3a321eac6f0762a642ea3110f3263f649a1ea4a760ea0447567",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 대제사장은 우리에게 합당하니 거룩하고 악이 없고 더러움이 없고 죄인에게서 떠나 계시고 하늘보다 높이 되신 자라"
+      ],
+      "raw_text_hashes": [
+        "d89c1bb503c6f3a321eac6f0762a642ea3110f3263f649a1ea4a760ea0447567"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:27",
+      "sequence": 30088,
+      "chapter_label": "HEB 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "who doesn’t need, like those high priests, to offer up sacrifices daily, first for his own sins, and then for the sins of the people. For he did this once for all, when he offered up himself.",
+      "ko": "저가 저 대제사장들이 먼저 자기 죄를 위하고 다음에 백성의 죄를 위하여 날마다 제사 드리는 것과 같이 할 필요가 없으니 이는 저가 단번에 자기를 드려 이루셨음이니라",
+      "source_text_hash": "1ec5d51a1e618dd40c2c9ffbfd427be8aaf65fde028bde01d11c7dfe586f3b14",
+      "translation_text_hash": "8a1298a545c767d92816b7831237ac64c95f1fda1d52263e21526c3e1102f436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 저 대제사장들이 먼저 자기 죄를 위하고 다음에 백성의 죄를 위하여 날마다 제사 드리는 것과 같이 할 필요가 없으니 이는 저가 단번에 자기를 드려 이루셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "8a1298a545c767d92816b7831237ac64c95f1fda1d52263e21526c3e1102f436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HEB:7:28",
+      "sequence": 30089,
+      "chapter_label": "HEB 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "HEB",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "HEB",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "For the law appoints men as high priests who have weakness, but the word of the oath, which came after the law, appoints a Son forever who has been perfected.",
+      "ko": "율법은 약점을 가진 사람들을 제사장으로 세웠거니와 율법 후에 하신 맹세의 말씀은 영원히 온전케 되신 아들을 세우셨느니라",
+      "source_text_hash": "146ed0efd2a0214826ba54d12b63fbf2221c4beb892c13f93a7b298f21934a4f",
+      "translation_text_hash": "de4e77fc0b95c831c991b55ae3f5aa4832302fc3d4c132c8b537545d436943f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법은 약점을 가진 사람들을 제사장으로 세웠거니와 율법 후에 하신 맹세의 말씀은 영원히 온전케 되신 아들을 세우셨느니라"
+      ],
+      "raw_text_hashes": [
+        "de4e77fc0b95c831c991b55ae3f5aa4832302fc3d4c132c8b537545d436943f2"
+      ]
+    }
+  ]
+}

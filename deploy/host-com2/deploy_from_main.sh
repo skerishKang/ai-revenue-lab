@@ -50,6 +50,7 @@ p01_health_url=${PADIEM_COM2_P01_HEALTH_URL:-http://127.0.0.1:8811/internal/v1/h
 b14_health_url=${PADIEM_COM2_B14_HEALTH_URL:-http://127.0.0.1:8789/health}
 apply=0
 ai_check=warn
+extended_smoke=0
 ai_base_url=${PADIEM_COM2_AI_CHECK_BASE_URL:-https://chat.padiem.net}
 requested=''
 resolved=''
@@ -65,7 +66,7 @@ say() { printf 'COM2_DEPLOY_%s\n' "$*"; }
 usage() {
   cat >&2 <<'USAGE'
 usage: deploy_from_main.sh <main-sha> [--apply] [--dry-run]
-       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH] [--ai-check=required|warn]
+       [--ops-checkout PATH] [--state-dir PATH] [--chat-db PATH] [--ai-check=required|warn] [--smoke]
 USAGE
 }
 
@@ -74,6 +75,7 @@ parse_args() {
     case "$1" in
       --apply) apply=1; shift ;;
       --dry-run) apply=0; shift ;;
+      --smoke) extended_smoke=1; shift ;;
       --ai-check=warn) ai_check=warn; shift ;;
       --ai-check=required) ai_check=required; shift ;;
       --ops-checkout) ops_checkout=${2:?path required}; shift 2 ;;
@@ -122,11 +124,11 @@ main() {
   run_deploy "$requested"
 }
 
-# Which services a changed path belongs to. `packages/` is shared, and Chat is
-# the only COM2 service that imports it.
+# Which services a changed path belongs to. Shared P01 dependencies are also
+# checked against its live release by p01_matches_target below.
 service_for_path() {
   case "$1" in
-    apps/padiem-chat/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
+    apps/padiem-chat/*|apps/padiem-council-apps/static/*|packages/*|deploy/host-com2/chat/*) echo chat ;;
     apps/padiem-ai-engine/*|deploy/host-com2/p01/*) echo p01 ;;
     apps/korean-ai-platform/*|deploy/host-com2/b14/*) echo b14 ;;
   esac
@@ -204,7 +206,7 @@ p01_matches_target() {
   actual=$(readlink -f -- "$p01_root/app") || return 1
   [[ -d $actual ]] || return 1
   temp=$(mktemp -d) || return 1
-  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-ai-engine | tar -x -C "$temp"; then
+  if ! "$git_bin" -C "$ops_checkout" archive "$resolved" apps/padiem-ai-engine packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent | tar -x -C "$temp"; then
     rm -rf -- "$temp"
     return 1
   fi
@@ -215,6 +217,15 @@ p01_matches_target() {
       break
     fi
   done
+  if (( result == 0 )); then
+    for item in packages/padiem-ai-core/padiem_ai_core packages/padiem-control-plane/padiem_control_plane apps/korean-ai-code-agent/src/kagent; do
+      if ! diff -qr --exclude=__pycache__ --exclude='*.pyc' \
+          "$temp/$item" "$actual/$(basename "$item")" >/dev/null 2>&1; then
+        result=1
+        break
+      fi
+    done
+  fi
   rm -rf -- "$temp"
   return "$result"
 }
@@ -481,6 +492,11 @@ PY
     say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:FAIL error_code=$ai_code"
   else
     say "SUMMARY=chat:${result[chat]} p01:${result[p01]} b14:${result[b14]} ai:$ai_status"
+  fi
+  if (( extended_smoke )); then
+    "$python_bin" "$ops_checkout/deploy/host-com2/post_deploy_smoke.py" \
+      --base-url "$ai_base_url" --chat-db "$chat_db" \
+      --ai-status "$ai_status" --ai-code "${ai_code:-none}" || true
   fi
   if (( failed )); then exit 1; fi
   return 0

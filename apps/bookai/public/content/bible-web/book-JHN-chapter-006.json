@@ -1,0 +1,2285 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:006",
+  "unit_ordinal": 1003,
+  "unit_label": "JHN 6",
+  "book_code": "JHN",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:6:1",
+      "sequence": 26258,
+      "chapter_label": "JHN 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, Jesus went away to the other side of the sea of Galilee, which is also called the Sea of Tiberias.",
+      "ko": "그 후에 예수께서 갈릴리 바다 곧 디베랴 바다 건너편으로 가시매",
+      "source_text_hash": "a5d2fb62324c0b2499cc675490c8984acfefd63346e3bbe4b510df4ba8d27531",
+      "translation_text_hash": "b22603594e1903d0cfe088ee44c43aaed5ad162385a132d2057059fc917b6eb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 예수께서 갈릴리 바다 곧 디베랴 바다 건너편으로 가시매"
+      ],
+      "raw_text_hashes": [
+        "b22603594e1903d0cfe088ee44c43aaed5ad162385a132d2057059fc917b6eb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:2",
+      "sequence": 26259,
+      "chapter_label": "JHN 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "A great multitude followed him, because they saw his signs which he did on those who were sick.",
+      "ko": "큰 무리가 따르니 이는 병인들에게 행하시는 표적을 봄이러라",
+      "source_text_hash": "799166f0266a6c915f6fd175b361a9dca28e83303a0fae6b47a1b3f5b246b1c9",
+      "translation_text_hash": "f0156431c943bcf5398272d885aa08d9b37b3d08ca83fcc83f45404c8ecd9579",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 무리가 따르니 이는 병인들에게 행하시는 표적을 봄이러라"
+      ],
+      "raw_text_hashes": [
+        "f0156431c943bcf5398272d885aa08d9b37b3d08ca83fcc83f45404c8ecd9579"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:3",
+      "sequence": 26260,
+      "chapter_label": "JHN 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus went up into the mountain, and he sat there with his disciples.",
+      "ko": "예수께서 산에 오르사 제자들과 함께 거기 앉으시니",
+      "source_text_hash": "acc5fb255d4bb8cebf86ccab7035883cc3442c83bee3a0f390c3c262a580ba83",
+      "translation_text_hash": "fa20270f86e86cbf825e73046250d68677a4ff831af201c403e4e609022f8645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 산에 오르사 제자들과 함께 거기 앉으시니"
+      ],
+      "raw_text_hashes": [
+        "fa20270f86e86cbf825e73046250d68677a4ff831af201c403e4e609022f8645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:4",
+      "sequence": 26261,
+      "chapter_label": "JHN 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Now the Passover, the feast of the Jews, was at hand.",
+      "ko": "마침 유대인의 명절인 유월절이 가까운지라",
+      "source_text_hash": "3e3ab09be0de4f42b4bb8bc31826c0c9a5bd5e1a5ab45e96f0d6cd56811598b9",
+      "translation_text_hash": "baffd0595483349badbd1e77d6593527c673cd26b5081cf878b599f9a9611d67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 유대인의 명절인 유월절이 가까운지라"
+      ],
+      "raw_text_hashes": [
+        "baffd0595483349badbd1e77d6593527c673cd26b5081cf878b599f9a9611d67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:5",
+      "sequence": 26262,
+      "chapter_label": "JHN 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus therefore, lifting up his eyes and seeing that a great multitude was coming to him, said to Philip, “Where are we to buy bread, that these may eat?”",
+      "ko": "예수께서 눈을 들어 큰 무리가 자기에게로 오는 것을 보시고 빌립에게 이르시되 우리가 어디서 떡을 사서 이 사람들로 먹게 하겠느냐 하시니",
+      "source_text_hash": "b6bc0cab307094302f48a65572a2768d8847c94446e8b313117dcc69e40ae66f",
+      "translation_text_hash": "09df817967eef485db91d38e9f0df3bbe94544e762f87589145e63b89b163cbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 눈을 들어 큰 무리가 자기에게로 오는 것을 보시고 빌립에게 이르시되 우리가 어디서 떡을 사서 이 사람들로 먹게 하겠느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "09df817967eef485db91d38e9f0df3bbe94544e762f87589145e63b89b163cbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:6",
+      "sequence": 26263,
+      "chapter_label": "JHN 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "He said this to test him, for he himself knew what he would do.",
+      "ko": "이렇게 말씀하심은 친히 어떻게 하실 것을 아시고 빌립을 시험코자 하심이라",
+      "source_text_hash": "d49f3ce6fdf885bf0061cbea3ab250976e5febb91701323096e57e7dce4005db",
+      "translation_text_hash": "a5d54c240db2dcc26ec8f0d75491729326b81936a0d5df475c36f2adee699f1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 말씀하심은 친히 어떻게 하실 것을 아시고 빌립을 시험코자 하심이라"
+      ],
+      "raw_text_hashes": [
+        "a5d54c240db2dcc26ec8f0d75491729326b81936a0d5df475c36f2adee699f1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:7",
+      "sequence": 26264,
+      "chapter_label": "JHN 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Philip answered him, “Two hundred denarii worth of bread is not sufficient for them, that every one of them may receive a little.”",
+      "ko": "빌립이 대답하되 각 사람으로 조금씩 받게 할찌라도 이백 데나리온의 떡이 부족하리이다",
+      "source_text_hash": "af21b7f5866a36edcd657b8e3b5fee7bff69f178d0ec6bac79aa6184803c982a",
+      "translation_text_hash": "72f485254c611b4aa0023bab7cb6123bed7d017c146e1a76f2988b8387902479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 대답하되 각 사람으로 조금씩 받게 할찌라도 이백 데나리온의 떡이 부족하리이다"
+      ],
+      "raw_text_hashes": [
+        "72f485254c611b4aa0023bab7cb6123bed7d017c146e1a76f2988b8387902479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:8",
+      "sequence": 26265,
+      "chapter_label": "JHN 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "One of his disciples, Andrew, Simon Peter’s brother, said to him,",
+      "ko": "제자 중 하나 곧 시몬 베드로의 형제 안드레가 예수께 여짜오되",
+      "source_text_hash": "54b2bc575986cbc9b8251d53c1dc95074445a6f2da79129fa921f0ff5933a68a",
+      "translation_text_hash": "304cf9ae1e0b1c374d59eb50c2a5c128e093a67101cd034ee554e11961b44187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중 하나 곧 시몬 베드로의 형제 안드레가 예수께 여짜오되"
+      ],
+      "raw_text_hashes": [
+        "304cf9ae1e0b1c374d59eb50c2a5c128e093a67101cd034ee554e11961b44187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:9",
+      "sequence": 26266,
+      "chapter_label": "JHN 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "“There is a boy here who has five barley loaves and two fish, but what are these among so many?”",
+      "ko": "여기 한 아이가 있어 보리떡 다섯 개와 물고기 두 마리를 가졌나이다 그러나 그것이 이 많은 사람에게 얼마나 되겠삽나이까",
+      "source_text_hash": "f2ad578cb35db32d2a52e31578ca49619154815e310e32a3d1cf2d1f939135c0",
+      "translation_text_hash": "408637289f9708b866e842c7640b5907ffda164c71b81434948757dac9ea722f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여기 한 아이가 있어 보리떡 다섯 개와 물고기 두 마리를 가졌나이다 그러나 그것이 이 많은 사람에게 얼마나 되겠삽나이까"
+      ],
+      "raw_text_hashes": [
+        "408637289f9708b866e842c7640b5907ffda164c71b81434948757dac9ea722f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:10",
+      "sequence": 26267,
+      "chapter_label": "JHN 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus said, “Have the people sit down.”Now there was much grass in that place. So the men sat down, in number about five thousand.",
+      "ko": "예수께서 가라사대 이 사람들로 앉게 하라 하신대 그 곳에 잔디가 많은지라 사람들이 앉으니 수효가 오천쯤 되더라",
+      "source_text_hash": "4877e9c1d7dc8d990120073a9961807d52b5eb66bc7d7877d1f4c973c4ea486a",
+      "translation_text_hash": "6d6e891baecbdb931ccb271857868c91ff092e6b43acf12a732e18aceda92d3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 이 사람들로 앉게 하라 하신대 그 곳에 잔디가 많은지라 사람들이 앉으니 수효가 오천쯤 되더라"
+      ],
+      "raw_text_hashes": [
+        "6d6e891baecbdb931ccb271857868c91ff092e6b43acf12a732e18aceda92d3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:11",
+      "sequence": 26268,
+      "chapter_label": "JHN 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Jesus took the loaves, and having given thanks, he distributed to the disciples, and the disciples to those who were sitting down, likewise also of the fish as much as they desired.",
+      "ko": "예수께서 떡을 가져 축사하신 후에 앉은 자들에게 나눠 주시고 고기도 그렇게 저희의 원대로 주시다",
+      "source_text_hash": "58f313339e0bcdfb2d478ffd5650c95bf50c44c1970f4a4e93d0f314d986386a",
+      "translation_text_hash": "c807b5f772526b64f61158f2be087f5f0173b50fbfa8987dcefe87f53040b59d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 떡을 가져 축사하신 후에 앉은 자들에게 나눠 주시고 고기도 그렇게 저희의 원대로 주시다"
+      ],
+      "raw_text_hashes": [
+        "c807b5f772526b64f61158f2be087f5f0173b50fbfa8987dcefe87f53040b59d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:12",
+      "sequence": 26269,
+      "chapter_label": "JHN 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "When they were filled, he said to his disciples, “Gather up the broken pieces which are left over, that nothing be lost.”",
+      "ko": "저희가 배부른 후에 예수께서 제자들에게 이르시되 남은 조각을 거두고 버리는 것이 없게 하라 하시므로",
+      "source_text_hash": "38b94e1df113ae428923c90abedfb41dd8144132692e89ec6d35f95d54205cc7",
+      "translation_text_hash": "d40d96561937c43ad77d2b2f8e10a41a511eb28be50672a700df5baaf2c4c4a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 배부른 후에 예수께서 제자들에게 이르시되 남은 조각을 거두고 버리는 것이 없게 하라 하시므로"
+      ],
+      "raw_text_hashes": [
+        "d40d96561937c43ad77d2b2f8e10a41a511eb28be50672a700df5baaf2c4c4a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:13",
+      "sequence": 26270,
+      "chapter_label": "JHN 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "So they gathered them up, and filled twelve baskets with broken pieces from the five barley loaves, which were left over by those who had eaten.",
+      "ko": "이에 거두니 보리떡 다섯 개로 먹고 남은 조각이 열 두 바구니에 찼더라",
+      "source_text_hash": "c8dac769bf1c942c080424d69d1d2d4fc14935e99587ab6c41b27cd31bea0400",
+      "translation_text_hash": "1c9b3dd8b36e9993d7ac356c7d51f952cf807fd32969250e515f052af375d567",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 거두니 보리떡 다섯 개로 먹고 남은 조각이 열 두 바구니에 찼더라"
+      ],
+      "raw_text_hashes": [
+        "1c9b3dd8b36e9993d7ac356c7d51f952cf807fd32969250e515f052af375d567"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:14",
+      "sequence": 26271,
+      "chapter_label": "JHN 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "When therefore the people saw the sign which Jesus did, they said, “This is truly the prophet who comes into the world.”",
+      "ko": "그 사람들이 예수의 행하신 이 표적을 보고 말하되 이는 참으로 세상에 오실 그 선지자라 하더라",
+      "source_text_hash": "b591dea1b9eb5ce6c4366dc24902b01d77ae7bc750544d2a24db301d561bf247",
+      "translation_text_hash": "c56273d489d82617402042ed51e496223bc8ad71209165da2a75254bb140d3c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 예수의 행하신 이 표적을 보고 말하되 이는 참으로 세상에 오실 그 선지자라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c56273d489d82617402042ed51e496223bc8ad71209165da2a75254bb140d3c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:15",
+      "sequence": 26272,
+      "chapter_label": "JHN 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Jesus therefore, perceiving that they were about to come and take him by force to make him king, withdrew again to the mountain by himself.",
+      "ko": "그러므로 예수께서 저희가 와서 자기를 억지로 잡아 임금 삼으려는 줄을 아시고 다시 혼자 산으로 떠나 가시니라",
+      "source_text_hash": "f438c99cfe77e14855f7567f86b0f14cb680c588539c61a6d6f2080ec45a0a25",
+      "translation_text_hash": "678b0e54a6701aad38c4012efcae070b34f738095ca5895ddc23650ae7e956f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수께서 저희가 와서 자기를 억지로 잡아 임금 삼으려는 줄을 아시고 다시 혼자 산으로 떠나 가시니라"
+      ],
+      "raw_text_hashes": [
+        "678b0e54a6701aad38c4012efcae070b34f738095ca5895ddc23650ae7e956f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:16",
+      "sequence": 26273,
+      "chapter_label": "JHN 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "When evening came, his disciples went down to the sea.",
+      "ko": "저물매 제자들이 바다에 내려가서",
+      "source_text_hash": "dc5c1610bf4d02a12842b858dc85f9ec4c2f80e30c392e1b7928d34d1998f1f5",
+      "translation_text_hash": "c0d52060b74e27011eb8b3e205379aa652b9ea5f4e5c4e10c18fae222823d180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물매 제자들이 바다에 내려가서"
+      ],
+      "raw_text_hashes": [
+        "c0d52060b74e27011eb8b3e205379aa652b9ea5f4e5c4e10c18fae222823d180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:17",
+      "sequence": 26274,
+      "chapter_label": "JHN 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "They entered into the boat, and were going over the sea to Capernaum. It was now dark, and Jesus had not come to them.",
+      "ko": "배를 타고 바다를 건너 가버나움으로 가는데 이미 어두웠고 예수는 아직 저희에게 오시지 아니하셨더니",
+      "source_text_hash": "21924e600c4ca50cb599acb92324fc34e149815e510d2ead82bedd1f332d366c",
+      "translation_text_hash": "1c404ed0203e438b142ef9104907417606c2af5ad14d494a44618687449f3afa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배를 타고 바다를 건너 가버나움으로 가는데 이미 어두웠고 예수는 아직 저희에게 오시지 아니하셨더니"
+      ],
+      "raw_text_hashes": [
+        "1c404ed0203e438b142ef9104907417606c2af5ad14d494a44618687449f3afa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:18",
+      "sequence": 26275,
+      "chapter_label": "JHN 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "The sea was tossed by a great wind blowing.",
+      "ko": "큰 바람이 불어 파도가 일어나더라",
+      "source_text_hash": "6efefe10846ef82aac017a6bee7f73a772e95fb9e8320b474b872d870f154455",
+      "translation_text_hash": "3ce619fa72122caf27503eb774fea7d739cd54f0ec55ec5181b02b35522fb21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 바람이 불어 파도가 일어나더라"
+      ],
+      "raw_text_hashes": [
+        "3ce619fa72122caf27503eb774fea7d739cd54f0ec55ec5181b02b35522fb21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:19",
+      "sequence": 26276,
+      "chapter_label": "JHN 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "When therefore they had rowed about twenty-five or thirty stadia, they saw Jesus walking on the sea and drawing near to the boat; and they were afraid.",
+      "ko": "제자들이 노를 저어 십여리쯤 가다가 예수께서 바다 위로 걸어 배에 가까이 오심을 보고 두려워하거늘",
+      "source_text_hash": "9f65c77a900585cecb277c87903472750a3f90ff01f8049b36f27f4ebf167887",
+      "translation_text_hash": "3a45b66e7ac5493dfed1e82aab220f13c70753e2a9c790958e2a0840acd50618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 노를 저어 십여리쯤 가다가 예수께서 바다 위로 걸어 배에 가까이 오심을 보고 두려워하거늘"
+      ],
+      "raw_text_hashes": [
+        "3a45b66e7ac5493dfed1e82aab220f13c70753e2a9c790958e2a0840acd50618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:20",
+      "sequence": 26277,
+      "chapter_label": "JHN 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "But he said to them, “It is I.Don’t be afraid.”",
+      "ko": "가라사대 내니 두려워 말라 하신대",
+      "source_text_hash": "fa8486e6706d5845fa0719422873d7a18383014599ce636bd1852af946c5a5c5",
+      "translation_text_hash": "03becb14f24df19a3dd97174c05924c0250d4a5373be337f2c601652a186eb97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내니 두려워 말라 하신대"
+      ],
+      "raw_text_hashes": [
+        "03becb14f24df19a3dd97174c05924c0250d4a5373be337f2c601652a186eb97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:21",
+      "sequence": 26278,
+      "chapter_label": "JHN 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "They were willing therefore to receive him into the boat. Immediately the boat was at the land where they were going.",
+      "ko": "이에 기뻐서 배로 영접하니 배는 곧 저희의 가려던 땅에 이르렀더라",
+      "source_text_hash": "0d8e791aa01866dd1081b6d85f0f26b081b83c14e9d7f4e5e5ffd3ff856b6024",
+      "translation_text_hash": "0c74784158c65c8930ea02cc1ab3043cc2cb5048878e6e71a6168b3db0d78455",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 기뻐서 배로 영접하니 배는 곧 저희의 가려던 땅에 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "0c74784158c65c8930ea02cc1ab3043cc2cb5048878e6e71a6168b3db0d78455"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:22",
+      "sequence": 26279,
+      "chapter_label": "JHN 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "On the next day, the multitude that stood on the other side of the sea saw that there was no other boat there, except the one in which his disciples had embarked, and that Jesus hadn’t entered with his disciples into the boat, but his disciples had gone away alone.",
+      "ko": "이튿날 바다 건너편에 섰는 무리가 배 한척 밖에 다른 배가 거기 없는 것과 또 어제 예수께서 제자들과 함께 그 배에 오르지 아니하시고 제자들만 가는 것을 보았더니",
+      "source_text_hash": "32b6b1b6292ab3e41bdcb1a8cfe8b03d9abdd5a990e5f934d2f09f7c4805f75e",
+      "translation_text_hash": "9b5471d0afddd98066cc06680469635a5b2ac52952c7012e3558283229945505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 바다 건너편에 섰는 무리가 배 한척 밖에 다른 배가 거기 없는 것과 또 어제 예수께서 제자들과 함께 그 배에 오르지 아니하시고 제자들만 가는 것을 보았더니"
+      ],
+      "raw_text_hashes": [
+        "9b5471d0afddd98066cc06680469635a5b2ac52952c7012e3558283229945505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:23",
+      "sequence": 26280,
+      "chapter_label": "JHN 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "However, boats from Tiberias came near to the place where they ate the bread after the Lord had given thanks.",
+      "ko": "(그러나 디베랴에서 배들이 주의 축사하신 후 여럿이 떡 먹던 그 곳에 가까이 왔더라)",
+      "source_text_hash": "406a10423ca60f93cc0b911fbc9513ec3495c1ce51c0bf08f5008490fa2c0b29",
+      "translation_text_hash": "b44f0cc7d298632600790824d1ff23cd4005bf2ff7b6e58dab4bd947786e6599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(그러나 디베랴에서 배들이 주의 축사하신 후 여럿이 떡 먹던 그 곳에 가까이 왔더라)"
+      ],
+      "raw_text_hashes": [
+        "b44f0cc7d298632600790824d1ff23cd4005bf2ff7b6e58dab4bd947786e6599"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:24",
+      "sequence": 26281,
+      "chapter_label": "JHN 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "When the multitude therefore saw that Jesus wasn’t there, nor his disciples, they themselves got into the boats and came to Capernaum, seeking Jesus.",
+      "ko": "무리가 거기 예수도 없으시고 제자들도 없음을 보고 곧 배들을 타고 예수를 찾으러 가버나움으로 가서",
+      "source_text_hash": "a63bb689167a3782d968eeaad7ba435a01d403629683516aeff5e7e4efc521bd",
+      "translation_text_hash": "69bdaaaa2db0d52011d4d9b2ca1dbb50673759a3af6be717577298b995d0f6af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 거기 예수도 없으시고 제자들도 없음을 보고 곧 배들을 타고 예수를 찾으러 가버나움으로 가서"
+      ],
+      "raw_text_hashes": [
+        "69bdaaaa2db0d52011d4d9b2ca1dbb50673759a3af6be717577298b995d0f6af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:25",
+      "sequence": 26282,
+      "chapter_label": "JHN 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "When they found him on the other side of the sea, they asked him, “Rabbi, when did you come here?”",
+      "ko": "바다 건너편에서 만나 랍비여 어느 때에 여기 오셨나이까 하니",
+      "source_text_hash": "da7aabac6246b8e5daed84a2223f9fa04af8443903275af68247d842d23926a6",
+      "translation_text_hash": "16f06d61ecff3c34f46d598ed2d6b7884d84bf1c55211ed8bea5d6ec0ca82786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다 건너편에서 만나 랍비여 어느 때에 여기 오셨나이까 하니"
+      ],
+      "raw_text_hashes": [
+        "16f06d61ecff3c34f46d598ed2d6b7884d84bf1c55211ed8bea5d6ec0ca82786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:26",
+      "sequence": 26283,
+      "chapter_label": "JHN 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "Jesus answered them, “Most certainly I tell you, you seek me, not because you saw signs, but because you ate of the loaves and were filled.",
+      "ko": "예수께서 대답하여 가라사대 내가 진실로 진실로 너희에게 이르노니 너희가 나를 찾는 것은 표적을 본 까닭이 아니요 떡을 먹고 배부른 까닭이로다",
+      "source_text_hash": "ccc8718b001b379849603ce5a8671709a221741ad98c666aebfcea04e4acfda9",
+      "translation_text_hash": "106f7e678db7808dca13f8f650c103c45c7b2a013c5043f83ab51e305851b8f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내가 진실로 진실로 너희에게 이르노니 너희가 나를 찾는 것은 표적을 본 까닭이 아니요 떡을 먹고 배부른 까닭이로다"
+      ],
+      "raw_text_hashes": [
+        "106f7e678db7808dca13f8f650c103c45c7b2a013c5043f83ab51e305851b8f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:27",
+      "sequence": 26284,
+      "chapter_label": "JHN 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Don’t work for the food which perishes, but for the food which remains to eternal life, which the Son of Man will give to you. For God the Father has sealed him.”",
+      "ko": "썩는 양식을 위하여 일하지 말고 영생하도록 있는 양식을 위하여 하라 이 양식은 인자가 너희에게 주리니 인자는 아버지 하나님의 인치신 자니라",
+      "source_text_hash": "9ec7bcf3c3069f7ee283859f94193ff955a50c12e5807395fdd8a354f6c8df41",
+      "translation_text_hash": "96c9360deac1fb3b6bbfc39fd46acf169dc373c827ecd4c7299178b858c33988",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "썩는 양식을 위하여 일하지 말고 영생하도록 있는 양식을 위하여 하라 이 양식은 인자가 너희에게 주리니 인자는 아버지 하나님의 인치신 자니라"
+      ],
+      "raw_text_hashes": [
+        "96c9360deac1fb3b6bbfc39fd46acf169dc373c827ecd4c7299178b858c33988"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:28",
+      "sequence": 26285,
+      "chapter_label": "JHN 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "They said therefore to him, “What must we do, that we may work the works of God?”",
+      "ko": "저희가 묻되 우리가 어떻게 하여야 하나님의 일을 하오리이까",
+      "source_text_hash": "d9f39176399bfeb7789935ce928ba0a0636425ba1689400088cc807b9f911239",
+      "translation_text_hash": "17df9c2634b7ae81c8c4310881d983bf537bd8b7fd9eff1d2488e086ed960c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 묻되 우리가 어떻게 하여야 하나님의 일을 하오리이까"
+      ],
+      "raw_text_hashes": [
+        "17df9c2634b7ae81c8c4310881d983bf537bd8b7fd9eff1d2488e086ed960c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:29",
+      "sequence": 26286,
+      "chapter_label": "JHN 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus answered them, “This is the work of God, that you believe in him whom he has sent.”",
+      "ko": "예수께서 대답하여 가라사대 하나님의 보내신 자를 믿는 것이 하나님의 일이니라 하시니",
+      "source_text_hash": "62d7f372bc3a06aea8fc939af450c00bc6dc32e99a7db0566cf9e09e2ad87e4c",
+      "translation_text_hash": "8ed9a6b32e520d45abc4c24ebf2d2de90b6cec228fad3a326b5f18fc0fde9b0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 하나님의 보내신 자를 믿는 것이 하나님의 일이니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "8ed9a6b32e520d45abc4c24ebf2d2de90b6cec228fad3a326b5f18fc0fde9b0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:30",
+      "sequence": 26287,
+      "chapter_label": "JHN 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "They said therefore to him, “What then do you do for a sign, that we may see and believe you? What work do you do?",
+      "ko": "저희가 묻되 그러면 우리로 보고 당신을 믿게 행하시는 표적이 무엇이니이까, 하시는 일이 무엇이니이까",
+      "source_text_hash": "0308e7c24eb654cd97fb61a4d60543128c0697aefc1a595430140beba9c8d7d7",
+      "translation_text_hash": "9a4ebbe49f743733b82ddff27601c827222c2231df4c21923382f52ce5cf3f9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 묻되 그러면 우리로 보고 당신을 믿게 행하시는 표적이 무엇이니이까, 하시는 일이 무엇이니이까"
+      ],
+      "raw_text_hashes": [
+        "9a4ebbe49f743733b82ddff27601c827222c2231df4c21923382f52ce5cf3f9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:31",
+      "sequence": 26288,
+      "chapter_label": "JHN 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "Our fathers ate the manna in the wilderness. As it is written, ‘He gave them bread out of heaven to eat.’”",
+      "ko": "기록된바 하늘에서 저희에게 떡을 주어 먹게 하였다 함과 같이 우리 조상들은 광야에서 만나를 먹었나이다",
+      "source_text_hash": "71a741135246290d5d9adbf36d2c04cb0faad4f3824ee5e0b0652ee12e8d7b87",
+      "translation_text_hash": "1d2ba3e1a7d9c303bd6e9bcc10f86ceda6d1f39919120914d26ad5b8c068f25a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 하늘에서 저희에게 떡을 주어 먹게 하였다 함과 같이 우리 조상들은 광야에서 만나를 먹었나이다"
+      ],
+      "raw_text_hashes": [
+        "1d2ba3e1a7d9c303bd6e9bcc10f86ceda6d1f39919120914d26ad5b8c068f25a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:32",
+      "sequence": 26289,
+      "chapter_label": "JHN 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "Jesus therefore said to them, “Most certainly, I tell you, it wasn’t Moses who gave you the bread out of heaven, but my Father gives you the true bread out of heaven.",
+      "ko": "예수께서 이르시되 내가 진실로 진실로 너희에게 이르노니 하늘에서 내린 떡은 모세가 준것이 아니라 오직 내 아버지가 하늘에서 내린 참 떡을 너희에게 주시나니",
+      "source_text_hash": "15eebfc994ddd67828f27699ea26d3a2d11c7ceedaac723d7b8d0cc048e40b74",
+      "translation_text_hash": "d2f9c02685fd7550cd3bdb57ce566a5c51f11834399a6e49e76b7cf9cefd2e26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 진실로 진실로 너희에게 이르노니 하늘에서 내린 떡은 모세가 준것이 아니라 오직 내 아버지가 하늘에서 내린 참 떡을 너희에게 주시나니"
+      ],
+      "raw_text_hashes": [
+        "d2f9c02685fd7550cd3bdb57ce566a5c51f11834399a6e49e76b7cf9cefd2e26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:33",
+      "sequence": 26290,
+      "chapter_label": "JHN 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "For the bread of God is that which comes down out of heaven and gives life to the world.”",
+      "ko": "하나님의 떡은 하늘에서 내려 세상에게 생명을 주는 것이니라",
+      "source_text_hash": "274430f2460ed54a4be8702fcc1a7b709c51e6bbfd28a0b2eb63cf6fcfe64b6c",
+      "translation_text_hash": "232c0268d400f78e1ab57a856c695a6ea06078b449a46bd4858f86522a7200e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 떡은 하늘에서 내려 세상에게 생명을 주는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "232c0268d400f78e1ab57a856c695a6ea06078b449a46bd4858f86522a7200e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:34",
+      "sequence": 26291,
+      "chapter_label": "JHN 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "They said therefore to him, “Lord, always give us this bread.”",
+      "ko": "저희가 가로되 주여 이 떡을 항상 우리에게 주소서",
+      "source_text_hash": "97c6526cb7b9f0d81d6db18b2affe63fea793fa23ee842ba48ec03ee0087728c",
+      "translation_text_hash": "2107818e386e1a577bb0ce4cd6cc6b1af02357b2c0b5c8a09eab5eedf5919211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 가로되 주여 이 떡을 항상 우리에게 주소서"
+      ],
+      "raw_text_hashes": [
+        "2107818e386e1a577bb0ce4cd6cc6b1af02357b2c0b5c8a09eab5eedf5919211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:35",
+      "sequence": 26292,
+      "chapter_label": "JHN 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus said to them, “I am the bread of life. Whoever comes to me will not be hungry, and whoever believes in me will never be thirsty.",
+      "ko": "예수께서 가라사대 내가 곧 생명의 떡이니 내게 오는 자는 결코 주리지 아니할 터이요 나를 믿는 자는 영원히 목마르지 아니하리라",
+      "source_text_hash": "08b375567eaa990daad60eaababd1e2d3649bc3cc778913ef61a005565ad4ad4",
+      "translation_text_hash": "b30afdf4909996265e77aa21e2cfc2495f8cb7d0df52923ad0e2e2e2df65b06d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내가 곧 생명의 떡이니 내게 오는 자는 결코 주리지 아니할 터이요 나를 믿는 자는 영원히 목마르지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "b30afdf4909996265e77aa21e2cfc2495f8cb7d0df52923ad0e2e2e2df65b06d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:36",
+      "sequence": 26293,
+      "chapter_label": "JHN 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "But I told you that you have seen me, and yet you don’t believe.",
+      "ko": "그러나 내가 너희더러 이르기를 너희는 나를 보고도 믿지 아니하는도다 하였느니라",
+      "source_text_hash": "58f63e0d302b72a4a927e3736715ea09cc57b61b88e1baa63289005f59da323e",
+      "translation_text_hash": "b4de26ad645c49e92d167b2bed88c083c1678734342bd980be62cf765a600579",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너희더러 이르기를 너희는 나를 보고도 믿지 아니하는도다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "b4de26ad645c49e92d167b2bed88c083c1678734342bd980be62cf765a600579"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:37",
+      "sequence": 26294,
+      "chapter_label": "JHN 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "All those whom the Father gives me will come to me. He who comes to me I will in no way throw out.",
+      "ko": "아버지께서 내게 주시는 자는 다 내게로 올 것이요 내게 오는 자는 내가 결코 내어 쫓지 아니하리라",
+      "source_text_hash": "f49cb7f49ef65b2474bc63ff1b08d5f06acaf0e2fd1ed4eb81854993887b69df",
+      "translation_text_hash": "ea36039533c689d54c73f8d7365784380d8de991467e6aa7542c378a86077709",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 내게 주시는 자는 다 내게로 올 것이요 내게 오는 자는 내가 결코 내어 쫓지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "ea36039533c689d54c73f8d7365784380d8de991467e6aa7542c378a86077709"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:38",
+      "sequence": 26295,
+      "chapter_label": "JHN 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "For I have come down from heaven, not to do my own will, but the will of him who sent me.",
+      "ko": "내가 하늘로서 내려온 것은 내 뜻을 행하려 함이 아니요",
+      "source_text_hash": "b06ee4dfe4cc64071e44ff13464b172c0663c5fd8acd2f5f173e694de01b00a9",
+      "translation_text_hash": "90e845442cbdbbfae79546d135bbfd1230f7c5895067b690bc05cac4ba517aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하늘로서 내려온 것은 내 뜻을 행하려 함이 아니요"
+      ],
+      "raw_text_hashes": [
+        "90e845442cbdbbfae79546d135bbfd1230f7c5895067b690bc05cac4ba517aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:39",
+      "sequence": 26296,
+      "chapter_label": "JHN 6",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 39
+        }
+      ],
+      "en": "This is the will of my Father who sent me, that of all he has given to me I should lose nothing, but should raise him up at the last day.",
+      "ko": "나를 보내신 이의 뜻을 행하려 함이니라 나를 보내신 이의 뜻은 내게 주신 자 중에 내가 하나도 잃어버리지 아니하고 마지막 날에 다시 살리는 이것이니라",
+      "source_text_hash": "8aafed2e18126d13c991a62fdb70c0c3ad05fe16da7f17e935ef6214691ba797",
+      "translation_text_hash": "e618fe447f065689cfb612a7b6683eafa97a72d947b46d33b9f42cb47a5046b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보내신 이의 뜻을 행하려 함이니라 나를 보내신 이의 뜻은 내게 주신 자 중에 내가 하나도 잃어버리지 아니하고 마지막 날에 다시 살리는 이것이니라"
+      ],
+      "raw_text_hashes": [
+        "e618fe447f065689cfb612a7b6683eafa97a72d947b46d33b9f42cb47a5046b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:40",
+      "sequence": 26297,
+      "chapter_label": "JHN 6",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 40
+        }
+      ],
+      "en": "This is the will of the one who sent me, that everyone who sees the Son and believes in him should have eternal life; and I will raise him up at the last day.”",
+      "ko": "내 아버지의 뜻은 아들을 보고 믿는 자마다 영생을 얻는 이것이니 마지막 날에 내가 이를 다시 살리리라 하시니라",
+      "source_text_hash": "ac1a86b08f18da661552079192e4fd4dd7baf55581dfb56e5e63bd4c59d189af",
+      "translation_text_hash": "fe87c1923c21c9c53d02e1096dc6603fae5b34557cea3c6df8f7bdbe36f094e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아버지의 뜻은 아들을 보고 믿는 자마다 영생을 얻는 이것이니 마지막 날에 내가 이를 다시 살리리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "fe87c1923c21c9c53d02e1096dc6603fae5b34557cea3c6df8f7bdbe36f094e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:41",
+      "sequence": 26298,
+      "chapter_label": "JHN 6",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 41
+        }
+      ],
+      "en": "The Jews therefore murmured concerning him, because he said, “I am the bread which came down out of heaven.”",
+      "ko": "자기가 하늘로서 내려온 떡이라 하시므로 유대인들이 예수께 대하여 수군거려",
+      "source_text_hash": "3321213bafe434e49f7e761e047694bcd87aec2feb0f1ffcb4e160639503966b",
+      "translation_text_hash": "5b02f76edd64717eef9c43b4b6834f22a24f33b772fe195be7d2ef73e8feffc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기가 하늘로서 내려온 떡이라 하시므로 유대인들이 예수께 대하여 수군거려"
+      ],
+      "raw_text_hashes": [
+        "5b02f76edd64717eef9c43b4b6834f22a24f33b772fe195be7d2ef73e8feffc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:42",
+      "sequence": 26299,
+      "chapter_label": "JHN 6",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 42
+        }
+      ],
+      "en": "They said, “Isn’t this Jesus, the son of Joseph, whose father and mother we know? How then does he say, ‘I have come down out of heaven’?”",
+      "ko": "가로되 이는 요셉의 아들 예수가 아니냐 그 부모를 우리가 아는데 제가 지금 어찌하여 하늘로서 내려왔다 하느냐",
+      "source_text_hash": "80532759194adde79098fbfa46dc60bcce3d9f8e8092c3cce6765bf409783e90",
+      "translation_text_hash": "dc79adea2976c18a26ea25be0b1b611846cf7615eb856bb7046905f4ead8e8cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이는 요셉의 아들 예수가 아니냐 그 부모를 우리가 아는데 제가 지금 어찌하여 하늘로서 내려왔다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "dc79adea2976c18a26ea25be0b1b611846cf7615eb856bb7046905f4ead8e8cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:43",
+      "sequence": 26300,
+      "chapter_label": "JHN 6",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 43
+        }
+      ],
+      "en": "Therefore Jesus answered them, “Don’t murmur among yourselves.",
+      "ko": "예수께서 대답하여 가라사대 너희는 서로 수군거리지 말라",
+      "source_text_hash": "19b3f5c05a45f2310250729ebd941cbfd4b592123b9bc15c6c7192e85e18d695",
+      "translation_text_hash": "b60c16eda988ab6c2938df57c618d90a300fda3bf0b78b062a553ed5bae4f4a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희는 서로 수군거리지 말라"
+      ],
+      "raw_text_hashes": [
+        "b60c16eda988ab6c2938df57c618d90a300fda3bf0b78b062a553ed5bae4f4a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:44",
+      "sequence": 26301,
+      "chapter_label": "JHN 6",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 44
+        }
+      ],
+      "en": "No one can come to me unless the Father who sent me draws him; and I will raise him up in the last day.",
+      "ko": "나를 보내신 아버지께서 이끌지 아니하면 아무라도 내게 올 수 없으니 오는 그를 내가 마지막 날에 다시 살리리라",
+      "source_text_hash": "b2f627f5140cea4456d269f7785d9a8ea7b798e0b5f4fafb53c75785064d6506",
+      "translation_text_hash": "8d7884cc91910553c22cbaade42e5d6a8f97880c735d3f2f11c81fd1bfd3c133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보내신 아버지께서 이끌지 아니하면 아무라도 내게 올 수 없으니 오는 그를 내가 마지막 날에 다시 살리리라"
+      ],
+      "raw_text_hashes": [
+        "8d7884cc91910553c22cbaade42e5d6a8f97880c735d3f2f11c81fd1bfd3c133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:45",
+      "sequence": 26302,
+      "chapter_label": "JHN 6",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 45
+        }
+      ],
+      "en": "It is written in the prophets, ‘They will all be taught by God.’ Therefore everyone who hears from the Father and has learned, comes to me.",
+      "ko": "선지자의 글에 저희가 다 하나님의 가르치심을 받으리라 기록되었은즉 아버지께 듣고 배운 사람마다 내게로 오느니라",
+      "source_text_hash": "dd8fae9c5966ff7aa85342d6283c7d57ddc6fb0e25e91fdd07029c8eabae01b3",
+      "translation_text_hash": "0fcce46b0181eaf2572ae2eec7c276af2b97b2f403c3b95f85d246a337ad0a91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 글에 저희가 다 하나님의 가르치심을 받으리라 기록되었은즉 아버지께 듣고 배운 사람마다 내게로 오느니라"
+      ],
+      "raw_text_hashes": [
+        "0fcce46b0181eaf2572ae2eec7c276af2b97b2f403c3b95f85d246a337ad0a91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:46",
+      "sequence": 26303,
+      "chapter_label": "JHN 6",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 46
+        }
+      ],
+      "en": "Not that anyone has seen the Father, except he who is from God. He has seen the Father.",
+      "ko": "이는 아버지를 본 자가 있다는 것이 아니라 오직 하나님에게서 온 자만 아버지를 보았느니라",
+      "source_text_hash": "a493d532801a5889b5ba21da9f6c1654154fc280ac8abf60d5c55ac406e6d947",
+      "translation_text_hash": "730acb99b41afbdb0e1bc72e626c352d3ed93d0ee1c739abe11871983614239d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아버지를 본 자가 있다는 것이 아니라 오직 하나님에게서 온 자만 아버지를 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "730acb99b41afbdb0e1bc72e626c352d3ed93d0ee1c739abe11871983614239d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:47",
+      "sequence": 26304,
+      "chapter_label": "JHN 6",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 47
+        }
+      ],
+      "en": "Most certainly, I tell you, he who believes in me has eternal life.",
+      "ko": "진실로 진실로 너희에게 이르노니 믿는 자는 영생을 가졌나니",
+      "source_text_hash": "912c46ea24030f7dc3e963898d7edd0ea59d7e84490d94cbe91490261c8f817f",
+      "translation_text_hash": "1a62f2b7b5126e58551f46122eff48e3c4c67fb462500223cff5c99f4cba6691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 진실로 너희에게 이르노니 믿는 자는 영생을 가졌나니"
+      ],
+      "raw_text_hashes": [
+        "1a62f2b7b5126e58551f46122eff48e3c4c67fb462500223cff5c99f4cba6691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:48",
+      "sequence": 26305,
+      "chapter_label": "JHN 6",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 48
+        }
+      ],
+      "en": "I am the bread of life.",
+      "ko": "내가 곧 생명의 떡이로라",
+      "source_text_hash": "04bd51dcbd96c4e245c3cd6c26c92cbc3014bd2de88597c879b664685f6c2efd",
+      "translation_text_hash": "a65dd7b6485c4bb0edcf47a65798ac01ff477b337ec5ff8881a3d78a00a74d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 곧 생명의 떡이로라"
+      ],
+      "raw_text_hashes": [
+        "a65dd7b6485c4bb0edcf47a65798ac01ff477b337ec5ff8881a3d78a00a74d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:49",
+      "sequence": 26306,
+      "chapter_label": "JHN 6",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 49
+        }
+      ],
+      "en": "Your fathers ate the manna in the wilderness and they died.",
+      "ko": "너희 조상들은 광야에서 만나를 먹었어도 죽었거니와",
+      "source_text_hash": "427f2ade7c4b27abda29c682e83fa5e0fa337a04700d0af19448c5be717e50b0",
+      "translation_text_hash": "8003c0a27fc87e5780aafeb05b49c73ae450a37b3783de4e89fbd11c632f85e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 조상들은 광야에서 만나를 먹었어도 죽었거니와"
+      ],
+      "raw_text_hashes": [
+        "8003c0a27fc87e5780aafeb05b49c73ae450a37b3783de4e89fbd11c632f85e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:50",
+      "sequence": 26307,
+      "chapter_label": "JHN 6",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 50
+        }
+      ],
+      "en": "This is the bread which comes down out of heaven, that anyone may eat of it and not die.",
+      "ko": "이는 하늘로서 내려오는 떡이니 사람으로 하여금 먹고 죽지 아니하게 하는 것이니라",
+      "source_text_hash": "91ebad6c52e17c85fad8a3624c17f99861ec1a33446b4949c05ffd163b4d5e3c",
+      "translation_text_hash": "9abfe648313308810f6d311e05f45bbbb40aff36c9d2e928f755e8294da77328",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 하늘로서 내려오는 떡이니 사람으로 하여금 먹고 죽지 아니하게 하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "9abfe648313308810f6d311e05f45bbbb40aff36c9d2e928f755e8294da77328"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:51",
+      "sequence": 26308,
+      "chapter_label": "JHN 6",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 51
+        }
+      ],
+      "en": "I am the living bread which came down out of heaven. If anyone eats of this bread, he will live forever. Yes, the bread which I will give for the life of the world is my flesh.”",
+      "ko": "나는 하늘로서 내려온 산 떡이니 사람이 이 떡을 먹으면 영생하리라 나의 줄 떡은 곧 세상의 생명을 위한 내 살이로라 하시니라",
+      "source_text_hash": "69bb5cafbcb6a83c723700ce682fb0913e53d59a2c829abb3636394bd9269321",
+      "translation_text_hash": "2851ddd15098bc6b415178c707b84b820a961c7e621ed91b56332c634a03fbdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 하늘로서 내려온 산 떡이니 사람이 이 떡을 먹으면 영생하리라 나의 줄 떡은 곧 세상의 생명을 위한 내 살이로라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "2851ddd15098bc6b415178c707b84b820a961c7e621ed91b56332c634a03fbdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:52",
+      "sequence": 26309,
+      "chapter_label": "JHN 6",
+      "verse_label": "52",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 52
+        }
+      ],
+      "en": "The Jews therefore contended with one another, saying, “How can this man give us his flesh to eat?”",
+      "ko": "이러므로 유대인들이 서로 다투어 가로되 이 사람이 어찌 능히 제 살을 우리에게 주어 먹게 하겠느냐",
+      "source_text_hash": "98514f883309fa95a3b54ccf8ac54ff7cccaacaca1a682499b9073732474e3cf",
+      "translation_text_hash": "0e632dea44f348d9906d6065570bf0dc2f1546a0a45af6f129d915b0767e72a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 유대인들이 서로 다투어 가로되 이 사람이 어찌 능히 제 살을 우리에게 주어 먹게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "0e632dea44f348d9906d6065570bf0dc2f1546a0a45af6f129d915b0767e72a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:53",
+      "sequence": 26310,
+      "chapter_label": "JHN 6",
+      "verse_label": "53",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 53
+        }
+      ],
+      "en": "Jesus therefore said to them, “Most certainly I tell you, unless you eat the flesh of the Son of Man and drink his blood, you don’t have life in yourselves.",
+      "ko": "예수께서 이르시되 내가 진실로 진실로 너희에게 이르노니 인자의 살을 먹지 아니하고 인자의 피를 마시지 아니하면 너희 속에 생명이 없느니라",
+      "source_text_hash": "bf5839cf1ba78957f13b9db633ad90446f6a5f5dec628e3d5d89046095b66ea2",
+      "translation_text_hash": "17039f5025867ea075f8c25d31f6caf4dbfe8f15046e24a59e7a71ff3628c0ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 진실로 진실로 너희에게 이르노니 인자의 살을 먹지 아니하고 인자의 피를 마시지 아니하면 너희 속에 생명이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "17039f5025867ea075f8c25d31f6caf4dbfe8f15046e24a59e7a71ff3628c0ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:54",
+      "sequence": 26311,
+      "chapter_label": "JHN 6",
+      "verse_label": "54",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 54
+        }
+      ],
+      "en": "He who eats my flesh and drinks my blood has eternal life, and I will raise him up at the last day.",
+      "ko": "내 살을 먹고 내 피를 마시는 자는 영생을 가졌고 마지막 날에 내가 그를 다시 살리리니",
+      "source_text_hash": "b8061c7f23c948a02576e324429f4732ba5386111adb662ef270257bdc7f65b0",
+      "translation_text_hash": "a025604c54f14cf0c196ab109be57a4189a1cb781895933a7139568c6605ae6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 살을 먹고 내 피를 마시는 자는 영생을 가졌고 마지막 날에 내가 그를 다시 살리리니"
+      ],
+      "raw_text_hashes": [
+        "a025604c54f14cf0c196ab109be57a4189a1cb781895933a7139568c6605ae6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:55",
+      "sequence": 26312,
+      "chapter_label": "JHN 6",
+      "verse_label": "55",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 55
+        }
+      ],
+      "en": "For my flesh is food indeed, and my blood is drink indeed.",
+      "ko": "내 살은 참된 양식이요 내 피는 참된 음료로다",
+      "source_text_hash": "da3a7e54b7a40f7a6bef29f90729b44a5a322aa80633527c76be8d90d0ebb007",
+      "translation_text_hash": "2001a6910b448e3b4be5c3e122ee1179d26e89bb46f65b2a7ad8bc89b222a554",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 살은 참된 양식이요 내 피는 참된 음료로다"
+      ],
+      "raw_text_hashes": [
+        "2001a6910b448e3b4be5c3e122ee1179d26e89bb46f65b2a7ad8bc89b222a554"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:56",
+      "sequence": 26313,
+      "chapter_label": "JHN 6",
+      "verse_label": "56",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 56
+        }
+      ],
+      "en": "He who eats my flesh and drinks my blood lives in me, and I in him.",
+      "ko": "내 살을 먹고 내 피를 마시는 자는 내 안에 거하고 나도 그 안에 거하나니",
+      "source_text_hash": "c6397f36c73ed31c09d11eb3a7cb94b72038b86ae23abd594ffd2b277b91460e",
+      "translation_text_hash": "2f17c1d20d94ed9b372f81e283ef946ec4f1a269339c31333b7b673caa8a8744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 살을 먹고 내 피를 마시는 자는 내 안에 거하고 나도 그 안에 거하나니"
+      ],
+      "raw_text_hashes": [
+        "2f17c1d20d94ed9b372f81e283ef946ec4f1a269339c31333b7b673caa8a8744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:57",
+      "sequence": 26314,
+      "chapter_label": "JHN 6",
+      "verse_label": "57",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 57
+        }
+      ],
+      "en": "As the living Father sent me, and I live because of the Father, so he who feeds on me will also live because of me.",
+      "ko": "살아계신 아버지께서 나를 보내시매 내가 아버지로 인하여 사는것 같이 나를 먹는 그 사람도 나로 인하여 살리라",
+      "source_text_hash": "80a2516fcb7da5a0d292f9aabc6c62b0182c308397ae8ca6b966f7bca5465392",
+      "translation_text_hash": "fca13fba35bb09f9280724f7e059f983114db96a3e04fa3de271dc889c3059d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살아계신 아버지께서 나를 보내시매 내가 아버지로 인하여 사는것 같이 나를 먹는 그 사람도 나로 인하여 살리라"
+      ],
+      "raw_text_hashes": [
+        "fca13fba35bb09f9280724f7e059f983114db96a3e04fa3de271dc889c3059d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:58",
+      "sequence": 26315,
+      "chapter_label": "JHN 6",
+      "verse_label": "58",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 58
+        }
+      ],
+      "en": "This is the bread which came down out of heaven—not as our fathers ate the manna and died. He who eats this bread will live forever.”",
+      "ko": "이것은 하늘로서 내려온 떡이니 조상들이 먹고도 죽은 그것과 같지 아니하여 이 떡을 먹는 자는 영원히 살리라",
+      "source_text_hash": "e70a78c79f8ee956a96cc3b512be77dcc1fded79455f038783ff5e1be849382b",
+      "translation_text_hash": "21697788da763f906ffea466a442aa40a09051574ce266ed47219478980a67ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 하늘로서 내려온 떡이니 조상들이 먹고도 죽은 그것과 같지 아니하여 이 떡을 먹는 자는 영원히 살리라"
+      ],
+      "raw_text_hashes": [
+        "21697788da763f906ffea466a442aa40a09051574ce266ed47219478980a67ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:59",
+      "sequence": 26316,
+      "chapter_label": "JHN 6",
+      "verse_label": "59",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 59
+        }
+      ],
+      "en": "He said these things in the synagogue, as he taught in Capernaum.",
+      "ko": "이 말씀은 예수께서 가버나움 회당에서 가르치실 때에 하셨느니라",
+      "source_text_hash": "07a718e6b4a4daa9da27ae00c05c88e052ea0a4b7c4e0e43071a7c526a010833",
+      "translation_text_hash": "3c8d7f30d9346b3286c9afe88248734d152e87797dad5dc61cc01f9214b5d262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀은 예수께서 가버나움 회당에서 가르치실 때에 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3c8d7f30d9346b3286c9afe88248734d152e87797dad5dc61cc01f9214b5d262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:60",
+      "sequence": 26317,
+      "chapter_label": "JHN 6",
+      "verse_label": "60",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 60
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 60
+        }
+      ],
+      "en": "Therefore many of his disciples, when they heard this, said, “This is a hard saying! Who can listen to it?”",
+      "ko": "제자 중 여럿이 듣고 말하되 이 말씀은 어렵도다 누가 들을 수 있느냐 한대",
+      "source_text_hash": "29f34625a5b34dd058ea12eab35fdc0eaacc110ddfd3e3cba228740e32919aeb",
+      "translation_text_hash": "bb62c0e1c73978b9955c8774e2f6125d6a95877167b90f7da06c10825f0d43b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중 여럿이 듣고 말하되 이 말씀은 어렵도다 누가 들을 수 있느냐 한대"
+      ],
+      "raw_text_hashes": [
+        "bb62c0e1c73978b9955c8774e2f6125d6a95877167b90f7da06c10825f0d43b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:61",
+      "sequence": 26318,
+      "chapter_label": "JHN 6",
+      "verse_label": "61",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 61
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 61
+        }
+      ],
+      "en": "But Jesus knowing in himself that his disciples murmured at this, said to them, “Does this cause you to stumble?",
+      "ko": "예수께서 스스로 제자들이 이 말씀에 대하여 수군거리는 줄 아시고 가라사대 이 말이 너희에게 걸림이 되느냐",
+      "source_text_hash": "d0760345ff8a7914729fc3cccbddc134bf6f91f9f0da1df80448b324fb18794b",
+      "translation_text_hash": "102450da932213168954c065cedb5849e57ad3122e9321fd72fbcc6d1fc48f34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 스스로 제자들이 이 말씀에 대하여 수군거리는 줄 아시고 가라사대 이 말이 너희에게 걸림이 되느냐"
+      ],
+      "raw_text_hashes": [
+        "102450da932213168954c065cedb5849e57ad3122e9321fd72fbcc6d1fc48f34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:62",
+      "sequence": 26319,
+      "chapter_label": "JHN 6",
+      "verse_label": "62",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 62
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 62
+        }
+      ],
+      "en": "Then what if you would see the Son of Man ascending to where he was before?",
+      "ko": "그러면 너희가 인자의 이전 있던 곳으로 올라가는 것을 볼것 같으면 어찌 하려느냐",
+      "source_text_hash": "63c24f12110c54f1a51e49cb5c616a5717c251affb8b9a530bee66fff58cf611",
+      "translation_text_hash": "776fc057241918a9c131a4f068cc7de7650570f58d8ab7c4840985d6c0fa245f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 인자의 이전 있던 곳으로 올라가는 것을 볼것 같으면 어찌 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "776fc057241918a9c131a4f068cc7de7650570f58d8ab7c4840985d6c0fa245f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:63",
+      "sequence": 26320,
+      "chapter_label": "JHN 6",
+      "verse_label": "63",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 63
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 63
+        }
+      ],
+      "en": "It is the spirit who gives life. The flesh profits nothing. The words that I speak to you are spirit, and are life.",
+      "ko": "살리는 것은 영이니 육은 무익하니라 내가 너희에게 이른 말이 영이요 생명이라",
+      "source_text_hash": "9f686de8ba66f8b445ab71d4bf2999b09e8be26fb3fc34bd872ffd0fdca1b4c7",
+      "translation_text_hash": "430792fa6c289e3779f0e12db82945e8538d66fa3f9de75fc2585a51758d2fc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살리는 것은 영이니 육은 무익하니라 내가 너희에게 이른 말이 영이요 생명이라"
+      ],
+      "raw_text_hashes": [
+        "430792fa6c289e3779f0e12db82945e8538d66fa3f9de75fc2585a51758d2fc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:64",
+      "sequence": 26321,
+      "chapter_label": "JHN 6",
+      "verse_label": "64",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 64
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 64
+        }
+      ],
+      "en": "But there are some of you who don’t believe.”For Jesus knew from the beginning who they were who didn’t believe, and who it was who would betray him.",
+      "ko": "그러나 너희 중에 믿지 아니하는 자들이 있느니라 하시니 이는 예수께서 믿지 아니하는 자들이 누구며 자기를 팔 자가 누군지 처음부터 아심이러라",
+      "source_text_hash": "aa1d721ccc68d0d6b185ef32d32ca3bcf66012b3566546eaf3f0884731e8c8d4",
+      "translation_text_hash": "a11d5b1deea28ec9c6eaef356eeff741cc43cc8eee7587d1e7369ba17fea81e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 중에 믿지 아니하는 자들이 있느니라 하시니 이는 예수께서 믿지 아니하는 자들이 누구며 자기를 팔 자가 누군지 처음부터 아심이러라"
+      ],
+      "raw_text_hashes": [
+        "a11d5b1deea28ec9c6eaef356eeff741cc43cc8eee7587d1e7369ba17fea81e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:65",
+      "sequence": 26322,
+      "chapter_label": "JHN 6",
+      "verse_label": "65",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 65
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 65
+        }
+      ],
+      "en": "He said, “For this cause I have said to you that no one can come to me, unless it is given to him by my Father.”",
+      "ko": "또 가라사대 이러하므로 전에 너희에게 말하기를 내 아버지께서 오게 하여 주지 아니하시면 누구든지 내게 올 수 없다 하였노라 하시니라",
+      "source_text_hash": "9958c8933cbf04b4e08f450b9a547e881f93398cd20a2d3baf844faa6973310a",
+      "translation_text_hash": "d889bae8d850cb2e36383316adec4a216191b3bd09a197aea73f5ad9f944cdce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 이러하므로 전에 너희에게 말하기를 내 아버지께서 오게 하여 주지 아니하시면 누구든지 내게 올 수 없다 하였노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d889bae8d850cb2e36383316adec4a216191b3bd09a197aea73f5ad9f944cdce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:66",
+      "sequence": 26323,
+      "chapter_label": "JHN 6",
+      "verse_label": "66",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 66
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 66
+        }
+      ],
+      "en": "At this, many of his disciples went back and walked no more with him.",
+      "ko": "이러므로 제자 중에 많이 물러가고 다시 그와 함께 다니지 아니하더라",
+      "source_text_hash": "70579cf50ab6b95c75723ecba58bd4af11ededf659d0359256e04fe3a582976a",
+      "translation_text_hash": "9fe77e677a3e98effee2b2013be41e1299e73e021fa99a1a71aba7a4dc9cd776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 제자 중에 많이 물러가고 다시 그와 함께 다니지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "9fe77e677a3e98effee2b2013be41e1299e73e021fa99a1a71aba7a4dc9cd776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:67",
+      "sequence": 26324,
+      "chapter_label": "JHN 6",
+      "verse_label": "67",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 67
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 67
+        }
+      ],
+      "en": "Jesus said therefore to the twelve, “You don’t also want to go away, do you?”",
+      "ko": "예수께서 열 두 제자에게 이르시되 너희도 가려느냐",
+      "source_text_hash": "8a406ab6d7053bf0f58a696119a2571fd061c250f967b9bf86494b077fb71867",
+      "translation_text_hash": "4f0f8b37c9106ca242e6e03172573dd8fcb38bf07b2250a7be39ea57dc02c88c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 열 두 제자에게 이르시되 너희도 가려느냐"
+      ],
+      "raw_text_hashes": [
+        "4f0f8b37c9106ca242e6e03172573dd8fcb38bf07b2250a7be39ea57dc02c88c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:68",
+      "sequence": 26325,
+      "chapter_label": "JHN 6",
+      "verse_label": "68",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 68
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 68
+        }
+      ],
+      "en": "Simon Peter answered him, “Lord, to whom would we go? You have the words of eternal life.",
+      "ko": "시몬 베드로가 대답하되 주여 영생의 말씀이 계시매 우리가 뉘게로 가오리이까",
+      "source_text_hash": "fb9963537a9b5521a27c80fe10c6aac817c6178aebaf3730cda0edadc55f492b",
+      "translation_text_hash": "9a97dac896ab29660a6eb599b9293d282d9150604adf2d1f2bdc1e6417705738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬 베드로가 대답하되 주여 영생의 말씀이 계시매 우리가 뉘게로 가오리이까"
+      ],
+      "raw_text_hashes": [
+        "9a97dac896ab29660a6eb599b9293d282d9150604adf2d1f2bdc1e6417705738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:69",
+      "sequence": 26326,
+      "chapter_label": "JHN 6",
+      "verse_label": "69",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 69
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 69
+        }
+      ],
+      "en": "We have come to believe and know that you are the Christ, the Son of the living God.”",
+      "ko": "우리가 주는 하나님의 거룩하신 자신줄 믿고 알았삽나이다",
+      "source_text_hash": "b45a11c485afcb69dfd48f8e93baca51bd6b519aca6c207f1c80d461b2815891",
+      "translation_text_hash": "7b6cb3a1b7e3c071f3f92957803a7b87f07674861550f51d7dfa43520e3a7453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 주는 하나님의 거룩하신 자신줄 믿고 알았삽나이다"
+      ],
+      "raw_text_hashes": [
+        "7b6cb3a1b7e3c071f3f92957803a7b87f07674861550f51d7dfa43520e3a7453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:70",
+      "sequence": 26327,
+      "chapter_label": "JHN 6",
+      "verse_label": "70",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 70
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 70
+        }
+      ],
+      "en": "Jesus answered them, “Didn’t I choose you, the twelve, and one of you is a devil?”",
+      "ko": "예수께서 대답하시되 내가 너희 열 둘을 택하지 아니하였느냐 그러나 너희 중에 한 사람은 마귀니라 하시니",
+      "source_text_hash": "a6b834e7e230725a5b1be165a43b6cd9e4b6074dd6754796f65eb39e2838db0e",
+      "translation_text_hash": "3e8012f358b2abf97f9474f01de57ca0e6d93040b6c04f099d255c140d20e070",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 너희 열 둘을 택하지 아니하였느냐 그러나 너희 중에 한 사람은 마귀니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "3e8012f358b2abf97f9474f01de57ca0e6d93040b6c04f099d255c140d20e070"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:6:71",
+      "sequence": 26328,
+      "chapter_label": "JHN 6",
+      "verse_label": "71",
+      "locator": {
+        "book": "JHN",
+        "chapter": 6,
+        "verse": 71
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 6,
+          "verse": 71
+        }
+      ],
+      "en": "Now he spoke of Judas, the son of Simon Iscariot, for it was he who would betray him, being one of the twelve.",
+      "ko": "이 말씀은 가룟 시몬의 아들 유다를 가리키심이라 저는 열 둘 중의 하나로 예수를 팔 자러라",
+      "source_text_hash": "540d196e6d000def621ecf7c031cda5980f12e735906e92a4392776e4329dcb4",
+      "translation_text_hash": "911b997a70513786829a32d8c90844c40391a6b5ee08077a4067c34c316219eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀은 가룟 시몬의 아들 유다를 가리키심이라 저는 열 둘 중의 하나로 예수를 팔 자러라"
+      ],
+      "raw_text_hashes": [
+        "911b997a70513786829a32d8c90844c40391a6b5ee08077a4067c34c316219eb"
+      ]
+    }
+  ]
+}

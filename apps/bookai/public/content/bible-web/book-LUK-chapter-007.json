@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:007",
+  "unit_ordinal": 980,
+  "unit_label": "LUK 7",
+  "book_code": "LUK",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:7:1",
+      "sequence": 25197,
+      "chapter_label": "LUK 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "After he had finished speaking in the hearing of the people, he entered into Capernaum.",
+      "ko": "예수께서 모든 말씀을 백성에게 들려주시기를 마치신 후에 가버나움으로 들어가시니라",
+      "source_text_hash": "eda3f35083e0b68c3520e20fb4e9e91dfb9bbcb3420e67f4af9b909f9ea89ff0",
+      "translation_text_hash": "7ae933859849f6b15148d615796aedb9d3ba8239946d03fd2a09c53c946b3448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 모든 말씀을 백성에게 들려주시기를 마치신 후에 가버나움으로 들어가시니라"
+      ],
+      "raw_text_hashes": [
+        "7ae933859849f6b15148d615796aedb9d3ba8239946d03fd2a09c53c946b3448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:2",
+      "sequence": 25198,
+      "chapter_label": "LUK 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "A certain centurion’s servant, who was dear to him, was sick and at the point of death.",
+      "ko": "어떤 백부장의 사랑하는 종이 병들어 죽게 되었더니",
+      "source_text_hash": "18e1def1cd31a7bfe79fdb0fb55028f3dcfb380cd04b1fbddb152056a0a04272",
+      "translation_text_hash": "7193550d431acc4fb1364a3849303cc3ae60bc788b6b303604f5d79f364421ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 백부장의 사랑하는 종이 병들어 죽게 되었더니"
+      ],
+      "raw_text_hashes": [
+        "7193550d431acc4fb1364a3849303cc3ae60bc788b6b303604f5d79f364421ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:3",
+      "sequence": 25199,
+      "chapter_label": "LUK 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "When he heard about Jesus, he sent to him elders of the Jews, asking him to come and save his servant.",
+      "ko": "예수의 소문을 듣고 유대인의 장로 몇을 보내어 오셔서 그 종을 구원하시기를 청한지라",
+      "source_text_hash": "f894514878b346b11de3f4820450eced12bedef98e92798f806cf0ba5cac4a4c",
+      "translation_text_hash": "591dc3dff54537a2ccb0ae77e76ede9b0592609f23ff68635a7906af9f6c69f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 소문을 듣고 유대인의 장로 몇을 보내어 오셔서 그 종을 구원하시기를 청한지라"
+      ],
+      "raw_text_hashes": [
+        "591dc3dff54537a2ccb0ae77e76ede9b0592609f23ff68635a7906af9f6c69f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:4",
+      "sequence": 25200,
+      "chapter_label": "LUK 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "When they came to Jesus, they begged him earnestly, saying, “He is worthy for you to do this for him,",
+      "ko": "이에 저희가 예수께 나아와 간절히 구하여 가로되 이 일을 하시는 것이 이 사람에게는 합당하니이다",
+      "source_text_hash": "c8c317e30d0f744650523fe09fb2d164ddbc0b64ce40f01216d508f787f9d4d1",
+      "translation_text_hash": "61dd7dd2d0357526138ada7d3d03a70dbb3a3799c093050dac25beeaaf5b224d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 예수께 나아와 간절히 구하여 가로되 이 일을 하시는 것이 이 사람에게는 합당하니이다"
+      ],
+      "raw_text_hashes": [
+        "61dd7dd2d0357526138ada7d3d03a70dbb3a3799c093050dac25beeaaf5b224d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:5",
+      "sequence": 25201,
+      "chapter_label": "LUK 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "for he loves our nation, and he built our synagogue for us.”",
+      "ko": "저가 우리 민족을 사랑하고 또한 우리를 위하여 회당을 지었나이다 하니",
+      "source_text_hash": "a10e16980c06887f64b585690139083683e11ba30739748b92c1179217ddade0",
+      "translation_text_hash": "ccc6dbc7072ce98cb931f9da6dd37833c0c0048bd3477390bbe88aa994a1aba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 우리 민족을 사랑하고 또한 우리를 위하여 회당을 지었나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "ccc6dbc7072ce98cb931f9da6dd37833c0c0048bd3477390bbe88aa994a1aba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:6",
+      "sequence": 25202,
+      "chapter_label": "LUK 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Jesus went with them. When he was now not far from the house, the centurion sent friends to him, saying to him, “Lord, don’t trouble yourself, for I am not worthy for you to come under my roof.",
+      "ko": "예수께서 함께 가실쌔 이에 그 집이 멀지 아니하여 백부장이 벗들을 보내어 가로되 주여 수고하시지 마옵소서 내 집에 들어오심을 나는 감당치 못하겠나이다",
+      "source_text_hash": "ef66ed025a0d36d88490f7ac1400b6a443aa0104e19adfba32023481934f7f2b",
+      "translation_text_hash": "3ce925385ff0862ec8e72fff3a879acc86f60b02994bffc015d65d90ba44e47e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 함께 가실쌔 이에 그 집이 멀지 아니하여 백부장이 벗들을 보내어 가로되 주여 수고하시지 마옵소서 내 집에 들어오심을 나는 감당치 못하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "3ce925385ff0862ec8e72fff3a879acc86f60b02994bffc015d65d90ba44e47e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:7",
+      "sequence": 25203,
+      "chapter_label": "LUK 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Therefore I didn’t even think myself worthy to come to you; but say the word, and my servant will be healed.",
+      "ko": "그러므로 내가 주께 나아가기도 감당치 못할 줄을 알았나이다 말씀만 하사 내 하인을 낫게 하소서",
+      "source_text_hash": "f4599b63508d91f04b16cad8e1b16a86a80a47f64a6604e7214c95ddfd1f7965",
+      "translation_text_hash": "ea28f781f8dc45516c3bf0ab09de5749daf3748182cc723add97aba23038d069",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 주께 나아가기도 감당치 못할 줄을 알았나이다 말씀만 하사 내 하인을 낫게 하소서"
+      ],
+      "raw_text_hashes": [
+        "ea28f781f8dc45516c3bf0ab09de5749daf3748182cc723add97aba23038d069"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:8",
+      "sequence": 25204,
+      "chapter_label": "LUK 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "For I also am a man placed under authority, having under myself soldiers. I tell this one, ‘Go!’ and he goes; and to another, ‘Come!’ and he comes; and to my servant, ‘Do this,’ and he does it.”",
+      "ko": "저도 남의 수하에 든 사람이요 제 아래에도 군병이 있으니 이더러 가라 하면 가고 저더러 오라 하면 오고 제 종더러 이것을 하라 하면 하나이다",
+      "source_text_hash": "c1a6f3310962b4f99b8c3a174b30a7c5c66850aaabfce482a0f5c7589cc4eea8",
+      "translation_text_hash": "25d593149930d4944bc7d14ab796fc6b9379e3633b1a443b0c1ae7b2d2cd25f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저도 남의 수하에 든 사람이요 제 아래에도 군병이 있으니 이더러 가라 하면 가고 저더러 오라 하면 오고 제 종더러 이것을 하라 하면 하나이다"
+      ],
+      "raw_text_hashes": [
+        "25d593149930d4944bc7d14ab796fc6b9379e3633b1a443b0c1ae7b2d2cd25f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:9",
+      "sequence": 25205,
+      "chapter_label": "LUK 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "When Jesus heard these things, he marveled at him, and turned and said to the multitude who followed him, “I tell you, I have not found such great faith, no, not in Israel.”",
+      "ko": "예수께서 들으시고 저를 기이히 여겨 돌이키사 좇는 무리에게 이르시되 내가 너희에게 이르노니 이스라엘 중에서도 이만한 믿음은 만나보지 못하였노라 하시더라",
+      "source_text_hash": "ba1f6a6996f9fec0395e45b60604dce9ba9fd5bc569c9928362a4d128fa82456",
+      "translation_text_hash": "bcb6d3e01994892dd723d930f8be4af3fb1e73132eaf9bb79a90410f34afcf2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 저를 기이히 여겨 돌이키사 좇는 무리에게 이르시되 내가 너희에게 이르노니 이스라엘 중에서도 이만한 믿음은 만나보지 못하였노라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "bcb6d3e01994892dd723d930f8be4af3fb1e73132eaf9bb79a90410f34afcf2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:10",
+      "sequence": 25206,
+      "chapter_label": "LUK 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Those who were sent, returning to the house, found that the servant who had been sick was well.",
+      "ko": "보내었던 사람들이 집으로 돌아가 보매 종이 이미 강건하여졌더라",
+      "source_text_hash": "e2ec2fa05fa130d4c2b87f6e9cfe3b5a810277f04139668faa80c43f940f9649",
+      "translation_text_hash": "5e7c5c34793bf447624907b5e2c3c8f851f9e437a1558b52b5134e9f95466eb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보내었던 사람들이 집으로 돌아가 보매 종이 이미 강건하여졌더라"
+      ],
+      "raw_text_hashes": [
+        "5e7c5c34793bf447624907b5e2c3c8f851f9e437a1558b52b5134e9f95466eb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:11",
+      "sequence": 25207,
+      "chapter_label": "LUK 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Soon afterwards, he went to a city called Nain. Many of his disciples, along with a great multitude, went with him.",
+      "ko": "그 후에 예수께서 나인이란 성으로 가실쌔 제자와 허다한 무리가 동행하더니",
+      "source_text_hash": "44ba6d3a54dfaf1d7e405dc229c25a8e9a36324df9aec766debf836f200fa647",
+      "translation_text_hash": "430d9615f89423160a7e0cbfdc5af04f564a4b3100e7a6d0ef9d24be44786276",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 예수께서 나인이란 성으로 가실쌔 제자와 허다한 무리가 동행하더니"
+      ],
+      "raw_text_hashes": [
+        "430d9615f89423160a7e0cbfdc5af04f564a4b3100e7a6d0ef9d24be44786276"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:12",
+      "sequence": 25208,
+      "chapter_label": "LUK 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Now when he came near to the gate of the city, behold, one who was dead was carried out, the only born son of his mother, and she was a widow. Many people of the city were with her.",
+      "ko": "성문에 가까이 오실 때에 사람들이 한 죽은 자를 메고 나오니 이는 그 어미의 독자요 어미는 과부라 그 성의 많은 사람도 그와 함께 나오거늘",
+      "source_text_hash": "55b868ce8bc4edeeb2ae7c725da4607323a7addcb0a5bfb22e49e3a08b2f8e49",
+      "translation_text_hash": "6c73c26cea78a7131de3ab14d53ab8599b5204fc3a7441e62ddece312c2725fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문에 가까이 오실 때에 사람들이 한 죽은 자를 메고 나오니 이는 그 어미의 독자요 어미는 과부라 그 성의 많은 사람도 그와 함께 나오거늘"
+      ],
+      "raw_text_hashes": [
+        "6c73c26cea78a7131de3ab14d53ab8599b5204fc3a7441e62ddece312c2725fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:13",
+      "sequence": 25209,
+      "chapter_label": "LUK 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "When the Lord saw her, he had compassion on her and said to her, “Don’t cry.”",
+      "ko": "주께서 과부를 보시고 불쌍히 여기사 울지 말라 하시고",
+      "source_text_hash": "9476797ceb3e960fcc544fd6ac5fe67049765a7f805c1ea5cffacdec702894e1",
+      "translation_text_hash": "f8f97ff6977e7291593ea1033ddb247371fca69e8c04f8d4b448233fdef222dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 과부를 보시고 불쌍히 여기사 울지 말라 하시고"
+      ],
+      "raw_text_hashes": [
+        "f8f97ff6977e7291593ea1033ddb247371fca69e8c04f8d4b448233fdef222dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:14",
+      "sequence": 25210,
+      "chapter_label": "LUK 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "He came near and touched the coffin, and the bearers stood still. He said, “Young man, I tell you, arise!”",
+      "ko": "가까이 오사 그 관에 손을 대시니 멘 자들이 서는지라 예수께서 가라사대 청년아 내가 네게 말하노니 일어나라 하시매",
+      "source_text_hash": "e5fd6d8d89c749bc610ea84219720aefb0b1c6a7f174d075a18b663471d2be38",
+      "translation_text_hash": "ff3d039ca92b96a5a3f248b6d85fb13fa78751804eb06247a948e3288023a801",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가까이 오사 그 관에 손을 대시니 멘 자들이 서는지라 예수께서 가라사대 청년아 내가 네게 말하노니 일어나라 하시매"
+      ],
+      "raw_text_hashes": [
+        "ff3d039ca92b96a5a3f248b6d85fb13fa78751804eb06247a948e3288023a801"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:15",
+      "sequence": 25211,
+      "chapter_label": "LUK 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "He who was dead sat up and began to speak. Then he gave him to his mother.",
+      "ko": "죽었던 자가 일어앉고 말도 하거늘 예수께서 그를 어미에게 주신대",
+      "source_text_hash": "78ef274f62cb6c2ef48c1c743a303c6f9be1e292a483a8f16c09eaf826ae2c83",
+      "translation_text_hash": "3845486e00298d151db60a1e7c732d2a089b668c3e674ac415dfb5bf37f48ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽었던 자가 일어앉고 말도 하거늘 예수께서 그를 어미에게 주신대"
+      ],
+      "raw_text_hashes": [
+        "3845486e00298d151db60a1e7c732d2a089b668c3e674ac415dfb5bf37f48ab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:16",
+      "sequence": 25212,
+      "chapter_label": "LUK 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Fear took hold of all, and they glorified God, saying, “A great prophet has arisen among us!” and, “God has visited his people!”",
+      "ko": "모든 사람이 두려워하며 하나님께 영광을 돌려 가로되 큰 선지자가 우리 가운데 일어나셨다 하고 또 하나님께서 자기 백성을 돌아보셨다 하더라",
+      "source_text_hash": "04545e55572d2a7756fa0cdfe1e15192dfca8bb07e4aa7faf686afd4182f025e",
+      "translation_text_hash": "d90621a05d3b32ee19b0bcb5780272a95f5745d19641a7e864d1613cac7c6ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 두려워하며 하나님께 영광을 돌려 가로되 큰 선지자가 우리 가운데 일어나셨다 하고 또 하나님께서 자기 백성을 돌아보셨다 하더라"
+      ],
+      "raw_text_hashes": [
+        "d90621a05d3b32ee19b0bcb5780272a95f5745d19641a7e864d1613cac7c6ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:17",
+      "sequence": 25213,
+      "chapter_label": "LUK 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "This report went out concerning him in the whole of Judea and in all the surrounding region.",
+      "ko": "예수께 대한 이 소문이 온 유대와 사방에 두루 퍼지니라",
+      "source_text_hash": "7e9ab7595a46eb074c1ad45f5531697dea168e5d98b111b67cbc56fe81d895de",
+      "translation_text_hash": "43142565dcc34664e3cea044af096c95555b672b3cde4768fe77e131046d61f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 대한 이 소문이 온 유대와 사방에 두루 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "43142565dcc34664e3cea044af096c95555b672b3cde4768fe77e131046d61f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:18",
+      "sequence": 25214,
+      "chapter_label": "LUK 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "The disciples of John told him about all these things.",
+      "ko": "요한의 제자들이 이 모든 일을 그에게 고하니",
+      "source_text_hash": "d31d101ceade76610051271b962fc25b53faadf956896c6134c14d54ed8dfad7",
+      "translation_text_hash": "aad218a82d0885f620e23fec4779c49fd4867cb23f0c667af0b2d75a60712a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 제자들이 이 모든 일을 그에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "aad218a82d0885f620e23fec4779c49fd4867cb23f0c667af0b2d75a60712a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:19",
+      "sequence": 25215,
+      "chapter_label": "LUK 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "John, calling to himself two of his disciples, sent them to Jesus, saying, “Are you the one who is coming, or should we look for another?”",
+      "ko": "요한이 그 제자 중 둘을 불러 주께 보내어 가로되 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까 하라 하매",
+      "source_text_hash": "00203dbfa0a24210d751265946c1ca056a05a0d229cdeed5c97d8111bdfa81a9",
+      "translation_text_hash": "cff5dbfee8376e969bacd88be8611f03b832033929227f4e259c57f42192223e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 그 제자 중 둘을 불러 주께 보내어 가로되 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까 하라 하매"
+      ],
+      "raw_text_hashes": [
+        "cff5dbfee8376e969bacd88be8611f03b832033929227f4e259c57f42192223e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:20",
+      "sequence": 25216,
+      "chapter_label": "LUK 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "When the men had come to him, they said, “John the Baptizer has sent us to you, saying, ‘Are you he who comes, or should we look for another?’”",
+      "ko": "저희가 예수께 나아가 가로되 세례 요한이 우리를 보내어 당신께 말하기를 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까 하더이다 하니",
+      "source_text_hash": "cc12b4c81c263724d36565b0e1d4a8c3cb806cc44b27d7d97a5bd61672bf3591",
+      "translation_text_hash": "5d096d691d836b9c36093010cba1be9ca498bfda5e43b9b05cb62b9cfec2e84e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수께 나아가 가로되 세례 요한이 우리를 보내어 당신께 말하기를 오실 그이가 당신이오니이까 우리가 다른이를 기다리오리이까 하더이다 하니"
+      ],
+      "raw_text_hashes": [
+        "5d096d691d836b9c36093010cba1be9ca498bfda5e43b9b05cb62b9cfec2e84e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:21",
+      "sequence": 25217,
+      "chapter_label": "LUK 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "In that hour he cured many of diseases and plagues and evil spirits; and to many who were blind he gave sight.",
+      "ko": "마침 그 시에 예수께서 질병과 고통과 및 악귀 들린 자를 많이 고치시며 또 많은 소경을 보게 하신지라",
+      "source_text_hash": "4f9d2c3a383ee6abafcab0a50a1e6ce73c288c545a5b276a6000b3336443c228",
+      "translation_text_hash": "6b818f349b3f5f84c12cb351ed429e6a733babbbe40ce78eef664d243584c5e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 그 시에 예수께서 질병과 고통과 및 악귀 들린 자를 많이 고치시며 또 많은 소경을 보게 하신지라"
+      ],
+      "raw_text_hashes": [
+        "6b818f349b3f5f84c12cb351ed429e6a733babbbe40ce78eef664d243584c5e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:22",
+      "sequence": 25218,
+      "chapter_label": "LUK 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "Jesus answered them, “Go and tell John the things which you have seen and heard: that the blind receive their sight, the lame walk, the lepers are cleansed, the deaf hear, the dead are raised up, and the poor have good news preached to them.",
+      "ko": "대답하여 가라사대 너희가 가서 보고 들은 것을 요한에게 고하되 소경이 보며 앉은뱅이가 걸으며 문둥이가 깨끗함을 받으며 귀머거리가 들으며 죽은 자가 살아나며 가난한 자에게 복음이 전파된다 하라",
+      "source_text_hash": "36fc8096eded4551933e8c38338293f00c594bf3da8e248bd2bc4656c61b5240",
+      "translation_text_hash": "821339387c2f664740d7a12be74ea4b3c4fba4910c681bff8532c898dec5e52c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 너희가 가서 보고 들은 것을 요한에게 고하되 소경이 보며 앉은뱅이가 걸으며 문둥이가 깨끗함을 받으며 귀머거리가 들으며 죽은 자가 살아나며 가난한 자에게 복음이 전파된다 하라"
+      ],
+      "raw_text_hashes": [
+        "821339387c2f664740d7a12be74ea4b3c4fba4910c681bff8532c898dec5e52c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:23",
+      "sequence": 25219,
+      "chapter_label": "LUK 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Blessed is he who finds no occasion for stumbling in me.”",
+      "ko": "누구든지 나를 인하여 실족하지 아니하는 자는 복이 있도다 하시니라",
+      "source_text_hash": "2dc1629160aeef472c8b2ba8789831d5db389b2375765e0f8aadad85abf0fc1b",
+      "translation_text_hash": "5e330335d4ac3a6dafab0172fc26493a1bc7507431fb1a1987f65da6b22bcbeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 나를 인하여 실족하지 아니하는 자는 복이 있도다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "5e330335d4ac3a6dafab0172fc26493a1bc7507431fb1a1987f65da6b22bcbeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:24",
+      "sequence": 25220,
+      "chapter_label": "LUK 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "When John’s messengers had departed, he began to tell the multitudes about John, “What did you go out into the wilderness to see? A reed shaken by the wind?",
+      "ko": "요한의 보낸 자가 떠난 후에 예수께서 무리에게 요한에 대하여 말씀하시되 너희가 무엇을 보려고 광야에 나갔더냐 바람에 흔들리는 갈대냐",
+      "source_text_hash": "207aed7fbbd91054ba24fd1ba61c8f927175f88e2a45d18c11322a9ee950f3d8",
+      "translation_text_hash": "548a94c6eb8ba592266bcf48f4c4af03fffb7bf4d5f46b57d1c2bbd97ba0a1bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 보낸 자가 떠난 후에 예수께서 무리에게 요한에 대하여 말씀하시되 너희가 무엇을 보려고 광야에 나갔더냐 바람에 흔들리는 갈대냐"
+      ],
+      "raw_text_hashes": [
+        "548a94c6eb8ba592266bcf48f4c4af03fffb7bf4d5f46b57d1c2bbd97ba0a1bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:25",
+      "sequence": 25221,
+      "chapter_label": "LUK 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "But what did you go out to see? A man clothed in soft clothing? Behold, those who are gorgeously dressed and live delicately are in kings’ courts.",
+      "ko": "그러면 너희가 무엇을 보려고 나갔더냐 부드러운 옷 입은 사람이냐 보라 화려한 옷 입고 사치하게 지내는 자는 왕궁에 있느니라",
+      "source_text_hash": "9d3780b3a1e8578252c6f149577d5562634f9f779b0e2968ec99928feabb44cc",
+      "translation_text_hash": "ffe7455196b98e2637712e5e7c195fa08e405bd52b76c9b25ed30be8bfe0ab36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 무엇을 보려고 나갔더냐 부드러운 옷 입은 사람이냐 보라 화려한 옷 입고 사치하게 지내는 자는 왕궁에 있느니라"
+      ],
+      "raw_text_hashes": [
+        "ffe7455196b98e2637712e5e7c195fa08e405bd52b76c9b25ed30be8bfe0ab36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:26",
+      "sequence": 25222,
+      "chapter_label": "LUK 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "But what did you go out to see? A prophet? Yes, I tell you, and much more than a prophet.",
+      "ko": "그러면 너희가 무엇을 보려고 나갔더냐 선지자냐 옳다 내가 너희에게 이르노니 선지자보다도 나은 자니라",
+      "source_text_hash": "c2636cac0d59db8d6456abbd93a4d19bacfb540b8b7954290636d58880e12929",
+      "translation_text_hash": "af05843c07b451c4f38133a3a9a2deb5c12279b1e3431f4d3338f9ad1048646a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 너희가 무엇을 보려고 나갔더냐 선지자냐 옳다 내가 너희에게 이르노니 선지자보다도 나은 자니라"
+      ],
+      "raw_text_hashes": [
+        "af05843c07b451c4f38133a3a9a2deb5c12279b1e3431f4d3338f9ad1048646a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:27",
+      "sequence": 25223,
+      "chapter_label": "LUK 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "This is he of whom it is written,‘Behold, I send my messenger before your face, who will prepare your way before you.’",
+      "ko": "기록된바 보라 내가 내 사자를 네 앞에 보내노니 그가 네 앞에서 네 길을 예비하리라 한 것이 이 사람에 대한 말씀이라",
+      "source_text_hash": "2f498b5a8e58fa3ecfbc39c945da73703f587f7d8f58816f227b717dc51ca969",
+      "translation_text_hash": "138352c37400d7be13563aa1e01e52dbd8e7e1e64db2d845e5e24579e6743a02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 보라 내가 내 사자를 네 앞에 보내노니 그가 네 앞에서 네 길을 예비하리라 한 것이 이 사람에 대한 말씀이라"
+      ],
+      "raw_text_hashes": [
+        "138352c37400d7be13563aa1e01e52dbd8e7e1e64db2d845e5e24579e6743a02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:28",
+      "sequence": 25224,
+      "chapter_label": "LUK 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "“For I tell you, among those who are born of women there is not a greater prophet than John the Baptizer; yet he who is least in God’s Kingdom is greater than he.”",
+      "ko": "내가 너희에게 말하노니 여자가 낳은 자 중에 요한보다 큰이가 없도다 그러나 하나님의 나라에서는 극히 작은 자라도 저보다 크니라 하시니",
+      "source_text_hash": "6fc5ffc158818657859f1c706ef8482104c6cd947b638329258b9b41ec24119a",
+      "translation_text_hash": "ac3001179d9f5cb5b0b99108e949ae968620a74a41efe023d70258b1253a7643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 여자가 낳은 자 중에 요한보다 큰이가 없도다 그러나 하나님의 나라에서는 극히 작은 자라도 저보다 크니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "ac3001179d9f5cb5b0b99108e949ae968620a74a41efe023d70258b1253a7643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:29",
+      "sequence": 25225,
+      "chapter_label": "LUK 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "When all the people and the tax collectors heard this, they declared God to be just, having been baptized with John’s baptism.",
+      "ko": "모든 백성과 세리들은 이미 요한의 세례를 받은지라 이 말씀을 듣고 하나님을 의롭다 하되",
+      "source_text_hash": "afa91de714750a3d4c7957f88e248cd97ffe0d5fea0f441373440ecb9e2b205b",
+      "translation_text_hash": "40d4c6f1fd81024e1617a0a804f4e9139adbad2e1cdb0167173221b4f06936da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성과 세리들은 이미 요한의 세례를 받은지라 이 말씀을 듣고 하나님을 의롭다 하되"
+      ],
+      "raw_text_hashes": [
+        "40d4c6f1fd81024e1617a0a804f4e9139adbad2e1cdb0167173221b4f06936da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:30",
+      "sequence": 25226,
+      "chapter_label": "LUK 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "But the Pharisees and the lawyers rejected the counsel of God, not being baptized by him themselves.",
+      "ko": "오직 바리새인과 율법사들은 그 세례를 받지 아니한지라 스스로 하나님의 뜻을 저버리니라",
+      "source_text_hash": "c80ffdc10671b3d5ac7ac61e21390066837ca3fe82ae7e481e5ea47918d3db1b",
+      "translation_text_hash": "846b4822d4f0cd65f22d5004929eafe9630d92f535cb7986c5ce10f64772c5c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 바리새인과 율법사들은 그 세례를 받지 아니한지라 스스로 하나님의 뜻을 저버리니라"
+      ],
+      "raw_text_hashes": [
+        "846b4822d4f0cd65f22d5004929eafe9630d92f535cb7986c5ce10f64772c5c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:31",
+      "sequence": 25227,
+      "chapter_label": "LUK 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "“To what then should I compare the people of this generation? What are they like?",
+      "ko": "또 가라사대 이 세대의 사람을 무엇으로 비유할꼬 무엇과 같은고",
+      "source_text_hash": "9edda56fb1928ec71899dde3160a1d49c64bfdd75f702de933c42b83f58cc2f7",
+      "translation_text_hash": "5b60f932d1204a8775ff212634ac027ef1f784728de8177a6ed909207a9e2123",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 이 세대의 사람을 무엇으로 비유할꼬 무엇과 같은고"
+      ],
+      "raw_text_hashes": [
+        "5b60f932d1204a8775ff212634ac027ef1f784728de8177a6ed909207a9e2123"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:32",
+      "sequence": 25228,
+      "chapter_label": "LUK 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "They are like children who sit in the marketplace and call to one another, saying, ‘We piped to you, and you didn’t dance. We mourned, and you didn’t weep.’",
+      "ko": "비유컨대 아이들이 장터에 앉아 서로 불러 가로되 우리가 너희를 향하여 피리를 불어도 너희가 춤추지 않고 우리가 애곡을 하여도 너희가 울지 아니하였다 함과 같도다",
+      "source_text_hash": "d16ce0d5918d77435a986eff08145c9d9c7aa122bc8cb588e70cf114aee160c0",
+      "translation_text_hash": "73cd3a0e24cb3df04d662ed9c77fffb1dd916744c7e27c116c63de863ebced40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비유컨대 아이들이 장터에 앉아 서로 불러 가로되 우리가 너희를 향하여 피리를 불어도 너희가 춤추지 않고 우리가 애곡을 하여도 너희가 울지 아니하였다 함과 같도다"
+      ],
+      "raw_text_hashes": [
+        "73cd3a0e24cb3df04d662ed9c77fffb1dd916744c7e27c116c63de863ebced40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:33",
+      "sequence": 25229,
+      "chapter_label": "LUK 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "For John the Baptizer came neither eating bread nor drinking wine, and you say, ‘He has a demon.’",
+      "ko": "세례요한이 와서 떡도 먹지 아니하며 포도주도 마시지 아니하매 너희 말이 귀신이 들렸다 하더니",
+      "source_text_hash": "d6c29e8f4e68bfbd3b37b0a6b396be9d06c72fac5d0e205511cda80551a3e194",
+      "translation_text_hash": "e7f2b85690efc7bd9009a6f740a831a58b3c8c512b624b19567b65aa95ae4aeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세례요한이 와서 떡도 먹지 아니하며 포도주도 마시지 아니하매 너희 말이 귀신이 들렸다 하더니"
+      ],
+      "raw_text_hashes": [
+        "e7f2b85690efc7bd9009a6f740a831a58b3c8c512b624b19567b65aa95ae4aeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:34",
+      "sequence": 25230,
+      "chapter_label": "LUK 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "The Son of Man has come eating and drinking, and you say, ‘Behold, a glutton and a drunkard, a friend of tax collectors and sinners!’",
+      "ko": "인자는 와서 먹고 마시매 너희 말이 보라 먹기를 탐하고 포도주를 즐기는 사람이요 세리와 죄인의 친구로다 하니",
+      "source_text_hash": "95c651f245d8dcbef62c7ad269cf01431741e66cdd089f69601e9851e2b41de0",
+      "translation_text_hash": "848a6a0c86d358470cbdd47264b3ed775f02bbd36023df9c4c7c59e51dd370a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자는 와서 먹고 마시매 너희 말이 보라 먹기를 탐하고 포도주를 즐기는 사람이요 세리와 죄인의 친구로다 하니"
+      ],
+      "raw_text_hashes": [
+        "848a6a0c86d358470cbdd47264b3ed775f02bbd36023df9c4c7c59e51dd370a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:35",
+      "sequence": 25231,
+      "chapter_label": "LUK 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "Wisdom is justified by all her children.”",
+      "ko": "지혜는 자기의 모든 자녀로 인하여 옳다 함을 얻느니라",
+      "source_text_hash": "0620457e15b24623c50f99f2982e7b0f31c56e702e2d203dd3366bd4390c6b33",
+      "translation_text_hash": "979c7ac1064220ced7ec7f354541004a952edbcfacde4e900fa9a304a01ccac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜는 자기의 모든 자녀로 인하여 옳다 함을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "979c7ac1064220ced7ec7f354541004a952edbcfacde4e900fa9a304a01ccac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:36",
+      "sequence": 25232,
+      "chapter_label": "LUK 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "One of the Pharisees invited him to eat with him. He entered into the Pharisee’s house and sat at the table.",
+      "ko": "한 바리새인이 예수께 자기와 함께 잡수시기를 청하니 이에 바리새인의 집에 들어가 앉으셨을 때에",
+      "source_text_hash": "0c6d39ce1193748feab0970045e75b82561121ab25d5072d8a0371aba88e6588",
+      "translation_text_hash": "0abfd71ab13e14d9aa89259bb5b7e50719643b4642267cafaf846ea4809897ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 바리새인이 예수께 자기와 함께 잡수시기를 청하니 이에 바리새인의 집에 들어가 앉으셨을 때에"
+      ],
+      "raw_text_hashes": [
+        "0abfd71ab13e14d9aa89259bb5b7e50719643b4642267cafaf846ea4809897ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:37",
+      "sequence": 25233,
+      "chapter_label": "LUK 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "Behold, a woman in the city who was a sinner, when she knew that he was reclining in the Pharisee’s house, brought an alabaster jar of ointment.",
+      "ko": "그 동네에 죄인인 한 여자가 있어 예수께서 바리새인의 집에 앉으셨음을 알고 향유 담은 옥합을 가지고 와서",
+      "source_text_hash": "8eaaa34763206e730915fda7f148506d880016748c0cdbd01f3ed95932715a7f",
+      "translation_text_hash": "f29c1b8e48421fbf25427a73f5082c133331430672482f2d40bab6fe3a586370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 동네에 죄인인 한 여자가 있어 예수께서 바리새인의 집에 앉으셨음을 알고 향유 담은 옥합을 가지고 와서"
+      ],
+      "raw_text_hashes": [
+        "f29c1b8e48421fbf25427a73f5082c133331430672482f2d40bab6fe3a586370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:38",
+      "sequence": 25234,
+      "chapter_label": "LUK 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "Standing behind at his feet weeping, she began to wet his feet with her tears, and she wiped them with the hair of her head, kissed his feet, and anointed them with the ointment.",
+      "ko": "예수의 뒤로 그 발 곁에 서서 울며 눈물로 그 발을 적시고 자기 머리털로 씻고 그 발에 입맞추고 향유를 부으니",
+      "source_text_hash": "5f88dc3b286942f534a3d705c59eb7c4dc0d14efcab6659664eebdf4af76fbce",
+      "translation_text_hash": "8004642d412f7751a808198c9259abf6741d5288a9bd85df22d987f21c05725c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 뒤로 그 발 곁에 서서 울며 눈물로 그 발을 적시고 자기 머리털로 씻고 그 발에 입맞추고 향유를 부으니"
+      ],
+      "raw_text_hashes": [
+        "8004642d412f7751a808198c9259abf6741d5288a9bd85df22d987f21c05725c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:39",
+      "sequence": 25235,
+      "chapter_label": "LUK 7",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 39
+        }
+      ],
+      "en": "Now when the Pharisee who had invited him saw it, he said to himself, “This man, if he were a prophet, would have perceived who and what kind of woman this is who touches him, that she is a sinner.”",
+      "ko": "예수를 청한 바리새인이 이것을 보고 마음에 이르되 이 사람이 만일 선지자더면 자기를 만지는 이 여자가 누구며 어떠한 자 곧 죄인인 줄을 알았으리라 하거늘",
+      "source_text_hash": "8da5055ee4c517f1556387106c68b3d05bf686ee04d345f1fb4213bbf42cb23a",
+      "translation_text_hash": "45c483d20d6beb709f14bc3f42dd0f3b5b0d23a11941785e3e154ae7590e7107",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 청한 바리새인이 이것을 보고 마음에 이르되 이 사람이 만일 선지자더면 자기를 만지는 이 여자가 누구며 어떠한 자 곧 죄인인 줄을 알았으리라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "45c483d20d6beb709f14bc3f42dd0f3b5b0d23a11941785e3e154ae7590e7107"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:40",
+      "sequence": 25236,
+      "chapter_label": "LUK 7",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 40
+        }
+      ],
+      "en": "Jesus answered him, “Simon, I have something to tell you.” He said, “Teacher, say on.”",
+      "ko": "예수께서 대답하여 가라사대 시몬아 내가 네게 이를 말이 있다 하시니 저가 가로되 선생님 말씀하소서",
+      "source_text_hash": "7373718ade051097e44ea2e4261f6c15cc412655028c4f1b56f6ce94b694b67f",
+      "translation_text_hash": "9bbc3a9ed4b9badb316b0fb6ea121d91b7c931c5f000232022be215df6841baf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 시몬아 내가 네게 이를 말이 있다 하시니 저가 가로되 선생님 말씀하소서"
+      ],
+      "raw_text_hashes": [
+        "9bbc3a9ed4b9badb316b0fb6ea121d91b7c931c5f000232022be215df6841baf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:41",
+      "sequence": 25237,
+      "chapter_label": "LUK 7",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 41
+        }
+      ],
+      "en": "“A certain lender had two debtors. The one owed five hundred denarii, and the other fifty.",
+      "ko": "가라사대 빚 주는 사람에게 빚진 자가 둘이 있어 하나는 오백 데나리온을 졌고 하나는 오십 데나리온을 졌는데",
+      "source_text_hash": "5f1479b02661f7bb10bda34094a7e96fe30215f031145646e53f7b66ab4d57f0",
+      "translation_text_hash": "55f46a471c91277c1705f321e1a44542d63ecedda4bfaf846316bd302b80ffd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 빚 주는 사람에게 빚진 자가 둘이 있어 하나는 오백 데나리온을 졌고 하나는 오십 데나리온을 졌는데"
+      ],
+      "raw_text_hashes": [
+        "55f46a471c91277c1705f321e1a44542d63ecedda4bfaf846316bd302b80ffd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:42",
+      "sequence": 25238,
+      "chapter_label": "LUK 7",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 42
+        }
+      ],
+      "en": "When they couldn’t pay, he forgave them both. Which of them therefore will love him most?”",
+      "ko": "갚을 것이 없으므로 둘 다 탕감하여 주었으니 둘 중에 누가 저를 더 사랑하겠느냐",
+      "source_text_hash": "fb97e873ff111785bbb82cbffa5aa0598e257473960d1d57fd2b251a7a3b6652",
+      "translation_text_hash": "7a2e43079e492231abb87784c0dea714150e9dd7d8307433222077d15847fce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갚을 것이 없으므로 둘 다 탕감하여 주었으니 둘 중에 누가 저를 더 사랑하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7a2e43079e492231abb87784c0dea714150e9dd7d8307433222077d15847fce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:43",
+      "sequence": 25239,
+      "chapter_label": "LUK 7",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 43
+        }
+      ],
+      "en": "Simon answered, “He, I suppose, to whom he forgave the most.” He said to him, “You have judged correctly.”",
+      "ko": "시몬이 대답하여 가로되 제 생각에는 많이 탕감함을 받은 자니이다 가라사대 네 판단이 옳다 하시고",
+      "source_text_hash": "260cb07b9746a637ce9b2057a0e183e6f84031d734201120123bf0d13d95bc9c",
+      "translation_text_hash": "fbadcb3d9675d35ab39d967e120782e11992f04b06fa2af569528e80b31a6c9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시몬이 대답하여 가로되 제 생각에는 많이 탕감함을 받은 자니이다 가라사대 네 판단이 옳다 하시고"
+      ],
+      "raw_text_hashes": [
+        "fbadcb3d9675d35ab39d967e120782e11992f04b06fa2af569528e80b31a6c9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:44",
+      "sequence": 25240,
+      "chapter_label": "LUK 7",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 44
+        }
+      ],
+      "en": "Turning to the woman, he said to Simon, “Do you see this woman? I entered into your house, and you gave me no water for my feet, but she has wet my feet with her tears, and wiped them with the hair of her head.",
+      "ko": "여자를 돌아보시며 시몬에게 이르시되 이 여자를 보느냐 내가 네 집에 들어오매 너는 내게 발 씻을 물도 주지 아니하였으되 이 여자는 눈물로 내 발을 적시고 그 머리털로 씻었으며",
+      "source_text_hash": "758b6bd65e8f1536677417ef74dbef9bef17b4d6f4270ef6c7ff5a4439ad7c4a",
+      "translation_text_hash": "bb44e31314117c977820a7ec86b7acfe6f3686ef59018defc500c6246cdc97a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자를 돌아보시며 시몬에게 이르시되 이 여자를 보느냐 내가 네 집에 들어오매 너는 내게 발 씻을 물도 주지 아니하였으되 이 여자는 눈물로 내 발을 적시고 그 머리털로 씻었으며"
+      ],
+      "raw_text_hashes": [
+        "bb44e31314117c977820a7ec86b7acfe6f3686ef59018defc500c6246cdc97a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:45",
+      "sequence": 25241,
+      "chapter_label": "LUK 7",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 45
+        }
+      ],
+      "en": "You gave me no kiss, but she, since the time I came in, has not ceased to kiss my feet.",
+      "ko": "너는 내게 입맞추지 아니하였으되 저는 내가 들어올 때로부터 내 발에 입맞추기를 그치지 아니하였으며",
+      "source_text_hash": "2be58a2d7706d02bd2597313551ea713dcd69b90ac5ade2c944f05df04b1ecbe",
+      "translation_text_hash": "499b25b20c5508181be020742b19d6d1c4fead0b321f36063989c7654cced6b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내게 입맞추지 아니하였으되 저는 내가 들어올 때로부터 내 발에 입맞추기를 그치지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "499b25b20c5508181be020742b19d6d1c4fead0b321f36063989c7654cced6b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:46",
+      "sequence": 25242,
+      "chapter_label": "LUK 7",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 46
+        }
+      ],
+      "en": "You didn’t anoint my head with oil, but she has anointed my feet with ointment.",
+      "ko": "너는 내 머리에 감람유도 붓지 아니하였으되 저는 향유를 내 발에 부었느니라",
+      "source_text_hash": "b1356792c7d054839f47f3554558fe80ad1b82f15d71524c5b8901fe184ff905",
+      "translation_text_hash": "8b28bf388315f94a4ad8e97ea8ad8e8a2d958f6ee996e2d8e4cb2fc2fe5268db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 내 머리에 감람유도 붓지 아니하였으되 저는 향유를 내 발에 부었느니라"
+      ],
+      "raw_text_hashes": [
+        "8b28bf388315f94a4ad8e97ea8ad8e8a2d958f6ee996e2d8e4cb2fc2fe5268db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:47",
+      "sequence": 25243,
+      "chapter_label": "LUK 7",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 47
+        }
+      ],
+      "en": "Therefore I tell you, her sins, which are many, are forgiven, for she loved much. But one to whom little is forgiven, loves little.”",
+      "ko": "이러므로 내가 네게 말하노니 저의 많은 죄가 사하여졌도다 이는 저의 사랑함이 많음이라 사함을 받은 일이 적은 자는 적게 사랑하느니라",
+      "source_text_hash": "16e2fca4ce189fc00fdce36884e31c56874ee16ab91f80a15d8810b70b27f1c9",
+      "translation_text_hash": "ac029cb239d983afaf6742938b56696026b7b5532dcc15d8ebe1bae7c9ec81ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 네게 말하노니 저의 많은 죄가 사하여졌도다 이는 저의 사랑함이 많음이라 사함을 받은 일이 적은 자는 적게 사랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "ac029cb239d983afaf6742938b56696026b7b5532dcc15d8ebe1bae7c9ec81ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:48",
+      "sequence": 25244,
+      "chapter_label": "LUK 7",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 48
+        }
+      ],
+      "en": "He said to her, “Your sins are forgiven.”",
+      "ko": "이에 여자에게 이르시되 네 죄 사함을 얻었느니라 하시니",
+      "source_text_hash": "72ce09debf7dfb99df06107be77be9de227b2c119ff9b9c4907948487b7fbe56",
+      "translation_text_hash": "a209b71ab9a23de178bff996978bcd3b1a8a3e2f344bcc64545d422f9a413184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여자에게 이르시되 네 죄 사함을 얻었느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "a209b71ab9a23de178bff996978bcd3b1a8a3e2f344bcc64545d422f9a413184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:49",
+      "sequence": 25245,
+      "chapter_label": "LUK 7",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 49
+        }
+      ],
+      "en": "Those who sat at the table with him began to say to themselves, “Who is this who even forgives sins?”",
+      "ko": "함께 앉은 자들이 속으로 말하되 이가 누구이기에 죄도 사하는가 하더라",
+      "source_text_hash": "4fc6d81d745d94982915c7a5103e8d2c6b71ca9cb678cd539c167a973e4bff42",
+      "translation_text_hash": "f1acc8d42d14babd3beea489097217536d48b702040bc6b4705a139f32503b5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함께 앉은 자들이 속으로 말하되 이가 누구이기에 죄도 사하는가 하더라"
+      ],
+      "raw_text_hashes": [
+        "f1acc8d42d14babd3beea489097217536d48b702040bc6b4705a139f32503b5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:7:50",
+      "sequence": 25246,
+      "chapter_label": "LUK 7",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 7,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 7,
+          "verse": 50
+        }
+      ],
+      "en": "He said to the woman, “Your faith has saved you. Go in peace.”",
+      "ko": "예수께서 여자에게 이르시되 네 믿음이 너를 구원하였으니 평안히 가라 하시니라",
+      "source_text_hash": "5a8a695b4b4bafb6f6a8521f645955685b15957916b9f0c0f930d7124ee012d8",
+      "translation_text_hash": "a6d683c0c28df7bb1dbbafb64863ac581ea77a931993c4f816e634e72a49349e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 여자에게 이르시되 네 믿음이 너를 구원하였으니 평안히 가라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a6d683c0c28df7bb1dbbafb64863ac581ea77a931993c4f816e634e72a49349e"
+      ]
+    }
+  ]
+}

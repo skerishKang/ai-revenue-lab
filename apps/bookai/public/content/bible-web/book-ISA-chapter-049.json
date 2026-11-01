@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:049",
+  "unit_ordinal": 728,
+  "unit_label": "ISA 49",
+  "book_code": "ISA",
+  "chapter_number": 49,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:49:1",
+      "sequence": 18638,
+      "chapter_label": "ISA 49",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 1
+        }
+      ],
+      "en": "Listen, islands, to me. Listen, you peoples, from afar: the LORD has called me from the womb; from the inside of my mother, he has mentioned my name.",
+      "ko": "섬들아 나를 들으라 원방 백성들아 귀를 기울이라 여호와께서 내가 태에서 나옴으로부터 나를 부르셨고 내가 어미 복중에서 나옴으로부터 내 이름을 말씀하셨으며",
+      "source_text_hash": "b15cf62f010bd7fa7313682978e8052cee7f32f2ad49cf9f7b4c8ed154e9ec4d",
+      "translation_text_hash": "94d345f48dbce5fec90b45a205bd638a7a7977a1de1c15e247fc832c84b0bb23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "섬들아 나를 들으라 원방 백성들아 귀를 기울이라 여호와께서 내가 태에서 나옴으로부터 나를 부르셨고 내가 어미 복중에서 나옴으로부터 내 이름을 말씀하셨으며"
+      ],
+      "raw_text_hashes": [
+        "94d345f48dbce5fec90b45a205bd638a7a7977a1de1c15e247fc832c84b0bb23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:2",
+      "sequence": 18639,
+      "chapter_label": "ISA 49",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 2
+        }
+      ],
+      "en": "He has made my mouth like a sharp sword. He has hidden me in the shadow of his hand. He has made me a polished shaft. He has kept me close in his quiver.",
+      "ko": "내 입을 날카로운 칼 같이 만드시고 나를 그 손 그늘에 숨기시며 나로 마광한 살을 만드사 그 전통에 감추시고",
+      "source_text_hash": "ca9ba59ba302ae8a81f90b18ffb65df566d64c59adee273ef94d62808a7aa798",
+      "translation_text_hash": "7f436a1326ce36e9f83f3e003059a2871500693385dcb4402ce3fed6f3280aeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 입을 날카로운 칼 같이 만드시고 나를 그 손 그늘에 숨기시며 나로 마광한 살을 만드사 그 전통에 감추시고"
+      ],
+      "raw_text_hashes": [
+        "7f436a1326ce36e9f83f3e003059a2871500693385dcb4402ce3fed6f3280aeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:3",
+      "sequence": 18640,
+      "chapter_label": "ISA 49",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 3
+        }
+      ],
+      "en": "He said to me, “You are my servant, Israel, in whom I will be glorified.”",
+      "ko": "내게 이르시되 너는 나의 종이요 내 영광을 나타낼 이스라엘이라 하셨느니라",
+      "source_text_hash": "396da36a5c8fd36760a2f68ce94f649be9e5efd94cd95a02365a4aa2c67f5341",
+      "translation_text_hash": "a69a87c464f1189890de99417ee3ab59c6efc9ea5923384eebbb77d932ebfa6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 너는 나의 종이요 내 영광을 나타낼 이스라엘이라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "a69a87c464f1189890de99417ee3ab59c6efc9ea5923384eebbb77d932ebfa6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:4",
+      "sequence": 18641,
+      "chapter_label": "ISA 49",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 4
+        }
+      ],
+      "en": "But I said, “I have labored in vain. I have spent my strength in vain for nothing; yet surely the justice due to me is with the LORD, and my reward with my God.”",
+      "ko": "그러나 나는 말하기를 내가 헛되이 수고하였으며 무익히 공연히 내 힘을 다하였다 하였도다 정녕히 나의 신원이 여호와께 있고 나의 보응이 나의 하나님께 있느니라",
+      "source_text_hash": "cc963efdaf9626efc600b7f65d87de225d3f3e5a2b432258b2da8efd651f9b91",
+      "translation_text_hash": "086060f32782074f254956cd16a966595fa150b83225b95426207e8e881f7cc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나는 말하기를 내가 헛되이 수고하였으며 무익히 공연히 내 힘을 다하였다 하였도다 정녕히 나의 신원이 여호와께 있고 나의 보응이 나의 하나님께 있느니라"
+      ],
+      "raw_text_hashes": [
+        "086060f32782074f254956cd16a966595fa150b83225b95426207e8e881f7cc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:5",
+      "sequence": 18642,
+      "chapter_label": "ISA 49",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 5
+        }
+      ],
+      "en": "Now the LORD, he who formed me from the womb to be his servant, says to bring Jacob again to him, and to gather Israel to him, for I am honorable in the LORD’s eyes, and my God has become my strength.",
+      "ko": "나는 여호와의 보시기에 존귀한 자라 나의 하나님이 나의 힘이 되셨도다 다시 야곱을 자기에게로 돌아오게 하시며 이스라엘을 자기에게로 모이게 하시려고 나를 태에서 나옴으로부터 자기 종을 삼으신 여호와께서 말씀하시니라",
+      "source_text_hash": "475055d6b26e816dfba2fd8438c4ecebda767ba241528315b4006957baf4296a",
+      "translation_text_hash": "d76e8a5083b1be50bd6b232fcd890e4f32af0e9f392fa0de24ac801909982b7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와의 보시기에 존귀한 자라 나의 하나님이 나의 힘이 되셨도다 다시 야곱을 자기에게로 돌아오게 하시며 이스라엘을 자기에게로 모이게 하시려고 나를 태에서 나옴으로부터 자기 종을 삼으신 여호와께서 말씀하시니라"
+      ],
+      "raw_text_hashes": [
+        "d76e8a5083b1be50bd6b232fcd890e4f32af0e9f392fa0de24ac801909982b7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:6",
+      "sequence": 18643,
+      "chapter_label": "ISA 49",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 6
+        }
+      ],
+      "en": "Indeed, he says, “It is too light a thing that you should be my servant to raise up the tribes of Jacob, and to restore the preserved of Israel. I will also give you as a light to the nations, that you may be my salvation to the end of the earth.”",
+      "ko": "그가 가라사대 네가 나의 종이 되어 야곱의 지파들을 일으키며 이스라엘 중에 보전된 자를 돌아오게 할 것은 오히려 경한 일이라 내가 또 너로 이방의 빛을 삼아 나의 구원을 베풀어서 땅 끝까지 이르게 하리라",
+      "source_text_hash": "513cdf6417e2a0a94769056dea5a1c6c146ed5225ba8a5981b91694a534bc76c",
+      "translation_text_hash": "33117fd0a10f71bf81b95473d72684731ff28d6660b43273dab36f472f167493",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가라사대 네가 나의 종이 되어 야곱의 지파들을 일으키며 이스라엘 중에 보전된 자를 돌아오게 할 것은 오히려 경한 일이라 내가 또 너로 이방의 빛을 삼아 나의 구원을 베풀어서 땅 끝까지 이르게 하리라"
+      ],
+      "raw_text_hashes": [
+        "33117fd0a10f71bf81b95473d72684731ff28d6660b43273dab36f472f167493"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:7",
+      "sequence": 18644,
+      "chapter_label": "ISA 49",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD, the Redeemer of Israel, and his Holy One, says to him whom man despises, to him whom the nation abhors, to a servant of rulers: “Kings shall see and rise up, princes, and they shall worship, because of the LORD who is faithful, even the Holy One of Israel, who has chosen you.”",
+      "ko": "이스라엘의 구속자, 이스라엘의 거룩한 자이신 여호와께서 사람에게 멸시를 당하는 자, 백성에게 미움을 받는 자, 관원들에게 종이 된 자에게 이같이 이르시되 너를 보고 열왕이 일어서며 방백들이 경배하리니 이는 너를 택한바 신실한 나 여호와 이스라엘의 거룩한 자를 인함이니라",
+      "source_text_hash": "65d7e2b196c06704ef03109ed43ed0b548d212125e3b5c4ddf078f3de2b1b52d",
+      "translation_text_hash": "020cad02b675f7bd1f64861dfdd2c7339e301bc5e1f93545546bfc8253fa1b56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 구속자, 이스라엘의 거룩한 자이신 여호와께서 사람에게 멸시를 당하는 자, 백성에게 미움을 받는 자, 관원들에게 종이 된 자에게 이같이 이르시되 너를 보고 열왕이 일어서며 방백들이 경배하리니 이는 너를 택한바 신실한 나 여호와 이스라엘의 거룩한 자를 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "020cad02b675f7bd1f64861dfdd2c7339e301bc5e1f93545546bfc8253fa1b56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:8",
+      "sequence": 18645,
+      "chapter_label": "ISA 49",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD says, “I have answered you in an acceptable time. I have helped you in a day of salvation. I will preserve you and give you for a covenant of the people, to raise up the land, to make them inherit the desolate heritage,",
+      "ko": "여호와께서 또 가라사대 은혜의 때에 내가 네게 응답하였고 구원의 날에 내가 너를 도왔도다 내가 장차 너를 보호하여 너로 백성의 언약을 삼으며 나라를 일으켜 그들로 그 황무하였던 땅을 기업으로 상속케 하리라",
+      "source_text_hash": "b4b3d2632310e49f0d3850d697f503f0486bcdf9860535ad2ccdf6162270d473",
+      "translation_text_hash": "11a9b6c863337813b77cf8d707379f77225a8895538f435654427cbb8f7529e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 가라사대 은혜의 때에 내가 네게 응답하였고 구원의 날에 내가 너를 도왔도다 내가 장차 너를 보호하여 너로 백성의 언약을 삼으며 나라를 일으켜 그들로 그 황무하였던 땅을 기업으로 상속케 하리라"
+      ],
+      "raw_text_hashes": [
+        "11a9b6c863337813b77cf8d707379f77225a8895538f435654427cbb8f7529e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:9",
+      "sequence": 18646,
+      "chapter_label": "ISA 49",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 9
+        }
+      ],
+      "en": "saying to those who are bound, ‘Come out!’; to those who are in darkness, ‘Show yourselves!’ “They shall feed along the paths, and their pasture shall be on all treeless heights.",
+      "ko": "내가 잡혀 있는 자에게 이르기를 나오라 하며 흑암에 있는 자에게 나타나라 하리라 그들이 길에서 먹겠고 모든 자산에도 그들의 풀밭이 있을 것인즉",
+      "source_text_hash": "5283fec6083968ae320b5fa2989377dab8df1f63ba011456d12397ced54bfc01",
+      "translation_text_hash": "a81624783657585ffdc0cb39cc0795ab97b6a2cb439d313f13534118ce8f02ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 잡혀 있는 자에게 이르기를 나오라 하며 흑암에 있는 자에게 나타나라 하리라 그들이 길에서 먹겠고 모든 자산에도 그들의 풀밭이 있을 것인즉"
+      ],
+      "raw_text_hashes": [
+        "a81624783657585ffdc0cb39cc0795ab97b6a2cb439d313f13534118ce8f02ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:10",
+      "sequence": 18647,
+      "chapter_label": "ISA 49",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 10
+        }
+      ],
+      "en": "They shall not hunger nor thirst; neither shall the heat nor sun strike them, for he who has mercy on them will lead them. He will guide them by springs of water.",
+      "ko": "그들이 주리거나 목마르지 아니할 것이며 더위와 볕이 그들을 상하지 아니하리니 이는 그들을 긍휼히 여기는 자가 그들을 이끌되 샘물 근원으로 인도할 것임이니라",
+      "source_text_hash": "09c9c23e70578d04f235010b12da8e7eb6c3d227ba18cbfcd1b3f4ef5dafb5a8",
+      "translation_text_hash": "c4cb1dd8d4c86401e8234541258fb439056a454012aaa8e2ea858a2849b8c706",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 주리거나 목마르지 아니할 것이며 더위와 볕이 그들을 상하지 아니하리니 이는 그들을 긍휼히 여기는 자가 그들을 이끌되 샘물 근원으로 인도할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "c4cb1dd8d4c86401e8234541258fb439056a454012aaa8e2ea858a2849b8c706"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:11",
+      "sequence": 18648,
+      "chapter_label": "ISA 49",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 11
+        }
+      ],
+      "en": "I will make all my mountains a road, and my highways shall be exalted.",
+      "ko": "내가 나의 모든 산을 길로 삼고 나의 대로를 돋우리니",
+      "source_text_hash": "a2beaac0df302ee69bb99e385584a8c5613fea1218283b092e925dfbcdd78ad8",
+      "translation_text_hash": "52b39f86ebfb0f49e45f25103ff848467791370604b511995a01bf2075ac880a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 모든 산을 길로 삼고 나의 대로를 돋우리니"
+      ],
+      "raw_text_hashes": [
+        "52b39f86ebfb0f49e45f25103ff848467791370604b511995a01bf2075ac880a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:12",
+      "sequence": 18649,
+      "chapter_label": "ISA 49",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, these shall come from afar, and behold, these from the north and from the west, and these from the land of Sinim.”",
+      "ko": "혹자는 원방에서, 혹자는 북방과 서방에서, 혹자는 시님 땅에서 오리라",
+      "source_text_hash": "34ec44e0f6e96b88e426aae20ce6877f327b65039b3019da1ee449850bc3523a",
+      "translation_text_hash": "4ec95ceeb91596c3112360c3501197f20a619e2bfb35d3d140b6d490c3af9ba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹자는 원방에서, 혹자는 북방과 서방에서, 혹자는 시님 땅에서 오리라"
+      ],
+      "raw_text_hashes": [
+        "4ec95ceeb91596c3112360c3501197f20a619e2bfb35d3d140b6d490c3af9ba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:13",
+      "sequence": 18650,
+      "chapter_label": "ISA 49",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 13
+        }
+      ],
+      "en": "Sing, heavens, and be joyful, earth! Break out into singing, mountains! For the LORD has comforted his people, and will have compassion on his afflicted.",
+      "ko": "하늘이여 노래하라 땅이여 기뻐하라 산들이여 즐거이 노래하라 여호와가 그 백성을 위로하였은즉 그 고난 당한 자를 긍휼히 여길 것임이니라",
+      "source_text_hash": "fd9b4a4852218442ab5ef2cdd6839b65e475a37e58a8912b3551aab3cca89d38",
+      "translation_text_hash": "6e65781a87cbd4f7ec7a94c63c938c53ac90fb565aebbc39360dd4a220295a3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이여 노래하라 땅이여 기뻐하라 산들이여 즐거이 노래하라 여호와가 그 백성을 위로하였은즉 그 고난 당한 자를 긍휼히 여길 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "6e65781a87cbd4f7ec7a94c63c938c53ac90fb565aebbc39360dd4a220295a3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:14",
+      "sequence": 18651,
+      "chapter_label": "ISA 49",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 14
+        }
+      ],
+      "en": "But Zion said, “The LORD has forsaken me, and the Lord has forgotten me.”",
+      "ko": "오직 시온이 이르기를 여호와께서 나를 버리시며 주께서 나를 잊으셨다 하였거니와",
+      "source_text_hash": "69db06aff42fa85cdec0d88925c1b92674d352a45d79171286feb95f9d5214d8",
+      "translation_text_hash": "a25fc5e37094603e787a2263d0f7733b8073f1c6800305a86b860e5dab74043e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 시온이 이르기를 여호와께서 나를 버리시며 주께서 나를 잊으셨다 하였거니와"
+      ],
+      "raw_text_hashes": [
+        "a25fc5e37094603e787a2263d0f7733b8073f1c6800305a86b860e5dab74043e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:15",
+      "sequence": 18652,
+      "chapter_label": "ISA 49",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 15
+        }
+      ],
+      "en": "“Can a woman forget her nursing child, that she should not have compassion on the son of her womb? Yes, these may forget, yet I will not forget you!",
+      "ko": "여인이 어찌 그 젖먹는 자식을 잊겠으며 자기 태에서 난 아들을 긍휼히 여기지 않겠느냐 그들은 혹시 잊을찌라도 나는 너를 잊지 아니할 것이라",
+      "source_text_hash": "0ca1f341acaa79823d795f8a572d0faee29465c8a34d11d4d55c559430189659",
+      "translation_text_hash": "e37f6678869e64911c918ec561204221939955834624db1fe3693f0f4b6d7fe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 어찌 그 젖먹는 자식을 잊겠으며 자기 태에서 난 아들을 긍휼히 여기지 않겠느냐 그들은 혹시 잊을찌라도 나는 너를 잊지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "e37f6678869e64911c918ec561204221939955834624db1fe3693f0f4b6d7fe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:16",
+      "sequence": 18653,
+      "chapter_label": "ISA 49",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 16
+        }
+      ],
+      "en": "Behold, I have engraved you on the palms of my hands. Your walls are continually before me.",
+      "ko": "내가 너를 내 손바닥에 새겼고 너의 성벽이 항상 내 앞에 있나니",
+      "source_text_hash": "34a43245fce19b9b90623ea8291f747d3747fe68010edd65f73dc7a731f8153c",
+      "translation_text_hash": "7d3fbaac81c1703e3364f3dd315c8e00d528b1c915c2d9245909824688b80dba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 내 손바닥에 새겼고 너의 성벽이 항상 내 앞에 있나니"
+      ],
+      "raw_text_hashes": [
+        "7d3fbaac81c1703e3364f3dd315c8e00d528b1c915c2d9245909824688b80dba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:17",
+      "sequence": 18654,
+      "chapter_label": "ISA 49",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 17
+        }
+      ],
+      "en": "Your children hurry. Your destroyers and those who devastated you will leave you.",
+      "ko": "네 자녀들은 속히 돌아 오고 너를 헐며 너를 황폐케 하던 자들은 너를 떠나가리라",
+      "source_text_hash": "7b2ef2d1fa7349ffef58bb571483c44f06499c29baf04485a9f6bcf378a9541f",
+      "translation_text_hash": "b39c1e49f85221a6cdc3a5f81879c3456ea72a112af767ae2711f5f3ccee96ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자녀들은 속히 돌아 오고 너를 헐며 너를 황폐케 하던 자들은 너를 떠나가리라"
+      ],
+      "raw_text_hashes": [
+        "b39c1e49f85221a6cdc3a5f81879c3456ea72a112af767ae2711f5f3ccee96ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:18",
+      "sequence": 18655,
+      "chapter_label": "ISA 49",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 18
+        }
+      ],
+      "en": "Lift up your eyes all around, and see: all these gather themselves together, and come to you. As I live,” says the LORD, “you shall surely clothe yourself with them all as with an ornament, and dress yourself with them, like a bride.",
+      "ko": "네 눈을 들어 사방을 보라 그들이 다 모여 네게로 오느니라 나 여호와가 이르노라 내가 나의 삶으로 맹세하노니 네가 반드시 그 모든 무리로 장식을 삼아 몸에 차며 띠기를 신부처럼 할 것이라",
+      "source_text_hash": "3a4aefa9d9a3abc3dda0a341779177f12d57f80a04dc23500e1e838e51a0c7ae",
+      "translation_text_hash": "2d387a09fa9076983fb3ce660d8467705eebeb76a432f67b843304afa8b97058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈을 들어 사방을 보라 그들이 다 모여 네게로 오느니라 나 여호와가 이르노라 내가 나의 삶으로 맹세하노니 네가 반드시 그 모든 무리로 장식을 삼아 몸에 차며 띠기를 신부처럼 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "2d387a09fa9076983fb3ce660d8467705eebeb76a432f67b843304afa8b97058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:19",
+      "sequence": 18656,
+      "chapter_label": "ISA 49",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 19
+        }
+      ],
+      "en": "“For, as for your waste and your desolate places, and your land that has been destroyed, surely now that land will be too small for the inhabitants, and those who swallowed you up will be far away.",
+      "ko": "대저 네 황폐하고 적막한 곳들과 네 파멸을 당하였던 땅이 이제는 거민이 많으므로 좁게 될 것이며 너를 삼켰던 자들이 멀리 떠날 것이니라",
+      "source_text_hash": "10f1b896ede51364587cd4d6aa2d69d173ab073f2b8ad9ef995500cd95cbf220",
+      "translation_text_hash": "a8c426de9e370796531e5d675c7bc5d25afe3e2eb273e81835d4dfe74b427d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 네 황폐하고 적막한 곳들과 네 파멸을 당하였던 땅이 이제는 거민이 많으므로 좁게 될 것이며 너를 삼켰던 자들이 멀리 떠날 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a8c426de9e370796531e5d675c7bc5d25afe3e2eb273e81835d4dfe74b427d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:20",
+      "sequence": 18657,
+      "chapter_label": "ISA 49",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 20
+        }
+      ],
+      "en": "The children of your bereavement will say in your ears, ‘This place is too small for me. Give me a place to live in.’",
+      "ko": "고난 중에 낳은 자녀가 후일에 네 귀에 말하기를 이곳이 우리에게 좁으니 넓혀서 우리로 거처하게 하라 하리니",
+      "source_text_hash": "c2d4dc31bfce1ba68fd953b1a38c2a386fd620097e9ab9afdb0621ba7f7366ce",
+      "translation_text_hash": "f88c4131ddcc1c2da598991296c9a1efc61ad7629c3d17530f23c46b40c1283e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고난 중에 낳은 자녀가 후일에 네 귀에 말하기를 이곳이 우리에게 좁으니 넓혀서 우리로 거처하게 하라 하리니"
+      ],
+      "raw_text_hashes": [
+        "f88c4131ddcc1c2da598991296c9a1efc61ad7629c3d17530f23c46b40c1283e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:21",
+      "sequence": 18658,
+      "chapter_label": "ISA 49",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 21
+        }
+      ],
+      "en": "Then you will say in your heart, ‘Who has conceived these for me, since I have been bereaved of my children and am alone, an exile, and wandering back and forth? Who has brought these up? Behold, I was left alone. Where were these?’”",
+      "ko": "그 때에 네 심중에 이르기를 누가 나를 위하여 이 무리를 낳았는고 나는 자녀를 잃고 외로와졌으며 사로잡혔으며 유리하였거늘 이 무리를 누가 양육하였는고 나는 홀로 되었거늘 이 무리는 어디서 생겼는고 하리라",
+      "source_text_hash": "a5a8222d5083fec754927fc60a5a5f0e4871c3b0a9501e17e367f2e92fc9eb50",
+      "translation_text_hash": "2d5c47b869a160beeb0bff1c64c49342739355e929631279fa2378e365c58a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 네 심중에 이르기를 누가 나를 위하여 이 무리를 낳았는고 나는 자녀를 잃고 외로와졌으며 사로잡혔으며 유리하였거늘 이 무리를 누가 양육하였는고 나는 홀로 되었거늘 이 무리는 어디서 생겼는고 하리라"
+      ],
+      "raw_text_hashes": [
+        "2d5c47b869a160beeb0bff1c64c49342739355e929631279fa2378e365c58a26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:22",
+      "sequence": 18659,
+      "chapter_label": "ISA 49",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 22
+        }
+      ],
+      "en": "The Lord GOD says, “Behold, I will lift up my hand to the nations, and lift up my banner to the peoples. They shall bring your sons in their bosom, and your daughters shall be carried on their shoulders.",
+      "ko": "나 주 여호와가 이르노라 내가 열방을 향하여 나의 손을 들고 민족들을 향하여 나의 기호를 세울 것이라 그들이 네 아들들을 품에 안고 네 딸들을 어깨에 메고 올것이며",
+      "source_text_hash": "5504367bfdeeab6cb61bc42995275f2bcbaccc1888f5c2a9523d8aa0babc27f0",
+      "translation_text_hash": "3177e845bd2d4b7d99f6c02c563374c55aa98452e5b7e252c546aec98825b620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 이르노라 내가 열방을 향하여 나의 손을 들고 민족들을 향하여 나의 기호를 세울 것이라 그들이 네 아들들을 품에 안고 네 딸들을 어깨에 메고 올것이며"
+      ],
+      "raw_text_hashes": [
+        "3177e845bd2d4b7d99f6c02c563374c55aa98452e5b7e252c546aec98825b620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:23",
+      "sequence": 18660,
+      "chapter_label": "ISA 49",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 23
+        }
+      ],
+      "en": "Kings shall be your foster fathers, and their queens your nursing mothers. They will bow down to you with their faces to the earth, and lick the dust of your feet. Then you will know that I am the LORD; and those who wait for me won’t be disappointed.”",
+      "ko": "열왕은 네 양부가 되며 왕비들은 네 유모가 될 것이며 그들이 얼굴을 땅에 대고 네게 절하고 네 발의 티끌을 핥을 것이니 네가 나를 여호와인줄 알리라 나를 바라는 자는 수치를 당하지 아니하리라",
+      "source_text_hash": "cbf4a2a429dcd8c0de3dfd11e8c81adfee616bd6df65b0c6ed211491122db8d6",
+      "translation_text_hash": "ea56dc3f078bae943f85f85b2b8a1dad3b6d4cce9cb3d5df2c8c7bbabda6a14b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열왕은 네 양부가 되며 왕비들은 네 유모가 될 것이며 그들이 얼굴을 땅에 대고 네게 절하고 네 발의 티끌을 핥을 것이니 네가 나를 여호와인줄 알리라 나를 바라는 자는 수치를 당하지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "ea56dc3f078bae943f85f85b2b8a1dad3b6d4cce9cb3d5df2c8c7bbabda6a14b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:24",
+      "sequence": 18661,
+      "chapter_label": "ISA 49",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 24
+        }
+      ],
+      "en": "Shall the plunder be taken from the mighty, or the lawful captives be delivered?",
+      "ko": "용사의 빼앗은 것을 어떻게 도로 빼앗으며 승리자에게 사로잡힌 자를 어떻게 건져낼 수 있으랴마는",
+      "source_text_hash": "28d454142e4fadf95a12393c9986e20832de5f3d70df6ba2604d734fdaba22dd",
+      "translation_text_hash": "030f7b3e288b7fb20446bc211de2ce78d6b4771cb3aa84221b1777309602fbde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사의 빼앗은 것을 어떻게 도로 빼앗으며 승리자에게 사로잡힌 자를 어떻게 건져낼 수 있으랴마는"
+      ],
+      "raw_text_hashes": [
+        "030f7b3e288b7fb20446bc211de2ce78d6b4771cb3aa84221b1777309602fbde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:25",
+      "sequence": 18662,
+      "chapter_label": "ISA 49",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 25
+        }
+      ],
+      "en": "But the LORD says, “Even the captives of the mighty shall be taken away, and the plunder retrieved from the fierce, for I will contend with him who contends with you and I will save your children.",
+      "ko": "나 여호와가 이같이 말하노라 용사의 포로도 빼앗을 것이요 강포자의 빼앗은 것도 건져낼 것이니 이는 내가 너를 대적하는 자를 대적하고 네 자녀를 구원할 것임이라",
+      "source_text_hash": "ba937169290fd1810e7110aca1dc96e05db075bfe03e0fa326b74a14bd230419",
+      "translation_text_hash": "8e4f495413dbe1bd588e3634d84a9a252097fac74fdf7065424897baa8d0823b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 용사의 포로도 빼앗을 것이요 강포자의 빼앗은 것도 건져낼 것이니 이는 내가 너를 대적하는 자를 대적하고 네 자녀를 구원할 것임이라"
+      ],
+      "raw_text_hashes": [
+        "8e4f495413dbe1bd588e3634d84a9a252097fac74fdf7065424897baa8d0823b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:49:26",
+      "sequence": 18663,
+      "chapter_label": "ISA 49",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 49,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 49,
+          "verse": 26
+        }
+      ],
+      "en": "I will feed those who oppress you with their own flesh; and they will be drunk on their own blood, as with sweet wine. Then all flesh shall know that I, the LORD, am your Savior and your Redeemer, the Mighty One of Jacob.”",
+      "ko": "내가 너를 학대하는 자로 자기의 고기를 먹게 하며 새 술에 취함 같이 자기의 피에 취하게 하리니 모든 육체가 나 여호와는 네 구원자요 네 구속자요 야곱의 전능자인줄 알리라",
+      "source_text_hash": "3ee564e6cdc498717aa0df7b6132c8ea59178eb0145e48cc1fa5a2e30700119a",
+      "translation_text_hash": "f79c7c993c498d8a118afd0958e535bd8d94d708ba6a7e440e1866b016649db7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 학대하는 자로 자기의 고기를 먹게 하며 새 술에 취함 같이 자기의 피에 취하게 하리니 모든 육체가 나 여호와는 네 구원자요 네 구속자요 야곱의 전능자인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "f79c7c993c498d8a118afd0958e535bd8d94d708ba6a7e440e1866b016649db7"
+      ]
+    }
+  ]
+}

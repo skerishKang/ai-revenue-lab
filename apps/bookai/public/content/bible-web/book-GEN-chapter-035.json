@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:035",
+  "unit_ordinal": 35,
+  "unit_label": "GEN 35",
+  "book_code": "GEN",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:35:1",
+      "sequence": 1013,
+      "chapter_label": "GEN 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "God said to Jacob, “Arise, go up to Bethel, and live there. Make there an altar to God, who appeared to you when you fled from the face of Esau your brother.”",
+      "ko": "하나님이 야곱에게 이르시되 일어나 벧엘로 올라가서 거기 거하며 네가 네 형 에서의 낯을 피하여 도망하던 때에 네게 나타났던 하나님께 거기서 단을 쌓으라 하신지라",
+      "source_text_hash": "cb813f9c6291d179b9b9af09710e86201b1bf37dcfe2ebe8ba70a58bc756db13",
+      "translation_text_hash": "e829ae7f9379bacd2012f2e564a6967272e1506a46ef3f3676101fbd5c625bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 야곱에게 이르시되 일어나 벧엘로 올라가서 거기 거하며 네가 네 형 에서의 낯을 피하여 도망하던 때에 네게 나타났던 하나님께 거기서 단을 쌓으라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "e829ae7f9379bacd2012f2e564a6967272e1506a46ef3f3676101fbd5c625bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:2",
+      "sequence": 1014,
+      "chapter_label": "GEN 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "Then Jacob said to his household, and to all who were with him, “Put away the foreign gods that are among you, purify yourselves, and change your garments.",
+      "ko": "야곱이 이에 자기 집 사람과 자기와 함께한 모든 자에게 이르되 너희 중의 이방 신상을 버리고 자신을 정결케 하고 의복을 바꾸라",
+      "source_text_hash": "024adc9518c015bc34ee951f3990773dcdd5e341cd27cd08d7e4604ee08d00cd",
+      "translation_text_hash": "3a4fa44cb90b24c4bb185ae49d4bdba661e64119ee79ec885d41cf733a5c1c16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 이에 자기 집 사람과 자기와 함께한 모든 자에게 이르되 너희 중의 이방 신상을 버리고 자신을 정결케 하고 의복을 바꾸라"
+      ],
+      "raw_text_hashes": [
+        "3a4fa44cb90b24c4bb185ae49d4bdba661e64119ee79ec885d41cf733a5c1c16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:3",
+      "sequence": 1015,
+      "chapter_label": "GEN 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "Let’s arise, and go up to Bethel. I will make there an altar to God, who answered me in the day of my distress, and was with me on the way which I went.”",
+      "ko": "우리가 일어나 벧엘로 올라가자 나의 환난날에 내게 응답하시며 나의 가는 길에서 나와 함께하신 하나님께 내가 거기서 단을 쌓으려 하노라 하매",
+      "source_text_hash": "b9477d35b860e9bfa4fda476998c87b76b5e5934d4835a6b4861db7d93a6f351",
+      "translation_text_hash": "ccff0fc708c4cb91bc28bd8fbd103ebedddb7f6c7d2a5b1a0a978f1d32b2e631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 일어나 벧엘로 올라가자 나의 환난날에 내게 응답하시며 나의 가는 길에서 나와 함께하신 하나님께 내가 거기서 단을 쌓으려 하노라 하매"
+      ],
+      "raw_text_hashes": [
+        "ccff0fc708c4cb91bc28bd8fbd103ebedddb7f6c7d2a5b1a0a978f1d32b2e631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:4",
+      "sequence": 1016,
+      "chapter_label": "GEN 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "They gave to Jacob all the foreign gods which were in their hands, and the rings which were in their ears; and Jacob hid them under the oak which was by Shechem.",
+      "ko": "그들이 자기 손에 있는 모든 이방 신상과 자기 귀에 있는 고리를 야곱에게 주는지라 야곱이 그것들을 세겜 근처 상수리나무 아래 묻고",
+      "source_text_hash": "b34e7ab9f7b4b9205bd79088b5962b1f39f2ccdbe0571e7dee11acbf006d3486",
+      "translation_text_hash": "9f98b42de478f0a615a610a73b4a6a5406eb5e1d38f88976b729f162b06f2c3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 자기 손에 있는 모든 이방 신상과 자기 귀에 있는 고리를 야곱에게 주는지라 야곱이 그것들을 세겜 근처 상수리나무 아래 묻고"
+      ],
+      "raw_text_hashes": [
+        "9f98b42de478f0a615a610a73b4a6a5406eb5e1d38f88976b729f162b06f2c3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:5",
+      "sequence": 1017,
+      "chapter_label": "GEN 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "They traveled, and a terror of God was on the cities that were around them, and they didn’t pursue the sons of Jacob.",
+      "ko": "그들이 발행하였으나 하나님이 그 사면 고을들로 크게 두려워하게 하신고로 야곱의 아들들을 추격하는 자가 없었더라",
+      "source_text_hash": "3222285fa1b7a8876ad728f07c543261dc1d81f4c0bfbed74102249799bd6cec",
+      "translation_text_hash": "e1b71e58856a5bf2cca093d687df96edfc562d49b96b3d2f49108a0c105445bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 발행하였으나 하나님이 그 사면 고을들로 크게 두려워하게 하신고로 야곱의 아들들을 추격하는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "e1b71e58856a5bf2cca093d687df96edfc562d49b96b3d2f49108a0c105445bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:6",
+      "sequence": 1018,
+      "chapter_label": "GEN 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "So Jacob came to Luz (that is, Bethel), which is in the land of Canaan, he and all the people who were with him.",
+      "ko": "야곱과 그와 함께한 모든 사람이 가나안 땅 루스 곧 벧엘에 이르고",
+      "source_text_hash": "464383e012ac0aa6a87dcf80e3d78c7383eae8aea1cdc361c46e9c213f7184b9",
+      "translation_text_hash": "2ceb22e2a4c6a9cf62e44a0a1ea2c983ad14abb5a6603465153c6d7c3d234b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱과 그와 함께한 모든 사람이 가나안 땅 루스 곧 벧엘에 이르고"
+      ],
+      "raw_text_hashes": [
+        "2ceb22e2a4c6a9cf62e44a0a1ea2c983ad14abb5a6603465153c6d7c3d234b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:7",
+      "sequence": 1019,
+      "chapter_label": "GEN 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "He built an altar there, and called the place El Beth El; because there God was revealed to him, when he fled from the face of his brother.",
+      "ko": "그가 거기서 단을 쌓고 그곳을 엘벧엘이라 불렀으니 이는 그 형의 낯을 피할 때에 하나님이 그에게 거기서 나타나셨음이더라",
+      "source_text_hash": "34f743988d157306888205ae6e0c028f61d7256b67d256f31c191663e3f58199",
+      "translation_text_hash": "af025ff2852b5a7c0a180ca589d646696cfa87e4a82b35deba2f4ee5b3a315cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 거기서 단을 쌓고 그곳을 엘벧엘이라 불렀으니 이는 그 형의 낯을 피할 때에 하나님이 그에게 거기서 나타나셨음이더라"
+      ],
+      "raw_text_hashes": [
+        "af025ff2852b5a7c0a180ca589d646696cfa87e4a82b35deba2f4ee5b3a315cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:8",
+      "sequence": 1020,
+      "chapter_label": "GEN 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "Deborah, Rebekah’s nurse, died, and she was buried below Bethel under the oak; and its name was called Allon Bacuth.",
+      "ko": "리브가의 유모 드보라가 죽으매 그를 벧엘 아래 상수리나무 밑에 장사하고 그 나무 이름을 알론바굿이라 불렀더라",
+      "source_text_hash": "b7fe9f0a2eb4dd07fc334886dbc7f7400626aa30826aa6eaebe470807a4a8e7d",
+      "translation_text_hash": "be72ad322a055bec99c16edb15d6012bca4cf5470fcaf10f4bc157f4d9f61045",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "리브가의 유모 드보라가 죽으매 그를 벧엘 아래 상수리나무 밑에 장사하고 그 나무 이름을 알론바굿이라 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "be72ad322a055bec99c16edb15d6012bca4cf5470fcaf10f4bc157f4d9f61045"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:9",
+      "sequence": 1021,
+      "chapter_label": "GEN 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "God appeared to Jacob again, when he came from Paddan Aram, and blessed him.",
+      "ko": "야곱이 밧단아람에서 돌아오매 하나님이 다시 야곱에게 나타나사 그에게 복을 주시고",
+      "source_text_hash": "507987689061f78496958eb0d3d6929efc35e649380faf7680c48da516b7ffda",
+      "translation_text_hash": "43b525622a5e0107935a061cfdf50be73c89543a9e508e2efcd73b785ceb5be8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 밧단아람에서 돌아오매 하나님이 다시 야곱에게 나타나사 그에게 복을 주시고"
+      ],
+      "raw_text_hashes": [
+        "43b525622a5e0107935a061cfdf50be73c89543a9e508e2efcd73b785ceb5be8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:10",
+      "sequence": 1022,
+      "chapter_label": "GEN 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "God said to him, “Your name is Jacob. Your name shall not be Jacob any more, but your name will be Israel.” He named him Israel.",
+      "ko": "그에게 이르시되 네 이름이 야곱이다마는 네 이름을 다시는 야곱이라 부르지 않겠고 이스라엘이 네 이름이 되리라 하시고 그가 그의 이름을 이스라엘이라 부르시고",
+      "source_text_hash": "f5f1d8c917375918a8f0d5fc105299fc8a068801d18dace316eb5e16e8d914ce",
+      "translation_text_hash": "a816910b751850791f372ab2c3e07e2e7a1eef28e0091606c13873ca370124d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르시되 네 이름이 야곱이다마는 네 이름을 다시는 야곱이라 부르지 않겠고 이스라엘이 네 이름이 되리라 하시고 그가 그의 이름을 이스라엘이라 부르시고"
+      ],
+      "raw_text_hashes": [
+        "a816910b751850791f372ab2c3e07e2e7a1eef28e0091606c13873ca370124d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:11",
+      "sequence": 1023,
+      "chapter_label": "GEN 35",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 11
+        }
+      ],
+      "en": "God said to him, “I am God Almighty. Be fruitful and multiply. A nation and a company of nations will be from you, and kings will come out of your body.",
+      "ko": "그에게 이르시되 나는 전능한 하나님이니라 생육하며 번성하라 국민과 많은 국민이 네게서 나고 왕들이 네 허리에서 나오리라",
+      "source_text_hash": "e6f024043b618233255f2a899c089f90358db01021246a21eadca1ddf20c353d",
+      "translation_text_hash": "fab98a1ee2b80c1788713cfbd7bedc2e9249a0eb9157c1a231236065d202e719",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르시되 나는 전능한 하나님이니라 생육하며 번성하라 국민과 많은 국민이 네게서 나고 왕들이 네 허리에서 나오리라"
+      ],
+      "raw_text_hashes": [
+        "fab98a1ee2b80c1788713cfbd7bedc2e9249a0eb9157c1a231236065d202e719"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:12",
+      "sequence": 1024,
+      "chapter_label": "GEN 35",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 12
+        }
+      ],
+      "en": "The land which I gave to Abraham and Isaac, I will give it to you, and to your offspring after you I will give the land.”",
+      "ko": "내가 아브라함과 이삭에게 준 땅을 네게 주고 내가 네 후손에게도 그 땅을 주리라 하시고",
+      "source_text_hash": "535e4cf66a779ead0e5785cc606189cf4f15655168471eee11c88ee5a3f127bc",
+      "translation_text_hash": "53c1af09bdb4099483f7ea950e8cb8d438e536743fbba5fe9cee6a0cafdfcbe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아브라함과 이삭에게 준 땅을 네게 주고 내가 네 후손에게도 그 땅을 주리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "53c1af09bdb4099483f7ea950e8cb8d438e536743fbba5fe9cee6a0cafdfcbe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:13",
+      "sequence": 1025,
+      "chapter_label": "GEN 35",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 13
+        }
+      ],
+      "en": "God went up from him in the place where he spoke with him.",
+      "ko": "하나님이 그와 말씀하시던 곳에서 그를 떠나 올라 가시는지라",
+      "source_text_hash": "4c02608d93d05e52e868dc78cb33ae97ffc559114d89efec41aa99215cd3513d",
+      "translation_text_hash": "eeaaaad07de06b737bc45cd7bb2523528cb4b186fe894bc2b4b8bd45550e1dc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그와 말씀하시던 곳에서 그를 떠나 올라 가시는지라"
+      ],
+      "raw_text_hashes": [
+        "eeaaaad07de06b737bc45cd7bb2523528cb4b186fe894bc2b4b8bd45550e1dc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:14",
+      "sequence": 1026,
+      "chapter_label": "GEN 35",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 14
+        }
+      ],
+      "en": "Jacob set up a pillar in the place where he spoke with him, a pillar of stone. He poured out a drink offering on it, and poured oil on it.",
+      "ko": "야곱이 하나님의 자기와 말씀하시던 곳에 기둥 곧 돌 기둥을 세우고 그 위에 전제물을 붓고 또 그 위에 기름을 붓고",
+      "source_text_hash": "372f7ca6261ebb1b215eee2f2e2af683f8c507fe4777e4b45723b658203ce6ef",
+      "translation_text_hash": "5ae7599e0107ef49f8546885d2666482ed13770ba388e3571e528818b03dc328",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 하나님의 자기와 말씀하시던 곳에 기둥 곧 돌 기둥을 세우고 그 위에 전제물을 붓고 또 그 위에 기름을 붓고"
+      ],
+      "raw_text_hashes": [
+        "5ae7599e0107ef49f8546885d2666482ed13770ba388e3571e528818b03dc328"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:15",
+      "sequence": 1027,
+      "chapter_label": "GEN 35",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 15
+        }
+      ],
+      "en": "Jacob called the name of the place where God spoke with him “Bethel”.",
+      "ko": "하나님이 자기와 말씀하시던 곳의 이름을 벧엘이라 불렀더라",
+      "source_text_hash": "c4a3dfb9a9ffb0541239779d19fba76df4fe6fb91e5db04515886714745e0b1a",
+      "translation_text_hash": "4e103724057944ec8a0d955a0004b7400d81e93e081c9550a297b76351489fea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 자기와 말씀하시던 곳의 이름을 벧엘이라 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "4e103724057944ec8a0d955a0004b7400d81e93e081c9550a297b76351489fea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:16",
+      "sequence": 1028,
+      "chapter_label": "GEN 35",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 16
+        }
+      ],
+      "en": "They traveled from Bethel. There was still some distance to come to Ephrath, and Rachel travailed. She had hard labor.",
+      "ko": "그들이 벧엘에서 발행하여 에브랏에 이르기까지 얼마 길을 격한 곳에서 라헬이 임산하여 심히 신고하더니",
+      "source_text_hash": "5f9125341a35ad2cf84f7ecef6272d27f168d2b3d809090c34b147b3c8d60b77",
+      "translation_text_hash": "05f05480a6b7c8e941b908de11cb353a51eec6022529cfad1f17d766f7b8e770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 벧엘에서 발행하여 에브랏에 이르기까지 얼마 길을 격한 곳에서 라헬이 임산하여 심히 신고하더니"
+      ],
+      "raw_text_hashes": [
+        "05f05480a6b7c8e941b908de11cb353a51eec6022529cfad1f17d766f7b8e770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:17",
+      "sequence": 1029,
+      "chapter_label": "GEN 35",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 17
+        }
+      ],
+      "en": "When she was in hard labor, the midwife said to her, “Don’t be afraid, for now you will have another son.”",
+      "ko": "그가 난산할 즈음에 산파가 그에게 이르되 두려워말라 지금 그대가 또 득남하느니라 하매",
+      "source_text_hash": "435f86c7b1b109c383a6c550776e633a4672669fa34119fcf862acb20876c402",
+      "translation_text_hash": "f23c160e531e682259601212863a5a538ce1cbb89255ae59229a2e651278291e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 난산할 즈음에 산파가 그에게 이르되 두려워말라 지금 그대가 또 득남하느니라 하매"
+      ],
+      "raw_text_hashes": [
+        "f23c160e531e682259601212863a5a538ce1cbb89255ae59229a2e651278291e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:18",
+      "sequence": 1030,
+      "chapter_label": "GEN 35",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 18
+        }
+      ],
+      "en": "As her soul was departing (for she died), she named him Benoni, but his father named him Benjamin.",
+      "ko": "그가 죽기에 임하여 그 혼이 떠나려할 때에 아들의 이름은 베노니라 불렀으나 그 아비가 그를 베냐민이라 불렀더라",
+      "source_text_hash": "0bc4c78acfb9cf9e88b39c942577088a8d5efcbdd3b476f788378ae6639ef65a",
+      "translation_text_hash": "f70c10df2e95fdb0d72066b7e0717c4df6b7570ddc62a5f08cbc4ff5d132ba6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 죽기에 임하여 그 혼이 떠나려할 때에 아들의 이름은 베노니라 불렀으나 그 아비가 그를 베냐민이라 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "f70c10df2e95fdb0d72066b7e0717c4df6b7570ddc62a5f08cbc4ff5d132ba6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:19",
+      "sequence": 1031,
+      "chapter_label": "GEN 35",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 19
+        }
+      ],
+      "en": "Rachel died, and was buried on the way to Ephrath (also called Bethlehem).",
+      "ko": "라헬이 죽으매 에브랏 곧 베들레헴 길에 장사되었고",
+      "source_text_hash": "08e824c8f29a090dac2d14a8b27453aebb3c8600fab8e3af688b6038c8df5290",
+      "translation_text_hash": "785c6623869be99f5ec9f1d3e389f27fdc74f94a4af5f560499b975d6c888dd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬이 죽으매 에브랏 곧 베들레헴 길에 장사되었고"
+      ],
+      "raw_text_hashes": [
+        "785c6623869be99f5ec9f1d3e389f27fdc74f94a4af5f560499b975d6c888dd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:20",
+      "sequence": 1032,
+      "chapter_label": "GEN 35",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 20
+        }
+      ],
+      "en": "Jacob set up a pillar on her grave. The same is the Pillar of Rachel’s grave to this day.",
+      "ko": "야곱이 라헬의 묘에 비를 세웠더니 지금까지 라헬의 묘비라 일컫더라",
+      "source_text_hash": "67dd19330be927a2c6f0aeda7d86292a36206c0b02674d20671b0ede425e9e9f",
+      "translation_text_hash": "9470bbb2c13429427365e4399abe63e55a5ff8d25913a21286e0823c089efa08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 라헬의 묘에 비를 세웠더니 지금까지 라헬의 묘비라 일컫더라"
+      ],
+      "raw_text_hashes": [
+        "9470bbb2c13429427365e4399abe63e55a5ff8d25913a21286e0823c089efa08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:21",
+      "sequence": 1033,
+      "chapter_label": "GEN 35",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 21
+        }
+      ],
+      "en": "Israel traveled, and spread his tent beyond the tower of Eder.",
+      "ko": "이스라엘이 다시 발행하여 에델 망대를 지나 장막을 쳤더라",
+      "source_text_hash": "23e825e8e4b2c66de0ee53fe46748b81a11a8b8340eb4e98e0c4ccc69da868f1",
+      "translation_text_hash": "305869d4f806b967796cc946f1ebf41dbd8e4a78fb24cd15d50dbeb3d1e31dbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 다시 발행하여 에델 망대를 지나 장막을 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "305869d4f806b967796cc946f1ebf41dbd8e4a78fb24cd15d50dbeb3d1e31dbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:22",
+      "sequence": 1034,
+      "chapter_label": "GEN 35",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 22
+        }
+      ],
+      "en": "While Israel lived in that land, Reuben went and lay with Bilhah, his father’s concubine, and Israel heard of it. Now the sons of Jacob were twelve.",
+      "ko": "이스라엘이 그 땅에 유할 때에 르우벤이 가서 그 서모 빌하와 통간하매 이스라엘이 이를 들었더라 야곱의 아들은 열둘이라",
+      "source_text_hash": "e6ded8ee8cd3b5caf6b57258ec19fe11c8f4f099a23bb87801c94875e52a0b9a",
+      "translation_text_hash": "0caa78924358b66235d335609b25202724e61246ca75181a1f299f54f2c38fe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 그 땅에 유할 때에 르우벤이 가서 그 서모 빌하와 통간하매 이스라엘이 이를 들었더라 야곱의 아들은 열둘이라"
+      ],
+      "raw_text_hashes": [
+        "0caa78924358b66235d335609b25202724e61246ca75181a1f299f54f2c38fe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:23",
+      "sequence": 1035,
+      "chapter_label": "GEN 35",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 23
+        }
+      ],
+      "en": "The sons of Leah: Reuben (Jacob’s firstborn), Simeon, Levi, Judah, Issachar, and Zebulun.",
+      "ko": "레아의 소생은 야곱의 장자 르우벤과 그 다음 시므온과 레위와 유다와 잇사갈과 스불론이요",
+      "source_text_hash": "b20d4b9fbaa602312e6c406a7fbb2245c4050ed8bd742201cecf3dc57a0693ce",
+      "translation_text_hash": "3a0f59a9903bd86ff37c7c72cfa0944cf0bea99778b9cf88251deaf6a7e4ee51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아의 소생은 야곱의 장자 르우벤과 그 다음 시므온과 레위와 유다와 잇사갈과 스불론이요"
+      ],
+      "raw_text_hashes": [
+        "3a0f59a9903bd86ff37c7c72cfa0944cf0bea99778b9cf88251deaf6a7e4ee51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:24",
+      "sequence": 1036,
+      "chapter_label": "GEN 35",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 24
+        }
+      ],
+      "en": "The sons of Rachel: Joseph and Benjamin.",
+      "ko": "라헬의 소생은 요셉과 베냐민이며",
+      "source_text_hash": "ea68a737125d75b2d6f486c3dcc656abbf8db742f9df59dc788f7e073f8602d5",
+      "translation_text_hash": "0fdca9c201b39cb857ce1fdb87ec2a17ab4b710fc3d28d9f5e526e3b3e401c25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬의 소생은 요셉과 베냐민이며"
+      ],
+      "raw_text_hashes": [
+        "0fdca9c201b39cb857ce1fdb87ec2a17ab4b710fc3d28d9f5e526e3b3e401c25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:25",
+      "sequence": 1037,
+      "chapter_label": "GEN 35",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 25
+        }
+      ],
+      "en": "The sons of Bilhah (Rachel’s servant): Dan and Naphtali.",
+      "ko": "라헬의 여종 빌하의 소생은 단과 납달리요",
+      "source_text_hash": "1ae97b5a28c1847947237710bcd1510920acf0cea1a9158659dec7d4eb394872",
+      "translation_text_hash": "bc1bd5203936ae67f16aebeae50628fe3a4aa7fd89b1cae1aba8736468e4f5bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라헬의 여종 빌하의 소생은 단과 납달리요"
+      ],
+      "raw_text_hashes": [
+        "bc1bd5203936ae67f16aebeae50628fe3a4aa7fd89b1cae1aba8736468e4f5bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:26",
+      "sequence": 1038,
+      "chapter_label": "GEN 35",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 26
+        }
+      ],
+      "en": "The sons of Zilpah (Leah’s servant): Gad and Asher. These are the sons of Jacob, who were born to him in Paddan Aram.",
+      "ko": "레아의 여종 실바의 소생은 갓과 아셀이니 이들은 야곱의 아들들이요 밧단아람에서 그에게 낳은 자더라",
+      "source_text_hash": "7235cd49612c12864ebf563b08e767049f6c5d96e06d2a4f8569146fdbb00526",
+      "translation_text_hash": "7fc6e79d8871fba741c6154957517903399ca18a722fbd14d63275a54a025a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레아의 여종 실바의 소생은 갓과 아셀이니 이들은 야곱의 아들들이요 밧단아람에서 그에게 낳은 자더라"
+      ],
+      "raw_text_hashes": [
+        "7fc6e79d8871fba741c6154957517903399ca18a722fbd14d63275a54a025a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:27",
+      "sequence": 1039,
+      "chapter_label": "GEN 35",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 27
+        }
+      ],
+      "en": "Jacob came to Isaac his father, to Mamre, to Kiriath Arba (which is Hebron), where Abraham and Isaac lived as foreigners.",
+      "ko": "야곱이 기럇아르바의 마므레로 가서 그 아비 이삭에게 이르렀으니 기럇아르바는 곧 아브라함과 이삭의 우거하던 헤브론이더라",
+      "source_text_hash": "46cc17460bb48edc506644dbb4447a01d914b1c1a1fee49383cbb42be5aa172c",
+      "translation_text_hash": "4289a778ead69d50732512670df3ebd80195a9840afbf125149b13c0c19016ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 기럇아르바의 마므레로 가서 그 아비 이삭에게 이르렀으니 기럇아르바는 곧 아브라함과 이삭의 우거하던 헤브론이더라"
+      ],
+      "raw_text_hashes": [
+        "4289a778ead69d50732512670df3ebd80195a9840afbf125149b13c0c19016ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:28",
+      "sequence": 1040,
+      "chapter_label": "GEN 35",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 28
+        }
+      ],
+      "en": "The days of Isaac were one hundred eighty years.",
+      "ko": "이삭의 나이 일백 팔십세라",
+      "source_text_hash": "9cf31f7a0d0006c85eabc5458a7fcb0cecbeeff5e226b8efe4cf26c1619ccc85",
+      "translation_text_hash": "74c6018a42cec14b60943a499fee8f6294fc468a6c1dc35013c9ef6434714bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭의 나이 일백 팔십세라"
+      ],
+      "raw_text_hashes": [
+        "74c6018a42cec14b60943a499fee8f6294fc468a6c1dc35013c9ef6434714bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:35:29",
+      "sequence": 1041,
+      "chapter_label": "GEN 35",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 35,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 35,
+          "verse": 29
+        }
+      ],
+      "en": "Isaac gave up the spirit and died, and was gathered to his people, old and full of days. Esau and Jacob, his sons, buried him.",
+      "ko": "이삭이 나이 많고 늙어 기운이 진하매 죽어 자기 열조에게로 돌아가니 그 아들 에서와 야곱이 그를 장사하였더라",
+      "source_text_hash": "37f72879c16c08b7b11c91cb3ea9e647bff9c5a288ad858a81bf70fa13706509",
+      "translation_text_hash": "75f7f24473201f18b43a0af157e2433fa2691c4099d9c98167e01378cdd43bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 나이 많고 늙어 기운이 진하매 죽어 자기 열조에게로 돌아가니 그 아들 에서와 야곱이 그를 장사하였더라"
+      ],
+      "raw_text_hashes": [
+        "75f7f24473201f18b43a0af157e2433fa2691c4099d9c98167e01378cdd43bdd"
+      ]
+    }
+  ]
+}

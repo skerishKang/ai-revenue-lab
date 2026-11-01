@@ -264,7 +264,10 @@ async def claw_local_connect(request: Request) -> JSONResponse:
 
     mint = None
     try:
-        mint = port.issue_pairing_challenge(
+        issue = getattr(port, "issue_pairing_challenge_async", None)
+        if not callable(issue):
+            issue = port.issue_pairing_challenge
+        mint = issue(
             owner_id=uid,
             conversation_id=conversation_id,
             now=datetime.now(timezone.utc),

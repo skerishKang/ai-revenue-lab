@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:038",
+  "unit_ordinal": 516,
+  "unit_label": "PSA 38",
+  "book_code": "PSA",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:38:1",
+      "sequence": 14492,
+      "chapter_label": "PSA 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, don’t rebuke me in your wrath, neither chasten me in your hot displeasure.",
+      "ko": "여호와여 주의 노로 나를 책하지 마시고 분노로 나를 징계치 마소서",
+      "source_text_hash": "ebb9d11f8d98c9fcd90833473a95a7121d2c779bc3b06e2db8cc6f2241429974",
+      "translation_text_hash": "2418cc248a7f15835fbd8ce1a10215ab024438a8e067098f3b55a45b69b883e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 노로 나를 책하지 마시고 분노로 나를 징계치 마소서"
+      ],
+      "raw_text_hashes": [
+        "2418cc248a7f15835fbd8ce1a10215ab024438a8e067098f3b55a45b69b883e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:2",
+      "sequence": 14493,
+      "chapter_label": "PSA 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "For your arrows have pierced me, your hand presses hard on me.",
+      "ko": "주의 살이 나를 찌르고 주의 손이 나를 심히 누르시나이다",
+      "source_text_hash": "b1fce8017139e59b953de61e50d053e3085f986da75d3f41591ac14274b42b76",
+      "translation_text_hash": "55023cedd445728e85663833a3f75c6c7dece7f7e7c2ba932d71edeaed196515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 살이 나를 찌르고 주의 손이 나를 심히 누르시나이다"
+      ],
+      "raw_text_hashes": [
+        "55023cedd445728e85663833a3f75c6c7dece7f7e7c2ba932d71edeaed196515"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:3",
+      "sequence": 14494,
+      "chapter_label": "PSA 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "There is no soundness in my flesh because of your indignation, neither is there any health in my bones because of my sin.",
+      "ko": "주의 진노로 인하여 내 살에 성한 곳이 없사오며 나의 죄로 인하여 내 뼈에 평안함이 없나이다",
+      "source_text_hash": "9a3eb3340f7185b0fde0771eba08c514bb73239fd324ae04f0082b415939f033",
+      "translation_text_hash": "a77ab24e5f81b011834cd908cd3aaae76220a6c8b2c1c4546501f77e1eb37899",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 진노로 인하여 내 살에 성한 곳이 없사오며 나의 죄로 인하여 내 뼈에 평안함이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "a77ab24e5f81b011834cd908cd3aaae76220a6c8b2c1c4546501f77e1eb37899"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:4",
+      "sequence": 14495,
+      "chapter_label": "PSA 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "For my iniquities have gone over my head. As a heavy burden, they are too heavy for me.",
+      "ko": "내 죄악이 내 머리에 넘쳐서 무거운 짐 같으니 감당할 수 없나이다",
+      "source_text_hash": "8e2eac5b1d1e124b89b137feac46e07418e5628cf9d2f3efdad0bcda93b95390",
+      "translation_text_hash": "fd6ae4b0ab560f2ee332b6774bd83df27fd89978a2b2eb73a17b7c0d0a631b73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 죄악이 내 머리에 넘쳐서 무거운 짐 같으니 감당할 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "fd6ae4b0ab560f2ee332b6774bd83df27fd89978a2b2eb73a17b7c0d0a631b73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:5",
+      "sequence": 14496,
+      "chapter_label": "PSA 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "My wounds are loathsome and corrupt because of my foolishness.",
+      "ko": "내 상처가 썩어 악취가 나오니 나의 우매한 연고로소이다",
+      "source_text_hash": "720d29fa26856a8a311380247b7ea41402af24117f36d700a5ab03b43f152b1e",
+      "translation_text_hash": "a4a5dcb1ece9eb64cb9a0071a4680a183df884028d51cd358a6fa13039a31742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 상처가 썩어 악취가 나오니 나의 우매한 연고로소이다"
+      ],
+      "raw_text_hashes": [
+        "a4a5dcb1ece9eb64cb9a0071a4680a183df884028d51cd358a6fa13039a31742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:6",
+      "sequence": 14497,
+      "chapter_label": "PSA 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "I am in pain and bowed down greatly. I go mourning all day long.",
+      "ko": "내가 아프고 심히 구부러졌으며 종일토록 슬픈 중에 다니나이다",
+      "source_text_hash": "8fd95fed027d9953472aa874fce81adbddce79e97e0607fee2ad05bee5d2b7a1",
+      "translation_text_hash": "16723ad1b91390563be26c3bec6f70c8497ab224bb6d1162e20c5024a8c4acba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아프고 심히 구부러졌으며 종일토록 슬픈 중에 다니나이다"
+      ],
+      "raw_text_hashes": [
+        "16723ad1b91390563be26c3bec6f70c8497ab224bb6d1162e20c5024a8c4acba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:7",
+      "sequence": 14498,
+      "chapter_label": "PSA 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "For my waist is filled with burning. There is no soundness in my flesh.",
+      "ko": "내 허리에 열기가 가득하고 내 살에 성한 곳이 없나이다",
+      "source_text_hash": "b59b08a675a0dda1bca39b64d56a059547ac85799b4f9eba1d7db860144671f3",
+      "translation_text_hash": "97b6ea54ab3bce356e0f593365b30849ec89a228b2bfe59193c2d591b8b1a14f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 허리에 열기가 가득하고 내 살에 성한 곳이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "97b6ea54ab3bce356e0f593365b30849ec89a228b2bfe59193c2d591b8b1a14f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:8",
+      "sequence": 14499,
+      "chapter_label": "PSA 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "I am faint and severely bruised. I have groaned by reason of the anguish of my heart.",
+      "ko": "내가 피곤하고 심히 상하였으매 마음이 불안하여 신음하나이다",
+      "source_text_hash": "126fbaddf69adfbd40eb31ae1a66bf53a9edd11cf82e1d9c4e6079cea7f64308",
+      "translation_text_hash": "ba789507e8e092597422a68b8d6873f8f13aca890d566d379f686f2584747889",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 피곤하고 심히 상하였으매 마음이 불안하여 신음하나이다"
+      ],
+      "raw_text_hashes": [
+        "ba789507e8e092597422a68b8d6873f8f13aca890d566d379f686f2584747889"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:9",
+      "sequence": 14500,
+      "chapter_label": "PSA 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "Lord, all my desire is before you. My groaning is not hidden from you.",
+      "ko": "주여 나의 모든 소원이 주의 앞에 있사오며 나의 탄식이 주의 앞에 감추이지 아니하나이다",
+      "source_text_hash": "805715f9b9f806f82636d425dbcd7ea203db0ef55f9f65a4b6e6fa75663622bd",
+      "translation_text_hash": "97357d12cccf17f0785fa2b393f7680d74c0a24c8e51f10f0045a96deaf55d20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 나의 모든 소원이 주의 앞에 있사오며 나의 탄식이 주의 앞에 감추이지 아니하나이다"
+      ],
+      "raw_text_hashes": [
+        "97357d12cccf17f0785fa2b393f7680d74c0a24c8e51f10f0045a96deaf55d20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:10",
+      "sequence": 14501,
+      "chapter_label": "PSA 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "My heart throbs. My strength fails me. As for the light of my eyes, it has also left me.",
+      "ko": "내 심장이 뛰고 내 기력이 쇠하여 내 눈의 빛도 나를 떠났나이다",
+      "source_text_hash": "4e59ce23b173554ae3885b6aef2f4193e8f79414cb384ec01ab54a91fe9962a7",
+      "translation_text_hash": "91e6eebb5d0b6c74b9dd232327d239a3517dce2e7420916b4fea0461cf9d3ed5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 심장이 뛰고 내 기력이 쇠하여 내 눈의 빛도 나를 떠났나이다"
+      ],
+      "raw_text_hashes": [
+        "91e6eebb5d0b6c74b9dd232327d239a3517dce2e7420916b4fea0461cf9d3ed5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:11",
+      "sequence": 14502,
+      "chapter_label": "PSA 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "My lovers and my friends stand aloof from my plague. My kinsmen stand far away.",
+      "ko": "나의 사랑하는 자와 나의 친구들이 나의 상처를 멀리하고 나의 친척들도 멀리 섰나이다",
+      "source_text_hash": "2c96c097a8f5a1021e877f6cf4d40a4fc0682d515bae21f192cdad7467d5d86d",
+      "translation_text_hash": "eb4f352c055a798a3477a2bd5adb4d1c3940f3ab0a26f5639f18c0ce26a58391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자와 나의 친구들이 나의 상처를 멀리하고 나의 친척들도 멀리 섰나이다"
+      ],
+      "raw_text_hashes": [
+        "eb4f352c055a798a3477a2bd5adb4d1c3940f3ab0a26f5639f18c0ce26a58391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:12",
+      "sequence": 14503,
+      "chapter_label": "PSA 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "They also who seek after my life lay snares. Those who seek my hurt speak mischievous things, and meditate deceits all day long.",
+      "ko": "내 생명을 찾는 자가 올무를 놓고 나를 해하려는 자가 괴악한 일을 말하여 종일토록 궤계를 도모하오나",
+      "source_text_hash": "526866269eab619c4705dd0605e6113c859cd46409479fa8ff28ed096d62c2b8",
+      "translation_text_hash": "4ce5593f15bb76cfb41952ad7053871dbf9d33fa63306071cda8a2056fb5ff06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 생명을 찾는 자가 올무를 놓고 나를 해하려는 자가 괴악한 일을 말하여 종일토록 궤계를 도모하오나"
+      ],
+      "raw_text_hashes": [
+        "4ce5593f15bb76cfb41952ad7053871dbf9d33fa63306071cda8a2056fb5ff06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:13",
+      "sequence": 14504,
+      "chapter_label": "PSA 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "But I, as a deaf man, don’t hear. I am as a mute man who doesn’t open his mouth.",
+      "ko": "나는 귀먹은 자 같이 듣지 아니하고 벙어리 같이 입을 열지 아니하오니",
+      "source_text_hash": "9819126b777e95e99d5a4ef5487a7220e4a844b706143f3cefb924132e8a3b3d",
+      "translation_text_hash": "3629f31ae3cef16b3ab4d66db418e42d062b4298a5007423634dfb8d3a2e1890",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 귀먹은 자 같이 듣지 아니하고 벙어리 같이 입을 열지 아니하오니"
+      ],
+      "raw_text_hashes": [
+        "3629f31ae3cef16b3ab4d66db418e42d062b4298a5007423634dfb8d3a2e1890"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:14",
+      "sequence": 14505,
+      "chapter_label": "PSA 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "Yes, I am as a man who doesn’t hear, in whose mouth are no reproofs.",
+      "ko": "나는 듣지 못하는 자 같아서 입에는 변박함이 없나이다",
+      "source_text_hash": "e3c4b00e4ca7a8eb2822ea289aa6114fd195037e7343414d58a11c395e594092",
+      "translation_text_hash": "da2ec89465c9de96e99aca7238df41f6bf8e4db9f86e619ca3da660e2597b5ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 듣지 못하는 자 같아서 입에는 변박함이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "da2ec89465c9de96e99aca7238df41f6bf8e4db9f86e619ca3da660e2597b5ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:15",
+      "sequence": 14506,
+      "chapter_label": "PSA 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "For I hope in you, LORD. You will answer, Lord my God.",
+      "ko": "여호와여 내가 주를 바랐사오니 내 주 하나님이 내게 응락하시리이다",
+      "source_text_hash": "b021e5865d7579cb022a53e061c594ee56b543c99a4c966483dff2e81c67afca",
+      "translation_text_hash": "4f595cb50d8b28882052d7079b173d5b00d4ac18612ee2886ce1a694ed18d0f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주를 바랐사오니 내 주 하나님이 내게 응락하시리이다"
+      ],
+      "raw_text_hashes": [
+        "4f595cb50d8b28882052d7079b173d5b00d4ac18612ee2886ce1a694ed18d0f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:16",
+      "sequence": 14507,
+      "chapter_label": "PSA 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "For I said, “Don’t let them gloat over me, or exalt themselves over me when my foot slips.”",
+      "ko": "내가 말하기를 두렵건대 저희가 내게 대하여 기뻐하며 내가 실족할 때에 나를 향하여 망자존대할까 하였나이다",
+      "source_text_hash": "de90cde8160020aaf6019baf6a9e9606fccd1480802f9b8e08033b61fa10f80d",
+      "translation_text_hash": "444e121ced28ee82dcd1536c4d8c5517ce0bb1989817c41bed4be4eb2f3ff0cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 두렵건대 저희가 내게 대하여 기뻐하며 내가 실족할 때에 나를 향하여 망자존대할까 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "444e121ced28ee82dcd1536c4d8c5517ce0bb1989817c41bed4be4eb2f3ff0cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:17",
+      "sequence": 14508,
+      "chapter_label": "PSA 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "For I am ready to fall. My pain is continually before me.",
+      "ko": "내가 넘어지게 되었고 나의 근심이 항상 내 앞에 있사오니",
+      "source_text_hash": "a86524f8c64d742c165115ee4078058a9a091f087aefb0dd6cda9580fa5f9384",
+      "translation_text_hash": "b73238c6225d633a53152646fe99ffafd0e2952dbff836855866e6ee936f2642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 넘어지게 되었고 나의 근심이 항상 내 앞에 있사오니"
+      ],
+      "raw_text_hashes": [
+        "b73238c6225d633a53152646fe99ffafd0e2952dbff836855866e6ee936f2642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:18",
+      "sequence": 14509,
+      "chapter_label": "PSA 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "For I will declare my iniquity. I will be sorry for my sin.",
+      "ko": "내 죄악을 고하고 내 죄를 슬퍼함이니이다",
+      "source_text_hash": "60856bdd045098e4d7400c2767166d03757ed00ca32107df27c7d261b3421ba7",
+      "translation_text_hash": "fc1f314de1b270061578ef7b0d1675b00ea45b07ed944169ba0af40723101a10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 죄악을 고하고 내 죄를 슬퍼함이니이다"
+      ],
+      "raw_text_hashes": [
+        "fc1f314de1b270061578ef7b0d1675b00ea45b07ed944169ba0af40723101a10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:19",
+      "sequence": 14510,
+      "chapter_label": "PSA 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "But my enemies are vigorous and many. Those who hate me without reason are numerous.",
+      "ko": "내 원수가 활발하며 강하고 무리하게 나를 미워하는 자가 무수하오며",
+      "source_text_hash": "ab156b3cf0f2445fad22666457e2bb8cdfff1fc8e8afbb950c457b1e7b1cc964",
+      "translation_text_hash": "255c80141d044ba19e5b95e23742db70ad1a6a69bd04c9da7ba0ca3faac18ecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 원수가 활발하며 강하고 무리하게 나를 미워하는 자가 무수하오며"
+      ],
+      "raw_text_hashes": [
+        "255c80141d044ba19e5b95e23742db70ad1a6a69bd04c9da7ba0ca3faac18ecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:20",
+      "sequence": 14511,
+      "chapter_label": "PSA 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "They who give evil for good are also adversaries to me, because I follow what is good.",
+      "ko": "또 악으로 선을 갚는 자들이 내가 선을 좇는 연고로 나를 대적하나이다",
+      "source_text_hash": "3d1cde2cbea8a811a14f8b2be5dee83e5e98c2537f82dc2cd818d832ef9053ab",
+      "translation_text_hash": "c07f5d2aabc9ac339f6535d1cc5808e156b24ecf333311c91c3cd38ae7e1752e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 악으로 선을 갚는 자들이 내가 선을 좇는 연고로 나를 대적하나이다"
+      ],
+      "raw_text_hashes": [
+        "c07f5d2aabc9ac339f6535d1cc5808e156b24ecf333311c91c3cd38ae7e1752e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:21",
+      "sequence": 14512,
+      "chapter_label": "PSA 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "Don’t forsake me, LORD. My God, don’t be far from me.",
+      "ko": "여호와여 나를 버리지 마소서 나의 하나님이여 나를 멀리하지 마소서",
+      "source_text_hash": "d779d30e961cf8cecca3c021ae551fc832451e780c289ea298967c1b46d20fcc",
+      "translation_text_hash": "495eef9dd0826f73373c25a5b0aa4dcf4ac619658f9fbe6c4aa08356d549c2bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 나를 버리지 마소서 나의 하나님이여 나를 멀리하지 마소서"
+      ],
+      "raw_text_hashes": [
+        "495eef9dd0826f73373c25a5b0aa4dcf4ac619658f9fbe6c4aa08356d549c2bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:38:22",
+      "sequence": 14513,
+      "chapter_label": "PSA 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "PSA",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "Hurry to help me, Lord, my salvation.",
+      "ko": "속히 나를 도우소서 주 나의 구원이시여",
+      "source_text_hash": "ce1a33af0112aab5d89a0db5627da5ae8a43c409fc9cc3b660e8ea6ff0550854",
+      "translation_text_hash": "2a6d58a72dc0c3d9b49fad6f0a5d7658056ff299df314a57c2f0f7736605dde3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속히 나를 도우소서 주 나의 구원이시여"
+      ],
+      "raw_text_hashes": [
+        "2a6d58a72dc0c3d9b49fad6f0a5d7658056ff299df314a57c2f0f7736605dde3"
+      ]
+    }
+  ]
+}

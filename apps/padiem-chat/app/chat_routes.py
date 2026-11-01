@@ -682,6 +682,8 @@ async def api_chat_stream(request: Request):
                     {"error": {"code": "chat_pc_tool_unsupported", "message": "요청한 PC 도구를 실행할 수 없습니다."}},
                     status_code=502,
                 )
+            from .pc_action_context import build_pc_action_context
+
             execution_user_text = next(
                 (item["content"] for item in reversed(policy.messages)
                  if item.get("role") == "user"),
@@ -702,6 +704,14 @@ async def api_chat_stream(request: Request):
                     device_id=raw.get("device_id"),
                     run_id=raw.get("pc_run_id"),
                     conversation_messages=messages,
+                    pc_action_context=build_pc_action_context(
+                        messages, user_text=latest_user_text,
+                        trusted_history=(conversation_id is not None and uid is not None and store is not None),
+                        tool_results=(
+                            ("file", project_files_context), ("file", drive_context),
+                            ("web", getattr(getattr(auto_plan, "prepared", None), "context", None)),
+                        ),
+                    ),
                     selected_tool=selected_tool,
                     declared_plan=declared_plan,
                 )

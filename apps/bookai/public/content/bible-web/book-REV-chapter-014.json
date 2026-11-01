@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:014",
+  "unit_ordinal": 1181,
+  "unit_label": "REV 14",
+  "book_code": "REV",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:14:1",
+      "sequence": 30924,
+      "chapter_label": "REV 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "I saw, and behold, the Lamb standing on Mount Zion, and with him a number, one hundred forty-four thousand, having his name and the name of his Father written on their foreheads.",
+      "ko": "또 내가 보니 보라 어린 양이 시온산에 섰고 그와 함께 십 사만 사천이 섰는데 그 이마에 어린 양의 이름과 그 아버지의 이름을 쓴 것이 있도다",
+      "source_text_hash": "4ec55bf3d42d871c5ca88313ccd5e219d4611c63fff2a7f5ceaeb9bb418162cb",
+      "translation_text_hash": "373350158d42d35f7e3e65da83b1d7834fd35662e623de06321783e1f30b7a1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보니 보라 어린 양이 시온산에 섰고 그와 함께 십 사만 사천이 섰는데 그 이마에 어린 양의 이름과 그 아버지의 이름을 쓴 것이 있도다"
+      ],
+      "raw_text_hashes": [
+        "373350158d42d35f7e3e65da83b1d7834fd35662e623de06321783e1f30b7a1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:2",
+      "sequence": 30925,
+      "chapter_label": "REV 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "I heard a sound from heaven like the sound of many waters and like the sound of a great thunder. The sound which I heard was like that of harpists playing on their harps.",
+      "ko": "내가 하늘에서 나는 소리를 들으니 많은 물소리도 같고 큰 뇌성도 같은데 내게 들리는 소리는 거문고 타는 자들의 그 거문고 타는 것 같더라",
+      "source_text_hash": "ae931afe10d518191e08f58fc235ad3e6e2798613fd03d49e7c60ac06dd24f72",
+      "translation_text_hash": "83ac7057e4e4106ff2c7f0baca93f6f1e8faa1bcad0b98bf6842a2437bbbe7a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 하늘에서 나는 소리를 들으니 많은 물소리도 같고 큰 뇌성도 같은데 내게 들리는 소리는 거문고 타는 자들의 그 거문고 타는 것 같더라"
+      ],
+      "raw_text_hashes": [
+        "83ac7057e4e4106ff2c7f0baca93f6f1e8faa1bcad0b98bf6842a2437bbbe7a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:3",
+      "sequence": 30926,
+      "chapter_label": "REV 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "They sing a new song before the throne and before the four living creatures and the elders. No one could learn the song except the one hundred forty-four thousand, those who had been redeemed out of the earth.",
+      "ko": "저희가 보좌와 네 생물과 장로들 앞에서 새 노래를 부르니 땅에서 구속함을 얻은 십 사만 사천인 밖에는 능히 이 노래를 배울 자가 없더라",
+      "source_text_hash": "8f4762a92106800bf72beda0a1410ef91af4f9661d667c7dff8d2ce4d735dc5d",
+      "translation_text_hash": "2e04570be23751de5a1ada78151cdbed7eee79c3347bc323ef951a5430c34252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 보좌와 네 생물과 장로들 앞에서 새 노래를 부르니 땅에서 구속함을 얻은 십 사만 사천인 밖에는 능히 이 노래를 배울 자가 없더라"
+      ],
+      "raw_text_hashes": [
+        "2e04570be23751de5a1ada78151cdbed7eee79c3347bc323ef951a5430c34252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:4",
+      "sequence": 30927,
+      "chapter_label": "REV 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "These are those who were not defiled with women, for they are virgins. These are those who follow the Lamb wherever he goes. These were redeemed by Jesus from among men, the first fruits to God and to the Lamb.",
+      "ko": "이 사람들은 여자로 더불어 더럽히지 아니하고 정절이 있는 자라 어린 양이 어디로 인도하든지 따라가는 자며 사람 가운데서 구속을 받아 처음 익은 열매로 하나님과 어린 양에게 속한 자들이니",
+      "source_text_hash": "873a81827f8d3fa87c6f13620a9078da3e18c02803986ca3654f941669a58685",
+      "translation_text_hash": "8b302c1ab0df151d2af51cffe6ad02052c42b75cd93ea72ff63214d20e8cc50d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람들은 여자로 더불어 더럽히지 아니하고 정절이 있는 자라 어린 양이 어디로 인도하든지 따라가는 자며 사람 가운데서 구속을 받아 처음 익은 열매로 하나님과 어린 양에게 속한 자들이니"
+      ],
+      "raw_text_hashes": [
+        "8b302c1ab0df151d2af51cffe6ad02052c42b75cd93ea72ff63214d20e8cc50d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:5",
+      "sequence": 30928,
+      "chapter_label": "REV 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "In their mouth was found no lie, for they are blameless.",
+      "ko": "그 입에 거짓말이 없고 흠이 없는 자들이더라",
+      "source_text_hash": "5e55acba3a547bfbb37d95618e5b4ad3000e8140830f82d8b3ac35fbd06bb509",
+      "translation_text_hash": "0674dbb4aa295cf970b9bb9951e90f397458310847437136996c3cd8b7b7572a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에 거짓말이 없고 흠이 없는 자들이더라"
+      ],
+      "raw_text_hashes": [
+        "0674dbb4aa295cf970b9bb9951e90f397458310847437136996c3cd8b7b7572a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:6",
+      "sequence": 30929,
+      "chapter_label": "REV 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "I saw an angel flying in mid heaven, having an eternal Good News to proclaim to those who dwell on the earth—to every nation, tribe, language, and people.",
+      "ko": "또 보니 다른 천사가 공중에 날아가는데 땅에 거하는 자들 곧 여러 나라와 족속과 방언과 백성에게 전할 영원한 복음을 가졌더라",
+      "source_text_hash": "a735d06eada7670535bb6df9c11a46aee6aa09b88e191b5e90aa489fb214e2cc",
+      "translation_text_hash": "fb3cb54e90534ea47f6a9c3250dd27244fed336b1f1221e53b9e649a75ad5d4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보니 다른 천사가 공중에 날아가는데 땅에 거하는 자들 곧 여러 나라와 족속과 방언과 백성에게 전할 영원한 복음을 가졌더라"
+      ],
+      "raw_text_hashes": [
+        "fb3cb54e90534ea47f6a9c3250dd27244fed336b1f1221e53b9e649a75ad5d4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:7",
+      "sequence": 30930,
+      "chapter_label": "REV 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "He said with a loud voice, “Fear the Lord, and give him glory, for the hour of his judgment has come. Worship him who made the heaven, the earth, the sea, and the springs of waters!”",
+      "ko": "그가 큰 음성으로 가로되 하나님을 두려워하며 그에게 영광을 돌리라 이는 그의 심판하실 시간이 이르렀음이니 하늘과 땅과 바다와 물들의 근원을 만드신 이를 경배하라 하더라",
+      "source_text_hash": "322798ec69e7a9525e7e6c223d69d563b15eb560fd4d7e39b8c5ba013987a286",
+      "translation_text_hash": "fca1591e602288fcf4e161d040d25b77ccdfdba1e246d6170e24f327e68ebf5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 큰 음성으로 가로되 하나님을 두려워하며 그에게 영광을 돌리라 이는 그의 심판하실 시간이 이르렀음이니 하늘과 땅과 바다와 물들의 근원을 만드신 이를 경배하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "fca1591e602288fcf4e161d040d25b77ccdfdba1e246d6170e24f327e68ebf5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:8",
+      "sequence": 30931,
+      "chapter_label": "REV 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "Another, a second angel, followed, saying, “Babylon the great has fallen, which has made all the nations to drink of the wine of the wrath of her sexual immorality.”",
+      "ko": "또 다른 천사 곧 둘째가 그 뒤를 따라 말하되 무너졌도다 무너졌도다 큰 성 바벨론이여 모든 나라를 그 음행으로 인하여 진노의 포도주로 먹이던 자로다 하더라",
+      "source_text_hash": "149556ee0d9860e9052188277f18e97d4b5c7e9fff82790509161c7d3e68c738",
+      "translation_text_hash": "643b1cc0342b5ee5b4486e8d9d8bcf78cb91a3b6e22bbf69883665951b55a25e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 천사 곧 둘째가 그 뒤를 따라 말하되 무너졌도다 무너졌도다 큰 성 바벨론이여 모든 나라를 그 음행으로 인하여 진노의 포도주로 먹이던 자로다 하더라"
+      ],
+      "raw_text_hashes": [
+        "643b1cc0342b5ee5b4486e8d9d8bcf78cb91a3b6e22bbf69883665951b55a25e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:9",
+      "sequence": 30932,
+      "chapter_label": "REV 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "Another angel, a third, followed them, saying with a great voice, “If anyone worships the beast and his image, and receives a mark on his forehead or on his hand,",
+      "ko": "또 다른 천사 곧 세째가 그 뒤를 따라 큰 음성으로 가로되 만일 누구든지 짐승과 그의 우상에게 경배하고 이마에나 손에 표를 받으면",
+      "source_text_hash": "5df77352a9f583cc25699e87f06f4147937e5f3bf94b5182c4577c53e40c5f40",
+      "translation_text_hash": "cc5626ffa4d55da684a8fd29162fbfc0c8ecada209b7e0e8a1b433a531e1ab66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 천사 곧 세째가 그 뒤를 따라 큰 음성으로 가로되 만일 누구든지 짐승과 그의 우상에게 경배하고 이마에나 손에 표를 받으면"
+      ],
+      "raw_text_hashes": [
+        "cc5626ffa4d55da684a8fd29162fbfc0c8ecada209b7e0e8a1b433a531e1ab66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:10",
+      "sequence": 30933,
+      "chapter_label": "REV 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "he also will drink of the wine of the wrath of God, which is prepared unmixed in the cup of his anger. He will be tormented with fire and sulfur in the presence of the holy angels and in the presence of the Lamb.",
+      "ko": "그도 하나님의 진노의 포도주를 마시리니 그 진노의 잔에 섞인 것이 없이 부은 포도주라 거룩한 천사들 앞과 어린 양 앞에서 불과 유황으로 고난을 받으리니",
+      "source_text_hash": "134879b785f8f2233cb96d4ab075dab4ad35634b99209c06408a29f65ee29b1b",
+      "translation_text_hash": "fa64face80cf7ab27c0ca0baa22c0e60d9ad3a029ce4f38e23d99ccde43ca691",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그도 하나님의 진노의 포도주를 마시리니 그 진노의 잔에 섞인 것이 없이 부은 포도주라 거룩한 천사들 앞과 어린 양 앞에서 불과 유황으로 고난을 받으리니"
+      ],
+      "raw_text_hashes": [
+        "fa64face80cf7ab27c0ca0baa22c0e60d9ad3a029ce4f38e23d99ccde43ca691"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:11",
+      "sequence": 30934,
+      "chapter_label": "REV 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "The smoke of their torment goes up forever and ever. They have no rest day and night, those who worship the beast and his image, and whoever receives the mark of his name.",
+      "ko": "그 고난의 연기가 세세토록 올라가리로다 짐승과 그의 우상에게 경배하고 그 이름의 표를 받는 자는 누구든지 밤낮 쉼을 얻지 못하리라 하더라",
+      "source_text_hash": "9a6f90ee75ace344b16a9d73b923713143957a84f25de4b681b4486c6617be20",
+      "translation_text_hash": "c018fb8ecb2e0b2098ae1b7f7836abb8a0d096eb46d6d01e9f42f955440decbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고난의 연기가 세세토록 올라가리로다 짐승과 그의 우상에게 경배하고 그 이름의 표를 받는 자는 누구든지 밤낮 쉼을 얻지 못하리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c018fb8ecb2e0b2098ae1b7f7836abb8a0d096eb46d6d01e9f42f955440decbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:12",
+      "sequence": 30935,
+      "chapter_label": "REV 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Here is the perseverance of the saints, those who keep the commandments of God and the faith of Jesus.”",
+      "ko": "성도들의 인내가 여기 있나니 저희는 하나님의 계명과 예수 믿음을 지키는 자니라",
+      "source_text_hash": "f67b442cc90ee38563fe94b3a01809b6dc32b048a5618ef5dd1eecd8cdf16563",
+      "translation_text_hash": "38dad6a4a099771827585baaf1082173235eeb973559fa3ab2a8ec1588fbc6b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성도들의 인내가 여기 있나니 저희는 하나님의 계명과 예수 믿음을 지키는 자니라"
+      ],
+      "raw_text_hashes": [
+        "38dad6a4a099771827585baaf1082173235eeb973559fa3ab2a8ec1588fbc6b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:13",
+      "sequence": 30936,
+      "chapter_label": "REV 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "I heard a voice from heaven saying, “Write, ‘Blessed are the dead who die in the Lord from now on.’” “Yes,” says the Spirit, “that they may rest from their labors, for their works follow with them.”",
+      "ko": "또 내가 들으니 하늘에서 음성이 나서 가로되 기록하라 자금 이후로 주 안에서 죽는 자들은 복이 있도다 하시매 성령이 가라사대 그러하다 저희 수고를 그치고 쉬리니 이는 저희의 행한 일이 따름이라 하시더라",
+      "source_text_hash": "cec9ee3b405b40e3f5eefcda32c279a561ed27c2c5858e6114688658a8d97ee4",
+      "translation_text_hash": "0828edb321354616d9db9edd301ae978adb13aad9cf014435b1796f70136945b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 들으니 하늘에서 음성이 나서 가로되 기록하라 자금 이후로 주 안에서 죽는 자들은 복이 있도다 하시매 성령이 가라사대 그러하다 저희 수고를 그치고 쉬리니 이는 저희의 행한 일이 따름이라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0828edb321354616d9db9edd301ae978adb13aad9cf014435b1796f70136945b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:14",
+      "sequence": 30937,
+      "chapter_label": "REV 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "I looked, and saw a white cloud, and on the cloud one sitting like a son of man, having on his head a golden crown, and in his hand a sharp sickle.",
+      "ko": "또 내가 보니 흰구름이 있고 구름 위에 사람의 아들과 같은 이가 앉았는데 그 머리에는 금 면류관이 있고 그 손에는 이한 낫을 가졌더라",
+      "source_text_hash": "c8143f704fdccdf697a923f6e5418b9c16a9c7267d7f3659c3847e73a279b015",
+      "translation_text_hash": "0129ccfee29861e2a17699ec6ea14ae6724e650273e96f1ae7bc4e8a3349d0f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보니 흰구름이 있고 구름 위에 사람의 아들과 같은 이가 앉았는데 그 머리에는 금 면류관이 있고 그 손에는 이한 낫을 가졌더라"
+      ],
+      "raw_text_hashes": [
+        "0129ccfee29861e2a17699ec6ea14ae6724e650273e96f1ae7bc4e8a3349d0f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:15",
+      "sequence": 30938,
+      "chapter_label": "REV 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Another angel came out of the temple, crying with a loud voice to him who sat on the cloud, “Send your sickle and reap, for the hour to reap has come; for the harvest of the earth is ripe!”",
+      "ko": "또 다른 천사가 성전으로부터 나와 구름 위에 앉은이를 향하여 큰 음성으로 외쳐 가로되 네 낫을 휘둘러 거두라 거둘 때가 이르러 땅에 곡식이 다 익었음이로다 하니",
+      "source_text_hash": "fef96cebfe5b28f848ceb38c9b196c6e4651c568bfa49167c091e06b139fb28b",
+      "translation_text_hash": "c0eadfbd41bd8132be7d2c52eb00f1be61d2ad68c64b50c3a7787fe1518d7efe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 천사가 성전으로부터 나와 구름 위에 앉은이를 향하여 큰 음성으로 외쳐 가로되 네 낫을 휘둘러 거두라 거둘 때가 이르러 땅에 곡식이 다 익었음이로다 하니"
+      ],
+      "raw_text_hashes": [
+        "c0eadfbd41bd8132be7d2c52eb00f1be61d2ad68c64b50c3a7787fe1518d7efe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:16",
+      "sequence": 30939,
+      "chapter_label": "REV 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "He who sat on the cloud thrust his sickle on the earth, and the earth was reaped.",
+      "ko": "구름 위에 앉으신 이가 낫을 땅에 휘두르매 곡식이 거두어지니라",
+      "source_text_hash": "55cfc7ed28593b34785d8cc7fd6dbd10008df9ef100b691072ebd6f39197ea9a",
+      "translation_text_hash": "1e20d0d6c16312427a06c6fa33012ef771900b10bdb7f84e740e766a9faae306",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름 위에 앉으신 이가 낫을 땅에 휘두르매 곡식이 거두어지니라"
+      ],
+      "raw_text_hashes": [
+        "1e20d0d6c16312427a06c6fa33012ef771900b10bdb7f84e740e766a9faae306"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:17",
+      "sequence": 30940,
+      "chapter_label": "REV 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "Another angel came out of the temple which is in heaven. He also had a sharp sickle.",
+      "ko": "또 다른 천사가 하늘에 있는 성전에서 나오는데 또한 이한 낫을 가졌더라",
+      "source_text_hash": "95f53764c39a713dd74b79379d1b9061b46d4ca51c7ad1299f4e0e3e5230ca23",
+      "translation_text_hash": "ea2f23191654f166c9037b348e8c973508760a30b295ce6cb0127a014a9c57a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 천사가 하늘에 있는 성전에서 나오는데 또한 이한 낫을 가졌더라"
+      ],
+      "raw_text_hashes": [
+        "ea2f23191654f166c9037b348e8c973508760a30b295ce6cb0127a014a9c57a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:18",
+      "sequence": 30941,
+      "chapter_label": "REV 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "Another angel came out from the altar, he who has power over fire, and he called with a great voice to him who had the sharp sickle, saying, “Send your sharp sickle and gather the clusters of the vine of the earth, for the earth’s grapes are fully ripe!”",
+      "ko": "또 불을 다스리는 다른 천사가 제단으로부터 나와 이한 낫 가진 자를 향하여 큰 음성으로 불러 가로되 네 이한 낫을 휘둘러 땅의 포도송이를 거두라 그 포도가 익었느니라 하더라",
+      "source_text_hash": "c3258dfc5dcc9d25dfed47a26901085a8999af1f2c04832e52cce1e745ca65d8",
+      "translation_text_hash": "767d8520ba8c077a73c2ce7a004d7e6f2e29b53a858e6717e03f3c679edc6e86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 불을 다스리는 다른 천사가 제단으로부터 나와 이한 낫 가진 자를 향하여 큰 음성으로 불러 가로되 네 이한 낫을 휘둘러 땅의 포도송이를 거두라 그 포도가 익었느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "767d8520ba8c077a73c2ce7a004d7e6f2e29b53a858e6717e03f3c679edc6e86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:19",
+      "sequence": 30942,
+      "chapter_label": "REV 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "The angel thrust his sickle into the earth, and gathered the vintage of the earth and threw it into the great wine press of the wrath of God.",
+      "ko": "천사가 낫을 땅에 휘둘러 땅의 포도를 거두어 하나님의 진노의 큰 포도주 틀에 던지매",
+      "source_text_hash": "6a62afca0cb52ba913d0173484d97b3c6c98dd743091e6210c60c3e3ef391791",
+      "translation_text_hash": "928b8c7e2464b38bbf51e46b4bbf0bbfb1f5c8958da18482e13e30a7aecde3e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 낫을 땅에 휘둘러 땅의 포도를 거두어 하나님의 진노의 큰 포도주 틀에 던지매"
+      ],
+      "raw_text_hashes": [
+        "928b8c7e2464b38bbf51e46b4bbf0bbfb1f5c8958da18482e13e30a7aecde3e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:14:20",
+      "sequence": 30943,
+      "chapter_label": "REV 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "The wine press was trodden outside of the city, and blood came out of the wine press, up to the bridles of the horses, as far as one thousand six hundred stadia.",
+      "ko": "성 밖에서 그 틀이 밟히니 틀에서 피가 나서 말굴레까지 닿았고 일천 육백 스다디온에 퍼졌더라",
+      "source_text_hash": "23d0dbec4f7c60953c17b57a0dd995351d68994d441f87e4fd23c22e80fdeb87",
+      "translation_text_hash": "1453048b8265c2afaff3c7d511239d2f8035379cee9f565e0373510743252270",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성 밖에서 그 틀이 밟히니 틀에서 피가 나서 말굴레까지 닿았고 일천 육백 스다디온에 퍼졌더라"
+      ],
+      "raw_text_hashes": [
+        "1453048b8265c2afaff3c7d511239d2f8035379cee9f565e0373510743252270"
+      ]
+    }
+  ]
+}

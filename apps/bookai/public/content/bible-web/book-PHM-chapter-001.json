@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PHM:chapter:001",
+  "unit_ordinal": 1133,
+  "unit_label": "PHM 1",
+  "book_code": "PHM",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PHM:1:1",
+      "sequence": 29936,
+      "chapter_label": "PHM 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Paul, a prisoner of Christ Jesus, and Timothy our brother, to Philemon, our beloved fellow worker,",
+      "ko": "그리스도 예수를 위하여 갇힌 자 된 바울과 및 형제 디모데는 우리의 사랑을 받는 자요 동역자인 빌레몬과",
+      "source_text_hash": "76b7955cdacae9d5e65cdf07cd871df14a72bee0bbdfad49de8ec209adca5afe",
+      "translation_text_hash": "6f71ac38e8b5adc4fa248b126629983ac8f231c7fb716f965d89fcc3d3038ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수를 위하여 갇힌 자 된 바울과 및 형제 디모데는 우리의 사랑을 받는 자요 동역자인 빌레몬과"
+      ],
+      "raw_text_hashes": [
+        "6f71ac38e8b5adc4fa248b126629983ac8f231c7fb716f965d89fcc3d3038ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:2",
+      "sequence": 29937,
+      "chapter_label": "PHM 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "to the beloved Apphia, to Archippus our fellow soldier, and to the assembly in your house:",
+      "ko": "및 자매 압비아와 및 우리와 함께 군사 된 아킵보와 네 집에 있는 교회에게 편지하노니",
+      "source_text_hash": "a367068f900fc848d2b9a0a78995bafe0884b72b5a881caa9423c02e875aebff",
+      "translation_text_hash": "fdf61326e14840b98e1587bdd5077059587f39544fa4d2136f9e48c4b0fa57f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "및 자매 압비아와 및 우리와 함께 군사 된 아킵보와 네 집에 있는 교회에게 편지하노니"
+      ],
+      "raw_text_hashes": [
+        "fdf61326e14840b98e1587bdd5077059587f39544fa4d2136f9e48c4b0fa57f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:3",
+      "sequence": 29938,
+      "chapter_label": "PHM 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Grace to you and peace from God our Father and the Lord Jesus Christ.",
+      "ko": "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 너희에게 있을찌어다",
+      "source_text_hash": "4b0c50bd93c1ece92cdc3eb0ce96aa9db845690c46dccfc6611823b4dce05733",
+      "translation_text_hash": "94e09d075dce1b237843612b23fcc1f04cfa9eedd0e5679c97b2db0d4af5269d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 우리 아버지와 주 예수 그리스도로 좇아 은혜와 평강이 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "94e09d075dce1b237843612b23fcc1f04cfa9eedd0e5679c97b2db0d4af5269d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:4",
+      "sequence": 29939,
+      "chapter_label": "PHM 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "I thank my God always, making mention of you in my prayers,",
+      "ko": "내가 항상 내 하나님께 감사하고 기도할 때에 너를 말함은",
+      "source_text_hash": "c4860592c4bcfa288771cfab2d81d2ed41206dc72a7ba10789e346a342185cae",
+      "translation_text_hash": "5c686677790b5db1140ff1cbdcc229da8c81777514ca38a2643433459c6e41c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 항상 내 하나님께 감사하고 기도할 때에 너를 말함은"
+      ],
+      "raw_text_hashes": [
+        "5c686677790b5db1140ff1cbdcc229da8c81777514ca38a2643433459c6e41c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:5",
+      "sequence": 29940,
+      "chapter_label": "PHM 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "hearing of your love and of the faith which you have toward the Lord Jesus and toward all the saints,",
+      "ko": "주 예수와 및 모든 성도에 대한 네 사랑과 믿음이 있음을 들음이니",
+      "source_text_hash": "f37c1db6f66e2d9937b002cfc13257e8bbe759f08fcb0239c1c499b120551876",
+      "translation_text_hash": "7ed428bbe6d230e4bde30d2787976886e70d9ec6e6a8a176cd8af33a60bab5f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수와 및 모든 성도에 대한 네 사랑과 믿음이 있음을 들음이니"
+      ],
+      "raw_text_hashes": [
+        "7ed428bbe6d230e4bde30d2787976886e70d9ec6e6a8a176cd8af33a60bab5f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:6",
+      "sequence": 29941,
+      "chapter_label": "PHM 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "that the fellowship of your faith may become effective in the knowledge of every good thing which is in us in Christ Jesus.",
+      "ko": "이로써 네 믿음의 교제가 우리 가운데 있는 선을 알게 하고 그리스도께 미치도록 역사하느니라",
+      "source_text_hash": "5ede5c6619d7b265396dbdbdf95aa3ab052981fc76c365ee3c8987b08d7f5682",
+      "translation_text_hash": "1d2fb6a25be4bfac88b330f547a4504c3753cf38f876ba1cccb3f8b408bc4662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로써 네 믿음의 교제가 우리 가운데 있는 선을 알게 하고 그리스도께 미치도록 역사하느니라"
+      ],
+      "raw_text_hashes": [
+        "1d2fb6a25be4bfac88b330f547a4504c3753cf38f876ba1cccb3f8b408bc4662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:7",
+      "sequence": 29942,
+      "chapter_label": "PHM 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "For we have much joy and comfort in your love, because the hearts of the saints have been refreshed through you, brother.",
+      "ko": "형제여 성도들의 마음이 너로 말미암아 평안함을 얻었으니 내가 너의 사랑으로 많은 기쁨과 위로를 얻었노라",
+      "source_text_hash": "3114e5d409e122b6ed86642ffa074aa84073a36deb342f53e519deaf66a39400",
+      "translation_text_hash": "f6ca90cb5ed807069e3127c10e3d025dc573d336a1ae0be5820da3fc8d00c4f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제여 성도들의 마음이 너로 말미암아 평안함을 얻었으니 내가 너의 사랑으로 많은 기쁨과 위로를 얻었노라"
+      ],
+      "raw_text_hashes": [
+        "f6ca90cb5ed807069e3127c10e3d025dc573d336a1ae0be5820da3fc8d00c4f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:8",
+      "sequence": 29943,
+      "chapter_label": "PHM 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore though I have all boldness in Christ to command you that which is appropriate,",
+      "ko": "이러므로 내가 그리스도 안에서 많은 담력을 가지고 네게 마땅한 일로 명할 수 있으나",
+      "source_text_hash": "cfbf81f4af9e59a59eba8793b3e8ab5f5d7bbb7c4ce8c5ac9de29de3961433ff",
+      "translation_text_hash": "f1917f65487c1ae9d32b31b6b960f884a200189ce5388f2e140af287b330037d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 그리스도 안에서 많은 담력을 가지고 네게 마땅한 일로 명할 수 있으나"
+      ],
+      "raw_text_hashes": [
+        "f1917f65487c1ae9d32b31b6b960f884a200189ce5388f2e140af287b330037d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:9",
+      "sequence": 29944,
+      "chapter_label": "PHM 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "yet for love’s sake I rather appeal to you, being such a one as Paul, the aged, but also a prisoner of Jesus Christ.",
+      "ko": "사랑을 인하여 도리어 간구하노니 나이 많은 나 바울은 지금 또 예수 그리스도를 위하여 갇힌 자 되어",
+      "source_text_hash": "7de44e84b5cfb4a9f87f1b5417856be648e37203afcab03663cb42db25f587dc",
+      "translation_text_hash": "1faa92f96cca099d3c26bedd16f811c972355fc3ef254e5bc55ea087aad472be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑을 인하여 도리어 간구하노니 나이 많은 나 바울은 지금 또 예수 그리스도를 위하여 갇힌 자 되어"
+      ],
+      "raw_text_hashes": [
+        "1faa92f96cca099d3c26bedd16f811c972355fc3ef254e5bc55ea087aad472be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:10",
+      "sequence": 29945,
+      "chapter_label": "PHM 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "I appeal to you for my child Onesimus, whom I have become the father of in my chains,",
+      "ko": "갇힌 중에서 낳은 아들 오네시모를 위하여 네게 간구하노라",
+      "source_text_hash": "2b584a218ed5497aa0f4a90f07a9f9ddba44d5b26b12d04667f84c65d85acfb4",
+      "translation_text_hash": "c42e028d689683052bf4cbbf47d75a97c241ac7182817ba7ffcfb9a645654404",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갇힌 중에서 낳은 아들 오네시모를 위하여 네게 간구하노라"
+      ],
+      "raw_text_hashes": [
+        "c42e028d689683052bf4cbbf47d75a97c241ac7182817ba7ffcfb9a645654404"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:11",
+      "sequence": 29946,
+      "chapter_label": "PHM 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "who once was useless to you, but now is useful to you and to me.",
+      "ko": "저가 전에는 네게 무익하였으나 이제는 나와 네게 유익하므로",
+      "source_text_hash": "02c78de94b0d29897f309fd4dd6cbc5f482461d474d4754390b7e24df8ca2fce",
+      "translation_text_hash": "20cdb14b59995e78f7a1664e6f2dacf33a952157cbbec175f0497591e627e12c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 전에는 네게 무익하였으나 이제는 나와 네게 유익하므로"
+      ],
+      "raw_text_hashes": [
+        "20cdb14b59995e78f7a1664e6f2dacf33a952157cbbec175f0497591e627e12c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:12",
+      "sequence": 29947,
+      "chapter_label": "PHM 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "I am sending him back. Therefore receive him, that is, my own heart,",
+      "ko": "네게 저를 돌려 보내노니 저는 내 심복이라",
+      "source_text_hash": "2e545508809608f186473db726d7bf25f6a7fa595bc04dfe60dc21451266dedd",
+      "translation_text_hash": "be327527f9bec7f0f2d35253bcca778d30503a06b813aae9022c33805c5c3dc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 저를 돌려 보내노니 저는 내 심복이라"
+      ],
+      "raw_text_hashes": [
+        "be327527f9bec7f0f2d35253bcca778d30503a06b813aae9022c33805c5c3dc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:13",
+      "sequence": 29948,
+      "chapter_label": "PHM 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "whom I desired to keep with me, that on your behalf he might serve me in my chains for the Good News.",
+      "ko": "저를 내게 머물러 두어 내 복음을 위하여 갇힌 중에서 네 대신 나를 섬기게 하고자 하나",
+      "source_text_hash": "835f2ffb1863827507839b7a264d67a795f162cf8c2da5bff61b7fba1a4ef930",
+      "translation_text_hash": "88ba23286f60e72e6dbb9604a6c61a8f502a477fb31fa19d4be42811f5e984d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 내게 머물러 두어 내 복음을 위하여 갇힌 중에서 네 대신 나를 섬기게 하고자 하나"
+      ],
+      "raw_text_hashes": [
+        "88ba23286f60e72e6dbb9604a6c61a8f502a477fb31fa19d4be42811f5e984d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:14",
+      "sequence": 29949,
+      "chapter_label": "PHM 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "But I was willing to do nothing without your consent, that your goodness would not be as of necessity, but of free will.",
+      "ko": "다만 네 승낙이 없이는 내가 아무 것도 하기를 원치 아니하노니 이는 너의 선한 일이 억지 같이 되지 아니하고 자의로 되게 하려 함이로라",
+      "source_text_hash": "801a244b077cb036fbaba46c7864c3cd8cc420c7baabb6ed6550e92425f661cf",
+      "translation_text_hash": "9dba9980d49d753a11235895da6393489908f955466aba9640089799e629914c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 네 승낙이 없이는 내가 아무 것도 하기를 원치 아니하노니 이는 너의 선한 일이 억지 같이 되지 아니하고 자의로 되게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "9dba9980d49d753a11235895da6393489908f955466aba9640089799e629914c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:15",
+      "sequence": 29950,
+      "chapter_label": "PHM 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "For perhaps he was therefore separated from you for a while that you would have him forever,",
+      "ko": "저가 잠시 떠나게 된 것은 이를 인하여 저를 영원히 두게 함이니",
+      "source_text_hash": "40ae20ae23860760ab51a3720ef3b5f85f291a7894f9efdc359df2438c286ffa",
+      "translation_text_hash": "0bbea14ebff62982aaec4710fa3dc668589aa2c17d756190aa094827f5dde8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 잠시 떠나게 된 것은 이를 인하여 저를 영원히 두게 함이니"
+      ],
+      "raw_text_hashes": [
+        "0bbea14ebff62982aaec4710fa3dc668589aa2c17d756190aa094827f5dde8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:16",
+      "sequence": 29951,
+      "chapter_label": "PHM 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "no longer as a slave, but more than a slave, a beloved brother—especially to me, but how much rather to you, both in the flesh and in the Lord.",
+      "ko": "이 후로는 종과 같이 아니하고 종에서 뛰어나 곧 사랑 받는 형제로 둘 자라 내게 특별히 그러하거든 하물며 육신과 주 안에서 상관된 네게랴",
+      "source_text_hash": "f3d2ad67095a4360bf3070594cb5c17738b966ec8128c146d1f290c339a1b5b7",
+      "translation_text_hash": "19b74704ee246499378b9f8e3429a73c6311f19caee11aa17d1a76642b0a6084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후로는 종과 같이 아니하고 종에서 뛰어나 곧 사랑 받는 형제로 둘 자라 내게 특별히 그러하거든 하물며 육신과 주 안에서 상관된 네게랴"
+      ],
+      "raw_text_hashes": [
+        "19b74704ee246499378b9f8e3429a73c6311f19caee11aa17d1a76642b0a6084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:17",
+      "sequence": 29952,
+      "chapter_label": "PHM 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "If then you count me a partner, receive him as you would receive me.",
+      "ko": "그러므로 네가 나를 동무로 알찐대 저를 영접하기를 내게 하듯하고",
+      "source_text_hash": "3df707e66b8642e9183f90912466368adb4377d9c242cde6014b21332d86d675",
+      "translation_text_hash": "4c33bd5ec4bdb5fede06749ba6a35dd9683405a8f6967a052cd9b32bca516382",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네가 나를 동무로 알찐대 저를 영접하기를 내게 하듯하고"
+      ],
+      "raw_text_hashes": [
+        "4c33bd5ec4bdb5fede06749ba6a35dd9683405a8f6967a052cd9b32bca516382"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:18",
+      "sequence": 29953,
+      "chapter_label": "PHM 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "But if he has wronged you at all or owes you anything, put that to my account.",
+      "ko": "저가 만일 네게 불의를 하였거나 네게 진 것이 있거든 이것을 내게로 회계하라",
+      "source_text_hash": "875e98c2588e388a76dd484a66846a6aae53fe2e29fd33a48381d0bcc19f93bb",
+      "translation_text_hash": "9bdabc9024ee9cb2566dbe36dc4f4b9885fc0fbe2a60373658fb94ba22405713",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 만일 네게 불의를 하였거나 네게 진 것이 있거든 이것을 내게로 회계하라"
+      ],
+      "raw_text_hashes": [
+        "9bdabc9024ee9cb2566dbe36dc4f4b9885fc0fbe2a60373658fb94ba22405713"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:19",
+      "sequence": 29954,
+      "chapter_label": "PHM 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "I, Paul, write this with my own hand: I will repay it (not to mention to you that you owe to me even your own self besides).",
+      "ko": "나 바울이 친필로 쓰노니 내가 갚으려니와 너는 이 외에 네 자신으로 내게 빚진 것을 내가 말하지 아니하노라",
+      "source_text_hash": "4dbaf7d8115b79144aceb6da756fb2b38ab4aed29871084b9ae5220bcff7c8f4",
+      "translation_text_hash": "99fc85d6a350472ee78d33f993fe78174af5b636888e3b10d74808dc8d32a82c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 바울이 친필로 쓰노니 내가 갚으려니와 너는 이 외에 네 자신으로 내게 빚진 것을 내가 말하지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "99fc85d6a350472ee78d33f993fe78174af5b636888e3b10d74808dc8d32a82c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:20",
+      "sequence": 29955,
+      "chapter_label": "PHM 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "Yes, brother, let me have joy from you in the Lord. Refresh my heart in the Lord.",
+      "ko": "오 형제여! 나로 주 안에서 너를 인하여 기쁨을 얻게 하고 내 마음이 그리스도 안에서 평안하게 하라",
+      "source_text_hash": "e81f90f508a27b9235d52d6f2b2a51bd7b9b1a2a2d256661c66ac6a8fe46d03e",
+      "translation_text_hash": "08691810638368773ad8713b742f8310576076bf3a58f424eb1d7d96f4ab3208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오 형제여! 나로 주 안에서 너를 인하여 기쁨을 얻게 하고 내 마음이 그리스도 안에서 평안하게 하라"
+      ],
+      "raw_text_hashes": [
+        "08691810638368773ad8713b742f8310576076bf3a58f424eb1d7d96f4ab3208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:21",
+      "sequence": 29956,
+      "chapter_label": "PHM 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Having confidence in your obedience, I write to you, knowing that you will do even beyond what I say.",
+      "ko": "나는 네가 순종함을 확신하므로 네게 썼노니 네가 나의 말보다 더 행할 줄을 아노라",
+      "source_text_hash": "4e97b8687c856ec5cb61e13938c3f1a26b51a0c9d8cb8ca4a01a4525610e8f89",
+      "translation_text_hash": "62649d63c6012831e1576192132c5692c23a4dbeb2e423f1d7cc166ca5ad4428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 네가 순종함을 확신하므로 네게 썼노니 네가 나의 말보다 더 행할 줄을 아노라"
+      ],
+      "raw_text_hashes": [
+        "62649d63c6012831e1576192132c5692c23a4dbeb2e423f1d7cc166ca5ad4428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:22",
+      "sequence": 29957,
+      "chapter_label": "PHM 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Also, prepare a guest room for me, for I hope that through your prayers I will be restored to you.",
+      "ko": "오직 너는 나를 위하여 처소를 예비하라 너희 기도로 내가 너희에게 나아가게 하여 주시기를 바라노라",
+      "source_text_hash": "3304b0cf1435fa90f9788da707d30a4d45005c1f957e7a43eebb3b3fb8d972d2",
+      "translation_text_hash": "5b19ff846240bcb4c5473093b6481d97ae7dce15ddf309884243f4d6c3745216",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 나를 위하여 처소를 예비하라 너희 기도로 내가 너희에게 나아가게 하여 주시기를 바라노라"
+      ],
+      "raw_text_hashes": [
+        "5b19ff846240bcb4c5473093b6481d97ae7dce15ddf309884243f4d6c3745216"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:23",
+      "sequence": 29958,
+      "chapter_label": "PHM 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "Epaphras, my fellow prisoner in Christ Jesus, greets you,",
+      "ko": "그리스도 예수 안에서 나와 함께 갇힌 자 에바브라와",
+      "source_text_hash": "df23427be7ff4b157ceca93e898b083fd13dae4eb0f214c5c741f08025f44fb0",
+      "translation_text_hash": "7e52fb68c0588e889220d014bf64a2a6e3b99e00633e5905cc3b1ec9425fb51a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수 안에서 나와 함께 갇힌 자 에바브라와"
+      ],
+      "raw_text_hashes": [
+        "7e52fb68c0588e889220d014bf64a2a6e3b99e00633e5905cc3b1ec9425fb51a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:24",
+      "sequence": 29959,
+      "chapter_label": "PHM 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "as do Mark, Aristarchus, Demas, and Luke, my fellow workers.",
+      "ko": "또한 나의 동역자 마가, 아리스다고, 데마, 누가가 문안하느니라",
+      "source_text_hash": "31ea2f4685a8b77d0aab7148d7cf22a6ef1fd4bd52c19aca305f5086bccf8b6c",
+      "translation_text_hash": "bf3d7874a86a93d2d14dc8d0b9eafd8ab38f0e901f68fcf2376ed1e5d1357976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 나의 동역자 마가, 아리스다고, 데마, 누가가 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "bf3d7874a86a93d2d14dc8d0b9eafd8ab38f0e901f68fcf2376ed1e5d1357976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PHM:1:25",
+      "sequence": 29960,
+      "chapter_label": "PHM 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "PHM",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PHM",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "The grace of our Lord Jesus Christ be with your spirit. Amen.",
+      "ko": "우리 주 예수 그리스도의 은혜가 너희 심령과 함께 할찌어다",
+      "source_text_hash": "668de5cb4b4cddcd60957456b11d24a05612876667166d42d436f9cde9171a63",
+      "translation_text_hash": "6561c87ac8783dc99e9387c52f44d6c69a5e3c3e22fb1b3253b5644dc7b83384",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도의 은혜가 너희 심령과 함께 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "6561c87ac8783dc99e9387c52f44d6c69a5e3c3e22fb1b3253b5644dc7b83384"
+      ]
+    }
+  ]
+}

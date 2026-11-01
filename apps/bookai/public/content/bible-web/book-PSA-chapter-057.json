@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:057",
+  "unit_ordinal": 535,
+  "unit_label": "PSA 57",
+  "book_code": "PSA",
+  "chapter_number": 57,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:57:1",
+      "sequence": 14770,
+      "chapter_label": "PSA 57",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 1
+        }
+      ],
+      "en": "Be merciful to me, God, be merciful to me, for my soul takes refuge in you. Yes, in the shadow of your wings, I will take refuge, until disaster has passed.",
+      "ko": "하나님이여 나를 긍휼히 여기시고 나를 긍휼히 여기소서 내 영혼이 주께로 피하되 주의 날개 그늘 아래서 이 재앙이 지나기까지 피하리이다",
+      "source_text_hash": "0f40306ac5482a29a94fac399090f1a586753ce616bb1727c21d004e5de47a16",
+      "translation_text_hash": "d24efc2b7141cb5a8d49938c18e2c9652219fc5985cfbc1c72f5f7c98a563866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 나를 긍휼히 여기시고 나를 긍휼히 여기소서 내 영혼이 주께로 피하되 주의 날개 그늘 아래서 이 재앙이 지나기까지 피하리이다"
+      ],
+      "raw_text_hashes": [
+        "d24efc2b7141cb5a8d49938c18e2c9652219fc5985cfbc1c72f5f7c98a563866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:2",
+      "sequence": 14771,
+      "chapter_label": "PSA 57",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 2
+        }
+      ],
+      "en": "I cry out to God Most High, to God who accomplishes my requests for me.",
+      "ko": "내가 지극히 높으신 하나님께 부르짖음이여 곧 나를 위하여 모든 것을 이루시는 하나님께로다",
+      "source_text_hash": "dad65cb8bb4e20c15558c127f4df7a9b39ef0c940478b03788b5d8952b810a3a",
+      "translation_text_hash": "0e9d250298c3a0ee461ccefcca8d051b76fd0026de0c6ce708f2c82e197c280e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 지극히 높으신 하나님께 부르짖음이여 곧 나를 위하여 모든 것을 이루시는 하나님께로다"
+      ],
+      "raw_text_hashes": [
+        "0e9d250298c3a0ee461ccefcca8d051b76fd0026de0c6ce708f2c82e197c280e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:3",
+      "sequence": 14772,
+      "chapter_label": "PSA 57",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 3
+        }
+      ],
+      "en": "He will send from heaven, and save me, he rebukes the one who is pursuing me. Selah. God will send out his loving kindness and his truth.",
+      "ko": "저가 하늘에서 보내사 나를 삼키려는 자의 비방에서 나를 구원하실찌라(셀라) 하나님이 그 인자와 진리를 보내시리로다",
+      "source_text_hash": "85b670ca6331215d3f66c5e4cd116f9d8c58f13e730b003bf0846d09d99186e7",
+      "translation_text_hash": "f3395dc0a3c72e63b769d6b9481bd3b27459979f59b5dd892b2eb40eaa71fdfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 하늘에서 보내사 나를 삼키려는 자의 비방에서 나를 구원하실찌라(셀라) 하나님이 그 인자와 진리를 보내시리로다"
+      ],
+      "raw_text_hashes": [
+        "f3395dc0a3c72e63b769d6b9481bd3b27459979f59b5dd892b2eb40eaa71fdfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:4",
+      "sequence": 14773,
+      "chapter_label": "PSA 57",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 4
+        }
+      ],
+      "en": "My soul is among lions. I lie among those who are set on fire, even the sons of men, whose teeth are spears and arrows, and their tongue a sharp sword.",
+      "ko": "내 혼이 사자 중에 처하며 내가 불사르는 자 중에 누웠으니 곧 인생 중에라 저희 이는 창과 살이요 저희 혀는 날카로운 칼 같도다",
+      "source_text_hash": "f9d9a82d3a78f368001f10a72b84a81ffafd7ea875188889c1480fb00e66f49f",
+      "translation_text_hash": "3cc1b16949509501635c39d627856f256da535e0e6db2e0b68fc2e0ba980b900",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 혼이 사자 중에 처하며 내가 불사르는 자 중에 누웠으니 곧 인생 중에라 저희 이는 창과 살이요 저희 혀는 날카로운 칼 같도다"
+      ],
+      "raw_text_hashes": [
+        "3cc1b16949509501635c39d627856f256da535e0e6db2e0b68fc2e0ba980b900"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:5",
+      "sequence": 14774,
+      "chapter_label": "PSA 57",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 5
+        }
+      ],
+      "en": "Be exalted, God, above the heavens! Let your glory be above all the earth!",
+      "ko": "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광은 온 세계 위에 높아지기를 원하나이다",
+      "source_text_hash": "c97b84fd5d47037236993fca37389f84b8f024c0df2ba93e0d71ed8458235ef6",
+      "translation_text_hash": "aa39ae061758ad9532a35e4b872aa973649f1957e7db93cc192208e3c6c1c41a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광은 온 세계 위에 높아지기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "aa39ae061758ad9532a35e4b872aa973649f1957e7db93cc192208e3c6c1c41a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:6",
+      "sequence": 14775,
+      "chapter_label": "PSA 57",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 6
+        }
+      ],
+      "en": "They have prepared a net for my steps. My soul is bowed down. They dig a pit before me. They fall into the middle of it themselves. Selah.",
+      "ko": "저희가 내 걸음을 장애하려고 그물을 예비하였으니 내 영혼이 억울하도다 저희가 내 앞에 웅덩이를 팠으나 스스로 그 중에 빠졌도다(셀라)",
+      "source_text_hash": "116706a4b666ad741ed357aace37e9fab559f4671faed02d417c86d366e574ab",
+      "translation_text_hash": "45d93f137c77d575f37e97ffa133b251ca15fcfdd21006a2d60d2a892a799577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 내 걸음을 장애하려고 그물을 예비하였으니 내 영혼이 억울하도다 저희가 내 앞에 웅덩이를 팠으나 스스로 그 중에 빠졌도다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "45d93f137c77d575f37e97ffa133b251ca15fcfdd21006a2d60d2a892a799577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:7",
+      "sequence": 14776,
+      "chapter_label": "PSA 57",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 7
+        }
+      ],
+      "en": "My heart is steadfast, God. My heart is steadfast. I will sing, yes, I will sing praises.",
+      "ko": "하나님이여 내 마음이 확정되었고 내 마음이 확정되었사오니 내가 노래하고 내가 찬송하리이다",
+      "source_text_hash": "dd7e60caae4ffecdb4deeb21123ebfaf612451faf816cf4fb057d531b4878740",
+      "translation_text_hash": "76f7b2e281da21a59062d4dc77567cce22523331fa4a390e82065181cfd81749",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 마음이 확정되었고 내 마음이 확정되었사오니 내가 노래하고 내가 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "76f7b2e281da21a59062d4dc77567cce22523331fa4a390e82065181cfd81749"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:8",
+      "sequence": 14777,
+      "chapter_label": "PSA 57",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 8
+        }
+      ],
+      "en": "Wake up, my glory! Wake up, lute and harp! I will wake up the dawn.",
+      "ko": "내 영광아 깰찌어다 비파야, 수금아, 깰찌어다 내가 새벽을 깨우리로다",
+      "source_text_hash": "e898dd1d97300845120889cbd830b4d377727ccf632c0226114d6753a3dff814",
+      "translation_text_hash": "c2fc4ef03f32bad07299200771114bfabde130a9b389ed938fefd68748a5dfa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영광아 깰찌어다 비파야, 수금아, 깰찌어다 내가 새벽을 깨우리로다"
+      ],
+      "raw_text_hashes": [
+        "c2fc4ef03f32bad07299200771114bfabde130a9b389ed938fefd68748a5dfa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:9",
+      "sequence": 14778,
+      "chapter_label": "PSA 57",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 9
+        }
+      ],
+      "en": "I will give thanks to you, Lord, among the peoples. I will sing praises to you among the nations.",
+      "ko": "주여 내가 만민 중에서 주께 감사하오며 열방 중에서 주를 찬송하리이다",
+      "source_text_hash": "a4783ceef33554dc59839d808e3f0b214319a56987ad8009c4f730fa7f365eac",
+      "translation_text_hash": "05cdfd9a3d70b92a10c769d1e8a136728294fc409103b50bece8e703ec33534d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내가 만민 중에서 주께 감사하오며 열방 중에서 주를 찬송하리이다"
+      ],
+      "raw_text_hashes": [
+        "05cdfd9a3d70b92a10c769d1e8a136728294fc409103b50bece8e703ec33534d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:10",
+      "sequence": 14779,
+      "chapter_label": "PSA 57",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 10
+        }
+      ],
+      "en": "For your great loving kindness reaches to the heavens, and your truth to the skies.",
+      "ko": "대저 주의 인자는 커서 하늘에 미치고 주의 진리는 궁창에 이르나이다",
+      "source_text_hash": "1358d783ab2a2977359fbbd8c96abc0257c124a387932e165df463a9c209687d",
+      "translation_text_hash": "82f847bccf15a3b1620ac2550a190b7fbef554b19a12ffe9961f5a460d6bac7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주의 인자는 커서 하늘에 미치고 주의 진리는 궁창에 이르나이다"
+      ],
+      "raw_text_hashes": [
+        "82f847bccf15a3b1620ac2550a190b7fbef554b19a12ffe9961f5a460d6bac7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:57:11",
+      "sequence": 14780,
+      "chapter_label": "PSA 57",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 57,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 57,
+          "verse": 11
+        }
+      ],
+      "en": "Be exalted, God, above the heavens. Let your glory be over all the earth.",
+      "ko": "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광은 온 세계 위에 높아지기를 원하나이다",
+      "source_text_hash": "e66e1827f9fa2f397517acaf15aaa55f113580b82126c8c799e1743e43027739",
+      "translation_text_hash": "aa39ae061758ad9532a35e4b872aa973649f1957e7db93cc192208e3c6c1c41a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광은 온 세계 위에 높아지기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "aa39ae061758ad9532a35e4b872aa973649f1957e7db93cc192208e3c6c1c41a"
+      ]
+    }
+  ]
+}

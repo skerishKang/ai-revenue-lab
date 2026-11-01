@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:018",
+  "unit_ordinal": 356,
+  "unit_label": "1CH 18",
+  "book_code": "1CH",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:18:1",
+      "sequence": 10892,
+      "chapter_label": "1CH 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "After this, David defeated the Philistines and subdued them, and took Gath and its towns out of the hand of the Philistines.",
+      "ko": "이 후에 다윗이 블레셋 사람을 쳐서 항복받고 블레셋 사람의 손에서 가드와 그 동네를 빼앗고",
+      "source_text_hash": "f68a784e8797f36172ca32a970e8661957666199738a45fdf737ec342a9fed15",
+      "translation_text_hash": "1540e8b68e7e77a3fa6269fc7ac8f379c8220fc7ff102eef7be9edcf18020b3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 다윗이 블레셋 사람을 쳐서 항복받고 블레셋 사람의 손에서 가드와 그 동네를 빼앗고"
+      ],
+      "raw_text_hashes": [
+        "1540e8b68e7e77a3fa6269fc7ac8f379c8220fc7ff102eef7be9edcf18020b3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:2",
+      "sequence": 10893,
+      "chapter_label": "1CH 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "He defeated Moab; and the Moabites became servants to David and brought tribute.",
+      "ko": "또 모압을 치매 모압 사람이 다윗의 종이 되어 조공을 바치니라",
+      "source_text_hash": "8cdfc1496dfdd80927dcc9ecee5d863f737b0752a72ce14f7f9d838540193f26",
+      "translation_text_hash": "1b3a5dd6a0a8c85f4df5b1d4409be939b72f2cc3bc0820020abfa26ed4695bdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 모압을 치매 모압 사람이 다윗의 종이 되어 조공을 바치니라"
+      ],
+      "raw_text_hashes": [
+        "1b3a5dd6a0a8c85f4df5b1d4409be939b72f2cc3bc0820020abfa26ed4695bdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:3",
+      "sequence": 10894,
+      "chapter_label": "1CH 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "David defeated Hadadezer king of Zobah, toward Hamath, as he went to establish his dominion by the river Euphrates.",
+      "ko": "소바 왕 하닷에셀이 유브라데강 가에서 자기 권세를 펴고자 하매 다윗이 저를 쳐서 하맛까지 이르고",
+      "source_text_hash": "1b9858bac8b41aa29c9c65e895e82af605a5536b8b2c9e9eb2e3a622cea790ef",
+      "translation_text_hash": "41c834d8bc491e5433edf4bebb66e186cd6f0e423c5cd710922cefbda04a63da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소바 왕 하닷에셀이 유브라데강 가에서 자기 권세를 펴고자 하매 다윗이 저를 쳐서 하맛까지 이르고"
+      ],
+      "raw_text_hashes": [
+        "41c834d8bc491e5433edf4bebb66e186cd6f0e423c5cd710922cefbda04a63da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:4",
+      "sequence": 10895,
+      "chapter_label": "1CH 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "David took from him one thousand chariots, seven thousand horsemen, and twenty thousand footmen; and David hamstrung all the chariot horses, but reserved of them enough for one hundred chariots.",
+      "ko": "그 병거 일천승과 기병 칠천과 보병 이만을 빼앗고 그 병거 일백승의 말만 남기고 그 외의 병거의 말은 다 발의 힘줄을 끊었더니",
+      "source_text_hash": "76c69e133175d75ce3f0d69eb8671a9727edfe87252e8d0d710882b488324634",
+      "translation_text_hash": "ff7709c650608d2aec89895bcad5df80f6a8c25533185ad391ba11fcf0a3c786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 병거 일천승과 기병 칠천과 보병 이만을 빼앗고 그 병거 일백승의 말만 남기고 그 외의 병거의 말은 다 발의 힘줄을 끊었더니"
+      ],
+      "raw_text_hashes": [
+        "ff7709c650608d2aec89895bcad5df80f6a8c25533185ad391ba11fcf0a3c786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:5",
+      "sequence": 10896,
+      "chapter_label": "1CH 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "When the Syrians of Damascus came to help Hadadezer king of Zobah, David struck twenty-two thousand men of the Syrians.",
+      "ko": "다메섹 아람 사람이 소바 왕 하닷에셀을 도우러 온지라 다윗이 아람 사람 이만 이천을 죽이고",
+      "source_text_hash": "cf0464ccf00052ee81efc706c877b1a01271867df8abcbc2c9fdf5f46514ae11",
+      "translation_text_hash": "7fd4673d8bf0648f3ae18babb1239e7153471aed233662003a240ea51bb82cd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹 아람 사람이 소바 왕 하닷에셀을 도우러 온지라 다윗이 아람 사람 이만 이천을 죽이고"
+      ],
+      "raw_text_hashes": [
+        "7fd4673d8bf0648f3ae18babb1239e7153471aed233662003a240ea51bb82cd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:6",
+      "sequence": 10897,
+      "chapter_label": "1CH 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "Then David put garrisons in Syria of Damascus; and the Syrians became servants to David and brought tribute. The LORD gave victory to David wherever he went.",
+      "ko": "다메섹 아람에 수비대를 두매 아람 사람이 다윗의 종이 되어 조공을 바치니라 다윗이 어디로 가든지 여호와께서 이기게 하시니라",
+      "source_text_hash": "72e13076998aec76205035321c4944de6b98ba498f8b7ab30c8af89a1de9d2d4",
+      "translation_text_hash": "f220df5bf96b1405cb4f1dfb15eed05b564f83f985ea142d8976ad8a199f9f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹 아람에 수비대를 두매 아람 사람이 다윗의 종이 되어 조공을 바치니라 다윗이 어디로 가든지 여호와께서 이기게 하시니라"
+      ],
+      "raw_text_hashes": [
+        "f220df5bf96b1405cb4f1dfb15eed05b564f83f985ea142d8976ad8a199f9f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:7",
+      "sequence": 10898,
+      "chapter_label": "1CH 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "David took the shields of gold that were on the servants of Hadadezer, and brought them to Jerusalem.",
+      "ko": "다윗이 하닷에셀의 신복들의 가진 금방패를 빼앗아 예루살렘으로 가져오고",
+      "source_text_hash": "36e0323def8533d8b633c5c82c27ea1dc68efe6d801babc12e58d707f05e845d",
+      "translation_text_hash": "d860a568dc9881ef2b7afe685465da1063498bfad050f7bf63414acd65a8559c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 하닷에셀의 신복들의 가진 금방패를 빼앗아 예루살렘으로 가져오고"
+      ],
+      "raw_text_hashes": [
+        "d860a568dc9881ef2b7afe685465da1063498bfad050f7bf63414acd65a8559c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:8",
+      "sequence": 10899,
+      "chapter_label": "1CH 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "From Tibhath and from Cun, cities of Hadadezer, David took very much bronze, with which Solomon made the bronze sea, the pillars, and the vessels of bronze.",
+      "ko": "또 하닷에셀의 성읍 디브핫과 군에서 심히 많은 놋을 취하였더니 솔로몬이 그것으로 놋바다와 기둥과 놋그릇들을 만들었더라",
+      "source_text_hash": "787498d05838cf6b51ddba24db2ea567b3b7d6e9f97b5405089d4e2cbe5bf682",
+      "translation_text_hash": "8428ca43258161807357d2ecc853caa4cdba88140f868d0229fc46cc1ad6531c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하닷에셀의 성읍 디브핫과 군에서 심히 많은 놋을 취하였더니 솔로몬이 그것으로 놋바다와 기둥과 놋그릇들을 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "8428ca43258161807357d2ecc853caa4cdba88140f868d0229fc46cc1ad6531c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:9",
+      "sequence": 10900,
+      "chapter_label": "1CH 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "When Tou king of Hamath heard that David had struck all the army of Hadadezer king of Zobah,",
+      "ko": "하맛 왕 도우가 다윗이 소바 왕 하닷에셀의 온 군대를 쳐서 파하였다 함을 듣고",
+      "source_text_hash": "0487476dfc7243a032e3987c22815f067ccf79186e26dd2c4550e41ea0dd8c40",
+      "translation_text_hash": "5de4dd15f190ca23268f01ad267cb46769606bf739c4c4d2e4998cd665de6111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하맛 왕 도우가 다윗이 소바 왕 하닷에셀의 온 군대를 쳐서 파하였다 함을 듣고"
+      ],
+      "raw_text_hashes": [
+        "5de4dd15f190ca23268f01ad267cb46769606bf739c4c4d2e4998cd665de6111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:10",
+      "sequence": 10901,
+      "chapter_label": "1CH 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "he sent Hadoram his son to King David to greet him and to bless him, because he had fought against Hadadezer and struck him (for Hadadezer had wars with Tou); and he had with him all kinds of vessels of gold and silver and bronze.",
+      "ko": "그 아들 하도람을 보내어 다윗왕에게 문안하고 축복하게 하니 이는 하닷에셀이 이왕에 도우로 더불어 여러번 전쟁이 있던 터에 다윗이 하닷에셀을 쳐서 파하였음이라 하도람이 금과 은과 놋의 여러가지 그릇을 가져 온지라",
+      "source_text_hash": "b49e0a4d6b5ce0c8438d20b7c15055869d9ff27f3c31b713959540d18f5f08eb",
+      "translation_text_hash": "42ba77ba15920b5e0abde69bcac5be1b4064f306af84284c86beb10204d5b5a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들 하도람을 보내어 다윗왕에게 문안하고 축복하게 하니 이는 하닷에셀이 이왕에 도우로 더불어 여러번 전쟁이 있던 터에 다윗이 하닷에셀을 쳐서 파하였음이라 하도람이 금과 은과 놋의 여러가지 그릇을 가져 온지라"
+      ],
+      "raw_text_hashes": [
+        "42ba77ba15920b5e0abde69bcac5be1b4064f306af84284c86beb10204d5b5a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:11",
+      "sequence": 10902,
+      "chapter_label": "1CH 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "King David also dedicated these to the LORD, with the silver and the gold that he carried away from all the nations: from Edom, from Moab, from the children of Ammon, from the Philistines, and from Amalek.",
+      "ko": "다윗왕이 그것도 여호와께 드리되 에돔과 모압과 암몬 자손과 블레셋 사람과 아말렉등 여러 족속에게서 취하여온 은금과 함께하여 드리니라",
+      "source_text_hash": "9776bfd1fcfd32a8684427327cfcc6be6300d50a755371aad6f2bd86b87771c7",
+      "translation_text_hash": "15529ec54724839ef3862a4bba88045379603e152ca287d5a7ee9264c69de066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗왕이 그것도 여호와께 드리되 에돔과 모압과 암몬 자손과 블레셋 사람과 아말렉등 여러 족속에게서 취하여온 은금과 함께하여 드리니라"
+      ],
+      "raw_text_hashes": [
+        "15529ec54724839ef3862a4bba88045379603e152ca287d5a7ee9264c69de066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:12",
+      "sequence": 10903,
+      "chapter_label": "1CH 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "Moreover Abishai the son of Zeruiah struck eighteen thousand of the Edomites in the Valley of Salt.",
+      "ko": "스루야의 아들 아비새가 염곡에서 에돔 사람 일만 팔천을 쳐 죽인지라",
+      "source_text_hash": "568dc53fd0b09ef1371e399836240027bd0df5c37c5b75d44bdc75fccb7b6fca",
+      "translation_text_hash": "33cba481676cf0af5f723e6d0f8771b293557bff1ec370dca66076a5aeefb7b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 아비새가 염곡에서 에돔 사람 일만 팔천을 쳐 죽인지라"
+      ],
+      "raw_text_hashes": [
+        "33cba481676cf0af5f723e6d0f8771b293557bff1ec370dca66076a5aeefb7b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:13",
+      "sequence": 10904,
+      "chapter_label": "1CH 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "He put garrisons in Edom; and all the Edomites became servants to David. The LORD gave victory to David wherever he went.",
+      "ko": "다윗이 에돔에 수비대를 두매 에돔 사람이 다 다윗의 종이 되니라 다윗이 어디로 가든지 여호와께서 이기게 하셨더라",
+      "source_text_hash": "c114391194570b891c422be3cbed75546a45af3c11b6fbecd8ba8e15ab5d877b",
+      "translation_text_hash": "395567b7405d475d4d406b5ae1f08d89b844d6595effbd1b0d28ead57738cbff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 에돔에 수비대를 두매 에돔 사람이 다 다윗의 종이 되니라 다윗이 어디로 가든지 여호와께서 이기게 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "395567b7405d475d4d406b5ae1f08d89b844d6595effbd1b0d28ead57738cbff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:14",
+      "sequence": 10905,
+      "chapter_label": "1CH 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "David reigned over all Israel; and he executed justice and righteousness for all his people.",
+      "ko": "다윗이 온 이스라엘을 다스려 모든 백성에게 공과 의를 행할쌔",
+      "source_text_hash": "924588375ff6e40fdb873719e0e743ccaade54c3941cd1a8c70a53991745d7e1",
+      "translation_text_hash": "a9ec43c171001d58eaab21f6e3e851a86cc261735642818a51c030a2e40302bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 온 이스라엘을 다스려 모든 백성에게 공과 의를 행할쌔"
+      ],
+      "raw_text_hashes": [
+        "a9ec43c171001d58eaab21f6e3e851a86cc261735642818a51c030a2e40302bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:15",
+      "sequence": 10906,
+      "chapter_label": "1CH 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "Joab the son of Zeruiah was over the army; Jehoshaphat the son of Ahilud was recorder;",
+      "ko": "스루야의 아들 요압은 군대 장관이 되고 아힐룻의 아들 여호사밧은 사관이 되고",
+      "source_text_hash": "90c933a8afac6c8ce58957a6814882ab2416c6e27b6e490fcf3b8e497abaee31",
+      "translation_text_hash": "e218457bfbefb9f1e220103a881fd9b445a995f291451bb20eb2d6430251b9d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스루야의 아들 요압은 군대 장관이 되고 아힐룻의 아들 여호사밧은 사관이 되고"
+      ],
+      "raw_text_hashes": [
+        "e218457bfbefb9f1e220103a881fd9b445a995f291451bb20eb2d6430251b9d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:16",
+      "sequence": 10907,
+      "chapter_label": "1CH 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "Zadok the son of Ahitub and Abimelech the son of Abiathar were priests; Shavsha was scribe;",
+      "ko": "아히둡의 아들 사독과 아비아달의 아들 아비멜렉은 제사장이 되고 사워사는 서기관이 되고",
+      "source_text_hash": "5ff0c09b89d85d24b4ce6dc6c66dbb7521d6cd03f7fec326a6f4384ec048d79a",
+      "translation_text_hash": "c0b50e80e01ee3c63f003630d5b7a9817825d8d7d2bd0213ec3a8f722a7fde20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아히둡의 아들 사독과 아비아달의 아들 아비멜렉은 제사장이 되고 사워사는 서기관이 되고"
+      ],
+      "raw_text_hashes": [
+        "c0b50e80e01ee3c63f003630d5b7a9817825d8d7d2bd0213ec3a8f722a7fde20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:18:17",
+      "sequence": 10908,
+      "chapter_label": "1CH 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "and Benaiah the son of Jehoiada was over the Cherethites and the Pelethites; and the sons of David were chief officials serving the king.",
+      "ko": "여호야다의 아들 브나야는 그렛 사람과 블렛 사람을 관할하고 다윗의 아들들은 왕을 모셔 대신이 되니라",
+      "source_text_hash": "ec7739711e86a01ccd2775ad0f87f885d5413a59cffbcc3d04403866b50641ca",
+      "translation_text_hash": "70cf495f6e67b73b3b9e843362bfd30f5b49a0933058eba5360ce9dc934e9542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야다의 아들 브나야는 그렛 사람과 블렛 사람을 관할하고 다윗의 아들들은 왕을 모셔 대신이 되니라"
+      ],
+      "raw_text_hashes": [
+        "70cf495f6e67b73b3b9e843362bfd30f5b49a0933058eba5360ce9dc934e9542"
+      ]
+    }
+  ]
+}

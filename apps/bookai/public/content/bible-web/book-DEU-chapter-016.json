@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:016",
+  "unit_ordinal": 169,
+  "unit_label": "DEU 16",
+  "book_code": "DEU",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:16:1",
+      "sequence": 5344,
+      "chapter_label": "DEU 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Observe the month of Abib, and keep the Passover to the LORD your God; for in the month of Abib the LORD your God brought you out of Egypt by night.",
+      "ko": "아빕월을 지켜 네 하나님 여호와의 유월절 예식을 행하라 이는 아빕월에 네 하나님 여호와께서 밤에 너를 애굽에서 인도하여 내셨음이라",
+      "source_text_hash": "3b1c26a83f265fe4a31599e14fb9eccc6fcae402f835e3180c40045813c7704c",
+      "translation_text_hash": "8c3b8e54b4c0da665d13125717f69a8e33120ceb6cdc853d39060dd8d26228fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아빕월을 지켜 네 하나님 여호와의 유월절 예식을 행하라 이는 아빕월에 네 하나님 여호와께서 밤에 너를 애굽에서 인도하여 내셨음이라"
+      ],
+      "raw_text_hashes": [
+        "8c3b8e54b4c0da665d13125717f69a8e33120ceb6cdc853d39060dd8d26228fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:2",
+      "sequence": 5345,
+      "chapter_label": "DEU 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "You shall sacrifice the Passover to the LORD your God, of the flock and the herd, in the place which the LORD shall choose to cause his name to dwell there.",
+      "ko": "여호와께서 그 이름을 두시려고 택하신 곳에서 우양으로 네 하나님 여호와께 유월절 제사를 드리되",
+      "source_text_hash": "9493353334e5abcd8dc7b4dbb4de41951a560bfb301fcb71eb2184fa41100fea",
+      "translation_text_hash": "f234e83e90e2c29a2cdab77d387dff5a55e1a6f198ea65a1ebbd250382ffe4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 이름을 두시려고 택하신 곳에서 우양으로 네 하나님 여호와께 유월절 제사를 드리되"
+      ],
+      "raw_text_hashes": [
+        "f234e83e90e2c29a2cdab77d387dff5a55e1a6f198ea65a1ebbd250382ffe4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:3",
+      "sequence": 5346,
+      "chapter_label": "DEU 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "You shall eat no leavened bread with it. You shall eat unleavened bread with it seven days, even the bread of affliction (for you came out of the land of Egypt in haste) that you may remember the day when you came out of the land of Egypt all the days of your life.",
+      "ko": "유교병을 그것과 아울러 먹지 말고 칠일 동안은 무교병 곧 고난의 떡을 그것과 아울러 먹으라 이는 네가 애굽 땅에서 급속히 나왔음이니 이같이 행하여 너의 평생에 항상 네가 애굽 땅에서 나온 날을 기억할 것이니라",
+      "source_text_hash": "c44243b928b71340e8623669bd5f4d2edf9ecd2c2236a6ddeab65a6f609cd4a1",
+      "translation_text_hash": "19a90bda6afaf5e2bf9c2c00748e28951c29e01bdc4cb12419e540559b39b600",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유교병을 그것과 아울러 먹지 말고 칠일 동안은 무교병 곧 고난의 떡을 그것과 아울러 먹으라 이는 네가 애굽 땅에서 급속히 나왔음이니 이같이 행하여 너의 평생에 항상 네가 애굽 땅에서 나온 날을 기억할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "19a90bda6afaf5e2bf9c2c00748e28951c29e01bdc4cb12419e540559b39b600"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:4",
+      "sequence": 5347,
+      "chapter_label": "DEU 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "No yeast shall be seen with you in all your borders seven days; neither shall any of the meat, which you sacrifice the first day at evening, remain all night until the morning.",
+      "ko": "그 칠일 동안에는 네 사경 내에 누룩이 보이지 않게 할 것이요 또 네가 첫날 해 질 때에 제사드린 고기를 밤을 지내어 아침까지 두지 말것이며",
+      "source_text_hash": "bf8260ff704ff16d2c914d50845e54b21c5b374fda60b88d9290b3f6ce5d648f",
+      "translation_text_hash": "dc19342445ca66e6a85e6461adc2b390dc3482376a0f71e3b387e5d196f573ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 칠일 동안에는 네 사경 내에 누룩이 보이지 않게 할 것이요 또 네가 첫날 해 질 때에 제사드린 고기를 밤을 지내어 아침까지 두지 말것이며"
+      ],
+      "raw_text_hashes": [
+        "dc19342445ca66e6a85e6461adc2b390dc3482376a0f71e3b387e5d196f573ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:5",
+      "sequence": 5348,
+      "chapter_label": "DEU 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "You may not sacrifice the Passover within any of your gates which the LORD your God gives you;",
+      "ko": "유월절 제사를 네 하나님 여호와께서 네게 주신 각 성에서 드리지 말고",
+      "source_text_hash": "689b82b04928723f253a47021bd376e2b0100196df507427079482c29f9bd095",
+      "translation_text_hash": "0a5c81ca8cd0d4feebb6f3db0a3730822bb5c05dd8695f363f28780f1e8e004e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 제사를 네 하나님 여호와께서 네게 주신 각 성에서 드리지 말고"
+      ],
+      "raw_text_hashes": [
+        "0a5c81ca8cd0d4feebb6f3db0a3730822bb5c05dd8695f363f28780f1e8e004e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:6",
+      "sequence": 5349,
+      "chapter_label": "DEU 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "but at the place which the LORD your God shall choose to cause his name to dwell in, there you shall sacrifice the Passover at evening, at the going down of the sun, at the season that you came out of Egypt.",
+      "ko": "오직 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳에서 네가 애굽에서 나오던 시각 곧 초저녁 해 질 때에 드리고",
+      "source_text_hash": "3ed1f44cc0e3aecd0d4d94c983474978acbd7b63fb469ee5fb5d099278d8b563",
+      "translation_text_hash": "d7edb9fb50c09ddfe3cec76ec4760bb1dfea771d6ec49a524f1b1b86fb7f7f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳에서 네가 애굽에서 나오던 시각 곧 초저녁 해 질 때에 드리고"
+      ],
+      "raw_text_hashes": [
+        "d7edb9fb50c09ddfe3cec76ec4760bb1dfea771d6ec49a524f1b1b86fb7f7f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:7",
+      "sequence": 5350,
+      "chapter_label": "DEU 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "You shall roast and eat it in the place which the LORD your God chooses. In the morning you shall return to your tents.",
+      "ko": "네 하나님 여호와께서 택하신 곳에서 그 고기를 구워먹고 아침에 네 장막으로 돌아갈 것이니라",
+      "source_text_hash": "d9412830192a41d914b0e258697cd3c5694caa046c0e930a5392cfdbb038c89b",
+      "translation_text_hash": "990aa44f0c5f8af45c1bf9f06d39c19d29e8d07e677397aa0b71cc167b1d5a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 택하신 곳에서 그 고기를 구워먹고 아침에 네 장막으로 돌아갈 것이니라"
+      ],
+      "raw_text_hashes": [
+        "990aa44f0c5f8af45c1bf9f06d39c19d29e8d07e677397aa0b71cc167b1d5a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:8",
+      "sequence": 5351,
+      "chapter_label": "DEU 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Six days you shall eat unleavened bread. On the seventh day shall be a solemn assembly to the LORD your God. You shall do no work.",
+      "ko": "너는 육일 동안은 무교병을 먹고 제 칠일에 네 하나님 여호와 앞에 성회로 모이고 아무 노동도 하지 말찌니라",
+      "source_text_hash": "fe26c4b747041e8e9ab4cdc21a8edc719e3c0776a4cd1a4f0fd23a8784887de0",
+      "translation_text_hash": "106563afed16da7501dd3cb67ee39e8588ae2246ea80232bf33478ca3ca8c292",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 육일 동안은 무교병을 먹고 제 칠일에 네 하나님 여호와 앞에 성회로 모이고 아무 노동도 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "106563afed16da7501dd3cb67ee39e8588ae2246ea80232bf33478ca3ca8c292"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:9",
+      "sequence": 5352,
+      "chapter_label": "DEU 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "You shall count for yourselves seven weeks. From the time you begin to put the sickle to the standing grain you shall begin to count seven weeks.",
+      "ko": "칠주를 계수할찌니 곡식에 낫을 대는 첫날부터 칠주를 계수하여",
+      "source_text_hash": "a547f87a13c1fad0afb33ac4c1f49cc5d2a14993f3760d6d95b32dff30fa4d25",
+      "translation_text_hash": "fbd03c4238b51e9a4130a45950013835e3e7925513162b9eb45cfa6025ab2ec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠주를 계수할찌니 곡식에 낫을 대는 첫날부터 칠주를 계수하여"
+      ],
+      "raw_text_hashes": [
+        "fbd03c4238b51e9a4130a45950013835e3e7925513162b9eb45cfa6025ab2ec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:10",
+      "sequence": 5353,
+      "chapter_label": "DEU 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "You shall keep the feast of weeks to the LORD your God with a tribute of a free will offering of your hand, which you shall give according to how the LORD your God blesses you.",
+      "ko": "네 하나님 여호와 앞에 칠칠절을 지키되 네 하나님 여호와께서 네게 복을 주신대로 네 힘을 헤아려 자원하는 예물을 드리고",
+      "source_text_hash": "560f25eedbf3eb384a25c0148e80e90053cff01abfa0cb4f1154bb01aecbf3c0",
+      "translation_text_hash": "680297844f424fe16163b628d9aaafebf5a7ea9d12b1411b833b2149fbb3d10c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와 앞에 칠칠절을 지키되 네 하나님 여호와께서 네게 복을 주신대로 네 힘을 헤아려 자원하는 예물을 드리고"
+      ],
+      "raw_text_hashes": [
+        "680297844f424fe16163b628d9aaafebf5a7ea9d12b1411b833b2149fbb3d10c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:11",
+      "sequence": 5354,
+      "chapter_label": "DEU 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "You shall rejoice before the LORD your God: you, your son, your daughter, your male servant, your female servant, the Levite who is within your gates, the foreigner, the fatherless, and the widow who are among you, in the place which the LORD your God shall choose to cause his name to dwell there.",
+      "ko": "너와 네 자녀와 노비와 네 성중에 거하는 레위인과 및 너희 중에 있는 객과 고아와 과부가 함께 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳에서 네 하나님 여호와 앞에서 즐거워 할찌니라",
+      "source_text_hash": "21440142b520c46ca7df8b0dda49b0fee60089bf70afc62e890b349cfdc0c53a",
+      "translation_text_hash": "b61cf902b2c454c0742e094b027e8a605b6bfc581849843b63767945ee9861ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 네 자녀와 노비와 네 성중에 거하는 레위인과 및 너희 중에 있는 객과 고아와 과부가 함께 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳에서 네 하나님 여호와 앞에서 즐거워 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "b61cf902b2c454c0742e094b027e8a605b6bfc581849843b63767945ee9861ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:12",
+      "sequence": 5355,
+      "chapter_label": "DEU 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "You shall remember that you were a slave in Egypt. You shall observe and do these statutes.",
+      "ko": "너는 애굽에서 종 되었던 것을 기억하고 이 규례를 지켜 행할찌니라",
+      "source_text_hash": "6216e10d1f969dc9f37a20ec05f2f904064c62694014393c5b001cddb22fd63f",
+      "translation_text_hash": "04f728ec2e6bc17d370c2d6b04eee346f55c384a1426057a5d540ae14ef22e24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 애굽에서 종 되었던 것을 기억하고 이 규례를 지켜 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "04f728ec2e6bc17d370c2d6b04eee346f55c384a1426057a5d540ae14ef22e24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:13",
+      "sequence": 5356,
+      "chapter_label": "DEU 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "You shall keep the feast of booths seven days, after you have gathered in from your threshing floor and from your wine press.",
+      "ko": "너희 타작 마당과 포도주 틀의 소출을 수장한 후에 칠일 동안 초막절을 지킬 것이요",
+      "source_text_hash": "197a9f582ce1c472c8d9d1ec5fb1cf271a8e24ef2e54197e9c2580f57a265786",
+      "translation_text_hash": "f05f785146b0de6e7e72bca0b1e203107fba8896801b4e59544f9d1ba7d73d51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 타작 마당과 포도주 틀의 소출을 수장한 후에 칠일 동안 초막절을 지킬 것이요"
+      ],
+      "raw_text_hashes": [
+        "f05f785146b0de6e7e72bca0b1e203107fba8896801b4e59544f9d1ba7d73d51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:14",
+      "sequence": 5357,
+      "chapter_label": "DEU 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "You shall rejoice in your feast, you, your son, your daughter, your male servant, your female servant, the Levite, the foreigner, the fatherless, and the widow who are within your gates.",
+      "ko": "절기를 지킬 때에는 너와 네 자녀와 노비와 네 성중에 거하는 레위인과 객과 고아와 과부가 함께 연락하되",
+      "source_text_hash": "0e325ad09827544ecb505c082963505455d5e5b88777c36589ddfaee6cf81067",
+      "translation_text_hash": "b1be8fab795b4600a341ac4cc312ce788b3e432e755c4f8f3d04f2dc18eaa2a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "절기를 지킬 때에는 너와 네 자녀와 노비와 네 성중에 거하는 레위인과 객과 고아와 과부가 함께 연락하되"
+      ],
+      "raw_text_hashes": [
+        "b1be8fab795b4600a341ac4cc312ce788b3e432e755c4f8f3d04f2dc18eaa2a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:15",
+      "sequence": 5358,
+      "chapter_label": "DEU 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "You shall keep a feast to the LORD your God seven days in the place which the LORD chooses, because the LORD your God will bless you in all your increase and in all the work of your hands, and you shall be altogether joyful.",
+      "ko": "네 하나님 여호와께서 택하신 곳에서 너는 칠일 동안 네 하나님 여호와 앞에서 절기를 지키고 네 하나님 여호와께서 네 모든 물산과 네 손을 댄 모든 일에 복 주실 것을 인하여 너는 온전히 즐거워할찌니라",
+      "source_text_hash": "4657400da0c8a4615ba6bb08a8bef7d33cf6973d0c855636bff5edc761253aca",
+      "translation_text_hash": "bf4ad184acbf79357463167c75a84a98524d50d5ddc23ca2ff58908cf7e3fcb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 택하신 곳에서 너는 칠일 동안 네 하나님 여호와 앞에서 절기를 지키고 네 하나님 여호와께서 네 모든 물산과 네 손을 댄 모든 일에 복 주실 것을 인하여 너는 온전히 즐거워할찌니라"
+      ],
+      "raw_text_hashes": [
+        "bf4ad184acbf79357463167c75a84a98524d50d5ddc23ca2ff58908cf7e3fcb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:16",
+      "sequence": 5359,
+      "chapter_label": "DEU 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "Three times in a year all of your males shall appear before the LORD your God in the place which he chooses: in the feast of unleavened bread, in the feast of weeks, and in the feast of booths. They shall not appear before the LORD empty.",
+      "ko": "너희 중 모든 남자는 일년 삼차 곧 무교절과 칠칠절과 초막절에 네 하나님 여호와의 택하신 곳에서 여호와께 보이되 공수로 여호와께 보이지 말고",
+      "source_text_hash": "518276696d46adc2dac1a709bdb7f05877e87013da3e496e7372a5f653f36b5c",
+      "translation_text_hash": "ead9e52e6d3c1db352606e941425e34f6e2492f56244ae909f6c4d2ad1799aec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 모든 남자는 일년 삼차 곧 무교절과 칠칠절과 초막절에 네 하나님 여호와의 택하신 곳에서 여호와께 보이되 공수로 여호와께 보이지 말고"
+      ],
+      "raw_text_hashes": [
+        "ead9e52e6d3c1db352606e941425e34f6e2492f56244ae909f6c4d2ad1799aec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:17",
+      "sequence": 5360,
+      "chapter_label": "DEU 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Every man shall give as he is able, according to the LORD your God’s blessing which he has given you.",
+      "ko": "각 사람이 네 하나님 여호와의 주신 복을 따라 그 힘대로 물건을 드릴찌니라",
+      "source_text_hash": "e53295ae538d831ad62f2d7a30cf5fc72c01595a11e9deeb3bcb1c847c3cee6a",
+      "translation_text_hash": "543bed56bc4dddb1e3d317a743dffcb96b5b79cccceb593847023fd885d5e321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람이 네 하나님 여호와의 주신 복을 따라 그 힘대로 물건을 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "543bed56bc4dddb1e3d317a743dffcb96b5b79cccceb593847023fd885d5e321"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:18",
+      "sequence": 5361,
+      "chapter_label": "DEU 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "You shall make judges and officers in all your gates, which the LORD your God gives you, according to your tribes; and they shall judge the people with righteous judgment.",
+      "ko": "네 하나님 여호와께서 네게 주시는 각 성에서 네 지파를 따라 재판장과 유사를 둘것이요 그들은 공의로 백성을 재판할 것이니라",
+      "source_text_hash": "2ddde842aef79c580758b88b672e8a090c1411417605fd0760ab955f450837de",
+      "translation_text_hash": "2939900ffa79ac072a75ad92b18b0288ebfbc45fbe9e8655ccb28574013bd90a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주시는 각 성에서 네 지파를 따라 재판장과 유사를 둘것이요 그들은 공의로 백성을 재판할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "2939900ffa79ac072a75ad92b18b0288ebfbc45fbe9e8655ccb28574013bd90a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:19",
+      "sequence": 5362,
+      "chapter_label": "DEU 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "You shall not pervert justice. You shall not show partiality. You shall not take a bribe, for a bribe blinds the eyes of the wise and perverts the words of the righteous.",
+      "ko": "너는 굽게 판단하지 말며 사람을 외모로 보지 말며 또 뇌물을 받지 말라 뇌물은 지혜자의 눈을 어둡게 하고 의인의 말을 굽게 하느니라",
+      "source_text_hash": "59cf32173db3a58ec73457dec850c7990a1f6c8eff18e4118c89d0463c54689f",
+      "translation_text_hash": "2dd007967493a94752f70f24a5e44184b51ca100a90fd321b5da77b4b6e67e0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 굽게 판단하지 말며 사람을 외모로 보지 말며 또 뇌물을 받지 말라 뇌물은 지혜자의 눈을 어둡게 하고 의인의 말을 굽게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "2dd007967493a94752f70f24a5e44184b51ca100a90fd321b5da77b4b6e67e0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:20",
+      "sequence": 5363,
+      "chapter_label": "DEU 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "You shall follow that which is altogether just, that you may live and inherit the land which the LORD your God gives you.",
+      "ko": "너는 마땅히 공의만 좇으라 그리하면 네가 살겠고 네 하나님 여호와께서 네게 주시는 땅을 얻으리라",
+      "source_text_hash": "371dae3d372fb94da8541446e949793f18a73f0397b9261b56f57d80cd9840cb",
+      "translation_text_hash": "1ebf29a8c49b3bb745fc529b61b2ba28795a23d54c236b9fe6247c4e9116b3c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마땅히 공의만 좇으라 그리하면 네가 살겠고 네 하나님 여호와께서 네게 주시는 땅을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "1ebf29a8c49b3bb745fc529b61b2ba28795a23d54c236b9fe6247c4e9116b3c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:21",
+      "sequence": 5364,
+      "chapter_label": "DEU 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "You shall not plant for yourselves an Asherah of any kind of tree beside the LORD your God’s altar, which you shall make for yourselves.",
+      "ko": "네 하나님 여호와를 위하여 쌓은 단 곁에 아무 나무로든지 아세라상을 세우지 말며",
+      "source_text_hash": "1abf62c5829a3e551fb9363505545ca5b8cfa30dae968afba5cd0b3f594bec3f",
+      "translation_text_hash": "59449cf1f69af81d05aef2db18c3487ab724b267981cad8ca289d4ade70fc0cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와를 위하여 쌓은 단 곁에 아무 나무로든지 아세라상을 세우지 말며"
+      ],
+      "raw_text_hashes": [
+        "59449cf1f69af81d05aef2db18c3487ab724b267981cad8ca289d4ade70fc0cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:16:22",
+      "sequence": 5365,
+      "chapter_label": "DEU 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "Neither shall you set yourself up a sacred stone which the LORD your God hates.",
+      "ko": "자기를 위하여 주상을 세우지 말라 네 하나님 여호와께서 미워하시느니라",
+      "source_text_hash": "29ee7dd1d0a26111ee508738108a6fb0da737ec395d66970dc8077700e92d065",
+      "translation_text_hash": "69a1c32f2f1be6f2c8cdb00064a3110fb2395da6cd84c09968c9fa8704aa8827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 위하여 주상을 세우지 말라 네 하나님 여호와께서 미워하시느니라"
+      ],
+      "raw_text_hashes": [
+        "69a1c32f2f1be6f2c8cdb00064a3110fb2395da6cd84c09968c9fa8704aa8827"
+      ]
+    }
+  ]
+}

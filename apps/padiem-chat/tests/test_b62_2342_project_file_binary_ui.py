@@ -349,13 +349,16 @@ function pickAndUpload(file) {
   if (byId.projectFormError.hidden !== false) fail("PPTX_ERROR_NOT_VISIBLE");
 
   // 5) Binary size is validated by the server, not this browser fixture.
-  // 6) Server stays the validation authority: 422 message surfaced verbatim; no row added.
+  // 6) Server remains the validation authority; raw text stays out of the UI.
   nextPostFailure = { status: 422, body: { error: { code: "invalid_project_file", message: "SERVER_REJECT_MARKER_2342" } } };
   pickAndUpload(makeFile("second.pdf", "application/pdf", PDF_BYTES, null));
   await tick(80);
   posts = filePosts();
   if (posts.length !== 4) fail("SERVER_ERROR_POST_COUNT");
-  if (byId.projectFormError.textContent !== "SERVER_REJECT_MARKER_2342") fail("SERVER_ERROR_MESSAGE_NOT_SURFACED");
+  if (byId.projectFormError.textContent !== "project-file-save-failed") fail("MAPPED_ERROR_NOT_SHOWN");
+  const reference = byId.projectFormError.children.find((child) => child.className === "error-code");
+  if (!reference || reference.textContent !== "error-code-reference: invalid_project_file") fail("REFERENCE_CODE_NOT_SHOWN");
+  if (byId.projectFormError.textContent.includes("SERVER_REJECT_MARKER_2342")) fail("RAW_SERVER_ERROR_SHOWN");
   if (byId.projectFormError.hidden !== false) fail("SERVER_ERROR_NOT_VISIBLE");
   if (findRowText("second.pdf") !== null) fail("REJECTED_FILE_ROW_ADDED");
   if (busyDuringPost[3] !== "true") fail("ARIA_BUSY_NOT_SET_DURING_FAILED_POST");

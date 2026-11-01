@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:005",
+  "unit_ordinal": 1172,
+  "unit_label": "REV 5",
+  "book_code": "REV",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:5:1",
+      "sequence": 30777,
+      "chapter_label": "REV 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "I saw, in the right hand of him who sat on the throne, a book written inside and outside, sealed shut with seven seals.",
+      "ko": "내가 보매 보좌에 앉으신 이의 오른손에 책이 있으니 안팎으로 썼고 일곱 인으로 봉하였더라",
+      "source_text_hash": "d6580571573bf4b68cb2ab87b6a52eba85d87c5fde1ebd911e87836e0e0ddc3e",
+      "translation_text_hash": "e84c3ca62aaab1f81192c4b55d6e3eeb819c53133a6957819788a049bdb11a9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보매 보좌에 앉으신 이의 오른손에 책이 있으니 안팎으로 썼고 일곱 인으로 봉하였더라"
+      ],
+      "raw_text_hashes": [
+        "e84c3ca62aaab1f81192c4b55d6e3eeb819c53133a6957819788a049bdb11a9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:2",
+      "sequence": 30778,
+      "chapter_label": "REV 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "I saw a mighty angel proclaiming with a loud voice, “Who is worthy to open the book, and to break its seals?”",
+      "ko": "또 보매 힘 있는 천사가 큰 음성으로 외치기를 누가 책을 펴며 그 인을 떼기에 합당하냐 하니",
+      "source_text_hash": "922f2039876c4c1a1e1b165c40671692205a925795267387230f8c394eabc1dc",
+      "translation_text_hash": "e0833a8a06e72e0f2b3f44707cf7cec223ed1153591734d5538b1df86ed1272d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보매 힘 있는 천사가 큰 음성으로 외치기를 누가 책을 펴며 그 인을 떼기에 합당하냐 하니"
+      ],
+      "raw_text_hashes": [
+        "e0833a8a06e72e0f2b3f44707cf7cec223ed1153591734d5538b1df86ed1272d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:3",
+      "sequence": 30779,
+      "chapter_label": "REV 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "No one in heaven above, or on the earth, or under the earth, was able to open the book or to look in it.",
+      "ko": "하늘 위에나 땅 위에나 땅 아래에 능히 책을 펴거나 보거나 할 이가 없더라",
+      "source_text_hash": "37fdc120675792ebaa5d7bcb782a49f243cc958deaff577c845a50012ad08931",
+      "translation_text_hash": "cda41b81abea5067cad86f27e5e61a447208c6bb9d6f31802886a68b0b67faf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘 위에나 땅 위에나 땅 아래에 능히 책을 펴거나 보거나 할 이가 없더라"
+      ],
+      "raw_text_hashes": [
+        "cda41b81abea5067cad86f27e5e61a447208c6bb9d6f31802886a68b0b67faf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:4",
+      "sequence": 30780,
+      "chapter_label": "REV 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Then I wept much, because no one was found worthy to open the book or to look in it.",
+      "ko": "이 책을 펴거나 보거나 하기에 합당한 자가 보이지 않기로 내가 크게 울었더니",
+      "source_text_hash": "f52f84c48d508a4af2bc33a924d1486ba5812c5fbdd9a7485b2b193956a207d7",
+      "translation_text_hash": "e7e9bde76da34657b352fb4b95a6861da8ea5ca82882af0930ae28713fac394a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 책을 펴거나 보거나 하기에 합당한 자가 보이지 않기로 내가 크게 울었더니"
+      ],
+      "raw_text_hashes": [
+        "e7e9bde76da34657b352fb4b95a6861da8ea5ca82882af0930ae28713fac394a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:5",
+      "sequence": 30781,
+      "chapter_label": "REV 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "One of the elders said to me, “Don’t weep. Behold, the Lion who is of the tribe of Judah, the Root of David, has overcome: he who opens the book and its seven seals.”",
+      "ko": "장로 중에 하나가 내게 말하되 울지 말라 유대 지파의 사자 다윗의 뿌리가 이기었으니 이 책과 그 일곱 인을 떼시리라 하더라",
+      "source_text_hash": "b0d4c9a0e2a593af759a72b8486142a49bded3803b9eae49aefb5d959dcf6f23",
+      "translation_text_hash": "5e031629b669627c9316ba1bdbf67afd4d2a09abef3bb5206ff331d81c593771",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장로 중에 하나가 내게 말하되 울지 말라 유대 지파의 사자 다윗의 뿌리가 이기었으니 이 책과 그 일곱 인을 떼시리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "5e031629b669627c9316ba1bdbf67afd4d2a09abef3bb5206ff331d81c593771"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:6",
+      "sequence": 30782,
+      "chapter_label": "REV 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "I saw in the middle of the throne and of the four living creatures, and in the middle of the elders, a Lamb standing, as though it had been slain, having seven horns and seven eyes, which are the seven Spirits of God, sent out into all the earth.",
+      "ko": "내가 또 보니 보좌와 네 생물과 장로들 사이에 어린 양이 섰는데 일찍 죽임을 당한것 같더라 일곱 뿔과 일곱 눈이 있으니 이 눈은 온 땅에 보내심을 입은 하나님의 일곱 영이더라",
+      "source_text_hash": "ee6c36b830666f2179bbdb9eb7d2e685a720febc4c9802c3577af5eca49ea759",
+      "translation_text_hash": "a66246734533e42a1ecd4491c30e37a8ed6d59da9a346338b68a90a41c257d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 보니 보좌와 네 생물과 장로들 사이에 어린 양이 섰는데 일찍 죽임을 당한것 같더라 일곱 뿔과 일곱 눈이 있으니 이 눈은 온 땅에 보내심을 입은 하나님의 일곱 영이더라"
+      ],
+      "raw_text_hashes": [
+        "a66246734533e42a1ecd4491c30e37a8ed6d59da9a346338b68a90a41c257d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:7",
+      "sequence": 30783,
+      "chapter_label": "REV 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Then he came, and he took it out of the right hand of him who sat on the throne.",
+      "ko": "어린 양이 나아와서 보좌에 앉으신 이의 오른손에서 책을 취하시니라",
+      "source_text_hash": "bb766879f2c5cfc3472a6b4d4135fe01d9415a71ba239a9e79d0eaad6461cecb",
+      "translation_text_hash": "0f7120772bcf11721ec92dee3f729eede8cddff634eb2c627700b5a0600b2545",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 양이 나아와서 보좌에 앉으신 이의 오른손에서 책을 취하시니라"
+      ],
+      "raw_text_hashes": [
+        "0f7120772bcf11721ec92dee3f729eede8cddff634eb2c627700b5a0600b2545"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:8",
+      "sequence": 30784,
+      "chapter_label": "REV 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Now when he had taken the book, the four living creatures and the twenty-four elders fell down before the Lamb, each one having a harp, and golden bowls full of incense, which are the prayers of the saints.",
+      "ko": "책을 취하시매 네 생물과 이십 사 장로들이 어린 양 앞에 엎드려 각각 거문고와 향이 가득한 금 대접을 가졌으니 이 향은 성도의 기도들이라",
+      "source_text_hash": "b473c04762ebae058d80e347f1555a7dcc27e3e2c96537246d64a54b5f17299a",
+      "translation_text_hash": "359af18ac8ae4b12b24260376621c255338fa15768791086f58d7adc36fd18ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "책을 취하시매 네 생물과 이십 사 장로들이 어린 양 앞에 엎드려 각각 거문고와 향이 가득한 금 대접을 가졌으니 이 향은 성도의 기도들이라"
+      ],
+      "raw_text_hashes": [
+        "359af18ac8ae4b12b24260376621c255338fa15768791086f58d7adc36fd18ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:9",
+      "sequence": 30785,
+      "chapter_label": "REV 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "They sang a new song, saying, “You are worthy to take the book and to open its seals, for you were killed, and bought us for God with your blood out of every tribe, language, people, and nation,",
+      "ko": "새 노래를 노래하여 가로되 책을 가지시고 그 인봉을 떼기에 합당하시도다 일찍 죽임을 당하사 각 족속과 방언과 백성과 나라 가운데서 사람들을 피로 사서 하나님께 드리시고",
+      "source_text_hash": "860acb2c7b7bcbb279b23fc974463bd63c09482e0bc6543f0447737de3d7087a",
+      "translation_text_hash": "a23012fbcbeedaefc9d73636b5d50ce0d06c49d07b62948402d2380506072fee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 노래를 노래하여 가로되 책을 가지시고 그 인봉을 떼기에 합당하시도다 일찍 죽임을 당하사 각 족속과 방언과 백성과 나라 가운데서 사람들을 피로 사서 하나님께 드리시고"
+      ],
+      "raw_text_hashes": [
+        "a23012fbcbeedaefc9d73636b5d50ce0d06c49d07b62948402d2380506072fee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:10",
+      "sequence": 30786,
+      "chapter_label": "REV 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "and made us kings and priests to our God; and we will reign on the earth.”",
+      "ko": "저희로 우리 하나님 앞에서 나라와 제사장을 삼으셨으니 저희가 땅에서 왕노릇하리로다 하더라",
+      "source_text_hash": "e3b40e9ca7ef1d4001220a756da539499f04eb2a7825b20e86450acf652a3408",
+      "translation_text_hash": "b573b940e62ac194be27fc65b99d25c9c79e35bde4f1fd8e4716cf38086e4f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희로 우리 하나님 앞에서 나라와 제사장을 삼으셨으니 저희가 땅에서 왕노릇하리로다 하더라"
+      ],
+      "raw_text_hashes": [
+        "b573b940e62ac194be27fc65b99d25c9c79e35bde4f1fd8e4716cf38086e4f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:11",
+      "sequence": 30787,
+      "chapter_label": "REV 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "I looked, and I heard something like a voice of many angels around the throne, the living creatures, and the elders. The number of them was ten thousands of ten thousands, and thousands of thousands,",
+      "ko": "내가 또 보고 들으매 보좌와 생물들과 장로들을 둘러 선 많은 천사의 음성이 있으니 그 수가 만만이요 천천이라",
+      "source_text_hash": "4aa73762cc1f3fb1bc87de27b1a5fe86db244c4733350715b24a605d3e49d8fc",
+      "translation_text_hash": "7fd94f0c00ea646da2e39a3830000c578da7e87bdae07543122543080d42d542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 보고 들으매 보좌와 생물들과 장로들을 둘러 선 많은 천사의 음성이 있으니 그 수가 만만이요 천천이라"
+      ],
+      "raw_text_hashes": [
+        "7fd94f0c00ea646da2e39a3830000c578da7e87bdae07543122543080d42d542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:12",
+      "sequence": 30788,
+      "chapter_label": "REV 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "saying with a loud voice, “Worthy is the Lamb who has been killed to receive the power, wealth, wisdom, strength, honor, glory, and blessing!”",
+      "ko": "큰 음성으로 가로되 죽임을 당하신 어린 양이 능력과 부와 지혜와 힘과 존귀와 영광과 찬송을 받으시기에 합당하도다 하더라",
+      "source_text_hash": "e027b2c1b20b5383ef34e1286f6546c91db94ffa0d208de94c17c6f5c5bcaff4",
+      "translation_text_hash": "1af6e274652c4cb51c82f4cdbaaf770f8cf027c4a951907c8b644ccc71dc6d2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 음성으로 가로되 죽임을 당하신 어린 양이 능력과 부와 지혜와 힘과 존귀와 영광과 찬송을 받으시기에 합당하도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "1af6e274652c4cb51c82f4cdbaaf770f8cf027c4a951907c8b644ccc71dc6d2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:13",
+      "sequence": 30789,
+      "chapter_label": "REV 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "I heard every created thing which is in heaven, on the earth, under the earth, on the sea, and everything in them, saying, “To him who sits on the throne and to the Lamb be the blessing, the honor, the glory, and the dominion, forever and ever! Amen!”",
+      "ko": "내가 또 들으니 하늘 위에와 땅 위에와 땅 아래와 바다 위에와 또 그 가운데 모든 만물이 가로되 보좌에 앉으신 이와 어린 양에게 찬송과 존귀와 영광과 능력을 세세토록 돌릴찌어다 하니",
+      "source_text_hash": "7bd3cf42186c5ad95f04c116f7202f39a076abada68b4591a8817852369d1e8c",
+      "translation_text_hash": "32a40687d33f4326d0f2766816881f405c01f0de9b71e89da682dacd0277c56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 들으니 하늘 위에와 땅 위에와 땅 아래와 바다 위에와 또 그 가운데 모든 만물이 가로되 보좌에 앉으신 이와 어린 양에게 찬송과 존귀와 영광과 능력을 세세토록 돌릴찌어다 하니"
+      ],
+      "raw_text_hashes": [
+        "32a40687d33f4326d0f2766816881f405c01f0de9b71e89da682dacd0277c56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:5:14",
+      "sequence": 30790,
+      "chapter_label": "REV 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "The four living creatures said, “Amen!” Then the elders fell down and worshiped.",
+      "ko": "네 생물이 가로되 아멘 하고 장로들은 엎드려 경배하더라",
+      "source_text_hash": "bd54d08ede337915c4e2019d87e7d4b4ede22f537ec3c66cf09a92362034a200",
+      "translation_text_hash": "64a41d0e349436fb41f56a0119038fbe24293d9c44d8e9f3283551024693c228",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생물이 가로되 아멘 하고 장로들은 엎드려 경배하더라"
+      ],
+      "raw_text_hashes": [
+        "64a41d0e349436fb41f56a0119038fbe24293d9c44d8e9f3283551024693c228"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:011",
+  "unit_ordinal": 278,
+  "unit_label": "2SA 11",
+  "book_code": "2SA",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:11:1",
+      "sequence": 8261,
+      "chapter_label": "2SA 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "At the return of the year, at the time when kings go out, David sent Joab and his servants with him, and all Israel; and they destroyed the children of Ammon and besieged Rabbah. But David stayed at Jerusalem.",
+      "ko": "해가 돌아와서 왕들의 출전할 때가 되매 다윗이 요압과 그 신복과 온 이스라엘 군대를 보내니 저희가 암몬 자손을 멸하고 랍바를 에워쌌고 다윗은 예루살렘에 그대로 있으니라",
+      "source_text_hash": "9e332599f00766bdd665a9ada21b0bc27a7c0bac907c4b057331d5e716b8642c",
+      "translation_text_hash": "d95b1d2309a263eeb1d4b141108a47ef3170891b6d5f690972ff71fccde7591a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돌아와서 왕들의 출전할 때가 되매 다윗이 요압과 그 신복과 온 이스라엘 군대를 보내니 저희가 암몬 자손을 멸하고 랍바를 에워쌌고 다윗은 예루살렘에 그대로 있으니라"
+      ],
+      "raw_text_hashes": [
+        "d95b1d2309a263eeb1d4b141108a47ef3170891b6d5f690972ff71fccde7591a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:2",
+      "sequence": 8262,
+      "chapter_label": "2SA 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "At evening, David arose from his bed and walked on the roof of the king’s house. From the roof, he saw a woman bathing, and the woman was very beautiful to look at.",
+      "ko": "저녁때에 다윗이 그 침상에서 일어나 왕궁 지붕 위에서 거닐다가 그곳에서 보니 한 여인이 목욕을 하는데 심히 아름다와 보이는지라",
+      "source_text_hash": "d2035805eb0a5b88d3b3c3f84a20d17f953b053f2623aa3acf770b08e28df242",
+      "translation_text_hash": "5b55191f17fb7c7f1377fdfb6a4b323d0cd7e792f85aeea9ae45f2f084fb9a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저녁때에 다윗이 그 침상에서 일어나 왕궁 지붕 위에서 거닐다가 그곳에서 보니 한 여인이 목욕을 하는데 심히 아름다와 보이는지라"
+      ],
+      "raw_text_hashes": [
+        "5b55191f17fb7c7f1377fdfb6a4b323d0cd7e792f85aeea9ae45f2f084fb9a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:3",
+      "sequence": 8263,
+      "chapter_label": "2SA 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "David sent and inquired after the woman. One said, “Isn’t this Bathsheba, the daughter of Eliam, Uriah the Hittite’s wife?”",
+      "ko": "다윗이 보내어 그 여인을 알아보게 하였더니 고하되 그는 엘리암의 딸이요 헷사람 우리아의 아내 밧세바가 아니니이까",
+      "source_text_hash": "663b5373533020e460ebb955e03577ce6344e80ff7c019865aa8c36095520d1a",
+      "translation_text_hash": "a5c32b1f3c4c920cc3d21f9d40b54ac2067081fc4fa7d146a1b994760a086116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 보내어 그 여인을 알아보게 하였더니 고하되 그는 엘리암의 딸이요 헷사람 우리아의 아내 밧세바가 아니니이까"
+      ],
+      "raw_text_hashes": [
+        "a5c32b1f3c4c920cc3d21f9d40b54ac2067081fc4fa7d146a1b994760a086116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:4",
+      "sequence": 8264,
+      "chapter_label": "2SA 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "David sent messengers, and took her; and she came in to him, and he lay with her (for she was purified from her uncleanness); and she returned to her house.",
+      "ko": "다윗이 사자를 보내어 저를 자기에게로 데려 오게 하고 저가 그 부정함을 깨끗케 하였으므로 더불어 동침하매 저가 자기 집으로 돌아가니라",
+      "source_text_hash": "71fb5a6b446e8a4244c39eb228d9b5522e1ea4b53ff4be4c9fca6466bf3d8b7c",
+      "translation_text_hash": "285fcbc275361dc3ce365a429d62b9d4cca399c2d2b76d6b70319f35b803914d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사자를 보내어 저를 자기에게로 데려 오게 하고 저가 그 부정함을 깨끗케 하였으므로 더불어 동침하매 저가 자기 집으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "285fcbc275361dc3ce365a429d62b9d4cca399c2d2b76d6b70319f35b803914d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:5",
+      "sequence": 8265,
+      "chapter_label": "2SA 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "The woman conceived; and she sent and told David, and said, “I am with child.”",
+      "ko": "여인이 잉태하매 보내어 다윗에게 고하여 가로되 내가 잉태하였나이다 하니라",
+      "source_text_hash": "528aaf37348035202a7f18add32d8161d6523e7be5a39b3cbbdec89d9d16bba2",
+      "translation_text_hash": "a4be81de72954c3de4b1b36c00cfdf5654f96836ad537900aca11736f6382594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 잉태하매 보내어 다윗에게 고하여 가로되 내가 잉태하였나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "a4be81de72954c3de4b1b36c00cfdf5654f96836ad537900aca11736f6382594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:6",
+      "sequence": 8266,
+      "chapter_label": "2SA 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "David sent to Joab, “Send me Uriah the Hittite.” Joab sent Uriah to David.",
+      "ko": "다윗이 요압에게 기별하여 헷 사람 우리아를 내게 보내라 하매 요압이 우리아를 다윗에게로 보내니",
+      "source_text_hash": "ba40f6f8eebb95a3bca212aadf71ad3939f7a989b040b6575cd273fef6f36d18",
+      "translation_text_hash": "25f140000c5de88abfc1e78dd779300c4e8580211a1fe478a902e6945ec69c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 요압에게 기별하여 헷 사람 우리아를 내게 보내라 하매 요압이 우리아를 다윗에게로 보내니"
+      ],
+      "raw_text_hashes": [
+        "25f140000c5de88abfc1e78dd779300c4e8580211a1fe478a902e6945ec69c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:7",
+      "sequence": 8267,
+      "chapter_label": "2SA 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "When Uriah had come to him, David asked him how Joab did, and how the people fared, and how the war prospered.",
+      "ko": "우리아가 다윗에게 이르매 다윗이 요압의 안부와 군사의 안부와 싸움의 어떠한 것을 묻고",
+      "source_text_hash": "bf1b84d6b01510277784515e7e63c5a101fe5ac99776a7043d4c1bbdf9b3e6b8",
+      "translation_text_hash": "1c369e6a0a828cde2e191a2415cc8c267fd42939aba2e3d3c24aeb61e1dbf3a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리아가 다윗에게 이르매 다윗이 요압의 안부와 군사의 안부와 싸움의 어떠한 것을 묻고"
+      ],
+      "raw_text_hashes": [
+        "1c369e6a0a828cde2e191a2415cc8c267fd42939aba2e3d3c24aeb61e1dbf3a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:8",
+      "sequence": 8268,
+      "chapter_label": "2SA 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "David said to Uriah, “Go down to your house and wash your feet.” Uriah departed out of the king’s house, and a gift from the king was sent after him.",
+      "ko": "저가 또 우리아에게 이르되 네 집으로 내려가서 발을 씻으라 하니 우리아가 왕궁에서 나가매 왕의 식물이 뒤따라 가니라",
+      "source_text_hash": "8f52de43fa90327e89c6424b0be56c0e06992535583f90651fd60ddd8eb3f39f",
+      "translation_text_hash": "1c8c6a513944ff110a4ef2f9f3a432c1f4189dcdc24ae173f29636d8954f7fbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 또 우리아에게 이르되 네 집으로 내려가서 발을 씻으라 하니 우리아가 왕궁에서 나가매 왕의 식물이 뒤따라 가니라"
+      ],
+      "raw_text_hashes": [
+        "1c8c6a513944ff110a4ef2f9f3a432c1f4189dcdc24ae173f29636d8954f7fbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:9",
+      "sequence": 8269,
+      "chapter_label": "2SA 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "But Uriah slept at the door of the king’s house with all the servants of his lord, and didn’t go down to his house.",
+      "ko": "그러나 우리아는 집으로 내려가지 아니하고 왕궁 문에서 그 주의 신복들로 더불어 잔지라",
+      "source_text_hash": "bec9e438b0bad2ca2563aa647d8bc0c231d140a25ccb194e4cefd2918b0ad189",
+      "translation_text_hash": "45ad6059af2fa3e554c30c15ceb61e6560032f0a71312967c3fd834beddc7141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리아는 집으로 내려가지 아니하고 왕궁 문에서 그 주의 신복들로 더불어 잔지라"
+      ],
+      "raw_text_hashes": [
+        "45ad6059af2fa3e554c30c15ceb61e6560032f0a71312967c3fd834beddc7141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:10",
+      "sequence": 8270,
+      "chapter_label": "2SA 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "When they had told David, saying, “Uriah didn’t go down to his house,” David said to Uriah, “Haven’t you come from a journey? Why didn’t you go down to your house?”",
+      "ko": "혹이 다윗에게 고하여 가로되 우리아가 그 집으로 내려가지 아니하였나이다 다윗이 우리아에게 이르되 네가 길 갔다가 돌아온 것이 아니냐 어찌하여 네 집으로 내려가지 아니하였느냐",
+      "source_text_hash": "c8bcb56b7d3f59cc443bcb2ccd7113c3b3788b499ef65511cd621c2f46d08172",
+      "translation_text_hash": "67669ce23e97c61a640af55a932efe37e008f2c536a3c03ca3467c735964aeb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗에게 고하여 가로되 우리아가 그 집으로 내려가지 아니하였나이다 다윗이 우리아에게 이르되 네가 길 갔다가 돌아온 것이 아니냐 어찌하여 네 집으로 내려가지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "67669ce23e97c61a640af55a932efe37e008f2c536a3c03ca3467c735964aeb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:11",
+      "sequence": 8271,
+      "chapter_label": "2SA 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Uriah said to David, “The ark, Israel, and Judah, are staying in tents; and my lord Joab and the servants of my lord are encamped in the open field. Shall I then go into my house to eat and to drink, and to lie with my wife? As you live, and as your soul lives, I will not do this thing!”",
+      "ko": "우리아가 다윗에게 고하되 언약궤와 이스라엘과 유다가 영채 가운데 유하고 내 주 요압과 내 왕의 신복들이 바깥 들에 유진하였거늘 내가 어찌 내 집으로 가서 먹고 마시고 내 처와 같이 자리이까 내가 이 일을 행치 아니하기로 왕의 사심과 왕의 혼의 사심을 가리켜 맹세하나이다",
+      "source_text_hash": "5355d5c6b7999d216cf4a983bc9de849f6d123379b05e0152a97a9241cfca882",
+      "translation_text_hash": "9d6374c52bc4a490b6023a82dec988207b988436c13bdf2e24a376baebeaa552",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리아가 다윗에게 고하되 언약궤와 이스라엘과 유다가 영채 가운데 유하고 내 주 요압과 내 왕의 신복들이 바깥 들에 유진하였거늘 내가 어찌 내 집으로 가서 먹고 마시고 내 처와 같이 자리이까 내가 이 일을 행치 아니하기로 왕의 사심과 왕의 혼의 사심을 가리켜 맹세하나이다"
+      ],
+      "raw_text_hashes": [
+        "9d6374c52bc4a490b6023a82dec988207b988436c13bdf2e24a376baebeaa552"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:12",
+      "sequence": 8272,
+      "chapter_label": "2SA 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "David said to Uriah, “Stay here today also, and tomorrow I will let you depart.” So Uriah stayed in Jerusalem that day and the next day.",
+      "ko": "다윗이 우리아에게 이르되 오늘도 여기 있으라 내일은 내가 너를 보내리라 우리아가 그 날에 예루살렘에 유하니라 이튿날",
+      "source_text_hash": "9c241d0d378a6abe9b212df2e5dd0389d85110e7fba279638a4c727e2e6349c8",
+      "translation_text_hash": "10f7fe57a7353b7925d0cd9a291cfb84cf82727c55506a486fa7e1a9e1d82808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 우리아에게 이르되 오늘도 여기 있으라 내일은 내가 너를 보내리라 우리아가 그 날에 예루살렘에 유하니라 이튿날"
+      ],
+      "raw_text_hashes": [
+        "10f7fe57a7353b7925d0cd9a291cfb84cf82727c55506a486fa7e1a9e1d82808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:13",
+      "sequence": 8273,
+      "chapter_label": "2SA 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "When David had called him, he ate and drank before him; and he made him drunk. At evening, he went out to lie on his bed with the servants of his lord, but didn’t go down to his house.",
+      "ko": "다윗이 저를 불러서 저로 그 앞에서 먹고 마시고 취하게 하니 저녁때에 저가 나가서 그 주의 신복으로 더불어 침상에 눕고 그 집으로 내려가지 아니하니라",
+      "source_text_hash": "535eaa6fc7d65595e6f15d3e68c7429064cdb54a7709e633ab1a305bcc491581",
+      "translation_text_hash": "4402ec4b3c00aa5a123823febcf1cc6d393ea3ad1a6130d4d2ab296749016393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저를 불러서 저로 그 앞에서 먹고 마시고 취하게 하니 저녁때에 저가 나가서 그 주의 신복으로 더불어 침상에 눕고 그 집으로 내려가지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "4402ec4b3c00aa5a123823febcf1cc6d393ea3ad1a6130d4d2ab296749016393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:14",
+      "sequence": 8274,
+      "chapter_label": "2SA 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "In the morning, David wrote a letter to Joab and sent it by the hand of Uriah.",
+      "ko": "아침이 되매 다윗이 편지를 써서 우리아의 손에 부쳐 요압에게 보내니",
+      "source_text_hash": "ac84d08ed817c12f74af95bca7c0c6c7ba3300bb28b178eebe065f77bad27a7d",
+      "translation_text_hash": "831134e521f394fec943da8e3a05b1cc7e57eb33d8c00b5cce50f4f80966b1f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침이 되매 다윗이 편지를 써서 우리아의 손에 부쳐 요압에게 보내니"
+      ],
+      "raw_text_hashes": [
+        "831134e521f394fec943da8e3a05b1cc7e57eb33d8c00b5cce50f4f80966b1f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:15",
+      "sequence": 8275,
+      "chapter_label": "2SA 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "He wrote in the letter, saying, “Send Uriah to the forefront of the hottest battle, and retreat from him, that he may be struck and die.”",
+      "ko": "그 편지에 써서 이르기를 너희가 우리아를 맹렬한 싸움에 앞세워 두고 너희는 뒤로 물러가서 저로 맞아 죽게하라 하였더라",
+      "source_text_hash": "8475fb43807b001f0c3cecff75d2eea03d5c18b15409b6b9eddf23e63412c624",
+      "translation_text_hash": "464404335756d31d1a36a15d50ae3e9065a47da4e8ff60ad97a0ba80684edc5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 편지에 써서 이르기를 너희가 우리아를 맹렬한 싸움에 앞세워 두고 너희는 뒤로 물러가서 저로 맞아 죽게하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "464404335756d31d1a36a15d50ae3e9065a47da4e8ff60ad97a0ba80684edc5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:16",
+      "sequence": 8276,
+      "chapter_label": "2SA 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "When Joab kept watch on the city, he assigned Uriah to the place where he knew that valiant men were.",
+      "ko": "요압이 그 성을 살펴 용사들의 있는줄을 아는 그곳에 우리아를 두니",
+      "source_text_hash": "dff1fb9cea2a603603efa61d437dda7d9bbf56b954baa6952791567df43c7716",
+      "translation_text_hash": "473b4767404c4008b68360fa19f68faf0057f415e4a95783ccd80ce997b8ee19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 그 성을 살펴 용사들의 있는줄을 아는 그곳에 우리아를 두니"
+      ],
+      "raw_text_hashes": [
+        "473b4767404c4008b68360fa19f68faf0057f415e4a95783ccd80ce997b8ee19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:17",
+      "sequence": 8277,
+      "chapter_label": "2SA 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "The men of the city went out and fought with Joab. Some of the people fell, even of David’s servants; and Uriah the Hittite died also.",
+      "ko": "성 사람들이 나와서 요압으로 더불어 싸울 때에 다윗의 신복중 몇 사람이 엎드러지고 헷 사람 우리아도 죽으니라",
+      "source_text_hash": "277beec5333bb1a8aadd33a6c1cf4e320696dbcef0c0ac287421f7fe805ebe38",
+      "translation_text_hash": "821de1d47239e7ee516268c9e5768a192a5bfc10858e00fb674797169fc418d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성 사람들이 나와서 요압으로 더불어 싸울 때에 다윗의 신복중 몇 사람이 엎드러지고 헷 사람 우리아도 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "821de1d47239e7ee516268c9e5768a192a5bfc10858e00fb674797169fc418d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:18",
+      "sequence": 8278,
+      "chapter_label": "2SA 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "Then Joab sent and told David all the things concerning the war;",
+      "ko": "요압이 보내어 전쟁의 모든 일을 다윗에게 고할쌔",
+      "source_text_hash": "fbf4e017a698f119ec32bd269c2f9ffddb89f330246a19bbc626bf2aa2930b80",
+      "translation_text_hash": "ca6ae87ec765bbb91329e928af01364120536fb8f75a0a9ae3d01ba1e7e04bb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요압이 보내어 전쟁의 모든 일을 다윗에게 고할쌔"
+      ],
+      "raw_text_hashes": [
+        "ca6ae87ec765bbb91329e928af01364120536fb8f75a0a9ae3d01ba1e7e04bb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:19",
+      "sequence": 8279,
+      "chapter_label": "2SA 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "and he commanded the messenger, saying, “When you have finished telling all the things concerning the war to the king,",
+      "ko": "그 사자에게 명하여 가로되 전쟁의 모든 일을 네가 왕께 고하기를 마친 후에",
+      "source_text_hash": "f2d33f4b28718a6600703c624abc073aa8a59967b614de3210023cbe3608b9d2",
+      "translation_text_hash": "21802f0735364e52be494c184aa6b3fbee5ea2210c4dcd3c8e2ce5c26093f744",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사자에게 명하여 가로되 전쟁의 모든 일을 네가 왕께 고하기를 마친 후에"
+      ],
+      "raw_text_hashes": [
+        "21802f0735364e52be494c184aa6b3fbee5ea2210c4dcd3c8e2ce5c26093f744"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:20",
+      "sequence": 8280,
+      "chapter_label": "2SA 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "it shall be that, if the king’s wrath arise, and he asks you, ‘Why did you go so near to the city to fight? Didn’t you know that they would shoot from the wall?",
+      "ko": "혹시 왕이 노하여 네게 말씀하기를 너희가 어찌하여 성에 그처럼 가까이 가서 싸웠느냐 저희가 성 위에서 쏠줄을 알지 못하였느냐",
+      "source_text_hash": "68c3f6ad32b80073879933b98e0727435349f16bffdfa289bcb1be7d2d574ef9",
+      "translation_text_hash": "13eaecf154d3d0b26aca7fac0c9df86f6f82ffae740fc23b4893cbee4558c195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 왕이 노하여 네게 말씀하기를 너희가 어찌하여 성에 그처럼 가까이 가서 싸웠느냐 저희가 성 위에서 쏠줄을 알지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "13eaecf154d3d0b26aca7fac0c9df86f6f82ffae740fc23b4893cbee4558c195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:21",
+      "sequence": 8281,
+      "chapter_label": "2SA 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Who struck Abimelech the son of Jerubbesheth? Didn’t a woman cast an upper millstone on him from the wall, so that he died at Thebez? Why did you go so near the wall?’ then you shall say, ‘Your servant Uriah the Hittite is also dead.’”",
+      "ko": "여룹베셋의 아들 아비멜렉을 쳐죽인 자가 누구냐 여인 하나가 성에서 맷돌 윗짝을 그 위에 던지매 저가 데벳스에서 죽지 아니하였느냐 어찌하여 성에 가까이 갔더냐 하시거든 네가 말하기를 왕의 종 헷 사람 우리아도 죽었나이다 하라",
+      "source_text_hash": "cb92972833eb6bb5d5b11a13601d3fe9fa32c9778ee0cd94067e7f00920dc7a4",
+      "translation_text_hash": "d1cd26f0d23c67dd64fab8f01112fac9cdf5cba5f06ca40c2f67f714d6ff2bb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여룹베셋의 아들 아비멜렉을 쳐죽인 자가 누구냐 여인 하나가 성에서 맷돌 윗짝을 그 위에 던지매 저가 데벳스에서 죽지 아니하였느냐 어찌하여 성에 가까이 갔더냐 하시거든 네가 말하기를 왕의 종 헷 사람 우리아도 죽었나이다 하라"
+      ],
+      "raw_text_hashes": [
+        "d1cd26f0d23c67dd64fab8f01112fac9cdf5cba5f06ca40c2f67f714d6ff2bb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:22",
+      "sequence": 8282,
+      "chapter_label": "2SA 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "So the messenger went, and came and showed David all that Joab had sent him for.",
+      "ko": "사자가 가서 다윗에게 이르러 요압의 모든 보낸 일을 고하여",
+      "source_text_hash": "1162b526f050150cefa9fcfa89176809b31a46a66cfeeb154ad61cc89110ff32",
+      "translation_text_hash": "65c1d6336db766746ae57402d80aeb85d7bc9ba52771e9aa6dc877bf71d96077",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 가서 다윗에게 이르러 요압의 모든 보낸 일을 고하여"
+      ],
+      "raw_text_hashes": [
+        "65c1d6336db766746ae57402d80aeb85d7bc9ba52771e9aa6dc877bf71d96077"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:23",
+      "sequence": 8283,
+      "chapter_label": "2SA 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "The messenger said to David, “The men prevailed against us, and came out to us into the field; and we were on them even to the entrance of the gate.",
+      "ko": "가로되 그 사람들이 우리보다 승하여 우리를 향하여 들로 나온고로 우리가 저희를 쳐서 성문 어귀까지 미쳤더니",
+      "source_text_hash": "836cd2b05cbd2d0ca2011e716c706355887d4f0183783ec32f7fdb7f511ad09c",
+      "translation_text_hash": "d34de63d8d6dbf5bf1f60a5c62633eeb1e1df00a654e00078e78329eb318a082",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그 사람들이 우리보다 승하여 우리를 향하여 들로 나온고로 우리가 저희를 쳐서 성문 어귀까지 미쳤더니"
+      ],
+      "raw_text_hashes": [
+        "d34de63d8d6dbf5bf1f60a5c62633eeb1e1df00a654e00078e78329eb318a082"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:24",
+      "sequence": 8284,
+      "chapter_label": "2SA 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "The shooters shot at your servants from off the wall; and some of the king’s servants are dead, and your servant Uriah the Hittite is also dead.”",
+      "ko": "활 쏘는 자들이 성 위에서 왕의 신복들을 향하여 쏘매 왕의 신복중 몇사람이 죽고 왕의 종 헷 사람 우리아도 죽었나이다",
+      "source_text_hash": "e14f31bb7913cb5900eb9a6aa51e7ac161b448034741d2d14c84dea673c32d11",
+      "translation_text_hash": "239133bc4c982b91588faf9bbe5997ba1c8341457a496f2ce285c26871653c1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활 쏘는 자들이 성 위에서 왕의 신복들을 향하여 쏘매 왕의 신복중 몇사람이 죽고 왕의 종 헷 사람 우리아도 죽었나이다"
+      ],
+      "raw_text_hashes": [
+        "239133bc4c982b91588faf9bbe5997ba1c8341457a496f2ce285c26871653c1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:25",
+      "sequence": 8285,
+      "chapter_label": "2SA 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Then David said to the messenger, “Tell Joab, ‘Don’t let this thing displease you, for the sword devours one as well as another. Make your battle stronger against the city, and overthrow it.’ Encourage him.”",
+      "ko": "다윗이 사자에게 이르되 너는 요압에게 이같이 말하기를 이 일로 걱정하지 말라 칼은 이 사람이나 저 사람이나 죽이느니라 그 성을 향하여 더욱 힘써 싸워 함락시키라 하여 너는 저를 담대케 하라 하니라",
+      "source_text_hash": "1a4ea933fea8a874ba8716ee4b5f5ccaf3e355af7a8a1e4371d4ca7132dd3410",
+      "translation_text_hash": "288f98493773da5200b90ff4168710c2a72a74abfe852265a8e57fb462eced71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사자에게 이르되 너는 요압에게 이같이 말하기를 이 일로 걱정하지 말라 칼은 이 사람이나 저 사람이나 죽이느니라 그 성을 향하여 더욱 힘써 싸워 함락시키라 하여 너는 저를 담대케 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "288f98493773da5200b90ff4168710c2a72a74abfe852265a8e57fb462eced71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:26",
+      "sequence": 8286,
+      "chapter_label": "2SA 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "When Uriah’s wife heard that Uriah her husband was dead, she mourned for her husband.",
+      "ko": "우리아의 처가 그 남편 우리아의 죽었음을 듣고 호곡하니라",
+      "source_text_hash": "e0492124bfea4b2e5689c3aaff5def9b68f15d0ab9b7f5560ade2a021f97083b",
+      "translation_text_hash": "98773fea6894ccb3bd044c1d696b278b6ae385efbb0c5942b4e5d1e10a73004d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리아의 처가 그 남편 우리아의 죽었음을 듣고 호곡하니라"
+      ],
+      "raw_text_hashes": [
+        "98773fea6894ccb3bd044c1d696b278b6ae385efbb0c5942b4e5d1e10a73004d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:11:27",
+      "sequence": 8287,
+      "chapter_label": "2SA 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "When the mourning was past, David sent and took her home to his house, and she became his wife and bore him a son. But the thing that David had done displeased the LORD.",
+      "ko": "그 장사를 마치매 다윗이 보내어 저를 궁으로 데려 오니 저가 그 처가 되어 아들을 낳으니라 다윗의 소위가 여호와 보시기에 악하였더라",
+      "source_text_hash": "a88248af9aa48f03987ab2f759135962eed1bf00aad00d54f270ea2360ddcad6",
+      "translation_text_hash": "8ce78f69647e9973cfad97aaca47af55cee790e5a598007375a9cd0ce2f1d5d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장사를 마치매 다윗이 보내어 저를 궁으로 데려 오니 저가 그 처가 되어 아들을 낳으니라 다윗의 소위가 여호와 보시기에 악하였더라"
+      ],
+      "raw_text_hashes": [
+        "8ce78f69647e9973cfad97aaca47af55cee790e5a598007375a9cd0ce2f1d5d6"
+      ]
+    }
+  ]
+}

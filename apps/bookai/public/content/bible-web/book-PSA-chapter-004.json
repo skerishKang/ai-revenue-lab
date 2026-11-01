@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:004",
+  "unit_ordinal": 482,
+  "unit_label": "PSA 4",
+  "book_code": "PSA",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:4:1",
+      "sequence": 13967,
+      "chapter_label": "PSA 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Answer me when I call, God of my righteousness. Give me relief from my distress. Have mercy on me, and hear my prayer.",
+      "ko": "내 의의 하나님이여 내가 부를 때에 응답하소서 곤란 중에 나를 너그럽게 하셨사오니 나를 긍휼히 여기사 나의 기도를 들으소서",
+      "source_text_hash": "ea84ee232526529f1a24e5f7bc5f279ef5f54a12770e3d869e8f810220cd2b95",
+      "translation_text_hash": "c6c20d038e4c7d45c3996b3af73850d75328f10e4c29ec9140580cc51289e7dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 의의 하나님이여 내가 부를 때에 응답하소서 곤란 중에 나를 너그럽게 하셨사오니 나를 긍휼히 여기사 나의 기도를 들으소서"
+      ],
+      "raw_text_hashes": [
+        "c6c20d038e4c7d45c3996b3af73850d75328f10e4c29ec9140580cc51289e7dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:2",
+      "sequence": 13968,
+      "chapter_label": "PSA 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "You sons of men, how long shall my glory be turned into dishonor? Will you love vanity and seek after falsehood? Selah.",
+      "ko": "인생들아 어느 때까지 나의 영광을 변하여 욕되게 하며 허사를 좋아하고 궤휼을 구하겠는고(셀라)",
+      "source_text_hash": "4b1cb26aa8ee2d3dd3ccc305daf7f9e9438963e3e5569d77f9bb7c3cadb3093b",
+      "translation_text_hash": "789562498a36d470db417472f19c8f35017c71b5c786f6733d0826300bfc2e3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생들아 어느 때까지 나의 영광을 변하여 욕되게 하며 허사를 좋아하고 궤휼을 구하겠는고(셀라)"
+      ],
+      "raw_text_hashes": [
+        "789562498a36d470db417472f19c8f35017c71b5c786f6733d0826300bfc2e3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:3",
+      "sequence": 13969,
+      "chapter_label": "PSA 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "But know that the LORD has set apart for himself him who is godly; The LORD will hear when I call to him.",
+      "ko": "여호와께서 자기를 위하여 경건한 자를 택하신줄 너희가 알지어다 내가 부를 때에 여호와께서 들으시리로다",
+      "source_text_hash": "64de04a304873b483980d914c82172f8976484738262ac143e45c1c29c38bb2e",
+      "translation_text_hash": "3be8b4e5f645f72254cd2ce8b1ec106141d439281714d7082c10ab71a9fe8ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기를 위하여 경건한 자를 택하신줄 너희가 알지어다 내가 부를 때에 여호와께서 들으시리로다"
+      ],
+      "raw_text_hashes": [
+        "3be8b4e5f645f72254cd2ce8b1ec106141d439281714d7082c10ab71a9fe8ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:4",
+      "sequence": 13970,
+      "chapter_label": "PSA 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Stand in awe, and don’t sin. Search your own heart on your bed, and be still. Selah.",
+      "ko": "너희는 떨며 범죄치 말지어다 자리에 누워 심중에 말하고 잠잠할지어다(셀라)",
+      "source_text_hash": "0bfbbeb36518d9d217dc23bf6546c176926696040aebcad9423bfd8631c64f93",
+      "translation_text_hash": "39bedb3212ade9f23372c16103f85d2d4b6ce3c709c4b63b25b1a5369f97138e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 떨며 범죄치 말지어다 자리에 누워 심중에 말하고 잠잠할지어다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "39bedb3212ade9f23372c16103f85d2d4b6ce3c709c4b63b25b1a5369f97138e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:5",
+      "sequence": 13971,
+      "chapter_label": "PSA 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Offer the sacrifices of righteousness. Put your trust in the LORD.",
+      "ko": "의의 제사를 드리고 여호와를 의뢰할지어다",
+      "source_text_hash": "5dcd4e2fee5a027d76f4a69bbeaed5e8fded204ca058977bf7e63d09bdd438c8",
+      "translation_text_hash": "3706bbc9ab8b3e3e5a29e31e898c205c9879ad484e76c6a49992d4c2201e779f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의의 제사를 드리고 여호와를 의뢰할지어다"
+      ],
+      "raw_text_hashes": [
+        "3706bbc9ab8b3e3e5a29e31e898c205c9879ad484e76c6a49992d4c2201e779f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:6",
+      "sequence": 13972,
+      "chapter_label": "PSA 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Many say, “Who will show us any good?” LORD, let the light of your face shine on us.",
+      "ko": "여러 사람의 말이 우리에게 선을 보일 자 누구뇨 하오니 여호와여 주의 얼굴을 들어 우리에게 비취소서",
+      "source_text_hash": "7130c0bf5eb584b3fc2a62e02722cd0f80d88ef85050d476716f248ba71ef3e4",
+      "translation_text_hash": "489b8986e888408182e17815d7defed0775590e366654245c41fdae807c06974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 사람의 말이 우리에게 선을 보일 자 누구뇨 하오니 여호와여 주의 얼굴을 들어 우리에게 비취소서"
+      ],
+      "raw_text_hashes": [
+        "489b8986e888408182e17815d7defed0775590e366654245c41fdae807c06974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:7",
+      "sequence": 13973,
+      "chapter_label": "PSA 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "You have put gladness in my heart, more than when their grain and their new wine are increased.",
+      "ko": "주께서 내 마음에 두신 기쁨은 저희의 곡식과 새 포도주의 풍성할 때보다 더하니이다",
+      "source_text_hash": "f9497cb9e00a7527477b9146a680b59c3d40fcf85d208fc3087d8110618a17ee",
+      "translation_text_hash": "e4ccb5bbe5057bb85996d7c166035cf21945b4d9d8cc9406920e8e7005ca5ce1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 마음에 두신 기쁨은 저희의 곡식과 새 포도주의 풍성할 때보다 더하니이다"
+      ],
+      "raw_text_hashes": [
+        "e4ccb5bbe5057bb85996d7c166035cf21945b4d9d8cc9406920e8e7005ca5ce1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:4:8",
+      "sequence": 13974,
+      "chapter_label": "PSA 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "In peace I will both lay myself down and sleep, for you alone, LORD, make me live in safety.",
+      "ko": "내가 평안히 눕고 자기도 하리니 나를 안전히 거하게 하시는 이는 오직 여호와시니이다",
+      "source_text_hash": "dbe94e652a64954806539924cf8506fe762858573ca11c84207fc93c6b6a3e86",
+      "translation_text_hash": "79452038a4908422c5f548017d17378749dcebad7462a96fe5db7ee40336c535",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 평안히 눕고 자기도 하리니 나를 안전히 거하게 하시는 이는 오직 여호와시니이다"
+      ],
+      "raw_text_hashes": [
+        "79452038a4908422c5f548017d17378749dcebad7462a96fe5db7ee40336c535"
+      ]
+    }
+  ]
+}

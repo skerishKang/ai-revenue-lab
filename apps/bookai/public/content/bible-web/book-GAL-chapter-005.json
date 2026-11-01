@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GAL:chapter:005",
+  "unit_ordinal": 1096,
+  "unit_label": "GAL 5",
+  "book_code": "GAL",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GAL:5:1",
+      "sequence": 29160,
+      "chapter_label": "GAL 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Stand firm therefore in the liberty by which Christ has made us free, and don’t be entangled again with a yoke of bondage.",
+      "ko": "그리스도께서 우리로 자유케 하려고 자유를 주셨으니 그러므로 굳세게 서서 다시는 종의 멍에를 메지 말라",
+      "source_text_hash": "e05b0b6a7bc3545e953cfec576cebe8697b6e27ba7262e0849c3ba0ee6bcd6a1",
+      "translation_text_hash": "475467dedbee6d6247dce6dd229045322b5fe81b59e0ea1fa66124473a0f6f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도께서 우리로 자유케 하려고 자유를 주셨으니 그러므로 굳세게 서서 다시는 종의 멍에를 메지 말라"
+      ],
+      "raw_text_hashes": [
+        "475467dedbee6d6247dce6dd229045322b5fe81b59e0ea1fa66124473a0f6f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:2",
+      "sequence": 29161,
+      "chapter_label": "GAL 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, I, Paul, tell you that if you receive circumcision, Christ will profit you nothing.",
+      "ko": "보라 나 바울은 너희에게 말하노니 너희가 만일 할례를 받으면 그리스도께서 너희에게 아무 유익이 없으리라",
+      "source_text_hash": "dceef2afdd521971356f7e4d594fbe6915fea0f001a4f9f80dc8b1603d4e2e10",
+      "translation_text_hash": "e003b4ec70434aab4494464eabecbcc15da175734bc19e31a9e49f116a1b7be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나 바울은 너희에게 말하노니 너희가 만일 할례를 받으면 그리스도께서 너희에게 아무 유익이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "e003b4ec70434aab4494464eabecbcc15da175734bc19e31a9e49f116a1b7be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:3",
+      "sequence": 29162,
+      "chapter_label": "GAL 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Yes, I testify again to every man who receives circumcision that he is a debtor to do the whole law.",
+      "ko": "내가 할례를 받는 각 사람에게 다시 증거하노니 그는 율법 전체를 행할 의무를 가진 자라",
+      "source_text_hash": "aae7af25db5405191a45695eed25fc473e041bfddcb678831a6bf316895ada52",
+      "translation_text_hash": "8f3a75b8a3eba1eb16b7490ad266c44975b77e929d1c593be4f1f3250fd6882a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 할례를 받는 각 사람에게 다시 증거하노니 그는 율법 전체를 행할 의무를 가진 자라"
+      ],
+      "raw_text_hashes": [
+        "8f3a75b8a3eba1eb16b7490ad266c44975b77e929d1c593be4f1f3250fd6882a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:4",
+      "sequence": 29163,
+      "chapter_label": "GAL 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "You are alienated from Christ, you who desire to be justified by the law. You have fallen away from grace.",
+      "ko": "율법 안에서 의롭다 함을 얻으려 하는 너희는 그리스도에게서 끊어지고 은혜에서 떨어진 자로다",
+      "source_text_hash": "c3227c21c534ab55b9b4e2014ded07c85a3c01de7fd67886254eef8c8ff0d716",
+      "translation_text_hash": "547e24a686b362219901b1ba1576952101040b95d15a39e251342fb622847c35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법 안에서 의롭다 함을 얻으려 하는 너희는 그리스도에게서 끊어지고 은혜에서 떨어진 자로다"
+      ],
+      "raw_text_hashes": [
+        "547e24a686b362219901b1ba1576952101040b95d15a39e251342fb622847c35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:5",
+      "sequence": 29164,
+      "chapter_label": "GAL 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "For we through the Spirit, by faith wait for the hope of righteousness.",
+      "ko": "우리가 성령으로 믿음을 좇아 의의 소망을 기다리노니",
+      "source_text_hash": "20731255247c441724096cd2186cb61550d466e77d1a080adc447a28d83176ef",
+      "translation_text_hash": "44e5ffad8fc383c8915ea8e32572947c169c2bec40c724c93634b94c6b6e9354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 성령으로 믿음을 좇아 의의 소망을 기다리노니"
+      ],
+      "raw_text_hashes": [
+        "44e5ffad8fc383c8915ea8e32572947c169c2bec40c724c93634b94c6b6e9354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:6",
+      "sequence": 29165,
+      "chapter_label": "GAL 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "For in Christ Jesus neither circumcision nor uncircumcision amounts to anything, but faith working through love.",
+      "ko": "그리스도 예수 안에서는 할례나 무할례가 효력이 없되 사랑으로써 역사하는 믿음 뿐이니라",
+      "source_text_hash": "861bfadb643f254a511257eae47c218a8e2e3e8cd4b98fc386bb241885d0e39d",
+      "translation_text_hash": "0837f5fc16d8f341d33c56f96aef2bbf13117f15847d034057a9c19dd06d6b2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수 안에서는 할례나 무할례가 효력이 없되 사랑으로써 역사하는 믿음 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "0837f5fc16d8f341d33c56f96aef2bbf13117f15847d034057a9c19dd06d6b2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:7",
+      "sequence": 29166,
+      "chapter_label": "GAL 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "You were running well! Who interfered with you that you should not obey the truth?",
+      "ko": "너희가 달음질을 잘 하더니 누가 너희를 막아 진리를 순종치 않게 하더냐",
+      "source_text_hash": "2246d6316baace0441b790fdd22fb743f7a1636a1162e1b650d15342ade0d3f0",
+      "translation_text_hash": "2984cd9c1dbf1d7dfbd430d260fc42974089fa02efdf5d461764f1716291c778",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 달음질을 잘 하더니 누가 너희를 막아 진리를 순종치 않게 하더냐"
+      ],
+      "raw_text_hashes": [
+        "2984cd9c1dbf1d7dfbd430d260fc42974089fa02efdf5d461764f1716291c778"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:8",
+      "sequence": 29167,
+      "chapter_label": "GAL 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "This persuasion is not from him who calls you.",
+      "ko": "그 권면이 너희를 부르신 이에게서 난 것이 아니라",
+      "source_text_hash": "5a32d5643636cc1e369e9c9b20c5e9a5a2bb78036edc93d7fec007cbd13ead2f",
+      "translation_text_hash": "9fadec22cb2c9086b59c95e136fa6dc8d7e9a13f882cf3e0294ad23f9405e693",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 권면이 너희를 부르신 이에게서 난 것이 아니라"
+      ],
+      "raw_text_hashes": [
+        "9fadec22cb2c9086b59c95e136fa6dc8d7e9a13f882cf3e0294ad23f9405e693"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:9",
+      "sequence": 29168,
+      "chapter_label": "GAL 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "A little yeast grows through the whole lump.",
+      "ko": "적은 누룩이 온 덩이에 퍼지느니라",
+      "source_text_hash": "84c96e7874cd40c65a637421e217a425702fee9d68347f8eef71daf69cb4a8c7",
+      "translation_text_hash": "d62a6fdd89ea224ad487b6263675d535d3a62a62d62d408dc32eb21ac3e29641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "적은 누룩이 온 덩이에 퍼지느니라"
+      ],
+      "raw_text_hashes": [
+        "d62a6fdd89ea224ad487b6263675d535d3a62a62d62d408dc32eb21ac3e29641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:10",
+      "sequence": 29169,
+      "chapter_label": "GAL 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "I have confidence toward you in the Lord that you will think no other way. But he who troubles you will bear his judgment, whoever he is.",
+      "ko": "나는 너희가 아무 다른 마음도 품지 아니할 줄을 주 안에서 확신하노라 그러나 너희를 요동케 하는 자는 누구든지 심판을 받으리라",
+      "source_text_hash": "c2417178bdc67aadd432346580ab9740df1fec91ea95db0fc8a5aec3ac7430cb",
+      "translation_text_hash": "811d660f7e395d11f4acb8daf71b2b5ccead5e23cfa1135dc14f8a7688467c07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희가 아무 다른 마음도 품지 아니할 줄을 주 안에서 확신하노라 그러나 너희를 요동케 하는 자는 누구든지 심판을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "811d660f7e395d11f4acb8daf71b2b5ccead5e23cfa1135dc14f8a7688467c07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:11",
+      "sequence": 29170,
+      "chapter_label": "GAL 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "But I, brothers, if I still preach circumcision, why am I still persecuted? Then the stumbling block of the cross has been removed.",
+      "ko": "형제들아 내가 지금까지 할례를 전하면 어찌하여 지금까지 핍박을 받으리요 그리하였으면 십자가의 거치는 것이 그쳤으리니",
+      "source_text_hash": "a4bb73718bcd61a2ab651f6cf31cc70811760c0bb5b6cfb4e7ebebe7d284a287",
+      "translation_text_hash": "df5eb3d682376278094482afff5ca865ce3823b0556b52095f6c4342a14a86e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 지금까지 할례를 전하면 어찌하여 지금까지 핍박을 받으리요 그리하였으면 십자가의 거치는 것이 그쳤으리니"
+      ],
+      "raw_text_hashes": [
+        "df5eb3d682376278094482afff5ca865ce3823b0556b52095f6c4342a14a86e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:12",
+      "sequence": 29171,
+      "chapter_label": "GAL 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "I wish that those who disturb you would cut themselves off.",
+      "ko": "너희를 어지럽게 하는 자들이 스스로 베어 버리기를 원하노라",
+      "source_text_hash": "9e397f89bc4a894d79efae85d14e5a549485c5f9f8e0630f508557136c451170",
+      "translation_text_hash": "f1aed9b23068c430e66cd29bbdc0bb6059b997c7d3cb459ef6aa6b1d39745d50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 어지럽게 하는 자들이 스스로 베어 버리기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "f1aed9b23068c430e66cd29bbdc0bb6059b997c7d3cb459ef6aa6b1d39745d50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:13",
+      "sequence": 29172,
+      "chapter_label": "GAL 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "For you, brothers, were called for freedom. Only don’t use your freedom as an opportunity for the flesh, but through love be servants to one another.",
+      "ko": "형제들아 너희가 자유를 위하여 부르심을 입었으나 그러나 그 자유로 육체의 기회를 삼지 말고 오직 사랑으로 서로 종노릇하라",
+      "source_text_hash": "1dea138df4ff48b2e18a63eb4d1b675b7b830a22d7baef3d5d96de0734b76793",
+      "translation_text_hash": "210c6ac112b41c5f5c0951b9e9beb9c2876bda7177e0cf82530d93ba1d81d603",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 너희가 자유를 위하여 부르심을 입었으나 그러나 그 자유로 육체의 기회를 삼지 말고 오직 사랑으로 서로 종노릇하라"
+      ],
+      "raw_text_hashes": [
+        "210c6ac112b41c5f5c0951b9e9beb9c2876bda7177e0cf82530d93ba1d81d603"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:14",
+      "sequence": 29173,
+      "chapter_label": "GAL 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "For the whole law is fulfilled in one word, in this: “You shall love your neighbor as yourself.”",
+      "ko": "온 율법은 네 이웃 사랑하기를 네 몸 같이 하라 하신 한 말씀에 이루었나니",
+      "source_text_hash": "a2d7f718233dae049df9e92f24571b747465067cacfcd4410045b368edad04c2",
+      "translation_text_hash": "9344c77b39f251cb8a1aaaad805b303305e29f00313d30932a100217b4bc21ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 율법은 네 이웃 사랑하기를 네 몸 같이 하라 하신 한 말씀에 이루었나니"
+      ],
+      "raw_text_hashes": [
+        "9344c77b39f251cb8a1aaaad805b303305e29f00313d30932a100217b4bc21ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:15",
+      "sequence": 29174,
+      "chapter_label": "GAL 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "But if you bite and devour one another, be careful that you don’t consume one another.",
+      "ko": "만일 서로 물고 먹으면 피차 멸망할까 조심하라",
+      "source_text_hash": "f1f03d75fa02045811e78690717663751c922b8da0b2e68709658bbd2b0ce437",
+      "translation_text_hash": "957bdf03a7d65391decb32506c19c94c77bcb719639925629a46521afff348b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 서로 물고 먹으면 피차 멸망할까 조심하라"
+      ],
+      "raw_text_hashes": [
+        "957bdf03a7d65391decb32506c19c94c77bcb719639925629a46521afff348b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:16",
+      "sequence": 29175,
+      "chapter_label": "GAL 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "But I say, walk by the Spirit, and you won’t fulfill the lust of the flesh.",
+      "ko": "내가 이르노니 너희는 성령을 좇아 행하라 그리하면 육체의 욕심을 이루지 아니하리라",
+      "source_text_hash": "8cd3d41b5198ea6149958d8dea0c20496bde1ccafddc7a8908a589ec49e01c29",
+      "translation_text_hash": "f91068e71185412f87cc010ee28c57a8538404436fe1cee559c05ea0df67df70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이르노니 너희는 성령을 좇아 행하라 그리하면 육체의 욕심을 이루지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f91068e71185412f87cc010ee28c57a8538404436fe1cee559c05ea0df67df70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:17",
+      "sequence": 29176,
+      "chapter_label": "GAL 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "For the flesh lusts against the Spirit, and the Spirit against the flesh; and these are contrary to one another, that you may not do the things that you desire.",
+      "ko": "육체의 소욕은 성령을 거스리고 성령의 소욕은 육체를 거스리나니 이 둘이 서로 대적함으로 너희의 원하는 것을 하지 못하게 하려 함이니라",
+      "source_text_hash": "c444694094ef02f43bede09dcc5515fd2d24b76eaadd257f5ff0995e42f29117",
+      "translation_text_hash": "ac00194cf00dc5d7929b3308f35ce989cb73e7a9e9b0a0ead968c571e0137034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체의 소욕은 성령을 거스리고 성령의 소욕은 육체를 거스리나니 이 둘이 서로 대적함으로 너희의 원하는 것을 하지 못하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "ac00194cf00dc5d7929b3308f35ce989cb73e7a9e9b0a0ead968c571e0137034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:18",
+      "sequence": 29177,
+      "chapter_label": "GAL 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "But if you are led by the Spirit, you are not under the law.",
+      "ko": "너희가 만일 성령의 인도하시는 바가 되면 율법 아래 있지 아니하리라",
+      "source_text_hash": "1c5d1aec54e54c2c34fcb8d7d6cfd71a20497f6478d884e5365bdace89f04c1f",
+      "translation_text_hash": "1a8fe539d17ab5bb21ec5e3a61056397fae7497a0f299a5bb0a580a498c519fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 성령의 인도하시는 바가 되면 율법 아래 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "1a8fe539d17ab5bb21ec5e3a61056397fae7497a0f299a5bb0a580a498c519fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:19",
+      "sequence": 29178,
+      "chapter_label": "GAL 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Now the deeds of the flesh are obvious, which are: adultery, sexual immorality, uncleanness, lustfulness,",
+      "ko": "육체의 일은 현저하니 곧 음행과 더러운 것과 호색과",
+      "source_text_hash": "678a98d984116de49a8238f535a27221793f9a10dde865ead72ae21bf1998ee1",
+      "translation_text_hash": "274197b873c920a3f9c911a9de5aa345ee821e8d3ce280003e3650672748723b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체의 일은 현저하니 곧 음행과 더러운 것과 호색과"
+      ],
+      "raw_text_hashes": [
+        "274197b873c920a3f9c911a9de5aa345ee821e8d3ce280003e3650672748723b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:20",
+      "sequence": 29179,
+      "chapter_label": "GAL 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "idolatry, sorcery, hatred, strife, jealousies, outbursts of anger, rivalries, divisions, heresies,",
+      "ko": "우상 숭배와 술수와 원수를 맺는 것과 분쟁과 시기와 분냄과 당 짓는 것과 분리함과 이단과",
+      "source_text_hash": "5b4b209d9d282dc3b2582071659407b56937a0fcb2d637ea0945cdb0c4abd6fe",
+      "translation_text_hash": "0d00b59339450ecbf5e38d1c02758f1ca5ac4eefc5e22131b46ac6eeff26aa00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상 숭배와 술수와 원수를 맺는 것과 분쟁과 시기와 분냄과 당 짓는 것과 분리함과 이단과"
+      ],
+      "raw_text_hashes": [
+        "0d00b59339450ecbf5e38d1c02758f1ca5ac4eefc5e22131b46ac6eeff26aa00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:21",
+      "sequence": 29180,
+      "chapter_label": "GAL 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "envy, murders, drunkenness, orgies, and things like these; of which I forewarn you, even as I also forewarned you, that those who practice such things will not inherit God’s Kingdom.",
+      "ko": "투기와 술 취함과 방탕함과 또 그와 같은 것들이라 전에 너희에게 경계한것 같이 경계하노니 이런 일을 하는 자들은 하나님의 나라를 유업으로 받지 못할 것이요",
+      "source_text_hash": "99647ffa4d3c8c18386d07818b584d5df07b25e1c3f1249def91f76226bd3614",
+      "translation_text_hash": "9ecf49717f33e0ca1aa31c35d837c08ddd51348f949af99b89c4e418df7154cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "투기와 술 취함과 방탕함과 또 그와 같은 것들이라 전에 너희에게 경계한것 같이 경계하노니 이런 일을 하는 자들은 하나님의 나라를 유업으로 받지 못할 것이요"
+      ],
+      "raw_text_hashes": [
+        "9ecf49717f33e0ca1aa31c35d837c08ddd51348f949af99b89c4e418df7154cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:22",
+      "sequence": 29181,
+      "chapter_label": "GAL 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "But the fruit of the Spirit is love, joy, peace, patience, kindness, goodness, faith,",
+      "ko": "오직 성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과",
+      "source_text_hash": "68bedd5663dfb81c17ec52ea283c690ee4a42d14dbf8b155d87564a1abcdc08e",
+      "translation_text_hash": "54101e9e3689274b697e470467b21a4f36d86efaca6139fe2a8317162e2fbdc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 성령의 열매는 사랑과 희락과 화평과 오래 참음과 자비와 양선과 충성과"
+      ],
+      "raw_text_hashes": [
+        "54101e9e3689274b697e470467b21a4f36d86efaca6139fe2a8317162e2fbdc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:23",
+      "sequence": 29182,
+      "chapter_label": "GAL 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "gentleness, and self-control. Against such things there is no law.",
+      "ko": "온유와 절제니 이같은 것을 금지할 법이 없느니라",
+      "source_text_hash": "bc35954cfce63dccd96b1f6ef151ea405f36a48d33b7b6c5a5e80f61ea5b5be5",
+      "translation_text_hash": "9b05c54ba48f1d51123b1e281868d325c71653096f97fdfd2f95793d6dd1b7ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온유와 절제니 이같은 것을 금지할 법이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "9b05c54ba48f1d51123b1e281868d325c71653096f97fdfd2f95793d6dd1b7ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:24",
+      "sequence": 29183,
+      "chapter_label": "GAL 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Those who belong to Christ have crucified the flesh with its passions and lusts.",
+      "ko": "그리스도 예수의 사람들은 육체와 함께 그 정과 욕심을 십자가에 못 박았느니라",
+      "source_text_hash": "3b2d9721e86d9db5fb4d5d78603f88909d012d114ef29c69b08761e5a7525ef6",
+      "translation_text_hash": "9c6f26006e0d2ec679e210c4f2f5ad20bbe37ec419d9ab1e0c33a807dab57ecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수의 사람들은 육체와 함께 그 정과 욕심을 십자가에 못 박았느니라"
+      ],
+      "raw_text_hashes": [
+        "9c6f26006e0d2ec679e210c4f2f5ad20bbe37ec419d9ab1e0c33a807dab57ecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:25",
+      "sequence": 29184,
+      "chapter_label": "GAL 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "If we live by the Spirit, let’s also walk by the Spirit.",
+      "ko": "만일 우리가 성령으로 살면 또한 성령으로 행할찌니",
+      "source_text_hash": "b78cd26fed56b18f0aa8929ee14a53805979dcdd1e7ea945cb5bc5f41d8d2ac1",
+      "translation_text_hash": "cc4d579a2887caf53af93c87fc78488c180beef2c1c3b49156554a5851e75321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 성령으로 살면 또한 성령으로 행할찌니"
+      ],
+      "raw_text_hashes": [
+        "cc4d579a2887caf53af93c87fc78488c180beef2c1c3b49156554a5851e75321"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GAL:5:26",
+      "sequence": 29185,
+      "chapter_label": "GAL 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "GAL",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GAL",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "Let’s not become conceited, provoking one another, and envying one another.",
+      "ko": "헛된 영광을 구하여 서로 격동하고 서로 투기하지 말찌니라",
+      "source_text_hash": "35f043814863d7c36dccd4a9b2bfe11eb059908eeef8a392d410aa0409c18451",
+      "translation_text_hash": "ff6d7b34c67eadbae1739388208d81c0ec61494e83e0eb2e2d2784bd04b07d07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헛된 영광을 구하여 서로 격동하고 서로 투기하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "ff6d7b34c67eadbae1739388208d81c0ec61494e83e0eb2e2d2784bd04b07d07"
+      ]
+    }
+  ]
+}

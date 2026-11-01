@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:026",
+  "unit_ordinal": 654,
+  "unit_label": "PRO 26",
+  "book_code": "PRO",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:26:1",
+      "sequence": 17143,
+      "chapter_label": "PRO 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "Like snow in summer, and as rain in harvest, so honor is not fitting for a fool.",
+      "ko": "미련한 자에게는 영예가 적당하지 아니하니 마치 여름에 눈오는 것과 추수 때에 비오는것 같으니라",
+      "source_text_hash": "f4d6e7cea2d027c4c291045483977746a5283ae3b3e239d2e968a0ea3da9994f",
+      "translation_text_hash": "5e19c494afc6bf0f98a9c53b379d70af6f33a34546b27e1860d6c92519e4f0a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자에게는 영예가 적당하지 아니하니 마치 여름에 눈오는 것과 추수 때에 비오는것 같으니라"
+      ],
+      "raw_text_hashes": [
+        "5e19c494afc6bf0f98a9c53b379d70af6f33a34546b27e1860d6c92519e4f0a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:2",
+      "sequence": 17144,
+      "chapter_label": "PRO 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "Like a fluttering sparrow, like a darting swallow, so the undeserved curse doesn’t come to rest.",
+      "ko": "까닭 없는 저주는 참새의 떠도는 것과 제비의 날아가는 것 같이 이르지 아니 하느니라",
+      "source_text_hash": "5ce38abbca88650bcebd9b835ef91a0ea86531b860ba484c07e378386f46ef95",
+      "translation_text_hash": "2cb37ed08e2afe3bbf8288d5265398a98a860fca20a51422760c0230f08acce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까닭 없는 저주는 참새의 떠도는 것과 제비의 날아가는 것 같이 이르지 아니 하느니라"
+      ],
+      "raw_text_hashes": [
+        "2cb37ed08e2afe3bbf8288d5265398a98a860fca20a51422760c0230f08acce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:3",
+      "sequence": 17145,
+      "chapter_label": "PRO 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "A whip is for the horse, a bridle for the donkey, and a rod for the back of fools!",
+      "ko": "말에게는 채찍이요 나귀에게는 자갈이요 미련한 자의 등에는 막대기니라",
+      "source_text_hash": "b06eb9c9759672201cdc95442f80883b24d285929ddc5293cb76e385be5f3f18",
+      "translation_text_hash": "522671e7c3c638aa7e225057712a0f3b205317c9ab3a773bc744ff9b13dd67df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말에게는 채찍이요 나귀에게는 자갈이요 미련한 자의 등에는 막대기니라"
+      ],
+      "raw_text_hashes": [
+        "522671e7c3c638aa7e225057712a0f3b205317c9ab3a773bc744ff9b13dd67df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:4",
+      "sequence": 17146,
+      "chapter_label": "PRO 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "Don’t answer a fool according to his folly, lest you also be like him.",
+      "ko": "미련한 자의 어리석은 것을 따라 대답하지 말라 두렵건대 네가 그와 같을까 하노라",
+      "source_text_hash": "0710d04ed2989a12d63dedb7ade0050d6b8b21e12fd6115288d67aa6802a1e3b",
+      "translation_text_hash": "315157fde2480c6bdd06574a22b0986b35b010f6764c6039dc59352e5afa5d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자의 어리석은 것을 따라 대답하지 말라 두렵건대 네가 그와 같을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "315157fde2480c6bdd06574a22b0986b35b010f6764c6039dc59352e5afa5d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:5",
+      "sequence": 17147,
+      "chapter_label": "PRO 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "Answer a fool according to his folly, lest he be wise in his own eyes.",
+      "ko": "미련한 자의 어리석은 것을 따라 그에게 대답하라 두렵건대 그가 스스로 지혜롭게 여길까 하노라",
+      "source_text_hash": "eee6df9a97d3213f1efcdf64ff7abaf3894326bc1641c5b1035b0cec0ad89781",
+      "translation_text_hash": "fdada38507adbbeb4c38538c4701824f020657a3a0ecfe86a7e8a6806dd7ce52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자의 어리석은 것을 따라 그에게 대답하라 두렵건대 그가 스스로 지혜롭게 여길까 하노라"
+      ],
+      "raw_text_hashes": [
+        "fdada38507adbbeb4c38538c4701824f020657a3a0ecfe86a7e8a6806dd7ce52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:6",
+      "sequence": 17148,
+      "chapter_label": "PRO 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "One who sends a message by the hand of a fool is cutting off feet and drinking violence.",
+      "ko": "미련한 자 편에 기별하는 것은 자기의 발을 베어 버림이라 해를 받느니라",
+      "source_text_hash": "7d3268744302c9af0eb3e2ca0f19c31173b1052c47514f6181470170dd4577bf",
+      "translation_text_hash": "200058baf8bd9de6d110cbc6ed28de7502e9d76b4690fbdedea02f897cd65954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자 편에 기별하는 것은 자기의 발을 베어 버림이라 해를 받느니라"
+      ],
+      "raw_text_hashes": [
+        "200058baf8bd9de6d110cbc6ed28de7502e9d76b4690fbdedea02f897cd65954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:7",
+      "sequence": 17149,
+      "chapter_label": "PRO 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "Like the legs of the lame that hang loose, so is a parable in the mouth of fools.",
+      "ko": "저는 자의 다리는 힘 없이 달렸나니 미련한 자의 입의 잠언도 그러하니라",
+      "source_text_hash": "62f256aef8018dd807adb422237454c66c62061e471728de3f7b6274aec3cf5e",
+      "translation_text_hash": "a6895a876377a40588ab00b8f0565a47e3d830d4036ee9635b1b4ae81f1e9630",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 자의 다리는 힘 없이 달렸나니 미련한 자의 입의 잠언도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "a6895a876377a40588ab00b8f0565a47e3d830d4036ee9635b1b4ae81f1e9630"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:8",
+      "sequence": 17150,
+      "chapter_label": "PRO 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "As one who binds a stone in a sling, so is he who gives honor to a fool.",
+      "ko": "미련한 자에게 영예를 주는 것은 돌을 물매에 매는 것과 같으니라",
+      "source_text_hash": "8961cb6dfabba1b4ad3d0068a4c39bbbc5ae48d6995e862c558ca693bc7aef97",
+      "translation_text_hash": "9c9c14502828af4bab00c3371d1e7aa7e07726d966280b7386053d4aa0cd1428",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자에게 영예를 주는 것은 돌을 물매에 매는 것과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "9c9c14502828af4bab00c3371d1e7aa7e07726d966280b7386053d4aa0cd1428"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:9",
+      "sequence": 17151,
+      "chapter_label": "PRO 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Like a thorn bush that goes into the hand of a drunkard, so is a parable in the mouth of fools.",
+      "ko": "미련한 자의 입의 잠언은 술 취한 자의 손에 든 가시나무 같으니라",
+      "source_text_hash": "84e2665a145978c4bc6da659d26b55b8563e77ba18b0a4a98481417be7cb02ca",
+      "translation_text_hash": "130a6611e2ddd018b7b73c951fcfb44a87a3fd84963ccb141be1ff8e1a2cfff5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미련한 자의 입의 잠언은 술 취한 자의 손에 든 가시나무 같으니라"
+      ],
+      "raw_text_hashes": [
+        "130a6611e2ddd018b7b73c951fcfb44a87a3fd84963ccb141be1ff8e1a2cfff5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:10",
+      "sequence": 17152,
+      "chapter_label": "PRO 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "As an archer who wounds all, so is he who hires a fool or he who hires those who pass by.",
+      "ko": "장인이 온갖 것을 만들찌라도 미련한 자를 고용하는 것은 지나가는 자를 고용함과 같으니라",
+      "source_text_hash": "4f9111dc40e7616b70d0c23075e80efd1baea7910364558a3f7d2ee9552517ac",
+      "translation_text_hash": "dc23eec2908e274442eaf2939c6fa6e92b4910d07d876e2473402e67188b45a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장인이 온갖 것을 만들찌라도 미련한 자를 고용하는 것은 지나가는 자를 고용함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "dc23eec2908e274442eaf2939c6fa6e92b4910d07d876e2473402e67188b45a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:11",
+      "sequence": 17153,
+      "chapter_label": "PRO 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "As a dog that returns to his vomit, so is a fool who repeats his folly.",
+      "ko": "개가 그 토한 것을 도로 먹는 것 같이 미련한 자는 그 미련한 것을 거듭 행하느니라",
+      "source_text_hash": "16c49806a9caff6ec5023031336ca3049cc81a925d5f31cb542ee6a977af0302",
+      "translation_text_hash": "ef3818e9ae8d6995b55ac3192d91fc2e510b900c18506cf61873d96ed0caf1e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개가 그 토한 것을 도로 먹는 것 같이 미련한 자는 그 미련한 것을 거듭 행하느니라"
+      ],
+      "raw_text_hashes": [
+        "ef3818e9ae8d6995b55ac3192d91fc2e510b900c18506cf61873d96ed0caf1e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:12",
+      "sequence": 17154,
+      "chapter_label": "PRO 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "Do you see a man wise in his own eyes? There is more hope for a fool than for him.",
+      "ko": "네가 스스로 지혜롭게 여기는 자를 보느냐 그보다 미련한 자에게 오히려 바랄 것이 있느니라",
+      "source_text_hash": "35ab1861cdb033f3d18e3b76a5e783e399490aa8997ee77eaab3996a6eff285a",
+      "translation_text_hash": "e0d746f66d370f63b759a0fd7ebc36f2fc04a3038dc06c448ae3e033eee5a5a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 스스로 지혜롭게 여기는 자를 보느냐 그보다 미련한 자에게 오히려 바랄 것이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "e0d746f66d370f63b759a0fd7ebc36f2fc04a3038dc06c448ae3e033eee5a5a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:13",
+      "sequence": 17155,
+      "chapter_label": "PRO 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "The sluggard says, “There is a lion in the road! A fierce lion roams the streets!”",
+      "ko": "게으른 자는 길에 사자가 있다 거리에 사자가 있다 하느니라",
+      "source_text_hash": "f2e1b94af17454257a01cdfd6d76990b29e8e997a4e546643fe63b0b2b106582",
+      "translation_text_hash": "53fc64996f2d1904428ce574c8b94d395047616d524d185dcb7880047c961c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 길에 사자가 있다 거리에 사자가 있다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "53fc64996f2d1904428ce574c8b94d395047616d524d185dcb7880047c961c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:14",
+      "sequence": 17156,
+      "chapter_label": "PRO 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "As the door turns on its hinges, so does the sluggard on his bed.",
+      "ko": "문짝이 돌쩌귀를 따라서 도는 것 같이 게으른 자는 침상에서 구으느니라",
+      "source_text_hash": "50b430486de083af39ce71f7dda2bc3c308e2f8686192b3f7addc118d9728871",
+      "translation_text_hash": "ccd8831d07d46695cc5539e7fc0839880e70667c59bdb4b8c68aed4f60db4fd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문짝이 돌쩌귀를 따라서 도는 것 같이 게으른 자는 침상에서 구으느니라"
+      ],
+      "raw_text_hashes": [
+        "ccd8831d07d46695cc5539e7fc0839880e70667c59bdb4b8c68aed4f60db4fd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:15",
+      "sequence": 17157,
+      "chapter_label": "PRO 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "The sluggard buries his hand in the dish. He is too lazy to bring it back to his mouth.",
+      "ko": "게으른 자는 그 손을 그릇에 넣고도 입으로 올리기를 괴로와하느니라",
+      "source_text_hash": "bfd14401422499d606afde5569efaaa527652e1390f35f67af20f4237c339b9c",
+      "translation_text_hash": "36802ceee04b62bda2f6ec4fed7e0ec000687e5ee0a8971529d3e03ab326f43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 그 손을 그릇에 넣고도 입으로 올리기를 괴로와하느니라"
+      ],
+      "raw_text_hashes": [
+        "36802ceee04b62bda2f6ec4fed7e0ec000687e5ee0a8971529d3e03ab326f43c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:16",
+      "sequence": 17158,
+      "chapter_label": "PRO 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "The sluggard is wiser in his own eyes than seven men who answer with discretion.",
+      "ko": "게으른 자는 선히 대답하는 사람 일곱보다 자기를 지혜롭게 여기느니라",
+      "source_text_hash": "381ce4b08a53b7d2ca6ce417dd625671a3f9faf928783cd922ed8b5290125c98",
+      "translation_text_hash": "afb7e383b84822c09414d0b8629b741b3ae7091ebd1ffa4b0d08140b917478a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자는 선히 대답하는 사람 일곱보다 자기를 지혜롭게 여기느니라"
+      ],
+      "raw_text_hashes": [
+        "afb7e383b84822c09414d0b8629b741b3ae7091ebd1ffa4b0d08140b917478a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:17",
+      "sequence": 17159,
+      "chapter_label": "PRO 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Like one who grabs a dog’s ears is one who passes by and meddles in a quarrel not his own.",
+      "ko": "길로 지나다가 자기에게 상관 없는 다툼을 간섭하는 자는 개 귀를 잡는 자와 같으니라",
+      "source_text_hash": "a2997e017153d410309da8f27860d25e73722adfc31e02ab6bc0edf0be15c84a",
+      "translation_text_hash": "fbf4945db58cb1c6b74dfa3d0940f91d69f33bc73437d5d6b826cbae7dfb83af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길로 지나다가 자기에게 상관 없는 다툼을 간섭하는 자는 개 귀를 잡는 자와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "fbf4945db58cb1c6b74dfa3d0940f91d69f33bc73437d5d6b826cbae7dfb83af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:18",
+      "sequence": 17160,
+      "chapter_label": "PRO 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "Like a madman who shoots torches, arrows, and death,",
+      "ko": "횃불을 던지며 살을 쏘아서 사람을 죽이는 미친 사람이 있나니",
+      "source_text_hash": "ad6597342bdc5d8cd68e08e8d1afda53542a475b1f91e83715742605f852eee2",
+      "translation_text_hash": "7db96a10037bf66ce00613566499e175f1657363f5ec9874c19f2ca0df028625",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "횃불을 던지며 살을 쏘아서 사람을 죽이는 미친 사람이 있나니"
+      ],
+      "raw_text_hashes": [
+        "7db96a10037bf66ce00613566499e175f1657363f5ec9874c19f2ca0df028625"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:19",
+      "sequence": 17161,
+      "chapter_label": "PRO 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "is the man who deceives his neighbor and says, “Am I not joking?”",
+      "ko": "자기 이웃을 속이고 말하기를 내가 희롱하였노라 하는 자도 그러하니라",
+      "source_text_hash": "62ceb800ac01f7bc2f76970c575d9586ceb16616a8b37299e5e7643bd0f16235",
+      "translation_text_hash": "c8fe4c523508edbe7e6295c79039429ed2f4af2d986a960867647aa384022a04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 이웃을 속이고 말하기를 내가 희롱하였노라 하는 자도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "c8fe4c523508edbe7e6295c79039429ed2f4af2d986a960867647aa384022a04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:20",
+      "sequence": 17162,
+      "chapter_label": "PRO 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "For lack of wood a fire goes out. Without gossip, a quarrel dies down.",
+      "ko": "나무가 다하면 불이 꺼지고 말장이가 없어지면 다툼이 쉬느니라",
+      "source_text_hash": "5d9e4eeb9c8b79c22fe2d8e8451065aac2a246408cba706d1a64461630c2ce3d",
+      "translation_text_hash": "c540433eda826f3f27631fd92c78e7246665efa95ec4ab7cf00bb9a9456172e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무가 다하면 불이 꺼지고 말장이가 없어지면 다툼이 쉬느니라"
+      ],
+      "raw_text_hashes": [
+        "c540433eda826f3f27631fd92c78e7246665efa95ec4ab7cf00bb9a9456172e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:21",
+      "sequence": 17163,
+      "chapter_label": "PRO 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "As coals are to hot embers, and wood to fire, so is a contentious man to kindling strife.",
+      "ko": "숯불 위에 숯을 더하는 것과 타는 불에 나무를 더하는 것 같이 다툼을 좋아하는 자는 시비를 일으키느니라",
+      "source_text_hash": "8ef0d78d29a9e16ab8279cec680dabaacd60abd27ce9b4eccb4b2f2b1f35eefe",
+      "translation_text_hash": "20693fc3dc58403f817cb835e6574279390cc9291d83cf3059c13be5fffa3a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숯불 위에 숯을 더하는 것과 타는 불에 나무를 더하는 것 같이 다툼을 좋아하는 자는 시비를 일으키느니라"
+      ],
+      "raw_text_hashes": [
+        "20693fc3dc58403f817cb835e6574279390cc9291d83cf3059c13be5fffa3a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:22",
+      "sequence": 17164,
+      "chapter_label": "PRO 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "The words of a whisperer are as dainty morsels, they go down into the innermost parts.",
+      "ko": "남의 말하기를 좋아하는 자의 말은 별식과 같아서 뱃속 깊은데로 내려가느니라",
+      "source_text_hash": "bda7b378e2432e62523335f367d2681cd89193cdb8d4b47df4154b42fa6ede5e",
+      "translation_text_hash": "15b5a499bc8fbd38f7d253dcd2ffa5c456e28148a280fe0443408c1abc00231e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남의 말하기를 좋아하는 자의 말은 별식과 같아서 뱃속 깊은데로 내려가느니라"
+      ],
+      "raw_text_hashes": [
+        "15b5a499bc8fbd38f7d253dcd2ffa5c456e28148a280fe0443408c1abc00231e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:23",
+      "sequence": 17165,
+      "chapter_label": "PRO 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "Like silver dross on an earthen vessel are the lips of a fervent one with an evil heart.",
+      "ko": "온유한 입술에 악한 마음은 낮은 은을 입힌 토기니라",
+      "source_text_hash": "5af05653b82660b50019d1281d0e068affd67a1548564a9099e4afb0f236c9ea",
+      "translation_text_hash": "a1bb12f6ff700e7c45b22f16275bb0c0658ff2c959c6f3de53bb82ae336316fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온유한 입술에 악한 마음은 낮은 은을 입힌 토기니라"
+      ],
+      "raw_text_hashes": [
+        "a1bb12f6ff700e7c45b22f16275bb0c0658ff2c959c6f3de53bb82ae336316fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:24",
+      "sequence": 17166,
+      "chapter_label": "PRO 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "A malicious man disguises himself with his lips, but he harbors evil in his heart.",
+      "ko": "감정 있는 자는 입술로는 꾸미고 속에는 궤휼을 품나니",
+      "source_text_hash": "86a7b7e68bee367551ff2cdda29dcabe0c97c412ca64e62ed37b202face58167",
+      "translation_text_hash": "ddc4dfd30dc6062493ef119333604d6064706ee5479cb4ed787df94c7777679e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감정 있는 자는 입술로는 꾸미고 속에는 궤휼을 품나니"
+      ],
+      "raw_text_hashes": [
+        "ddc4dfd30dc6062493ef119333604d6064706ee5479cb4ed787df94c7777679e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:25",
+      "sequence": 17167,
+      "chapter_label": "PRO 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "When his speech is charming, don’t believe him, for there are seven abominations in his heart.",
+      "ko": "그 말이 좋을찌라도 믿지 말 것은 그 마음에 일곱 가지 가증한 것이 있음이라",
+      "source_text_hash": "f0b61b52179f15b9994f9b64561c4b96a5c3fb71a9776f533346885c96f8a571",
+      "translation_text_hash": "d214b75bc314c241fb6dc5fee3c9404f771788b276d85f6d240bb3e450d86e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말이 좋을찌라도 믿지 말 것은 그 마음에 일곱 가지 가증한 것이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "d214b75bc314c241fb6dc5fee3c9404f771788b276d85f6d240bb3e450d86e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:26",
+      "sequence": 17168,
+      "chapter_label": "PRO 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "His malice may be concealed by deception, but his wickedness will be exposed in the assembly.",
+      "ko": "궤휼로 그 감정을 감출찌라도 그 악이 회중 앞에 드러나리라",
+      "source_text_hash": "bf339a310e4f434e74c874b59fdafd25fc230b589d6579af11d1cd1fc63aeceb",
+      "translation_text_hash": "0d24117e57546cdf7a5d662c592d2d203c657978364004b472a02b8be87b0cc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궤휼로 그 감정을 감출찌라도 그 악이 회중 앞에 드러나리라"
+      ],
+      "raw_text_hashes": [
+        "0d24117e57546cdf7a5d662c592d2d203c657978364004b472a02b8be87b0cc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:27",
+      "sequence": 17169,
+      "chapter_label": "PRO 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "Whoever digs a pit shall fall into it. Whoever rolls a stone, it will come back on him.",
+      "ko": "함정을 파는 자는 그것에 빠질 것이요 돌을 굴리는 자는 도리어 그것에 치이리라",
+      "source_text_hash": "9f13ec4d4b154db3ef1a536d63d26ce93a50393e1de094934004dd41d535fd7e",
+      "translation_text_hash": "6d665db7b3b7a8439e60ad46e57cacf8e7ca5c4b88d1b5d1567a2bc546841190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "함정을 파는 자는 그것에 빠질 것이요 돌을 굴리는 자는 도리어 그것에 치이리라"
+      ],
+      "raw_text_hashes": [
+        "6d665db7b3b7a8439e60ad46e57cacf8e7ca5c4b88d1b5d1567a2bc546841190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:26:28",
+      "sequence": 17170,
+      "chapter_label": "PRO 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "A lying tongue hates those it hurts; and a flattering mouth works ruin.",
+      "ko": "거짓말 하는 자는 자기의 해한 자를 미워하고 아첨하는 입은 패망을 일으키느니라",
+      "source_text_hash": "bca175df4bb8865b4caa57f539a284dfaf449b0fcbf36eb103d1a9c24ada0fcd",
+      "translation_text_hash": "4b2422734a5093f22974d93edf113d248045a163b0d57663c8954c5bcd914732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓말 하는 자는 자기의 해한 자를 미워하고 아첨하는 입은 패망을 일으키느니라"
+      ],
+      "raw_text_hashes": [
+        "4b2422734a5093f22974d93edf113d248045a163b0d57663c8954c5bcd914732"
+      ]
+    }
+  ]
+}

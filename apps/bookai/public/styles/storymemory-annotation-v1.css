@@ -1,0 +1,56 @@
+
+/* ===== B61 #1292 · Annotation Layer v1 ===== */
+#smalToolbar{position:fixed;z-index:120;display:none;align-items:center;gap:2px;padding:5px 7px;border-radius:999px;background:rgba(43,35,26,.97);box-shadow:0 10px 28px rgba(20,15,8,.35);border:1px solid rgba(222,196,146,.28)}
+#smalToolbar.show{display:flex}
+.smal-dot{width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,251,240,.4);padding:0;cursor:pointer;transition:transform .12s}
+.smal-dot:hover{transform:scale(1.15)}
+.smal-tb{border:0;background:transparent;color:#efe6d6;border-radius:999px;padding:6px 9px;font:600 10px/1 var(--sans);cursor:pointer;letter-spacing:.04em}
+.smal-tb:hover{background:rgba(255,251,240,.12)}
+.smal-tb[aria-pressed="true"]{background:#b1704e;color:#fff}
+.smal-tb:disabled{opacity:.35;cursor:default}
+.smal-sep{width:1px;height:18px;background:rgba(222,196,146,.25);margin:0 4px;flex:none}
+body.smal-bound #selectionToolbar{display:none!important}
+mark.smal{background:transparent;color:inherit;border-radius:2px;padding:0 .05em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.smal-hl-yellow{background:rgba(255,224,102,.55)}
+.smal-hl-mint{background:rgba(126,214,168,.5)}
+.smal-hl-pink{background:rgba(244,143,177,.5)}
+.smal-hl-blue{background:rgba(137,180,240,.5)}
+body.smr-theme-dark .smal-hl-yellow{background:rgba(255,224,102,.3)}
+body.smr-theme-dark .smal-hl-mint{background:rgba(126,214,168,.26)}
+body.smr-theme-dark .smal-hl-pink{background:rgba(244,143,177,.26)}
+body.smr-theme-dark .smal-hl-blue{background:rgba(137,180,240,.28)}
+.smal-ul{border-bottom:2px solid #a16547}
+body.smr-theme-dark .smal-ul{border-bottom-color:#d9a066}
+.smal-memo{background:rgba(122,94,168,.13);border-bottom:2px dotted #7a5ea8}
+body.smr-theme-dark .smal-memo{background:rgba(167,139,250,.16);border-bottom-color:#a78bfa}
+.smal-badge{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:2px;border-radius:50%;background:#7a5ea8;color:#fff;font:700 9px/1 var(--sans);cursor:pointer;vertical-align:.28em;border:0;padding:0}
+.smal-badge::before{content:"✎"}
+body.smr-theme-dark .smal-badge{background:#a78bfa;color:#1d1812}
+body.smal-erase #readerPageBody{cursor:crosshair}
+body.smal-erase mark.smal,body.smal-erase .smal-badge{cursor:pointer}
+body.smal-erase mark.smal:hover,body.smal-erase .smal-badge:hover{outline:2px solid #c0392b;outline-offset:1px;background:rgba(220,80,80,.28)}
+.smal-dock{position:absolute;right:16px;bottom:58px;z-index:60;display:none;flex-direction:column;gap:8px}
+#reader.active .smal-dock{display:flex}
+.smal-dock button{width:34px;height:34px;border-radius:50%;border:1px solid rgba(45,34,24,.18);background:rgba(255,253,248,.94);color:#4a443c;font:400 15px/1 var(--sans);display:grid;place-items:center;box-shadow:0 6px 18px rgba(31,25,18,.14);padding:0;cursor:pointer}
+.smal-dock button[aria-pressed="true"]{background:#9c583d;color:#fffdf8;border-color:#9c583d}
+.smal-dock button:disabled{opacity:.35;cursor:default}
+body.focus-reading #reader.active .smal-dock{opacity:.25}
+#smalPop{position:fixed;z-index:130;display:none;width:min(300px,calc(100vw - 24px));background:#fffdf8;border:1px solid rgba(45,34,24,.18);border-radius:12px;box-shadow:0 16px 44px rgba(31,25,18,.28);padding:12px;color:#2b231a}
+#smalPop.show{display:block}
+body.smr-theme-dark #smalPop{background:#2e2822;border-color:rgba(222,196,146,.25);color:#e9e1d2}
+.smal-pop-quote{font:400 11.5px/1.55 var(--sans);color:#8a7f70;margin:0 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+body.smr-theme-dark .smal-pop-quote{color:#a99e8d}
+#smalPop textarea{width:100%;min-height:66px;box-sizing:border-box;border:1px solid rgba(45,34,24,.22);border-radius:8px;padding:8px;font:400 13px/1.6 var(--sans);background:#fff;resize:vertical;color:inherit}
+body.smr-theme-dark #smalPop textarea{background:#262019;border-color:rgba(222,196,146,.25);color:#e9e1d2}
+.smal-pop-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:9px}
+.smal-pop-actions button{border:0;border-radius:999px;padding:7px 13px;font:700 11px/1 var(--sans);cursor:pointer}
+.smal-pop-save{background:#b1704e;color:#fff}
+.smal-pop-cancel{background:transparent;color:inherit;border:1px solid rgba(45,34,24,.22)}
+.smal-pop-del{background:transparent;color:#c0392b;border:1px solid rgba(192,57,43,.4);margin-right:auto}
+@media (max-width:640px){
+  .smal-dock{right:10px;bottom:52px;gap:6px}
+  .smal-dock button{width:30px;height:30px;font-size:13px}
+  #smalToolbar{padding:4px 5px}
+  .smal-dot{width:18px;height:18px}
+  .smal-tb{padding:6px 7px;font-size:9px}
+}

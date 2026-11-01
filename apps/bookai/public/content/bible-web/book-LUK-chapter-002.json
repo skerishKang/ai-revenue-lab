@@ -1,0 +1,1677 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:002",
+  "unit_ordinal": 975,
+  "unit_label": "LUK 2",
+  "book_code": "LUK",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:2:1",
+      "sequence": 24975,
+      "chapter_label": "LUK 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Now in those days, a decree went out from Caesar Augustus that all the world should be enrolled.",
+      "ko": "이때에 가이사 아구스도가 영을 내려 천하로 다 호적하라 하였으니",
+      "source_text_hash": "3b336400ff7c4a8ad3b2c09842a6824c01017209bd339f2f2153cc02b3d0889d",
+      "translation_text_hash": "7afc2211c565915a28931539eccd5c8aeec5390695b35fda4c95ff176df1f6f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이때에 가이사 아구스도가 영을 내려 천하로 다 호적하라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "7afc2211c565915a28931539eccd5c8aeec5390695b35fda4c95ff176df1f6f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:2",
+      "sequence": 24976,
+      "chapter_label": "LUK 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "This was the first enrollment made when Quirinius was governor of Syria.",
+      "ko": "이 호적은 구레뇨가 수리아 총독 되었을 때에 첫번 한것이라",
+      "source_text_hash": "1c2f25f564c0dd6cfd0a81524afad55314cdd155689a58bf11fbde358187a545",
+      "translation_text_hash": "7721b31757124bb5343ea260c7473bfa69574e3bf96e62df87f73cdd5dd170ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 호적은 구레뇨가 수리아 총독 되었을 때에 첫번 한것이라"
+      ],
+      "raw_text_hashes": [
+        "7721b31757124bb5343ea260c7473bfa69574e3bf96e62df87f73cdd5dd170ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:3",
+      "sequence": 24977,
+      "chapter_label": "LUK 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "All went to enroll themselves, everyone to his own city.",
+      "ko": "모든 사람이 호적하러 각각 고향으로 돌아가매",
+      "source_text_hash": "d7eb6c25ffb2a4c1fbb8559d13bf9a283acb0cf0a165db98abd73cc79a9b4a0e",
+      "translation_text_hash": "b59e6e312b5cff81628c77d132629bd540c6c5ec869d610cba8d9de5fe34c790",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 호적하러 각각 고향으로 돌아가매"
+      ],
+      "raw_text_hashes": [
+        "b59e6e312b5cff81628c77d132629bd540c6c5ec869d610cba8d9de5fe34c790"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:4",
+      "sequence": 24978,
+      "chapter_label": "LUK 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Joseph also went up from Galilee, out of the city of Nazareth, into Judea, to David’s city, which is called Bethlehem, because he was of the house and family of David,",
+      "ko": "요셉도 다윗의 집 족속인 고로 갈릴리 나사렛 동네에서 유대를 향하여 베들레헴이라 하는 다윗의 동네로",
+      "source_text_hash": "6cfc5920834ccb8654a11ca6bbeff762bc8274776a1ad8c2090682c264aa3bd4",
+      "translation_text_hash": "2b369df34ba303bae0455928ad4bd8224c27cbf789ebdf14069abf05509f5f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉도 다윗의 집 족속인 고로 갈릴리 나사렛 동네에서 유대를 향하여 베들레헴이라 하는 다윗의 동네로"
+      ],
+      "raw_text_hashes": [
+        "2b369df34ba303bae0455928ad4bd8224c27cbf789ebdf14069abf05509f5f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:5",
+      "sequence": 24979,
+      "chapter_label": "LUK 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "to enroll himself with Mary, who was pledged to be married to him as wife, being pregnant.",
+      "ko": "그 정혼한 마리아와 함께 호적하러 올라가니 마리아가 이미 잉태되었더라",
+      "source_text_hash": "7dae004612052f0c78485269e6715e53c3c40d11f5e3dd6751fef96eb79aab85",
+      "translation_text_hash": "466157a87319b570e052c98290cc0d0477bc599b9abbcfb8ba521bbf064c2d15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 정혼한 마리아와 함께 호적하러 올라가니 마리아가 이미 잉태되었더라"
+      ],
+      "raw_text_hashes": [
+        "466157a87319b570e052c98290cc0d0477bc599b9abbcfb8ba521bbf064c2d15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:6",
+      "sequence": 24980,
+      "chapter_label": "LUK 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "While they were there, the day had come for her to give birth.",
+      "ko": "거기 있을 그 때에 해산할 날이 차서",
+      "source_text_hash": "9983ccd0c603dc17a39d3224c92f1ac9273856cb03e50c9f3b34d0838dbafcd8",
+      "translation_text_hash": "b75586e91e6ef4c1b68d79ad540554910ba8cabfd9371b43540cd76c915e3dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 있을 그 때에 해산할 날이 차서"
+      ],
+      "raw_text_hashes": [
+        "b75586e91e6ef4c1b68d79ad540554910ba8cabfd9371b43540cd76c915e3dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:7",
+      "sequence": 24981,
+      "chapter_label": "LUK 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "She gave birth to her firstborn son. She wrapped him in bands of cloth and laid him in a feeding trough, because there was no room for them in the inn.",
+      "ko": "맏아들을 낳아 강보로 싸서 구유에 뉘었으니 이는 사관에 있을 곳이 없음이러라",
+      "source_text_hash": "f7cb816d314f66b9062d5a8cc22988b2a49c9ebc42eee194f1a16e72b79dcf53",
+      "translation_text_hash": "98a878a28198ce597dc5791de4116fd98cec1bfa47f94e27795481951ca13b35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "맏아들을 낳아 강보로 싸서 구유에 뉘었으니 이는 사관에 있을 곳이 없음이러라"
+      ],
+      "raw_text_hashes": [
+        "98a878a28198ce597dc5791de4116fd98cec1bfa47f94e27795481951ca13b35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:8",
+      "sequence": 24982,
+      "chapter_label": "LUK 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "There were shepherds in the same country staying in the field, and keeping watch by night over their flock.",
+      "ko": "그 지경에 목자들이 밖에서 밤에 자기 양떼를 지키더니",
+      "source_text_hash": "da63ceb2179c177a9e109036807c54007ef42a84aca96ad2c5b7f8edb48e8e71",
+      "translation_text_hash": "83d1b72c87db0f3cc390fb6b6ad33ae4dcb2c0496798735e0d375d2c252b8f57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 지경에 목자들이 밖에서 밤에 자기 양떼를 지키더니"
+      ],
+      "raw_text_hashes": [
+        "83d1b72c87db0f3cc390fb6b6ad33ae4dcb2c0496798735e0d375d2c252b8f57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:9",
+      "sequence": 24983,
+      "chapter_label": "LUK 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, an angel of the Lord stood by them, and the glory of the Lord shone around them, and they were terrified.",
+      "ko": "주의 사자가 곁에 서고 주의 영광이 저희를 두루 비취매 크게 무서워하는지라",
+      "source_text_hash": "24c9656d3a9dafe376f1634193f843a67e59d7101e3b371ca6d6b7258d72df82",
+      "translation_text_hash": "b13acdd9b9bf4b327880db338060a48ac0a8ef685bcd3a0c86ab5d9eb6de29a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사자가 곁에 서고 주의 영광이 저희를 두루 비취매 크게 무서워하는지라"
+      ],
+      "raw_text_hashes": [
+        "b13acdd9b9bf4b327880db338060a48ac0a8ef685bcd3a0c86ab5d9eb6de29a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:10",
+      "sequence": 24984,
+      "chapter_label": "LUK 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The angel said to them, “Don’t be afraid, for behold, I bring you good news of great joy which will be to all the people.",
+      "ko": "천사가 이르되 무서워 말라 보라 내가 온 백성에게 미칠 큰 기쁨의 좋은 소식을 너희에게 전하노라",
+      "source_text_hash": "09a0fc10199c4930e97243546e565d998b3443c0be03c9877b751ed5aebcc1dc",
+      "translation_text_hash": "ba5b54c2a954007ff86584d1f8a413a2c792764a6fa89443ca00a1259f4fccb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 이르되 무서워 말라 보라 내가 온 백성에게 미칠 큰 기쁨의 좋은 소식을 너희에게 전하노라"
+      ],
+      "raw_text_hashes": [
+        "ba5b54c2a954007ff86584d1f8a413a2c792764a6fa89443ca00a1259f4fccb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:11",
+      "sequence": 24985,
+      "chapter_label": "LUK 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "For there is born to you today, in David’s city, a Savior, who is Christ the Lord.",
+      "ko": "오늘날 다윗의 동네에 너희를 위하여 구주가 나셨으니 곧 그리스도 주시니라",
+      "source_text_hash": "d7fe692b45fc8f55819caf6ee125779a979e12218ca9dcaba49b7dbe31a8acae",
+      "translation_text_hash": "2f261065156de4b7dc5fffcd9d5e203693e9f6683ea6cbab966a249c962bc1b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 다윗의 동네에 너희를 위하여 구주가 나셨으니 곧 그리스도 주시니라"
+      ],
+      "raw_text_hashes": [
+        "2f261065156de4b7dc5fffcd9d5e203693e9f6683ea6cbab966a249c962bc1b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:12",
+      "sequence": 24986,
+      "chapter_label": "LUK 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "This is the sign to you: you will find a baby wrapped in strips of cloth, lying in a feeding trough.”",
+      "ko": "너희가 가서 강보에 싸여 구유에 누인 아기를 보리니 이것이 너희에게 표적이니라 하더니",
+      "source_text_hash": "079eb711146c491d7ddd324d11dd255210e73f58df9d9cf94d183e172b3aa518",
+      "translation_text_hash": "2303c617a97f681f495606399c1e9cf060d36a605cf5eda03a94e19a0466a26f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 가서 강보에 싸여 구유에 누인 아기를 보리니 이것이 너희에게 표적이니라 하더니"
+      ],
+      "raw_text_hashes": [
+        "2303c617a97f681f495606399c1e9cf060d36a605cf5eda03a94e19a0466a26f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:13",
+      "sequence": 24987,
+      "chapter_label": "LUK 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Suddenly, there was with the angel a multitude of the heavenly army praising God and saying,",
+      "ko": "홀연히 허다한 천군이 그 천사와 함께 있어 하나님을 찬송하여 가로되",
+      "source_text_hash": "cb31333fdc184fb5c85f09c748ff39b1f944027b045f11da48385036658993cf",
+      "translation_text_hash": "755b2825a903e4dd84206dfd5e9e539d862e34cfd7ac1da58b47862d62c30bce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀연히 허다한 천군이 그 천사와 함께 있어 하나님을 찬송하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "755b2825a903e4dd84206dfd5e9e539d862e34cfd7ac1da58b47862d62c30bce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:14",
+      "sequence": 24988,
+      "chapter_label": "LUK 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "“Glory to God in the highest, on earth peace, good will toward men.”",
+      "ko": "지극히 높은 곳에서는 하나님께 영광이요 땅에서는 기뻐하심을 입은 사람들 중에 평화로다 하니라",
+      "source_text_hash": "96adfac588dbdd7fbdb8983ae23de409d90dbafba82c1b3f48befda112d18778",
+      "translation_text_hash": "dc6939ee7e00bc9d28811866611c49bc9546c353471515fe894d3fd1ee4f4f6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 높은 곳에서는 하나님께 영광이요 땅에서는 기뻐하심을 입은 사람들 중에 평화로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "dc6939ee7e00bc9d28811866611c49bc9546c353471515fe894d3fd1ee4f4f6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:15",
+      "sequence": 24989,
+      "chapter_label": "LUK 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "When the angels went away from them into the sky, the shepherds said to one another, “Let’s go to Bethlehem, now, and see this thing that has happened, which the Lord has made known to us.”",
+      "ko": "천사들이 떠나 하늘로 올라가니 목자가 서로 말하되 이제 베들레헴까지 가서 주께서 우리에게 알리신바 이 이루어진 일을 보자 하고",
+      "source_text_hash": "e7a89767998b8ba8b4b9aa0b6b098e1ddd834f5a4dd5424a4c4c20dcdb9b77ae",
+      "translation_text_hash": "a2c5c82ff7ba59931960e113934e0b1572a5fcf6fc60fcc7d00672b5324fa83a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사들이 떠나 하늘로 올라가니 목자가 서로 말하되 이제 베들레헴까지 가서 주께서 우리에게 알리신바 이 이루어진 일을 보자 하고"
+      ],
+      "raw_text_hashes": [
+        "a2c5c82ff7ba59931960e113934e0b1572a5fcf6fc60fcc7d00672b5324fa83a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:16",
+      "sequence": 24990,
+      "chapter_label": "LUK 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "They came with haste and found both Mary and Joseph, and the baby was lying in the feeding trough.",
+      "ko": "빨리 가서 마리아와 요셉과 구유에 누인 아기를 찾아서",
+      "source_text_hash": "b9d61ea4f8d7d951963e1876ecbfc69a48c904f3c370f97e951e862b342583f4",
+      "translation_text_hash": "34a562c11c4a9a0fea4df225f8097cf4dc30e3bd78ebaa39b75b000f0ca95403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빨리 가서 마리아와 요셉과 구유에 누인 아기를 찾아서"
+      ],
+      "raw_text_hashes": [
+        "34a562c11c4a9a0fea4df225f8097cf4dc30e3bd78ebaa39b75b000f0ca95403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:17",
+      "sequence": 24991,
+      "chapter_label": "LUK 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "When they saw it, they publicized widely the saying which was spoken to them about this child.",
+      "ko": "보고 천사가 자기들에게 이 아기에 대하여 말한 것을 고하니",
+      "source_text_hash": "f5b4e9cbdea9fe01d680564f5087f40c224653b874d469ab467b69f19f59d247",
+      "translation_text_hash": "c36bd969f11ab0729246b46b1cfdc179139ff7e7d9053abc486c93bc97c295cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보고 천사가 자기들에게 이 아기에 대하여 말한 것을 고하니"
+      ],
+      "raw_text_hashes": [
+        "c36bd969f11ab0729246b46b1cfdc179139ff7e7d9053abc486c93bc97c295cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:18",
+      "sequence": 24992,
+      "chapter_label": "LUK 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "All who heard it wondered at the things which were spoken to them by the shepherds.",
+      "ko": "듣는 자가 다 목자의 말하는 일을 기이히 여기되",
+      "source_text_hash": "bb53598e616323431f360af21a9399654d33ccc19ebbde5572dd29922d78785f",
+      "translation_text_hash": "e119550f5860531488052be5f6a8511ed7f006f79b0be86a1c4884468d3650b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 자가 다 목자의 말하는 일을 기이히 여기되"
+      ],
+      "raw_text_hashes": [
+        "e119550f5860531488052be5f6a8511ed7f006f79b0be86a1c4884468d3650b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:19",
+      "sequence": 24993,
+      "chapter_label": "LUK 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "But Mary kept all these sayings, pondering them in her heart.",
+      "ko": "마리아는 이 모든 말을 마음에 지키어 생각하니라",
+      "source_text_hash": "e1b2c899c3c6d520dc81997bc84766f3042d856b6155de3d91a707e8875e302d",
+      "translation_text_hash": "3e040ef807d643988bc358177793dd6a1f3a1900a983a52cb29b80a446abbf70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아는 이 모든 말을 마음에 지키어 생각하니라"
+      ],
+      "raw_text_hashes": [
+        "3e040ef807d643988bc358177793dd6a1f3a1900a983a52cb29b80a446abbf70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:20",
+      "sequence": 24994,
+      "chapter_label": "LUK 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "The shepherds returned, glorifying and praising God for all the things that they had heard and seen, just as it was told them.",
+      "ko": "목자가 자기들에게 이르던 바와 같이 듣고 본 그 모든 것을 인하여 하나님께 영광을 돌리고 찬송하며 돌아가니라",
+      "source_text_hash": "6bd2c3eaac1c9d99a6d35120589fedff2202db1bec051fc07c7fe7992babace4",
+      "translation_text_hash": "231a9d353c0e1d09254a4a386b18157030b63dce692004d0595924db65146f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자가 자기들에게 이르던 바와 같이 듣고 본 그 모든 것을 인하여 하나님께 영광을 돌리고 찬송하며 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "231a9d353c0e1d09254a4a386b18157030b63dce692004d0595924db65146f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:21",
+      "sequence": 24995,
+      "chapter_label": "LUK 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "When eight days were fulfilled for the circumcision of the child, his name was called Jesus, which was given by the angel before he was conceived in the womb.",
+      "ko": "할례할 팔일이 되매 그 이름을 예수라 하니 곧 수태하기 전에 천사의 일컬은 바러라",
+      "source_text_hash": "20dfdb2069601e6df03c693957d2efc6c5d708561233c7cd9346d29172626392",
+      "translation_text_hash": "9790d119f38de0b0066dde70c45c0d9bf5570379237e292a32b0f449c8aba7f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례할 팔일이 되매 그 이름을 예수라 하니 곧 수태하기 전에 천사의 일컬은 바러라"
+      ],
+      "raw_text_hashes": [
+        "9790d119f38de0b0066dde70c45c0d9bf5570379237e292a32b0f449c8aba7f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:22",
+      "sequence": 24996,
+      "chapter_label": "LUK 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "When the days of their purification according to the law of Moses were fulfilled, they brought him up to Jerusalem to present him to the Lord",
+      "ko": "모세의 법대로 결례의 날이 차매 아기를 데리고 예루살렘에 올라가니",
+      "source_text_hash": "db4c2c3231867163972a21dc91c823bb64fe714debf750d2363b1963e6134405",
+      "translation_text_hash": "b70e6bc30efaa221e49e653c4393dc7256f78424d46c39ca8281299744e03d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 법대로 결례의 날이 차매 아기를 데리고 예루살렘에 올라가니"
+      ],
+      "raw_text_hashes": [
+        "b70e6bc30efaa221e49e653c4393dc7256f78424d46c39ca8281299744e03d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:23",
+      "sequence": 24997,
+      "chapter_label": "LUK 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "(as it is written in the law of the Lord, “Every male who opens the womb shall be called holy to the Lord”),",
+      "ko": "이는 주의 율법에 쓴바 첫 태에 처음 난 남자마다 주의 거룩한 자라 하리라 한대로 아기를 주께 드리고",
+      "source_text_hash": "c5f8c3f16274a7c2ef3576a64255b23854df9dc2c0c1273e1907832b81659564",
+      "translation_text_hash": "6838f30369e025df070dbd3131997e66755dce6d0e989fdd4378f8413e14ac29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 주의 율법에 쓴바 첫 태에 처음 난 남자마다 주의 거룩한 자라 하리라 한대로 아기를 주께 드리고"
+      ],
+      "raw_text_hashes": [
+        "6838f30369e025df070dbd3131997e66755dce6d0e989fdd4378f8413e14ac29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:24",
+      "sequence": 24998,
+      "chapter_label": "LUK 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "and to offer a sacrifice according to that which is said in the law of the Lord, “A pair of turtledoves, or two young pigeons.”",
+      "ko": "또 주의 율법에 말씀하신대로 비둘기 한 쌍이나 혹 어린 반구 둘로 제사하려함이더라",
+      "source_text_hash": "0c6a5eded17bd7b7e59ea44b140311257f61c1e134cde5e1c8827e3f5c97f97b",
+      "translation_text_hash": "235ea11ceb8c3bc00e46a16b5bd43416f8a90eb730bfb3f105488b179812f05f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 율법에 말씀하신대로 비둘기 한 쌍이나 혹 어린 반구 둘로 제사하려함이더라"
+      ],
+      "raw_text_hashes": [
+        "235ea11ceb8c3bc00e46a16b5bd43416f8a90eb730bfb3f105488b179812f05f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:25",
+      "sequence": 24999,
+      "chapter_label": "LUK 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "Behold, there was a man in Jerusalem whose name was Simeon. This man was righteous and devout, looking for the consolation of Israel, and the Holy Spirit was on him.",
+      "ko": "예루살렘에 시므온이라 하는 사람이 있으니 이 사람이 의롭고 경건하여 이스라엘의 위로를 기다리는 자라 성령이 그 위에 계시더라",
+      "source_text_hash": "0edfd2cbf45bc2047a09a2438655a3790426549339d12f629063d5c77e77955f",
+      "translation_text_hash": "320e540ff9d534adf07e09ef7d5a9807d41c5d2dfe355ea67f60972580a1dae5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 시므온이라 하는 사람이 있으니 이 사람이 의롭고 경건하여 이스라엘의 위로를 기다리는 자라 성령이 그 위에 계시더라"
+      ],
+      "raw_text_hashes": [
+        "320e540ff9d534adf07e09ef7d5a9807d41c5d2dfe355ea67f60972580a1dae5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:26",
+      "sequence": 25000,
+      "chapter_label": "LUK 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "It had been revealed to him by the Holy Spirit that he should not see death before he had seen the Lord’s Christ.",
+      "ko": "저가 주의 그리스도를 보기 전에 죽지 아니하리라 하는 성령의 지시를 받았더니",
+      "source_text_hash": "c53c7989e28a50293a38456ff03850f0984fee036bf838fa1be2aa2a02a5c974",
+      "translation_text_hash": "0f98dd0d79cf5f5547deef2c7ec755972e986d395ae8249056e076762350b4fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 주의 그리스도를 보기 전에 죽지 아니하리라 하는 성령의 지시를 받았더니"
+      ],
+      "raw_text_hashes": [
+        "0f98dd0d79cf5f5547deef2c7ec755972e986d395ae8249056e076762350b4fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:27",
+      "sequence": 25001,
+      "chapter_label": "LUK 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "He came in the Spirit into the temple. When the parents brought in the child, Jesus, that they might do concerning him according to the custom of the law,",
+      "ko": "성령의 감동으로 성전에 들어가매 마침 부모가 율법의 전례대로 행하고자 하여 그 아기 예수를 데리고 오는지라",
+      "source_text_hash": "9ac8807dcd033b7269df4ffae6be9e692b1b7bc0acc7cfa54da46a089e8d24ce",
+      "translation_text_hash": "496d96ce5177afde1d9c0c1bca52cfdd3e29b85524fc771d579b5e86b1bbb866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령의 감동으로 성전에 들어가매 마침 부모가 율법의 전례대로 행하고자 하여 그 아기 예수를 데리고 오는지라"
+      ],
+      "raw_text_hashes": [
+        "496d96ce5177afde1d9c0c1bca52cfdd3e29b85524fc771d579b5e86b1bbb866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:28",
+      "sequence": 25002,
+      "chapter_label": "LUK 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "then he received him into his arms and blessed God, and said,",
+      "ko": "시므온이 아기를 안고 하나님을 찬송하여 가로되",
+      "source_text_hash": "4578183d10b423e3d14bfeb39215991b871d21bc7ee2358696310b5ffaa8d78b",
+      "translation_text_hash": "7d21cce50945cbd5d698ad541da2adc188dbec703ce5a99cf1285a985a3c1dd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온이 아기를 안고 하나님을 찬송하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "7d21cce50945cbd5d698ad541da2adc188dbec703ce5a99cf1285a985a3c1dd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:29",
+      "sequence": 25003,
+      "chapter_label": "LUK 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "“Now you are releasing your servant, Master, according to your word, in peace;",
+      "ko": "주재여 이제는 말씀하신대로 종을 평안히 놓아 주시는도다",
+      "source_text_hash": "15a75c497a4a3bc2837098382b3e329cede0749dd6b0cc6be84896574cbbb90d",
+      "translation_text_hash": "286a39639608ffa1c44a50623404338fc9e8c32146f3e1e7d91fd1df59f528f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주재여 이제는 말씀하신대로 종을 평안히 놓아 주시는도다"
+      ],
+      "raw_text_hashes": [
+        "286a39639608ffa1c44a50623404338fc9e8c32146f3e1e7d91fd1df59f528f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:30",
+      "sequence": 25004,
+      "chapter_label": "LUK 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "for my eyes have seen your salvation,",
+      "ko": "내 눈이 주의 구원을 보았사오니",
+      "source_text_hash": "fa056c9bdef8b125b35645852983313456afa6186437ec2161f316cbd93fb73b",
+      "translation_text_hash": "ace5ffd6fce478c44c98fa8e66392a02f643a848585af90e2860002d124e6638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 눈이 주의 구원을 보았사오니"
+      ],
+      "raw_text_hashes": [
+        "ace5ffd6fce478c44c98fa8e66392a02f643a848585af90e2860002d124e6638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:31",
+      "sequence": 25005,
+      "chapter_label": "LUK 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "which you have prepared before the face of all peoples;",
+      "ko": "이는 만민 앞에 예비하신 것이요",
+      "source_text_hash": "e5b73d451a249a04a97361c51884df7f96050a1be9164d6846f3f0e4d8c9b66b",
+      "translation_text_hash": "112f25d15f58c88ff1532826b2fe2e6bd694947b6f1fbb655fefb9ec2b1148b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 만민 앞에 예비하신 것이요"
+      ],
+      "raw_text_hashes": [
+        "112f25d15f58c88ff1532826b2fe2e6bd694947b6f1fbb655fefb9ec2b1148b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:32",
+      "sequence": 25006,
+      "chapter_label": "LUK 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "a light for revelation to the nations, and the glory of your people Israel.”",
+      "ko": "이방을 비추는 빛이요 주의 백성 이스라엘의 영광이니이다 하니",
+      "source_text_hash": "347a23dece730c6d2d7990cc8d41ad1f78efdba3e3eaac03dc2626e4deb62623",
+      "translation_text_hash": "e4400f4ca70652417dc03cca09a0420abaddaf87de57ba09d6034bb621d169a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방을 비추는 빛이요 주의 백성 이스라엘의 영광이니이다 하니"
+      ],
+      "raw_text_hashes": [
+        "e4400f4ca70652417dc03cca09a0420abaddaf87de57ba09d6034bb621d169a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:33",
+      "sequence": 25007,
+      "chapter_label": "LUK 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "Joseph and his mother were marveling at the things which were spoken concerning him.",
+      "ko": "그 부모가 그 아기에 대한 말들을 기이히 여기더라",
+      "source_text_hash": "c85310444e1444eb30ba061c2140626474583c7b114ba45ba8e662f7e2e51fd9",
+      "translation_text_hash": "3485e4725cac1e3f4ab2be054d93d9358f9de42ceb737c1754f1d905301fcb6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 그 아기에 대한 말들을 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "3485e4725cac1e3f4ab2be054d93d9358f9de42ceb737c1754f1d905301fcb6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:34",
+      "sequence": 25008,
+      "chapter_label": "LUK 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "Simeon blessed them, and said to Mary, his mother, “Behold, this child is appointed for the falling and the rising of many in Israel, and for a sign which is spoken against.",
+      "ko": "시므온이 저희에게 축복하고 그 모친 마리아에게 일러 가로되 보라 이 아이는 이스라엘 중 많은 사람의 패하고 흥함을 위하며 비방을 받는 표적 되기 위하여 세움을 입었고",
+      "source_text_hash": "7417f928683fe98ce8a6ede0b2f5a19e7c7489fa9995958056c081d3246c8356",
+      "translation_text_hash": "b1e0e93fff7fde8043a78e54f1322d1c277e2bfbcdb825196458884152cfebd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온이 저희에게 축복하고 그 모친 마리아에게 일러 가로되 보라 이 아이는 이스라엘 중 많은 사람의 패하고 흥함을 위하며 비방을 받는 표적 되기 위하여 세움을 입었고"
+      ],
+      "raw_text_hashes": [
+        "b1e0e93fff7fde8043a78e54f1322d1c277e2bfbcdb825196458884152cfebd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:35",
+      "sequence": 25009,
+      "chapter_label": "LUK 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "Yes, a sword will pierce through your own soul, that the thoughts of many hearts may be revealed.”",
+      "ko": "또 칼이 네 마음을 찌르듯 하리라 이는 여러 사람의 마음의 생각을 드러내려 함이니라 하더라",
+      "source_text_hash": "ceca85f20f2e6758017a35b28a9e757600e6f06a307ec5907a852aa7fc8feb36",
+      "translation_text_hash": "c23d535c859e59489580b940bae95f4e6f145d8c58d308f2e211f8c6a94133ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 칼이 네 마음을 찌르듯 하리라 이는 여러 사람의 마음의 생각을 드러내려 함이니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c23d535c859e59489580b940bae95f4e6f145d8c58d308f2e211f8c6a94133ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:36",
+      "sequence": 25010,
+      "chapter_label": "LUK 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "There was one Anna, a prophetess, the daughter of Phanuel, of the tribe of Asher (she was of a great age, having lived with a husband seven years from her virginity,",
+      "ko": "또 아셀 지파 바누엘의 딸 안나라 하는 선지자가 있어 나이 매우 늙었더라 그가 출가한 후 일곱 해 동안 남편과 함께 살다가",
+      "source_text_hash": "b18fbeecf861eabd46ac8d512ee407bd0e650be8a9055ce1747594518b8c29ee",
+      "translation_text_hash": "0da3f4a14cd1d9004ebec50b4c699bd02c03527fd34f3c57071c4b3623a95928",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아셀 지파 바누엘의 딸 안나라 하는 선지자가 있어 나이 매우 늙었더라 그가 출가한 후 일곱 해 동안 남편과 함께 살다가"
+      ],
+      "raw_text_hashes": [
+        "0da3f4a14cd1d9004ebec50b4c699bd02c03527fd34f3c57071c4b3623a95928"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:37",
+      "sequence": 25011,
+      "chapter_label": "LUK 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "and she had been a widow for about eighty-four years), who didn’t depart from the temple, worshiping with fastings and petitions night and day.",
+      "ko": "과부 된지 팔십 사년이라 이 사람이 성전을 떠나지 아니하고 주야에 금식하며 기도함으로 섬기더니",
+      "source_text_hash": "819c8188597005be4f4fd09d7c91c3d5a4123c69f47c3855559431b858dad7cc",
+      "translation_text_hash": "6068d0e230dfdb398e6885a72c7de63c2e5c3e186f2a00052bac8b14111ff97a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "과부 된지 팔십 사년이라 이 사람이 성전을 떠나지 아니하고 주야에 금식하며 기도함으로 섬기더니"
+      ],
+      "raw_text_hashes": [
+        "6068d0e230dfdb398e6885a72c7de63c2e5c3e186f2a00052bac8b14111ff97a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:38",
+      "sequence": 25012,
+      "chapter_label": "LUK 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "Coming up at that very hour, she gave thanks to the Lord, and spoke of him to all those who were looking for redemption in Jerusalem.",
+      "ko": "마침 이 때에 나아와서 하나님께 감사하고 예루살렘의 구속됨을 바라는 모든 사람에게 이 아기에 대하여 말하니라",
+      "source_text_hash": "977ecf18efeae4116791e10380b476fcca81727807475d075c20ed64e0786b8a",
+      "translation_text_hash": "bb07ff61c1435fa126e7369963106e3a10ebdc84238333bb177ee6caacc32da8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 이 때에 나아와서 하나님께 감사하고 예루살렘의 구속됨을 바라는 모든 사람에게 이 아기에 대하여 말하니라"
+      ],
+      "raw_text_hashes": [
+        "bb07ff61c1435fa126e7369963106e3a10ebdc84238333bb177ee6caacc32da8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:39",
+      "sequence": 25013,
+      "chapter_label": "LUK 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "When they had accomplished all things that were according to the law of the Lord, they returned into Galilee, to their own city, Nazareth.",
+      "ko": "주의 율법을 좇아 모든 일을 필하고 갈릴리로 돌아가 본 동네 나사렛에 이르니라",
+      "source_text_hash": "d2fdc9ff7aeb6f269cb8e2f3edb5eb6ddbdf787fc395e0c7c71b30bc8f06118d",
+      "translation_text_hash": "6ffa34dd0338492ccb13a604887cadf2d2f039bb2bed05f32ab1294269a70a72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 율법을 좇아 모든 일을 필하고 갈릴리로 돌아가 본 동네 나사렛에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "6ffa34dd0338492ccb13a604887cadf2d2f039bb2bed05f32ab1294269a70a72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:40",
+      "sequence": 25014,
+      "chapter_label": "LUK 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "The child was growing, and was becoming strong in spirit, being filled with wisdom, and the grace of God was upon him.",
+      "ko": "아기가 자라며 강하여지고 지혜가 충족하며 하나님의 은혜가 그 위에 있더라",
+      "source_text_hash": "bf140f4c7d1262e5d61e80ba93b6fcb310d105df6b36087d373c5189cba84b9f",
+      "translation_text_hash": "84d46c8c12ec54981dbde7de6d36e8d09f09e5f9f07298f1e97e1f17b323b3c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아기가 자라며 강하여지고 지혜가 충족하며 하나님의 은혜가 그 위에 있더라"
+      ],
+      "raw_text_hashes": [
+        "84d46c8c12ec54981dbde7de6d36e8d09f09e5f9f07298f1e97e1f17b323b3c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:41",
+      "sequence": 25015,
+      "chapter_label": "LUK 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "His parents went every year to Jerusalem at the feast of the Passover.",
+      "ko": "그 부모가 해마다 유월절을 당하면 예루살렘으로 가더니",
+      "source_text_hash": "b966b0277ec4c49f432cce61f55e19d18d8e54012e208751936ebc2855effea6",
+      "translation_text_hash": "27ff32678b1d91063c9fe0e64cf94771c8f4e2277c1b79490fc3951c00b71c91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 해마다 유월절을 당하면 예루살렘으로 가더니"
+      ],
+      "raw_text_hashes": [
+        "27ff32678b1d91063c9fe0e64cf94771c8f4e2277c1b79490fc3951c00b71c91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:42",
+      "sequence": 25016,
+      "chapter_label": "LUK 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "When he was twelve years old, they went up to Jerusalem according to the custom of the feast;",
+      "ko": "예수께서 열 두살 될 때에 저희가 이 절기의 전례를 좇아 올라갔다가",
+      "source_text_hash": "97ff23f92e97e4b31c54f8d4ac7afe3497eed03f17f8216cca03dad7757bc71a",
+      "translation_text_hash": "68e5cb27861da17f4bc6fee8b305d2d17b21e94df2e00a1ef5c22976a88ab3d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 열 두살 될 때에 저희가 이 절기의 전례를 좇아 올라갔다가"
+      ],
+      "raw_text_hashes": [
+        "68e5cb27861da17f4bc6fee8b305d2d17b21e94df2e00a1ef5c22976a88ab3d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:43",
+      "sequence": 25017,
+      "chapter_label": "LUK 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "and when they had fulfilled the days, as they were returning, the boy Jesus stayed behind in Jerusalem. Joseph and his mother didn’t know it,",
+      "ko": "그 날들을 마치고 돌아갈 때에 아이 예수는 예루살렘에 머무셨더라 그 부모는 이를 알지 못하고",
+      "source_text_hash": "2347fd6c9945cc12a44c7a7fd35757c4a19ebedb8fa88ede8bb0ad71b74cc6d9",
+      "translation_text_hash": "8a4c7ba32b9231b52bde2b828c385e0c936edad91f053133989fed0adef71b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날들을 마치고 돌아갈 때에 아이 예수는 예루살렘에 머무셨더라 그 부모는 이를 알지 못하고"
+      ],
+      "raw_text_hashes": [
+        "8a4c7ba32b9231b52bde2b828c385e0c936edad91f053133989fed0adef71b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:44",
+      "sequence": 25018,
+      "chapter_label": "LUK 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "but supposing him to be in the company, they went a day’s journey; and they looked for him among their relatives and acquaintances.",
+      "ko": "동행 중에 있는 줄로 생각하고 하룻길을 간 후 친족과 아는 자 중에서 찾되",
+      "source_text_hash": "00c2c55e4fa4ad6d14f44f7b80779de4c125ec18f71d5908c721d195438b2bb4",
+      "translation_text_hash": "70319e5d72144874fa560529f51465ff70959823ce48f5902ad38c4540feaa4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동행 중에 있는 줄로 생각하고 하룻길을 간 후 친족과 아는 자 중에서 찾되"
+      ],
+      "raw_text_hashes": [
+        "70319e5d72144874fa560529f51465ff70959823ce48f5902ad38c4540feaa4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:45",
+      "sequence": 25019,
+      "chapter_label": "LUK 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "When they didn’t find him, they returned to Jerusalem, looking for him.",
+      "ko": "만나지 못하매 찾으면서 예루살렘에 돌아갔더니",
+      "source_text_hash": "62eb3d765c3f93deda73f64910d86db3817ba21227bd12a2d0e848ecf93c52b9",
+      "translation_text_hash": "19b2375ba1c4a6f78387cdfd417192b21fecd77981e3fd38feff89b9d3679872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만나지 못하매 찾으면서 예루살렘에 돌아갔더니"
+      ],
+      "raw_text_hashes": [
+        "19b2375ba1c4a6f78387cdfd417192b21fecd77981e3fd38feff89b9d3679872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:46",
+      "sequence": 25020,
+      "chapter_label": "LUK 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "After three days they found him in the temple, sitting in the middle of the teachers, both listening to them and asking them questions.",
+      "ko": "사흘 후에 성전에서 만난즉 그가 선생들 중에 앉으사 저희에게 듣기도 하시며 묻기도 하시니",
+      "source_text_hash": "dadabe8e12452b2b1b611a1730d2b880511658829834ed7a89f811889db7fe3b",
+      "translation_text_hash": "036fae1c479e7542e54de144e3a38aeb626251e6c00c30e67ddebd16d7ab569b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사흘 후에 성전에서 만난즉 그가 선생들 중에 앉으사 저희에게 듣기도 하시며 묻기도 하시니"
+      ],
+      "raw_text_hashes": [
+        "036fae1c479e7542e54de144e3a38aeb626251e6c00c30e67ddebd16d7ab569b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:47",
+      "sequence": 25021,
+      "chapter_label": "LUK 2",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 47
+        }
+      ],
+      "en": "All who heard him were amazed at his understanding and his answers.",
+      "ko": "듣는 자가 다 그 지혜와 대답을 기이히 여기더라",
+      "source_text_hash": "6fe0589713d60b49c260e1d277de9c0f9d762f794c826cda6e556e4d51f4f9a2",
+      "translation_text_hash": "cd7207cdc1be5bdc9702186a67538314c0cd4573591c5d496b30c44c3b38718b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣는 자가 다 그 지혜와 대답을 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "cd7207cdc1be5bdc9702186a67538314c0cd4573591c5d496b30c44c3b38718b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:48",
+      "sequence": 25022,
+      "chapter_label": "LUK 2",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 48
+        }
+      ],
+      "en": "When they saw him, they were astonished; and his mother said to him, “Son, why have you treated us this way? Behold, your father and I were anxiously looking for you.”",
+      "ko": "그 부모가 보고 놀라며 그 모친은 가로되 아이야 어찌하여 우리에게 이렇게 하였느냐 보라 네 아버지와 내가 근심하여 너를 찾았노라",
+      "source_text_hash": "7924682d581c53e4f584c024abf08cdcb2e3697df4338a2b3fed1fa854eb0628",
+      "translation_text_hash": "5dc3ad4622ed525301991e4f2aec632a038691071824e5d666bf0eb3de9c1143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 보고 놀라며 그 모친은 가로되 아이야 어찌하여 우리에게 이렇게 하였느냐 보라 네 아버지와 내가 근심하여 너를 찾았노라"
+      ],
+      "raw_text_hashes": [
+        "5dc3ad4622ed525301991e4f2aec632a038691071824e5d666bf0eb3de9c1143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:49",
+      "sequence": 25023,
+      "chapter_label": "LUK 2",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 49
+        }
+      ],
+      "en": "He said to them, “Why were you looking for me? Didn’t you know that I must be in my Father’s house?”",
+      "ko": "예수께서 가라사대 어찌하여 나를 찾으셨나이까 내가 내 아버지 집에 있어야 될 줄을 알지 못하셨나이까 하시니",
+      "source_text_hash": "8a756a7b2b000b3b82e6a905cdd64fa87e289b037bc8bacead1fad3abb8a63dc",
+      "translation_text_hash": "2bac4e342ea231274dde7c285463e842dc702410162cbcb9aef391ba2f568bf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 어찌하여 나를 찾으셨나이까 내가 내 아버지 집에 있어야 될 줄을 알지 못하셨나이까 하시니"
+      ],
+      "raw_text_hashes": [
+        "2bac4e342ea231274dde7c285463e842dc702410162cbcb9aef391ba2f568bf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:50",
+      "sequence": 25024,
+      "chapter_label": "LUK 2",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 50
+        }
+      ],
+      "en": "They didn’t understand the saying which he spoke to them.",
+      "ko": "양친이 그 하신 말씀을 깨닫지 못하더라",
+      "source_text_hash": "0617d6e20037e419e66133f00f643fdb11c58893d98ee281267e1df5d447cefa",
+      "translation_text_hash": "42b9ed5ab6268bb4c1e9ad8d15bcf3ade541b377737e59052a562d4fa4e4b199",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양친이 그 하신 말씀을 깨닫지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "42b9ed5ab6268bb4c1e9ad8d15bcf3ade541b377737e59052a562d4fa4e4b199"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:51",
+      "sequence": 25025,
+      "chapter_label": "LUK 2",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 51
+        }
+      ],
+      "en": "And he went down with them and came to Nazareth. He was subject to them, and his mother kept all these sayings in her heart.",
+      "ko": "예수께서 한가지로 내려가사 나사렛에 이르러 순종하여 받드시더라 그 모친은 이 모든 말을 마음에 두니라",
+      "source_text_hash": "f10beabdb3acbc4429f6527b046220f93351b2aa9454aa0e2ce53194e811fe8d",
+      "translation_text_hash": "0cf715d37190e0679f52b1ea0a3ae0675dedab8c12e23b1c84159fb167a0d072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 한가지로 내려가사 나사렛에 이르러 순종하여 받드시더라 그 모친은 이 모든 말을 마음에 두니라"
+      ],
+      "raw_text_hashes": [
+        "0cf715d37190e0679f52b1ea0a3ae0675dedab8c12e23b1c84159fb167a0d072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:2:52",
+      "sequence": 25026,
+      "chapter_label": "LUK 2",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 2,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 2,
+          "verse": 52
+        }
+      ],
+      "en": "And Jesus increased in wisdom and stature, and in favor with God and men.",
+      "ko": "예수는 그 지혜와 그 키가 자라가며 하나님과 사람에게 더 사랑스러워 가시더라",
+      "source_text_hash": "da3fd338fb1b7007517a6895ff0523ba1666f63ac5e0143251a80c8b0682e147",
+      "translation_text_hash": "f982338c4d75e57af835d818a952aee47ce41e76a7e90f653bf7c4e16b4db223",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 그 지혜와 그 키가 자라가며 하나님과 사람에게 더 사랑스러워 가시더라"
+      ],
+      "raw_text_hashes": [
+        "f982338c4d75e57af835d818a952aee47ce41e76a7e90f653bf7c4e16b4db223"
+      ]
+    }
+  ]
+}

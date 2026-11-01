@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:002",
+  "unit_ordinal": 1121,
+  "unit_label": "1TI 2",
+  "book_code": "1TI",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:2:1",
+      "sequence": 29714,
+      "chapter_label": "1TI 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "I exhort therefore, first of all, that petitions, prayers, intercessions, and givings of thanks be made for all men,",
+      "ko": "그러므로 내가 첫째로 권하노니 모든 사람을 위하여 간구와 기도와 도고와 감사를 하되",
+      "source_text_hash": "ba3ba5965e94af5540846950d405fbb9505cf2ee9b19d4c925678eb0ddf655b1",
+      "translation_text_hash": "e0bcc1dd6aad071580c0a0f7244610bcfb354a72744ae6d565e563a571249321",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 첫째로 권하노니 모든 사람을 위하여 간구와 기도와 도고와 감사를 하되"
+      ],
+      "raw_text_hashes": [
+        "e0bcc1dd6aad071580c0a0f7244610bcfb354a72744ae6d565e563a571249321"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:2",
+      "sequence": 29715,
+      "chapter_label": "1TI 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "for kings and all who are in high places, that we may lead a tranquil and quiet life in all godliness and reverence.",
+      "ko": "임금들과 높은 지위에 있는 모든 사람을 위하여 하라 이는 우리가 모든 경건과 단정한 중에 고요하고 평안한 생활을 하려 함이니라",
+      "source_text_hash": "e8c152f100ec2a9ee147c0130277da4079a10929ccfa864ab14d85c3c4b05510",
+      "translation_text_hash": "3eae4abf69a4e8ef5ec409710fd4b2c90382642eb128a8a189322f3d9ce4a53f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임금들과 높은 지위에 있는 모든 사람을 위하여 하라 이는 우리가 모든 경건과 단정한 중에 고요하고 평안한 생활을 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "3eae4abf69a4e8ef5ec409710fd4b2c90382642eb128a8a189322f3d9ce4a53f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:3",
+      "sequence": 29716,
+      "chapter_label": "1TI 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "For this is good and acceptable in the sight of God our Savior,",
+      "ko": "이것이 우리 구주 하나님 앞에 선하고 받으실만한 것이니",
+      "source_text_hash": "535267a1d07e03046c369c84343e32953b5d10017e6869242ff6c94fc0f8e940",
+      "translation_text_hash": "a5fc22221973e1c2947f57345a507fedfd8ca9ebf28b754e0d9d7c16eec57f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 우리 구주 하나님 앞에 선하고 받으실만한 것이니"
+      ],
+      "raw_text_hashes": [
+        "a5fc22221973e1c2947f57345a507fedfd8ca9ebf28b754e0d9d7c16eec57f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:4",
+      "sequence": 29717,
+      "chapter_label": "1TI 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "who desires all people to be saved and come to full knowledge of the truth.",
+      "ko": "하나님은 모든 사람이 구원을 받으며 진리를 아는데 이르기를 원하시느니라",
+      "source_text_hash": "b300e725fec699ac43dd07dce7a049dc8b07e9f0c64008cac608fe53040e3f8b",
+      "translation_text_hash": "519f64977ad9992a53dae12218862499c77545cf82dc02dc5d4ebd3daea22b24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 모든 사람이 구원을 받으며 진리를 아는데 이르기를 원하시느니라"
+      ],
+      "raw_text_hashes": [
+        "519f64977ad9992a53dae12218862499c77545cf82dc02dc5d4ebd3daea22b24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:5",
+      "sequence": 29718,
+      "chapter_label": "1TI 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For there is one God and one mediator between God and men, the man Christ Jesus,",
+      "ko": "하나님은 한 분이시요 또 하나님과 사람 사이에 중보도 한 분이시니 곧 사람이신 그리스도 예수라",
+      "source_text_hash": "cde3cb49d34f18d7fa1ebe4a2fc02fc8fa6be66f5bad2051bfed705ffbf39f59",
+      "translation_text_hash": "aa11cbb09d3ab38e912e4ade49f3badb20720896632f942625db4f66db8ce24e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 한 분이시요 또 하나님과 사람 사이에 중보도 한 분이시니 곧 사람이신 그리스도 예수라"
+      ],
+      "raw_text_hashes": [
+        "aa11cbb09d3ab38e912e4ade49f3badb20720896632f942625db4f66db8ce24e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:6",
+      "sequence": 29719,
+      "chapter_label": "1TI 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "who gave himself as a ransom for all, the testimony at the proper time,",
+      "ko": "그가 모든 사람을 위하여 자기를 속전으로 주셨으니 기약이 이르면 증거할 것이라",
+      "source_text_hash": "182b96ab47cefdefb3dec41e08405e22eaf887136c3b214e843230dfbf7be417",
+      "translation_text_hash": "d01817f8b8adf397b386926e436e433c0330c699d2918dcef9c9f7d86c887447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 모든 사람을 위하여 자기를 속전으로 주셨으니 기약이 이르면 증거할 것이라"
+      ],
+      "raw_text_hashes": [
+        "d01817f8b8adf397b386926e436e433c0330c699d2918dcef9c9f7d86c887447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:7",
+      "sequence": 29720,
+      "chapter_label": "1TI 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "to which I was appointed a preacher and an apostle—I am telling the truth in Christ, not lying—a teacher of the Gentiles in faith and truth.",
+      "ko": "이를 위하여 내가 전파하는 자와 사도로 세움을 입은 것은 참말이요 거짓말이 아니니 믿음과 진리 안에서 내가 이방인의 스승이 되었노라",
+      "source_text_hash": "bcee9128a815c8ca7ad55c7a2c34a7fbe0ec92ea0af5dc03fc628da0e45fa331",
+      "translation_text_hash": "7ad5951bf071b99db9d01de88cbbdd4b79f1737e35e57ee7efafa3d9a76fb721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 내가 전파하는 자와 사도로 세움을 입은 것은 참말이요 거짓말이 아니니 믿음과 진리 안에서 내가 이방인의 스승이 되었노라"
+      ],
+      "raw_text_hashes": [
+        "7ad5951bf071b99db9d01de88cbbdd4b79f1737e35e57ee7efafa3d9a76fb721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:8",
+      "sequence": 29721,
+      "chapter_label": "1TI 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "I desire therefore that the men in every place pray, lifting up holy hands without anger and doubting.",
+      "ko": "그러므로 각처에서 남자들이 분노와 다툼이 없이 거룩한 손을 들어 기도하기를 원하노라",
+      "source_text_hash": "ab9cf02993834563e6d4698682fbe99dd04dc5dcfbf6407d1c1d0bd725efa690",
+      "translation_text_hash": "8b327076c3fb9b2118f053236e327c6b6c336df36ccfaaf505ec0b74d6e971f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 각처에서 남자들이 분노와 다툼이 없이 거룩한 손을 들어 기도하기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "8b327076c3fb9b2118f053236e327c6b6c336df36ccfaaf505ec0b74d6e971f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:9",
+      "sequence": 29722,
+      "chapter_label": "1TI 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "In the same way, that women also adorn themselves in decent clothing, with modesty and propriety, not with braided hair, gold, pearls, or expensive clothing,",
+      "ko": "또 이와 같이 여자들도 아담한 옷을 입으며 염치와 정절로 자기를 단장하고 땋은 머리와 금이나 진주나 값진 옷으로 하지 말고",
+      "source_text_hash": "85ce46c1e08eda1c1854c009d05480b11b79a5c7173ba206cff9f15f68d5c844",
+      "translation_text_hash": "4af00c00b28dbdd1189037db116d13d947f82afa38febf13da36e46fc4ca723d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이와 같이 여자들도 아담한 옷을 입으며 염치와 정절로 자기를 단장하고 땋은 머리와 금이나 진주나 값진 옷으로 하지 말고"
+      ],
+      "raw_text_hashes": [
+        "4af00c00b28dbdd1189037db116d13d947f82afa38febf13da36e46fc4ca723d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:10",
+      "sequence": 29723,
+      "chapter_label": "1TI 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "but with good works, which is appropriate for women professing godliness.",
+      "ko": "오직 선행으로 하기를 원하라 이것이 하나님을 공경한다 하는 자들에게 마땅한 것이니라",
+      "source_text_hash": "ce41e83578f910ae822a361f513e4ab5e9dcc3ab800f45fdd1873b41f14fd6e7",
+      "translation_text_hash": "13246af74d69ac7c95c7f07636b936f9b8852ccee57820d621e65f3bc1282e77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 선행으로 하기를 원하라 이것이 하나님을 공경한다 하는 자들에게 마땅한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "13246af74d69ac7c95c7f07636b936f9b8852ccee57820d621e65f3bc1282e77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:11",
+      "sequence": 29724,
+      "chapter_label": "1TI 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Let a woman learn in quietness with full submission.",
+      "ko": "여자는 일절 순종함으로 종용히 배우라",
+      "source_text_hash": "43ebe26cf5c017b2ed0e515455899e42e717b5bedb0c1b6eb6a039749b6d1d1a",
+      "translation_text_hash": "385819ff122e0d8e0e461b50ddc08d6eba5e94437945a961680788a9ed65b544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자는 일절 순종함으로 종용히 배우라"
+      ],
+      "raw_text_hashes": [
+        "385819ff122e0d8e0e461b50ddc08d6eba5e94437945a961680788a9ed65b544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:12",
+      "sequence": 29725,
+      "chapter_label": "1TI 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "But I don’t permit a woman to teach, nor to exercise authority over a man, but to be in quietness.",
+      "ko": "여자의 가르치는 것과 남자를 주관하는 것을 허락지 아니하노니 오직 종용할찌니라",
+      "source_text_hash": "f5f601ba3d06a5c00e9843a79197234a1605b7ddd5ed5c16a8d5b394f0d07ff6",
+      "translation_text_hash": "5917660e98b7a9abab558e477c740db21fb50a9e7015e7c202d196153a3160e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자의 가르치는 것과 남자를 주관하는 것을 허락지 아니하노니 오직 종용할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5917660e98b7a9abab558e477c740db21fb50a9e7015e7c202d196153a3160e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:13",
+      "sequence": 29726,
+      "chapter_label": "1TI 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "For Adam was formed first, then Eve.",
+      "ko": "이는 아담이 먼저 지음을 받고 이와가 그 후며",
+      "source_text_hash": "51987ef3b051783190e25ad8b174efcc6608778bdfc563aa6ff5964fa92295cb",
+      "translation_text_hash": "46a82f267444970f8ca687eca92a655790d1a0de1767272230a127caecd5e362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아담이 먼저 지음을 받고 이와가 그 후며"
+      ],
+      "raw_text_hashes": [
+        "46a82f267444970f8ca687eca92a655790d1a0de1767272230a127caecd5e362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:14",
+      "sequence": 29727,
+      "chapter_label": "1TI 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Adam wasn’t deceived, but the woman, being deceived, has fallen into disobedience;",
+      "ko": "아담이 꾀임을 보지 아니하고 여자가 꾀임을 보아 죄에 빠졌음이니라",
+      "source_text_hash": "36494ca2e407d03fee252d612b8a545647feaa6bb835216ba14aee8ea3ce5823",
+      "translation_text_hash": "740322d91497abc6e3633f5674248d48de5e411660b609f419684a231298f303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아담이 꾀임을 보지 아니하고 여자가 꾀임을 보아 죄에 빠졌음이니라"
+      ],
+      "raw_text_hashes": [
+        "740322d91497abc6e3633f5674248d48de5e411660b609f419684a231298f303"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:2:15",
+      "sequence": 29728,
+      "chapter_label": "1TI 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "but she will be saved through her childbearing, if they continue in faith, love, and holiness with sobriety.",
+      "ko": "그러나 여자들이 만일 정절로써 믿음과 사랑과 거룩함에 거하면 그 해산함으로 구원을 얻으리라",
+      "source_text_hash": "2f09d23203b42dd1ef71698ed0bfe58b10ff2d5f8c0cf28f951405b14253e3d2",
+      "translation_text_hash": "4f761edb5801a7bd28982d0d6ce2f75338b45a5e0ff3ba20fca2346b0ab5902a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 여자들이 만일 정절로써 믿음과 사랑과 거룩함에 거하면 그 해산함으로 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "4f761edb5801a7bd28982d0d6ce2f75338b45a5e0ff3ba20fca2346b0ab5902a"
+      ]
+    }
+  ]
+}

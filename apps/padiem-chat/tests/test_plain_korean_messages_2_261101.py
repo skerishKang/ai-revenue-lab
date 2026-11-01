@@ -34,7 +34,7 @@ def test_visible_error_copy_has_no_embedded_technical_code():
 
 def test_reference_codes_are_separate_and_bounded():
     for path in (CHAT / "calendar.js", CHAT / "admin-models.js",
-                 CHAT / "util-menu.js", QUOTE / "quote-drive-ui.js",
+                 QUOTE / "quote-drive-ui.js",
                  QUOTE / "app.js"):
         text = path.read_text(encoding="utf-8")
         assert 'className = "error-code"' in text or '"error-code"' in text
@@ -48,3 +48,11 @@ def test_util_does_not_display_arbitrary_server_error_text():
     assert "data?.error?.message" not in api
     assert 'error.code = typeof data?.error?.code === "string"' in api
     assert "GEN_ERROR_COPY[res.status]" in api
+
+
+def test_util_generation_does_not_show_reference_codes():
+    source = (CHAT / "util-menu.js").read_text(encoding="utf-8")
+    failure = source.split("function showGenerationFailure(", 1)[1].split("function retryButton(", 1)[0]
+    assert "참고 코드" not in failure
+    assert "error.code" not in failure
+    assert "generationFailureText(error)" in failure

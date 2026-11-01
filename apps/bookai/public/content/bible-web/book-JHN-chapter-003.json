@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:003",
+  "unit_ordinal": 1000,
+  "unit_label": "JHN 3",
+  "book_code": "JHN",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:3:1",
+      "sequence": 26121,
+      "chapter_label": "JHN 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now there was a man of the Pharisees named Nicodemus, a ruler of the Jews.",
+      "ko": "바리새인 중에 니고데모라 하는 사람이 있으니 유대인의 관원이라",
+      "source_text_hash": "c1014c1ce6496c0da18d6965dbba8ee816bbe74dd2cf288353ea25f22c092837",
+      "translation_text_hash": "dc03cdb5db11afa40e5159564edf66c601f0fa5bf7e1eba6701d6d480e8f7012",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인 중에 니고데모라 하는 사람이 있으니 유대인의 관원이라"
+      ],
+      "raw_text_hashes": [
+        "dc03cdb5db11afa40e5159564edf66c601f0fa5bf7e1eba6701d6d480e8f7012"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:2",
+      "sequence": 26122,
+      "chapter_label": "JHN 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "He came to Jesus by night and said to him, “Rabbi, we know that you are a teacher come from God, for no one can do these signs that you do, unless God is with him.”",
+      "ko": "그가 밤에 예수께 와서 가로되 랍비여 우리가 당신은 하나님께로서 오신 선생인줄 아나이다 하나님이 함께 하시지 아니하시면 당신의 행하시는 이 표적을 아무라도 할 수 없음이니이다",
+      "source_text_hash": "b42f8dcdd8b3913cdfd03f19e5806e050f0d55b50bc52f9ae82d0d5b18bde45b",
+      "translation_text_hash": "2bda8d7334e0cf267e24d0d926273b0dd1ec418d42b580a5d0e4859eedc02487",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 밤에 예수께 와서 가로되 랍비여 우리가 당신은 하나님께로서 오신 선생인줄 아나이다 하나님이 함께 하시지 아니하시면 당신의 행하시는 이 표적을 아무라도 할 수 없음이니이다"
+      ],
+      "raw_text_hashes": [
+        "2bda8d7334e0cf267e24d0d926273b0dd1ec418d42b580a5d0e4859eedc02487"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:3",
+      "sequence": 26123,
+      "chapter_label": "JHN 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus answered him, “Most certainly I tell you, unless one is born anew, he can’t see God’s Kingdom.”",
+      "ko": "예수께서 대답하여 가라사대 진실로 진실로 네게 이르노니 사람이 거듭나지 아니하면 하나님 나라를 볼수 없느니라",
+      "source_text_hash": "e593d3333ee5172e5cdaf3b66e68c3c390b9e4761fa5894bcdb93e3ffb0c187c",
+      "translation_text_hash": "8d0fae5738134b5d6e25b9a6d560d0957e84cdfcc25e1d6cd84f168f5f5f2c9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 진실로 진실로 네게 이르노니 사람이 거듭나지 아니하면 하나님 나라를 볼수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8d0fae5738134b5d6e25b9a6d560d0957e84cdfcc25e1d6cd84f168f5f5f2c9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:4",
+      "sequence": 26124,
+      "chapter_label": "JHN 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Nicodemus said to him, “How can a man be born when he is old? Can he enter a second time into his mother’s womb and be born?”",
+      "ko": "니고데모가 가로되 사람이 늙으면 어떻게 날 수 있삽나이까 두번째 모태에 들어갔다가 날 수 있삽나이까",
+      "source_text_hash": "93052427c9fee9ffa557e92338db0a3f7b61e8516da0e23df861a6bc3768767b",
+      "translation_text_hash": "8dbccccf917b54416b3c92bee745f4e74d8b02a4eb968eb1f0b5650cb6eadf60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "니고데모가 가로되 사람이 늙으면 어떻게 날 수 있삽나이까 두번째 모태에 들어갔다가 날 수 있삽나이까"
+      ],
+      "raw_text_hashes": [
+        "8dbccccf917b54416b3c92bee745f4e74d8b02a4eb968eb1f0b5650cb6eadf60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:5",
+      "sequence": 26125,
+      "chapter_label": "JHN 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus answered, “Most certainly I tell you, unless one is born of water and Spirit, he can’t enter into God’s Kingdom.",
+      "ko": "예수께서 대답하시되 진실로 진실로 네게 이르노니 사람이 물과 성령으로 나지 아니하면 하나님 나라에 들어갈 수 없느니라",
+      "source_text_hash": "a1e99611aa58b9056703802b1bd34da6d736d1b9f1da11054cf41de47ae8317a",
+      "translation_text_hash": "473c4b91488cd38801ff89cfab204f7209f59f1fc60b5c9f4bc1ef24f71b4c19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 진실로 진실로 네게 이르노니 사람이 물과 성령으로 나지 아니하면 하나님 나라에 들어갈 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "473c4b91488cd38801ff89cfab204f7209f59f1fc60b5c9f4bc1ef24f71b4c19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:6",
+      "sequence": 26126,
+      "chapter_label": "JHN 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "That which is born of the flesh is flesh. That which is born of the Spirit is spirit.",
+      "ko": "육으로 난 것은 육이요 성령으로 난 것은 영이니",
+      "source_text_hash": "d4c35b1103e88342489bb2bceb88ece1600cd9a28301339e93c41d3f48af9e41",
+      "translation_text_hash": "5608c9e3a1c7a346e50840e3594e124337ae68ed4894f193373286bdf5f83385",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육으로 난 것은 육이요 성령으로 난 것은 영이니"
+      ],
+      "raw_text_hashes": [
+        "5608c9e3a1c7a346e50840e3594e124337ae68ed4894f193373286bdf5f83385"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:7",
+      "sequence": 26127,
+      "chapter_label": "JHN 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Don’t marvel that I said to you, ‘You must all be born anew.’",
+      "ko": "내가 네게 거듭나야 하겠다 하는 말을 기이히 여기지 말라",
+      "source_text_hash": "d851cf6f869656565d42d6376c2099ba8707b3b48434204c4053bd9baa215270",
+      "translation_text_hash": "b5f8a5054a5077821f84aac7e1eb81ce43f0937dc0a54d5197d5cfdd07f957ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 거듭나야 하겠다 하는 말을 기이히 여기지 말라"
+      ],
+      "raw_text_hashes": [
+        "b5f8a5054a5077821f84aac7e1eb81ce43f0937dc0a54d5197d5cfdd07f957ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:8",
+      "sequence": 26128,
+      "chapter_label": "JHN 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "The windblows where it wants to, and you hear its sound, but don’t know where it comes from and where it is going. So is everyone who is born of the Spirit.”",
+      "ko": "바람이 임의로 불매 네가 그 소리를 들어도 어디서 오며 어디로 가는지 알지 못하나니 성령으로 난 사람은 다 이러하니라",
+      "source_text_hash": "c5aa99af1186df270c444af97fba90c4602cdaaf60f26591381d074877e89d62",
+      "translation_text_hash": "99fabb94e8e9fe54c1efbde2be6bb2ab8acba96f5d808474a36e3eccce796097",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바람이 임의로 불매 네가 그 소리를 들어도 어디서 오며 어디로 가는지 알지 못하나니 성령으로 난 사람은 다 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "99fabb94e8e9fe54c1efbde2be6bb2ab8acba96f5d808474a36e3eccce796097"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:9",
+      "sequence": 26129,
+      "chapter_label": "JHN 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Nicodemus answered him, “How can these things be?”",
+      "ko": "니고데모가 대답하여 가로되 어찌 이러한 일이 있을 수 있나이까",
+      "source_text_hash": "e088e5905671c96764f124375da0c9eeecacd8cb043e215388d50d3bdc4243a6",
+      "translation_text_hash": "61301e8c7eb7ba18406a59d6dcd8389b879c13ef787bf62b1ddbff9db2e6c95e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "니고데모가 대답하여 가로되 어찌 이러한 일이 있을 수 있나이까"
+      ],
+      "raw_text_hashes": [
+        "61301e8c7eb7ba18406a59d6dcd8389b879c13ef787bf62b1ddbff9db2e6c95e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:10",
+      "sequence": 26130,
+      "chapter_label": "JHN 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus answered him, “Are you the teacher of Israel, and don’t understand these things?",
+      "ko": "예수께서 가라사대 너는 이스라엘의 선생으로서 이러한 일을 알지 못하느냐",
+      "source_text_hash": "377046e393eca31ee2217918d0e8310960e7cbde77a7d02ac1f0d65deb650475",
+      "translation_text_hash": "5aeecef37b77f08b9b2c55796fc0588e306cf57aed52ce664af08de1283863de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너는 이스라엘의 선생으로서 이러한 일을 알지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "5aeecef37b77f08b9b2c55796fc0588e306cf57aed52ce664af08de1283863de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:11",
+      "sequence": 26131,
+      "chapter_label": "JHN 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Most certainly I tell you, we speak that which we know and testify of that which we have seen, and you don’t receive our witness.",
+      "ko": "진실로 진실로 네게 이르노니 우리 아는 것을 말하고 본 것을 증거하노라 그러나 너희가 우리 증거를 받지 아니하는도다",
+      "source_text_hash": "9dd5e8991c1dd3159d9d90cb0bbb628584ee8f621b06fce5e61e67038735b753",
+      "translation_text_hash": "09e8bac853fafc40a0a76851dcc6f5ad3b1cee2b2dd9722b032fdbe8cf567d4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 진실로 네게 이르노니 우리 아는 것을 말하고 본 것을 증거하노라 그러나 너희가 우리 증거를 받지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "09e8bac853fafc40a0a76851dcc6f5ad3b1cee2b2dd9722b032fdbe8cf567d4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:12",
+      "sequence": 26132,
+      "chapter_label": "JHN 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "If I told you earthly things and you don’t believe, how will you believe if I tell you heavenly things?",
+      "ko": "내가 땅의 일을 말하여도 너희가 믿지 아니하거든 하물며 하늘 일을 말하면 어떻게 믿겠느냐",
+      "source_text_hash": "1e1221842338d8aa7973fade6200bf02884a516ed6679fe8634f78302716a8f5",
+      "translation_text_hash": "1f1ed2e8ab4320eb99339e80d8d3fcf977a153c72e87495c33f9d625c76fabe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅의 일을 말하여도 너희가 믿지 아니하거든 하물며 하늘 일을 말하면 어떻게 믿겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1f1ed2e8ab4320eb99339e80d8d3fcf977a153c72e87495c33f9d625c76fabe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:13",
+      "sequence": 26133,
+      "chapter_label": "JHN 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "No one has ascended into heaven but he who descended out of heaven, the Son of Man, who is in heaven.",
+      "ko": "하늘에서 내려온 자 곧 인자 외에는 하늘에 올라간 자가 없느니라",
+      "source_text_hash": "1df68e805acb0e565a0a4688e1a26d634f6b8a491c4b178642d2e667d122bc03",
+      "translation_text_hash": "d8cd591211786e5f6670325527a976e9d08a34b9712d43f303deb1f64d8610b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에서 내려온 자 곧 인자 외에는 하늘에 올라간 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "d8cd591211786e5f6670325527a976e9d08a34b9712d43f303deb1f64d8610b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:14",
+      "sequence": 26134,
+      "chapter_label": "JHN 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "As Moses lifted up the serpent in the wilderness, even so must the Son of Man be lifted up,",
+      "ko": "모세가 광야에서 뱀을 든것 같이 인자도 들려야 하리니",
+      "source_text_hash": "cc491e4f18e3bc545a86c813d8cf8b31a03dd9bd404bbe5b8b75dc0de2ec9ff4",
+      "translation_text_hash": "a766ae365843ecb52b5b00b956fd9f69a9f79d5636912db9278c1d1aa5ffecb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 광야에서 뱀을 든것 같이 인자도 들려야 하리니"
+      ],
+      "raw_text_hashes": [
+        "a766ae365843ecb52b5b00b956fd9f69a9f79d5636912db9278c1d1aa5ffecb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:15",
+      "sequence": 26135,
+      "chapter_label": "JHN 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "that whoever believes in him should not perish, but have eternal life.",
+      "ko": "이는 저를 믿는 자마다 영생을 얻게 하려 하심이니라",
+      "source_text_hash": "89f76f2ffa768608c09113e6a1da710a35849cb2f4ae111be5305679087eaf9c",
+      "translation_text_hash": "af1c81ec179c0eaa0391fc024ad175b221f61fe4e4edb8320f83cd95e7c9f273",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 저를 믿는 자마다 영생을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "af1c81ec179c0eaa0391fc024ad175b221f61fe4e4edb8320f83cd95e7c9f273"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:16",
+      "sequence": 26136,
+      "chapter_label": "JHN 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "For God so loved the world, that he gave his only bornSon, that whoever believes in him should not perish, but have eternal life.",
+      "ko": "하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 저를 믿는 자마다 멸망치 않고 영생을 얻게 하려 하심이니라",
+      "source_text_hash": "11247f72e65b7cd0229b12a5a962a3c0042a8839ae037bf7597f9ff9dd6cf1ac",
+      "translation_text_hash": "f171a68f79e967d55d421a7ad781181c0fe1c922b18f28a55769ffa57394d467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 저를 믿는 자마다 멸망치 않고 영생을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "f171a68f79e967d55d421a7ad781181c0fe1c922b18f28a55769ffa57394d467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:17",
+      "sequence": 26137,
+      "chapter_label": "JHN 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "For God didn’t send his Son into the world to judge the world, but that the world should be saved through him.",
+      "ko": "하나님이 그 아들을 세상에 보내신 것은 세상을 심판하려 하심이 아니요 저로 말미암아 세상이 구원을 받게하려 하심이라",
+      "source_text_hash": "50dadb9d5ca3dc6a275a204de5a0be573c2095e32297e8268bdc45043ce783ee",
+      "translation_text_hash": "e6b40d7cdb916f8686d48736b7e1e2bb01af5b07d0addb4126cc6d13f38d2d48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 아들을 세상에 보내신 것은 세상을 심판하려 하심이 아니요 저로 말미암아 세상이 구원을 받게하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "e6b40d7cdb916f8686d48736b7e1e2bb01af5b07d0addb4126cc6d13f38d2d48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:18",
+      "sequence": 26138,
+      "chapter_label": "JHN 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "He who believes in him is not judged. He who doesn’t believe has been judged already, because he has not believed in the name of the only born Son of God.",
+      "ko": "저를 믿는 자는 심판을 받지 아니하는 것이요 믿지 아니하는 자는 하나님의 독생자의 이름을 믿지 아니하므로 벌써 심판을 받은 것이니라",
+      "source_text_hash": "d2d9bc396c27036d537612e45c2de960f8f6e0594dcf905f468e163a8d8e7b87",
+      "translation_text_hash": "ab2bf5afd0431b2a63866656a1bac4a6d6b7d7e0b03c7c89c76481d030fdf323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 믿는 자는 심판을 받지 아니하는 것이요 믿지 아니하는 자는 하나님의 독생자의 이름을 믿지 아니하므로 벌써 심판을 받은 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ab2bf5afd0431b2a63866656a1bac4a6d6b7d7e0b03c7c89c76481d030fdf323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:19",
+      "sequence": 26139,
+      "chapter_label": "JHN 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "This is the judgment, that the light has come into the world, and men loved the darkness rather than the light, for their works were evil.",
+      "ko": "그 정죄는 이것이니 곧 빛이 세상에 왔으되 사람들이 자기 행위가 악하므로 빛보다 어두움을 더 사랑한 것이니라",
+      "source_text_hash": "011918c6360ffbbaa235085cd9fa91c3ab115dce503b2aba05ccf2d43fb964ea",
+      "translation_text_hash": "aa7f89ff970849c88f4ef933ce9e3573630f03724038ea1b981eefc7465aaafd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 정죄는 이것이니 곧 빛이 세상에 왔으되 사람들이 자기 행위가 악하므로 빛보다 어두움을 더 사랑한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "aa7f89ff970849c88f4ef933ce9e3573630f03724038ea1b981eefc7465aaafd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:20",
+      "sequence": 26140,
+      "chapter_label": "JHN 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "For everyone who does evil hates the light and doesn’t come to the light, lest his works would be exposed.",
+      "ko": "악을 행하는 자마다 빛을 미워하여 빛으로 오지 아니하나니 이는 그 행위가 드러날까 함이요",
+      "source_text_hash": "a76cec629d54a1d6ae5f9cc773a0068961fb0a72433acd069ce0a1db3043ef40",
+      "translation_text_hash": "2249632f5bdf30a686d6a74533f8935826ace71d5846009b9046d957fe607643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악을 행하는 자마다 빛을 미워하여 빛으로 오지 아니하나니 이는 그 행위가 드러날까 함이요"
+      ],
+      "raw_text_hashes": [
+        "2249632f5bdf30a686d6a74533f8935826ace71d5846009b9046d957fe607643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:21",
+      "sequence": 26141,
+      "chapter_label": "JHN 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "But he who does the truth comes to the light, that his works may be revealed, that they have been done in God.”",
+      "ko": "진리를 좇는 자는 빛으로 오나니 이는 그 행위가 하나님 안에서 행한 것임을 나타내려 함이라 하시니라",
+      "source_text_hash": "d2fdf40420c7aeb2586420e420e18e42ab47ba89f3e7192ad2bc864acf590a54",
+      "translation_text_hash": "9a87ab8acc5c2aac47fbd3d925e9f6d4e17b820a09fbae78f0fb60076ed955ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리를 좇는 자는 빛으로 오나니 이는 그 행위가 하나님 안에서 행한 것임을 나타내려 함이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9a87ab8acc5c2aac47fbd3d925e9f6d4e17b820a09fbae78f0fb60076ed955ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:22",
+      "sequence": 26142,
+      "chapter_label": "JHN 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "After these things, Jesus came with his disciples into the land of Judea. He stayed there with them and baptized.",
+      "ko": "이 후에 예수께서 제자들과 유대 땅으로 가서 거기 함께 유하시며 세례를 주시더라",
+      "source_text_hash": "837464be18fded13f01f1015bf5b9f9de48fad8a9a413d083759331a51e88526",
+      "translation_text_hash": "cf727f26cfbbfd9c5b148ebd8b3af0031390d25d976da7b7e45ed4a92579229c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 예수께서 제자들과 유대 땅으로 가서 거기 함께 유하시며 세례를 주시더라"
+      ],
+      "raw_text_hashes": [
+        "cf727f26cfbbfd9c5b148ebd8b3af0031390d25d976da7b7e45ed4a92579229c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:23",
+      "sequence": 26143,
+      "chapter_label": "JHN 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "John also was baptizing in Enon near Salim, because there was much water there. They came and were baptized;",
+      "ko": "요한도 살렘 가까운 애논에서 세례를 주니 거기 물들이 많음이라 사람들이 와서 세례를 받더라",
+      "source_text_hash": "d3ee40cb29e3cf80228f67d82b2f36a0108fd353313ab25525d9fe722d3ba800",
+      "translation_text_hash": "7af08e28a21c89c82a1b25d29cb866533ad06719fde153d3ccd221346fe484ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한도 살렘 가까운 애논에서 세례를 주니 거기 물들이 많음이라 사람들이 와서 세례를 받더라"
+      ],
+      "raw_text_hashes": [
+        "7af08e28a21c89c82a1b25d29cb866533ad06719fde153d3ccd221346fe484ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:24",
+      "sequence": 26144,
+      "chapter_label": "JHN 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "for John was not yet thrown into prison.",
+      "ko": "요한이 아직 옥에 갇히지 아니하였더라",
+      "source_text_hash": "7501ef0f5e38a638a8eb836da686fbf4beaa9858d4f0a44b4a2647e951f79d07",
+      "translation_text_hash": "91cd7ebe8d27ae00c73ac44972f9efea69b26b95161191b05e1eb2c4ece31e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 아직 옥에 갇히지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "91cd7ebe8d27ae00c73ac44972f9efea69b26b95161191b05e1eb2c4ece31e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:25",
+      "sequence": 26145,
+      "chapter_label": "JHN 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore a dispute arose on the part of John’s disciples with some Jews about purification.",
+      "ko": "이에 요한의 제자 중에서 한 유대인으로 더불어 결례에 대하여 변론이 되었더니",
+      "source_text_hash": "7348818b6955e8bc17452e262a0da19a6fc8091468c28423e205012b1302f6d7",
+      "translation_text_hash": "280ebbfb365f645a8a2d5fdcdeda7674b57571c47fe53b7ead24edb174f2b874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 요한의 제자 중에서 한 유대인으로 더불어 결례에 대하여 변론이 되었더니"
+      ],
+      "raw_text_hashes": [
+        "280ebbfb365f645a8a2d5fdcdeda7674b57571c47fe53b7ead24edb174f2b874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:26",
+      "sequence": 26146,
+      "chapter_label": "JHN 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "They came to John and said to him, “Rabbi, he who was with you beyond the Jordan, to whom you have testified, behold, he baptizes, and everyone is coming to him.”",
+      "ko": "저희가 요한에게 와서 가로되 랍비여 선생님과 함께 요단강 저편에 있던 자 곧 선생님이 증거하시던 자가 세례를 주매 사람이 다 그에게로 가더이다",
+      "source_text_hash": "4c2e8d3855092ac460ae682ab63cd77f61c1b9c222743842561181fbd5a50c3a",
+      "translation_text_hash": "26b37f35937467e893139dfcf9e174afe73b277d167550d356b6541f2698bca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 요한에게 와서 가로되 랍비여 선생님과 함께 요단강 저편에 있던 자 곧 선생님이 증거하시던 자가 세례를 주매 사람이 다 그에게로 가더이다"
+      ],
+      "raw_text_hashes": [
+        "26b37f35937467e893139dfcf9e174afe73b277d167550d356b6541f2698bca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:27",
+      "sequence": 26147,
+      "chapter_label": "JHN 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "John answered, “A man can receive nothing unless it has been given him from heaven.",
+      "ko": "요한이 대답하여 가로되 만일 하늘에서 주신바 아니면 사람이 아무 것도 받을 수 없느니라",
+      "source_text_hash": "8a3a03a7ced6ab5aeff85745ebc1ddebc4aaf3bdf09acbb9b9bfda2012eb2dfd",
+      "translation_text_hash": "e97202f24a5614627e4390e5033f442212a51f7951d7fb4ae13af34a0ff0f622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 대답하여 가로되 만일 하늘에서 주신바 아니면 사람이 아무 것도 받을 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "e97202f24a5614627e4390e5033f442212a51f7951d7fb4ae13af34a0ff0f622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:28",
+      "sequence": 26148,
+      "chapter_label": "JHN 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "You yourselves testify that I said, ‘I am not the Christ,’ but, ‘I have been sent before him.’",
+      "ko": "나의 말한바 나는 그리스도가 아니요 그의 앞에 보내심을 받은 자라고 한 것을 증거할 자는 너희니라",
+      "source_text_hash": "a1b0290a9af11bc3df411e9c1f06ea10bdee26b7d3959d6711901ddb160253f7",
+      "translation_text_hash": "a856f16077fb7929e22902d6bccef01e3c1eee03fdd0e6467995e35313da9ed4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 말한바 나는 그리스도가 아니요 그의 앞에 보내심을 받은 자라고 한 것을 증거할 자는 너희니라"
+      ],
+      "raw_text_hashes": [
+        "a856f16077fb7929e22902d6bccef01e3c1eee03fdd0e6467995e35313da9ed4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:29",
+      "sequence": 26149,
+      "chapter_label": "JHN 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "He who has the bride is the bridegroom; but the friend of the bridegroom, who stands and hears him, rejoices greatly because of the bridegroom’s voice. Therefore my joy is made full.",
+      "ko": "신부를 취하는 자는 신랑이나 서서 신랑의 음성을 듣는 친구가 크게 기뻐하나니 나는 이러한 기쁨이 충만하였노라",
+      "source_text_hash": "f3685da5e54ed1a720b5bf0652bb337a946e1bfe8ec7a5f6cde3104fbb363742",
+      "translation_text_hash": "48c288f47daee6404812cb87d534cb3f79f89fa1949047da17be87ff9978995b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신부를 취하는 자는 신랑이나 서서 신랑의 음성을 듣는 친구가 크게 기뻐하나니 나는 이러한 기쁨이 충만하였노라"
+      ],
+      "raw_text_hashes": [
+        "48c288f47daee6404812cb87d534cb3f79f89fa1949047da17be87ff9978995b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:30",
+      "sequence": 26150,
+      "chapter_label": "JHN 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "He must increase, but I must decrease.",
+      "ko": "그는 흥하여야 하겠고 나는 쇠하여야 하리라 하니라",
+      "source_text_hash": "1a292d853327d042d3331f85c2b7816e82903a6391c33b0f49fa26da4bf789de",
+      "translation_text_hash": "7c7be252afada3e504d73becbf3e7742c8d449b3e8cead6017364ffec3c40083",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 흥하여야 하겠고 나는 쇠하여야 하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "7c7be252afada3e504d73becbf3e7742c8d449b3e8cead6017364ffec3c40083"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:31",
+      "sequence": 26151,
+      "chapter_label": "JHN 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "“He who comes from above is above all. He who is from the earth belongs to the earth and speaks of the earth. He who comes from heaven is above all.",
+      "ko": "위로부터 오시는 이는 만물 위에 계시고 땅에서 난 이는 땅에 속하여 땅에 속한 것을 말하느니라 하늘로서 오시는 이는 만물 위에 계시나니",
+      "source_text_hash": "e49eb878005ae3ca404570cfbe36fb30ba4714bfde90cf4db9f3dfa7b33cc999",
+      "translation_text_hash": "dedc787f497e09bc7f7605c25c0084c79e01dfd7183a40e314431f462ee08433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "위로부터 오시는 이는 만물 위에 계시고 땅에서 난 이는 땅에 속하여 땅에 속한 것을 말하느니라 하늘로서 오시는 이는 만물 위에 계시나니"
+      ],
+      "raw_text_hashes": [
+        "dedc787f497e09bc7f7605c25c0084c79e01dfd7183a40e314431f462ee08433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:32",
+      "sequence": 26152,
+      "chapter_label": "JHN 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "What he has seen and heard, of that he testifies; and no one receives his witness.",
+      "ko": "그가 그 보고 들은 것을 증거하되 그의 증거를 받는 이가 없도다",
+      "source_text_hash": "a98691e43e4fc60e10bb9fa0d99f9e95fb9aa20ec1fc73e39e48c2a2ce50b951",
+      "translation_text_hash": "a6ed0b8b6e208d932a66982e4f24594676a7cd65e9aedf91db749d72139c1829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 보고 들은 것을 증거하되 그의 증거를 받는 이가 없도다"
+      ],
+      "raw_text_hashes": [
+        "a6ed0b8b6e208d932a66982e4f24594676a7cd65e9aedf91db749d72139c1829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:33",
+      "sequence": 26153,
+      "chapter_label": "JHN 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "He who has received his witness has set his seal to this, that God is true.",
+      "ko": "그의 증거를 받는 이는 하나님을 참되시다 하여 인쳤느니라",
+      "source_text_hash": "156f5a277326abf155e5d8c34ea8e7fcefc6ac794888423621b1352c3814b5b5",
+      "translation_text_hash": "243d75f29d9acdebd8f9ccfcbf8b1f0d50d6c7deea7b9d82b224b6b036818c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 증거를 받는 이는 하나님을 참되시다 하여 인쳤느니라"
+      ],
+      "raw_text_hashes": [
+        "243d75f29d9acdebd8f9ccfcbf8b1f0d50d6c7deea7b9d82b224b6b036818c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:34",
+      "sequence": 26154,
+      "chapter_label": "JHN 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "For he whom God has sent speaks the words of God; for God gives the Spirit without measure.",
+      "ko": "하나님의 보내신 이는 하나님의 말씀을 하나니 이는 하나님이 성령을 한량 없이 주심이니라",
+      "source_text_hash": "e516ec73fd95a03d06ee5f1c6d730136a01d5720efd3abdc7da511d8de2fe00f",
+      "translation_text_hash": "c7a74a1d91135620c2a85b11583325845aa73d9a127ba8bc3ebc4e55341c55f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 보내신 이는 하나님의 말씀을 하나니 이는 하나님이 성령을 한량 없이 주심이니라"
+      ],
+      "raw_text_hashes": [
+        "c7a74a1d91135620c2a85b11583325845aa73d9a127ba8bc3ebc4e55341c55f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:35",
+      "sequence": 26155,
+      "chapter_label": "JHN 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "The Father loves the Son, and has given all things into his hand.",
+      "ko": "아버지께서 아들을 사랑하사 만물을 다 그 손에 주셨으니",
+      "source_text_hash": "defc6c519948527f1b993ad663d9fc1d220af6b301a51db36c56f64bebc2237e",
+      "translation_text_hash": "dbffb59829f6ee2c98eeba01f856c850ca2410ccef45d9cf9e4514dc6d5bc597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 아들을 사랑하사 만물을 다 그 손에 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "dbffb59829f6ee2c98eeba01f856c850ca2410ccef45d9cf9e4514dc6d5bc597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:3:36",
+      "sequence": 26156,
+      "chapter_label": "JHN 3",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 3,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 3,
+          "verse": 36
+        }
+      ],
+      "en": "One who believes in the Son has eternal life, but one who disobeys the Son won’t see life, but the wrath of God remains on him.”",
+      "ko": "아들을 믿는 자는 영생이 있고 아들을 순종치 아니하는 자는 영생을 보지 못하고 도리어 하나님의 진노가 그 위에 머물러 있느니라",
+      "source_text_hash": "4e577fb45f54833e3dfc1a7d1867ca93ee7bceea7fe7a4af0d5184e6a4c8839a",
+      "translation_text_hash": "25135cf285a5032e2bff88d71097db7704f04b080f9af4b9ed01c3faaeb4f43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들을 믿는 자는 영생이 있고 아들을 순종치 아니하는 자는 영생을 보지 못하고 도리어 하나님의 진노가 그 위에 머물러 있느니라"
+      ],
+      "raw_text_hashes": [
+        "25135cf285a5032e2bff88d71097db7704f04b080f9af4b9ed01c3faaeb4f43c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:017",
+  "unit_ordinal": 17,
+  "unit_label": "GEN 17",
+  "book_code": "GEN",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:17:1",
+      "sequence": 399,
+      "chapter_label": "GEN 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "When Abram was ninety-nine years old, the LORD appeared to Abram and said to him, “I am God Almighty. Walk before me and be blameless.",
+      "ko": "아브람의 구십 구세 때에 여호와께서 아브람에게 나타나서 그에게 이르시되 나는 전능한 하나님이라 너는 내 앞에서 행하여 완전하라",
+      "source_text_hash": "49a61429809f1ba825a3e9e16b78786053f525ddc4fbcfc9644e4ca8b97515af",
+      "translation_text_hash": "644ea68582b7af262aae003cbd8804c6ebbeedef676d5082f41ecd74fffe0006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람의 구십 구세 때에 여호와께서 아브람에게 나타나서 그에게 이르시되 나는 전능한 하나님이라 너는 내 앞에서 행하여 완전하라"
+      ],
+      "raw_text_hashes": [
+        "644ea68582b7af262aae003cbd8804c6ebbeedef676d5082f41ecd74fffe0006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:2",
+      "sequence": 400,
+      "chapter_label": "GEN 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "I will make my covenant between me and you, and will multiply you exceedingly.”",
+      "ko": "내가 내 언약을 나와 너 사이에 세워 너로 심히 번성케 하리라 하시니",
+      "source_text_hash": "abe5a770bddeaaf2a275648e0f1bb9797e1dd5c14ec592abe5b3aa36d9ad47ab",
+      "translation_text_hash": "60a497a3b5fd156911239d0ea7ed993f6ce69eaed0014a4c9a8a7f8ff14b7483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 언약을 나와 너 사이에 세워 너로 심히 번성케 하리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "60a497a3b5fd156911239d0ea7ed993f6ce69eaed0014a4c9a8a7f8ff14b7483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:3",
+      "sequence": 401,
+      "chapter_label": "GEN 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "Abram fell on his face. God talked with him, saying,",
+      "ko": "아브람이 엎드린대 하나님이 또 그에게 일러 가라사대",
+      "source_text_hash": "29c53ec499762842e098b857a710ebb9be969c6874adc98ee02cf89a335801e9",
+      "translation_text_hash": "5f65145ab8535b44ef35f884c42c0a2ea14acaae4ec90a305d22f080dd2c1cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 엎드린대 하나님이 또 그에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "5f65145ab8535b44ef35f884c42c0a2ea14acaae4ec90a305d22f080dd2c1cb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:4",
+      "sequence": 402,
+      "chapter_label": "GEN 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "“As for me, behold, my covenant is with you. You will be the father of a multitude of nations.",
+      "ko": "내가 너와 내 언약을 세우니 너는 열국의 아비가 될찌라",
+      "source_text_hash": "cf45d747352d01dd99a15d270339e8e381adaa4ddec48964ccb389d9d5ba9690",
+      "translation_text_hash": "a5dee9594fcf2dc8ca3af0a9fd9e4e1a3d20e91ab08489629b88a225b8def9e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 내 언약을 세우니 너는 열국의 아비가 될찌라"
+      ],
+      "raw_text_hashes": [
+        "a5dee9594fcf2dc8ca3af0a9fd9e4e1a3d20e91ab08489629b88a225b8def9e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:5",
+      "sequence": 403,
+      "chapter_label": "GEN 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "Your name will no more be called Abram, but your name will be Abraham; for I have made you the father of a multitude of nations.",
+      "ko": "이제 후로는 네 이름을 아브람이라 하지 아니하고 아브라함이라 하리니 이는 내가 너로 열국의 아비가 되게 함이니라",
+      "source_text_hash": "4dc2681c81932ab6dc3e780d62ef4b47977758bffeb4cf2414f69935e97c6fd1",
+      "translation_text_hash": "3146dabba4bf6efd77ed9263ebe0128aad4791f599e38d3ab05f3263b6ccb90e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 후로는 네 이름을 아브람이라 하지 아니하고 아브라함이라 하리니 이는 내가 너로 열국의 아비가 되게 함이니라"
+      ],
+      "raw_text_hashes": [
+        "3146dabba4bf6efd77ed9263ebe0128aad4791f599e38d3ab05f3263b6ccb90e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:6",
+      "sequence": 404,
+      "chapter_label": "GEN 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "I will make you exceedingly fruitful, and I will make nations of you. Kings will come out of you.",
+      "ko": "내가 너로 심히 번성케 하리니 나라들이 네게로 좇아 일어나며 열왕이 네게로 좇아 나리라",
+      "source_text_hash": "61f651fba95d62fbe05c9884ef2dd01fc8002ad1e524bd237595b791d6ae37eb",
+      "translation_text_hash": "36c526f9570fafe9eaf97d40dc9a298d27a17de30144299e17c303b423a0f01d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 심히 번성케 하리니 나라들이 네게로 좇아 일어나며 열왕이 네게로 좇아 나리라"
+      ],
+      "raw_text_hashes": [
+        "36c526f9570fafe9eaf97d40dc9a298d27a17de30144299e17c303b423a0f01d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:7",
+      "sequence": 405,
+      "chapter_label": "GEN 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "I will establish my covenant between me and you and your offspring after you throughout their generations for an everlasting covenant, to be a God to you and to your offspring after you.",
+      "ko": "내가 내 언약을 나와 너와 네 대대 후손의 사이에 세워서 영원한 언약을 삼고 너와 네 후손의 하나님이 되리라",
+      "source_text_hash": "67fb84916b08a35fd0ca7669d52587423ac7558c87a591a25983518050cf5f30",
+      "translation_text_hash": "edefe3eb063ae688e32476076ca4a08b55fe4131f021590817631dc60828dac7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 언약을 나와 너와 네 대대 후손의 사이에 세워서 영원한 언약을 삼고 너와 네 후손의 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "edefe3eb063ae688e32476076ca4a08b55fe4131f021590817631dc60828dac7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:8",
+      "sequence": 406,
+      "chapter_label": "GEN 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "I will give to you, and to your offspring after you, the land where you are traveling, all the land of Canaan, for an everlasting possession. I will be their God.”",
+      "ko": "내가 너와 네 후손에게 너의 우거하는 이 땅 곧 가나안 일경으로 주어 영원한 기업이 되게 하고 나는 그들의 하나님이 되리라",
+      "source_text_hash": "1dfd91e70f1c836d43515a9e1341e07f0ea0b06870189a06a25b061969f11867",
+      "translation_text_hash": "6ba27ba4c859e949025c3464ea400d33dd5d263cadf228c423a6c5baee228fd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너와 네 후손에게 너의 우거하는 이 땅 곧 가나안 일경으로 주어 영원한 기업이 되게 하고 나는 그들의 하나님이 되리라"
+      ],
+      "raw_text_hashes": [
+        "6ba27ba4c859e949025c3464ea400d33dd5d263cadf228c423a6c5baee228fd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:9",
+      "sequence": 407,
+      "chapter_label": "GEN 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "God said to Abraham, “As for you, you shall keep my covenant, you and your offspring after you throughout their generations.",
+      "ko": "하나님이 또 아브라함에게 이르시되 그런즉 너는 내 언약을 지키고 네 후손도 대대로 지키라",
+      "source_text_hash": "519e0c68b591dfeb01d04942af90946ea95d75cde6e1c2e60369e30996579233",
+      "translation_text_hash": "f68cbd88b81fcf2304c1f7b137d6cdca3858729756af16020570748b207b41cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 또 아브라함에게 이르시되 그런즉 너는 내 언약을 지키고 네 후손도 대대로 지키라"
+      ],
+      "raw_text_hashes": [
+        "f68cbd88b81fcf2304c1f7b137d6cdca3858729756af16020570748b207b41cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:10",
+      "sequence": 408,
+      "chapter_label": "GEN 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "This is my covenant, which you shall keep, between me and you and your offspring after you. Every male among you shall be circumcised.",
+      "ko": "너희 중 남자는 다 할례를 받으라 이것이 나와 너희와 너희 후손 사이에 지킬 내 언약이니라",
+      "source_text_hash": "9fff485ad7d5b4f0b81aed331bc102f96dc354e9b4179d0edc1867c9b49f6e8c",
+      "translation_text_hash": "df2bcf0071f4af7a85d0cedaf19feec8af0740e68d3554d1e018cf0dfba6de7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중 남자는 다 할례를 받으라 이것이 나와 너희와 너희 후손 사이에 지킬 내 언약이니라"
+      ],
+      "raw_text_hashes": [
+        "df2bcf0071f4af7a85d0cedaf19feec8af0740e68d3554d1e018cf0dfba6de7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:11",
+      "sequence": 409,
+      "chapter_label": "GEN 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "You shall be circumcised in the flesh of your foreskin. It will be a token of the covenant between me and you.",
+      "ko": "너희는 양피를 베어라 이것이 나와 너희 사이의 언약의 표징이니라",
+      "source_text_hash": "0cd9cecd4bcde83f1b99ac197281d5a31d6d32b5ca23736058c976535db47440",
+      "translation_text_hash": "b09b21bec0442c7aee5e4271216c4b836fa76b39be715567847c92c0c23e9fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 양피를 베어라 이것이 나와 너희 사이의 언약의 표징이니라"
+      ],
+      "raw_text_hashes": [
+        "b09b21bec0442c7aee5e4271216c4b836fa76b39be715567847c92c0c23e9fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:12",
+      "sequence": 410,
+      "chapter_label": "GEN 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "He who is eight days old shall be circumcised among you, every male throughout your generations, he who is born in the house, or bought with money from any foreigner who is not of your offspring.",
+      "ko": "대대로 남자는 집에서 난 자나 혹 너희 자손이 아니요 이방 사람에게서 돈으로 산 자를 무론하고 난지 팔일만에 할례를 받을 것이라",
+      "source_text_hash": "1c0e749e2748f773f550758c15ba31ea00ab37c3fade39c3a69b31d4c28b5c6f",
+      "translation_text_hash": "b7ba807133c7a1318106b6056fb55ba11745c87eebfc98ed11b9d73ee4f43a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대대로 남자는 집에서 난 자나 혹 너희 자손이 아니요 이방 사람에게서 돈으로 산 자를 무론하고 난지 팔일만에 할례를 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "b7ba807133c7a1318106b6056fb55ba11745c87eebfc98ed11b9d73ee4f43a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:13",
+      "sequence": 411,
+      "chapter_label": "GEN 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "He who is born in your house, and he who is bought with your money, must be circumcised. My covenant shall be in your flesh for an everlasting covenant.",
+      "ko": "너희 집에서 난 자든지 너희 돈으로 산 자든지 할례를 받아야 하리니 이에 내 언약이 너희 살에 있어 영원한 언약이 되려니와",
+      "source_text_hash": "cc18ce7d8e82a569da294463747d1ad58d6428558a59efaf31706e4ee8658616",
+      "translation_text_hash": "c2393e45628537a9cbeffc5c5e764382709b1c912b8833d7d04f575d8448c5f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 집에서 난 자든지 너희 돈으로 산 자든지 할례를 받아야 하리니 이에 내 언약이 너희 살에 있어 영원한 언약이 되려니와"
+      ],
+      "raw_text_hashes": [
+        "c2393e45628537a9cbeffc5c5e764382709b1c912b8833d7d04f575d8448c5f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:14",
+      "sequence": 412,
+      "chapter_label": "GEN 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "The uncircumcised male who is not circumcised in the flesh of his foreskin, that soul shall be cut off from his people. He has broken my covenant.”",
+      "ko": "할례를 받지 아니한 남자 곧 그 양피를 베지 아니한 자는 백성 중에서 끊어지리니 그가 내 언약을 배반하였음이니라",
+      "source_text_hash": "8f97fa3d403938fa7db3e5512ee8be7e5e348cbaf2fdf4961b48693f0e3cad27",
+      "translation_text_hash": "11dc31cf8c188bf3609135bd0069ddaea2183028efc8105a61f02070384bfba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례를 받지 아니한 남자 곧 그 양피를 베지 아니한 자는 백성 중에서 끊어지리니 그가 내 언약을 배반하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "11dc31cf8c188bf3609135bd0069ddaea2183028efc8105a61f02070384bfba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:15",
+      "sequence": 413,
+      "chapter_label": "GEN 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "God said to Abraham, “As for Sarai your wife, you shall not call her name Sarai, but her name shall be Sarah.",
+      "ko": "하나님이 또 아브라함에게 이르시되 네 아내 사래는 이름을 사래라 하지 말고 그 이름을 사라라 하라",
+      "source_text_hash": "723df0ca0c82711c063958722927e3ebbf2c3b8488395885d948074a6e9de737",
+      "translation_text_hash": "85267a1e0d80f4e1f2c28ded2bb19583aef3e8801c1315d5f399e653f0bf0b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 또 아브라함에게 이르시되 네 아내 사래는 이름을 사래라 하지 말고 그 이름을 사라라 하라"
+      ],
+      "raw_text_hashes": [
+        "85267a1e0d80f4e1f2c28ded2bb19583aef3e8801c1315d5f399e653f0bf0b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:16",
+      "sequence": 414,
+      "chapter_label": "GEN 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "I will bless her, and moreover I will give you a son by her. Yes, I will bless her, and she will be a mother of nations. Kings of peoples will come from her.”",
+      "ko": "내가 그에게 복을 주어 그로 네게 아들을 낳아주게 하며 내가 그에게 복을 주어 그로 열국의 어미가 되게 하리니 민족의 열왕이 그에게서 나리라",
+      "source_text_hash": "9e9f690fe608f73a156bd83302ba130cb43946d67f33d052bc158fc5379f0d0a",
+      "translation_text_hash": "dbd1695a6a0d88c1960b8eccc38f9a0484d086fa246c7eabc5f0dbc6e8a750a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그에게 복을 주어 그로 네게 아들을 낳아주게 하며 내가 그에게 복을 주어 그로 열국의 어미가 되게 하리니 민족의 열왕이 그에게서 나리라"
+      ],
+      "raw_text_hashes": [
+        "dbd1695a6a0d88c1960b8eccc38f9a0484d086fa246c7eabc5f0dbc6e8a750a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:17",
+      "sequence": 415,
+      "chapter_label": "GEN 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Then Abraham fell on his face, and laughed, and said in his heart, “Will a child be born to him who is one hundred years old? Will Sarah, who is ninety years old, give birth?”",
+      "ko": "아브라함이 엎드리어 웃으며 심중에 이르되 백세 된 사람이 어찌 자식을 낳을까 사라는 구십세니 어찌 생산하리요 하고",
+      "source_text_hash": "34ee4708aa51c17d6d4bc447edd17aa3f316b70c3641b225715c00b38d2965b3",
+      "translation_text_hash": "36be96683b800f0bf190f8d70ec886f6286d1de5ba27f4fc2700a5a618f2e944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 엎드리어 웃으며 심중에 이르되 백세 된 사람이 어찌 자식을 낳을까 사라는 구십세니 어찌 생산하리요 하고"
+      ],
+      "raw_text_hashes": [
+        "36be96683b800f0bf190f8d70ec886f6286d1de5ba27f4fc2700a5a618f2e944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:18",
+      "sequence": 416,
+      "chapter_label": "GEN 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "Abraham said to God, “Oh that Ishmael might live before you!”",
+      "ko": "아브라함이 이에 하나님께 고하되 이스마엘이나 하나님 앞에 살기를 원하나이다",
+      "source_text_hash": "9f9b9cde7b0789d89184b7295ffabcba0ab6a4023aaf530b7c9e27992c90324a",
+      "translation_text_hash": "5c66ca9a3052c3288bf96e552f1184bae0152f8ce874f00b2dfb43118f9cd642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 이에 하나님께 고하되 이스마엘이나 하나님 앞에 살기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "5c66ca9a3052c3288bf96e552f1184bae0152f8ce874f00b2dfb43118f9cd642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:19",
+      "sequence": 417,
+      "chapter_label": "GEN 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "God said, “No, but Sarah, your wife, will bear you a son. You shall call his name Isaac. I will establish my covenant with him for an everlasting covenant for his offspring after him.",
+      "ko": "하나님이 가라사대 아니라 네 아내 사라가 정녕 네게 아들을 낳으리니 너는 그 이름을 이삭이라 하라 내가 그와 내 언약을 세우리니 그의 후손에게 영원한 언약이 되리라",
+      "source_text_hash": "e7672be4ff7e756cb3ed017bb956e9ef13a1c91767521367b57ee163102b2386",
+      "translation_text_hash": "d397295bbbd848a594315d35701bef3c5a7255e14c0dcebb105652c9f26a7297",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 아니라 네 아내 사라가 정녕 네게 아들을 낳으리니 너는 그 이름을 이삭이라 하라 내가 그와 내 언약을 세우리니 그의 후손에게 영원한 언약이 되리라"
+      ],
+      "raw_text_hashes": [
+        "d397295bbbd848a594315d35701bef3c5a7255e14c0dcebb105652c9f26a7297"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:20",
+      "sequence": 418,
+      "chapter_label": "GEN 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "As for Ishmael, I have heard you. Behold, I have blessed him, and will make him fruitful, and will multiply him exceedingly. He will become the father of twelve princes, and I will make him a great nation.",
+      "ko": "이스마엘에게 이르러는 내가 네 말을 들었나니 내가 그에게 복을 주어 생육이 중다하여 그로 크게 번성케 할찌라 그가 열 두 방백을 낳으리니 내가 그로 큰 나라가 되게 하려니와",
+      "source_text_hash": "21c4ce740ab98c88147ad81012f6d1e6c40ae3b79632e128812164e79b142d2c",
+      "translation_text_hash": "20ac8d2e90289996a88a59bd813bcb53342561df499b7cf9ff2fdb205a5166b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스마엘에게 이르러는 내가 네 말을 들었나니 내가 그에게 복을 주어 생육이 중다하여 그로 크게 번성케 할찌라 그가 열 두 방백을 낳으리니 내가 그로 큰 나라가 되게 하려니와"
+      ],
+      "raw_text_hashes": [
+        "20ac8d2e90289996a88a59bd813bcb53342561df499b7cf9ff2fdb205a5166b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:21",
+      "sequence": 419,
+      "chapter_label": "GEN 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "But I will establish my covenant with Isaac, whom Sarah will bear to you at this set time next year.”",
+      "ko": "내 언약은 내가 명년 이 기한에 사라가 네게 낳을 이삭과 세우리라",
+      "source_text_hash": "bc6f65ed62f9a54c0db475f1f4a667cbed8d55162820c6495c0391c1c8ade60c",
+      "translation_text_hash": "38e9be9691e042990f65a742d78a3f13330e369056b18b014f82857c034862d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 언약은 내가 명년 이 기한에 사라가 네게 낳을 이삭과 세우리라"
+      ],
+      "raw_text_hashes": [
+        "38e9be9691e042990f65a742d78a3f13330e369056b18b014f82857c034862d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:22",
+      "sequence": 420,
+      "chapter_label": "GEN 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "When he finished talking with him, God went up from Abraham.",
+      "ko": "하나님이 아브라함과 말씀을 마치시고 그를 떠나 올라가셨더라",
+      "source_text_hash": "6cc841943185cb6caf3197ee7277da5d6f2f9a5f09dc7c3b9d14c75cb7e4a6c9",
+      "translation_text_hash": "05ef4406d01c868854660a4db88e3294dee310f38b097edbd6b0bf549a5fa316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 아브라함과 말씀을 마치시고 그를 떠나 올라가셨더라"
+      ],
+      "raw_text_hashes": [
+        "05ef4406d01c868854660a4db88e3294dee310f38b097edbd6b0bf549a5fa316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:23",
+      "sequence": 421,
+      "chapter_label": "GEN 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "Abraham took Ishmael his son, all who were born in his house, and all who were bought with his money: every male among the men of Abraham’s house, and circumcised the flesh of their foreskin in the same day, as God had said to him.",
+      "ko": "이에 아브라함이 하나님이 자기에게 말씀하신대로 이 날에 그 아들 이스마엘과 집에서 생장한 모든 자와 돈으로 산 모든 자 곧 아브라함의 집 사람 중 모든 남자를 데려다가 그 양피를 베었으니",
+      "source_text_hash": "fb7a688bbed0220892cfd879447bd66ca860c33c7abc16c5de207c3960b6c781",
+      "translation_text_hash": "3cf626265a0c0aee49de5b6d2b05aec6bdce7a2e6290ad20cd19d1bda0c54ff8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아브라함이 하나님이 자기에게 말씀하신대로 이 날에 그 아들 이스마엘과 집에서 생장한 모든 자와 돈으로 산 모든 자 곧 아브라함의 집 사람 중 모든 남자를 데려다가 그 양피를 베었으니"
+      ],
+      "raw_text_hashes": [
+        "3cf626265a0c0aee49de5b6d2b05aec6bdce7a2e6290ad20cd19d1bda0c54ff8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:24",
+      "sequence": 422,
+      "chapter_label": "GEN 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "Abraham was ninety-nine years old when he was circumcised in the flesh of his foreskin.",
+      "ko": "아브라함이 그 양피를 벤 때는 구십 구세이었고",
+      "source_text_hash": "f8f614da762997cb4f05b2ac8306a1fd78ab4a96abbdf07beda51bcae0f733a8",
+      "translation_text_hash": "24f0723b138530c4c3556c9fffb88b41cc6100aab1f2ff9adb1e0e69b4401538",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 그 양피를 벤 때는 구십 구세이었고"
+      ],
+      "raw_text_hashes": [
+        "24f0723b138530c4c3556c9fffb88b41cc6100aab1f2ff9adb1e0e69b4401538"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:25",
+      "sequence": 423,
+      "chapter_label": "GEN 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "Ishmael, his son, was thirteen years old when he was circumcised in the flesh of his foreskin.",
+      "ko": "그 아들 이스마엘이 그 양피를 벤 때는 십 삼세이었더라",
+      "source_text_hash": "b6fd045ff10830a2bad4c5cb13c562d9fae71a931d4ac2290c67211f54d6c2b5",
+      "translation_text_hash": "3992d8d01243e4fd9a45db4aafd26aa6b14e158490d4e1f816134d29eb2ae868",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들 이스마엘이 그 양피를 벤 때는 십 삼세이었더라"
+      ],
+      "raw_text_hashes": [
+        "3992d8d01243e4fd9a45db4aafd26aa6b14e158490d4e1f816134d29eb2ae868"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:26",
+      "sequence": 424,
+      "chapter_label": "GEN 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "In the same day both Abraham and Ishmael, his son, were circumcised.",
+      "ko": "당일에 아브라함과 그 아들 이스마엘이 할례를 받았고",
+      "source_text_hash": "16d0262095ab1197859e7f32505eec1485719b489428e0dbce3657ea5c62f3f7",
+      "translation_text_hash": "5bc52ae5306a977b18ad990424d60ad2ba3cd6260d503c9c3dee7a62f720f6f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당일에 아브라함과 그 아들 이스마엘이 할례를 받았고"
+      ],
+      "raw_text_hashes": [
+        "5bc52ae5306a977b18ad990424d60ad2ba3cd6260d503c9c3dee7a62f720f6f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:17:27",
+      "sequence": 425,
+      "chapter_label": "GEN 17",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 17,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 17,
+          "verse": 27
+        }
+      ],
+      "en": "All the men of his house, those born in the house, and those bought with money from a foreigner, were circumcised with him.",
+      "ko": "그 집의 모든 남자 곧 집에서 생장한 자와 돈으로 이방 사람에게서 사온 자가 다 그와 함께 할례를 받았더라",
+      "source_text_hash": "b6a912acf6bd3121612b0f7f03e5a417567aaf42fad7b9e8e1ec98aa469e686a",
+      "translation_text_hash": "028f41e5e40d17d9b4ef7aa309ca69ce9b0b692cdfb2fded6110311c0a124162",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집의 모든 남자 곧 집에서 생장한 자와 돈으로 이방 사람에게서 사온 자가 다 그와 함께 할례를 받았더라"
+      ],
+      "raw_text_hashes": [
+        "028f41e5e40d17d9b4ef7aa309ca69ce9b0b692cdfb2fded6110311c0a124162"
+      ]
+    }
+  ]
+}

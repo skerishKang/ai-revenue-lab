@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:023",
+  "unit_ordinal": 459,
+  "unit_label": "JOB 23",
+  "book_code": "JOB",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:23:1",
+      "sequence": 13421,
+      "chapter_label": "JOB 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "Then Job answered,",
+      "ko": "욥이 대답하여 가로되",
+      "source_text_hash": "5263caab7b43bc090defa0c0dbc9d551ac80859d1634826a141a04fc1349df96",
+      "translation_text_hash": "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "6e432eb41091f2b4077fe347703fb37615a4e3a45f9b3ead4a29e1a2b2065a30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:2",
+      "sequence": 13422,
+      "chapter_label": "JOB 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "“Even today my complaint is rebellious. His hand is heavy in spite of my groaning.",
+      "ko": "내가 오늘도 혹독히 원망하니 받는 재앙이 탄식보다 중함이니라",
+      "source_text_hash": "09939a47b9fc3e5414ba283c410293e8a03c15b022741c9bb545ab51e6153a58",
+      "translation_text_hash": "4aa964b8aaaf933b0c08d57afd38523ff25adfdc6185a05b0028a56723a5d426",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오늘도 혹독히 원망하니 받는 재앙이 탄식보다 중함이니라"
+      ],
+      "raw_text_hashes": [
+        "4aa964b8aaaf933b0c08d57afd38523ff25adfdc6185a05b0028a56723a5d426"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:3",
+      "sequence": 13423,
+      "chapter_label": "JOB 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "Oh that I knew where I might find him! That I might come even to his seat!",
+      "ko": "내가 어찌하면 하나님 발견할 곳을 알꼬 그리하면 그 보좌 앞에 나아가서",
+      "source_text_hash": "13c9623f5234e5c846888e631df73249c6973c3d1dcd5eae67b4891bfec616ca",
+      "translation_text_hash": "62bab02b319b81f871da9713cf90d2afb789a91e9cff6d465feaec1ce769607c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 어찌하면 하나님 발견할 곳을 알꼬 그리하면 그 보좌 앞에 나아가서"
+      ],
+      "raw_text_hashes": [
+        "62bab02b319b81f871da9713cf90d2afb789a91e9cff6d465feaec1ce769607c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:4",
+      "sequence": 13424,
+      "chapter_label": "JOB 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "I would set my cause in order before him, and fill my mouth with arguments.",
+      "ko": "그 앞에서 호소하며 변백할 말을 입에 채우고",
+      "source_text_hash": "d3e0f0b8a8c6427f95be38b5351f3faefddc61c3fcabe9a5a0b2f6cee20bc31e",
+      "translation_text_hash": "095504baf4b1480abd06678ba390e7880b2da603a677e835bed0d4750e0f4b25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에서 호소하며 변백할 말을 입에 채우고"
+      ],
+      "raw_text_hashes": [
+        "095504baf4b1480abd06678ba390e7880b2da603a677e835bed0d4750e0f4b25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:5",
+      "sequence": 13425,
+      "chapter_label": "JOB 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "I would know the words which he would answer me, and understand what he would tell me.",
+      "ko": "내게 대답하시는 말씀을 내가 알고 내게 이르시는 것을 내가 깨달으리라",
+      "source_text_hash": "ee0472d47f79b6260ccc96071ffa7bb465831494e7011dc3e488f0a512640ea7",
+      "translation_text_hash": "7de06fa927c7192454d42e053c0b74fb3c419772d988f259c020c02e22930861",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 대답하시는 말씀을 내가 알고 내게 이르시는 것을 내가 깨달으리라"
+      ],
+      "raw_text_hashes": [
+        "7de06fa927c7192454d42e053c0b74fb3c419772d988f259c020c02e22930861"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:6",
+      "sequence": 13426,
+      "chapter_label": "JOB 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "Would he contend with me in the greatness of his power? No, but he would listen to me.",
+      "ko": "그가 큰 권능을 가지시고 나로 더불어 다투실까 아니라 도리어 내 말을 들으시리라",
+      "source_text_hash": "523634f90efcfc8d15f664930a0319db7d997ce32a9902ca64f431abc18dc313",
+      "translation_text_hash": "16e316dd5236a194f5796489e045132328f8b6c7df6162f69a3f8c7a9bf5065d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 큰 권능을 가지시고 나로 더불어 다투실까 아니라 도리어 내 말을 들으시리라"
+      ],
+      "raw_text_hashes": [
+        "16e316dd5236a194f5796489e045132328f8b6c7df6162f69a3f8c7a9bf5065d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:7",
+      "sequence": 13427,
+      "chapter_label": "JOB 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "There the upright might reason with him, so I should be delivered forever from my judge.",
+      "ko": "거기서는 정직자가 그와 변론할 수 있은즉 내가 심판자에게서 영영히 벗어나리라",
+      "source_text_hash": "bd022046d4e2bed9801fa85b5e0f39b3410b1a8427900cfd5e54e1566dc83f8f",
+      "translation_text_hash": "e661815a6a82ecefaf769a0999bb30ae5d294259158d06d2b96dd75714e4463c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서는 정직자가 그와 변론할 수 있은즉 내가 심판자에게서 영영히 벗어나리라"
+      ],
+      "raw_text_hashes": [
+        "e661815a6a82ecefaf769a0999bb30ae5d294259158d06d2b96dd75714e4463c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:8",
+      "sequence": 13428,
+      "chapter_label": "JOB 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "“If I go east, he is not there. If I go west, I can’t find him.",
+      "ko": "그런데 내가 앞으로 가도 그가 아니 계시고 뒤로 가도 보이지 아니하며",
+      "source_text_hash": "55be92acd3251e030f0787b4a90431da1351220615e64c60e4bfbab15d7f488a",
+      "translation_text_hash": "1b598c3224f771943b19fc03310e5aadc6b37d1e9449279358959b0cc731ffb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 내가 앞으로 가도 그가 아니 계시고 뒤로 가도 보이지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "1b598c3224f771943b19fc03310e5aadc6b37d1e9449279358959b0cc731ffb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:9",
+      "sequence": 13429,
+      "chapter_label": "JOB 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "He works to the north, but I can’t see him. He turns south, but I can’t catch a glimpse of him.",
+      "ko": "그가 왼편에서 일하시나 내가 만날 수 없고 그가 오른편으로 돌이키시나 뵈올 수 없구나",
+      "source_text_hash": "9c95c85864386b73285499f2c3673e73acc54dac1408cbcef03a8cbfa4ed10e0",
+      "translation_text_hash": "c04eec1ecae210aa59e2044e3ab9ebcb438b7844777f3d25c28dc93ec983b483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 왼편에서 일하시나 내가 만날 수 없고 그가 오른편으로 돌이키시나 뵈올 수 없구나"
+      ],
+      "raw_text_hashes": [
+        "c04eec1ecae210aa59e2044e3ab9ebcb438b7844777f3d25c28dc93ec983b483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:10",
+      "sequence": 13430,
+      "chapter_label": "JOB 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "But he knows the way that I take. When he has tried me, I will come out like gold.",
+      "ko": "나의 가는 길을 오직 그가 아시나니 그가 나를 단련하신 후에는 내가 정금 같이 나오리라",
+      "source_text_hash": "5d237799e098d024a0c1f7c3994dd9ee14e63a7537e29ce7b0fe4b4a718118f5",
+      "translation_text_hash": "18bc315c6cc10bfd386adc401e62532bf3d26d69aa861e1ac8191890dc515803",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 가는 길을 오직 그가 아시나니 그가 나를 단련하신 후에는 내가 정금 같이 나오리라"
+      ],
+      "raw_text_hashes": [
+        "18bc315c6cc10bfd386adc401e62532bf3d26d69aa861e1ac8191890dc515803"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:11",
+      "sequence": 13431,
+      "chapter_label": "JOB 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "My foot has held fast to his steps. I have kept his way, and not turned away.",
+      "ko": "내 발이 그의 걸음을 바로 따랐으며 내가 그의 길을 지켜 치우치지 아니하였고",
+      "source_text_hash": "965087137a94ff2a18e40c4e557c9f63ec9257d4f09e8168a107fb97ec695360",
+      "translation_text_hash": "3fb09a8f2c708139f859fac7ea771b7c80227e9828108b6820206a860bfd0cad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 발이 그의 걸음을 바로 따랐으며 내가 그의 길을 지켜 치우치지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "3fb09a8f2c708139f859fac7ea771b7c80227e9828108b6820206a860bfd0cad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:12",
+      "sequence": 13432,
+      "chapter_label": "JOB 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "I haven’t gone back from the commandment of his lips. I have treasured up the words of his mouth more than my necessary food.",
+      "ko": "내가 그의 입술의 명령을 어기지 아니하고 일정한 음식보다 그 입의 말씀을 귀히 여겼구나",
+      "source_text_hash": "f0b60b98177e54a382a43f50538f4e32a8e4019d08ba4e083abb8421d505403b",
+      "translation_text_hash": "2b7e4e197c0371b260b9c68d7d247e5fae18ca01574e708d9efd1d6da9807afb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그의 입술의 명령을 어기지 아니하고 일정한 음식보다 그 입의 말씀을 귀히 여겼구나"
+      ],
+      "raw_text_hashes": [
+        "2b7e4e197c0371b260b9c68d7d247e5fae18ca01574e708d9efd1d6da9807afb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:13",
+      "sequence": 13433,
+      "chapter_label": "JOB 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "But he stands alone, and who can oppose him? What his soul desires, even that he does.",
+      "ko": "그는 뜻이 일정하시니 누가 능히 돌이킬까 그 마음에 하고자 하시는 것이면 그것을 행하시나니",
+      "source_text_hash": "c9839111e42952ccf34593061169fab29741bb19e5cab617cca737ff9918d7b7",
+      "translation_text_hash": "164ce2bc3f79ee04a20a6f9847715e6f3b6a568de94bf64e14e9b0d627f8b90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 뜻이 일정하시니 누가 능히 돌이킬까 그 마음에 하고자 하시는 것이면 그것을 행하시나니"
+      ],
+      "raw_text_hashes": [
+        "164ce2bc3f79ee04a20a6f9847715e6f3b6a568de94bf64e14e9b0d627f8b90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:14",
+      "sequence": 13434,
+      "chapter_label": "JOB 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "For he performs that which is appointed for me. Many such things are with him.",
+      "ko": "그런즉 내게 작정하신 것을 이루실 것이라 이런 일이 그에게 많이 있느니라",
+      "source_text_hash": "24be29da7170eee89f6a05986d005f982c81ecc56f84e799a31f275e1999fdf8",
+      "translation_text_hash": "aa508bd0892a16c3506c4ac479e0eba0615a0bde918a89a328215f80f982d95c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내게 작정하신 것을 이루실 것이라 이런 일이 그에게 많이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "aa508bd0892a16c3506c4ac479e0eba0615a0bde918a89a328215f80f982d95c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:15",
+      "sequence": 13435,
+      "chapter_label": "JOB 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore I am terrified at his presence. When I consider, I am afraid of him.",
+      "ko": "그러므로 내가 그의 앞에서 떨며 이를 생각하고 그를 두려워하는구나",
+      "source_text_hash": "ed575622504ea65c3733e05f14944a7580978e7d4d28a2fdec4e3b5c51bfd9ed",
+      "translation_text_hash": "cf104de43a4994fac82a2867072294aa8e1a03dddc90725182ae832adbf81354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 그의 앞에서 떨며 이를 생각하고 그를 두려워하는구나"
+      ],
+      "raw_text_hashes": [
+        "cf104de43a4994fac82a2867072294aa8e1a03dddc90725182ae832adbf81354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:16",
+      "sequence": 13436,
+      "chapter_label": "JOB 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "For God has made my heart faint. The Almighty has terrified me.",
+      "ko": "하나님이 나로 낙심케 하시며 전능자가 나로 두렵게 하시나니",
+      "source_text_hash": "3b7e23d457e0f5f211259ad56419db19fddbe07d544eb4d5c5659226beec244a",
+      "translation_text_hash": "30750d6721288bd3109a2dc916671a712850b64b701a81e0e7ec90f74ef5ee3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나로 낙심케 하시며 전능자가 나로 두렵게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "30750d6721288bd3109a2dc916671a712850b64b701a81e0e7ec90f74ef5ee3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:23:17",
+      "sequence": 13437,
+      "chapter_label": "JOB 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "Because I was not cut off before the darkness, neither did he cover the thick darkness from my face.",
+      "ko": "이는 어두움으로 나를 끊지 아니하셨고 흑암으로 내 얼굴을 가리우지 아니하셨음이니라",
+      "source_text_hash": "babef185fb003baf1042e1747f684010c62f380c860f238370105e1f2058a4ab",
+      "translation_text_hash": "4d8af0142c818880d53d99a1f2cfadbf68c6172be07ff6a348ddd9e167ab64d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 어두움으로 나를 끊지 아니하셨고 흑암으로 내 얼굴을 가리우지 아니하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "4d8af0142c818880d53d99a1f2cfadbf68c6172be07ff6a348ddd9e167ab64d6"
+      ]
+    }
+  ]
+}

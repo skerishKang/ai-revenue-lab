@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:017",
+  "unit_ordinal": 696,
+  "unit_label": "ISA 17",
+  "book_code": "ISA",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:17:1",
+      "sequence": 17985,
+      "chapter_label": "ISA 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "The burden of Damascus. “Behold, Damascus is taken away from being a city, and it will be a ruinous heap.",
+      "ko": "다메섹에 관한 경고라 보라 다메섹이 장차 성읍 모양을 이루지 못하고 무너진 무더기가 될 것이라",
+      "source_text_hash": "e8b25edeb712807f6c9754446b8f8e8b7d6465c38dc2771271196b6812e4a075",
+      "translation_text_hash": "f991823f634062ac86a714c53108e6d2f79fa975e22fd95b7057b06f87392d97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다메섹에 관한 경고라 보라 다메섹이 장차 성읍 모양을 이루지 못하고 무너진 무더기가 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "f991823f634062ac86a714c53108e6d2f79fa975e22fd95b7057b06f87392d97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:2",
+      "sequence": 17986,
+      "chapter_label": "ISA 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "The cities of Aroer are forsaken. They will be for flocks, which shall lie down, and no one shall make them afraid.",
+      "ko": "아로엘의 성읍들이 버림을 당하리니 양 무리를 치는 곳이 되어 양이 눕되 놀라게 할 자가 없을 것이며",
+      "source_text_hash": "460701f02857628f0a6d62aaeda69e4801daa65b5667880a98bc556c6866fb25",
+      "translation_text_hash": "29335600a65cfa2ba57825aa624d92d92e788577d4de4cab1d254d588a998cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아로엘의 성읍들이 버림을 당하리니 양 무리를 치는 곳이 되어 양이 눕되 놀라게 할 자가 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "29335600a65cfa2ba57825aa624d92d92e788577d4de4cab1d254d588a998cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:3",
+      "sequence": 17987,
+      "chapter_label": "ISA 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "The fortress shall cease from Ephraim, and the kingdom from Damascus, and the remnant of Syria. They will be as the glory of the children of Israel,” says the LORD of Armies.",
+      "ko": "에브라임의 요새와 다메섹 나라와 아람의 남은 백성이 멸절하여 이스라엘 자손의 영광 같이 되리라 만군의 여호와의 말씀이니라",
+      "source_text_hash": "b2666bdb71fb6939dadadcf64dbb8f43978018b6de22f2d1050b6ba54bdcf25e",
+      "translation_text_hash": "99794fc341dca0ad67ac41c85a3feb36d390629d8d2ada27f68a4ec177ba551e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임의 요새와 다메섹 나라와 아람의 남은 백성이 멸절하여 이스라엘 자손의 영광 같이 되리라 만군의 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "99794fc341dca0ad67ac41c85a3feb36d390629d8d2ada27f68a4ec177ba551e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:4",
+      "sequence": 17988,
+      "chapter_label": "ISA 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "“It will happen in that day that the glory of Jacob will be made thin, and the fatness of his flesh will become lean.",
+      "ko": "그 날에 야곱의 영광이 쇠하고 그 살찐 몸이 파리하리니",
+      "source_text_hash": "1442f6afbe58ced9770120ff1a25a7d3dba795504d5d145a378c8722f25e2c50",
+      "translation_text_hash": "7d58f53a18345ab902c58a2dc162a6698824cbe170ad9cf99259169e3b758cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 야곱의 영광이 쇠하고 그 살찐 몸이 파리하리니"
+      ],
+      "raw_text_hashes": [
+        "7d58f53a18345ab902c58a2dc162a6698824cbe170ad9cf99259169e3b758cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:5",
+      "sequence": 17989,
+      "chapter_label": "ISA 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "It will be like when the harvester gathers the wheat, and his arm reaps the grain. Yes, it will be like when one gleans grain in the valley of Rephaim.",
+      "ko": "마치 추수하는 자가 곡식을 거두어 가지고 그 손으로 이삭을 벤 것 같고 르바임 골짜기에서 이삭을 주운 것 같으리라",
+      "source_text_hash": "5f14dd8614e66f6994a25117a10f00d5e0f08ab22913bfb529e7b6e7c937af38",
+      "translation_text_hash": "521fae870906de0a6e7d7a7599d032fdc5cf75fa66edf1d0ae5afd061d7cc071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마치 추수하는 자가 곡식을 거두어 가지고 그 손으로 이삭을 벤 것 같고 르바임 골짜기에서 이삭을 주운 것 같으리라"
+      ],
+      "raw_text_hashes": [
+        "521fae870906de0a6e7d7a7599d032fdc5cf75fa66edf1d0ae5afd061d7cc071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:6",
+      "sequence": 17990,
+      "chapter_label": "ISA 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "Yet gleanings will be left there, like the shaking of an olive tree, two or three olives in the top of the uppermost bough, four or five in the outermost branches of a fruitful tree,” says the LORD, the God of Israel.",
+      "ko": "그러나 오히려 주울 것이 남으리니 감람나무를 흔들 때에 가장 높은 가지 꼭대기에 실과 이 삼개가 남음 같겠고 무성한 나무의 가장 먼 가지에 사 오개가 남음 같으리라 이스라엘의 하나님 여호와의 말씀이니라",
+      "source_text_hash": "9e2725cfc0e19c65151a4e0ed1d3785037aa983d65ec145abfff62b3327ae179",
+      "translation_text_hash": "5eaafa8b91b142c42ec5291aaa114b7a54c882f1a263178abeecbdf1aef4da61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 오히려 주울 것이 남으리니 감람나무를 흔들 때에 가장 높은 가지 꼭대기에 실과 이 삼개가 남음 같겠고 무성한 나무의 가장 먼 가지에 사 오개가 남음 같으리라 이스라엘의 하나님 여호와의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "5eaafa8b91b142c42ec5291aaa114b7a54c882f1a263178abeecbdf1aef4da61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:7",
+      "sequence": 17991,
+      "chapter_label": "ISA 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "In that day, people will look to their Maker, and their eyes will have respect for the Holy One of Israel.",
+      "ko": "그 날에 사람이 자기를 지으신 자를 쳐다보겠으며 그 눈이 이스라엘의 거룩하신 자를 바라보겠고",
+      "source_text_hash": "f5da52887b4d58f9696ee85722732c0ff90cdbc559202dc1437b7d89f3b4cb39",
+      "translation_text_hash": "a397f965981accb54f62b92bc033e7dfb420cc66e828e1819bbde7f8be78a05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 사람이 자기를 지으신 자를 쳐다보겠으며 그 눈이 이스라엘의 거룩하신 자를 바라보겠고"
+      ],
+      "raw_text_hashes": [
+        "a397f965981accb54f62b92bc033e7dfb420cc66e828e1819bbde7f8be78a05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:8",
+      "sequence": 17992,
+      "chapter_label": "ISA 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "They will not look to the altars, the work of their hands; neither shall they respect that which their fingers have made, either the Asherah poles or the incense altars.",
+      "ko": "자기 손으로 만든 단을 쳐다보지 아니하며 자기 손가락으로 지은 아세라나 태양상을 바라보지 아니할 것이며",
+      "source_text_hash": "2e15440f18080a4a89b582810ea9cd03aaaeaf6e896c0bdecdaaaf4269f837e5",
+      "translation_text_hash": "9bbc36172b28eb6611362114c55dacdd70329f78c47765c87f74771c19f89962",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 손으로 만든 단을 쳐다보지 아니하며 자기 손가락으로 지은 아세라나 태양상을 바라보지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "9bbc36172b28eb6611362114c55dacdd70329f78c47765c87f74771c19f89962"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:9",
+      "sequence": 17993,
+      "chapter_label": "ISA 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "In that day, their strong cities will be like the forsaken places in the woods and on the mountain top, which were forsaken from before the children of Israel; and it will be a desolation.",
+      "ko": "그 날에 그 견고한 성읍들이 옛적에 이스라엘 자손 앞에서 버린 바 된 수풀 속의 처소와 작은 산꼭대기의 처소 같아서 황폐하리니",
+      "source_text_hash": "39b1df1c25252f107629468eadd0f6d64a7aef931b968e0ea11a67495edb025f",
+      "translation_text_hash": "cfb29c6245ad1a89fdcc9312d1a3ee9242f8a49542f0d9c67684ba2eb7b5af80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그 견고한 성읍들이 옛적에 이스라엘 자손 앞에서 버린 바 된 수풀 속의 처소와 작은 산꼭대기의 처소 같아서 황폐하리니"
+      ],
+      "raw_text_hashes": [
+        "cfb29c6245ad1a89fdcc9312d1a3ee9242f8a49542f0d9c67684ba2eb7b5af80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:10",
+      "sequence": 17994,
+      "chapter_label": "ISA 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "For you have forgotten the God of your salvation, and have not remembered the rock of your strength. Therefore you plant pleasant plants, and set out foreign seedlings.",
+      "ko": "이는 네가 자기의 구원의 하나님을 잊어버리며 자기의 능력의 반석을 마음에 두지 않은 까닭이라 그러므로 네가 기뻐하는 식물을 심으며 이방의 가지도 이종하고",
+      "source_text_hash": "faa92fc8dff7b4889cd4aa8f91b54876ac9c7ab074f702bd22da2648d780fba7",
+      "translation_text_hash": "f06cfb7ddb7d658ad3e2b00f22ba5deed9ffec899d8570b5d3450352260edadb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네가 자기의 구원의 하나님을 잊어버리며 자기의 능력의 반석을 마음에 두지 않은 까닭이라 그러므로 네가 기뻐하는 식물을 심으며 이방의 가지도 이종하고"
+      ],
+      "raw_text_hashes": [
+        "f06cfb7ddb7d658ad3e2b00f22ba5deed9ffec899d8570b5d3450352260edadb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:11",
+      "sequence": 17995,
+      "chapter_label": "ISA 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "In the day of your planting, you hedge it in. In the morning, you make your seed blossom, but the harvest flees away in the day of grief and of desperate sorrow.",
+      "ko": "네가 심는 날에 울타리로 두르고 아침에 너의 씨로 잘 발육하도록 하였으나 근심과 심한 슬픔의 날에 농작물이 없어지리라",
+      "source_text_hash": "5a47c97095272f19e53defe529750d94792ae1274825cd0818560c29a3f72085",
+      "translation_text_hash": "b477f384e3c915c7a45453e152300d7e150a6cfe12a393a009a648f4b2781caf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 심는 날에 울타리로 두르고 아침에 너의 씨로 잘 발육하도록 하였으나 근심과 심한 슬픔의 날에 농작물이 없어지리라"
+      ],
+      "raw_text_hashes": [
+        "b477f384e3c915c7a45453e152300d7e150a6cfe12a393a009a648f4b2781caf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:12",
+      "sequence": 17996,
+      "chapter_label": "ISA 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Ah, the uproar of many peoples who roar like the roaring of the seas; and the rushing of nations that rush like the rushing of mighty waters!",
+      "ko": "슬프다 많은 민족이 소동하였으되 바다 파도의 뛰노는 소리 같이 그들이 소동하였고 열방이 충돌하였으되 큰 물의 몰려옴 같이 그들도 충돌하였도다",
+      "source_text_hash": "8232cbf0ec5103037f1f46851f5ec266ef4e26e61d7f794877e1c7da85279d7a",
+      "translation_text_hash": "acb70b4dc5be2c0c51348d5c40746dbbaa2abb904981db8d399e42f57f9962f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 많은 민족이 소동하였으되 바다 파도의 뛰노는 소리 같이 그들이 소동하였고 열방이 충돌하였으되 큰 물의 몰려옴 같이 그들도 충돌하였도다"
+      ],
+      "raw_text_hashes": [
+        "acb70b4dc5be2c0c51348d5c40746dbbaa2abb904981db8d399e42f57f9962f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:13",
+      "sequence": 17997,
+      "chapter_label": "ISA 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "The nations will rush like the rushing of many waters, but he will rebuke them, and they will flee far off, and will be chased like the chaff of the mountains before the wind, and like the whirling dust before the storm.",
+      "ko": "열방이 충돌하기를 많은 물의 몰려옴과 같이 하나 주께서 그들을 꾸짖으시리니 그들이 멀리 도망함이 산에 겨가 바람 앞에 흩어짐 같겠고 폭풍 앞에 떠도는 티끌 같을 것이라",
+      "source_text_hash": "80a8bb691ff53b8c729048712d5ae94cbeca3135a509513e724e3a1173b134ba",
+      "translation_text_hash": "6c9f35d734c6f4cdae93bbe78d6faf8128907fb5e43ac3aacc264179ae48236d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열방이 충돌하기를 많은 물의 몰려옴과 같이 하나 주께서 그들을 꾸짖으시리니 그들이 멀리 도망함이 산에 겨가 바람 앞에 흩어짐 같겠고 폭풍 앞에 떠도는 티끌 같을 것이라"
+      ],
+      "raw_text_hashes": [
+        "6c9f35d734c6f4cdae93bbe78d6faf8128907fb5e43ac3aacc264179ae48236d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:17:14",
+      "sequence": 17998,
+      "chapter_label": "ISA 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "At evening, behold, terror! Before the morning, they are no more. This is the portion of those who plunder us, and the lot of those who rob us.",
+      "ko": "보라 저녁에 두려움을 당하고 아침 전에 그들이 없어졌나니 이는 우리를 노략한 자의 분깃이요 우리를 강탈한 자의 보응이니라",
+      "source_text_hash": "e3dd54c184145ca420e6b4f5c5294a94048dbee3ead7da19b25cb814b16ae5cd",
+      "translation_text_hash": "cfa4e216ed01e48761ab5ece5a2044939787d99cf61d99ad4e40e21cd18cb1f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 저녁에 두려움을 당하고 아침 전에 그들이 없어졌나니 이는 우리를 노략한 자의 분깃이요 우리를 강탈한 자의 보응이니라"
+      ],
+      "raw_text_hashes": [
+        "cfa4e216ed01e48761ab5ece5a2044939787d99cf61d99ad4e40e21cd18cb1f2"
+      ]
+    }
+  ]
+}

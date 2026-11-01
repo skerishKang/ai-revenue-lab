@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:028",
+  "unit_ordinal": 656,
+  "unit_label": "PRO 28",
+  "book_code": "PRO",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:28:1",
+      "sequence": 17198,
+      "chapter_label": "PRO 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "The wicked flee when no one pursues; but the righteous are as bold as a lion.",
+      "ko": "악인은 쫓아 오는 자가 없어도 도망하나 의인은 사자 같이 담대하니라",
+      "source_text_hash": "9fe9197d220ead813482f4c0bac98e3a4ba62e68b35a4945679083b1f1e807e4",
+      "translation_text_hash": "b83f91725abfbcbb650c5fb25d6e47a73a0e927b2afea1e031a5b396ac5a3ab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 쫓아 오는 자가 없어도 도망하나 의인은 사자 같이 담대하니라"
+      ],
+      "raw_text_hashes": [
+        "b83f91725abfbcbb650c5fb25d6e47a73a0e927b2afea1e031a5b396ac5a3ab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:2",
+      "sequence": 17199,
+      "chapter_label": "PRO 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "In rebellion, a land has many rulers, but order is maintained by a man of understanding and knowledge.",
+      "ko": "나라는 죄가 있으면 주관자가 많아져도 명철과 지식 있는 사람으로 말미암아 장구하게 되느니라",
+      "source_text_hash": "4272d6c7e7daed5505c1c756dee8f85586e27f58d6175102ad7a69f0711f1332",
+      "translation_text_hash": "d9836e034d6538f56b16333f0af7775c73483302ce2da7d74e72e129efec53d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라는 죄가 있으면 주관자가 많아져도 명철과 지식 있는 사람으로 말미암아 장구하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "d9836e034d6538f56b16333f0af7775c73483302ce2da7d74e72e129efec53d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:3",
+      "sequence": 17200,
+      "chapter_label": "PRO 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "A needy man who oppresses the poor is like a driving rain which leaves no crops.",
+      "ko": "가난한 자를 학대하는 가난한 자는 곡식을 남기지 아니하는 폭우 같으니라",
+      "source_text_hash": "3a563f2e1c3d558b47985dbbcdd473061843caf090a724346621d0acffa6f398",
+      "translation_text_hash": "87e8363ce286aeb438ba1644718b78502d98e82980118a27b3f855755f260ea2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자를 학대하는 가난한 자는 곡식을 남기지 아니하는 폭우 같으니라"
+      ],
+      "raw_text_hashes": [
+        "87e8363ce286aeb438ba1644718b78502d98e82980118a27b3f855755f260ea2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:4",
+      "sequence": 17201,
+      "chapter_label": "PRO 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "Those who forsake the law praise the wicked; but those who keep the law contend with them.",
+      "ko": "율법을 버린 자는 악인을 칭찬하나 율법을 지키는 자는 악인을 대적하느니라",
+      "source_text_hash": "0a623ac3fa58089be69aafd4f2eeed768374c761898337db3a22897cf958a27e",
+      "translation_text_hash": "389cc2604feda151a7067c6579fc2b1e9e18ab80d83bdf7e5ec39b71cd2aa6ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법을 버린 자는 악인을 칭찬하나 율법을 지키는 자는 악인을 대적하느니라"
+      ],
+      "raw_text_hashes": [
+        "389cc2604feda151a7067c6579fc2b1e9e18ab80d83bdf7e5ec39b71cd2aa6ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:5",
+      "sequence": 17202,
+      "chapter_label": "PRO 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Evil men don’t understand justice; but those who seek the LORD understand it fully.",
+      "ko": "악인은 공의를 깨닫지 못하나 여호와를 찾는 자는 모든 것을 깨닫느니라",
+      "source_text_hash": "c8f87616850c7a5c0181ed7261e869e6a8fae81d368e31c1b3c90fd3fa56feb2",
+      "translation_text_hash": "db5c78ac29b54b9f7b5091a858aa5152835760c729190b08f8b0f1deadb622f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 공의를 깨닫지 못하나 여호와를 찾는 자는 모든 것을 깨닫느니라"
+      ],
+      "raw_text_hashes": [
+        "db5c78ac29b54b9f7b5091a858aa5152835760c729190b08f8b0f1deadb622f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:6",
+      "sequence": 17203,
+      "chapter_label": "PRO 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "Better is the poor who walks in his integrity than he who is perverse in his ways, and he is rich.",
+      "ko": "성실히 행하는 가난한 자는 사곡히 행하는 부자보다 나으니라",
+      "source_text_hash": "a62a52229f77244e803c3f2c9c97d0cfb7ecea4f63ec7fba38d38087046164a0",
+      "translation_text_hash": "ff0d57fb20a9ebe226a0d8d4d5cd15a8125f9a2d1c0c38f2d1238a6d48efd556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성실히 행하는 가난한 자는 사곡히 행하는 부자보다 나으니라"
+      ],
+      "raw_text_hashes": [
+        "ff0d57fb20a9ebe226a0d8d4d5cd15a8125f9a2d1c0c38f2d1238a6d48efd556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:7",
+      "sequence": 17204,
+      "chapter_label": "PRO 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Whoever keeps the law is a wise son; but he who is a companion of gluttons shames his father.",
+      "ko": "율법을 지키는 자는 지혜로운 아들이요 탐식자를 사귀는 자는 아비를 욕되게 하는 자니라",
+      "source_text_hash": "e64e695d6da90fb791610cb15754aa8870a8d088f5d19c37be0108e44fdd6da3",
+      "translation_text_hash": "be1bf27a3f210f79b7c72401569f4cba09ff508c7c2143a5cfb4af8859c5ac1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법을 지키는 자는 지혜로운 아들이요 탐식자를 사귀는 자는 아비를 욕되게 하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "be1bf27a3f210f79b7c72401569f4cba09ff508c7c2143a5cfb4af8859c5ac1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:8",
+      "sequence": 17205,
+      "chapter_label": "PRO 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "He who increases his wealth by excessive interest gathers it for one who has pity on the poor.",
+      "ko": "중한 변리로 자기 재산을 많아지게 하는 것은 가난한 사람 불쌍히 여기는 자를 위하여 그 재산을 저축하는 것이니라",
+      "source_text_hash": "59398072cf7de6309ea4d2065d0bb3e6983adfabbd453086e2a5c1869cf66dcc",
+      "translation_text_hash": "3586720059e54f804b7291849fa4cb0414717b6486a302cc970c9a730d4f88d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "중한 변리로 자기 재산을 많아지게 하는 것은 가난한 사람 불쌍히 여기는 자를 위하여 그 재산을 저축하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3586720059e54f804b7291849fa4cb0414717b6486a302cc970c9a730d4f88d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:9",
+      "sequence": 17206,
+      "chapter_label": "PRO 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "He who turns away his ear from hearing the law, even his prayer is an abomination.",
+      "ko": "사람이 귀를 돌이키고 율법을 듣지 아니하면 그의 기도도 가증하니라",
+      "source_text_hash": "ecf9704a053c6b4072d29a7ecc94669956981033f9fa2f885bf7775fddc09c13",
+      "translation_text_hash": "a6fc65a56b0d21462029d423eee1b716aeb2c94c5522441e9185af04975c2133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 귀를 돌이키고 율법을 듣지 아니하면 그의 기도도 가증하니라"
+      ],
+      "raw_text_hashes": [
+        "a6fc65a56b0d21462029d423eee1b716aeb2c94c5522441e9185af04975c2133"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:10",
+      "sequence": 17207,
+      "chapter_label": "PRO 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Whoever causes the upright to go astray in an evil way, he will fall into his own trap; but the blameless will inherit good.",
+      "ko": "정직한 자를 악한 길로 유인하는 자는 스스로 자기 함정에 빠져도 성실한 자는 복을 얻느니라",
+      "source_text_hash": "f43ddce89985e70c8b82d17c44b0fa9beb5f0ea359f69de386a4d3c63dfe0e3a",
+      "translation_text_hash": "edc0386e0f0ee188848bed568bb57130112ad3d2e4807600bb4fad1f0cb1311d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정직한 자를 악한 길로 유인하는 자는 스스로 자기 함정에 빠져도 성실한 자는 복을 얻느니라"
+      ],
+      "raw_text_hashes": [
+        "edc0386e0f0ee188848bed568bb57130112ad3d2e4807600bb4fad1f0cb1311d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:11",
+      "sequence": 17208,
+      "chapter_label": "PRO 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "The rich man is wise in his own eyes; but the poor who has understanding sees through him.",
+      "ko": "부자는 자기를 지혜롭게 여겨도 명철한 가난한 자는 그를 살펴 아느니라",
+      "source_text_hash": "c1f7915398e79f8d15aff7f39290b00e5de222c780dd5a5db1fed0145fc1f52f",
+      "translation_text_hash": "fef961a32d06ca827b534d058ebc5abf556398c6f53a67061c62747bd1909984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부자는 자기를 지혜롭게 여겨도 명철한 가난한 자는 그를 살펴 아느니라"
+      ],
+      "raw_text_hashes": [
+        "fef961a32d06ca827b534d058ebc5abf556398c6f53a67061c62747bd1909984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:12",
+      "sequence": 17209,
+      "chapter_label": "PRO 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "When the righteous triumph, there is great glory; but when the wicked rise, men hide themselves.",
+      "ko": "의인이 득의하면 큰 영화가 있고 악인이 일어나면 사람이 숨느니라",
+      "source_text_hash": "bfd1c922e6dfe30454d5fcdb4b198690c85e3306a5f5c945f49cf4db2571365d",
+      "translation_text_hash": "abf3896338973518e7b026b83a92c2828d4bb95fe404a53ba2359c89409137fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의인이 득의하면 큰 영화가 있고 악인이 일어나면 사람이 숨느니라"
+      ],
+      "raw_text_hashes": [
+        "abf3896338973518e7b026b83a92c2828d4bb95fe404a53ba2359c89409137fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:13",
+      "sequence": 17210,
+      "chapter_label": "PRO 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "He who conceals his sins doesn’t prosper, but whoever confesses and renounces them finds mercy.",
+      "ko": "자기의 죄를 숨기는 자는 형통치 못하나 죄를 자복하고 버리는 자는 불쌍히 여김을 받으리라",
+      "source_text_hash": "3f511312483e6a37301036b9f2de2edfaec65455f11968c197b4a0b2ea6939c2",
+      "translation_text_hash": "269d9e0d124e43785f050320cfce3cfa6bf60d62c4d34bfbbde9c272b995f11f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 죄를 숨기는 자는 형통치 못하나 죄를 자복하고 버리는 자는 불쌍히 여김을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "269d9e0d124e43785f050320cfce3cfa6bf60d62c4d34bfbbde9c272b995f11f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:14",
+      "sequence": 17211,
+      "chapter_label": "PRO 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "Blessed is the man who always fears; but one who hardens his heart falls into trouble.",
+      "ko": "항상 경외하는 자는 복되거니와 마음을 강퍅하게 하는 자는 재앙에 빠지리라",
+      "source_text_hash": "45990cac8dabdf43f1f45a15559957cdf554629e1bea5f8264fb8ed9ef80fcb3",
+      "translation_text_hash": "cef2a18e9e0daba2314fbde6dd4fa3f2ae9fc794e47a238484822ea4ae0621cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 경외하는 자는 복되거니와 마음을 강퍅하게 하는 자는 재앙에 빠지리라"
+      ],
+      "raw_text_hashes": [
+        "cef2a18e9e0daba2314fbde6dd4fa3f2ae9fc794e47a238484822ea4ae0621cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:15",
+      "sequence": 17212,
+      "chapter_label": "PRO 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "As a roaring lion or a charging bear, so is a wicked ruler over helpless people.",
+      "ko": "가난한 백성을 압제하는 악한 관원은 부르짖는 사자와 주린 곰 같으니라",
+      "source_text_hash": "dbdcc4fe1785bcf1da9d2a01558751503592eeb40bf17885c79686ef2b1f21c5",
+      "translation_text_hash": "6d1257fae64c210e9ccdef3b456b13dee9cfe310b1dc890b42d3228815f89048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 백성을 압제하는 악한 관원은 부르짖는 사자와 주린 곰 같으니라"
+      ],
+      "raw_text_hashes": [
+        "6d1257fae64c210e9ccdef3b456b13dee9cfe310b1dc890b42d3228815f89048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:16",
+      "sequence": 17213,
+      "chapter_label": "PRO 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "A tyrannical ruler lacks judgment. One who hates ill-gotten gain will have long days.",
+      "ko": "무지한 치리자는 포학을 크게 행하거니와 탐욕을 미워하는 자는 장수하리라",
+      "source_text_hash": "452280d85ecbd5ae3253f2ba33a122bd057ea58e4ea27dd72d71922a06ddc5af",
+      "translation_text_hash": "3ba051699638e7a34bbd1692544d258bbdfb55dc154742a1db820100cc5f1ba7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무지한 치리자는 포학을 크게 행하거니와 탐욕을 미워하는 자는 장수하리라"
+      ],
+      "raw_text_hashes": [
+        "3ba051699638e7a34bbd1692544d258bbdfb55dc154742a1db820100cc5f1ba7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:17",
+      "sequence": 17214,
+      "chapter_label": "PRO 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "A man who is tormented by blood guilt will be a fugitive until death. No one will support him.",
+      "ko": "사람의 피를 흘린 자는 함정으로 달려갈 것이니 그를 막지 말찌니라",
+      "source_text_hash": "17b52c8e942b64bf3a8da1beb7b3c00c4e892ce685ce70e3a7697301624d37c9",
+      "translation_text_hash": "46b9eeb0a1e121e94a0bfbdce3dddcb703fe83e4e95d439ccbf751c2448ef1bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 피를 흘린 자는 함정으로 달려갈 것이니 그를 막지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "46b9eeb0a1e121e94a0bfbdce3dddcb703fe83e4e95d439ccbf751c2448ef1bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:18",
+      "sequence": 17215,
+      "chapter_label": "PRO 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "Whoever walks blamelessly is kept safe; but one with perverse ways will fall suddenly.",
+      "ko": "성실히 행하는 자는 구원을 얻을 것이나 사곡히 행하는 자는 곧 넘어지리라",
+      "source_text_hash": "7ed0356cc86af212817b54eda215bf1813604da2141e05a5b1ab7608efed9a56",
+      "translation_text_hash": "5f86428cad1d09f1119679b1c314aa25406eebdfb22ce9af08980a9e6e67e47e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성실히 행하는 자는 구원을 얻을 것이나 사곡히 행하는 자는 곧 넘어지리라"
+      ],
+      "raw_text_hashes": [
+        "5f86428cad1d09f1119679b1c314aa25406eebdfb22ce9af08980a9e6e67e47e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:19",
+      "sequence": 17216,
+      "chapter_label": "PRO 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "One who works his land will have an abundance of food; but one who chases fantasies will have his fill of poverty.",
+      "ko": "자기의 토지를 경작하는 자는 먹을 것이 많으려니와 방탕을 좇는 자는 궁핍함이 많으리라",
+      "source_text_hash": "4259dd6bcadff16803fd2b01d00d041960115319f1b9aa423183efd0d98d05c7",
+      "translation_text_hash": "2dafb2e335309ec7ed80f2704c01a9e7c0423304c5c1d8e2872516921118e6cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 토지를 경작하는 자는 먹을 것이 많으려니와 방탕을 좇는 자는 궁핍함이 많으리라"
+      ],
+      "raw_text_hashes": [
+        "2dafb2e335309ec7ed80f2704c01a9e7c0423304c5c1d8e2872516921118e6cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:20",
+      "sequence": 17217,
+      "chapter_label": "PRO 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "A faithful man is rich with blessings; but one who is eager to be rich will not go unpunished.",
+      "ko": "충성된 자는 복이 많아도 속히 부하고자 하는 자는 형벌을 면치 못하리라",
+      "source_text_hash": "88195ffb7181b56ee3eb5edb76910975064513b152c2d5f84721402e9b8c9dc6",
+      "translation_text_hash": "1d1684be6b66f5d9261cadbb0551da4b271d2e09e7906dfade598a8a34fbb2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "충성된 자는 복이 많아도 속히 부하고자 하는 자는 형벌을 면치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "1d1684be6b66f5d9261cadbb0551da4b271d2e09e7906dfade598a8a34fbb2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:21",
+      "sequence": 17218,
+      "chapter_label": "PRO 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "To show partiality is not good, yet a man will do wrong for a piece of bread.",
+      "ko": "사람의 낯을 보아주는 것이 좋지 못하고 한 조각 떡을 인하여 범법하는 것도 그러하니라",
+      "source_text_hash": "023f6967838fd098c1e7bc6f72219821c7897a90bd0b3574dbaffdb8bc8821ec",
+      "translation_text_hash": "809e6e804191983ab2a7d10a67616e4f121973b21684124a6a252e7e5dcf55b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 낯을 보아주는 것이 좋지 못하고 한 조각 떡을 인하여 범법하는 것도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "809e6e804191983ab2a7d10a67616e4f121973b21684124a6a252e7e5dcf55b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:22",
+      "sequence": 17219,
+      "chapter_label": "PRO 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "A stingy man hurries after riches, and doesn’t know that poverty waits for him.",
+      "ko": "악한 눈이 있는 자는 재물을 얻기에만 급하고 빈궁이 자기에게로 임할 줄은 알지 못하느니라",
+      "source_text_hash": "f99af4360ae197649fbf4817734a65e58a04b13f0830ae267cfff0cfa9b32a2e",
+      "translation_text_hash": "ae67c7878986606b7f2243fd404a51ae1a9aa59f824357159200623a76f0e45d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 눈이 있는 자는 재물을 얻기에만 급하고 빈궁이 자기에게로 임할 줄은 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "ae67c7878986606b7f2243fd404a51ae1a9aa59f824357159200623a76f0e45d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:23",
+      "sequence": 17220,
+      "chapter_label": "PRO 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "One who rebukes a man will afterward find more favor than one who flatters with the tongue.",
+      "ko": "사람을 경책하는 자는 혀로 아첨하는 자보다 나중에 더욱 사랑을 받느니라",
+      "source_text_hash": "2711c7e1b0668a4e5be81920e12340618432dc7a6f59db78d88b6455c47d4785",
+      "translation_text_hash": "bfc81e307f6d93e2fcd11950bf88dd8782c554199877f6aa60a2bd98344a3d31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 경책하는 자는 혀로 아첨하는 자보다 나중에 더욱 사랑을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "bfc81e307f6d93e2fcd11950bf88dd8782c554199877f6aa60a2bd98344a3d31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:24",
+      "sequence": 17221,
+      "chapter_label": "PRO 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "Whoever robs his father or his mother and says, “It’s not wrong,” is a partner with a destroyer.",
+      "ko": "부모의 물건을 도적질하고 죄가 아니라 하는 자는 멸망케 하는 자의 동류니라",
+      "source_text_hash": "effbd65e54b1c934171803d6a9a936d131f33770e6803e03a1ff39a9259d1c51",
+      "translation_text_hash": "251ebfb1a4e1740620e376e88ac4385c3e73160a82917e65b0bdd44a30985734",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부모의 물건을 도적질하고 죄가 아니라 하는 자는 멸망케 하는 자의 동류니라"
+      ],
+      "raw_text_hashes": [
+        "251ebfb1a4e1740620e376e88ac4385c3e73160a82917e65b0bdd44a30985734"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:25",
+      "sequence": 17222,
+      "chapter_label": "PRO 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "One who is greedy stirs up strife; but one who trusts in the LORD will prosper.",
+      "ko": "마음이 탐하는 자는 다툼을 일으키나 여호와를 의지하는 자는 풍족하게 되느니라",
+      "source_text_hash": "62a221595303281f3ead6f7f5e939794fc971e92fc7f449f16112f823d578526",
+      "translation_text_hash": "3d0495527efd9e83c51babb5f528c75da4253d5f102521de6c63fa5649ff57fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 탐하는 자는 다툼을 일으키나 여호와를 의지하는 자는 풍족하게 되느니라"
+      ],
+      "raw_text_hashes": [
+        "3d0495527efd9e83c51babb5f528c75da4253d5f102521de6c63fa5649ff57fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:26",
+      "sequence": 17223,
+      "chapter_label": "PRO 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "One who trusts in himself is a fool; but one who walks in wisdom is kept safe.",
+      "ko": "자기의 마음을 믿는 자는 미련한 자요 지혜롭게 행하는 자는 구원을 얻을 자니라",
+      "source_text_hash": "d3f55332e862d8b587f1f00157ef0aa4a1288e665cff9f4a22023ec35bdd1670",
+      "translation_text_hash": "37a2de87f6edd6b5309d532596d9ba7f9a99157bbb91a892c06c0f15d7ab3a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 마음을 믿는 자는 미련한 자요 지혜롭게 행하는 자는 구원을 얻을 자니라"
+      ],
+      "raw_text_hashes": [
+        "37a2de87f6edd6b5309d532596d9ba7f9a99157bbb91a892c06c0f15d7ab3a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:27",
+      "sequence": 17224,
+      "chapter_label": "PRO 28",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 27
+        }
+      ],
+      "en": "One who gives to the poor has no lack; but one who closes his eyes will have many curses.",
+      "ko": "가난한 자를 구제하는 자는 궁핍하지 아니 하려니와 못본체하는 자에게는 저주가 많으리라",
+      "source_text_hash": "942731c5f1c79b4be5e36d9c01c7cee8e331ea11a54e5050525e557e3880f7e8",
+      "translation_text_hash": "ee994f980061a4f6609b888827836f1bfe9787a12a646d6d7395815ff5259229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자를 구제하는 자는 궁핍하지 아니 하려니와 못본체하는 자에게는 저주가 많으리라"
+      ],
+      "raw_text_hashes": [
+        "ee994f980061a4f6609b888827836f1bfe9787a12a646d6d7395815ff5259229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:28:28",
+      "sequence": 17225,
+      "chapter_label": "PRO 28",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 28,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 28,
+          "verse": 28
+        }
+      ],
+      "en": "When the wicked rise, men hide themselves; but when they perish, the righteous thrive.",
+      "ko": "악인이 일어나면 사람이 숨고 그가 멸망하면 의인이 많아지느니라",
+      "source_text_hash": "640e72372d3c8eb9d1f1fb63d315379956e0fc192e2c422b37dd312eaf0888c5",
+      "translation_text_hash": "5f28ae6647d5a2a4b3e38fd547161f1d125fb1adc7035737ca41fd63c66bb190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인이 일어나면 사람이 숨고 그가 멸망하면 의인이 많아지느니라"
+      ],
+      "raw_text_hashes": [
+        "5f28ae6647d5a2a4b3e38fd547161f1d125fb1adc7035737ca41fd63c66bb190"
+      ]
+    }
+  ]
+}

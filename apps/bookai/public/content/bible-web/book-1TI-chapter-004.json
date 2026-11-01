@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:004",
+  "unit_ordinal": 1123,
+  "unit_label": "1TI 4",
+  "book_code": "1TI",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:4:1",
+      "sequence": 29745,
+      "chapter_label": "1TI 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "But the Spirit says expressly that in later times some will fall away from the faith, paying attention to seducing spirits and doctrines of demons,",
+      "ko": "그러나 성령이 밝히 말씀하시기를 후일에 어떤 사람들이 믿음에서 떠나 미혹케 하는 영과 귀신의 가르침을 좇으리라 하셨으니",
+      "source_text_hash": "26997df6ef15719033f13338da3d76550a400cec4cd3cc81b78d38938a087e2d",
+      "translation_text_hash": "a97291a5315166c3040c1b87d27f1f9d927669dce7c1556d8dc39dbc434a17f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 성령이 밝히 말씀하시기를 후일에 어떤 사람들이 믿음에서 떠나 미혹케 하는 영과 귀신의 가르침을 좇으리라 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "a97291a5315166c3040c1b87d27f1f9d927669dce7c1556d8dc39dbc434a17f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:2",
+      "sequence": 29746,
+      "chapter_label": "1TI 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "through the hypocrisy of men who speak lies, branded in their own conscience as with a hot iron,",
+      "ko": "자기 양심이 화인 맞아서 외식함으로 거짓말하는 자들이라",
+      "source_text_hash": "d2c8fe49ebeaa1c296d9176f81ddb188e45925a54a310ef7a41c79aba32b9997",
+      "translation_text_hash": "742a1a4005b126271c61e49d8148fa54ea30396f056bcfd1efa12e12afda88af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 양심이 화인 맞아서 외식함으로 거짓말하는 자들이라"
+      ],
+      "raw_text_hashes": [
+        "742a1a4005b126271c61e49d8148fa54ea30396f056bcfd1efa12e12afda88af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:3",
+      "sequence": 29747,
+      "chapter_label": "1TI 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "forbidding marriage and commanding to abstain from foods which God created to be received with thanksgiving by those who believe and know the truth.",
+      "ko": "혼인을 금하고 식물을 폐하라 할터이나 식물은 하나님이 지으신 바니 믿는 자들과 진리를 아는 자들이 감사함으로 받을 것이니라",
+      "source_text_hash": "d2125a26f14ea3e80caedec7311e38c77097d22ff3494dbc74e167fcc666c748",
+      "translation_text_hash": "a9eca72e8ff2c09305a7769d2e1442f38601f786315c545c5ec57c8b409fc710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혼인을 금하고 식물을 폐하라 할터이나 식물은 하나님이 지으신 바니 믿는 자들과 진리를 아는 자들이 감사함으로 받을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a9eca72e8ff2c09305a7769d2e1442f38601f786315c545c5ec57c8b409fc710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:4",
+      "sequence": 29748,
+      "chapter_label": "1TI 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "For every creature of God is good, and nothing is to be rejected if it is received with thanksgiving.",
+      "ko": "하나님의 지으신 모든 것이 선하매 감사함으로 받으면 버릴 것이 없나니",
+      "source_text_hash": "77ce692967a0b4476049a7d7a001744b22a27fa5935e69383de6334255785419",
+      "translation_text_hash": "dc7cfbe2c7c7780ed4378259bc84d013b215747552073b816739ae536d0913fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 지으신 모든 것이 선하매 감사함으로 받으면 버릴 것이 없나니"
+      ],
+      "raw_text_hashes": [
+        "dc7cfbe2c7c7780ed4378259bc84d013b215747552073b816739ae536d0913fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:5",
+      "sequence": 29749,
+      "chapter_label": "1TI 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "For it is sanctified through the word of God and prayer.",
+      "ko": "하나님의 말씀과 기도로 거룩하여짐이니라",
+      "source_text_hash": "635a0e19881a56353106d2fd051e65a7c739ba8a213cda801d4fe6b0cc555ff1",
+      "translation_text_hash": "4767af000d06e6b2232fab14b71ffc84c50a876c75a14bbb8ce855ad6e1ff24c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀과 기도로 거룩하여짐이니라"
+      ],
+      "raw_text_hashes": [
+        "4767af000d06e6b2232fab14b71ffc84c50a876c75a14bbb8ce855ad6e1ff24c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:6",
+      "sequence": 29750,
+      "chapter_label": "1TI 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "If you instruct the brothers of these things, you will be a good servant of Christ Jesus, nourished in the words of the faith and of the good doctrine which you have followed.",
+      "ko": "네가 이것으로 형제를 깨우치면 그리스도 예수의 선한 일군이 되어 믿음의 말씀과 네가 좇은 선한 교훈으로 양육을 받으리라",
+      "source_text_hash": "36514178e6202bee7b7816b784c0912eb6b6b316f58fbf629c137084afbd7332",
+      "translation_text_hash": "df6eb5036a17d29a1bc7c06f42e343f61de841c2d33d0541866f03e93118fa38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이것으로 형제를 깨우치면 그리스도 예수의 선한 일군이 되어 믿음의 말씀과 네가 좇은 선한 교훈으로 양육을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "df6eb5036a17d29a1bc7c06f42e343f61de841c2d33d0541866f03e93118fa38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:7",
+      "sequence": 29751,
+      "chapter_label": "1TI 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But refuse profane and old wives’ fables. Exercise yourself toward godliness.",
+      "ko": "망령되고 허탄한 신화를 버리고 오직 경건에 이르기를 연습하라",
+      "source_text_hash": "115c65716e076776391fdca9fb16fcaca0a456a81ff3c54a2a896814843d3185",
+      "translation_text_hash": "6fb8e3c9c71bc09b923b21113f3c354210dffaa967824d09572a8f8c4943d95d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "망령되고 허탄한 신화를 버리고 오직 경건에 이르기를 연습하라"
+      ],
+      "raw_text_hashes": [
+        "6fb8e3c9c71bc09b923b21113f3c354210dffaa967824d09572a8f8c4943d95d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:8",
+      "sequence": 29752,
+      "chapter_label": "1TI 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "For bodily exercise has some value, but godliness has value in all things, having the promise of the life which is now and of that which is to come.",
+      "ko": "육체의 연습은 약간의 유익이 있으나 경건은 범사에 유익하니 금생과 내생에 약속이 있느니라",
+      "source_text_hash": "917b32d70ada262280e878db2d5261cf83f12a0cacda04082d6afa0680f1b3d5",
+      "translation_text_hash": "7789a3d22f8fae2a397668ec614c3872d4f596fb412d94a820a1e6c44be30a5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육체의 연습은 약간의 유익이 있으나 경건은 범사에 유익하니 금생과 내생에 약속이 있느니라"
+      ],
+      "raw_text_hashes": [
+        "7789a3d22f8fae2a397668ec614c3872d4f596fb412d94a820a1e6c44be30a5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:9",
+      "sequence": 29753,
+      "chapter_label": "1TI 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "This saying is faithful and worthy of all acceptance.",
+      "ko": "미쁘다 이 말이여 모든 사람들이 받을만하도다",
+      "source_text_hash": "f6d6c0acc4131cd69ee268a08feabb6995f6e062d83620087e3498698fe305e6",
+      "translation_text_hash": "9158d5e8d02ae92f806ff7c671f708eb056df025a70b0bb09c6877e3bd063fbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미쁘다 이 말이여 모든 사람들이 받을만하도다"
+      ],
+      "raw_text_hashes": [
+        "9158d5e8d02ae92f806ff7c671f708eb056df025a70b0bb09c6877e3bd063fbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:10",
+      "sequence": 29754,
+      "chapter_label": "1TI 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "For to this end we both labor and suffer reproach, because we have set our trust in the living God, who is the Savior of all men, especially of those who believe.",
+      "ko": "이를 위하여 우리가 수고하고 진력하는 것은 우리 소망을 살아 계신 하나님께 둠이니 곧 모든 사람 특히 믿는 자들의 구주시라",
+      "source_text_hash": "2a8e04bb07a6040a599998df3b487d2dd6086066d9234ec326169d0edf1015f4",
+      "translation_text_hash": "a7142ebe460df58d07959e11031cc672b36d2314f0cfd0ae20b4697b44098ca1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 우리가 수고하고 진력하는 것은 우리 소망을 살아 계신 하나님께 둠이니 곧 모든 사람 특히 믿는 자들의 구주시라"
+      ],
+      "raw_text_hashes": [
+        "a7142ebe460df58d07959e11031cc672b36d2314f0cfd0ae20b4697b44098ca1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:11",
+      "sequence": 29755,
+      "chapter_label": "1TI 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Command and teach these things.",
+      "ko": "네가 이것들을 명하고 가르치라",
+      "source_text_hash": "4343fe133e299c5d2efd9fa6cbe79106119d5c128edcc5717d725140683d6e68",
+      "translation_text_hash": "0e7b9be3d57a3d5b665b9e37f3d7f1670ac3faa12de9b3281cfed188b529ae00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이것들을 명하고 가르치라"
+      ],
+      "raw_text_hashes": [
+        "0e7b9be3d57a3d5b665b9e37f3d7f1670ac3faa12de9b3281cfed188b529ae00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:12",
+      "sequence": 29756,
+      "chapter_label": "1TI 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Let no man despise your youth; but be an example to those who believe, in word, in your way of life, in love, in spirit, in faith, and in purity.",
+      "ko": "누구든지 네 연소함을 업신여기지 못하게 하고 오직 말과 행실과 사랑과 믿음과 정절에 대하여 믿는 자에게 본이 되어",
+      "source_text_hash": "70336c5d908ade97c76dc23bca947d5f46b4a434aa5c0e6a8411acfaeddeca9e",
+      "translation_text_hash": "3a215f61b8ea7f5782ea237d57db38bc76d8b0b967fa73686bada66fa143f354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 네 연소함을 업신여기지 못하게 하고 오직 말과 행실과 사랑과 믿음과 정절에 대하여 믿는 자에게 본이 되어"
+      ],
+      "raw_text_hashes": [
+        "3a215f61b8ea7f5782ea237d57db38bc76d8b0b967fa73686bada66fa143f354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:13",
+      "sequence": 29757,
+      "chapter_label": "1TI 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Until I come, pay attention to reading, to exhortation, and to teaching.",
+      "ko": "내가 이를 때까지 읽는 것과 권하는 것과 가르치는 것에 착념하라",
+      "source_text_hash": "8b9d3220ff5079e0d949e513b424f2cca12bdb852d61e0e0bcebdb96fb1a16fd",
+      "translation_text_hash": "2a87be32b375fe4b83614d22c49087969cb4b8b1834ebcc728fc5780375d6b96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이를 때까지 읽는 것과 권하는 것과 가르치는 것에 착념하라"
+      ],
+      "raw_text_hashes": [
+        "2a87be32b375fe4b83614d22c49087969cb4b8b1834ebcc728fc5780375d6b96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:14",
+      "sequence": 29758,
+      "chapter_label": "1TI 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t neglect the gift that is in you, which was given to you by prophecy with the laying on of the hands of the elders.",
+      "ko": "네 속에 있는 은사 곧 장로의 회에서 안수 받을 때에 예언으로 말미암아 받은 것을 조심 없이 말며",
+      "source_text_hash": "88017d7a1dec9b9fbac7d431608097b14909916c1cc5469a90680a97786e9a76",
+      "translation_text_hash": "35c5dca8bcea48a77a39002c66abc44e370de8592aba95dc19f61f02b726518b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 속에 있는 은사 곧 장로의 회에서 안수 받을 때에 예언으로 말미암아 받은 것을 조심 없이 말며"
+      ],
+      "raw_text_hashes": [
+        "35c5dca8bcea48a77a39002c66abc44e370de8592aba95dc19f61f02b726518b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:15",
+      "sequence": 29759,
+      "chapter_label": "1TI 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Be diligent in these things. Give yourself wholly to them, that your progress may be revealed to all.",
+      "ko": "이 모든 일에 전심전력하여 너의 진보를 모든 사람에게 나타나게 하라",
+      "source_text_hash": "90276ee82cc03a487626ad049c13bc1906469d9c075387e6977f1d4a841b9d5a",
+      "translation_text_hash": "f892f46103518d262471e74997030af0723702d798b0cb2989df73a06d37b9b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일에 전심전력하여 너의 진보를 모든 사람에게 나타나게 하라"
+      ],
+      "raw_text_hashes": [
+        "f892f46103518d262471e74997030af0723702d798b0cb2989df73a06d37b9b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:4:16",
+      "sequence": 29760,
+      "chapter_label": "1TI 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TI",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "Pay attention to yourself and to your teaching. Continue in these things, for in doing this you will save both yourself and those who hear you.",
+      "ko": "네가 네 자신과 가르침을 삼가 이 일을 계속하라 이것을 행함으로 네 자신과 네게 듣는 자를 구원하리라",
+      "source_text_hash": "f7551265bc20447378c582062016819f4e3e08eaf736eaa406f444f240e150c3",
+      "translation_text_hash": "d27a15bbd81208981e66b03112d16bc01e0f3f76309d4c687a22e5288d01a7e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 네 자신과 가르침을 삼가 이 일을 계속하라 이것을 행함으로 네 자신과 네게 듣는 자를 구원하리라"
+      ],
+      "raw_text_hashes": [
+        "d27a15bbd81208981e66b03112d16bc01e0f3f76309d4c687a22e5288d01a7e7"
+      ]
+    }
+  ]
+}

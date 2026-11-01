@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:002",
+  "unit_ordinal": 1080,
+  "unit_label": "2CO 2",
+  "book_code": "2CO",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:2:1",
+      "sequence": 28822,
+      "chapter_label": "2CO 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "But I determined this for myself, that I would not come to you again in sorrow.",
+      "ko": "내가 다시 근심으로 너희에게 나아가지 않기로 스스로 결단하였노니",
+      "source_text_hash": "df4b029e2ddcb12ee9d0c8550dc69dc24b713667bf644c1e18989a60d6ab9c87",
+      "translation_text_hash": "04a544fd4933cc53a3525bbe82e13ff504ac4ffd4c573f566f4cdbc335a98cd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 다시 근심으로 너희에게 나아가지 않기로 스스로 결단하였노니"
+      ],
+      "raw_text_hashes": [
+        "04a544fd4933cc53a3525bbe82e13ff504ac4ffd4c573f566f4cdbc335a98cd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:2",
+      "sequence": 28823,
+      "chapter_label": "2CO 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "For if I make you grieve, then who will make me glad but he who is made to grieve by me?",
+      "ko": "내가 너희를 근심하게 하면 나의 근심하게 한 자 밖에 나를 기쁘게 하는 자가 누구냐",
+      "source_text_hash": "83c349e55995a1833be456234613ce77bd15220e4adf7cac0af8fe09fe394d99",
+      "translation_text_hash": "dfe662b6980acc86e962e487a694e8a04dd6df2974eee23d816f67fb5a3657a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 근심하게 하면 나의 근심하게 한 자 밖에 나를 기쁘게 하는 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "dfe662b6980acc86e962e487a694e8a04dd6df2974eee23d816f67fb5a3657a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:3",
+      "sequence": 28824,
+      "chapter_label": "2CO 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "And I wrote this very thing to you, so that when I came, I wouldn’t have sorrow from them of whom I ought to rejoice; having confidence in you all that my joy would be shared by all of you.",
+      "ko": "내가 이같이 쓴 것은 내가 갈 때에 마땅히 나를 기쁘게 할 자로부터 도리어 근심을 얻을까 염려함이요 또 너희 무리를 대하여 나의 기쁨이 너희 무리의 기쁨인줄 확신함이로라",
+      "source_text_hash": "bf080b944bb46c70378c77e3b8d1a7747f09d2a393450d3e0ed88b2474c2ccd5",
+      "translation_text_hash": "c3b2474867f09df7f4d444f163689f37a05a5caec0ec7c595b3ffd59df293b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이같이 쓴 것은 내가 갈 때에 마땅히 나를 기쁘게 할 자로부터 도리어 근심을 얻을까 염려함이요 또 너희 무리를 대하여 나의 기쁨이 너희 무리의 기쁨인줄 확신함이로라"
+      ],
+      "raw_text_hashes": [
+        "c3b2474867f09df7f4d444f163689f37a05a5caec0ec7c595b3ffd59df293b52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:4",
+      "sequence": 28825,
+      "chapter_label": "2CO 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "For out of much affliction and anguish of heart I wrote to you with many tears, not that you should be made to grieve, but that you might know the love that I have so abundantly for you.",
+      "ko": "내가 큰 환난과 애통한 마음이 있어 많은 눈물로 너희에게 썼노니 이는 너희로 근심하게 하려 한것이 아니요 오직 내가 너희를 향하여 넘치는 사랑이 있음을 너희로 알게 하려 함이라",
+      "source_text_hash": "c12922d2160ee1b42a88af7ca3da255a737f4697e09149293961aa575cd25761",
+      "translation_text_hash": "8cca28f08087827ea8358bfc19054b72cb5ef61a80b89e188681191c71f7ac09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 큰 환난과 애통한 마음이 있어 많은 눈물로 너희에게 썼노니 이는 너희로 근심하게 하려 한것이 아니요 오직 내가 너희를 향하여 넘치는 사랑이 있음을 너희로 알게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "8cca28f08087827ea8358bfc19054b72cb5ef61a80b89e188681191c71f7ac09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:5",
+      "sequence": 28826,
+      "chapter_label": "2CO 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "But if any has caused sorrow, he has caused sorrow not to me, but in part (that I not press too heavily) to you all.",
+      "ko": "근심하게 한 자가 있었을찌라도 나를 근심하게 한것이 아니요 어느 정도 너희 무리를 근심하게 한것이니 어느 정도라 함은 내가 너무 심하게 하지 아니하려 함이라",
+      "source_text_hash": "1608ae5158e05e4b335db71ae68950ef2444285d411bda9862130c7a4decc444",
+      "translation_text_hash": "3a373fa56762820668e4338fcd70405e82a4865222f9fd538fa1daa72a574618",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근심하게 한 자가 있었을찌라도 나를 근심하게 한것이 아니요 어느 정도 너희 무리를 근심하게 한것이니 어느 정도라 함은 내가 너무 심하게 하지 아니하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "3a373fa56762820668e4338fcd70405e82a4865222f9fd538fa1daa72a574618"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:6",
+      "sequence": 28827,
+      "chapter_label": "2CO 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "This punishment which was inflicted by the many is sufficient for such a one;",
+      "ko": "이러한 사람이 많은 사람에게서 벌 받은 것이 족하도다",
+      "source_text_hash": "7f17f3d8c0e07a2f52459a2d6dc8681d3e2a5f941ac50b3a506148ad543c1a82",
+      "translation_text_hash": "51fff675a7995dc6a927fbda74e6891d1ac57633d10af8af975cec352b83ebb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러한 사람이 많은 사람에게서 벌 받은 것이 족하도다"
+      ],
+      "raw_text_hashes": [
+        "51fff675a7995dc6a927fbda74e6891d1ac57633d10af8af975cec352b83ebb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:7",
+      "sequence": 28828,
+      "chapter_label": "2CO 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "so that, on the contrary, you should rather forgive him and comfort him, lest by any means such a one should be swallowed up with his excessive sorrow.",
+      "ko": "그런즉 너희는 차라리 저를 용서하고 위로할 것이니 저가 너무 많은 근심에 잠길까 두려워하노라",
+      "source_text_hash": "4f214f527af46a88321fc254ad2b2787ef093a3f125cc5765e7f4570d21fc787",
+      "translation_text_hash": "81d943250f4a5833a362f6251ec66da3d0b102fa65d3a1ee6527397fdf911429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 차라리 저를 용서하고 위로할 것이니 저가 너무 많은 근심에 잠길까 두려워하노라"
+      ],
+      "raw_text_hashes": [
+        "81d943250f4a5833a362f6251ec66da3d0b102fa65d3a1ee6527397fdf911429"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:8",
+      "sequence": 28829,
+      "chapter_label": "2CO 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore I beg you to confirm your love toward him.",
+      "ko": "그러므로 너희를 권하노니 사랑을 저희에게 나타내라",
+      "source_text_hash": "4c51a60390def419068ec4e315fbb482fcd8b5cdb4e5e4e25ee0091bd6c39f01",
+      "translation_text_hash": "c65a99cb50e6e632be9b54af73be3e73dcc60261e4b1663052caff30559d6bc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희를 권하노니 사랑을 저희에게 나타내라"
+      ],
+      "raw_text_hashes": [
+        "c65a99cb50e6e632be9b54af73be3e73dcc60261e4b1663052caff30559d6bc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:9",
+      "sequence": 28830,
+      "chapter_label": "2CO 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "For to this end I also wrote, that I might know the proof of you, whether you are obedient in all things.",
+      "ko": "너희가 범사에 순종하는지 그 증거를 알고자하여 내가 이것을 너희에게 썼노라",
+      "source_text_hash": "dbdc0323eeae14b10528d107140ce0314502b80d2440de45191386fe536d7e8f",
+      "translation_text_hash": "ebdadae9c3acf3f21ed0094add868b50c65b552b1e09a770dcb299e70c77806f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 범사에 순종하는지 그 증거를 알고자하여 내가 이것을 너희에게 썼노라"
+      ],
+      "raw_text_hashes": [
+        "ebdadae9c3acf3f21ed0094add868b50c65b552b1e09a770dcb299e70c77806f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:10",
+      "sequence": 28831,
+      "chapter_label": "2CO 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Now I also forgive whomever you forgive anything. For if indeed I have forgiven anything, I have forgiven that one for your sakes in the presence of Christ,",
+      "ko": "너희가 무슨 일이든지 뉘게 용서하면 나도 그리하고 내가 만일 용서한 일이 있으면 용서한 그것은 너희를 위하여 그리스도 앞에서 한 것이니",
+      "source_text_hash": "2753001a1e1bd46d75b2c9600a452fc673660b31e67fe34fb4979f9d6e701b6a",
+      "translation_text_hash": "7c6669ed6fa991d8610925350b9ba0b5343b4845ae40421640cc07b9a43776cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 무슨 일이든지 뉘게 용서하면 나도 그리하고 내가 만일 용서한 일이 있으면 용서한 그것은 너희를 위하여 그리스도 앞에서 한 것이니"
+      ],
+      "raw_text_hashes": [
+        "7c6669ed6fa991d8610925350b9ba0b5343b4845ae40421640cc07b9a43776cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:11",
+      "sequence": 28832,
+      "chapter_label": "2CO 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "that no advantage may be gained over us by Satan, for we are not ignorant of his schemes.",
+      "ko": "이는 우리로 사단에게 속지 않게 하려 함이라 우리가 그 궤계를 알지 못하는 바가 아니로라",
+      "source_text_hash": "2a89fa0f36a9e12fad0c3f58c398a3e992c0f09784e3e950c392283a6d81c197",
+      "translation_text_hash": "0d25c7e2bca3c25f68ab751022b7fbbe7ba948b9fc5f48aa7c54338a709e259e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리로 사단에게 속지 않게 하려 함이라 우리가 그 궤계를 알지 못하는 바가 아니로라"
+      ],
+      "raw_text_hashes": [
+        "0d25c7e2bca3c25f68ab751022b7fbbe7ba948b9fc5f48aa7c54338a709e259e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:12",
+      "sequence": 28833,
+      "chapter_label": "2CO 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Now when I came to Troas for the Good News of Christ, and when a door was opened to me in the Lord,",
+      "ko": "내가 그리스도의 복음을 위하여 드로아에 이르매 주 안에서 문이 내게 열렸으되",
+      "source_text_hash": "98481f1e76121630b8deac399d5c8a9939a355e3b49d3100b0b9446ed89a2223",
+      "translation_text_hash": "d5c8c17c39f501998f4061026e8cd901bc72ce2e0cf17ee33635cf2998f37cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그리스도의 복음을 위하여 드로아에 이르매 주 안에서 문이 내게 열렸으되"
+      ],
+      "raw_text_hashes": [
+        "d5c8c17c39f501998f4061026e8cd901bc72ce2e0cf17ee33635cf2998f37cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:13",
+      "sequence": 28834,
+      "chapter_label": "2CO 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "I had no relief for my spirit, because I didn’t find Titus my brother, but taking my leave of them, I went out into Macedonia.",
+      "ko": "내가 내 형제 디도를 만나지 못하므로 내 심령이 편치 못하여 저희를 작별하고 마게도냐로 갔노라",
+      "source_text_hash": "352165f1c14769951c3eccd5cb5b027d2167cb317e15cf4ebbc28afd2b8f9936",
+      "translation_text_hash": "a32e5c0bf82114bcfc4b72cf46ff3913e98a964212f738b910cdd10265cf5396",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 형제 디도를 만나지 못하므로 내 심령이 편치 못하여 저희를 작별하고 마게도냐로 갔노라"
+      ],
+      "raw_text_hashes": [
+        "a32e5c0bf82114bcfc4b72cf46ff3913e98a964212f738b910cdd10265cf5396"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:14",
+      "sequence": 28835,
+      "chapter_label": "2CO 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Now thanks be to God who always leads us in triumph in Christ, and reveals through us the sweet aroma of his knowledge in every place.",
+      "ko": "항상 우리를 그리스도 안에서 이기게 하시고 우리로 말미암아 각처에서 그리스도를 아는 냄새를 나타내시는 하나님께 감사하노라",
+      "source_text_hash": "df92907b442d1dcd19a404fc14c2947b979f523d69c7edf26da55915961af924",
+      "translation_text_hash": "40ef5833353ea2e0a802cafee29bc6ee2ef5ebb15e8171271d9dcbf50123f3bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 우리를 그리스도 안에서 이기게 하시고 우리로 말미암아 각처에서 그리스도를 아는 냄새를 나타내시는 하나님께 감사하노라"
+      ],
+      "raw_text_hashes": [
+        "40ef5833353ea2e0a802cafee29bc6ee2ef5ebb15e8171271d9dcbf50123f3bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:15",
+      "sequence": 28836,
+      "chapter_label": "2CO 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "For we are a sweet aroma of Christ to God in those who are being saved and in those who perish:",
+      "ko": "우리는 구원 얻는 자들에게나 망하는 자들에게나 하나님 앞에서 그리스도의 향기니",
+      "source_text_hash": "0d8691f4084509fecf949399b5a223fb529ccd09f1297f5c0d3810d39b28cdeb",
+      "translation_text_hash": "3ed048831545eae7ef1d96736bbb3039d77c66a873f8b1cbe28933b182b8c3f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 구원 얻는 자들에게나 망하는 자들에게나 하나님 앞에서 그리스도의 향기니"
+      ],
+      "raw_text_hashes": [
+        "3ed048831545eae7ef1d96736bbb3039d77c66a873f8b1cbe28933b182b8c3f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:16",
+      "sequence": 28837,
+      "chapter_label": "2CO 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "to the one a stench from death to death, to the other a sweet aroma from life to life. Who is sufficient for these things?",
+      "ko": "이 사람에게는 사망으로 좇아 사망에 이르는 냄새요 저 사람에게는 생명으로 좇아 생명에 이르는 냄새라 누가 이것을 감당하리요",
+      "source_text_hash": "2c0b6ec7f1eda87ed9cb7aa75bd305e089afea14668e1ba28af16b4a15c25b4d",
+      "translation_text_hash": "60237a8604d6923015897ed9f76901c48a3c0ce2f6f828c5e64ba1a61adbf549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람에게는 사망으로 좇아 사망에 이르는 냄새요 저 사람에게는 생명으로 좇아 생명에 이르는 냄새라 누가 이것을 감당하리요"
+      ],
+      "raw_text_hashes": [
+        "60237a8604d6923015897ed9f76901c48a3c0ce2f6f828c5e64ba1a61adbf549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:2:17",
+      "sequence": 28838,
+      "chapter_label": "2CO 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "For we are not as so many, peddling the word of God. But as of sincerity, but as of God, in the sight of God, we speak in Christ.",
+      "ko": "우리는 수다한 사람과 같이 하나님의 말씀을 혼잡하게 하지 아니하고 곧 순전함으로 하나님께 받은 것 같이 하나님 앞에서와 그리스도 안에서 말하노라",
+      "source_text_hash": "102fea8efb2d8b785e8fc7afaebe41b2fdb48a8e098b3819cf35ccb43a56f75a",
+      "translation_text_hash": "83d846dd5d597f994b6735ec5cee8ef4296ab412ba5afc09e997b7230e2f0eed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 수다한 사람과 같이 하나님의 말씀을 혼잡하게 하지 아니하고 곧 순전함으로 하나님께 받은 것 같이 하나님 앞에서와 그리스도 안에서 말하노라"
+      ],
+      "raw_text_hashes": [
+        "83d846dd5d597f994b6735ec5cee8ef4296ab412ba5afc09e997b7230e2f0eed"
+      ]
+    }
+  ]
+}

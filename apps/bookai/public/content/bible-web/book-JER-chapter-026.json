@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:026",
+  "unit_ordinal": 771,
+  "unit_label": "JER 26",
+  "book_code": "JER",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:26:1",
+      "sequence": 19574,
+      "chapter_label": "JER 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "In the beginning of the reign of Jehoiakim the son of Josiah, king of Judah, this word came from the LORD:",
+      "ko": "유다 왕 요시야의 아들 여호야김의 즉위 초에 여호와께로서 이 말씀이 임하니라 가라사대",
+      "source_text_hash": "64f74e6a9cbf4a76ae4f7b1d626b4a3e6a6532651b6f3deafeac02389067c2cb",
+      "translation_text_hash": "84ce6d8d57db81c8aa6dee01e104fa97f544ff7a2b1d695f2fb7fd0d9e323163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요시야의 아들 여호야김의 즉위 초에 여호와께로서 이 말씀이 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "84ce6d8d57db81c8aa6dee01e104fa97f544ff7a2b1d695f2fb7fd0d9e323163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:2",
+      "sequence": 19575,
+      "chapter_label": "JER 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD says: ‘Stand in the court of the LORD’s house, and speak to all the cities of Judah which come to worship in the LORD’s house, all the words that I command you to speak to them. Don’t omit a word.",
+      "ko": "나 여호와가 이같이 이르노라 너는 여호와의 집 뜰에 서서 유다 모든 성읍에서 여호와의 집에 와서 경배하는 자에게 내가 네게 명하여 이르게 한 모든 말을 고하되 한 말도 감하지 말라",
+      "source_text_hash": "e53415f1b75007ff32a714207817a3d2a2510b8ba73118fb1f675a7588e3ccf0",
+      "translation_text_hash": "ef77f09e8d95313f19b63bfffe374346b9445b642b9f7317253de05536c7bee7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 이르노라 너는 여호와의 집 뜰에 서서 유다 모든 성읍에서 여호와의 집에 와서 경배하는 자에게 내가 네게 명하여 이르게 한 모든 말을 고하되 한 말도 감하지 말라"
+      ],
+      "raw_text_hashes": [
+        "ef77f09e8d95313f19b63bfffe374346b9445b642b9f7317253de05536c7bee7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:3",
+      "sequence": 19576,
+      "chapter_label": "JER 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "It may be they will listen, and every man turn from his evil way, that I may relent from the evil which I intend to do to them because of the evil of their doings.’”",
+      "ko": "그들이 듣고 혹시 각각 그 악한 길에서 떠나리라 그리하면 내가 그들의 악행으로 인하여 재앙을 그들에게 내리려 하던 뜻을 돌이키리라",
+      "source_text_hash": "5c691796456837047573a40ab4c392bccbb8f7bdbf0ef3605e0ca5fc1daf028a",
+      "translation_text_hash": "eb2054da3cf7dd42cf7bd1884cdc9d4f510e6028d224e06649cbd80e3f408c5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 듣고 혹시 각각 그 악한 길에서 떠나리라 그리하면 내가 그들의 악행으로 인하여 재앙을 그들에게 내리려 하던 뜻을 돌이키리라"
+      ],
+      "raw_text_hashes": [
+        "eb2054da3cf7dd42cf7bd1884cdc9d4f510e6028d224e06649cbd80e3f408c5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:4",
+      "sequence": 19577,
+      "chapter_label": "JER 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "You shall tell them, “The LORD says: ‘If you will not listen to me, to walk in my law which I have set before you,",
+      "ko": "너는 그들에게 이르기를 여호와의 말씀에 너희가 나를 청종치 아니하며 내가 너희 앞에 둔 내 법을 행치 아니하며",
+      "source_text_hash": "d02a9ca78138b86cfcaaab2b44bfa08e1fb79a006fe515b96aa74515163b8f3b",
+      "translation_text_hash": "9a9494905f8ccd0ca702d69507eee2138896818e51ab17c00c8f2047aa254664",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 이르기를 여호와의 말씀에 너희가 나를 청종치 아니하며 내가 너희 앞에 둔 내 법을 행치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "9a9494905f8ccd0ca702d69507eee2138896818e51ab17c00c8f2047aa254664"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:5",
+      "sequence": 19578,
+      "chapter_label": "JER 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "to listen to the words of my servants the prophets whom I send to you, even rising up early and sending them—but you have not listened—",
+      "ko": "내가 너희에게 보내고 부지런히 보낸 나의 종 선지자들의 말을 이미 듣지 아니하였거니와 너희가 만일 다시 듣지 아니하면",
+      "source_text_hash": "a65467e2afb95c3280b61f9bdb3922c0182e5354f6983a58554b8798f7194312",
+      "translation_text_hash": "4c62e9163b6163e61428d522f1eb29126a6eb62684b1885036575fb59f42e2d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 보내고 부지런히 보낸 나의 종 선지자들의 말을 이미 듣지 아니하였거니와 너희가 만일 다시 듣지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "4c62e9163b6163e61428d522f1eb29126a6eb62684b1885036575fb59f42e2d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:6",
+      "sequence": 19579,
+      "chapter_label": "JER 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "then I will make this house like Shiloh, and will make this city a curse to all the nations of the earth.’”",
+      "ko": "내가 이 집을 실로 같이 되게 하고 이 성으로 세계 열방의 저줏거리가 되게 하리라 하셨다 하라",
+      "source_text_hash": "109e3b6ad87494b95ccbf3e9ee8c635cb15fd8f4b39e5b4976d3547d0a332580",
+      "translation_text_hash": "c99f554338e24867b23e1e1adab5f29a0c0b554c79f5b1bb9f1d6caf4ea484d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 집을 실로 같이 되게 하고 이 성으로 세계 열방의 저줏거리가 되게 하리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "c99f554338e24867b23e1e1adab5f29a0c0b554c79f5b1bb9f1d6caf4ea484d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:7",
+      "sequence": 19580,
+      "chapter_label": "JER 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "The priests and the prophets and all the people heard Jeremiah speaking these words in the LORD’s house.",
+      "ko": "예레미야가 여호와의 집에서 이 말을 하매 제사장들과 선지자들과 모든 백성이 듣더라",
+      "source_text_hash": "6ddf8beccc679eb37deec3146e955d5ac96d85391d156986c690a5e2d7a7c1a5",
+      "translation_text_hash": "7fdb672fce2d5c8b00064014a4b24cb60b27733acb3ca4db0e73937b0fd27fde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 여호와의 집에서 이 말을 하매 제사장들과 선지자들과 모든 백성이 듣더라"
+      ],
+      "raw_text_hashes": [
+        "7fdb672fce2d5c8b00064014a4b24cb60b27733acb3ca4db0e73937b0fd27fde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:8",
+      "sequence": 19581,
+      "chapter_label": "JER 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "When Jeremiah had finished speaking all that the LORD had commanded him to speak to all the people, the priests and the prophets and all the people seized him, saying, “You shall surely die!",
+      "ko": "예레미야가 여호와께서 명하신 말씀을 모든 백성에게 고하기를 마치매 제사장들과 선지자들과 모든 백성이 그를 붙잡고 이르되 네가 반드시 죽으리라",
+      "source_text_hash": "0c2be750f7f2399a66d2a6351c066f5103faaef55765c5f75cb150052099d565",
+      "translation_text_hash": "ab98086017505b319fb84175252891491f0bbf7b77d13928d61e6cc402b693ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 여호와께서 명하신 말씀을 모든 백성에게 고하기를 마치매 제사장들과 선지자들과 모든 백성이 그를 붙잡고 이르되 네가 반드시 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "ab98086017505b319fb84175252891491f0bbf7b77d13928d61e6cc402b693ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:9",
+      "sequence": 19582,
+      "chapter_label": "JER 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Why have you prophesied in the LORD’s name, saying, ‘This house will be like Shiloh, and this city will be desolate, without inhabitant’?” All the people were crowded around Jeremiah in the LORD’s house.",
+      "ko": "어찌하여 네가 여호와의 이름을 의탁하고 예언하여 이르기를 이 집이 실로 같이 되겠고 이 성이 황무하여 거민이 없으리라 하느뇨 하며 그 모든 백성이 여호와의 집에서 예레미야에게로 모여드니라",
+      "source_text_hash": "3d219fb3d3fc5110027a09f0a1126686da44042bfb8e5f172bebde3c806874ef",
+      "translation_text_hash": "31017423dab566cfb016ac2dbabfbf6f36ceaf0bc48d6526c390e812f23e57a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 네가 여호와의 이름을 의탁하고 예언하여 이르기를 이 집이 실로 같이 되겠고 이 성이 황무하여 거민이 없으리라 하느뇨 하며 그 모든 백성이 여호와의 집에서 예레미야에게로 모여드니라"
+      ],
+      "raw_text_hashes": [
+        "31017423dab566cfb016ac2dbabfbf6f36ceaf0bc48d6526c390e812f23e57a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:10",
+      "sequence": 19583,
+      "chapter_label": "JER 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "When the princes of Judah heard these things, they came up from the king’s house to the LORD’s house; and they sat in the entry of the new gate of the LORD’s house.",
+      "ko": "유다 방백들이 이 일을 듣고 왕궁에서 여호와의 집으로 올라와서 여호와의 집 새문 어귀에 앉으매",
+      "source_text_hash": "23ff79ed0ff87b106e80f7676d83524dc4b9d0c32c4a2d666c31d1934b06dd7f",
+      "translation_text_hash": "3a0843f05ffc8ca538c69b82807030ec25b2ab73a05840779425f3f5e809c795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 방백들이 이 일을 듣고 왕궁에서 여호와의 집으로 올라와서 여호와의 집 새문 어귀에 앉으매"
+      ],
+      "raw_text_hashes": [
+        "3a0843f05ffc8ca538c69b82807030ec25b2ab73a05840779425f3f5e809c795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:11",
+      "sequence": 19584,
+      "chapter_label": "JER 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Then the priests and the prophets spoke to the princes and to all the people, saying, “This man is worthy of death, for he has prophesied against this city, as you have heard with your ears.”",
+      "ko": "제사장들과 선지자들이 방백들과 모든 백성에게 말하여 가로되 이 사람은 죽음이 합당하니 너희 귀로 들음 같이 이 성을 쳐서 예언하였느니라",
+      "source_text_hash": "ae8dc7b52cf9b64e2d828931909d382e8b0c7c8d067cec95d7e60a38215cb636",
+      "translation_text_hash": "e11c77da23d59882aae631564511d993a7fe8b0a1b3f0cadacc37dd96c76df6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들과 선지자들이 방백들과 모든 백성에게 말하여 가로되 이 사람은 죽음이 합당하니 너희 귀로 들음 같이 이 성을 쳐서 예언하였느니라"
+      ],
+      "raw_text_hashes": [
+        "e11c77da23d59882aae631564511d993a7fe8b0a1b3f0cadacc37dd96c76df6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:12",
+      "sequence": 19585,
+      "chapter_label": "JER 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "Then Jeremiah spoke to all the princes and to all the people, saying, “The LORD sent me to prophesy against this house and against this city all the words that you have heard.",
+      "ko": "예레미야가 모든 방백과 백성에게 일러 가로되 여호와께서 나를 보내사 너희의 들은바 모든 말로 이 집과 이 성을 쳐서 예언하게 하셨느니라",
+      "source_text_hash": "13ecf064c89cd76f6429c4735465106adf3f522f67a251e2bb29861a9e4be65c",
+      "translation_text_hash": "93d10f14c58b5434d52a0ea4103462d6d30cbf51cb85d934f40af0f867a9ce52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 모든 방백과 백성에게 일러 가로되 여호와께서 나를 보내사 너희의 들은바 모든 말로 이 집과 이 성을 쳐서 예언하게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "93d10f14c58b5434d52a0ea4103462d6d30cbf51cb85d934f40af0f867a9ce52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:13",
+      "sequence": 19586,
+      "chapter_label": "JER 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "Now therefore amend your ways and your doings, and obey the LORD your God’s voice; then the LORD will relent from the evil that he has pronounced against you.",
+      "ko": "그런즉 너희는 너희 길과 행위를 고치고 너희 하나님 여호와의 목소리를 청종하라 그리하면 여호와께서 너희에게 선고하신 재앙에 대하여 뜻을 돌이키시리라",
+      "source_text_hash": "8311f3855a9b463cd9aaf519c08ecbb67e2210e51d7eb4ca008f786e0f57996e",
+      "translation_text_hash": "a70ebae64b121e872823efbd85de87f24918f2f722fbdc742d68a0003e84b369",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 너희 길과 행위를 고치고 너희 하나님 여호와의 목소리를 청종하라 그리하면 여호와께서 너희에게 선고하신 재앙에 대하여 뜻을 돌이키시리라"
+      ],
+      "raw_text_hashes": [
+        "a70ebae64b121e872823efbd85de87f24918f2f722fbdc742d68a0003e84b369"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:14",
+      "sequence": 19587,
+      "chapter_label": "JER 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "But as for me, behold, I am in your hand. Do with me what is good and right in your eyes.",
+      "ko": "보라 나는 너희 손에 있으니 너희 소견에 선한대로, 옳은대로 하려니와",
+      "source_text_hash": "04d4f978b12062e2bb57d32f7d0dbfb407402f3b95169bd4a2981b78bd88be33",
+      "translation_text_hash": "9206bc6f05dc83a28ad77d5698b85f7f84c7c0846088da3f296b0f5f843d3317",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나는 너희 손에 있으니 너희 소견에 선한대로, 옳은대로 하려니와"
+      ],
+      "raw_text_hashes": [
+        "9206bc6f05dc83a28ad77d5698b85f7f84c7c0846088da3f296b0f5f843d3317"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:15",
+      "sequence": 19588,
+      "chapter_label": "JER 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "Only know for certain that if you put me to death, you will bring innocent blood on yourselves, on this city, and on its inhabitants; for in truth the LORD has sent me to you to speak all these words in your ears.”",
+      "ko": "너희는 분명히 알라 너희가 나를 죽이면 정녕히 무죄한 피로 너희 몸과 이 성과 이 성 거민에게로 돌아가게 하리라 이는 여호와께서 진실로 나를 보내사 이 모든 말을 너희 귀에 이르게 하셨음이니라",
+      "source_text_hash": "4bc1a0b839c839365ffc9f7fdcded3cb6f455a95d9160ffa96ddb441c964aa32",
+      "translation_text_hash": "c9c95787e2a17d7a5dfbb3444ab79cdd481c00afc79b5a3cbd57e60f531aa0bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 분명히 알라 너희가 나를 죽이면 정녕히 무죄한 피로 너희 몸과 이 성과 이 성 거민에게로 돌아가게 하리라 이는 여호와께서 진실로 나를 보내사 이 모든 말을 너희 귀에 이르게 하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "c9c95787e2a17d7a5dfbb3444ab79cdd481c00afc79b5a3cbd57e60f531aa0bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:16",
+      "sequence": 19589,
+      "chapter_label": "JER 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "Then the princes and all the people said to the priests and to the prophets: “This man is not worthy of death; for he has spoken to us in the name of the LORD our God.”",
+      "ko": "방백들과 모든 백성이 제사장들과 선지자들에게 이르되 이 사람이 우리 하나님 여호와의 이름을 의탁하고 우리에게 말하였으니 죽음이 부당하니라",
+      "source_text_hash": "ffc85211b775e51e15f850b0a6a6c7545927f9bdf02f4ab594430900e6a960fd",
+      "translation_text_hash": "7f696231b396f39d8e0d3af5b8254e01cc7c06bb74936290ec0b3666812f9518",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들과 모든 백성이 제사장들과 선지자들에게 이르되 이 사람이 우리 하나님 여호와의 이름을 의탁하고 우리에게 말하였으니 죽음이 부당하니라"
+      ],
+      "raw_text_hashes": [
+        "7f696231b396f39d8e0d3af5b8254e01cc7c06bb74936290ec0b3666812f9518"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:17",
+      "sequence": 19590,
+      "chapter_label": "JER 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Then certain of the elders of the land rose up, and spoke to all the assembly of the people, saying,",
+      "ko": "때에 그 땅 장로 중 몇 사람이 일어나 백성의 온 회중에 말하여 가로되",
+      "source_text_hash": "f6cc4dd93129e8b51e082b12c29ba32232c5498ab04691f0928c427da43de11b",
+      "translation_text_hash": "583f50cd242203fdccab6ba8a7f99fbf8aa024060bb4b7747011a95b5768494b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 그 땅 장로 중 몇 사람이 일어나 백성의 온 회중에 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "583f50cd242203fdccab6ba8a7f99fbf8aa024060bb4b7747011a95b5768494b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:18",
+      "sequence": 19591,
+      "chapter_label": "JER 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "“Micah the Morashtite prophesied in the days of Hezekiah king of Judah; and he spoke to all the people of Judah, saying, ‘The LORD of Armies says: “‘Zion will be plowed as a field, and Jerusalem will become heaps, and the mountain of the house as the high places of a forest.’",
+      "ko": "유다 왕 히스기야 시대에 모레셋 사람 미가가 유다 모든 백성에게 예언하여 가로되 만군의 여호와께서 이같이 말씀하시기를 시온은 밭 같이 경작함을 당하며 예루살렘은 무더기가 되며 이 전의 산은 수풀의 높은 곳들 같이 되리라 하였으나",
+      "source_text_hash": "4eaaceafa2a681eccaa81fdaee2d1feebb81783d59890b82d4eacb312f5685aa",
+      "translation_text_hash": "403f29b1a31428394fd79e67c900f2ef6ddbf05461b79f0e52bc928e2bc5cb33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 히스기야 시대에 모레셋 사람 미가가 유다 모든 백성에게 예언하여 가로되 만군의 여호와께서 이같이 말씀하시기를 시온은 밭 같이 경작함을 당하며 예루살렘은 무더기가 되며 이 전의 산은 수풀의 높은 곳들 같이 되리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "403f29b1a31428394fd79e67c900f2ef6ddbf05461b79f0e52bc928e2bc5cb33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:19",
+      "sequence": 19592,
+      "chapter_label": "JER 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "Did Hezekiah king of Judah and all Judah put him to death? Didn’t he fear the LORD, and entreat the favor of the LORD, and the LORD relented of the disaster which he had pronounced against them? We would commit great evil against our own souls that way!”",
+      "ko": "유다 왕 히스기야와 모든 유다가 그를 죽였느냐 히스기야가 여호와를 두려워하여 여호와께 간구하매 여호와께서 그들에게 선고한 재앙에 대하여 뜻을 돌이키지 아니하셨느냐 우리가 이같이 하면 우리 생명을 스스로 크게 해하는 일이니라",
+      "source_text_hash": "682dcf51dbe3d80ff692053ff410cced4d9d7c5f64396f71ed09aaa65e92716e",
+      "translation_text_hash": "8d4864da14c470b9f86212e253f8bc5b0292117f92efb8290bcd39da798b8da5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 히스기야와 모든 유다가 그를 죽였느냐 히스기야가 여호와를 두려워하여 여호와께 간구하매 여호와께서 그들에게 선고한 재앙에 대하여 뜻을 돌이키지 아니하셨느냐 우리가 이같이 하면 우리 생명을 스스로 크게 해하는 일이니라"
+      ],
+      "raw_text_hashes": [
+        "8d4864da14c470b9f86212e253f8bc5b0292117f92efb8290bcd39da798b8da5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:20",
+      "sequence": 19593,
+      "chapter_label": "JER 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "There was also a man who prophesied in the LORD’s name, Uriah the son of Shemaiah of Kiriath Jearim; and he prophesied against this city and against this land according to all the words of Jeremiah.",
+      "ko": "또 여호와의 이름을 의탁하고 예언한 사람이 있었는데 곧 기럇여아림 스마야의 아들 우리야라 그가 예레미야의 모든 말과 같이 이 성과 이 땅을 쳐서 예언하매",
+      "source_text_hash": "c5d20a6f24b3298845b82d12b1b24e30899620221a77909c12d74a2e10ea473e",
+      "translation_text_hash": "1bf82d3f80a648d849e7890c52cfc8530233d81bdd3da89bdc8c8bd59f9b4180",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와의 이름을 의탁하고 예언한 사람이 있었는데 곧 기럇여아림 스마야의 아들 우리야라 그가 예레미야의 모든 말과 같이 이 성과 이 땅을 쳐서 예언하매"
+      ],
+      "raw_text_hashes": [
+        "1bf82d3f80a648d849e7890c52cfc8530233d81bdd3da89bdc8c8bd59f9b4180"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:21",
+      "sequence": 19594,
+      "chapter_label": "JER 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "When Jehoiakim the king, with all his mighty men and all the princes heard his words, the king sought to put him to death; but when Uriah heard it, he was afraid, and fled, and went into Egypt.",
+      "ko": "여호야김왕과 그 모든 용사와 모든 방백이 그 말을 듣고는 왕이 그를 죽이려 하매 우리야가 이를 듣고 두려워 애굽으로 도망하여 간지라",
+      "source_text_hash": "06b17de94ae565f619a43381669a7c175e866e1009a7fe9c010b02fa8c0174b0",
+      "translation_text_hash": "a6698392edf6c2bdef0e5c821a0203f27e6a6c35cb4e62a2305ca45c73d94583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김왕과 그 모든 용사와 모든 방백이 그 말을 듣고는 왕이 그를 죽이려 하매 우리야가 이를 듣고 두려워 애굽으로 도망하여 간지라"
+      ],
+      "raw_text_hashes": [
+        "a6698392edf6c2bdef0e5c821a0203f27e6a6c35cb4e62a2305ca45c73d94583"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:22",
+      "sequence": 19595,
+      "chapter_label": "JER 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "Then Jehoiakim the king sent Elnathan the son of Achbor and certain men with him into Egypt.",
+      "ko": "여호야김왕이 사람을 애굽으로 보내되 곧 악볼의 아들 엘라단과 몇 사람을 함께 애굽으로 보내었더니",
+      "source_text_hash": "59f63c480af139407a1ed9139d7ed7d2552e377bf817ca863547eea1c56686f5",
+      "translation_text_hash": "77d455bc215bdfed219906c85cd9554ca0989cae42710f83f13aa6ac78db6995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호야김왕이 사람을 애굽으로 보내되 곧 악볼의 아들 엘라단과 몇 사람을 함께 애굽으로 보내었더니"
+      ],
+      "raw_text_hashes": [
+        "77d455bc215bdfed219906c85cd9554ca0989cae42710f83f13aa6ac78db6995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:23",
+      "sequence": 19596,
+      "chapter_label": "JER 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "They fetched Uriah out of Egypt and brought him to Jehoiakim the king, who killed him with the sword and cast his dead body into the graves of the common people.",
+      "ko": "그들이 우리야를 애굽에서 끌어 내어 여호야김왕께로 데려오매 왕이 칼로 그를 죽이고 그 시체를 평민의 묘실에 던지게 하였다 하니라",
+      "source_text_hash": "31e35c42b1a6f28e3b46b819a2f7c123becca7df317b8aaab5e2226c211214ad",
+      "translation_text_hash": "2e864da4f5a353f16fc8296718aa5b975b60b40cc27439f5505b833ac5dde050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 우리야를 애굽에서 끌어 내어 여호야김왕께로 데려오매 왕이 칼로 그를 죽이고 그 시체를 평민의 묘실에 던지게 하였다 하니라"
+      ],
+      "raw_text_hashes": [
+        "2e864da4f5a353f16fc8296718aa5b975b60b40cc27439f5505b833ac5dde050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:26:24",
+      "sequence": 19597,
+      "chapter_label": "JER 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "But the hand of Ahikam the son of Shaphan was with Jeremiah, so that they didn’t give him into the hand of the people to put him to death.",
+      "ko": "사반의 아들 아히감이 예레미야를 보호하여 예레미야를 백성의 손에 내어주지 아니하여 죽이지 못하게 하니라",
+      "source_text_hash": "1536abbb4dd394d4f4cd2fa3ee714adea636e98635011beb0cc44888babfb9a8",
+      "translation_text_hash": "5dc5370c64aee743c3e58989db5507b9bb58f7f7bc30dc002bfbf61c6690d51d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사반의 아들 아히감이 예레미야를 보호하여 예레미야를 백성의 손에 내어주지 아니하여 죽이지 못하게 하니라"
+      ],
+      "raw_text_hashes": [
+        "5dc5370c64aee743c3e58989db5507b9bb58f7f7bc30dc002bfbf61c6690d51d"
+      ]
+    }
+  ]
+}

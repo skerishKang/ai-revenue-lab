@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:002",
+  "unit_ordinal": 438,
+  "unit_label": "JOB 2",
+  "book_code": "JOB",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:2:1",
+      "sequence": 12893,
+      "chapter_label": "JOB 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Again, on the day when God’s sons came to present themselves before the LORD, Satan came also among them to present himself before the LORD.",
+      "ko": "또 하루는 하나님의 아들들이 와서 여호와 앞에 서고 사단도 그들 가운데 와서 여호와 앞에 서니",
+      "source_text_hash": "5f5dc093aaed23e9c2c59f9f67b69b2853b5d78af07d2d18920eb7e86f2038e9",
+      "translation_text_hash": "fa8a111effd7bec0f4b5955589aecc9c77a01fbfe2bcc0baa4a581b982f77448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 하루는 하나님의 아들들이 와서 여호와 앞에 서고 사단도 그들 가운데 와서 여호와 앞에 서니"
+      ],
+      "raw_text_hashes": [
+        "fa8a111effd7bec0f4b5955589aecc9c77a01fbfe2bcc0baa4a581b982f77448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:2",
+      "sequence": 12894,
+      "chapter_label": "JOB 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to Satan, “Where have you come from?” Satan answered the LORD, and said, “From going back and forth on the earth, and from walking up and down in it.”",
+      "ko": "여호와께서 사단에게 이르시되 네가 어디서 왔느냐 사단이 여호와께 대답하여 가로되 땅에 두루 돌아 여기 저기 다녀 왔나이다",
+      "source_text_hash": "8d1d9e2491d38982333104cca8dd721722e05b2422fbbf94a0ef513704fe4aea",
+      "translation_text_hash": "2308eaedf0bc0f6f6cc4a3d0067008261b035c7170b91506f90185f1e790e2e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 네가 어디서 왔느냐 사단이 여호와께 대답하여 가로되 땅에 두루 돌아 여기 저기 다녀 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "2308eaedf0bc0f6f6cc4a3d0067008261b035c7170b91506f90185f1e790e2e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:3",
+      "sequence": 12895,
+      "chapter_label": "JOB 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD said to Satan, “Have you considered my servant Job? For there is no one like him on the earth, a blameless and an upright man, one who fears God, and turns away from evil. He still maintains his integrity, although you incited me against him, to ruin him without cause.”",
+      "ko": "여호와께서 사단에게 이르시되 네가 내 종 욥을 유의하여 보았느냐 그와 같이 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자가 세상에 없느니라 네가 나를 격동하여 까닭없이 그를 치게 하였어도 그가 오히려 자기의 순전을 굳게 지켰느니라",
+      "source_text_hash": "b39829136b88628caa96468f679e274febb3ce4b9914da70273b1f82a6b7f0fd",
+      "translation_text_hash": "3941a40ccae4ec896c15a7c38ea789d33a3885bc5a47b8f00fa7af93a72ecc79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 네가 내 종 욥을 유의하여 보았느냐 그와 같이 순전하고 정직하여 하나님을 경외하며 악에서 떠난 자가 세상에 없느니라 네가 나를 격동하여 까닭없이 그를 치게 하였어도 그가 오히려 자기의 순전을 굳게 지켰느니라"
+      ],
+      "raw_text_hashes": [
+        "3941a40ccae4ec896c15a7c38ea789d33a3885bc5a47b8f00fa7af93a72ecc79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:4",
+      "sequence": 12896,
+      "chapter_label": "JOB 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Satan answered the LORD, and said, “Skin for skin. Yes, all that a man has he will give for his life.",
+      "ko": "사단이 여호와께 대답하여 가로되 가죽으로 가죽을 바꾸오니 사람이 그 모든 소유물로 자기의 생명을 바꾸올찌라",
+      "source_text_hash": "056399e05b210e3e6525477f1ea6958122a6377ddd9a2bb3315b26dc6e7774f4",
+      "translation_text_hash": "0f6e1b21edc5e1812ab01b551aac05151e26109aa13a7bf176ffffc060846e4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사단이 여호와께 대답하여 가로되 가죽으로 가죽을 바꾸오니 사람이 그 모든 소유물로 자기의 생명을 바꾸올찌라"
+      ],
+      "raw_text_hashes": [
+        "0f6e1b21edc5e1812ab01b551aac05151e26109aa13a7bf176ffffc060846e4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:5",
+      "sequence": 12897,
+      "chapter_label": "JOB 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "But stretch out your hand now, and touch his bone and his flesh, and he will renounce you to your face.”",
+      "ko": "이제 주의 손을 펴서 그의 뼈와 살을 치소서 그리하시면 정녕 대면하여 주를 욕하리이다",
+      "source_text_hash": "34af2b436c560e896072b27c2b19734d7993669901c6bf5e2530b602e1421475",
+      "translation_text_hash": "5c328f5c8dfb7d0fd1c566970821ecdf7d85d2907aebf487cee4f4c5ed433a84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 주의 손을 펴서 그의 뼈와 살을 치소서 그리하시면 정녕 대면하여 주를 욕하리이다"
+      ],
+      "raw_text_hashes": [
+        "5c328f5c8dfb7d0fd1c566970821ecdf7d85d2907aebf487cee4f4c5ed433a84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:6",
+      "sequence": 12898,
+      "chapter_label": "JOB 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD said to Satan, “Behold, he is in your hand. Only spare his life.”",
+      "ko": "여호와께서 사단에게 이르시되 내가 그를 네 손에 붙이노라 오직 그의 생명은 해하지 말찌니라",
+      "source_text_hash": "505fbbaae89443bbbdb81a95ef703c20ed7e53caff9a0f9855327bebbba3afeb",
+      "translation_text_hash": "33908133ed110c4d58383428a87738bb0fda8111797c11238499b4db9640e40c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 내가 그를 네 손에 붙이노라 오직 그의 생명은 해하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "33908133ed110c4d58383428a87738bb0fda8111797c11238499b4db9640e40c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:7",
+      "sequence": 12899,
+      "chapter_label": "JOB 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "So Satan went out from the presence of the LORD, and struck Job with painful sores from the sole of his foot to his head.",
+      "ko": "사단이 이에 여호와 앞에서 물러가서 욥을 쳐서 그 발바닥에서 정수리까지 악창이 나게 한지라",
+      "source_text_hash": "8c4625c0b768c6452696fa8d3731287a8e20ab7cb37685fd201a73a6044a6087",
+      "translation_text_hash": "28e6b38fe179fbc7765694d5de823c9581422cbb1a4d4e0e0051de769f82486d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사단이 이에 여호와 앞에서 물러가서 욥을 쳐서 그 발바닥에서 정수리까지 악창이 나게 한지라"
+      ],
+      "raw_text_hashes": [
+        "28e6b38fe179fbc7765694d5de823c9581422cbb1a4d4e0e0051de769f82486d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:8",
+      "sequence": 12900,
+      "chapter_label": "JOB 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "He took for himself a potsherd to scrape himself with, and he sat among the ashes.",
+      "ko": "욥이 재 가운데 앉아서 기와 조각을 가져다가 몸을 긁고 있더니",
+      "source_text_hash": "216966aa70e938e9f92fcd2de37764b26132459834832fa5d074179ca220eb1b",
+      "translation_text_hash": "d648058b4c1722cdaa943c70d090b4e33ae62ee03d62ff5ac5e9133cd6a568bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 재 가운데 앉아서 기와 조각을 가져다가 몸을 긁고 있더니"
+      ],
+      "raw_text_hashes": [
+        "d648058b4c1722cdaa943c70d090b4e33ae62ee03d62ff5ac5e9133cd6a568bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:9",
+      "sequence": 12901,
+      "chapter_label": "JOB 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Then his wife said to him, “Do you still maintain your integrity? Renounce God, and die.”",
+      "ko": "그 아내가 그에게 이르되 당신이 그래도 자기의 순전을 굳게 지키느뇨 하나님을 욕하고 죽으라",
+      "source_text_hash": "5178413dc8816db19fe4e36cbe1805c7e2ba738f69c0d58d2479deabb257a049",
+      "translation_text_hash": "9647ae655d104f19c1ff40f923f163a5f056949cd010548d2e280982c61e6e6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아내가 그에게 이르되 당신이 그래도 자기의 순전을 굳게 지키느뇨 하나님을 욕하고 죽으라"
+      ],
+      "raw_text_hashes": [
+        "9647ae655d104f19c1ff40f923f163a5f056949cd010548d2e280982c61e6e6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:10",
+      "sequence": 12902,
+      "chapter_label": "JOB 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "But he said to her, “You speak as one of the foolish women would speak. What? Shall we receive good at the hand of God, and shall we not receive evil?” In all this Job didn’t sin with his lips.",
+      "ko": "그가 이르되 그대의 말이 어리석은 여자 중 하나의 말 같도다 우리가 하나님께 복을 받았은즉 재앙도 받지 아니하겠느뇨 하고 이 모든 일에 욥이 입술로 범죄치 아니하니라",
+      "source_text_hash": "7bd03fdcea3792674f71af631a041adfe9597d5d91a73d6e0c14bb37e70aa5f8",
+      "translation_text_hash": "7d012a736a3093169d3dca1ec8c9e3731199adea79ea317e9fe7c0ff00c9b844",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이르되 그대의 말이 어리석은 여자 중 하나의 말 같도다 우리가 하나님께 복을 받았은즉 재앙도 받지 아니하겠느뇨 하고 이 모든 일에 욥이 입술로 범죄치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "7d012a736a3093169d3dca1ec8c9e3731199adea79ea317e9fe7c0ff00c9b844"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:11",
+      "sequence": 12903,
+      "chapter_label": "JOB 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Now when Job’s three friends heard of all this evil that had come on him, they each came from his own place: Eliphaz the Temanite, Bildad the Shuhite, and Zophar the Naamathite; and they made an appointment together to come to sympathize with him and to comfort him.",
+      "ko": "때에 욥의 친구 세 사람이 그에게 이 모든 재앙이 임하였다 함을 듣고 각각 자기 처소에서부터 이르렀으니 곧 데만 사람 엘리바스와 수아 사람 빌닷과 나아마 사람 소발이라 그들이 욥을 조문하고 위로하려 하여 상약하고 오더니",
+      "source_text_hash": "4ad4369299a819c5c61781ce1074f98d7c5bdf74cc58c324d077f13ab9dfc629",
+      "translation_text_hash": "162d457625aa1ee464e91f72ff9a8a9eca18058c3358ca08bdb6cbc6175a80cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 욥의 친구 세 사람이 그에게 이 모든 재앙이 임하였다 함을 듣고 각각 자기 처소에서부터 이르렀으니 곧 데만 사람 엘리바스와 수아 사람 빌닷과 나아마 사람 소발이라 그들이 욥을 조문하고 위로하려 하여 상약하고 오더니"
+      ],
+      "raw_text_hashes": [
+        "162d457625aa1ee464e91f72ff9a8a9eca18058c3358ca08bdb6cbc6175a80cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:12",
+      "sequence": 12904,
+      "chapter_label": "JOB 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "When they lifted up their eyes from a distance, and didn’t recognize him, they raised their voices, and wept; and they each tore his robe, and sprinkled dust on their heads toward the sky.",
+      "ko": "눈을 들어 멀리 보매 그 욥인줄 알기 어렵게 되었으므로 그들이 일제히 소리질러 울며 각각 자기의 겉옷을 찢고 하늘을 향하여 티끌을 날려 자기 머리에 뿌리고",
+      "source_text_hash": "2c37807c2f6b9d54860fd80e2c4d51e57a034e6ff75797ecdf9e546ae3902a36",
+      "translation_text_hash": "ebf3e949111f4ebd0c045606aef1f7ddee02250b003b3dd8ddb1ef19b5e20684",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈을 들어 멀리 보매 그 욥인줄 알기 어렵게 되었으므로 그들이 일제히 소리질러 울며 각각 자기의 겉옷을 찢고 하늘을 향하여 티끌을 날려 자기 머리에 뿌리고"
+      ],
+      "raw_text_hashes": [
+        "ebf3e949111f4ebd0c045606aef1f7ddee02250b003b3dd8ddb1ef19b5e20684"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:2:13",
+      "sequence": 12905,
+      "chapter_label": "JOB 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "So they sat down with him on the ground seven days and seven nights, and no one spoke a word to him, for they saw that his grief was very great.",
+      "ko": "칠일 칠야를 그와 함께 땅에 앉았으나 욥의 곤고함이 심함을 보는고로 그에게 한 말도 하는 자가 없었더라",
+      "source_text_hash": "ebdb37ce5f9acb8e9955dcb5fddc3d15df0c7cdbaf2a7dd238bc68eb30d22bbc",
+      "translation_text_hash": "0fab0258aaf70acbfc8455b2148631a519ab79855effa386828c5622684ae5d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 칠야를 그와 함께 땅에 앉았으나 욥의 곤고함이 심함을 보는고로 그에게 한 말도 하는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "0fab0258aaf70acbfc8455b2148631a519ab79855effa386828c5622684ae5d9"
+      ]
+    }
+  ]
+}

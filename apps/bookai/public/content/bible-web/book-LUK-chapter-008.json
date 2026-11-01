@@ -1,0 +1,1805 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:008",
+  "unit_ordinal": 981,
+  "unit_label": "LUK 8",
+  "book_code": "LUK",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:8:1",
+      "sequence": 25247,
+      "chapter_label": "LUK 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Soon afterwards, he went about through cities and villages, preaching and bringing the good news of God’s Kingdom. With him were the twelve,",
+      "ko": "이 후에 예수께서 각 성과 촌에 두루 다니시며 하나님의 나라를 반포하시며 그 복음을 전하실쌔 열 두 제자가 함께 하였고",
+      "source_text_hash": "93476d5d008af85f815a77668de236413768dfc0015f6cf49fc4e6fe055bdcab",
+      "translation_text_hash": "40fbf4f4a799fab427ce8453b282a558ae43e0797ed3458f5a4a53f5e15ac6bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 예수께서 각 성과 촌에 두루 다니시며 하나님의 나라를 반포하시며 그 복음을 전하실쌔 열 두 제자가 함께 하였고"
+      ],
+      "raw_text_hashes": [
+        "40fbf4f4a799fab427ce8453b282a558ae43e0797ed3458f5a4a53f5e15ac6bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:2",
+      "sequence": 25248,
+      "chapter_label": "LUK 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "and certain women who had been healed of evil spirits and infirmities: Mary who was called Magdalene, from whom seven demons had gone out;",
+      "ko": "또한 악귀를 쫓아내심과 병 고침을 받은 어떤 여자들 곧 일곱 귀신이 나간 자 막달라인이라 하는 마리아와",
+      "source_text_hash": "b8a1371abbc7f148afb249ceb7aed9bdd3fca391317c8202a4373911f80a83cf",
+      "translation_text_hash": "411712df3173c2b2c77ddb532fd2c73fd0e96c682b5f293970a2910dff45ca3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 악귀를 쫓아내심과 병 고침을 받은 어떤 여자들 곧 일곱 귀신이 나간 자 막달라인이라 하는 마리아와"
+      ],
+      "raw_text_hashes": [
+        "411712df3173c2b2c77ddb532fd2c73fd0e96c682b5f293970a2910dff45ca3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:3",
+      "sequence": 25249,
+      "chapter_label": "LUK 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "and Joanna, the wife of Chuzas, Herod’s steward; Susanna; and many others who served them from their possessions.",
+      "ko": "또 헤롯의 청지기 구사의 아내 요안나와 또 수산나와 다른 여러 여자가 함께 하여 자기들의 소유로 저희를 섬기더라",
+      "source_text_hash": "250b4f7695bb18cd48d3e27250c69c58e198e1fa2deb94bb3f59c680f453022e",
+      "translation_text_hash": "0e562e8b235fd06ec0a69208b28b3881aff5f37b5cfbdf256bf61e790feee202",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 헤롯의 청지기 구사의 아내 요안나와 또 수산나와 다른 여러 여자가 함께 하여 자기들의 소유로 저희를 섬기더라"
+      ],
+      "raw_text_hashes": [
+        "0e562e8b235fd06ec0a69208b28b3881aff5f37b5cfbdf256bf61e790feee202"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:4",
+      "sequence": 25250,
+      "chapter_label": "LUK 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "When a great multitude came together and people from every city were coming to him, he spoke by a parable:",
+      "ko": "각 동네 사람들이 예수께로 나아와 큰 무리를 이루니 예수께서 비유로 말씀하시되",
+      "source_text_hash": "de212c045e1d0dd69eb104eaaf3e3b3aa3d8115ed5961b8afc319fbaa9662e6e",
+      "translation_text_hash": "0c718645ab6899f67a9f8d59efb0d6ad4d69f03f7d8f0b272152531e0a6c8209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 동네 사람들이 예수께로 나아와 큰 무리를 이루니 예수께서 비유로 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "0c718645ab6899f67a9f8d59efb0d6ad4d69f03f7d8f0b272152531e0a6c8209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:5",
+      "sequence": 25251,
+      "chapter_label": "LUK 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "“The farmer went out to sow his seed. As he sowed, some fell along the road, and it was trampled under foot, and the birds of the sky devoured it.",
+      "ko": "씨를 뿌리는 자가 그 씨를 뿌리러 나가서 뿌릴쌔 더러는 길 가에 떨어지매 밟히며 공중의 새들이 먹어버렸고",
+      "source_text_hash": "1eaea5316be26d8069a2eab8a2b30df37f248ec30ca41c79d274e477d55f603c",
+      "translation_text_hash": "68d7c0d25c93a3e2b532802d06a1e807390014d51f82028111e98d2db511614b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "씨를 뿌리는 자가 그 씨를 뿌리러 나가서 뿌릴쌔 더러는 길 가에 떨어지매 밟히며 공중의 새들이 먹어버렸고"
+      ],
+      "raw_text_hashes": [
+        "68d7c0d25c93a3e2b532802d06a1e807390014d51f82028111e98d2db511614b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:6",
+      "sequence": 25252,
+      "chapter_label": "LUK 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Some seed fell on the rock, and as soon as it grew, it withered away, because it had no moisture.",
+      "ko": "더러는 바위 위에 떨어지매 났다가 습기가 없으므로 말랐고",
+      "source_text_hash": "6e4d612bf7fcfc04e16431f299b2debbca949e7c103ae7441959133029711198",
+      "translation_text_hash": "59598a554bd0964445ee7780ff1199e6532847117e4351092f17fa720bdf78f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 바위 위에 떨어지매 났다가 습기가 없으므로 말랐고"
+      ],
+      "raw_text_hashes": [
+        "59598a554bd0964445ee7780ff1199e6532847117e4351092f17fa720bdf78f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:7",
+      "sequence": 25253,
+      "chapter_label": "LUK 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Some fell amid the thorns, and the thorns grew with it and choked it.",
+      "ko": "더러는 가시떨기 속에 떨어지매 가시가 함께 자라서 기운을 막았고",
+      "source_text_hash": "8115ebe51d80cf91df98609bf46ffdba362f8edaec04b13e5cd3ee7af291c7ae",
+      "translation_text_hash": "6c6b8309f9cf7cd821b59ba46d7f3e76d6ef86ca4314ade872442f416fb99260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 가시떨기 속에 떨어지매 가시가 함께 자라서 기운을 막았고"
+      ],
+      "raw_text_hashes": [
+        "6c6b8309f9cf7cd821b59ba46d7f3e76d6ef86ca4314ade872442f416fb99260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:8",
+      "sequence": 25254,
+      "chapter_label": "LUK 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Some fell into the good ground and grew and produced one hundred times as much fruit.”As he said these things, he called out, “He who has ears to hear, let him hear!”",
+      "ko": "더러는 좋은 땅에 떨어지매 나서 백배의 결실을 하였느니라 이 말씀을 하시고 외치시되 들을 귀 있는 자는 들을찌어다",
+      "source_text_hash": "1a4624c2b46ee5b8f766a104cf3b55fcbbc3fe7b2b6ea733d191747365ada231",
+      "translation_text_hash": "99862155223eac421d1c4a2e6b1cf45f657b3be41a7a9c306acd79c389a7b4bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러는 좋은 땅에 떨어지매 나서 백배의 결실을 하였느니라 이 말씀을 하시고 외치시되 들을 귀 있는 자는 들을찌어다"
+      ],
+      "raw_text_hashes": [
+        "99862155223eac421d1c4a2e6b1cf45f657b3be41a7a9c306acd79c389a7b4bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:9",
+      "sequence": 25255,
+      "chapter_label": "LUK 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "Then his disciples asked him, “What does this parable mean?”",
+      "ko": "제자들이 이 비유의 뜻을 물으니",
+      "source_text_hash": "1e0f16c4b58aa96cc17f40a3759d2c1e90f603d478e0223c5b04da275af487ef",
+      "translation_text_hash": "2704fa1bc1c21ed3652980b386198189803876b1958980eb98d84f315f317383",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 이 비유의 뜻을 물으니"
+      ],
+      "raw_text_hashes": [
+        "2704fa1bc1c21ed3652980b386198189803876b1958980eb98d84f315f317383"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:10",
+      "sequence": 25256,
+      "chapter_label": "LUK 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "He said, “To you it is given to know the mysteries of God’s Kingdom, but to the rest it is given in parables, that ‘seeing they may not see, and hearing they may not understand.’",
+      "ko": "가라사대 하나님 나라의 비밀을 아는 것이 너희에게는 허락되었으나 다른 사람에게는 비유로 하나니 이는 저희로 보아도 보지 못하고 들어도 깨닫지 못하게 하려 함이니라",
+      "source_text_hash": "eb42c7a68584dcb2da4fbd692739eee93d663b52f6ea4fea2724e6d9d01908b8",
+      "translation_text_hash": "38e8181bd75f7ae67651822e77d3cbd0092da1bd656419294a2905a3014b1fa4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 하나님 나라의 비밀을 아는 것이 너희에게는 허락되었으나 다른 사람에게는 비유로 하나니 이는 저희로 보아도 보지 못하고 들어도 깨닫지 못하게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "38e8181bd75f7ae67651822e77d3cbd0092da1bd656419294a2905a3014b1fa4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:11",
+      "sequence": 25257,
+      "chapter_label": "LUK 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "“Now the parable is this: The seed is the word of God.",
+      "ko": "이 비유는 이러하니라 씨는 하나님의 말씀이요",
+      "source_text_hash": "098b6a6890832d3629307a83eb47569cf01ea097ba4fd9689a8edf78cd863f73",
+      "translation_text_hash": "24bc0828b94493462783a680c354b3dd9eacd14a82f898f6eaaeaa9806343b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 비유는 이러하니라 씨는 하나님의 말씀이요"
+      ],
+      "raw_text_hashes": [
+        "24bc0828b94493462783a680c354b3dd9eacd14a82f898f6eaaeaa9806343b52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:12",
+      "sequence": 25258,
+      "chapter_label": "LUK 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Those along the road are those who hear; then the devil comes and takes away the word from their heart, that they may not believe and be saved.",
+      "ko": "길 가에 있다는 것은 말씀을 들은 자니 이에 마귀가 와서 그들로 믿어 구원을 얻지 못하게 하려고 말씀을 그 마음에서 빼앗는 것이요",
+      "source_text_hash": "ae5b95b68228d461fc2bd7e6b2ecd0002f44ee8002887a3f2a3fe4e1ff7fdaaf",
+      "translation_text_hash": "15cb7bcb4d19c3c8078254946af66759a4dc7fa5c79779746f995091af4f7ed1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가에 있다는 것은 말씀을 들은 자니 이에 마귀가 와서 그들로 믿어 구원을 얻지 못하게 하려고 말씀을 그 마음에서 빼앗는 것이요"
+      ],
+      "raw_text_hashes": [
+        "15cb7bcb4d19c3c8078254946af66759a4dc7fa5c79779746f995091af4f7ed1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:13",
+      "sequence": 25259,
+      "chapter_label": "LUK 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Those on the rock are they who, when they hear, receive the word with joy; but these have no root. They believe for a while, then fall away in time of temptation.",
+      "ko": "바위 위에 있다는 것은 말씀을 들을 때에 기쁨으로 받으나 뿌리가 없어 잠간 믿다가 시험을 받을 때에 배반하는 자요",
+      "source_text_hash": "d9ee21174fd56c6e6d82155703d9ea3eb8e6375846b186b57f0c3a51414ff633",
+      "translation_text_hash": "97f148dc6d17efb9f49f828b617c36b44f3970df6521c249bf841706910be11a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바위 위에 있다는 것은 말씀을 들을 때에 기쁨으로 받으나 뿌리가 없어 잠간 믿다가 시험을 받을 때에 배반하는 자요"
+      ],
+      "raw_text_hashes": [
+        "97f148dc6d17efb9f49f828b617c36b44f3970df6521c249bf841706910be11a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:14",
+      "sequence": 25260,
+      "chapter_label": "LUK 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "What fell among the thorns, these are those who have heard, and as they go on their way they are choked with cares, riches, and pleasures of life; and they bring no fruit to maturity.",
+      "ko": "가시떨기에 떨어졌다는 것은 말씀을 들은 자니 지내는 중 이생의 염려와 재리와 일락에 기운이 막혀 온전히 결실치 못하는 자요",
+      "source_text_hash": "b89c035177b42af84dba5c455cbf62c2156dcc8a5c47a6cafdd727c691000517",
+      "translation_text_hash": "1f36596e2bc3a623952daa352498a3dfa9afc6e2552ce48f7a2b9686b1cbfb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가시떨기에 떨어졌다는 것은 말씀을 들은 자니 지내는 중 이생의 염려와 재리와 일락에 기운이 막혀 온전히 결실치 못하는 자요"
+      ],
+      "raw_text_hashes": [
+        "1f36596e2bc3a623952daa352498a3dfa9afc6e2552ce48f7a2b9686b1cbfb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:15",
+      "sequence": 25261,
+      "chapter_label": "LUK 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "Those in the good ground, these are those who with an honest and good heart, having heard the word, hold it tightly, and produce fruit with perseverance.",
+      "ko": "좋은 땅에 있다는 것은 착하고 좋은 마음으로 말씀을 듣고 지키어 인내로 결실하는 자니라",
+      "source_text_hash": "fcd3edc292a4fffc11ee73cf3ca5e5db35655ecb990df76c8f18f88a9ef7dd63",
+      "translation_text_hash": "41895988c1acc4ec29381078add14352857f8c6eaa1adb4b8b20943b861ca5f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좋은 땅에 있다는 것은 착하고 좋은 마음으로 말씀을 듣고 지키어 인내로 결실하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "41895988c1acc4ec29381078add14352857f8c6eaa1adb4b8b20943b861ca5f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:16",
+      "sequence": 25262,
+      "chapter_label": "LUK 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "“No one, when he has lit a lamp, covers it with a container or puts it under a bed; but puts it on a stand, that those who enter in may see the light.",
+      "ko": "누구든지 등불을 켜서 그릇으로 덮거나 평상 아래 두지 아니하고 등경 위에 두나니 이는 들어가는 자들로 그 빛을 보게 하려 함이라",
+      "source_text_hash": "faaf4cfc78c9910b484876d98458fba4a725fbf8d527252f7c6ad21809c95dfb",
+      "translation_text_hash": "d8b6507b7fd752b8076d581ef5b62ed971eeb9b5a636ecbc6e64d2f749ab2dc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 등불을 켜서 그릇으로 덮거나 평상 아래 두지 아니하고 등경 위에 두나니 이는 들어가는 자들로 그 빛을 보게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "d8b6507b7fd752b8076d581ef5b62ed971eeb9b5a636ecbc6e64d2f749ab2dc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:17",
+      "sequence": 25263,
+      "chapter_label": "LUK 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "For nothing is hidden that will not be revealed, nor anything secret that will not be known and come to light.",
+      "ko": "숨은 것이 장차 드러나지 아니할 것이 없고 감추인 것이 장차 알려지고 나타나지 않을 것이 없느니라",
+      "source_text_hash": "f27948cb1703ea281387e3c2560beeafa0bdeb649a55cbc522c05ec6139641f8",
+      "translation_text_hash": "6a8412f0489760916169f94f436d5f8b59b5b716d160e7cf1a705bda1c7a061f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숨은 것이 장차 드러나지 아니할 것이 없고 감추인 것이 장차 알려지고 나타나지 않을 것이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "6a8412f0489760916169f94f436d5f8b59b5b716d160e7cf1a705bda1c7a061f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:18",
+      "sequence": 25264,
+      "chapter_label": "LUK 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Be careful therefore how you hear. For whoever has, to him will be given; and whoever doesn’t have, from him will be taken away even that which he thinks he has.”",
+      "ko": "그러므로 너희가 어떻게 듣는가 스스로 삼가라 누구든지 있는 자는 받겠고 없는 자는 그 있는 줄로 아는 것까지 빼앗기리라 하시니라",
+      "source_text_hash": "2c70b4be7c6a552e502207bdfa49610856418e7d0224208793649d62b13f426e",
+      "translation_text_hash": "3e210a6baa97a5b2cb75505febbc378b5320955720ef0319a761c1f0b779fb6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 어떻게 듣는가 스스로 삼가라 누구든지 있는 자는 받겠고 없는 자는 그 있는 줄로 아는 것까지 빼앗기리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "3e210a6baa97a5b2cb75505febbc378b5320955720ef0319a761c1f0b779fb6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:19",
+      "sequence": 25265,
+      "chapter_label": "LUK 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "His mother and brothers came to him, and they could not come near him for the crowd.",
+      "ko": "예수의 모친과 그 동생들이 왔으나 무리를 인하여 가까이 하지 못하니",
+      "source_text_hash": "c2b57c35ba87db93d55e4d45d8c04e2303715ada110cad95362a232d0ff49bc8",
+      "translation_text_hash": "1a394033c2655f5b03958f25c28b1a16c09153dc9e980e4bcec54ef9c6ece504",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 모친과 그 동생들이 왔으나 무리를 인하여 가까이 하지 못하니"
+      ],
+      "raw_text_hashes": [
+        "1a394033c2655f5b03958f25c28b1a16c09153dc9e980e4bcec54ef9c6ece504"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:20",
+      "sequence": 25266,
+      "chapter_label": "LUK 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Some people told him, “Your mother and your brothers stand outside, desiring to see you.”",
+      "ko": "혹이 고하되 당신의 모친과 동생들이 당신을 보려고 밖에 섰나이다",
+      "source_text_hash": "d392559de20db3765d7f4a2ed3ede58aa3ba76623dd1f772cf5fbb7b66572035",
+      "translation_text_hash": "95bc9dd7327951f64ebc453d46af965fcbc94db90ae42bcf760a0e1696d4d86e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 고하되 당신의 모친과 동생들이 당신을 보려고 밖에 섰나이다"
+      ],
+      "raw_text_hashes": [
+        "95bc9dd7327951f64ebc453d46af965fcbc94db90ae42bcf760a0e1696d4d86e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:21",
+      "sequence": 25267,
+      "chapter_label": "LUK 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "But he answered them, “My mother and my brothers are these who hear the word of God and do it.”",
+      "ko": "예수께서 대답하여 가라사대 내 모친과 내 동생들은 곧 하나님의 말씀을 듣고 행하는 이 사람들이라 하시니라",
+      "source_text_hash": "a46d603a05349e65cdb395d91a7ed2ba7401e144a302cde40a2578dd42937d3e",
+      "translation_text_hash": "d325fd42bb16b956ed24eb658d907950465108da1c3b3d238cacdd98fcaf4149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내 모친과 내 동생들은 곧 하나님의 말씀을 듣고 행하는 이 사람들이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d325fd42bb16b956ed24eb658d907950465108da1c3b3d238cacdd98fcaf4149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:22",
+      "sequence": 25268,
+      "chapter_label": "LUK 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "Now on one of those days, he entered into a boat, himself and his disciples, and he said to them, “Let’s go over to the other side of the lake.”So they launched out.",
+      "ko": "하루는 제자들과 함께 배에 오르사 저희에게 이르시되 호수 저편으로 건너가자 하시매 이에 떠나",
+      "source_text_hash": "8f51480d49186ac5b5e76fed8f110cf8989c4aa5c16ae90f3932e09180615264",
+      "translation_text_hash": "a00a43b09b29c3b4ca112cc7eb381a29395b14329bfdda5d3438a1627b448d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 제자들과 함께 배에 오르사 저희에게 이르시되 호수 저편으로 건너가자 하시매 이에 떠나"
+      ],
+      "raw_text_hashes": [
+        "a00a43b09b29c3b4ca112cc7eb381a29395b14329bfdda5d3438a1627b448d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:23",
+      "sequence": 25269,
+      "chapter_label": "LUK 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "But as they sailed, he fell asleep. A wind storm came down on the lake, and they were taking on dangerous amounts of water.",
+      "ko": "행선할 때에 예수께서 잠이 드셨더니 마침 광풍이 호수로 내리치매 배에 물이 가득하게 되어 위태한지라",
+      "source_text_hash": "9cd7473b724c87a4798a975bcd7d1cfacbef41db4ce56156099b13dd350a9570",
+      "translation_text_hash": "6ee519f9d19a4a9d039448f265c17bd44e5a3b6ab3544a65d126ad4779784649",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "행선할 때에 예수께서 잠이 드셨더니 마침 광풍이 호수로 내리치매 배에 물이 가득하게 되어 위태한지라"
+      ],
+      "raw_text_hashes": [
+        "6ee519f9d19a4a9d039448f265c17bd44e5a3b6ab3544a65d126ad4779784649"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:24",
+      "sequence": 25270,
+      "chapter_label": "LUK 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "They came to him and awoke him, saying, “Master, Master, we are dying!” He awoke and rebuked the wind and the raging of the water; then they ceased, and it was calm.",
+      "ko": "제자들이 나아와 깨워 가로되 주여 주여 우리가 죽겠나이다 한대 예수께서 잠을 깨사 바람과 물결을 꾸짖으시니 이에 그쳐 잔잔하여지더라",
+      "source_text_hash": "bff6f3052edec94c9a4c162d6b550159229e1b821fc849ba998d6248ad413434",
+      "translation_text_hash": "18c157ec5c0a1b207bd986c02cc7129e2f777b92dc700ad7ab423ebc69431fd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 나아와 깨워 가로되 주여 주여 우리가 죽겠나이다 한대 예수께서 잠을 깨사 바람과 물결을 꾸짖으시니 이에 그쳐 잔잔하여지더라"
+      ],
+      "raw_text_hashes": [
+        "18c157ec5c0a1b207bd986c02cc7129e2f777b92dc700ad7ab423ebc69431fd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:25",
+      "sequence": 25271,
+      "chapter_label": "LUK 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "He said to them, “Where is your faith?”Being afraid, they marveled, saying to one another, “Who is this then, that he commands even the winds and the water, and they obey him?”",
+      "ko": "제자들에게 이르시되 너희 믿음이 어디 있느냐 하시니 저희가 두려워하고 기이히 여겨 서로 말하되 저가 뉘기에 바람과 물을 명하매 순종하는고 하더라",
+      "source_text_hash": "fd02987c6c5d21dd6c2f65e42b608f7c04e277b3ba0614d756c9c449dacd0883",
+      "translation_text_hash": "58a16decf18281b30f3c1eaceaed81232cd04d4feff14d418554d3a9e9421a36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들에게 이르시되 너희 믿음이 어디 있느냐 하시니 저희가 두려워하고 기이히 여겨 서로 말하되 저가 뉘기에 바람과 물을 명하매 순종하는고 하더라"
+      ],
+      "raw_text_hashes": [
+        "58a16decf18281b30f3c1eaceaed81232cd04d4feff14d418554d3a9e9421a36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:26",
+      "sequence": 25272,
+      "chapter_label": "LUK 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "Then they arrived at the country of the Gadarenes, which is opposite Galilee.",
+      "ko": "갈릴리 맞은편 거라사인의 땅에 이르러",
+      "source_text_hash": "4bf03db81ca6f58a0d931f44779cfe5229b8e6b5593d35c73fbc6747b462a76c",
+      "translation_text_hash": "4b25ad3f15d404ab8f622489769916607615bf94c8e446dd41d38837dd64825b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 맞은편 거라사인의 땅에 이르러"
+      ],
+      "raw_text_hashes": [
+        "4b25ad3f15d404ab8f622489769916607615bf94c8e446dd41d38837dd64825b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:27",
+      "sequence": 25273,
+      "chapter_label": "LUK 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "When Jesus stepped ashore, a certain man out of the city who had demons for a long time met him. He wore no clothes, and didn’t live in a house, but in the tombs.",
+      "ko": "육지에 내리시매 그 도시 사람으로서 귀신들린 자 하나가 예수를 만나니 이 사람은 오래 옷을 입지 아니하며 집에 거하지도 아니하고 무덤 사이에 거하는 자라",
+      "source_text_hash": "8a4bb3b03fb03033e9676f1a0f919d24daa5cf4c9f9958ff04331e6a0a58bb01",
+      "translation_text_hash": "af3da0c998c72ce23a08b7d8d9fc88b610ceeb9bc7d36f8ebf6acdc141d7a15e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육지에 내리시매 그 도시 사람으로서 귀신들린 자 하나가 예수를 만나니 이 사람은 오래 옷을 입지 아니하며 집에 거하지도 아니하고 무덤 사이에 거하는 자라"
+      ],
+      "raw_text_hashes": [
+        "af3da0c998c72ce23a08b7d8d9fc88b610ceeb9bc7d36f8ebf6acdc141d7a15e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:28",
+      "sequence": 25274,
+      "chapter_label": "LUK 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "When he saw Jesus, he cried out and fell down before him, and with a loud voice said, “What do I have to do with you, Jesus, you Son of the Most High God? I beg you, don’t torment me!”",
+      "ko": "예수를 보고 부르짖으며 그 앞에 엎드리어 큰 소리로 불러 가로되 지극히 높으신 하나님의 아들 예수여 나와 당신과 무슨 상관이 있나이까 당신께 구하노니 나를 괴롭게 마옵소서 하니",
+      "source_text_hash": "5a9fe003f877283c1c69e70884c333a5b35026c8ae1a74cffd0c66d9da730369",
+      "translation_text_hash": "d0d690424482f524f7e0693c60244f5f2c5dbb21830962a3d848621e24c60bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 보고 부르짖으며 그 앞에 엎드리어 큰 소리로 불러 가로되 지극히 높으신 하나님의 아들 예수여 나와 당신과 무슨 상관이 있나이까 당신께 구하노니 나를 괴롭게 마옵소서 하니"
+      ],
+      "raw_text_hashes": [
+        "d0d690424482f524f7e0693c60244f5f2c5dbb21830962a3d848621e24c60bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:29",
+      "sequence": 25275,
+      "chapter_label": "LUK 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "For Jesus was commanding the unclean spirit to come out of the man. For the unclean spirit had often seized the man. He was kept under guard and bound with chains and fetters. Breaking the bonds apart, he was driven by the demon into the desert.",
+      "ko": "이는 예수께서 이미 더러운 귀신을 명하사 이 사람에게서 나오라 하셨음이라 (귀신이 가끔 이 사람을 붙잡으므로 저가 쇠사슬과 고랑에 매이어 지키웠으되 그 맨 것을 끊고 귀신에게 몰려 광야로 나갔더라)",
+      "source_text_hash": "ce7d6e19b1dd5fafec36fb6730cbe9226252ba3bb0f67cd640a0be35c8a961af",
+      "translation_text_hash": "588edfbb8df4b0b855464a3e0e499e2c4fa05e536aebcbaa63231e0576a304a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 예수께서 이미 더러운 귀신을 명하사 이 사람에게서 나오라 하셨음이라 (귀신이 가끔 이 사람을 붙잡으므로 저가 쇠사슬과 고랑에 매이어 지키웠으되 그 맨 것을 끊고 귀신에게 몰려 광야로 나갔더라)"
+      ],
+      "raw_text_hashes": [
+        "588edfbb8df4b0b855464a3e0e499e2c4fa05e536aebcbaa63231e0576a304a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:30",
+      "sequence": 25276,
+      "chapter_label": "LUK 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Jesus asked him, “What is your name?”He said, “Legion,” for many demons had entered into him.",
+      "ko": "예수께서 네 이름이 무엇이냐 물으신즉 가로되 군대라 하니 이는 많은 귀신이 들렸음이라",
+      "source_text_hash": "727cf570f39fa5637e1dd3222390b598c0f3ec01572b8939cac004558acc49e1",
+      "translation_text_hash": "7cf90f306c7e9cec44437635de6673d05ace34cd1304e78cab096685ae71a17e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 네 이름이 무엇이냐 물으신즉 가로되 군대라 하니 이는 많은 귀신이 들렸음이라"
+      ],
+      "raw_text_hashes": [
+        "7cf90f306c7e9cec44437635de6673d05ace34cd1304e78cab096685ae71a17e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:31",
+      "sequence": 25277,
+      "chapter_label": "LUK 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "They begged him that he would not command them to go into the abyss.",
+      "ko": "무저갱으로 들어가라 하지 마시기를 간구하더니",
+      "source_text_hash": "d3e395e2ed1334c7d6025efb01ba222c06d3c14f041fff2af3df16e0949cf704",
+      "translation_text_hash": "4dbe5d21b52165ab036991fb14d9988c52c4c1cdae19abfd6273efe5ac0c1011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무저갱으로 들어가라 하지 마시기를 간구하더니"
+      ],
+      "raw_text_hashes": [
+        "4dbe5d21b52165ab036991fb14d9988c52c4c1cdae19abfd6273efe5ac0c1011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:32",
+      "sequence": 25278,
+      "chapter_label": "LUK 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "Now there was there a herd of many pigs feeding on the mountain, and they begged him that he would allow them to enter into those. Then he allowed them.",
+      "ko": "마침 거기 많은 돼지 떼가 산에서 먹고 있는지라 귀신들이 그 돼지에게로 들어가게 허하심을 간구하니 이에 허하신대",
+      "source_text_hash": "c16a9f67ba36fb0f8e38fbeb287c113542bb61857e5a79112893b70caa8599c8",
+      "translation_text_hash": "a95aa1446f84c6ee59cc87340fab25baac0fe4dea20a246ef9547a3eda8da758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 거기 많은 돼지 떼가 산에서 먹고 있는지라 귀신들이 그 돼지에게로 들어가게 허하심을 간구하니 이에 허하신대"
+      ],
+      "raw_text_hashes": [
+        "a95aa1446f84c6ee59cc87340fab25baac0fe4dea20a246ef9547a3eda8da758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:33",
+      "sequence": 25279,
+      "chapter_label": "LUK 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "The demons came out of the man and entered into the pigs, and the herd rushed down the steep bank into the lake and were drowned.",
+      "ko": "귀신들이 그 사람에게서 나와 돼지에게로 들어가니 그 떼가 비탈로 내리달아 호수에 들어가 몰사하거늘",
+      "source_text_hash": "439887a3ce0802c05a559b20a7ecadbceaf196dd051a71d18a1d621fc9248f3d",
+      "translation_text_hash": "3099f04ecc8fd6b58437e139043fe54b2fe575020dca684f889da55f254a034c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신들이 그 사람에게서 나와 돼지에게로 들어가니 그 떼가 비탈로 내리달아 호수에 들어가 몰사하거늘"
+      ],
+      "raw_text_hashes": [
+        "3099f04ecc8fd6b58437e139043fe54b2fe575020dca684f889da55f254a034c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:34",
+      "sequence": 25280,
+      "chapter_label": "LUK 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "When those who fed them saw what had happened, they fled and told it in the city and in the country.",
+      "ko": "치던 자들이 그 된 것을 보고 도망하여 성내와 촌에 고하니",
+      "source_text_hash": "3a98aee8e51cae5665ab0afdc590524255b682c1f0f33424f29495c2af893777",
+      "translation_text_hash": "a8ac95ed4adb5293dc4a76afe1a42bd4c8990a49a4be7bc119f104d340a22f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "치던 자들이 그 된 것을 보고 도망하여 성내와 촌에 고하니"
+      ],
+      "raw_text_hashes": [
+        "a8ac95ed4adb5293dc4a76afe1a42bd4c8990a49a4be7bc119f104d340a22f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:35",
+      "sequence": 25281,
+      "chapter_label": "LUK 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "People went out to see what had happened. They came to Jesus and found the man from whom the demons had gone out, sitting at Jesus’ feet, clothed and in his right mind; and they were afraid.",
+      "ko": "사람들이 그 된 것을 보러 나와서 예수께 이르러 귀신 나간 사람이 옷을 입고 정신이 온전하여 예수의 발 아래 앉은 것을 보고 두려워하거늘",
+      "source_text_hash": "29ebb8949f9fc5bca6513e1b242ec66df1f6b3c3e3827c28bd636a7f8cb81035",
+      "translation_text_hash": "f14732c90018a91d7417ae232815752ab2084f88dc229cf5cf4adbc1e2cb5178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 그 된 것을 보러 나와서 예수께 이르러 귀신 나간 사람이 옷을 입고 정신이 온전하여 예수의 발 아래 앉은 것을 보고 두려워하거늘"
+      ],
+      "raw_text_hashes": [
+        "f14732c90018a91d7417ae232815752ab2084f88dc229cf5cf4adbc1e2cb5178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:36",
+      "sequence": 25282,
+      "chapter_label": "LUK 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "Those who saw it told them how he who had been possessed by demons was healed.",
+      "ko": "귀신 들렸던 자의 어떻게 구원 받은 것을 본 자들이 저희에게 이르매",
+      "source_text_hash": "349e523886f8221a5476ba86ab28b84d405ed7cdd0666bc4b14f095e309b841a",
+      "translation_text_hash": "9885947ac8ad674c66ad6b34ce957bed7e14801d297f6cedf28a97ab06fb7510",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신 들렸던 자의 어떻게 구원 받은 것을 본 자들이 저희에게 이르매"
+      ],
+      "raw_text_hashes": [
+        "9885947ac8ad674c66ad6b34ce957bed7e14801d297f6cedf28a97ab06fb7510"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:37",
+      "sequence": 25283,
+      "chapter_label": "LUK 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "All the people of the surrounding country of the Gadarenes asked him to depart from them, for they were very much afraid. Then he entered into the boat and returned.",
+      "ko": "거라사인의 땅 근방 모든 백성이 크게 두려워하여 떠나가시기를 구하더라 예수께서 배에 올라 돌아가실쌔",
+      "source_text_hash": "429ce32a6d442cfcfed247aca47485661720fb5edda111298f63b22b828c5e1a",
+      "translation_text_hash": "11251eba46a089ec77c8dd7169e335c8f548fa481b5b7eaed95591b32b511c8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거라사인의 땅 근방 모든 백성이 크게 두려워하여 떠나가시기를 구하더라 예수께서 배에 올라 돌아가실쌔"
+      ],
+      "raw_text_hashes": [
+        "11251eba46a089ec77c8dd7169e335c8f548fa481b5b7eaed95591b32b511c8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:38",
+      "sequence": 25284,
+      "chapter_label": "LUK 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "But the man from whom the demons had gone out begged him that he might go with him, but Jesus sent him away, saying,",
+      "ko": "귀신 나간 사람이 함께 있기를 구하였으나 예수께서 저를 보내시며 가라사대",
+      "source_text_hash": "b71b2fb93048a382823c2fd8f94a0efe9d9cb3ab532ad1807be103946faa6173",
+      "translation_text_hash": "ae111f7e8d7ef14d772c734e2bce65685eb6a070569895873c6f850d84d25d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신 나간 사람이 함께 있기를 구하였으나 예수께서 저를 보내시며 가라사대"
+      ],
+      "raw_text_hashes": [
+        "ae111f7e8d7ef14d772c734e2bce65685eb6a070569895873c6f850d84d25d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:39",
+      "sequence": 25285,
+      "chapter_label": "LUK 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "“Return to your house, and declare what great things God has done for you.”He went his way, proclaiming throughout the whole city what great things Jesus had done for him.",
+      "ko": "집으로 돌아가 하나님이 네게 어떻게 큰 일 행하신 것을 일일이 고하라 하시니 저가 가서 예수께서 자기에게 어떻게 큰 일 하신 것을 온 성내에 전파하니라",
+      "source_text_hash": "46ce93a4fa5c5c342e495178f419c069ad25d547c0d40ec4a40e666f21b33e71",
+      "translation_text_hash": "ec7f13413255db52667f3c4642032cb2c7fb6a832f4df95344f0da70576a6e7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집으로 돌아가 하나님이 네게 어떻게 큰 일 행하신 것을 일일이 고하라 하시니 저가 가서 예수께서 자기에게 어떻게 큰 일 하신 것을 온 성내에 전파하니라"
+      ],
+      "raw_text_hashes": [
+        "ec7f13413255db52667f3c4642032cb2c7fb6a832f4df95344f0da70576a6e7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:40",
+      "sequence": 25286,
+      "chapter_label": "LUK 8",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 40
+        }
+      ],
+      "en": "When Jesus returned, the multitude welcomed him, for they were all waiting for him.",
+      "ko": "예수께서 돌아오시매 무리가 환영하니 이는 다 기다렸음이러라",
+      "source_text_hash": "447c59108a5fad34e353112f3c5a3bfaabf50469c342750b9d95529d9bb4820b",
+      "translation_text_hash": "11edf8f2bd6ed89e5f70ee3b5143c793e17e016d471123e7561eb4b73023a22b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌아오시매 무리가 환영하니 이는 다 기다렸음이러라"
+      ],
+      "raw_text_hashes": [
+        "11edf8f2bd6ed89e5f70ee3b5143c793e17e016d471123e7561eb4b73023a22b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:41",
+      "sequence": 25287,
+      "chapter_label": "LUK 8",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 41
+        }
+      ],
+      "en": "Behold, a man named Jairus came. He was a ruler of the synagogue. He fell down at Jesus’ feet and begged him to come into his house,",
+      "ko": "이에 회당장인 야이로라 하는 사람이 와서 예수의 발 아래 엎드려 자기 집에 오시기를 간구하니",
+      "source_text_hash": "b26fcddec5cb16e09a4134f8b75a5450a36cb558258d127d73a3405000b74f67",
+      "translation_text_hash": "a6f52500bd46ad117692d082ddb1198ac9158a34e7fb3d6572536601d9ae12ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 회당장인 야이로라 하는 사람이 와서 예수의 발 아래 엎드려 자기 집에 오시기를 간구하니"
+      ],
+      "raw_text_hashes": [
+        "a6f52500bd46ad117692d082ddb1198ac9158a34e7fb3d6572536601d9ae12ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:42",
+      "sequence": 25288,
+      "chapter_label": "LUK 8",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 42
+        }
+      ],
+      "en": "for he had an only born daughter, about twelve years of age, and she was dying. But as he went, the multitudes pressed against him.",
+      "ko": "이는 자기에게 열 두살 먹은 외딸이 있어 죽어감이러라 예수께서 가실 때에 무리가 옹위하더라",
+      "source_text_hash": "ce519cb2499f1242c74faa8fb8aba1ddf80e0cb78a005663e54d3d75539aa462",
+      "translation_text_hash": "f439fbf1d7f46ea8c9fb4036691a3d6fa65e1bf4a3fccf8f08cf62c5eb784617",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 자기에게 열 두살 먹은 외딸이 있어 죽어감이러라 예수께서 가실 때에 무리가 옹위하더라"
+      ],
+      "raw_text_hashes": [
+        "f439fbf1d7f46ea8c9fb4036691a3d6fa65e1bf4a3fccf8f08cf62c5eb784617"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:43",
+      "sequence": 25289,
+      "chapter_label": "LUK 8",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 43
+        }
+      ],
+      "en": "A woman who had a flow of blood for twelve years, who had spent all her living on physicians and could not be healed by any,",
+      "ko": "이에 열 두 해를 혈루증으로 앓는 중에 아무에게도 고침을 받지 못하던 여자가",
+      "source_text_hash": "ad6748e1beb49ecef04f81d42ccd969d06c2bfe80de8fe58e899c2ca125ec6e4",
+      "translation_text_hash": "f4ba7b4512991def062a25c48f19eb8aecca03a7ea2164fd5e51ceb06c8c8289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 열 두 해를 혈루증으로 앓는 중에 아무에게도 고침을 받지 못하던 여자가"
+      ],
+      "raw_text_hashes": [
+        "f4ba7b4512991def062a25c48f19eb8aecca03a7ea2164fd5e51ceb06c8c8289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:44",
+      "sequence": 25290,
+      "chapter_label": "LUK 8",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 44
+        }
+      ],
+      "en": "came behind him and touched the fringe of his cloak. Immediately the flow of her blood stopped.",
+      "ko": "예수의 뒤로 와서 그 옷가에 손을 대니 혈루증이 즉시 그쳤더라",
+      "source_text_hash": "31057eafc214e0f0de2419d693d6379c905d9d2ad3e26b558bf33a98cdd294a6",
+      "translation_text_hash": "519d516b426438b3a6b418b1fd14f0d668f10bd48b4ac5ff7c3b237ea73a4f3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 뒤로 와서 그 옷가에 손을 대니 혈루증이 즉시 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "519d516b426438b3a6b418b1fd14f0d668f10bd48b4ac5ff7c3b237ea73a4f3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:45",
+      "sequence": 25291,
+      "chapter_label": "LUK 8",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 45
+        }
+      ],
+      "en": "Jesus said, “Who touched me?”When all denied it, Peter and those with him said, “Master, the multitudes press and jostle you, and you say, ‘Who touched me?’”",
+      "ko": "예수께서 가라사대 내게 손을 댄 자가 누구냐 하시니 다 아니라 할 때에 베드로가 가로되 주여 무리가 옹위하여 미나이다",
+      "source_text_hash": "8b47e36cc88184b114ace79fccc53078453389ce01c86d36a77c164b1fcd5ba6",
+      "translation_text_hash": "16c9b4ca403bed4e4fa523bac97ceed97230faf85aff5da88c4ade09149207a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내게 손을 댄 자가 누구냐 하시니 다 아니라 할 때에 베드로가 가로되 주여 무리가 옹위하여 미나이다"
+      ],
+      "raw_text_hashes": [
+        "16c9b4ca403bed4e4fa523bac97ceed97230faf85aff5da88c4ade09149207a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:46",
+      "sequence": 25292,
+      "chapter_label": "LUK 8",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 46
+        }
+      ],
+      "en": "But Jesus said, “Someone did touch me, for I perceived that power has gone out of me.”",
+      "ko": "예수께서 가라사대 내게 손을 댄 자가 있도다 이는 내게서 능력이 나간 줄 앎이로다 하신대",
+      "source_text_hash": "bd265c74b4362b489c2967a1a4d705274359904965d46541a2b87198b01fa516",
+      "translation_text_hash": "1b8e06739f1c181d4d8bc51ff20bc7079064c61be79d2235ecfb2ecc541e4c39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 내게 손을 댄 자가 있도다 이는 내게서 능력이 나간 줄 앎이로다 하신대"
+      ],
+      "raw_text_hashes": [
+        "1b8e06739f1c181d4d8bc51ff20bc7079064c61be79d2235ecfb2ecc541e4c39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:47",
+      "sequence": 25293,
+      "chapter_label": "LUK 8",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 47
+        }
+      ],
+      "en": "When the woman saw that she was not hidden, she came trembling; and falling down before him declared to him in the presence of all the people the reason why she had touched him, and how she was healed immediately.",
+      "ko": "여자가 스스로 숨기지 못할 줄을 알고 떨며 나아와 엎드리어 그 손 댄 연고와 곧 나은 것을 모든 사람 앞에서 고하니",
+      "source_text_hash": "0b07d163ba392e358f6792ae3a8a388f426247d897aafe1d5cbbea3941eb32f0",
+      "translation_text_hash": "c355446e9b6e2c679ba066e95c7909c2fe4b178b5d211a8d1de329eeeca0f1a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 스스로 숨기지 못할 줄을 알고 떨며 나아와 엎드리어 그 손 댄 연고와 곧 나은 것을 모든 사람 앞에서 고하니"
+      ],
+      "raw_text_hashes": [
+        "c355446e9b6e2c679ba066e95c7909c2fe4b178b5d211a8d1de329eeeca0f1a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:48",
+      "sequence": 25294,
+      "chapter_label": "LUK 8",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 48
+        }
+      ],
+      "en": "He said to her, “Daughter, cheer up. Your faith has made you well. Go in peace.”",
+      "ko": "예수께서 이르시되 딸아 네 믿음이 너를 구원하였으니 평안히 가라 하시더라",
+      "source_text_hash": "437df0a977995e613d8b4101357faffbc3cf4b5dc463f8cbf7367ae201d38438",
+      "translation_text_hash": "bb562431689193cdf88110a8cc2b94e4c6bc8de96220fa6c21ef5fad50348aea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 딸아 네 믿음이 너를 구원하였으니 평안히 가라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "bb562431689193cdf88110a8cc2b94e4c6bc8de96220fa6c21ef5fad50348aea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:49",
+      "sequence": 25295,
+      "chapter_label": "LUK 8",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 49
+        }
+      ],
+      "en": "While he still spoke, one from the ruler of the synagogue’s house came, saying to him, “Your daughter is dead. Don’t trouble the Teacher.”",
+      "ko": "아직 말씀하실 때에 회당장의 집에서 사람이 와서 말하되 당신의 딸이 죽었나이다 선생을 더 괴롭게 마소서 하거늘",
+      "source_text_hash": "c716cdc82733f23f1d50c95defe6003f1058d9eba11f7fd8ab62a5cce477565c",
+      "translation_text_hash": "603000f0b47c344725bc3e313b845ec3a1dabe4492569a5d1275c0edddb5f4b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아직 말씀하실 때에 회당장의 집에서 사람이 와서 말하되 당신의 딸이 죽었나이다 선생을 더 괴롭게 마소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "603000f0b47c344725bc3e313b845ec3a1dabe4492569a5d1275c0edddb5f4b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:50",
+      "sequence": 25296,
+      "chapter_label": "LUK 8",
+      "verse_label": "50",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 50
+        }
+      ],
+      "en": "But Jesus hearing it, answered him, “Don’t be afraid. Only believe, and she will be healed.”",
+      "ko": "예수께서 들으시고 가라사대 두려워 말고 믿기만 하라 그리하면 딸이 구원을 얻으리라 하시고",
+      "source_text_hash": "5ecf478636652824d2e7abdf26716c5ea81d921198141d406d5a2002cc8ea39d",
+      "translation_text_hash": "19b0d9e7e509c6c47cb6bbd3c145ed4d508a22da2bfa660bf15849070b7b2e7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 가라사대 두려워 말고 믿기만 하라 그리하면 딸이 구원을 얻으리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "19b0d9e7e509c6c47cb6bbd3c145ed4d508a22da2bfa660bf15849070b7b2e7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:51",
+      "sequence": 25297,
+      "chapter_label": "LUK 8",
+      "verse_label": "51",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 51
+        }
+      ],
+      "en": "When he came to the house, he didn’t allow anyone to enter in, except Peter, John, James, the father of the child, and her mother.",
+      "ko": "집에 이르러 베드로와 요한과 야고보와 및 아이의 부모 외에는 함께 들어가기를 허하지 아니하시니라",
+      "source_text_hash": "bea7c0d76fa9f057db08934355c68dea9767530ffaec9c8aef050a43179fd360",
+      "translation_text_hash": "572400d3fc308aeb96a3c0b59706b114c29662749dfdc34b36f5454b4b6ff143",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집에 이르러 베드로와 요한과 야고보와 및 아이의 부모 외에는 함께 들어가기를 허하지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "572400d3fc308aeb96a3c0b59706b114c29662749dfdc34b36f5454b4b6ff143"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:52",
+      "sequence": 25298,
+      "chapter_label": "LUK 8",
+      "verse_label": "52",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 52
+        }
+      ],
+      "en": "All were weeping and mourning her, but he said, “Don’t weep. She isn’t dead, but sleeping.”",
+      "ko": "모든 사람이 아이를 위하여 울며 통곡하매 예수께서 이르시되 울지 말라 죽은 것이 아니라 잔다 하시니",
+      "source_text_hash": "d8d16218c2059fc0dced570a0db8c908b87f7ce4fb64dc89418eb6b1fba343f6",
+      "translation_text_hash": "a4b0443d71ed16a243fefc7430bbf0ecc15ea172eeba3c39c86dccaa02b188c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 아이를 위하여 울며 통곡하매 예수께서 이르시되 울지 말라 죽은 것이 아니라 잔다 하시니"
+      ],
+      "raw_text_hashes": [
+        "a4b0443d71ed16a243fefc7430bbf0ecc15ea172eeba3c39c86dccaa02b188c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:53",
+      "sequence": 25299,
+      "chapter_label": "LUK 8",
+      "verse_label": "53",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 53
+        }
+      ],
+      "en": "They were ridiculing him, knowing that she was dead.",
+      "ko": "저희가 그 죽은 것을 아는고로 비웃더라",
+      "source_text_hash": "210346b81bbc03c70b58232a604c1d9c0bbf4911d2435a5527ac8d42982cce64",
+      "translation_text_hash": "ae66e2df8f134768d43010f80b1ee0f8b17bf8c7f13356d77ca1684ddfb95abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 죽은 것을 아는고로 비웃더라"
+      ],
+      "raw_text_hashes": [
+        "ae66e2df8f134768d43010f80b1ee0f8b17bf8c7f13356d77ca1684ddfb95abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:54",
+      "sequence": 25300,
+      "chapter_label": "LUK 8",
+      "verse_label": "54",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 54
+        }
+      ],
+      "en": "But he put them all outside, and taking her by the hand, he called, saying, “Child, arise!”",
+      "ko": "예수께서 아이의 손을 잡고 불러 가라사대 아이야 일어나라 하시니",
+      "source_text_hash": "1aa032feb6a7faa714c53f931f9cbab9cde43988faf467f6619fe81f3008dc12",
+      "translation_text_hash": "08b8aea342bec2d60af944206b8fd93f47f0cb6b06f317252c12cfcdf38149e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 아이의 손을 잡고 불러 가라사대 아이야 일어나라 하시니"
+      ],
+      "raw_text_hashes": [
+        "08b8aea342bec2d60af944206b8fd93f47f0cb6b06f317252c12cfcdf38149e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:55",
+      "sequence": 25301,
+      "chapter_label": "LUK 8",
+      "verse_label": "55",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 55
+        }
+      ],
+      "en": "Her spirit returned, and she rose up immediately. He commanded that something be given to her to eat.",
+      "ko": "그 영이 돌아와 아이가 곧 일어나거늘 예수께서 먹을 것을 주라 명하신대",
+      "source_text_hash": "ce24346c6c9f99e25603b0cc0d4008f481ab07b60a64e63e3691dc666f97b9d6",
+      "translation_text_hash": "c9cfae34aac7bf049cd16aea1bb986791bf716f45ef2d679fd1b7fe7e350eccc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 영이 돌아와 아이가 곧 일어나거늘 예수께서 먹을 것을 주라 명하신대"
+      ],
+      "raw_text_hashes": [
+        "c9cfae34aac7bf049cd16aea1bb986791bf716f45ef2d679fd1b7fe7e350eccc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:8:56",
+      "sequence": 25302,
+      "chapter_label": "LUK 8",
+      "verse_label": "56",
+      "locator": {
+        "book": "LUK",
+        "chapter": 8,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 8,
+          "verse": 56
+        }
+      ],
+      "en": "Her parents were amazed, but he commanded them to tell no one what had been done.",
+      "ko": "그 부모가 놀라는지라 예수께서 경계하사 이 일을 아무에게도 말하지 말라 하시니라",
+      "source_text_hash": "89deba5f35506c97abfeb1b5cfdf39468af4156e7aa595edfd0a8dc46676af03",
+      "translation_text_hash": "8dc6b3d1e5c47db26343a9cb07d994cfb765fe1fc341700a796c0e93e288d098",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 놀라는지라 예수께서 경계하사 이 일을 아무에게도 말하지 말라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8dc6b3d1e5c47db26343a9cb07d994cfb765fe1fc341700a796c0e93e288d098"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:009",
+  "unit_ordinal": 126,
+  "unit_label": "NUM 9",
+  "book_code": "NUM",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:9:1",
+      "sequence": 3967,
+      "chapter_label": "NUM 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses in the wilderness of Sinai, in the first month of the second year after they had come out of the land of Egypt, saying,",
+      "ko": "애굽 땅에서 나온 다음 해 정월에 여호와께서 시내 광야에서 모세에게 일러 가라사대",
+      "source_text_hash": "a0df1691a16574bf9a136bfe17cfb684a57518dc9077e4b659236812632d4dc6",
+      "translation_text_hash": "822c29b584851eb0209612bc59e27d0baa181acd5a4963088cd076fc99e96b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 땅에서 나온 다음 해 정월에 여호와께서 시내 광야에서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "822c29b584851eb0209612bc59e27d0baa181acd5a4963088cd076fc99e96b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:2",
+      "sequence": 3968,
+      "chapter_label": "NUM 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "“Let the children of Israel keep the Passover in its appointed season.",
+      "ko": "이스라엘 자손으로 유월절을 그 정기에 지키게 하라",
+      "source_text_hash": "c78590c953d580898f170d75d4729697d74ac7f4eb608e6adde05fa8e0256474",
+      "translation_text_hash": "6ba92d7164ba6fa6e18759975fc715707e4049f64226b856d48fcaa6ed7c58f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손으로 유월절을 그 정기에 지키게 하라"
+      ],
+      "raw_text_hashes": [
+        "6ba92d7164ba6fa6e18759975fc715707e4049f64226b856d48fcaa6ed7c58f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:3",
+      "sequence": 3969,
+      "chapter_label": "NUM 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "On the fourteenth day of this month, at evening, you shall keep it in its appointed season. You shall keep it according to all its statutes and according to all its ordinances.”",
+      "ko": "그 정기 곧 이달 십사일 해질 때에 너희는 그것을 지키되 그 모든 율례와 그 모든 규례대로 지킬찌니라",
+      "source_text_hash": "541807c5a685241c3d0f96787dec165cabf95b2e2a5fcfaf6a53dfea829007c7",
+      "translation_text_hash": "f2f233fbce462b9e2d5355c1fa7ac5a3c4fb1f04d3fccc44920e5df0d64a6adf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 정기 곧 이달 십사일 해질 때에 너희는 그것을 지키되 그 모든 율례와 그 모든 규례대로 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "f2f233fbce462b9e2d5355c1fa7ac5a3c4fb1f04d3fccc44920e5df0d64a6adf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:4",
+      "sequence": 3970,
+      "chapter_label": "NUM 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "Moses told the children of Israel that they should keep the Passover.",
+      "ko": "모세가 이스라엘 자손에게 명하여 유월절을 지키라 하매",
+      "source_text_hash": "69f0bab53a2675168b01cd954ce5536543daa23957d73187864aad5fe895c8c1",
+      "translation_text_hash": "ac7b8c7bded97db4dcc00bf36fd23151b40ebdfd200787e6f6bc05275c25d753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 명하여 유월절을 지키라 하매"
+      ],
+      "raw_text_hashes": [
+        "ac7b8c7bded97db4dcc00bf36fd23151b40ebdfd200787e6f6bc05275c25d753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:5",
+      "sequence": 3971,
+      "chapter_label": "NUM 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "They kept the Passover in the first month, on the fourteenth day of the month at evening, in the wilderness of Sinai. According to all that the LORD commanded Moses, so the children of Israel did.",
+      "ko": "그들이 정월 십사일 해 질 때에 시내 광야에서 유월절을 지켰으되 이스라엘 자손이 여호와께서 모세에게 명하신 것을 다 좇아 행하였더라",
+      "source_text_hash": "2c09a09ae296cb8c15b9106e3d9375592c2266f75570b79eebf1927c153cec45",
+      "translation_text_hash": "2cd1c8f2a2a1bb3c614c364346e09f194632fd6fbe65d3b239628b0ffe9b82ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 정월 십사일 해 질 때에 시내 광야에서 유월절을 지켰으되 이스라엘 자손이 여호와께서 모세에게 명하신 것을 다 좇아 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "2cd1c8f2a2a1bb3c614c364346e09f194632fd6fbe65d3b239628b0ffe9b82ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:6",
+      "sequence": 3972,
+      "chapter_label": "NUM 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "There were certain men who were unclean because of the dead body of a man, so that they could not keep the Passover on that day, and they came before Moses and Aaron on that day.",
+      "ko": "때에 사람의 시체로 인하여 부정케 되어서 유월절을 지킬 수 없는 사람들이 있었는데 그들이 당일에 모세와 아론 앞에 이르러",
+      "source_text_hash": "e5c8f2ba68554fb9fc2391fff83eb2a94b648a50826ee25d0bdb7b5558f3241a",
+      "translation_text_hash": "8a9e5ed6828f510d31493128fd3a033b14462c31e4a8cf4c92440379bcf6aa57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 사람의 시체로 인하여 부정케 되어서 유월절을 지킬 수 없는 사람들이 있었는데 그들이 당일에 모세와 아론 앞에 이르러"
+      ],
+      "raw_text_hashes": [
+        "8a9e5ed6828f510d31493128fd3a033b14462c31e4a8cf4c92440379bcf6aa57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:7",
+      "sequence": 3973,
+      "chapter_label": "NUM 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "Those men said to him, “We are unclean because of the dead body of a man. Why are we kept back, that we may not offer the offering of the LORD in its appointed season among the children of Israel?”",
+      "ko": "그에게 이르되 우리가 사람의 시체로 인하여 부정케 되었거니와 우리를 금지하여 이스라엘 자손과 함께 정기에 여호와께 예물을 드리지 못하게 하심은 어찜이니이까",
+      "source_text_hash": "76feec9dc76a8d6a8d23ce3268f74ca52aed4371fafeea76e1dee70713d6c23d",
+      "translation_text_hash": "810e4bb2216c7db4fdd18bf44f27d0a5f70f17cf688588b75e7ccca5692f1c88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르되 우리가 사람의 시체로 인하여 부정케 되었거니와 우리를 금지하여 이스라엘 자손과 함께 정기에 여호와께 예물을 드리지 못하게 하심은 어찜이니이까"
+      ],
+      "raw_text_hashes": [
+        "810e4bb2216c7db4fdd18bf44f27d0a5f70f17cf688588b75e7ccca5692f1c88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:8",
+      "sequence": 3974,
+      "chapter_label": "NUM 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Moses answered them, “Wait, that I may hear what the LORD will command concerning you.”",
+      "ko": "모세가 그들에게 이르되 기다리라 여호와께서 너희에게 대하여 어떻게 명하시는지 내가 들으리라",
+      "source_text_hash": "2f25bc0d9431e1aa8e12ecaaf4bc654d8a49d16379c850eab7ea8006050f3af1",
+      "translation_text_hash": "b52ed5e22fc5f2e807224c49a6e8d131e4067e750547b52fa07014894f8c302a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 기다리라 여호와께서 너희에게 대하여 어떻게 명하시는지 내가 들으리라"
+      ],
+      "raw_text_hashes": [
+        "b52ed5e22fc5f2e807224c49a6e8d131e4067e750547b52fa07014894f8c302a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:9",
+      "sequence": 3975,
+      "chapter_label": "NUM 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:10",
+      "sequence": 3976,
+      "chapter_label": "NUM 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "“Say to the children of Israel, ‘If any man of you or of your generations is unclean by reason of a dead body, or is on a journey far away, he shall still keep the Passover to the LORD.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희나 너희 후손 중에 시체로 인하여 부정케 되든지 먼 여행 중에 있든지 할찌라도 다 여호와 앞에 마땅히 유월절을 지키되",
+      "source_text_hash": "9b18a4acda49dfca41f0c8a55ee3d47a198e29d40e3e187ab6f30a8fc901b14b",
+      "translation_text_hash": "fbc247f66c03a889169e626ea2acd86a15a3ba8fbd353f4f3136c2688cdb6619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희나 너희 후손 중에 시체로 인하여 부정케 되든지 먼 여행 중에 있든지 할찌라도 다 여호와 앞에 마땅히 유월절을 지키되"
+      ],
+      "raw_text_hashes": [
+        "fbc247f66c03a889169e626ea2acd86a15a3ba8fbd353f4f3136c2688cdb6619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:11",
+      "sequence": 3977,
+      "chapter_label": "NUM 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "In the second month, on the fourteenth day at evening they shall keep it; they shall eat it with unleavened bread and bitter herbs.",
+      "ko": "이월 십사일 해 질 때에 그것을 지켜서 어린 양에 무교병과 쓴 나물을 아울러 먹을 것이요",
+      "source_text_hash": "2006c766902d421e42993ca7b677ffe6497639770c6e7a8a38d7a09c95141643",
+      "translation_text_hash": "d91c09e487716e896753202c9fc790613af1acdbb97399ddd1da94459ac09360",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이월 십사일 해 질 때에 그것을 지켜서 어린 양에 무교병과 쓴 나물을 아울러 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "d91c09e487716e896753202c9fc790613af1acdbb97399ddd1da94459ac09360"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:12",
+      "sequence": 3978,
+      "chapter_label": "NUM 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "They shall leave none of it until the morning, nor break a bone of it. According to all the statute of the Passover they shall keep it.",
+      "ko": "아침까지 그것을 조금도 남겨 두지 말며 그 뼈를 하나도 꺾지 말아서 유월절 모든 율례대로 지킬 것이니라",
+      "source_text_hash": "98d1d976f7b761139c4543f9d51e4a5035200d251465849c926ef5c487e6ef3d",
+      "translation_text_hash": "88c6fc1fec80b90f6859d0c590e38ec9808dde5f55a1bdf8ce9d5e2d3782b9a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침까지 그것을 조금도 남겨 두지 말며 그 뼈를 하나도 꺾지 말아서 유월절 모든 율례대로 지킬 것이니라"
+      ],
+      "raw_text_hashes": [
+        "88c6fc1fec80b90f6859d0c590e38ec9808dde5f55a1bdf8ce9d5e2d3782b9a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:13",
+      "sequence": 3979,
+      "chapter_label": "NUM 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "But the man who is clean, and is not on a journey, and fails to keep the Passover, that soul shall be cut off from his people. Because he didn’t offer the offering of the LORD in its appointed season, that man shall bear his sin.",
+      "ko": "그러나 사람이 정결도 하고 여행 중에도 있지 아니하면서 유월절을 지키지 아니하는 자는 그 백성 중에서 끊쳐지리니 이런 사람은 그 정기에 여호와께 예물을 드리지 아니하였은즉 그 죄를 당할찌며",
+      "source_text_hash": "ae2b20d74509dfd8b17e6bb875e91d9e1d67aa7a20cc388c0799a6a92c928f1b",
+      "translation_text_hash": "7f12f5382b648eaea5124781cbd22dc76ca28113e09794e0d4ef0304882c85dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사람이 정결도 하고 여행 중에도 있지 아니하면서 유월절을 지키지 아니하는 자는 그 백성 중에서 끊쳐지리니 이런 사람은 그 정기에 여호와께 예물을 드리지 아니하였은즉 그 죄를 당할찌며"
+      ],
+      "raw_text_hashes": [
+        "7f12f5382b648eaea5124781cbd22dc76ca28113e09794e0d4ef0304882c85dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:14",
+      "sequence": 3980,
+      "chapter_label": "NUM 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "“‘If a foreigner lives among you and desires to keep the Passover to the LORD, then he shall do so according to the statute of the Passover, and according to its ordinance. You shall have one statute, both for the foreigner and for him who is born in the land.’”",
+      "ko": "만일 타국인이 너희 중에 우거하여 여호와 앞에 유월절을 지키고자 하면 유월절 율례대로 그 규례를 따라서 행할찌니 우거한 자에게나 본토인에게나 그 율례는 동일할 것이니라",
+      "source_text_hash": "9e06f145b6eba4f52f86370244bc1dde603a09205469b6308ff2ceb6adf9d18a",
+      "translation_text_hash": "e8f62ae33b065379a0ccf2c82119b3ee9b430c79dd2bda89a7212d2583a76eed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 타국인이 너희 중에 우거하여 여호와 앞에 유월절을 지키고자 하면 유월절 율례대로 그 규례를 따라서 행할찌니 우거한 자에게나 본토인에게나 그 율례는 동일할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e8f62ae33b065379a0ccf2c82119b3ee9b430c79dd2bda89a7212d2583a76eed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:15",
+      "sequence": 3981,
+      "chapter_label": "NUM 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "On the day that the tabernacle was raised up, the cloud covered the tabernacle, even the Tent of the Testimony. At evening it was over the tabernacle, as it were the appearance of fire, until morning.",
+      "ko": "성막을 세운 날에 구름이 성막 곧 증거막을 덮었고 저녁이 되면 성막 위에 불 모양 같은 것이 나타나서 아침까지 이르렀으되",
+      "source_text_hash": "723ec2489f40d5f0cbefb326a5d4296a5c8e460921820049f5b361a8a4819ee3",
+      "translation_text_hash": "494c4834a7f55550a046183d7ef49beff86244c07fef639821c2847c85954ad1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막을 세운 날에 구름이 성막 곧 증거막을 덮었고 저녁이 되면 성막 위에 불 모양 같은 것이 나타나서 아침까지 이르렀으되"
+      ],
+      "raw_text_hashes": [
+        "494c4834a7f55550a046183d7ef49beff86244c07fef639821c2847c85954ad1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:16",
+      "sequence": 3982,
+      "chapter_label": "NUM 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "So it was continually. The cloud covered it, and the appearance of fire by night.",
+      "ko": "항상 그러하여 낮에는 구름이 그것을 덮었고 밤이면 불 모양이 있었는데",
+      "source_text_hash": "900b57363b12107babed8268a7807ed08104edca3224e0bce5d23a7e912cf642",
+      "translation_text_hash": "67e589052badb9a5e417247a43abbc29cb9741586ef52857522187d7e380c947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항상 그러하여 낮에는 구름이 그것을 덮었고 밤이면 불 모양이 있었는데"
+      ],
+      "raw_text_hashes": [
+        "67e589052badb9a5e417247a43abbc29cb9741586ef52857522187d7e380c947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:17",
+      "sequence": 3983,
+      "chapter_label": "NUM 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "Whenever the cloud was taken up from over the Tent, then after that the children of Israel traveled; and in the place where the cloud remained, there the children of Israel encamped.",
+      "ko": "구름이 성막에서 떠오르는 때에는 이스라엘 자손이 곧 진행하였고 구름이 머무는 곳에 이스라엘 자손이 진을 쳤으니",
+      "source_text_hash": "758fdd2bee0634664cd46b77ad57bf8e59e3cbb671a76a5114b34837ed9ffaf9",
+      "translation_text_hash": "b76444a3fe1bd27e5be67fb5a8530256dc3d217f39441a29f0882a47ec3bfa28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 성막에서 떠오르는 때에는 이스라엘 자손이 곧 진행하였고 구름이 머무는 곳에 이스라엘 자손이 진을 쳤으니"
+      ],
+      "raw_text_hashes": [
+        "b76444a3fe1bd27e5be67fb5a8530256dc3d217f39441a29f0882a47ec3bfa28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:18",
+      "sequence": 3984,
+      "chapter_label": "NUM 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "At the commandment of the LORD, the children of Israel traveled, and at the commandment of the LORD they encamped. As long as the cloud remained on the tabernacle they remained encamped.",
+      "ko": "이스라엘 자손이 여호와의 명을 좇아 진행하였고 여호와의 명을 좇아 진을 쳤으며 구름이 성막 위에 머무는 동안에는 그들이 유진하였고",
+      "source_text_hash": "4945dc9bf22c9d42ed12590af81d965562c092c15d4ac12d2980cc1ae3eb1d84",
+      "translation_text_hash": "2990dde17bad99c611d569092366c99f1c593efa2663a0c4ca3f168a2e661095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와의 명을 좇아 진행하였고 여호와의 명을 좇아 진을 쳤으며 구름이 성막 위에 머무는 동안에는 그들이 유진하였고"
+      ],
+      "raw_text_hashes": [
+        "2990dde17bad99c611d569092366c99f1c593efa2663a0c4ca3f168a2e661095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:19",
+      "sequence": 3985,
+      "chapter_label": "NUM 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "When the cloud stayed on the tabernacle many days, then the children of Israel kept the LORD’s command, and didn’t travel.",
+      "ko": "구름이 장막 위에 머무는 날이 오랠 때에는 이스라엘 자손이 여호와의 명을 지켜 진행치 아니하였으며",
+      "source_text_hash": "3e9f84070809629b4d0fd066d1434dd5aca52fb27b11c81014bf825fd10b9281",
+      "translation_text_hash": "0d8f13bd945453cd8d6c70f698c9513059682efa8b2a15cede81fb6d906b4e2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구름이 장막 위에 머무는 날이 오랠 때에는 이스라엘 자손이 여호와의 명을 지켜 진행치 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "0d8f13bd945453cd8d6c70f698c9513059682efa8b2a15cede81fb6d906b4e2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:20",
+      "sequence": 3986,
+      "chapter_label": "NUM 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "Sometimes the cloud was a few days on the tabernacle; then according to the commandment of the LORD they remained encamped, and according to the commandment of the LORD they traveled.",
+      "ko": "혹시 구름이 장막 위에 머무는 날이 적을 때에도 그들이 다만 여호와의 명을 좇아 유진하고 여호와의 명을 좇아 진행하였으며",
+      "source_text_hash": "c4de8ad326a6fef3836fd8c2afe6b51f51d1099680e8064ccca42056ead9a853",
+      "translation_text_hash": "e137dca6444a292dafc33c1ca1c85b92f359a17d4b9c3335bf19d072727df6ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 구름이 장막 위에 머무는 날이 적을 때에도 그들이 다만 여호와의 명을 좇아 유진하고 여호와의 명을 좇아 진행하였으며"
+      ],
+      "raw_text_hashes": [
+        "e137dca6444a292dafc33c1ca1c85b92f359a17d4b9c3335bf19d072727df6ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:21",
+      "sequence": 3987,
+      "chapter_label": "NUM 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "Sometimes the cloud was from evening until morning; and when the cloud was taken up in the morning, they traveled; or by day and by night, when the cloud was taken up, they traveled.",
+      "ko": "혹시 구름이 저녁부터 아침까지 있다가 아침에 그 구름이 떠 오를 때에는 그들이 진행하였고 구름이 밤낮 있다가 떠 오르면 곧 진행하였으며",
+      "source_text_hash": "0cef281ee6105d5b9f8560379e42b153f6fafbd73a786fa64df64f5165e59a46",
+      "translation_text_hash": "925d3220d9ffd7e6093692c3a01a3dcb1c14db69dc27b2eafb76916991d07860",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹시 구름이 저녁부터 아침까지 있다가 아침에 그 구름이 떠 오를 때에는 그들이 진행하였고 구름이 밤낮 있다가 떠 오르면 곧 진행하였으며"
+      ],
+      "raw_text_hashes": [
+        "925d3220d9ffd7e6093692c3a01a3dcb1c14db69dc27b2eafb76916991d07860"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:22",
+      "sequence": 3988,
+      "chapter_label": "NUM 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "Whether it was two days, or a month, or a year that the cloud stayed on the tabernacle, remaining on it, the children of Israel remained encamped, and didn’t travel; but when it was taken up, they traveled.",
+      "ko": "이틀이든지 한 달이든지 일년이든지 구름이 성막 위에 머물러 있을 동안에는 이스라엘 자손이 유진하고 진행치 아니하다가 떠 오르면 진행하였으니",
+      "source_text_hash": "2054749ab3638157f7a47a49803389532ac4de892115a54a8e638b9385a2b3ef",
+      "translation_text_hash": "310a11aea067e79cd59f55ad1487093d60099a8369e355063d75df73a6a34d28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이틀이든지 한 달이든지 일년이든지 구름이 성막 위에 머물러 있을 동안에는 이스라엘 자손이 유진하고 진행치 아니하다가 떠 오르면 진행하였으니"
+      ],
+      "raw_text_hashes": [
+        "310a11aea067e79cd59f55ad1487093d60099a8369e355063d75df73a6a34d28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:9:23",
+      "sequence": 3989,
+      "chapter_label": "NUM 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "At the commandment of the LORD they encamped, and at the commandment of the LORD they traveled. They kept the LORD’s command, at the commandment of the LORD by Moses.",
+      "ko": "곧 그들이 여호와의 명을 좇아 진을 치며 여호와의 명을 좇아 진행하고 또 모세로 전하신 여호와의 명을 따라 여호와의 직임을 지켰더라",
+      "source_text_hash": "23d3cc0bdc49b3ff6d3ea691568911c1aa023b70708531e27360309535f00111",
+      "translation_text_hash": "a2f5c9a57a3c47912ec6b8ef3f7f2cafa212c112c5f2f99cbf41cb601148f512",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들이 여호와의 명을 좇아 진을 치며 여호와의 명을 좇아 진행하고 또 모세로 전하신 여호와의 명을 따라 여호와의 직임을 지켰더라"
+      ],
+      "raw_text_hashes": [
+        "a2f5c9a57a3c47912ec6b8ef3f7f2cafa212c112c5f2f99cbf41cb601148f512"
+      ]
+    }
+  ]
+}

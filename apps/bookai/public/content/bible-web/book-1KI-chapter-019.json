@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1KI:chapter:019",
+  "unit_ordinal": 310,
+  "unit_label": "1KI 19",
+  "book_code": "1KI",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1KI:19:1",
+      "sequence": 9389,
+      "chapter_label": "1KI 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Ahab told Jezebel all that Elijah had done, and how he had killed all the prophets with the sword.",
+      "ko": "아합이 엘리야의 무릇 행한 일과 그가 어떻게 모든 선지자를 칼로 죽인 것을 이세벨에게 고하니",
+      "source_text_hash": "32589742f33a7596dd5dba9801d8f0df653baa8127b8b791de1a2b033a84730d",
+      "translation_text_hash": "194f2058df95ca8920d0dfb6c56861b8c12c3a909b5f9bb8c649b944dc64c4a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합이 엘리야의 무릇 행한 일과 그가 어떻게 모든 선지자를 칼로 죽인 것을 이세벨에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "194f2058df95ca8920d0dfb6c56861b8c12c3a909b5f9bb8c649b944dc64c4a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:2",
+      "sequence": 9390,
+      "chapter_label": "1KI 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "Then Jezebel sent a messenger to Elijah, saying, “So let the gods do to me, and more also, if I don’t make your life as the life of one of them by tomorrow about this time!”",
+      "ko": "이세벨이 사자를 엘리야에게 보내어 이르되 내가 내일 이맘때에는 정녕 네 생명으로 저 사람들 중 한 사람의 생명 같게 하리라 아니하면 신들이 내게 벌 위에 벌을 내림이 마땅하니라 한지라",
+      "source_text_hash": "ca37c502634ae67d9b6fc6b4963eef9fcabea2d8e39b4ba218761e1a34336830",
+      "translation_text_hash": "8e3ee2e38acfcdeeb272b71437cdbbf8fbd79dc2350ef3a8db1d505188574669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이세벨이 사자를 엘리야에게 보내어 이르되 내가 내일 이맘때에는 정녕 네 생명으로 저 사람들 중 한 사람의 생명 같게 하리라 아니하면 신들이 내게 벌 위에 벌을 내림이 마땅하니라 한지라"
+      ],
+      "raw_text_hashes": [
+        "8e3ee2e38acfcdeeb272b71437cdbbf8fbd79dc2350ef3a8db1d505188574669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:3",
+      "sequence": 9391,
+      "chapter_label": "1KI 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "When he saw that, he arose and ran for his life, and came to Beersheba, which belongs to Judah, and left his servant there.",
+      "ko": "저가 이 형편을 보고 일어나 그 생명을 위하여 도망하여 유다에 속한 브엘세바에 이르러 자기의 사환을 그곳에 머물게 하고",
+      "source_text_hash": "5fcd334e4ca950fb8754e4e7cc6ecc1fe635ca87c0037b69a1caeca580d9659d",
+      "translation_text_hash": "518a09bdb39a52deca562d41655cb808ae19587d73fc431da2d82b3c5270a474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이 형편을 보고 일어나 그 생명을 위하여 도망하여 유다에 속한 브엘세바에 이르러 자기의 사환을 그곳에 머물게 하고"
+      ],
+      "raw_text_hashes": [
+        "518a09bdb39a52deca562d41655cb808ae19587d73fc431da2d82b3c5270a474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:4",
+      "sequence": 9392,
+      "chapter_label": "1KI 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "But he himself went a day’s journey into the wilderness, and came and sat down under a juniper tree. Then he requested for himself that he might die, and said, “It is enough. Now, O LORD, take away my life; for I am not better than my fathers.”",
+      "ko": "스스로 광야로 들어가 하룻길쯤 행하고 한 로뎀나무 아래 앉아서 죽기를 구하여 가로되 여호와여 넉넉하오니 지금 내 생명을 취하옵소서 나는 내 열조보다 낫지 못하니이다 하고",
+      "source_text_hash": "0a2568aa8cb998260f18ab0ed0daf9f94607e8928c1b6f58717fb5a6d43e6672",
+      "translation_text_hash": "72b7ea475955a15f68cb46529463246c02fe93577d54615d55a0057c951f3154",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 광야로 들어가 하룻길쯤 행하고 한 로뎀나무 아래 앉아서 죽기를 구하여 가로되 여호와여 넉넉하오니 지금 내 생명을 취하옵소서 나는 내 열조보다 낫지 못하니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "72b7ea475955a15f68cb46529463246c02fe93577d54615d55a0057c951f3154"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:5",
+      "sequence": 9393,
+      "chapter_label": "1KI 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "He lay down and slept under a juniper tree; and behold, an angel touched him, and said to him, “Arise and eat!”",
+      "ko": "로뎀나무 아래 누워 자더니 천사가 어루만지며 이르되 일어나서 먹으라 하는지라",
+      "source_text_hash": "2fbdbab482587c69fc2f2c3671d643b7a5a2842e1f6746630c91a5871de2ab77",
+      "translation_text_hash": "ea3de372ceebcc9b9d70d51b061f4da6c37d94aa79bfd056b7452f6fbb52ccad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "로뎀나무 아래 누워 자더니 천사가 어루만지며 이르되 일어나서 먹으라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "ea3de372ceebcc9b9d70d51b061f4da6c37d94aa79bfd056b7452f6fbb52ccad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:6",
+      "sequence": 9394,
+      "chapter_label": "1KI 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "He looked, and behold, there was at his head a cake baked on the coals, and a jar of water. He ate and drank, and lay down again.",
+      "ko": "본즉 머리맡에 숯불에 구운 떡과 한 병 물이 있더라 이에 먹고 마시고 다시 누웠더니",
+      "source_text_hash": "1bea3b690391c3338d0a39956906666a1cac9b3679cdc3bd13407ee8db00d8f3",
+      "translation_text_hash": "d6e850afc5ea72154b4ea8828c03c0301235340b3e6884995cb1bd9d3f5623f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "본즉 머리맡에 숯불에 구운 떡과 한 병 물이 있더라 이에 먹고 마시고 다시 누웠더니"
+      ],
+      "raw_text_hashes": [
+        "d6e850afc5ea72154b4ea8828c03c0301235340b3e6884995cb1bd9d3f5623f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:7",
+      "sequence": 9395,
+      "chapter_label": "1KI 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD’s angel came again the second time, and touched him, and said, “Arise and eat, because the journey is too great for you.”",
+      "ko": "여호와의 사자가 또 다시 와서 어루만지며 이르되 일어나서 먹으라 네가 길을 이기지 못할까 하노라 하는지라",
+      "source_text_hash": "e3f3fe14720708863b705a5a9d9970a7aeb44cddc5da1172527cd2bc83f1746e",
+      "translation_text_hash": "61bf0023ede1c3f9e3372c9f9008c7f6e701c3d61ff984afa8c1f4621f1a2f35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 또 다시 와서 어루만지며 이르되 일어나서 먹으라 네가 길을 이기지 못할까 하노라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "61bf0023ede1c3f9e3372c9f9008c7f6e701c3d61ff984afa8c1f4621f1a2f35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:8",
+      "sequence": 9396,
+      "chapter_label": "1KI 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "He arose, and ate and drank, and went in the strength of that food forty days and forty nights to Horeb, God’s Mountain.",
+      "ko": "이에 일어나 먹고 마시고 그 식물의 힘을 의지하여 사십주 사십야를 행하여 하나님의 산 호렙에 이르니라",
+      "source_text_hash": "3ff88b51cbad66fda3634f57d3afa2e989545fa80aa1d3927ee2d704b51fdf49",
+      "translation_text_hash": "eb7c79ec66f718e625682fe56b9bdd3d8233f96c7a5999af75d8e31b279d2aa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 일어나 먹고 마시고 그 식물의 힘을 의지하여 사십주 사십야를 행하여 하나님의 산 호렙에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "eb7c79ec66f718e625682fe56b9bdd3d8233f96c7a5999af75d8e31b279d2aa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:9",
+      "sequence": 9397,
+      "chapter_label": "1KI 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "He came to a cave there, and camped there; and behold, the LORD’s word came to him, and he said to him, “What are you doing here, Elijah?”",
+      "ko": "엘리야가 그곳 굴에 들어가 거기서 유하더니 여호와의 말씀이 저에게 임하여 이르시되 엘리야야 네가 어찌하여 여기 있느냐",
+      "source_text_hash": "c8f147d7a85488509a153f91327fd8c4aeddd7dd9cb445c0749ce6d80cb58812",
+      "translation_text_hash": "0c4071053d8cb611b9b407db273213945fe35fe3d73ad2e5b9a29c770d0cfe81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 그곳 굴에 들어가 거기서 유하더니 여호와의 말씀이 저에게 임하여 이르시되 엘리야야 네가 어찌하여 여기 있느냐"
+      ],
+      "raw_text_hashes": [
+        "0c4071053d8cb611b9b407db273213945fe35fe3d73ad2e5b9a29c770d0cfe81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:10",
+      "sequence": 9398,
+      "chapter_label": "1KI 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "He said, “I have been very jealous for the LORD, the God of Armies; for the children of Israel have forsaken your covenant, thrown down your altars, and killed your prophets with the sword. I, even I only, am left; and they seek my life, to take it away.”",
+      "ko": "저가 대답하되 내가 만군의 하나님 여호와를 위하여 열심이 특심하오니 이는 이스라엘 자손이 주의 언약을 버리고 주의 단을 헐며 칼로 주의 선지자들을 죽였음이오며 오직 나만 남았거늘 저희가 내 생명을 찾아 취하려 하나이다",
+      "source_text_hash": "aab4e27fb63297b3d0c772a1ff89102b5d3a9dbfad7a1d74a1b4b2c6d3ad3ea6",
+      "translation_text_hash": "a7051a82ba1e4cb932be57a9f55d79b57e9721f846c0af8277117012245bd9c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 대답하되 내가 만군의 하나님 여호와를 위하여 열심이 특심하오니 이는 이스라엘 자손이 주의 언약을 버리고 주의 단을 헐며 칼로 주의 선지자들을 죽였음이오며 오직 나만 남았거늘 저희가 내 생명을 찾아 취하려 하나이다"
+      ],
+      "raw_text_hashes": [
+        "a7051a82ba1e4cb932be57a9f55d79b57e9721f846c0af8277117012245bd9c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:11",
+      "sequence": 9399,
+      "chapter_label": "1KI 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "He said, “Go out and stand on the mountain before the LORD.” Behold, the LORD passed by, and a great and strong wind tore the mountains and broke in pieces the rocks before the LORD; but the LORD was not in the wind. After the wind there was an earthquake; but the LORD was not in the earthquake.",
+      "ko": "여호와께서 가라사대 너는 나가서 여호와의 앞에서 산에 섰으라 하시더니 여호와께서 지나가시는데 여호와의 앞에 크고 강한 바람이 산을 가르고 바위를 부수나 바람 가운데 여호와께서 계시지 아니하며 바람 후에 지진이 있으나 지진 가운데도 여호와께서 계시지 아니하며",
+      "source_text_hash": "ad3ce8bc89e23a8fa84b9ee10d95f855f3da6269340064eb6fb6272502cf2625",
+      "translation_text_hash": "bbd9534a02a9d97eaf8da5a2065c07d3a7b13f6406a1cf0b34264446df19ff78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 너는 나가서 여호와의 앞에서 산에 섰으라 하시더니 여호와께서 지나가시는데 여호와의 앞에 크고 강한 바람이 산을 가르고 바위를 부수나 바람 가운데 여호와께서 계시지 아니하며 바람 후에 지진이 있으나 지진 가운데도 여호와께서 계시지 아니하며"
+      ],
+      "raw_text_hashes": [
+        "bbd9534a02a9d97eaf8da5a2065c07d3a7b13f6406a1cf0b34264446df19ff78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:12",
+      "sequence": 9400,
+      "chapter_label": "1KI 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "After the earthquake a fire passed; but the LORD was not in the fire. After the fire, there was a still small voice.",
+      "ko": "또 지진 후에 불이 있으나 불 가운데도 여호와께서 계시지 아니하더니 불 후에 세미한 소리가 있는지라",
+      "source_text_hash": "84bebd374b43b8dc5f588d9a0ae079abf58e6255f967c05e6a7bb31c798591b4",
+      "translation_text_hash": "bef4497af79a82a2d468fb63235aaa4115ef734e2cda6df9abe1be3558fc2754",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 지진 후에 불이 있으나 불 가운데도 여호와께서 계시지 아니하더니 불 후에 세미한 소리가 있는지라"
+      ],
+      "raw_text_hashes": [
+        "bef4497af79a82a2d468fb63235aaa4115ef734e2cda6df9abe1be3558fc2754"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:13",
+      "sequence": 9401,
+      "chapter_label": "1KI 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "When Elijah heard it, he wrapped his face in his mantle, went out, and stood in the entrance of the cave. Behold, a voice came to him, and said, “What are you doing here, Elijah?”",
+      "ko": "엘리야가 듣고 겉옷으로 얼굴을 가리우고 나가 굴 어귀에 서매 소리가 있어 저에게 임하여 가라사대 엘리야야 네가 어찌하여 여기 있느냐",
+      "source_text_hash": "3391d9f64117f0d50eebae6bfcec4680d80f6d13745e1ce43aee32c1c6bdf791",
+      "translation_text_hash": "4017d8b00eb7cab36dfa7eb0a8475190c41c5cbec03150b895fa84dedd9db5f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 듣고 겉옷으로 얼굴을 가리우고 나가 굴 어귀에 서매 소리가 있어 저에게 임하여 가라사대 엘리야야 네가 어찌하여 여기 있느냐"
+      ],
+      "raw_text_hashes": [
+        "4017d8b00eb7cab36dfa7eb0a8475190c41c5cbec03150b895fa84dedd9db5f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:14",
+      "sequence": 9402,
+      "chapter_label": "1KI 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “I have been very jealous for the LORD, the God of Armies; for the children of Israel have forsaken your covenant, thrown down your altars, and killed your prophets with the sword. I, even I only, am left; and they seek my life, to take it away.”",
+      "ko": "저가 대답하되 내가 만군의 하나님 여호와를 위하여 열심이 특심하오니 이는 이스라엘 자손이 주의 언약을 버리고 주의 단을 헐며 칼로 주의 선지자들을 죽였음이오며 오직 나만 남았거늘 저희가 내 생명을 찾아 취하려 하나이다",
+      "source_text_hash": "aab4e27fb63297b3d0c772a1ff89102b5d3a9dbfad7a1d74a1b4b2c6d3ad3ea6",
+      "translation_text_hash": "a7051a82ba1e4cb932be57a9f55d79b57e9721f846c0af8277117012245bd9c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 대답하되 내가 만군의 하나님 여호와를 위하여 열심이 특심하오니 이는 이스라엘 자손이 주의 언약을 버리고 주의 단을 헐며 칼로 주의 선지자들을 죽였음이오며 오직 나만 남았거늘 저희가 내 생명을 찾아 취하려 하나이다"
+      ],
+      "raw_text_hashes": [
+        "a7051a82ba1e4cb932be57a9f55d79b57e9721f846c0af8277117012245bd9c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:15",
+      "sequence": 9403,
+      "chapter_label": "1KI 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD said to him, “Go, return on your way to the wilderness of Damascus. When you arrive, anoint Hazael to be king over Syria.",
+      "ko": "여호와께서 저에게 이르시되 너는 네 길을 돌이켜 광야로 말미암아 다메섹에 가서 이르거든 하사엘에게 기름을 부어 아람 왕이 되게 하고",
+      "source_text_hash": "6a83089da5e52dc985c366d9ed64abde94723af5cf9f33c49a5fc7fdcd123c21",
+      "translation_text_hash": "717c08c11ea281eb414739b1b0d89c605b463fa27fc5bbe6e80900901785d5a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 저에게 이르시되 너는 네 길을 돌이켜 광야로 말미암아 다메섹에 가서 이르거든 하사엘에게 기름을 부어 아람 왕이 되게 하고"
+      ],
+      "raw_text_hashes": [
+        "717c08c11ea281eb414739b1b0d89c605b463fa27fc5bbe6e80900901785d5a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:16",
+      "sequence": 9404,
+      "chapter_label": "1KI 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "Anoint Jehu the son of Nimshi to be king over Israel; and anoint Elisha the son of Shaphat of Abel Meholah to be prophet in your place.",
+      "ko": "너는 또 님시의 아들 예후에게 기름을 부어 이스라엘 왕이 되게 하고 또 아벨므흘라 사밧의 아들 엘리사에게 기름을 부어 너를 대신하여 선지자가 되게 하라",
+      "source_text_hash": "619b73d705981ed3a5f6be98b3d77b1145382ae66fa386cde94d71a6ffbf142c",
+      "translation_text_hash": "0accd6ebbe9bcb04b321339925c1fd7c5b550e4142322920ccc50ad48a2cb999",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 또 님시의 아들 예후에게 기름을 부어 이스라엘 왕이 되게 하고 또 아벨므흘라 사밧의 아들 엘리사에게 기름을 부어 너를 대신하여 선지자가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "0accd6ebbe9bcb04b321339925c1fd7c5b550e4142322920ccc50ad48a2cb999"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:17",
+      "sequence": 9405,
+      "chapter_label": "1KI 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "He who escapes from the sword of Hazael, Jehu will kill; and he who escapes from the sword of Jehu, Elisha will kill.",
+      "ko": "하사엘의 칼을 피하는 자를 예후가 죽일 것이요 예후의 칼을 피하는 자를 엘리사가 죽이리라",
+      "source_text_hash": "9b547ac6590ad27e86b90f2e2f7f1d420c62bb288b53092483f1d85423c0a3fa",
+      "translation_text_hash": "03135b34b65148bf92ef399d30cc95330571be7811209421e208caa6f8edfbe3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하사엘의 칼을 피하는 자를 예후가 죽일 것이요 예후의 칼을 피하는 자를 엘리사가 죽이리라"
+      ],
+      "raw_text_hashes": [
+        "03135b34b65148bf92ef399d30cc95330571be7811209421e208caa6f8edfbe3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:18",
+      "sequence": 9406,
+      "chapter_label": "1KI 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Yet I reserved seven thousand in Israel, all the knees of which have not bowed to Baal, and every mouth that has not kissed him.”",
+      "ko": "그러나 내가 이스라엘 가운데 칠천인을 남기리니 다 무릎을 바알에게 꿇지 아니하고 다 그 입을 바알에게 맞추지 아니한 자니라",
+      "source_text_hash": "b22aaea3c50e11aa938a1bd461ed71b2a7a8efd0810da7d45a2517dded25c128",
+      "translation_text_hash": "66a6a1fdae0646b69e45dae006cd721e52d0c69a3852e136588efa506c53c45c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 이스라엘 가운데 칠천인을 남기리니 다 무릎을 바알에게 꿇지 아니하고 다 그 입을 바알에게 맞추지 아니한 자니라"
+      ],
+      "raw_text_hashes": [
+        "66a6a1fdae0646b69e45dae006cd721e52d0c69a3852e136588efa506c53c45c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:19",
+      "sequence": 9407,
+      "chapter_label": "1KI 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "So he departed from there and found Elisha the son of Shaphat, who was plowing with twelve yoke of oxen before him, and he with the twelfth. Elijah went over to him and put his mantle on him.",
+      "ko": "엘리야가 거기서 떠나 사밧의 아들 엘리사를 만나니 저가 열 두 겨리 소를 앞세우고 밭을 가는데 자기는 열둘째 겨리와 함께 있더라 엘리야가 그리로 건너가서 겉옷을 그의 위에 던졌더니",
+      "source_text_hash": "e83f051be15b64e10811808ff78939e5285144ecfc28d34f54fbaf3519715535",
+      "translation_text_hash": "c06f35e0d1c6ba728ec82cdfdd68742a045d4300f0152acf3e09af209f81df35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 거기서 떠나 사밧의 아들 엘리사를 만나니 저가 열 두 겨리 소를 앞세우고 밭을 가는데 자기는 열둘째 겨리와 함께 있더라 엘리야가 그리로 건너가서 겉옷을 그의 위에 던졌더니"
+      ],
+      "raw_text_hashes": [
+        "c06f35e0d1c6ba728ec82cdfdd68742a045d4300f0152acf3e09af209f81df35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:20",
+      "sequence": 9408,
+      "chapter_label": "1KI 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Elisha left the oxen and ran after Elijah, and said, “Let me please kiss my father and my mother, and then I will follow you.” He said to him, “Go back again; for what have I done to you?”",
+      "ko": "저가 소를 버리고 엘리야에게로 달려가서 이르되 청컨대 나로 내 부모와 입맞추게 하소서 그리한 후에 내가 당신을 따르리이다 엘리야가 저에게 이르되 돌아가라 내가 네게 어떻게 행하였느냐 하니라",
+      "source_text_hash": "4c01855ba988235655ff062b77577c168d8ac1c6739538440faeba870d70ae87",
+      "translation_text_hash": "d85c61d29813f1f6ed85602846b1f87c255769c8a8bf21c57a389d3f27157558",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 소를 버리고 엘리야에게로 달려가서 이르되 청컨대 나로 내 부모와 입맞추게 하소서 그리한 후에 내가 당신을 따르리이다 엘리야가 저에게 이르되 돌아가라 내가 네게 어떻게 행하였느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "d85c61d29813f1f6ed85602846b1f87c255769c8a8bf21c57a389d3f27157558"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1KI:19:21",
+      "sequence": 9409,
+      "chapter_label": "1KI 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "1KI",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1KI",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "He returned from following him, and took the yoke of oxen, killed them, and boiled their meat with the oxen’s equipment, and gave to the people; and they ate. Then he arose, and went after Elijah, and served him.",
+      "ko": "엘리사가 저를 떠나 돌아가서 소 한 겨리를 취하여 잡고 소의 기구를 불살라 그 고기를 삶아 백성에게 주어 먹게 하고 일어나 가서 엘리야를 좇으며 수종 들었더라",
+      "source_text_hash": "d522dc8875e8f6c5e7ba5d33680ef60bb1fcc07d18aa31d69dc09ec7450fa2c6",
+      "translation_text_hash": "be96146776564c89d26086022ee461a6c5d943aeaf1fc29f616900a195c5f3a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 저를 떠나 돌아가서 소 한 겨리를 취하여 잡고 소의 기구를 불살라 그 고기를 삶아 백성에게 주어 먹게 하고 일어나 가서 엘리야를 좇으며 수종 들었더라"
+      ],
+      "raw_text_hashes": [
+        "be96146776564c89d26086022ee461a6c5d943aeaf1fc29f616900a195c5f3a5"
+      ]
+    }
+  ]
+}

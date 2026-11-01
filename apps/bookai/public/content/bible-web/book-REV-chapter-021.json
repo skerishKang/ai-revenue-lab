@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:021",
+  "unit_ordinal": 1188,
+  "unit_label": "REV 21",
+  "book_code": "REV",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:21:1",
+      "sequence": 31051,
+      "chapter_label": "REV 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "I saw a new heaven and a new earth, for the first heaven and the first earth have passed away, and the sea is no more.",
+      "ko": "또 내가 새 하늘과 새 땅을 보니 처음 하늘과 처음 땅이 없어졌고 바다도 다시 있지 않더라",
+      "source_text_hash": "25099d019b0cd474c268f2a36a8e913a0938ddc9659a83faec2ad552b1cf46d7",
+      "translation_text_hash": "c6139ef39b994382c538c74d97b62b252d8c4c4ef573b6770a0362b80fd892bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 새 하늘과 새 땅을 보니 처음 하늘과 처음 땅이 없어졌고 바다도 다시 있지 않더라"
+      ],
+      "raw_text_hashes": [
+        "c6139ef39b994382c538c74d97b62b252d8c4c4ef573b6770a0362b80fd892bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:2",
+      "sequence": 31052,
+      "chapter_label": "REV 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "I saw the holy city, New Jerusalem, coming down out of heaven from God, prepared like a bride adorned for her husband.",
+      "ko": "또 내가 보매 거룩한 성 새 예루살렘이 하나님께로부터 하늘에서 내려오니 그 예비한 것이 신부가 남편을 위하여 단장한 것 같더라",
+      "source_text_hash": "c93361fbba1b464a32366ee14ddaed3898ba3da06fc06c4f18c97725fa3d7711",
+      "translation_text_hash": "2e53e85a48b170eb2436a0b7ccd76366adaf6cddb1a234e73f3a4c0c5855d7e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 보매 거룩한 성 새 예루살렘이 하나님께로부터 하늘에서 내려오니 그 예비한 것이 신부가 남편을 위하여 단장한 것 같더라"
+      ],
+      "raw_text_hashes": [
+        "2e53e85a48b170eb2436a0b7ccd76366adaf6cddb1a234e73f3a4c0c5855d7e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:3",
+      "sequence": 31053,
+      "chapter_label": "REV 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "I heard a loud voice out of heaven saying, “Behold, God’s dwelling is with people; and he will dwell with them, and they will be his people, and God himself will be with them as their God.",
+      "ko": "내가 들으니 보좌에서 큰 음성이 나서 가로되 보라 하나님의 장막이 사람들과 함께 있으매 하나님이 저희와 함께 거하시리니 저희는 하나님의 백성이 되고 하나님은 친히 저희와 함께 계셔서",
+      "source_text_hash": "9372c064ffdc246e2e063f7fe4bfe98248431405d4d9278ef27ed6b1049ec0b1",
+      "translation_text_hash": "50ecc7b4ba0a4f491378b7dc4218701fd1258ddc0a05092ea1f40f512ae32c78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 들으니 보좌에서 큰 음성이 나서 가로되 보라 하나님의 장막이 사람들과 함께 있으매 하나님이 저희와 함께 거하시리니 저희는 하나님의 백성이 되고 하나님은 친히 저희와 함께 계셔서"
+      ],
+      "raw_text_hashes": [
+        "50ecc7b4ba0a4f491378b7dc4218701fd1258ddc0a05092ea1f40f512ae32c78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:4",
+      "sequence": 31054,
+      "chapter_label": "REV 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "He will wipe away every tear from their eyes. Death will be no more; neither will there be mourning, nor crying, nor pain any more. The first things have passed away.”",
+      "ko": "모든 눈물을 그 눈에서 씻기시매 다시 사망이 없고 애통하는 것이나 곡하는 것이나 아픈 것이 다시 있지 아니하리니 처음 것들이 다 지나갔음이러라",
+      "source_text_hash": "4d7130017b56d711d24b1db10f42bbcd18b7ea6c40d00a67e5e0774218fc3756",
+      "translation_text_hash": "d2521ce2b161fe4829a61a5c0e6c85d63e92609192bfad4dfe72520f502bd828",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 눈물을 그 눈에서 씻기시매 다시 사망이 없고 애통하는 것이나 곡하는 것이나 아픈 것이 다시 있지 아니하리니 처음 것들이 다 지나갔음이러라"
+      ],
+      "raw_text_hashes": [
+        "d2521ce2b161fe4829a61a5c0e6c85d63e92609192bfad4dfe72520f502bd828"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:5",
+      "sequence": 31055,
+      "chapter_label": "REV 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "He who sits on the throne said, “Behold, I am making all things new.”He said, “Write, for these words of God are faithful and true.”",
+      "ko": "보좌에 앉으신 이가 가라사대 보라 내가 만물을 새롭게 하노라 하시고 또 가라사대 이 말은 신실하고 참되니 기록하라 하시고",
+      "source_text_hash": "e4ba7ad5f74ff004c6d6373aefc058f17fcb4d25a62a8dba37dddcc2b36bb270",
+      "translation_text_hash": "b5719555e47d0b1d25a0f063c9d22e95954348d03f9e605b335410efa8550068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보좌에 앉으신 이가 가라사대 보라 내가 만물을 새롭게 하노라 하시고 또 가라사대 이 말은 신실하고 참되니 기록하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "b5719555e47d0b1d25a0f063c9d22e95954348d03f9e605b335410efa8550068"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:6",
+      "sequence": 31056,
+      "chapter_label": "REV 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "He said to me, “I am the Alpha and the Omega, the Beginning and the End. I will give freely to him who is thirsty from the spring of the water of life.",
+      "ko": "또 내게 말씀하시되 이루었도다 나는 알파와 오메가요 처음과 나중이라 내가 생명수 샘물로 목 마른 자에게 값 없이 주리니",
+      "source_text_hash": "498ea3832d445ee4052bb74599626997cce35cc43db023aeb8a3753f5b32712f",
+      "translation_text_hash": "d3c738ab13c116d01e6d4724515fc44aec39a48412a9cefceab0d6ac6cd73f16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 말씀하시되 이루었도다 나는 알파와 오메가요 처음과 나중이라 내가 생명수 샘물로 목 마른 자에게 값 없이 주리니"
+      ],
+      "raw_text_hashes": [
+        "d3c738ab13c116d01e6d4724515fc44aec39a48412a9cefceab0d6ac6cd73f16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:7",
+      "sequence": 31057,
+      "chapter_label": "REV 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "He who overcomes, I will give him these things. I will be his God, and he will be my son.",
+      "ko": "이기는 자는 이것들을 유업으로 얻으리라 나는 저의 하나님이 되고 그는 내 아들이 되리라",
+      "source_text_hash": "987b931bcccf501918df6f9eeeeac106047d17ab55fdf6029fe81a75f1ccd874",
+      "translation_text_hash": "1e473ca1d8fb0246f191bc6499bce2c8e7415ab98ff11d1edc43fcb6172bfb7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이기는 자는 이것들을 유업으로 얻으리라 나는 저의 하나님이 되고 그는 내 아들이 되리라"
+      ],
+      "raw_text_hashes": [
+        "1e473ca1d8fb0246f191bc6499bce2c8e7415ab98ff11d1edc43fcb6172bfb7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:8",
+      "sequence": 31058,
+      "chapter_label": "REV 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "But for the cowardly, unbelieving, sinners,abominable, murderers, sexually immoral, sorcerers,idolaters, and all liars, their part is in the lake that burns with fire and sulfur, which is the second death.”",
+      "ko": "그러나 두려워하는 자들과 믿지 아니하는 자들과 흉악한 자들과 살인자들과 행음자들과 술객들과 우상 숭배자들과 모든 거짓말 하는 자들은 불과 유황으로 타는 못에 참예하리니 이것이 둘째 사망이라",
+      "source_text_hash": "2f4ced5758bec46f2954a89aa77328a093343e7a666956781f55bf61bb6da608",
+      "translation_text_hash": "93d01ad3a7255014f73ec4c00b2781726aacac085ac32a4f97b1e82a53e13da7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 두려워하는 자들과 믿지 아니하는 자들과 흉악한 자들과 살인자들과 행음자들과 술객들과 우상 숭배자들과 모든 거짓말 하는 자들은 불과 유황으로 타는 못에 참예하리니 이것이 둘째 사망이라"
+      ],
+      "raw_text_hashes": [
+        "93d01ad3a7255014f73ec4c00b2781726aacac085ac32a4f97b1e82a53e13da7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:9",
+      "sequence": 31059,
+      "chapter_label": "REV 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "One of the seven angels who had the seven bowls which were loaded with the seven last plagues came, and he spoke with me, saying, “Come here. I will show you the bride, the Lamb’s wife.”",
+      "ko": "일곱 대접을 가지고 마지막 일곱 재앙을 담은 일곱 천사중 하나가 나아와서 내게 말하여 가로되 이리 오라 내가 신부 곧 어린 양의 아내를 네게 보이리라 하고",
+      "source_text_hash": "ab703112fa9d9073cc049d82248a50e7fd884d1c3f2a2ebf14caaf326a64c20f",
+      "translation_text_hash": "9919cafe43807d8bddfc7b6a7fbfd066a406e53ae2023fa00eb93d0e032e2056",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일곱 대접을 가지고 마지막 일곱 재앙을 담은 일곱 천사중 하나가 나아와서 내게 말하여 가로되 이리 오라 내가 신부 곧 어린 양의 아내를 네게 보이리라 하고"
+      ],
+      "raw_text_hashes": [
+        "9919cafe43807d8bddfc7b6a7fbfd066a406e53ae2023fa00eb93d0e032e2056"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:10",
+      "sequence": 31060,
+      "chapter_label": "REV 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "He carried me away in the Spirit to a great and high mountain, and showed me the holy city, Jerusalem, coming down out of heaven from God,",
+      "ko": "성령으로 나를 데리고 크고 높은 산으로 올라가 하나님께로부터 하늘에서 내려오는 거룩한 성 예루살렘을 보이니",
+      "source_text_hash": "87c903a4298f39f08179d865d8de59fcf152a59539618701a227c12cc6110fd9",
+      "translation_text_hash": "4b4f0b0244399e84b09d00354c1740bb137cbda5bea457f6316122846ad6cbdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령으로 나를 데리고 크고 높은 산으로 올라가 하나님께로부터 하늘에서 내려오는 거룩한 성 예루살렘을 보이니"
+      ],
+      "raw_text_hashes": [
+        "4b4f0b0244399e84b09d00354c1740bb137cbda5bea457f6316122846ad6cbdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:11",
+      "sequence": 31061,
+      "chapter_label": "REV 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "having the glory of God. Her light was like a most precious stone, like a jasper stone, clear as crystal;",
+      "ko": "하나님의 영광이 있으매 그 성의 빛이 지극히 귀한 보석 같고 벽옥과 수정 같이 맑더라",
+      "source_text_hash": "e900c9e46a1df7b5ee2e4954f64ab5c1726a22894e207faef034d2634be8944c",
+      "translation_text_hash": "719f43bc33a5d9125246f523f91eb50253362ae12de1adedd96ea9a21c2cca1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 영광이 있으매 그 성의 빛이 지극히 귀한 보석 같고 벽옥과 수정 같이 맑더라"
+      ],
+      "raw_text_hashes": [
+        "719f43bc33a5d9125246f523f91eb50253362ae12de1adedd96ea9a21c2cca1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:12",
+      "sequence": 31062,
+      "chapter_label": "REV 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "having a great and high wall with twelve gates, and at the gates twelve angels, and names written on them, which are the names of the twelve tribes of the children of Israel.",
+      "ko": "크고 높은 성곽이 있고 열 두 문이 있는데 문에 열 두 천사가 있고 그 문들 위에 이름을 썼으니 이스라엘 자손 열 두 지파의 이름들이라",
+      "source_text_hash": "9fd11723607dd00e7a0939d7ad8974c8678c749d5fb1a8999f5b861c5141458b",
+      "translation_text_hash": "5db1c24edb185a74b9711bafac8ab99ef2134e78bc94a59879ae42a5c53d9f00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크고 높은 성곽이 있고 열 두 문이 있는데 문에 열 두 천사가 있고 그 문들 위에 이름을 썼으니 이스라엘 자손 열 두 지파의 이름들이라"
+      ],
+      "raw_text_hashes": [
+        "5db1c24edb185a74b9711bafac8ab99ef2134e78bc94a59879ae42a5c53d9f00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:13",
+      "sequence": 31063,
+      "chapter_label": "REV 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "On the east were three gates, and on the north three gates, and on the south three gates, and on the west three gates.",
+      "ko": "동편에 세 문, 북편에 세 문, 남편에 세 문, 서편에 세 문이니",
+      "source_text_hash": "9a0c489c08458ada73965da565937d0f24fb339e408c56724924872711a91f1a",
+      "translation_text_hash": "606f9042a24b5415507d306166f2483a26387b3f487cf892600bcc04cccd960a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동편에 세 문, 북편에 세 문, 남편에 세 문, 서편에 세 문이니"
+      ],
+      "raw_text_hashes": [
+        "606f9042a24b5415507d306166f2483a26387b3f487cf892600bcc04cccd960a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:14",
+      "sequence": 31064,
+      "chapter_label": "REV 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "The wall of the city had twelve foundations, and on them twelve names of the twelve Apostles of the Lamb.",
+      "ko": "그 성에 성곽은 열 두 기초석이 있고 그 위에 어린 양의 십 이 사도의 열 두 이름이 있더라",
+      "source_text_hash": "04fef86db52b4d5f4f25a477e5ef37fec5b4e6b9caaaf47c21ae82f056cbc604",
+      "translation_text_hash": "f319fbe95521e2e3e4a51e9b60a6b644ceac538aafa56de22a2e7f740545f065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성에 성곽은 열 두 기초석이 있고 그 위에 어린 양의 십 이 사도의 열 두 이름이 있더라"
+      ],
+      "raw_text_hashes": [
+        "f319fbe95521e2e3e4a51e9b60a6b644ceac538aafa56de22a2e7f740545f065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:15",
+      "sequence": 31065,
+      "chapter_label": "REV 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "He who spoke with me had for a measure a golden reed to measure the city, its gates, and its walls.",
+      "ko": "내게 말하는 자가 그 성과 그 문들과 성곽을 척량하려고 금 갈대를 가졌더라",
+      "source_text_hash": "c984d00af510a779e44d86a8b838e4101b954f4e2545c765274b641a73c50765",
+      "translation_text_hash": "af36dff1c2ceb862c1b507ca598f8515ee725bf8510d8352fc2fa8162b9f615c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하는 자가 그 성과 그 문들과 성곽을 척량하려고 금 갈대를 가졌더라"
+      ],
+      "raw_text_hashes": [
+        "af36dff1c2ceb862c1b507ca598f8515ee725bf8510d8352fc2fa8162b9f615c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:16",
+      "sequence": 31066,
+      "chapter_label": "REV 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "The city is square. Its length is as great as its width. He measured the city with the reed: twelve thousand twelve stadia. Its length, width, and height are equal.",
+      "ko": "그 성은 네모가 반듯하여 장광이 같은지라 그 갈대로 그 성을 척량하니 일만 이천 스다디온이요 장과 광과 고가 같더라",
+      "source_text_hash": "09eab4b6289c50f79ff8053d784d733774b3df4a92caa5816c2fb9b3a269bac0",
+      "translation_text_hash": "aa927cef75deb1401330b0518008a87b8a153eb36f49019ea2048220489f16c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성은 네모가 반듯하여 장광이 같은지라 그 갈대로 그 성을 척량하니 일만 이천 스다디온이요 장과 광과 고가 같더라"
+      ],
+      "raw_text_hashes": [
+        "aa927cef75deb1401330b0518008a87b8a153eb36f49019ea2048220489f16c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:17",
+      "sequence": 31067,
+      "chapter_label": "REV 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "Its wall is one hundred forty-four cubits, by the measure of a man, that is, of an angel.",
+      "ko": "그 성곽을 척량하매 일백 사십 사 규빗이니 사람의 척량 곧 천사의 척량이라",
+      "source_text_hash": "2837ccd6feecfb5f08a411b2d5d6d9dc1d57da9ba388a1fc508ab5c994ef7acd",
+      "translation_text_hash": "28cf8534f3ea16f881adb1c7b08d674a5480121ca18a0ffe78961839768b16af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성곽을 척량하매 일백 사십 사 규빗이니 사람의 척량 곧 천사의 척량이라"
+      ],
+      "raw_text_hashes": [
+        "28cf8534f3ea16f881adb1c7b08d674a5480121ca18a0ffe78961839768b16af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:18",
+      "sequence": 31068,
+      "chapter_label": "REV 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "The construction of its wall was jasper. The city was pure gold, like pure glass.",
+      "ko": "그 성곽은 벽옥으로 쌓였고 그 성은 정금인데 맑은 유리 같더라",
+      "source_text_hash": "fc9ef572d3244e484f7c2511f11c951a5fc49c0a7364a5e9db0b56d5a2749931",
+      "translation_text_hash": "1f6c3a37f646d0e106eb225bfba50fc3208c186648416e04e9796f35316d2dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성곽은 벽옥으로 쌓였고 그 성은 정금인데 맑은 유리 같더라"
+      ],
+      "raw_text_hashes": [
+        "1f6c3a37f646d0e106eb225bfba50fc3208c186648416e04e9796f35316d2dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:19",
+      "sequence": 31069,
+      "chapter_label": "REV 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "The foundations of the city’s wall were adorned with all kinds of precious stones. The first foundation was jasper, the second sapphire, the third chalcedony, the fourth emerald,",
+      "ko": "그 성의 성곽의 기초석은 각색 보석으로 꾸몄는데 첫째 기초석은 벽옥이요 둘째는 남보석이요 세째는 옥수요 네째는 녹보석이요",
+      "source_text_hash": "09342068526c3068303592f9d402580d854b89f18269bb12d502c43b5e94a61b",
+      "translation_text_hash": "4fff7919336613685ca3c76a0676e9a1f5c08710552c02146aca5d4082f5d1b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성의 성곽의 기초석은 각색 보석으로 꾸몄는데 첫째 기초석은 벽옥이요 둘째는 남보석이요 세째는 옥수요 네째는 녹보석이요"
+      ],
+      "raw_text_hashes": [
+        "4fff7919336613685ca3c76a0676e9a1f5c08710552c02146aca5d4082f5d1b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:20",
+      "sequence": 31070,
+      "chapter_label": "REV 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "the fifth sardonyx, the sixth sardius, the seventh chrysolite, the eighth beryl, the ninth topaz, the tenth chrysoprase, the eleventh jacinth, and the twelfth amethyst.",
+      "ko": "다섯째는 홍마노요 여섯째는 홍보석이요 일곱째는 황옥이요 여덟째는 녹옥이요 아홉째는 담황옥이요 열째는 비취옥이요 열 한째는 청옥이요 열 둘째는 자정이라",
+      "source_text_hash": "7f7ee50592687b24565bf9e6abacb1eb6626bc179c25929ef8aa1429ac8fd681",
+      "translation_text_hash": "5f14566ad146333bafcdb8399c3fad44ccbf8e902c4d8bd5084e82adb6a0d035",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째는 홍마노요 여섯째는 홍보석이요 일곱째는 황옥이요 여덟째는 녹옥이요 아홉째는 담황옥이요 열째는 비취옥이요 열 한째는 청옥이요 열 둘째는 자정이라"
+      ],
+      "raw_text_hashes": [
+        "5f14566ad146333bafcdb8399c3fad44ccbf8e902c4d8bd5084e82adb6a0d035"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:21",
+      "sequence": 31071,
+      "chapter_label": "REV 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "The twelve gates were twelve pearls. Each one of the gates was made of one pearl. The street of the city was pure gold, like transparent glass.",
+      "ko": "그 열 두 문은 열 두 진주니 문마다 한 진주요 성의 길은 맑은 유리 같은 정금이더라",
+      "source_text_hash": "6c17211a926191af9b5a903704978b544133fd3ee2417cba92e57c14b7249674",
+      "translation_text_hash": "6fafc4a82d8b563ff644422f7b36e1086e28345497e84f1455e92c73c8b494f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열 두 문은 열 두 진주니 문마다 한 진주요 성의 길은 맑은 유리 같은 정금이더라"
+      ],
+      "raw_text_hashes": [
+        "6fafc4a82d8b563ff644422f7b36e1086e28345497e84f1455e92c73c8b494f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:22",
+      "sequence": 31072,
+      "chapter_label": "REV 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "I saw no temple in it, for the Lord God the Almighty and the Lamb are its temple.",
+      "ko": "성안에 성전을 내가 보지 못하였으니 이는 주 하나님 곧 전능하신 이와 및 어린 양이 그 성전이심이라",
+      "source_text_hash": "ef921fc971b64ca0bc346a9fa49836028e409878b73f97b7c2daf9f58dd2c42f",
+      "translation_text_hash": "836cdcba07632496a8f0267d930618cc021058d014bcec263ab225d8a1811017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성안에 성전을 내가 보지 못하였으니 이는 주 하나님 곧 전능하신 이와 및 어린 양이 그 성전이심이라"
+      ],
+      "raw_text_hashes": [
+        "836cdcba07632496a8f0267d930618cc021058d014bcec263ab225d8a1811017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:23",
+      "sequence": 31073,
+      "chapter_label": "REV 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "The city has no need for the sun or moon to shine, for the very glory of God illuminated it and its lamp is the Lamb.",
+      "ko": "그 성은 해나 달의 비췸이 쓸데 없으니 이는 하나님의 영광이 비취고 어린 양이 그 등이 되심이라",
+      "source_text_hash": "25b65719d068bc7e5eb6d44b9ddc6b022946344c414b4da9691b0859bd29af01",
+      "translation_text_hash": "d074ac852abc46d3c925703fb97615054894a0d85296be5deb360f3279fea97a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성은 해나 달의 비췸이 쓸데 없으니 이는 하나님의 영광이 비취고 어린 양이 그 등이 되심이라"
+      ],
+      "raw_text_hashes": [
+        "d074ac852abc46d3c925703fb97615054894a0d85296be5deb360f3279fea97a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:24",
+      "sequence": 31074,
+      "chapter_label": "REV 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "The nations will walk in its light. The kings of the earth bring the glory and honor of the nations into it.",
+      "ko": "만국이 그 빛 가운데로 다니고 땅의 왕들이 자기 영광을 가지고 그리로 들어오리라",
+      "source_text_hash": "21a960fd61e9a27007be8255f5630b035390a39afec190abbff6917932bab90b",
+      "translation_text_hash": "84c8eda10a4a4e8d699b3050b733bf0bb180329754b4301ce44777aaa07def10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만국이 그 빛 가운데로 다니고 땅의 왕들이 자기 영광을 가지고 그리로 들어오리라"
+      ],
+      "raw_text_hashes": [
+        "84c8eda10a4a4e8d699b3050b733bf0bb180329754b4301ce44777aaa07def10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:25",
+      "sequence": 31075,
+      "chapter_label": "REV 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "Its gates will in no way be shut by day (for there will be no night there),",
+      "ko": "성문들을 낮에 도무지 닫지 아니하리니 거기는 밤이 없음이라",
+      "source_text_hash": "758d7fba3dff9ccd4e97796fb528d242cea79230655690e8d27727db1b1e2e16",
+      "translation_text_hash": "15859b14a118dc1caeda8ea873ae6bba3c50850e504023d4e8018d7196ac9ada",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성문들을 낮에 도무지 닫지 아니하리니 거기는 밤이 없음이라"
+      ],
+      "raw_text_hashes": [
+        "15859b14a118dc1caeda8ea873ae6bba3c50850e504023d4e8018d7196ac9ada"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:26",
+      "sequence": 31076,
+      "chapter_label": "REV 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "and they shall bring the glory and the honor of the nations into it so that they may enter.",
+      "ko": "사람들이 만국의 영광과 존귀를 가지고 그리로 들어오겠고",
+      "source_text_hash": "b19cdcdf9a1837cd24ffb5f0b7359f55b27fa1ad57c2faeb36d8a2bd1aae8bb2",
+      "translation_text_hash": "188ce18c6717ffbfd2ea6f44136243a596061123b4887365b09b92da593c9e30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 만국의 영광과 존귀를 가지고 그리로 들어오겠고"
+      ],
+      "raw_text_hashes": [
+        "188ce18c6717ffbfd2ea6f44136243a596061123b4887365b09b92da593c9e30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:21:27",
+      "sequence": 31077,
+      "chapter_label": "REV 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "REV",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "There will in no way enter into it anything profane, or one who causes an abomination or a lie, but only those who are written in the Lamb’s book of life.",
+      "ko": "무엇이든지 속된 것이나 가증한 일 또는 거짓말 하는 자는 결코 그리로 들어오지 못하되 오직 어린 양의 생명책에 기록된 자들뿐이라",
+      "source_text_hash": "193f2eec32eff6e1d8a994a9ceda7a65f29f4b887dcb465cdeee04e33d91b6a9",
+      "translation_text_hash": "09721a5fc151a92f9dfbdbe0931ade2d8b33ab676d217fa8f2704ee6fb470435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무엇이든지 속된 것이나 가증한 일 또는 거짓말 하는 자는 결코 그리로 들어오지 못하되 오직 어린 양의 생명책에 기록된 자들뿐이라"
+      ],
+      "raw_text_hashes": [
+        "09721a5fc151a92f9dfbdbe0931ade2d8b33ab676d217fa8f2704ee6fb470435"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:010",
+  "unit_ordinal": 983,
+  "unit_label": "LUK 10",
+  "book_code": "LUK",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:10:1",
+      "sequence": 25365,
+      "chapter_label": "LUK 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now after these things, the Lord also appointed seventy others, and sent them two by two ahead of him into every city and place where he was about to come.",
+      "ko": "이 후에 주께서 달리 칠십인을 세우사 친히 가시려는 각동 각처로 둘씩 앞서 보내시며",
+      "source_text_hash": "19bf7260ee4ba4e323e0abddc16485edc13eda97080456f425795fed067d857f",
+      "translation_text_hash": "bcade01a982088058728f84006bc367f8f5d4efc0ea5f44cccaa040898647bba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 주께서 달리 칠십인을 세우사 친히 가시려는 각동 각처로 둘씩 앞서 보내시며"
+      ],
+      "raw_text_hashes": [
+        "bcade01a982088058728f84006bc367f8f5d4efc0ea5f44cccaa040898647bba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:2",
+      "sequence": 25366,
+      "chapter_label": "LUK 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Then he said to them, “The harvest is indeed plentiful, but the laborers are few. Pray therefore to the Lord of the harvest, that he may send out laborers into his harvest.",
+      "ko": "이르시되 추수할 것은 많되 일군이 적으니 그러므로 추수하는 주인에게 청하여 추수할 일군들을 보내어 주소서 하라",
+      "source_text_hash": "37d07d6ef257ac424248a0d9d998307f905e7ae2d329f01f30a0929cd6890dcb",
+      "translation_text_hash": "525459348ba590c925d669422e3dd5313fe05fb858581f5c16bba35ecce2c8a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 추수할 것은 많되 일군이 적으니 그러므로 추수하는 주인에게 청하여 추수할 일군들을 보내어 주소서 하라"
+      ],
+      "raw_text_hashes": [
+        "525459348ba590c925d669422e3dd5313fe05fb858581f5c16bba35ecce2c8a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:3",
+      "sequence": 25367,
+      "chapter_label": "LUK 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Go your ways. Behold, I send you out as lambs among wolves.",
+      "ko": "갈찌어다 내가 너희를 보냄이 어린 양을 이리 가운데로 보냄과 같도다",
+      "source_text_hash": "c0467d9bfdcff840258481418c18a656502478b30a7a8c0745e41cc02f9270ad",
+      "translation_text_hash": "ba21e93cc5168d44e47e79220723525724efbbe8b7a38ad94ee282cdaf1ec55e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈찌어다 내가 너희를 보냄이 어린 양을 이리 가운데로 보냄과 같도다"
+      ],
+      "raw_text_hashes": [
+        "ba21e93cc5168d44e47e79220723525724efbbe8b7a38ad94ee282cdaf1ec55e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:4",
+      "sequence": 25368,
+      "chapter_label": "LUK 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Carry no purse, nor wallet, nor sandals. Greet no one on the way.",
+      "ko": "전대나 주머니나 신을 가지지 말며 길에서 아무에게도 문안하지 말며",
+      "source_text_hash": "ab8d93e62d4af36f7cbc4914f5cf96b564beeb7e0bb30bd1ae926cd7dcc84b73",
+      "translation_text_hash": "8e374886dbe22a4331f613e5ded98cf377ef5850b130fc258c0598b560c25b7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전대나 주머니나 신을 가지지 말며 길에서 아무에게도 문안하지 말며"
+      ],
+      "raw_text_hashes": [
+        "8e374886dbe22a4331f613e5ded98cf377ef5850b130fc258c0598b560c25b7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:5",
+      "sequence": 25369,
+      "chapter_label": "LUK 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Into whatever house you enter, first say, ‘Peace be to this house.’",
+      "ko": "어느 집에 들어가든지 먼저 말하되 이 집이 평안할찌어다 하라",
+      "source_text_hash": "9bb694ebe28d0df6c2e09f0b95ae8fa49b7f298bcca3c6ae4995c484b982f232",
+      "translation_text_hash": "1c7a5bdc133182078f1773950849970d94f1c08afda5d1f5539865fd8463450f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 집에 들어가든지 먼저 말하되 이 집이 평안할찌어다 하라"
+      ],
+      "raw_text_hashes": [
+        "1c7a5bdc133182078f1773950849970d94f1c08afda5d1f5539865fd8463450f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:6",
+      "sequence": 25370,
+      "chapter_label": "LUK 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "If a son of peace is there, your peace will rest on him; but if not, it will return to you.",
+      "ko": "만일 평안을 받을 사람이 거기 있으면 너희 빈 평안이 그에게 머물 것이요 그렇지 않으면 너희에게로 돌아오리라",
+      "source_text_hash": "48fe4604a09bf97bd1593396ab03c6b3661d508933569e662285bf2e5380a0f7",
+      "translation_text_hash": "9b48801413f1f4068bea16dbd8393c9e03e301c5c562dd4b44fc5672009fe08b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 평안을 받을 사람이 거기 있으면 너희 빈 평안이 그에게 머물 것이요 그렇지 않으면 너희에게로 돌아오리라"
+      ],
+      "raw_text_hashes": [
+        "9b48801413f1f4068bea16dbd8393c9e03e301c5c562dd4b44fc5672009fe08b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:7",
+      "sequence": 25371,
+      "chapter_label": "LUK 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "Remain in that same house, eating and drinking the things they give, for the laborer is worthy of his wages. Don’t go from house to house.",
+      "ko": "그 집에 유하며 주는 것을 먹고 마시라 일군이 그 삯을 얻는 것이 마땅하니라 이 집에서 저 집으로 옮기지 말라",
+      "source_text_hash": "ed9656ab80dce549972cd3619297cd4406a53d4e08ab9c7a42afe981e0813794",
+      "translation_text_hash": "6fc3e12e4dd57abb8fffe12750f32e5d9d3c90139a470eb7905ca4f0ae194065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집에 유하며 주는 것을 먹고 마시라 일군이 그 삯을 얻는 것이 마땅하니라 이 집에서 저 집으로 옮기지 말라"
+      ],
+      "raw_text_hashes": [
+        "6fc3e12e4dd57abb8fffe12750f32e5d9d3c90139a470eb7905ca4f0ae194065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:8",
+      "sequence": 25372,
+      "chapter_label": "LUK 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Into whatever city you enter and they receive you, eat the things that are set before you.",
+      "ko": "어느 동네에 들어가든지 너희를 영접하거든 너희 앞에 차려놓는 것을 먹고",
+      "source_text_hash": "da7be14379cce152c97d02235dd74ef573e3489870ad400ad53617639cc73378",
+      "translation_text_hash": "bff7d1801cd6f3df01973f0edfc76eeafb42eb7f7dcea445d567b0273abb0b38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 동네에 들어가든지 너희를 영접하거든 너희 앞에 차려놓는 것을 먹고"
+      ],
+      "raw_text_hashes": [
+        "bff7d1801cd6f3df01973f0edfc76eeafb42eb7f7dcea445d567b0273abb0b38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:9",
+      "sequence": 25373,
+      "chapter_label": "LUK 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Heal the sick who are there and tell them, ‘God’s Kingdom has come near to you.’",
+      "ko": "거기 있는 병자들을 고치고 또 말하기를 하나님의 나라가 너희에게 가까이 왔다 하라",
+      "source_text_hash": "8464b961cedd820aba80b9db8606d158edbf11217c6c4d3a47c17dfa11eca334",
+      "translation_text_hash": "c7303a9b64d169adb388cdba0decb6370d994cd5e9ea23fd66a79c04cfcb60dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 있는 병자들을 고치고 또 말하기를 하나님의 나라가 너희에게 가까이 왔다 하라"
+      ],
+      "raw_text_hashes": [
+        "c7303a9b64d169adb388cdba0decb6370d994cd5e9ea23fd66a79c04cfcb60dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:10",
+      "sequence": 25374,
+      "chapter_label": "LUK 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "But into whatever city you enter and they don’t receive you, go out into its streets and say,",
+      "ko": "어느 동네에 들어가든지 너희를 영접지 아니하거든 그 거리로 나와서 말하되",
+      "source_text_hash": "b9b233e5876d03ecaac34afe6a9550f196e18f9768bb5bd67d4915e9570cee8a",
+      "translation_text_hash": "36e1b911b743c639bbf7318da1c3dee0e94d8cb62a404f3229b5feaefc0f2b04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 동네에 들어가든지 너희를 영접지 아니하거든 그 거리로 나와서 말하되"
+      ],
+      "raw_text_hashes": [
+        "36e1b911b743c639bbf7318da1c3dee0e94d8cb62a404f3229b5feaefc0f2b04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:11",
+      "sequence": 25375,
+      "chapter_label": "LUK 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "‘Even the dust from your city that clings to us, we wipe off against you. Nevertheless know this, that God’s Kingdom has come near to you.’",
+      "ko": "너희 동네에서 우리 발에 묻은 먼지도 너희에게 떨어버리노라 그러나 하나님의 나라가 가까이 온줄을 알라 하라",
+      "source_text_hash": "2e0dcbf3b5e8cf2cd922c0e0c9cd812f62e3dfbdfba429ef1a396950080c99c4",
+      "translation_text_hash": "36c9bfa19bc88b4098ad3e780faeb760815497667ef789a64b8cb62629ea272f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 동네에서 우리 발에 묻은 먼지도 너희에게 떨어버리노라 그러나 하나님의 나라가 가까이 온줄을 알라 하라"
+      ],
+      "raw_text_hashes": [
+        "36c9bfa19bc88b4098ad3e780faeb760815497667ef789a64b8cb62629ea272f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:12",
+      "sequence": 25376,
+      "chapter_label": "LUK 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "I tell you, it will be more tolerable in that day for Sodom than for that city.",
+      "ko": "내가 너희에게 말하노니 저날에 소돔이 그 동네보다 견디기 쉬우리라",
+      "source_text_hash": "40ea6614c1830ec19dd125fc74d7ac265b87aa42373953d1fe84db573789b077",
+      "translation_text_hash": "4b4154834f76424b8109f8a0e142ad75cdda88250f2c0ba51a5ab291fbc8f951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 저날에 소돔이 그 동네보다 견디기 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "4b4154834f76424b8109f8a0e142ad75cdda88250f2c0ba51a5ab291fbc8f951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:13",
+      "sequence": 25377,
+      "chapter_label": "LUK 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "“Woe to you, Chorazin! Woe to you, Bethsaida! For if the mighty works had been done in Tyre and Sidon which were done in you, they would have repented long ago, sitting in sackcloth and ashes.",
+      "ko": "화 있을찐저 고라신아, 화 있을찐저 벳새다야, 너희에게서 행한 모든 권능을 두로와 시돈에서 행하였더면 저희가 벌써 베옷을 입고 재에 앉아 회개하였으리라",
+      "source_text_hash": "7f3ceb04c601aaceaecf72b2dcc74e4a312ba18e172fa9a1effda7b7d61e3e0f",
+      "translation_text_hash": "66cf26f575d111b4cd41c11e3dec5e72ddfe33a82e26c80fcaf2fdb3f7fb1673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 고라신아, 화 있을찐저 벳새다야, 너희에게서 행한 모든 권능을 두로와 시돈에서 행하였더면 저희가 벌써 베옷을 입고 재에 앉아 회개하였으리라"
+      ],
+      "raw_text_hashes": [
+        "66cf26f575d111b4cd41c11e3dec5e72ddfe33a82e26c80fcaf2fdb3f7fb1673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:14",
+      "sequence": 25378,
+      "chapter_label": "LUK 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "But it will be more tolerable for Tyre and Sidon in the judgment than for you.",
+      "ko": "심판 때에 두로와 시돈이 너희보다 견디기 쉬우리라",
+      "source_text_hash": "90a6ccfb57b5a5320847a337c429a2b996fd947d740524acc866e18a9885b101",
+      "translation_text_hash": "9cb4d091622ddbb393303e94992ddd8e25d2a3982e74050c74b6020f90520688",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심판 때에 두로와 시돈이 너희보다 견디기 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "9cb4d091622ddbb393303e94992ddd8e25d2a3982e74050c74b6020f90520688"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:15",
+      "sequence": 25379,
+      "chapter_label": "LUK 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "You, Capernaum, who are exalted to heaven, will be brought down to Hades.",
+      "ko": "가버나움아 네가 하늘에까지 높아지겠느냐 음부에까지 낮아지리라",
+      "source_text_hash": "a2f40f8cf8b8ed2a9eaa2e3a26ea4df7bc274cc1393c1a8bb4cc277fe99c845e",
+      "translation_text_hash": "0296d3fab05a3e604677513f9a21fd0e3d2bf79da4f9e9a35bcf109f15e8216f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가버나움아 네가 하늘에까지 높아지겠느냐 음부에까지 낮아지리라"
+      ],
+      "raw_text_hashes": [
+        "0296d3fab05a3e604677513f9a21fd0e3d2bf79da4f9e9a35bcf109f15e8216f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:16",
+      "sequence": 25380,
+      "chapter_label": "LUK 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "Whoever listens to you listens to me, and whoever rejects you rejects me. Whoever rejects me rejects him who sent me.”",
+      "ko": "너희 말을 듣는 자는 곧 내 말을 듣는 것이요 너희를 저버리는 자는 곧 나를 저버리는 것이요 나를 저버리는 자는 나 보내신 이를 저버리는 것이라 하시니라",
+      "source_text_hash": "7bf83b0b5e436e379095355c45cd99f76b7318ab8f8c418cdc7ca899151f3cda",
+      "translation_text_hash": "9ef923adacfccb9c648fe1d8896c939abeea24e410ba0ceb19d55808117ae267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말을 듣는 자는 곧 내 말을 듣는 것이요 너희를 저버리는 자는 곧 나를 저버리는 것이요 나를 저버리는 자는 나 보내신 이를 저버리는 것이라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "9ef923adacfccb9c648fe1d8896c939abeea24e410ba0ceb19d55808117ae267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:17",
+      "sequence": 25381,
+      "chapter_label": "LUK 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "The seventy returned with joy, saying, “Lord, even the demons are subject to us in your name!”",
+      "ko": "칠십인이 기뻐 돌아와 가로되 주여 주의 이름으로 귀신들도 우리에게 항복하더이다",
+      "source_text_hash": "ef13253a40aa9534393e46ba9342fb4f5245463d8fea756ce5494a5582385ae5",
+      "translation_text_hash": "443b6d441f84c7110c26b2b33ab39d09c97f3d1bfe68fdb64cf60323f923ccd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠십인이 기뻐 돌아와 가로되 주여 주의 이름으로 귀신들도 우리에게 항복하더이다"
+      ],
+      "raw_text_hashes": [
+        "443b6d441f84c7110c26b2b33ab39d09c97f3d1bfe68fdb64cf60323f923ccd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:18",
+      "sequence": 25382,
+      "chapter_label": "LUK 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "He said to them, “I saw Satan having fallen like lightning from heaven.",
+      "ko": "예수께서 이르시되 사단이 하늘로서 번개 같이 떨어지는 것을 내가 보았노라",
+      "source_text_hash": "5a5f074e9c19998ea0f6d4bf1c5d1c66bf666cc34e7d670fc63e3df372d8c329",
+      "translation_text_hash": "22bfd937e019034eda90dfda6d2e7306f64d948d3073c4fbdac6c7505b1ecdc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 사단이 하늘로서 번개 같이 떨어지는 것을 내가 보았노라"
+      ],
+      "raw_text_hashes": [
+        "22bfd937e019034eda90dfda6d2e7306f64d948d3073c4fbdac6c7505b1ecdc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:19",
+      "sequence": 25383,
+      "chapter_label": "LUK 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Behold, I give you authority to tread on serpents and scorpions, and over all the power of the enemy. Nothing will in any way hurt you.",
+      "ko": "내가 너희에게 뱀과 전갈을 밟으며 원수의 모든 능력을 제어할 권세를 주었으니 너희를 해할 자가 결단코 없으리라",
+      "source_text_hash": "ec4894d56c7dec66f1d0c78f8ff5b8b6924cc616ef5b04848b2b7a33e4d9778a",
+      "translation_text_hash": "b2e404f6e55c2da7e09c21472582bb325e581a0786bbd0f1f408139ce81ab33c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 뱀과 전갈을 밟으며 원수의 모든 능력을 제어할 권세를 주었으니 너희를 해할 자가 결단코 없으리라"
+      ],
+      "raw_text_hashes": [
+        "b2e404f6e55c2da7e09c21472582bb325e581a0786bbd0f1f408139ce81ab33c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:20",
+      "sequence": 25384,
+      "chapter_label": "LUK 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Nevertheless, don’t rejoice in this, that the spirits are subject to you, but rejoice that your names are written in heaven.”",
+      "ko": "그러나 귀신들이 너희에게 항복하는 것으로 기뻐하지 말고 너희 이름이 하늘에 기록된 것으로 기뻐하라 하시니라",
+      "source_text_hash": "efa4b4a9f68ea80e65fe903ba8618de1c79a9a4bd4557bb3595f0e8c0a040d0e",
+      "translation_text_hash": "24b4c9e11869dcdf4ffd034def6a8aba26c23ad7b7087e4483e1757580dd17f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 귀신들이 너희에게 항복하는 것으로 기뻐하지 말고 너희 이름이 하늘에 기록된 것으로 기뻐하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "24b4c9e11869dcdf4ffd034def6a8aba26c23ad7b7087e4483e1757580dd17f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:21",
+      "sequence": 25385,
+      "chapter_label": "LUK 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "In that same hour, Jesus rejoiced in the Holy Spirit, and said, “I thank you, O Father, Lord of heaven and earth, that you have hidden these things from the wise and understanding, and revealed them to little children. Yes, Father, for so it was well-pleasing in your sight.”",
+      "ko": "이 때에 예수께서 성령으로 기뻐하사 가라사대 천지의 주재이신 아버지여 이것을 지혜롭고 슬기있는 자들에게는 숨기시고 어린 아이들에게는 나타내심을 감사하나이다 옳소이다 이렇게 된 것이 아버지의 뜻이니이다",
+      "source_text_hash": "37365a4c97c06d1e4ce9f870fa7574ba99ead838fbc4898a881993074982522e",
+      "translation_text_hash": "55b84b205795cd5e16826bede1b7f98bc104219da9e99ce3d0b1eb0511f82409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 예수께서 성령으로 기뻐하사 가라사대 천지의 주재이신 아버지여 이것을 지혜롭고 슬기있는 자들에게는 숨기시고 어린 아이들에게는 나타내심을 감사하나이다 옳소이다 이렇게 된 것이 아버지의 뜻이니이다"
+      ],
+      "raw_text_hashes": [
+        "55b84b205795cd5e16826bede1b7f98bc104219da9e99ce3d0b1eb0511f82409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:22",
+      "sequence": 25386,
+      "chapter_label": "LUK 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Turning to the disciples, he said, “All things have been delivered to me by my Father. No one knows who the Son is, except the Father, and who the Father is, except the Son, and he to whomever the Son desires to reveal him.”",
+      "ko": "내 아버지께서 모든 것을 내게 주셨으니 아버지 외에는 아들이 누군지 아는 자가 없고 아들과 또 아들의 소원대로 계시를 받는 자 외에는 아버지가 누군지 아는 자가 없나이다 하시고",
+      "source_text_hash": "5a8c610abe591c120917ec72ec63ef8c09612bcea5bf8d28405c349c61b46fe0",
+      "translation_text_hash": "70b97d9c49a89ac2217e9f932270998fd1bfdd05c8c0f584704790f369bb1805",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아버지께서 모든 것을 내게 주셨으니 아버지 외에는 아들이 누군지 아는 자가 없고 아들과 또 아들의 소원대로 계시를 받는 자 외에는 아버지가 누군지 아는 자가 없나이다 하시고"
+      ],
+      "raw_text_hashes": [
+        "70b97d9c49a89ac2217e9f932270998fd1bfdd05c8c0f584704790f369bb1805"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:23",
+      "sequence": 25387,
+      "chapter_label": "LUK 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Turning to the disciples, he said privately, “Blessed are the eyes which see the things that you see,",
+      "ko": "제자들을 돌아 보시며 종용히 이르시되 너희의 보는 것을 보는 눈은 복이 있도다",
+      "source_text_hash": "e168dfa32fd752beece2807217504253df83b1eebc61f13906811fb4ef8f90cc",
+      "translation_text_hash": "235e100380a9fa00c3ecb6dcb4649169091087a39e45cb97fb138a9a57d275d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들을 돌아 보시며 종용히 이르시되 너희의 보는 것을 보는 눈은 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "235e100380a9fa00c3ecb6dcb4649169091087a39e45cb97fb138a9a57d275d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:24",
+      "sequence": 25388,
+      "chapter_label": "LUK 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "for I tell you that many prophets and kings desired to see the things which you see, and didn’t see them, and to hear the things which you hear, and didn’t hear them.”",
+      "ko": "내가 너희에게 말하노니 많은 선지자와 임금이 너희 보는 바를 보고자 하였으되 보지 못하였으며 너희 듣는 바를 듣고자 하였으되 듣지 못하였느니라",
+      "source_text_hash": "6390de6ba638d8a95d557ebfadcf96982103abb890874a04712489e24c01409f",
+      "translation_text_hash": "7ac3947b06601ef5fd548e5cd293c4814efb55d0724b939bab0041c9942ea1a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 많은 선지자와 임금이 너희 보는 바를 보고자 하였으되 보지 못하였으며 너희 듣는 바를 듣고자 하였으되 듣지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7ac3947b06601ef5fd548e5cd293c4814efb55d0724b939bab0041c9942ea1a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:25",
+      "sequence": 25389,
+      "chapter_label": "LUK 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Behold, a certain lawyer stood up and tested him, saying, “Teacher, what shall I do to inherit eternal life?”",
+      "ko": "어떤 율법사가 일어나 예수를 시험하여 가로되 선생님 내가 무엇을 하여야 영생을 얻으리이까",
+      "source_text_hash": "9f662937f5ae35abd49199a3e2d18bde7648e2676109133b86f26074bbc19a40",
+      "translation_text_hash": "dad485b78247a24932892da16ce4e95d6ef8c025662b3e9081951fee2b0735c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 율법사가 일어나 예수를 시험하여 가로되 선생님 내가 무엇을 하여야 영생을 얻으리이까"
+      ],
+      "raw_text_hashes": [
+        "dad485b78247a24932892da16ce4e95d6ef8c025662b3e9081951fee2b0735c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:26",
+      "sequence": 25390,
+      "chapter_label": "LUK 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "He said to him, “What is written in the law? How do you read it?”",
+      "ko": "예수께서 이르시되 율법에 무엇이라 기록되었으며 네가 어떻게 읽느냐",
+      "source_text_hash": "adef254aa444df66c7d0cb50a20fe373da5fe81cd5fa53e97007bb9aa57ec86a",
+      "translation_text_hash": "e3b1c8859ec2e860c13325506b44a1d15a795bfcc9fddabadd3d2e05ec2c4390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 율법에 무엇이라 기록되었으며 네가 어떻게 읽느냐"
+      ],
+      "raw_text_hashes": [
+        "e3b1c8859ec2e860c13325506b44a1d15a795bfcc9fddabadd3d2e05ec2c4390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:27",
+      "sequence": 25391,
+      "chapter_label": "LUK 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "He answered, “You shall love the Lord your God with all your heart, with all your soul, with all your strength, and with all your mind; and your neighbor as yourself.”",
+      "ko": "대답하여 가로되 네 마음을 다하며 목숨을 다하며 힘을 다하며 뜻을 다하여 주 너의 하나님을 사랑하고 또한 네 이웃을 네 몸과 같이 사랑하라 하였나이다",
+      "source_text_hash": "a64038520f515abe0f1a9deb64fec6fb03f5d4a6fc42034501400d294250a3aa",
+      "translation_text_hash": "61eee8177d15a1eb5c721ad4e7c723fc559fd37acca96380a1f5af2559b26b94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 네 마음을 다하며 목숨을 다하며 힘을 다하며 뜻을 다하여 주 너의 하나님을 사랑하고 또한 네 이웃을 네 몸과 같이 사랑하라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "61eee8177d15a1eb5c721ad4e7c723fc559fd37acca96380a1f5af2559b26b94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:28",
+      "sequence": 25392,
+      "chapter_label": "LUK 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "He said to him, “You have answered correctly. Do this, and you will live.”",
+      "ko": "예수께서 이르시되 네 대답이 옳도다 이를 행하라 그러면 살리라 하시니",
+      "source_text_hash": "9bfa94cbdb118fbf4611703cf4d51a8d2ec18caf4ff76cd45deb34415a2bd952",
+      "translation_text_hash": "47ca6e9ec771fdddd52913c398ac3da91f06365cf09909f44c4b72fab60c5212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 네 대답이 옳도다 이를 행하라 그러면 살리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "47ca6e9ec771fdddd52913c398ac3da91f06365cf09909f44c4b72fab60c5212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:29",
+      "sequence": 25393,
+      "chapter_label": "LUK 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "But he, desiring to justify himself, asked Jesus, “Who is my neighbor?”",
+      "ko": "이 사람이 자기를 옳게 보이려고 예수께 여짜오되 그러면 내 이웃이 누구오니이까",
+      "source_text_hash": "8547b6983c3069626ea578505f53c250e1a921eb6ad578d57615ad535a8c508f",
+      "translation_text_hash": "082eb6d7e671ed800c1b066d7ba4ab6494701be4045860485d387a36360b3a46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 자기를 옳게 보이려고 예수께 여짜오되 그러면 내 이웃이 누구오니이까"
+      ],
+      "raw_text_hashes": [
+        "082eb6d7e671ed800c1b066d7ba4ab6494701be4045860485d387a36360b3a46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:30",
+      "sequence": 25394,
+      "chapter_label": "LUK 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "Jesus answered, “A certain man was going down from Jerusalem to Jericho, and he fell among robbers, who both stripped him and beat him, and departed, leaving him half dead.",
+      "ko": "예수께서 대답하여 가라사대 어떤 사람이 예루살렘에서 여리고로 내려가다가 강도를 만나매 강도들이 그 옷을 벗기고 때려 거반 죽은 것을 버리고 갔더라",
+      "source_text_hash": "8401f525423f73525bc513e9770590c866d2211f5778a958e8ff7722c11364da",
+      "translation_text_hash": "5096e7fc24ac0e0e169ae987ee0fae2f8c53ffe871303947c9ba8676f561cdae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 어떤 사람이 예루살렘에서 여리고로 내려가다가 강도를 만나매 강도들이 그 옷을 벗기고 때려 거반 죽은 것을 버리고 갔더라"
+      ],
+      "raw_text_hashes": [
+        "5096e7fc24ac0e0e169ae987ee0fae2f8c53ffe871303947c9ba8676f561cdae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:31",
+      "sequence": 25395,
+      "chapter_label": "LUK 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "By chance a certain priest was going down that way. When he saw him, he passed by on the other side.",
+      "ko": "마침 한 제사장이 그 길로 내려가다가 그를 보고 피하여 지나가고",
+      "source_text_hash": "222e969c50a722590993a6713d4059814b991a5664f2d3cd6ae144773b9ef2a4",
+      "translation_text_hash": "80cd18148ceb4f4559d18bdd13f53e8330129402ad2ae022bbac1859cc9859df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 한 제사장이 그 길로 내려가다가 그를 보고 피하여 지나가고"
+      ],
+      "raw_text_hashes": [
+        "80cd18148ceb4f4559d18bdd13f53e8330129402ad2ae022bbac1859cc9859df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:32",
+      "sequence": 25396,
+      "chapter_label": "LUK 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "In the same way a Levite also, when he came to the place and saw him, passed by on the other side.",
+      "ko": "또 이와 같이 한 레위 인도 그곳에 이르러 그를 보고 피하여 지나가되",
+      "source_text_hash": "b81dd2eacfa82fee1e43fea4262a6f348b7ad46360a0f6c7c8c9fac658f781ae",
+      "translation_text_hash": "d140d090fa4f7120a236c2d758391270a355f210b9c465d44e7692c9f4c37c70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이와 같이 한 레위 인도 그곳에 이르러 그를 보고 피하여 지나가되"
+      ],
+      "raw_text_hashes": [
+        "d140d090fa4f7120a236c2d758391270a355f210b9c465d44e7692c9f4c37c70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:33",
+      "sequence": 25397,
+      "chapter_label": "LUK 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "But a certain Samaritan, as he traveled, came where he was. When he saw him, he was moved with compassion,",
+      "ko": "어떤 사마리아인은 여행하는 중 거기 이르러 그를 보고 불쌍히 여겨",
+      "source_text_hash": "e867eb27a063489ca77d95a1f74670e03c88bd3d8d5424dbdaf6ada31736d85e",
+      "translation_text_hash": "6784bef97594344ad2080636c06d44050d77c00151f2eb941182af3ffe35245e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사마리아인은 여행하는 중 거기 이르러 그를 보고 불쌍히 여겨"
+      ],
+      "raw_text_hashes": [
+        "6784bef97594344ad2080636c06d44050d77c00151f2eb941182af3ffe35245e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:34",
+      "sequence": 25398,
+      "chapter_label": "LUK 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "came to him, and bound up his wounds, pouring on oil and wine. He set him on his own animal, brought him to an inn, and took care of him.",
+      "ko": "가까이 가서 기름과 포도주를 그 상처에 붓고 싸매고 자기 짐승에 태워 주막으로 데리고 가서 돌보아 주고",
+      "source_text_hash": "3205368e3bf6f9db1c1992e08ad6dcb6e6785ab78a96a5878f9e089de46f6ffd",
+      "translation_text_hash": "0053beb5144f634755319894fb3e3bbc5465e60a16ee27de3c6fe6e43de50dda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가까이 가서 기름과 포도주를 그 상처에 붓고 싸매고 자기 짐승에 태워 주막으로 데리고 가서 돌보아 주고"
+      ],
+      "raw_text_hashes": [
+        "0053beb5144f634755319894fb3e3bbc5465e60a16ee27de3c6fe6e43de50dda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:35",
+      "sequence": 25399,
+      "chapter_label": "LUK 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "On the next day, when he departed, he took out two denarii, gave them to the host, and said to him, ‘Take care of him. Whatever you spend beyond that, I will repay you when I return.’",
+      "ko": "이튿날에 데나리온 둘을 내어 주막 주인에게 주며 가로되 이 사람을 돌보아 주라 부비가 더 들면 내가 돌아 올 때에 갚으리라 하였으니",
+      "source_text_hash": "7f5966da7d38d1b2db208981e6ae07c9ecde9b273a48553ccfaf6667bce4e2a4",
+      "translation_text_hash": "4da9fa0ae5b705b75c96e445f8276ac8226af7aff10b1ce974def67ad105f346",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 데나리온 둘을 내어 주막 주인에게 주며 가로되 이 사람을 돌보아 주라 부비가 더 들면 내가 돌아 올 때에 갚으리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "4da9fa0ae5b705b75c96e445f8276ac8226af7aff10b1ce974def67ad105f346"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:36",
+      "sequence": 25400,
+      "chapter_label": "LUK 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "Now which of these three do you think seemed to be a neighbor to him who fell among the robbers?”",
+      "ko": "네 의견에는 이 세 사람 중에 누가 강도 만난 자의 이웃이 되겠느냐",
+      "source_text_hash": "9bc91a3a06f49ebc88dd446236c5c8fc6b9058dcf863e602325a56b6cb313aa8",
+      "translation_text_hash": "cb32ccf9d054a816c24a37cb19aea493831811d7fa7e4a8b882fb65f12b78615",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 의견에는 이 세 사람 중에 누가 강도 만난 자의 이웃이 되겠느냐"
+      ],
+      "raw_text_hashes": [
+        "cb32ccf9d054a816c24a37cb19aea493831811d7fa7e4a8b882fb65f12b78615"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:37",
+      "sequence": 25401,
+      "chapter_label": "LUK 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "He said, “He who showed mercy on him.” Then Jesus said to him, “Go and do likewise.”",
+      "ko": "가로되 자비를 베푼 자니이다 예수께서 이르시되 가서 너도 이와 같이 하라 하시니라",
+      "source_text_hash": "64ac6d906d8a636de8893f53b8c9cb7ede05c6f961ddf61d19afcceefce23d07",
+      "translation_text_hash": "e75c19316f9acbfdfc7688c4280652d722502d7f7e2750f306b910b455ecee05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 자비를 베푼 자니이다 예수께서 이르시되 가서 너도 이와 같이 하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e75c19316f9acbfdfc7688c4280652d722502d7f7e2750f306b910b455ecee05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:38",
+      "sequence": 25402,
+      "chapter_label": "LUK 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "As they went on their way, he entered into a certain village, and a certain woman named Martha received him into her house.",
+      "ko": "저희가 길 갈 때에 예수께서 한 촌에 들어가시매 마르다라 이름하는 한 여자가 자기 집으로 영접하더라",
+      "source_text_hash": "8d7930765b8a2ede11ac8bf5eafe6c618cb4f940fed57472228e78777aee7f54",
+      "translation_text_hash": "e2b2bc1b006e5cd2d4ae0ee930bae1f41f9783ab435ea00fa784169d01f5aeb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 길 갈 때에 예수께서 한 촌에 들어가시매 마르다라 이름하는 한 여자가 자기 집으로 영접하더라"
+      ],
+      "raw_text_hashes": [
+        "e2b2bc1b006e5cd2d4ae0ee930bae1f41f9783ab435ea00fa784169d01f5aeb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:39",
+      "sequence": 25403,
+      "chapter_label": "LUK 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "She had a sister called Mary, who also sat at Jesus’ feet and heard his word.",
+      "ko": "그에게 마리아라 하는 동생이 있어 주의 발아래 앉아 그의 말씀을 듣더니",
+      "source_text_hash": "b923256ff0f63cf5525e3f9c057e7274148b78fa7b6e1c24260da32704d908b2",
+      "translation_text_hash": "a2faeb864b7bdc20f187480287948a0f66de5cedacba36072514f9fa4187f850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 마리아라 하는 동생이 있어 주의 발아래 앉아 그의 말씀을 듣더니"
+      ],
+      "raw_text_hashes": [
+        "a2faeb864b7bdc20f187480287948a0f66de5cedacba36072514f9fa4187f850"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:40",
+      "sequence": 25404,
+      "chapter_label": "LUK 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "But Martha was distracted with much serving, and she came up to him, and said, “Lord, don’t you care that my sister left me to serve alone? Ask her therefore to help me.”",
+      "ko": "마르다는 준비하는 일이 많아 마음이 분주한지라 예수께 나아가 가로되 주여 내 동생이 나 혼자 일하게 두는 것을 생각지 아니하시나이까 저를 명하사 나를 도와주라 하소서",
+      "source_text_hash": "4f1b3297ffc98523430888630449da4fab67060049d245a66213b0621a8acaf5",
+      "translation_text_hash": "e16eb40fb5020a7ca5baf2067e158d2f7e9a2bff15bed5ede1c66e1110367d99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마르다는 준비하는 일이 많아 마음이 분주한지라 예수께 나아가 가로되 주여 내 동생이 나 혼자 일하게 두는 것을 생각지 아니하시나이까 저를 명하사 나를 도와주라 하소서"
+      ],
+      "raw_text_hashes": [
+        "e16eb40fb5020a7ca5baf2067e158d2f7e9a2bff15bed5ede1c66e1110367d99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:41",
+      "sequence": 25405,
+      "chapter_label": "LUK 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "Jesus answered her, “Martha, Martha, you are anxious and troubled about many things,",
+      "ko": "주께서 대답하여 가라사대 마르다야 마르다야 네가 많은 일로 염려하고 근심하나",
+      "source_text_hash": "6bea36108917283233b3f686bae9ba2e0b4f3d7c91d3f08aaea2e42cd7a586df",
+      "translation_text_hash": "c5bb1fad6bf228a46ed4b701de98863b59b7e4f883a68655187c0935d88412a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 대답하여 가라사대 마르다야 마르다야 네가 많은 일로 염려하고 근심하나"
+      ],
+      "raw_text_hashes": [
+        "c5bb1fad6bf228a46ed4b701de98863b59b7e4f883a68655187c0935d88412a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:10:42",
+      "sequence": 25406,
+      "chapter_label": "LUK 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "but one thing is needed. Mary has chosen the good part, which will not be taken away from her.”",
+      "ko": "그러나 몇 가지만 하든지 혹 한 가지만이라도 족하니라 마리아는 이 좋은 편을 택하였으니 빼앗기지 아니하리라 하시니라",
+      "source_text_hash": "aed9199c8a2ed7ba696468b97238c29cc345e102e2fa11614f63299ab60814b9",
+      "translation_text_hash": "7a28f4236dbc749c10e67db93455207818fc372b01a802d752baa3c0c6b92529",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 몇 가지만 하든지 혹 한 가지만이라도 족하니라 마리아는 이 좋은 편을 택하였으니 빼앗기지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "7a28f4236dbc749c10e67db93455207818fc372b01a802d752baa3c0c6b92529"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:011",
+  "unit_ordinal": 378,
+  "unit_label": "2CH 11",
+  "book_code": "2CH",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:11:1",
+      "sequence": 11416,
+      "chapter_label": "2CH 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "When Rehoboam had come to Jerusalem, he assembled the house of Judah and Benjamin, one hundred eighty thousand chosen men who were warriors, to fight against Israel, to bring the kingdom again to Rehoboam.",
+      "ko": "르호보암이 예루살렘에 이르러 유다와 베냐민 족속을 모으니 택한 용사가 십 팔만이라 이스라엘과 싸워 나라를 회복하여 르호보암에게 돌리려 하더니",
+      "source_text_hash": "e9f9a95ef0d6e846c559ef41b4b6b5d0e417f86064a7c6b16dc294b066316187",
+      "translation_text_hash": "786fe18c9829f8a889cf59e0fa12c82f1e804ad262967e2ac1a72b5a5c549bec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 예루살렘에 이르러 유다와 베냐민 족속을 모으니 택한 용사가 십 팔만이라 이스라엘과 싸워 나라를 회복하여 르호보암에게 돌리려 하더니"
+      ],
+      "raw_text_hashes": [
+        "786fe18c9829f8a889cf59e0fa12c82f1e804ad262967e2ac1a72b5a5c549bec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:2",
+      "sequence": 11417,
+      "chapter_label": "2CH 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "But the LORD’s word came to Shemaiah the man of God, saying,",
+      "ko": "여호와의 말씀이 하나님의 사람 스마야에게 임하여 가라사대",
+      "source_text_hash": "b713699c8bec9031e6e7b721e7d44dd03073b204b4614e6ab9453315bc18dd90",
+      "translation_text_hash": "d089a6a08e49d1d976c8496017fae624a39b727090afc2a9ee31ddd3870c400f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 하나님의 사람 스마야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d089a6a08e49d1d976c8496017fae624a39b727090afc2a9ee31ddd3870c400f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:3",
+      "sequence": 11418,
+      "chapter_label": "2CH 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "“Speak to Rehoboam the son of Solomon, king of Judah, and to all Israel in Judah and Benjamin, saying,",
+      "ko": "솔로몬의 아들 유다 왕 르호보암과 유다와 베냐민의 이스라엘 무리에게 고하여 이르기를",
+      "source_text_hash": "a62c6347ec33c6613aa37a409134f041f746c8ed1124f01bb999b9748a88bb61",
+      "translation_text_hash": "fbe334b63029ca8c369cffc8c90d731c2b01688912e16b3a21544ff076dae43f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬의 아들 유다 왕 르호보암과 유다와 베냐민의 이스라엘 무리에게 고하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "fbe334b63029ca8c369cffc8c90d731c2b01688912e16b3a21544ff076dae43f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:4",
+      "sequence": 11419,
+      "chapter_label": "2CH 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "‘The LORD says, “You shall not go up, nor fight against your brothers! Every man return to his house; for this thing is of me.”’” So they listened to the LORD’s words, and returned from going against Jeroboam.",
+      "ko": "여호와의 말씀이 너희는 올라가지 말라 너희 형제와 싸우지 말고 각기 집으로 돌아가라 이 일이 내게로 말미암아 난 것이라 하셨다 하라 하신지라 저희가 여호와의 말씀을 듣고 돌아가고 여로보암을 치러 가지 아니하였더라",
+      "source_text_hash": "a2580fc2999482fbe9cd2a39643cd62da1cfa323ad548f3b2cbc3a748f78f351",
+      "translation_text_hash": "74ecf215ee20685bff5011d261a41e245d4a450f57ef9bb8b3e289097b647906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 너희는 올라가지 말라 너희 형제와 싸우지 말고 각기 집으로 돌아가라 이 일이 내게로 말미암아 난 것이라 하셨다 하라 하신지라 저희가 여호와의 말씀을 듣고 돌아가고 여로보암을 치러 가지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "74ecf215ee20685bff5011d261a41e245d4a450f57ef9bb8b3e289097b647906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:5",
+      "sequence": 11420,
+      "chapter_label": "2CH 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Rehoboam lived in Jerusalem, and built cities for defense in Judah.",
+      "ko": "르호보암이 예루살렘에 거하여 유다 땅에 방비하는 성읍들을 건축하였으니",
+      "source_text_hash": "4fc93fb82f32adcb4e7a803039f530bf2a97f3894598b04c931da4c07fa54392",
+      "translation_text_hash": "017aec7cc58d23d51e6fa9f4e3f50fdcb799715d9938c8c648b2ce1d866f1e02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 예루살렘에 거하여 유다 땅에 방비하는 성읍들을 건축하였으니"
+      ],
+      "raw_text_hashes": [
+        "017aec7cc58d23d51e6fa9f4e3f50fdcb799715d9938c8c648b2ce1d866f1e02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:6",
+      "sequence": 11421,
+      "chapter_label": "2CH 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "He built Bethlehem, Etam, Tekoa,",
+      "ko": "곧 베들레헴과 에담과 드고아와",
+      "source_text_hash": "6b5e0e39e42c58689629a8640212b61342c2412f669da4ed7dfc11ab1afc4695",
+      "translation_text_hash": "1fc73648f329ef01886fe46699c632e7c0960230d5450004019de0b57c701976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 베들레헴과 에담과 드고아와"
+      ],
+      "raw_text_hashes": [
+        "1fc73648f329ef01886fe46699c632e7c0960230d5450004019de0b57c701976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:7",
+      "sequence": 11422,
+      "chapter_label": "2CH 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "Beth Zur, Soco, Adullam,",
+      "ko": "벧술과 소고와 아둘람과",
+      "source_text_hash": "d2e5de4016eff5847be172d346a3259fbedd850ca777715666a178d3bfc7bc78",
+      "translation_text_hash": "8884704492061985c9217eca220e64ff1263334580265bf4ff5d5732cfa12e26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧술과 소고와 아둘람과"
+      ],
+      "raw_text_hashes": [
+        "8884704492061985c9217eca220e64ff1263334580265bf4ff5d5732cfa12e26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:8",
+      "sequence": 11423,
+      "chapter_label": "2CH 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "Gath, Mareshah, Ziph,",
+      "ko": "가드와 마레사와 십과",
+      "source_text_hash": "87b5033457b38af99908755bbcf3ce05206f3acb6ee5b67d91a4d7c2e5516932",
+      "translation_text_hash": "c25fd76750b1679292625745e4f0f9b96acc81cc864873deadf72fac274253e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가드와 마레사와 십과"
+      ],
+      "raw_text_hashes": [
+        "c25fd76750b1679292625745e4f0f9b96acc81cc864873deadf72fac274253e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:9",
+      "sequence": 11424,
+      "chapter_label": "2CH 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Adoraim, Lachish, Azekah,",
+      "ko": "아도라임과 라기스와 아세가와",
+      "source_text_hash": "3979448f25ed9c264bf9f8f14b31b7fa22d3d5c8a607e787d40ee7876b0eb0e9",
+      "translation_text_hash": "70179e4ff4059c1e4112a79fc10fdf838e2ff14e99357ab02a5ad21a6d5f72b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아도라임과 라기스와 아세가와"
+      ],
+      "raw_text_hashes": [
+        "70179e4ff4059c1e4112a79fc10fdf838e2ff14e99357ab02a5ad21a6d5f72b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:10",
+      "sequence": 11425,
+      "chapter_label": "2CH 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Zorah, Aijalon, and Hebron, which are fortified cities in Judah and in Benjamin.",
+      "ko": "소라와 아얄론과 헤브론이니 다 유다와 베냐민 땅에 있어 견고한 성읍이라",
+      "source_text_hash": "58a4bc53c9d31bc00bbd369e7230829ee271237076df290d25f185f7c776fe7c",
+      "translation_text_hash": "104476348b21834399a0e350e2764b83871863f275da957c78d8c69d6fcbf694",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소라와 아얄론과 헤브론이니 다 유다와 베냐민 땅에 있어 견고한 성읍이라"
+      ],
+      "raw_text_hashes": [
+        "104476348b21834399a0e350e2764b83871863f275da957c78d8c69d6fcbf694"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:11",
+      "sequence": 11426,
+      "chapter_label": "2CH 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "He fortified the strongholds and put captains in them with stores of food, oil and wine.",
+      "ko": "르호보암이 이 모든 성읍을 더욱 견고케 하고 장관을 그 가운데 두고 양식과 기름과 포도주를 저축하고",
+      "source_text_hash": "0d09f064b5923faa20f1abb557b9b82b11ea432b797d3493e37df68d1e5ec02b",
+      "translation_text_hash": "ce8fab445d62aad45ce2953812f17a2764082619a8fea6af8314bb788b738230",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 이 모든 성읍을 더욱 견고케 하고 장관을 그 가운데 두고 양식과 기름과 포도주를 저축하고"
+      ],
+      "raw_text_hashes": [
+        "ce8fab445d62aad45ce2953812f17a2764082619a8fea6af8314bb788b738230"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:12",
+      "sequence": 11427,
+      "chapter_label": "2CH 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "He put shields and spears in every city, and made them exceedingly strong. Judah and Benjamin belonged to him.",
+      "ko": "각 성읍에 방패와 창을 두어 심히 강하게 하니라 유다와 베냐민이 르호보암에게 속하였더라",
+      "source_text_hash": "6d5e6e6d38cb1710f5b98b3cd36f4592b9f47569c92018fa7a19e2630aad2798",
+      "translation_text_hash": "e54b06790af9f490b07702dfcef849ccea4a16e6b64d0fd1441ab429c1888411",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 성읍에 방패와 창을 두어 심히 강하게 하니라 유다와 베냐민이 르호보암에게 속하였더라"
+      ],
+      "raw_text_hashes": [
+        "e54b06790af9f490b07702dfcef849ccea4a16e6b64d0fd1441ab429c1888411"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:13",
+      "sequence": 11428,
+      "chapter_label": "2CH 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "The priests and the Levites who were in all Israel stood with him out of all their territory.",
+      "ko": "온 이스라엘의 제사장과 레위 사람이 그 모든 지방에서부터 르호보암에게 돌아오되",
+      "source_text_hash": "067ad9dbb9b066626f74605b21bfcb6d853e1c2a04f32c4876d6f9a0f9333d30",
+      "translation_text_hash": "f3a9bfb601ca6d0dc8ed10b9cf03a448a039939a750d8d4deca0c6199e45ca75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘의 제사장과 레위 사람이 그 모든 지방에서부터 르호보암에게 돌아오되"
+      ],
+      "raw_text_hashes": [
+        "f3a9bfb601ca6d0dc8ed10b9cf03a448a039939a750d8d4deca0c6199e45ca75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:14",
+      "sequence": 11429,
+      "chapter_label": "2CH 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "For the Levites left their pasture lands and their possessions, and came to Judah and Jerusalem; for Jeroboam and his sons cast them off, that they should not execute the priest’s office to the LORD.",
+      "ko": "레위 사람이 그 향리와 산업을 떠나 유다와 예루살렘에 이르렀으니 이는 여로보암과 그 아들들이 저희를 폐하여 여호와께 제사장의 직분을 행치 못하게 하고",
+      "source_text_hash": "d3fd99fe4414b2bab7859828e5e96d67076af24e4aa37d454b5c2a6025b6f789",
+      "translation_text_hash": "51b5ed78155a82bf31ebd00272fed6dc434929b7976b596c704230efeb9538be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람이 그 향리와 산업을 떠나 유다와 예루살렘에 이르렀으니 이는 여로보암과 그 아들들이 저희를 폐하여 여호와께 제사장의 직분을 행치 못하게 하고"
+      ],
+      "raw_text_hashes": [
+        "51b5ed78155a82bf31ebd00272fed6dc434929b7976b596c704230efeb9538be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:15",
+      "sequence": 11430,
+      "chapter_label": "2CH 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "He himself appointed priests for the high places, for the male goat and calf idols which he had made.",
+      "ko": "여로보암이 여러 산당과 수염소 우상과 자기가 만든 송아지 우상을 위하여 스스로 제사장들을 세움이라",
+      "source_text_hash": "8b9f2a9703ab3673a9aca14d98835d856432eb819da40234a8d4fb5fdf54519e",
+      "translation_text_hash": "ffbab4eaa217cbcca254035d5d13f8b3b8e6fbea96f8ce4f56184d8f558356bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여로보암이 여러 산당과 수염소 우상과 자기가 만든 송아지 우상을 위하여 스스로 제사장들을 세움이라"
+      ],
+      "raw_text_hashes": [
+        "ffbab4eaa217cbcca254035d5d13f8b3b8e6fbea96f8ce4f56184d8f558356bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:16",
+      "sequence": 11431,
+      "chapter_label": "2CH 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "After them, out of all the tribes of Israel, those who set their hearts to seek the LORD, the God of Israel, came to Jerusalem to sacrifice to the LORD, the God of their fathers.",
+      "ko": "이스라엘 모든 지파 중에 마음을 오로지하여 이스라엘 하나님 여호와를 구하는 자들이 레위 사람을 따라 예루살렘에 이르러 그 열조의 하나님 여호와께 제사하고자 한지라",
+      "source_text_hash": "4d4c72c4cf965bceae71ef62379783c198f63c59c56100aced8ebdaab3c3171b",
+      "translation_text_hash": "842d398d038cbdb26dc447623b8cdd27e7c5d4483292bcc634a5ffdada798ee9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파 중에 마음을 오로지하여 이스라엘 하나님 여호와를 구하는 자들이 레위 사람을 따라 예루살렘에 이르러 그 열조의 하나님 여호와께 제사하고자 한지라"
+      ],
+      "raw_text_hashes": [
+        "842d398d038cbdb26dc447623b8cdd27e7c5d4483292bcc634a5ffdada798ee9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:17",
+      "sequence": 11432,
+      "chapter_label": "2CH 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "So they strengthened the kingdom of Judah and made Rehoboam the son of Solomon strong for three years, for they walked three years in the way of David and Solomon.",
+      "ko": "그러므로 삼년 동안 유다 나라를 도와 솔로몬의 아들 르호보암을 강성하게 하였으니 이는 무리가 삼년을 다윗과 솔로몬의 길로 행하였음이더라",
+      "source_text_hash": "7b749e6d5a8a7e95296734a9e192ee330be9fc1b6bc6fe44e9374d1c42f0dba6",
+      "translation_text_hash": "64de9ee80f5f46888577169da61da6ea0cab502151d90bffba36e6fd5c61fa89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 삼년 동안 유다 나라를 도와 솔로몬의 아들 르호보암을 강성하게 하였으니 이는 무리가 삼년을 다윗과 솔로몬의 길로 행하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "64de9ee80f5f46888577169da61da6ea0cab502151d90bffba36e6fd5c61fa89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:18",
+      "sequence": 11433,
+      "chapter_label": "2CH 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "Rehoboam took a wife for himself, Mahalath the daughter of Jerimoth the son of David and of Abihail the daughter of Eliab the son of Jesse.",
+      "ko": "르호보암이 다윗의 아들 여리못의 딸 마할랏으로 아내를 삼았으니 마할랏은 이새의 아들 엘리압의 딸 아비하일의 소생이라",
+      "source_text_hash": "45aeeb9c119b4b6166059057588b2c4083f8b64608c443ab46f9918b7ab9efad",
+      "translation_text_hash": "adb21306b58d504120db0f2a51fd3d216dffea34c10bd148767d3981becd50bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 다윗의 아들 여리못의 딸 마할랏으로 아내를 삼았으니 마할랏은 이새의 아들 엘리압의 딸 아비하일의 소생이라"
+      ],
+      "raw_text_hashes": [
+        "adb21306b58d504120db0f2a51fd3d216dffea34c10bd148767d3981becd50bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:19",
+      "sequence": 11434,
+      "chapter_label": "2CH 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "She bore him sons: Jeush, Shemariah, and Zaham.",
+      "ko": "그가 아들들 곧 여우스와 스마랴와 사함을 낳았으며",
+      "source_text_hash": "dc679d26bc42aa79553855cc84d2763bfae31e3751b0730de556f0b218f1b90b",
+      "translation_text_hash": "ffab845751aadb19330b372aef9f58e59f1896c506d514380a4304143c00a86f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아들들 곧 여우스와 스마랴와 사함을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "ffab845751aadb19330b372aef9f58e59f1896c506d514380a4304143c00a86f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:20",
+      "sequence": 11435,
+      "chapter_label": "2CH 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "After her, he took Maacah the granddaughter of Absalom; and she bore him Abijah, Attai, Ziza, and Shelomith.",
+      "ko": "그 후에 압살롬의 딸 마아가에게 장가 들었더니 저가 아비야와 앗대와 시사와 슬로밋을 낳았더라",
+      "source_text_hash": "dc5a90c0adca3de96fa638f98eddba567c18f3860907bb1a53079ef1837ff480",
+      "translation_text_hash": "01be515891a9f5c8ef1d6dbf1365e1939d72113b24abdd6448236bbbda170b87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 압살롬의 딸 마아가에게 장가 들었더니 저가 아비야와 앗대와 시사와 슬로밋을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "01be515891a9f5c8ef1d6dbf1365e1939d72113b24abdd6448236bbbda170b87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:21",
+      "sequence": 11436,
+      "chapter_label": "2CH 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Rehoboam loved Maacah the granddaughter of Absalom above all his wives and his concubines; for he took eighteen wives and sixty concubines, and became the father of twenty-eight sons and sixty daughters.",
+      "ko": "르호보암이 아내 십 팔과 첩 육십을 취하여 아들 이십 팔과 딸 육십을 낳았으나 압살롬의 딸 마아가를 모든 처첩보다 더 사랑하여",
+      "source_text_hash": "e923181fa9b2018ab0582754571a2a03db69e846b1253444ed4a39541caf743c",
+      "translation_text_hash": "ddb5ffca62d58d01a9246c3eeaef5a5a7421402692326a33159d8f3af1981843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 아내 십 팔과 첩 육십을 취하여 아들 이십 팔과 딸 육십을 낳았으나 압살롬의 딸 마아가를 모든 처첩보다 더 사랑하여"
+      ],
+      "raw_text_hashes": [
+        "ddb5ffca62d58d01a9246c3eeaef5a5a7421402692326a33159d8f3af1981843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:22",
+      "sequence": 11437,
+      "chapter_label": "2CH 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Rehoboam appointed Abijah the son of Maacah to be chief, the prince among his brothers, for he intended to make him king.",
+      "ko": "마아가의 아들 아비야를 세워 장자를 삼아 형제 중에 머리가 되게 하였으니 이는 저로 왕이 되게 하고자 함이라",
+      "source_text_hash": "04d1f38815e2aa21c6e36dcbb8b68a4e5b2706a79e8c6d0e8c9692c10bf0ab4e",
+      "translation_text_hash": "be4f126243eb523b50ac455773c47538b1a747f249cab46f96700f2ef8fd8e3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마아가의 아들 아비야를 세워 장자를 삼아 형제 중에 머리가 되게 하였으니 이는 저로 왕이 되게 하고자 함이라"
+      ],
+      "raw_text_hashes": [
+        "be4f126243eb523b50ac455773c47538b1a747f249cab46f96700f2ef8fd8e3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:11:23",
+      "sequence": 11438,
+      "chapter_label": "2CH 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "He dealt wisely, and dispersed some of his sons throughout all the lands of Judah and Benjamin, to every fortified city. He gave them food in abundance; and he sought many wives for them.",
+      "ko": "르호보암이 지혜롭게 행하여 그 모든 아들을 유다와 베냐민의 온 땅 모든 견고한 성읍에 흩어 살게 하고 양식을 후히 주고 아내를 많이 구하여 주었더라",
+      "source_text_hash": "9ade06b77013a109541d0152c31a5e615c05151656a3c3bf9046399de0838b2c",
+      "translation_text_hash": "f0c0dfa17dfbb03135f42d73ad2f11ca2fee74fe4b1b40e3574d32baee62895a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르호보암이 지혜롭게 행하여 그 모든 아들을 유다와 베냐민의 온 땅 모든 견고한 성읍에 흩어 살게 하고 양식을 후히 주고 아내를 많이 구하여 주었더라"
+      ],
+      "raw_text_hashes": [
+        "f0c0dfa17dfbb03135f42d73ad2f11ca2fee74fe4b1b40e3574d32baee62895a"
+      ]
+    }
+  ]
+}

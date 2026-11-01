@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:019",
+  "unit_ordinal": 69,
+  "unit_label": "EXO 19",
+  "book_code": "EXO",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:19:1",
+      "sequence": 2028,
+      "chapter_label": "EXO 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "In the third month after the children of Israel had gone out of the land of Egypt, on that same day they came into the wilderness of Sinai.",
+      "ko": "이스라엘 자손이 애굽 땅에서 나올때부터 제 삼월 곧 그 때에 그들이 시내 광야에 이르니라",
+      "source_text_hash": "d942392741868c1cd4ddb44481c390bc2e3daa0beae1f51a5fda235be504911e",
+      "translation_text_hash": "7f6898c92799981b01a6531feff130f3e13dbdaf9184da3c2d80a20ca18e8950",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 애굽 땅에서 나올때부터 제 삼월 곧 그 때에 그들이 시내 광야에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "7f6898c92799981b01a6531feff130f3e13dbdaf9184da3c2d80a20ca18e8950"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:2",
+      "sequence": 2029,
+      "chapter_label": "EXO 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "When they had departed from Rephidim, and had come to the wilderness of Sinai, they encamped in the wilderness; and there Israel encamped before the mountain.",
+      "ko": "그들이 르비딤을 떠나 시내 광야에 이르러 그 광야에 장막을 치되 산 앞에 장막을 치니라",
+      "source_text_hash": "4b8ee2f22634f99b04c8a4f65bea66b4aff88cc55ef8592a6623948bc9e254b3",
+      "translation_text_hash": "84974a72178cebda33a942dc659307e94a4551af706f2542936584ee993cdf55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 르비딤을 떠나 시내 광야에 이르러 그 광야에 장막을 치되 산 앞에 장막을 치니라"
+      ],
+      "raw_text_hashes": [
+        "84974a72178cebda33a942dc659307e94a4551af706f2542936584ee993cdf55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:3",
+      "sequence": 2030,
+      "chapter_label": "EXO 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "Moses went up to God, and the LORD called to him out of the mountain, saying, “This is what you shall tell the house of Jacob, and tell the children of Israel:",
+      "ko": "모세가 하나님 앞에 올라가니 여호와께서 산에서 그를 불러 가라사대 너는 이같이 야곱 족속에게 이르고 이스라엘 자손에게 고하라",
+      "source_text_hash": "9282b82d0a847adca64e204f6411077b7029089ffc2609db3e5223ed495dabde",
+      "translation_text_hash": "bba87fa20106843a8a814b0a24f5919775cfb66b5821f1ad1b0ef7f0f19cc7e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하나님 앞에 올라가니 여호와께서 산에서 그를 불러 가라사대 너는 이같이 야곱 족속에게 이르고 이스라엘 자손에게 고하라"
+      ],
+      "raw_text_hashes": [
+        "bba87fa20106843a8a814b0a24f5919775cfb66b5821f1ad1b0ef7f0f19cc7e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:4",
+      "sequence": 2031,
+      "chapter_label": "EXO 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "‘You have seen what I did to the Egyptians, and how I bore you on eagles’ wings, and brought you to myself.",
+      "ko": "나의 애굽 사람에게 어떻게 행하였음과 내가 어떻게 독수리 날개로 너희를 업어 내게로 인도하였음을 너희가 보았느니라",
+      "source_text_hash": "f589cfcefdc6368cb33fd8c846e0ef2bf439b1e0c7ab69b85f94bd3e64a0e7f4",
+      "translation_text_hash": "a4b71255d08db02674affce06d748f4091b5511fa5ca35510dd2b72091222a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 애굽 사람에게 어떻게 행하였음과 내가 어떻게 독수리 날개로 너희를 업어 내게로 인도하였음을 너희가 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "a4b71255d08db02674affce06d748f4091b5511fa5ca35510dd2b72091222a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:5",
+      "sequence": 2032,
+      "chapter_label": "EXO 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "Now therefore, if you will indeed obey my voice and keep my covenant, then you shall be my own possession from among all peoples; for all the earth is mine;",
+      "ko": "세계가 다 내게 속하였나니 너희가 내 말을 잘 듣고 내 언약을 지키면 너희는 열국 중에서 내 소유가 되겠고",
+      "source_text_hash": "7657bb0c69c32247f62531cdfbe41c65dbed257a8ce457d31eb5eb5ca2af1508",
+      "translation_text_hash": "ec9b33ea019a6502afd156ecd0c52633cd9428ac952657ac1f8da83c732734a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세계가 다 내게 속하였나니 너희가 내 말을 잘 듣고 내 언약을 지키면 너희는 열국 중에서 내 소유가 되겠고"
+      ],
+      "raw_text_hashes": [
+        "ec9b33ea019a6502afd156ecd0c52633cd9428ac952657ac1f8da83c732734a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:6",
+      "sequence": 2033,
+      "chapter_label": "EXO 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "and you shall be to me a kingdom of priests and a holy nation.’ These are the words which you shall speak to the children of Israel.”",
+      "ko": "너희가 내게 대하여 제사장 나라가 되며 거룩한 백성이 되리라 너는 이 말을 이스라엘 자손에게 고할찌니라",
+      "source_text_hash": "387f962132311f29a3344284b2ecc6a52e85abf09cd53154d6f18fa841a9a721",
+      "translation_text_hash": "a31e7eee2538cf6cf5c69aa4e2270c13b8100b618b913b97b0e11ab23feb2de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내게 대하여 제사장 나라가 되며 거룩한 백성이 되리라 너는 이 말을 이스라엘 자손에게 고할찌니라"
+      ],
+      "raw_text_hashes": [
+        "a31e7eee2538cf6cf5c69aa4e2270c13b8100b618b913b97b0e11ab23feb2de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:7",
+      "sequence": 2034,
+      "chapter_label": "EXO 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Moses came and called for the elders of the people, and set before them all these words which the LORD commanded him.",
+      "ko": "모세가 와서 백성의 장로들을 불러 여호와께서 자기에게 명하신 그 모든 말씀을 그 앞에 진술하니",
+      "source_text_hash": "9e3609efc551eeb24f30ce6418e529a8ea4c55f55792f1436c9f2dbc78674098",
+      "translation_text_hash": "a27b5d3af6ac20283ae61ac914228df6f7fb4b8558201a26e2329611ff2d4c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 와서 백성의 장로들을 불러 여호와께서 자기에게 명하신 그 모든 말씀을 그 앞에 진술하니"
+      ],
+      "raw_text_hashes": [
+        "a27b5d3af6ac20283ae61ac914228df6f7fb4b8558201a26e2329611ff2d4c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:8",
+      "sequence": 2035,
+      "chapter_label": "EXO 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "All the people answered together, and said, “All that the LORD has spoken we will do.” Moses reported the words of the people to the LORD.",
+      "ko": "백성이 일제히 응답하여 가로되 여호와의 명하신대로 우리가 다 행하리이다 모세가 백성의 말로 여호와께 회보하매",
+      "source_text_hash": "e1f1ec3c7e2036fefb1e765ff27eed96537b9f19260f43b437d90664e6563106",
+      "translation_text_hash": "3f15f04c33f19907d81fc084a3d690c06dc5860a4761a246ab6585a01a86a099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 일제히 응답하여 가로되 여호와의 명하신대로 우리가 다 행하리이다 모세가 백성의 말로 여호와께 회보하매"
+      ],
+      "raw_text_hashes": [
+        "3f15f04c33f19907d81fc084a3d690c06dc5860a4761a246ab6585a01a86a099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:9",
+      "sequence": 2036,
+      "chapter_label": "EXO 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD said to Moses, “Behold, I come to you in a thick cloud, that the people may hear when I speak with you, and may also believe you forever.” Moses told the words of the people to the LORD.",
+      "ko": "여호와께서 모세에게 이르시되 내가 빽빽한 구름 가운데서 네게 임함은 내가 너와 말하는 것을 백성으로 듣게 하며 또한 너를 영영히 믿게 하려함이니라 모세가 백성의 말로 여호와께 고하였으므로",
+      "source_text_hash": "afa7e09efde0e224d40825fae6dc990c08da98c19cf3481a5e2757c868f8e322",
+      "translation_text_hash": "523b2fa9aaee212886cd6c0ef45c480c71d929bf24f403e9f801895e4b5f02f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 내가 빽빽한 구름 가운데서 네게 임함은 내가 너와 말하는 것을 백성으로 듣게 하며 또한 너를 영영히 믿게 하려함이니라 모세가 백성의 말로 여호와께 고하였으므로"
+      ],
+      "raw_text_hashes": [
+        "523b2fa9aaee212886cd6c0ef45c480c71d929bf24f403e9f801895e4b5f02f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:10",
+      "sequence": 2037,
+      "chapter_label": "EXO 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD said to Moses, “Go to the people, and sanctify them today and tomorrow, and let them wash their garments,",
+      "ko": "여호와께서 모세에게 이르시되 너는 백성에게로 가서 오늘과 내일 그들을 성결케 하며 그들로 옷을 빨고",
+      "source_text_hash": "52e77f316c9b117c8d4168953e767d9ae68a18371e4a24834b2acc6ffe7992c2",
+      "translation_text_hash": "f258c43c7c5e8c75eabdfef81a73e7e14e2bc920eb91e919af7f7c4b598bb612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 백성에게로 가서 오늘과 내일 그들을 성결케 하며 그들로 옷을 빨고"
+      ],
+      "raw_text_hashes": [
+        "f258c43c7c5e8c75eabdfef81a73e7e14e2bc920eb91e919af7f7c4b598bb612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:11",
+      "sequence": 2038,
+      "chapter_label": "EXO 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "and be ready for the third day; for on the third day the LORD will come down in the sight of all the people on Mount Sinai.",
+      "ko": "예비하여 제 삼일을 기다리게 하라 이는 제 삼일에 나 여호와가 온 백성의 목전에 시내산에 강림할 것임이니",
+      "source_text_hash": "af952fbf80ea38091e7b6ff0e5a837a2d9a8c8df39fcddd4b6ad10b283ba98cc",
+      "translation_text_hash": "7f180c8c791b3cfb606607f7ea054dafcb107c9a38b617b9ad50a7f4fc627c91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예비하여 제 삼일을 기다리게 하라 이는 제 삼일에 나 여호와가 온 백성의 목전에 시내산에 강림할 것임이니"
+      ],
+      "raw_text_hashes": [
+        "7f180c8c791b3cfb606607f7ea054dafcb107c9a38b617b9ad50a7f4fc627c91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:12",
+      "sequence": 2039,
+      "chapter_label": "EXO 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "You shall set bounds to the people all around, saying, ‘Be careful that you don’t go up onto the mountain, or touch its border. Whoever touches the mountain shall be surely put to death.",
+      "ko": "너는 백성을 위하여 사면으로 지경을 정하고 이르기를 너희는 삼가 산에 오르거나 그 지경을 범하지 말찌니 산을 범하는 자는 정녕 죽임을 당할 것이라",
+      "source_text_hash": "c80c67ae6c45b223223115acc0f5a34dcf05c3dc4d77f2f12439547eead77dec",
+      "translation_text_hash": "37b22c86d664b4216c18315f0f6bfa633fd31cb1b62eaf5b6fb19c2a049dbc49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 백성을 위하여 사면으로 지경을 정하고 이르기를 너희는 삼가 산에 오르거나 그 지경을 범하지 말찌니 산을 범하는 자는 정녕 죽임을 당할 것이라"
+      ],
+      "raw_text_hashes": [
+        "37b22c86d664b4216c18315f0f6bfa633fd31cb1b62eaf5b6fb19c2a049dbc49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:13",
+      "sequence": 2040,
+      "chapter_label": "EXO 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "No hand shall touch him, but he shall surely be stoned or shot through; whether it is animal or man, he shall not live.’ When the trumpet sounds long, they shall come up to the mountain.”",
+      "ko": "손을 그에게 댐이 없이 그런 자는 돌에 맞아 죽임을 당하거나 살에 쐬어 죽임을 당하리니 짐승이나 사람을 무론하고 살지 못하리라 나팔을 길게 불거든 산 앞에 이를 것이니라 하라",
+      "source_text_hash": "58ccec060a8d896a16a1c3986ca591e32ab8072730668de98a9899280c537d0d",
+      "translation_text_hash": "dd6bc9ae6e6a9c5cf1fab9d4a3f5004b2bdf44ee1f1a59303e920f5dc4b9cd54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 그에게 댐이 없이 그런 자는 돌에 맞아 죽임을 당하거나 살에 쐬어 죽임을 당하리니 짐승이나 사람을 무론하고 살지 못하리라 나팔을 길게 불거든 산 앞에 이를 것이니라 하라"
+      ],
+      "raw_text_hashes": [
+        "dd6bc9ae6e6a9c5cf1fab9d4a3f5004b2bdf44ee1f1a59303e920f5dc4b9cd54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:14",
+      "sequence": 2041,
+      "chapter_label": "EXO 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "Moses went down from the mountain to the people, and sanctified the people; and they washed their clothes.",
+      "ko": "모세가 산에서 내려 백성에게 이르러 백성으로 성결케 하니 그들이 자기 옷을 빨더라",
+      "source_text_hash": "8053bbf8ea98522f7337c07023ead9a30c951f2a3347829282aac8e257f38a47",
+      "translation_text_hash": "8a40d4fc6c0a547b9a728dd87599af9283b1023efc3cd9547d501522275c7916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 산에서 내려 백성에게 이르러 백성으로 성결케 하니 그들이 자기 옷을 빨더라"
+      ],
+      "raw_text_hashes": [
+        "8a40d4fc6c0a547b9a728dd87599af9283b1023efc3cd9547d501522275c7916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:15",
+      "sequence": 2042,
+      "chapter_label": "EXO 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "He said to the people, “Be ready by the third day. Don’t have sexual relations with a woman.”",
+      "ko": "모세가 백성에게 이르되 예비하여 제 삼일을 기다리고 여인을 가까이 말라 하니라",
+      "source_text_hash": "66b81b52cccb79a5b29eb7feb569b0c2ff158f898496807a8f2a97848ecdee40",
+      "translation_text_hash": "aea48bc0056c4d1ee6aab9624fd9d672f77299ed706f128b9f64da4089ecb360",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 백성에게 이르되 예비하여 제 삼일을 기다리고 여인을 가까이 말라 하니라"
+      ],
+      "raw_text_hashes": [
+        "aea48bc0056c4d1ee6aab9624fd9d672f77299ed706f128b9f64da4089ecb360"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:16",
+      "sequence": 2043,
+      "chapter_label": "EXO 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "On the third day, when it was morning, there were thunders and lightnings, and a thick cloud on the mountain, and the sound of an exceedingly loud trumpet; and all the people who were in the camp trembled.",
+      "ko": "제 삼일 아침에 우뢰와 번개와 빽빽한 구름이 산 위에 있고 나팔 소리가 심히 크니 진중 모든 백성이 다 떨더라",
+      "source_text_hash": "50be63634c92541dd4fd16a8248514f1e81dfdd70be8fbbb66c23c518fea2992",
+      "translation_text_hash": "26f5f0faee0b3bd49929b5d9f27e4fcc7f975f8fa1dbf0c87fdff3f3e9358833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 삼일 아침에 우뢰와 번개와 빽빽한 구름이 산 위에 있고 나팔 소리가 심히 크니 진중 모든 백성이 다 떨더라"
+      ],
+      "raw_text_hashes": [
+        "26f5f0faee0b3bd49929b5d9f27e4fcc7f975f8fa1dbf0c87fdff3f3e9358833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:17",
+      "sequence": 2044,
+      "chapter_label": "EXO 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "Moses led the people out of the camp to meet God; and they stood at the lower part of the mountain.",
+      "ko": "모세가 하나님을 맞으려고 백성을 거느리고 진에서 나오매 그들이 산 기슭에 섰더니",
+      "source_text_hash": "0cfdc9b6e39075419c427c654eb3e85011361bea39ba6049df10356ea5d9791c",
+      "translation_text_hash": "716459ac9f2cbaea06b9b123a1621d57931c832ab5ebf684e76bbaee1d2a319b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하나님을 맞으려고 백성을 거느리고 진에서 나오매 그들이 산 기슭에 섰더니"
+      ],
+      "raw_text_hashes": [
+        "716459ac9f2cbaea06b9b123a1621d57931c832ab5ebf684e76bbaee1d2a319b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:18",
+      "sequence": 2045,
+      "chapter_label": "EXO 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "All of Mount Sinai smoked, because the LORD descended on it in fire; and its smoke ascended like the smoke of a furnace, and the whole mountain quaked greatly.",
+      "ko": "시내산에 연기가 자욱하니 여호와께서 불 가운데서 거기 강림하심이라 그 연기가 옹기점 연기 같이 떠오르고 온 산이 크게 진동하며",
+      "source_text_hash": "afd447f75c334dd646c24f7d741a0a2cc6c6bbbe1493f51e379a488f9aec4311",
+      "translation_text_hash": "f0745bbce09cb159acf2e2bc7226e831a712abd8ba4aa01990dbd4eb52e1658d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시내산에 연기가 자욱하니 여호와께서 불 가운데서 거기 강림하심이라 그 연기가 옹기점 연기 같이 떠오르고 온 산이 크게 진동하며"
+      ],
+      "raw_text_hashes": [
+        "f0745bbce09cb159acf2e2bc7226e831a712abd8ba4aa01990dbd4eb52e1658d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:19",
+      "sequence": 2046,
+      "chapter_label": "EXO 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "When the sound of the trumpet grew louder and louder, Moses spoke, and God answered him by a voice.",
+      "ko": "나팔 소리가 점점 커질 때에 모세가 말한즉 하나님이 음성으로 대답하시더라",
+      "source_text_hash": "9ea36d2d3dc871167ccb76fd83c5c3232884b8afc666ae017e1b0e38e606c0c1",
+      "translation_text_hash": "2f82cb5b77ae18f252b3fa6ca9c8cd8acdb5e288eb7fb9dbcbb8f17bcab38af6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔 소리가 점점 커질 때에 모세가 말한즉 하나님이 음성으로 대답하시더라"
+      ],
+      "raw_text_hashes": [
+        "2f82cb5b77ae18f252b3fa6ca9c8cd8acdb5e288eb7fb9dbcbb8f17bcab38af6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:20",
+      "sequence": 2047,
+      "chapter_label": "EXO 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD came down on Mount Sinai, to the top of the mountain. The LORD called Moses to the top of the mountain, and Moses went up.",
+      "ko": "여호와께서 시내산 곧 그 산꼭대기에 강림하시고 그리로 모세를 부르시니 모세가 올라 가매",
+      "source_text_hash": "d66f590ba15a7bdf4da0dbed093739b27ff9ae483f85140f104bd01d4feea765",
+      "translation_text_hash": "4878c410095517660ee84e5b51f0650c3f6ff24524668ccf20f3df19b726df00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내산 곧 그 산꼭대기에 강림하시고 그리로 모세를 부르시니 모세가 올라 가매"
+      ],
+      "raw_text_hashes": [
+        "4878c410095517660ee84e5b51f0650c3f6ff24524668ccf20f3df19b726df00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:21",
+      "sequence": 2048,
+      "chapter_label": "EXO 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD said to Moses, “Go down, warn the people, lest they break through to the LORD to gaze, and many of them perish.",
+      "ko": "여호와께서 모세에게 이르시되 내려가서 백성을 신칙하라 백성이 돌파하고 나 여호와께로 와서 보려고 하다가 많이 죽을까 하노라",
+      "source_text_hash": "99d1207df153f81fe81af13ac9bd49475bed585d162a370cfbea169cc4bd5933",
+      "translation_text_hash": "d8efa94cad904825f5bdb35ae7f5a7660cab5b46594ed189214bc87e278a3e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 내려가서 백성을 신칙하라 백성이 돌파하고 나 여호와께로 와서 보려고 하다가 많이 죽을까 하노라"
+      ],
+      "raw_text_hashes": [
+        "d8efa94cad904825f5bdb35ae7f5a7660cab5b46594ed189214bc87e278a3e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:22",
+      "sequence": 2049,
+      "chapter_label": "EXO 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Let the priests also, who come near to the LORD, sanctify themselves, lest the LORD break out on them.”",
+      "ko": "또 여호와께 가까이 하는 제사장들로 그 몸을 성결히 하게 하라 나 여호와가 그들을 돌격할까 하노라",
+      "source_text_hash": "8e6c4e535236db59b4fa6bc9146b1021e5792172077e459cd406f970d31811f4",
+      "translation_text_hash": "d2599fa221536ae838c19aeec2a8d47eb2df34b9bbf331a4877117e5a2dd1bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와께 가까이 하는 제사장들로 그 몸을 성결히 하게 하라 나 여호와가 그들을 돌격할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "d2599fa221536ae838c19aeec2a8d47eb2df34b9bbf331a4877117e5a2dd1bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:23",
+      "sequence": 2050,
+      "chapter_label": "EXO 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "Moses said to the LORD, “The people can’t come up to Mount Sinai, for you warned us, saying, ‘Set bounds around the mountain, and sanctify it.’”",
+      "ko": "모세가 여호와께 고하되 주께서 우리에게 명하여 이르시기를 산 사면에 지경을 세워 산을 거룩하게 하라 하셨사온즉 백성이 시내산에 오르지 못하리이다",
+      "source_text_hash": "a260ecf48369d47e8c80643c6cf6a8209e48155ae7a95e5c25626eb2f43c28d3",
+      "translation_text_hash": "ebb1aa9762662b9be5d8ae6bd9db00863b2a843314d820408d7e4837d742f69b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 고하되 주께서 우리에게 명하여 이르시기를 산 사면에 지경을 세워 산을 거룩하게 하라 하셨사온즉 백성이 시내산에 오르지 못하리이다"
+      ],
+      "raw_text_hashes": [
+        "ebb1aa9762662b9be5d8ae6bd9db00863b2a843314d820408d7e4837d742f69b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:24",
+      "sequence": 2051,
+      "chapter_label": "EXO 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD said to him, “Go down! You shall bring Aaron up with you, but don’t let the priests and the people break through to come up to the LORD, lest he break out against them.”",
+      "ko": "여호와께서 그에게 이르시되 가라 너는 내려가서 아론과 함께 올라 오고 제사장들과 백성에게는 돌파하고 나 여호와에게로 올라오지 못하게 하라 내가 그들을 돌격할까 하노라",
+      "source_text_hash": "1436ae949c9c17bc134406ea029cc383694c1b84f6badc1556a73d5e22cc3770",
+      "translation_text_hash": "19a0d4d5a5edc6dd23b40cc874980412f4a7240846717be90c870e287dcc1802",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 가라 너는 내려가서 아론과 함께 올라 오고 제사장들과 백성에게는 돌파하고 나 여호와에게로 올라오지 못하게 하라 내가 그들을 돌격할까 하노라"
+      ],
+      "raw_text_hashes": [
+        "19a0d4d5a5edc6dd23b40cc874980412f4a7240846717be90c870e287dcc1802"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:19:25",
+      "sequence": 2052,
+      "chapter_label": "EXO 19",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 19,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 19,
+          "verse": 25
+        }
+      ],
+      "en": "So Moses went down to the people, and told them.",
+      "ko": "모세가 백성에게 내려가서 그들에게 고하니라",
+      "source_text_hash": "24732362de6dcdfe81793695f7e69da11be145fef7d9bac3c24ecf2cd46a6966",
+      "translation_text_hash": "3c4fc9951b8884390e838eb6fa0e86cbf5e904f1ae4f7bb2581f5bc53e714961",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 백성에게 내려가서 그들에게 고하니라"
+      ],
+      "raw_text_hashes": [
+        "3c4fc9951b8884390e838eb6fa0e86cbf5e904f1ae4f7bb2581f5bc53e714961"
+      ]
+    }
+  ]
+}

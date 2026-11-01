@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:048",
+  "unit_ordinal": 850,
+  "unit_label": "EZK 48",
+  "book_code": "EZK",
+  "chapter_number": 48,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:48:1",
+      "sequence": 21704,
+      "chapter_label": "EZK 48",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 1
+        }
+      ],
+      "en": "“Now these are the names of the tribes: From the north end, beside the way of Hethlon to the entrance of Hamath, Hazar Enan at the border of Damascus, northward beside Hamath (and they shall have their sides east and west), Dan, one portion.",
+      "ko": "모든 지파의 이름대로 이 같을찌니라 극북에서부터 헤들론 길로 말미암아 하맛 어귀를 지나서 다메섹 지계에 있는 하살에논까지 곧 북으로 하맛 지계에 미치는 땅 동편에서 서편까지는 단의 분깃이요",
+      "source_text_hash": "fe0fe47d16c21a79d1c841fed12aa1434f99b0e7bb8429240df5ef9a0c21caba",
+      "translation_text_hash": "46f903d6ba9d775dcd7a6548e8e0eea07c2a66cac8ccf286f23941775457ebb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 지파의 이름대로 이 같을찌니라 극북에서부터 헤들론 길로 말미암아 하맛 어귀를 지나서 다메섹 지계에 있는 하살에논까지 곧 북으로 하맛 지계에 미치는 땅 동편에서 서편까지는 단의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "46f903d6ba9d775dcd7a6548e8e0eea07c2a66cac8ccf286f23941775457ebb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:2",
+      "sequence": 21705,
+      "chapter_label": "EZK 48",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 2
+        }
+      ],
+      "en": "“By the border of Dan, from the east side to the west side, Asher, one portion.",
+      "ko": "단 지계 다음으로 동편에서 서편까지는 아셀의 분깃이요",
+      "source_text_hash": "55e1a4770b13a6f91ddeeaf4feb869143a90a176acfe913b94ad4fe5bb3cf16a",
+      "translation_text_hash": "8ebdb260f510ceb19276680f2253e2b689231b4a1954dc1c168a3b4f190fe1e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 지계 다음으로 동편에서 서편까지는 아셀의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "8ebdb260f510ceb19276680f2253e2b689231b4a1954dc1c168a3b4f190fe1e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:3",
+      "sequence": 21706,
+      "chapter_label": "EZK 48",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 3
+        }
+      ],
+      "en": "“By the border of Asher, from the east side even to the west side, Naphtali, one portion.",
+      "ko": "아셀 지계 다음으로 동편에서 서편까지는 납달리의 분깃이요",
+      "source_text_hash": "92b7fec2dd01eba270f865bff1d3b883ea140f8ecfc7367e13e58174c0964bac",
+      "translation_text_hash": "545f88bfb3e687e4075dffa6f139d9ee176611aea96e5cd0e7d603fb0c231462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지계 다음으로 동편에서 서편까지는 납달리의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "545f88bfb3e687e4075dffa6f139d9ee176611aea96e5cd0e7d603fb0c231462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:4",
+      "sequence": 21707,
+      "chapter_label": "EZK 48",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 4
+        }
+      ],
+      "en": "“By the border of Naphtali, from the east side to the west side, Manasseh, one portion.",
+      "ko": "납달리 지계 다음으로 동편에서 서편까지는 므낫세의 분깃이요",
+      "source_text_hash": "d88492b61e0e3dc1d7a0e6528e9aa16a2e87129b277f06a489c12983d777d94f",
+      "translation_text_hash": "7136a77f647f824a21d7817415ae6a2a96defe19fd645e058f9afb86e824a4a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 지계 다음으로 동편에서 서편까지는 므낫세의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "7136a77f647f824a21d7817415ae6a2a96defe19fd645e058f9afb86e824a4a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:5",
+      "sequence": 21708,
+      "chapter_label": "EZK 48",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 5
+        }
+      ],
+      "en": "“By the border of Manasseh, from the east side to the west side, Ephraim, one portion.",
+      "ko": "므낫세 지계 다음으로 동편에서 서편까지는 에브라임의 분깃이요",
+      "source_text_hash": "5149450840f28e297e59e7fcd997e62bfcd905698a9beafaa8af08db26c9981f",
+      "translation_text_hash": "0b86543a0d26cdcc9840aaa77595b4ddb15dc66793627addb2cb379c2b948eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세 지계 다음으로 동편에서 서편까지는 에브라임의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "0b86543a0d26cdcc9840aaa77595b4ddb15dc66793627addb2cb379c2b948eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:6",
+      "sequence": 21709,
+      "chapter_label": "EZK 48",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 6
+        }
+      ],
+      "en": "“By the border of Ephraim, from the east side even to the west side, Reuben, one portion.",
+      "ko": "에브라임 지계 다음으로 동편에서 서편까지는 르우벤의 분깃이요",
+      "source_text_hash": "96d6de554a7babab409f96f556b1af3609e98197e2c9c35aac84bf2cb1965e81",
+      "translation_text_hash": "00bf1402215ddbf3bcc29d5c707c4cc53c1c59c4dbbf1e53395337ec77f237ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 지계 다음으로 동편에서 서편까지는 르우벤의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "00bf1402215ddbf3bcc29d5c707c4cc53c1c59c4dbbf1e53395337ec77f237ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:7",
+      "sequence": 21710,
+      "chapter_label": "EZK 48",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 7
+        }
+      ],
+      "en": "“By the border of Reuben, from the east side to the west side, Judah, one portion.",
+      "ko": "르우벤 지계 다음으로 동편에서 서편까지는 유다의 분깃이요",
+      "source_text_hash": "d1b7565195d898b01ecacfc35375c3d5101f775837979364c2da3e1ddb68e6dc",
+      "translation_text_hash": "33f8a6b5e151d9e05efbf6fb4b0f7c93af88a1597b0e10c9e11b528c39d7d7ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 지계 다음으로 동편에서 서편까지는 유다의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "33f8a6b5e151d9e05efbf6fb4b0f7c93af88a1597b0e10c9e11b528c39d7d7ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:8",
+      "sequence": 21711,
+      "chapter_label": "EZK 48",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 8
+        }
+      ],
+      "en": "“By the border of Judah, from the east side to the west side, shall be the offering which you shall offer, twenty-five thousand reeds in width, and in length as one of the portions, from the east side to the west side; and the sanctuary shall be in the middle of it.",
+      "ko": "유다 지계 다음으로 동편에서 서편까지는 너희가 예물로 드릴 땅이라 광이 이만 오천척이요 장은 다른 분깃의 동편에서 서편까지와 같고 성소는 그 중앙에 있을찌니",
+      "source_text_hash": "6b656cd2179e876f8d3ad0eea7b9e253137955b982176da5dae5c219d2ec6e60",
+      "translation_text_hash": "237d22b076e34b61248f50c6b034d2b1ddc747966711949fcc2d9013eb9542fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 지계 다음으로 동편에서 서편까지는 너희가 예물로 드릴 땅이라 광이 이만 오천척이요 장은 다른 분깃의 동편에서 서편까지와 같고 성소는 그 중앙에 있을찌니"
+      ],
+      "raw_text_hashes": [
+        "237d22b076e34b61248f50c6b034d2b1ddc747966711949fcc2d9013eb9542fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:9",
+      "sequence": 21712,
+      "chapter_label": "EZK 48",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 9
+        }
+      ],
+      "en": "“The offering that you shall offer to the LORD shall be twenty-five thousand reeds in length, and ten thousand in width.",
+      "ko": "곧 너희가 여호와께 드려 예물로 삼을 땅의 장이 이만 오천척이요 광이 일만척이라",
+      "source_text_hash": "503cf095c61c8b452639174f30e4d8494a8b9d76e7946c44412ae0a48add79d6",
+      "translation_text_hash": "e45240fa2da301e74a405a51bdc692e48de3cf4366ab9c686c4665dedb44dc92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 너희가 여호와께 드려 예물로 삼을 땅의 장이 이만 오천척이요 광이 일만척이라"
+      ],
+      "raw_text_hashes": [
+        "e45240fa2da301e74a405a51bdc692e48de3cf4366ab9c686c4665dedb44dc92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:10",
+      "sequence": 21713,
+      "chapter_label": "EZK 48",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 10
+        }
+      ],
+      "en": "For these, even for the priests, shall be the holy offering: toward the north twenty-five thousand in length, and toward the west ten thousand in width, and toward the east ten thousand in width, and toward the south twenty-five thousand in length; and the sanctuary of the LORD shall be in the middle of it.",
+      "ko": "이 드리는 거룩한 땅은 제사장에게 돌릴찌니 북편으로 장이 이만 오천척이요 서편으로 광이 일만척이요 동편으로 광이 일만척이요 남편으로 장이 이만 오천척이라 그 중앙에 여호와의 성소가 있게 하고",
+      "source_text_hash": "24f0a4149b58b418db6b911598ec90009292f3c97c12dccbe5e6514e77e42dc7",
+      "translation_text_hash": "a2441495bacd11e42ad7fdf83512b9e51b3fb4a7507e026e1d40f81f04de1f9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 드리는 거룩한 땅은 제사장에게 돌릴찌니 북편으로 장이 이만 오천척이요 서편으로 광이 일만척이요 동편으로 광이 일만척이요 남편으로 장이 이만 오천척이라 그 중앙에 여호와의 성소가 있게 하고"
+      ],
+      "raw_text_hashes": [
+        "a2441495bacd11e42ad7fdf83512b9e51b3fb4a7507e026e1d40f81f04de1f9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:11",
+      "sequence": 21714,
+      "chapter_label": "EZK 48",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 11
+        }
+      ],
+      "en": "It shall be for the priests who are sanctified of the sons of Zadok, who have kept my instruction, who didn’t go astray when the children of Israel went astray, as the Levites went astray.",
+      "ko": "이 땅으로 사독의 자손 중 거룩히 구별한 제사장에게 돌릴찌어다 그들은 직분을 지키고 이스라엘 족속이 그릇할 때에 레위 사람의 그릇한 것처럼 그릇하지 아니하였느니라",
+      "source_text_hash": "7f92bfe63b13be2bbce4d429c62d0098b548d9f4d3dde11d5e1099994301cc89",
+      "translation_text_hash": "4f4b3fd55c1be1ae7ae8a0aefa61dc655217a404a4e8d1ce45de97ea69eb447f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅으로 사독의 자손 중 거룩히 구별한 제사장에게 돌릴찌어다 그들은 직분을 지키고 이스라엘 족속이 그릇할 때에 레위 사람의 그릇한 것처럼 그릇하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4f4b3fd55c1be1ae7ae8a0aefa61dc655217a404a4e8d1ce45de97ea69eb447f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:12",
+      "sequence": 21715,
+      "chapter_label": "EZK 48",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 12
+        }
+      ],
+      "en": "It shall be to them an offering from the offering of the land, a most holy thing, by the border of the Levites.",
+      "ko": "이 온 땅 중에서 예물로 드리는 땅 곧 레위 지계와 연접한 땅을 그들이 지극히 거룩한 것으로 여길찌니라",
+      "source_text_hash": "0f467307bb903b60f0b0262b09f1b959c4aba6324f2411fc480f6d3f14479422",
+      "translation_text_hash": "bc6d2ef71b0a69f927d31276f5b6792ae19f3f4bc4a87cb19d8b92e7761c75f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 온 땅 중에서 예물로 드리는 땅 곧 레위 지계와 연접한 땅을 그들이 지극히 거룩한 것으로 여길찌니라"
+      ],
+      "raw_text_hashes": [
+        "bc6d2ef71b0a69f927d31276f5b6792ae19f3f4bc4a87cb19d8b92e7761c75f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:13",
+      "sequence": 21716,
+      "chapter_label": "EZK 48",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 13
+        }
+      ],
+      "en": "“Alongside the border of the priests, the Levites shall have twenty-five thousand cubits in length and ten thousand in width. All the length shall be twenty-five thousand, and the width ten thousand.",
+      "ko": "제사장의 지계를 따라 레위 사람의 분깃을 주되 장이 이만 오천척이요 광이 일만척으로 할찌니 이 구역의 장이 이만 오천척이요 광이 각기 일만척이라",
+      "source_text_hash": "18a257f79a2607a5778f79fc890954f4dd99b8cb199a969656dad41806a89b33",
+      "translation_text_hash": "58a4153ae31afdf8fadb9fff9756808fd7adfbde64a7544327f67987a6f1475e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 지계를 따라 레위 사람의 분깃을 주되 장이 이만 오천척이요 광이 일만척으로 할찌니 이 구역의 장이 이만 오천척이요 광이 각기 일만척이라"
+      ],
+      "raw_text_hashes": [
+        "58a4153ae31afdf8fadb9fff9756808fd7adfbde64a7544327f67987a6f1475e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:14",
+      "sequence": 21717,
+      "chapter_label": "EZK 48",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 14
+        }
+      ],
+      "en": "They shall sell none of it, nor exchange it, nor shall the first fruits of the land be alienated, for it is holy to the LORD.",
+      "ko": "그들이 그 땅을 팔지도 못하며 바꾸지도 못하며 그 땅의 처음 익은 열매를 남에게 주지도 못하리니 이는 나 여호와에게 거룩히 구별한 것임이니라",
+      "source_text_hash": "d40f8e347c9b26ec1a0395faad2f82b89fbba9f02c5aee0e58c24743809808d3",
+      "translation_text_hash": "b3c05d95479fd062d1556efe9bb206a78de053d42c1ed56e86e71dc6e0997367",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 땅을 팔지도 못하며 바꾸지도 못하며 그 땅의 처음 익은 열매를 남에게 주지도 못하리니 이는 나 여호와에게 거룩히 구별한 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "b3c05d95479fd062d1556efe9bb206a78de053d42c1ed56e86e71dc6e0997367"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:15",
+      "sequence": 21718,
+      "chapter_label": "EZK 48",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 15
+        }
+      ],
+      "en": "“The five thousand cubits that are left in the width, in front of the twenty-five thousand, shall be for common use, for the city, for dwelling and for pasture lands; and the city shall be in the middle of it.",
+      "ko": "이 이만 오천척 다음으로 광 오천척은 속된 땅으로 하여 성읍을 세우며 거하는 곳과 들을 삼되 성이 그 중앙에 있게 할찌니",
+      "source_text_hash": "16d14d81f6ccecb69f15677c187683dfd264f09a34cd9e5f24fe145440c1bf38",
+      "translation_text_hash": "796ed76da8a4b39e6b63c2186d1c0d172b369da52ba79427eb955cc960fb0390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 이만 오천척 다음으로 광 오천척은 속된 땅으로 하여 성읍을 세우며 거하는 곳과 들을 삼되 성이 그 중앙에 있게 할찌니"
+      ],
+      "raw_text_hashes": [
+        "796ed76da8a4b39e6b63c2186d1c0d172b369da52ba79427eb955cc960fb0390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:16",
+      "sequence": 21719,
+      "chapter_label": "EZK 48",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 16
+        }
+      ],
+      "en": "These shall be its measurements: the north side four thousand and five hundred, and the south side four thousand and five hundred, and on the east side four thousand and five hundred, and the west side four thousand and five hundred.",
+      "ko": "그 척수는 북편도 사천 오백척이요 남편도 사천 오백척이요 동편도 사천 오백척이요 서편도 사천 오백척이며",
+      "source_text_hash": "11fa66c59930acb7a7a543df6ff81bd9101e20cea3977df3cba200eff2e42c4b",
+      "translation_text_hash": "79bae898389a820d62d7019b2442068623b8acce360ceb28342ed73e1f3a6e41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 척수는 북편도 사천 오백척이요 남편도 사천 오백척이요 동편도 사천 오백척이요 서편도 사천 오백척이며"
+      ],
+      "raw_text_hashes": [
+        "79bae898389a820d62d7019b2442068623b8acce360ceb28342ed73e1f3a6e41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:17",
+      "sequence": 21720,
+      "chapter_label": "EZK 48",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 17
+        }
+      ],
+      "en": "The city shall have pasture lands: toward the north two hundred fifty, and toward the south two hundred fifty, and toward the east two hundred fifty, and toward the west two hundred fifty.",
+      "ko": "그 성의 들은 북으로 이백 오십척이요 남으로 이백 오십척이요 동으로 이백 오십척이요 서으로 이백 오십척이며",
+      "source_text_hash": "81e7913f4daf667acca8c211d47467b892c7b16f31e81df4f83d639eec30ecc3",
+      "translation_text_hash": "a46ff1b3583975048f1f281340e062554458b84b2e3b9b36214f5515d1707634",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성의 들은 북으로 이백 오십척이요 남으로 이백 오십척이요 동으로 이백 오십척이요 서으로 이백 오십척이며"
+      ],
+      "raw_text_hashes": [
+        "a46ff1b3583975048f1f281340e062554458b84b2e3b9b36214f5515d1707634"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:18",
+      "sequence": 21721,
+      "chapter_label": "EZK 48",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 18
+        }
+      ],
+      "en": "The remainder of the length, alongside the holy offering, shall be ten thousand eastward and ten thousand westward; and it shall be alongside the holy offering. Its increase shall be for food to those who labor in the city.",
+      "ko": "예물을 삼아 거룩히 구별할 땅과 연접하여 남아 있는 땅의 장이 동으로 일만척이요 서으로 일만척이라 곧 예물을 삼아 거룩히 구별할 땅과 연접하였으며 그 땅의 소산은 성읍에서 역사하는 자의 양식을 삼을찌라",
+      "source_text_hash": "b28d70efc2167876aecc1fa2e3547032b4c7a67cc18a0e94bd47a8808c327a17",
+      "translation_text_hash": "01817be2a540897dbd3e675d900508d5d841b122c145b3b4b5c5dcde9b89a1f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예물을 삼아 거룩히 구별할 땅과 연접하여 남아 있는 땅의 장이 동으로 일만척이요 서으로 일만척이라 곧 예물을 삼아 거룩히 구별할 땅과 연접하였으며 그 땅의 소산은 성읍에서 역사하는 자의 양식을 삼을찌라"
+      ],
+      "raw_text_hashes": [
+        "01817be2a540897dbd3e675d900508d5d841b122c145b3b4b5c5dcde9b89a1f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:19",
+      "sequence": 21722,
+      "chapter_label": "EZK 48",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 19
+        }
+      ],
+      "en": "Those who labor in the city, out of all the tribes of Israel, shall cultivate it.",
+      "ko": "이스라엘 모든 지파 중에 그 성읍에서 역사하는 자는 그 땅을 기경할찌니라",
+      "source_text_hash": "424eb516b5115b34a703607a751c398192d06647cdd657ee1318ed6af3e1110e",
+      "translation_text_hash": "96d3bbe5abb5e79ed05c5b51dcf93a137b8e4d3a443fc13892fd971923b947f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파 중에 그 성읍에서 역사하는 자는 그 땅을 기경할찌니라"
+      ],
+      "raw_text_hashes": [
+        "96d3bbe5abb5e79ed05c5b51dcf93a137b8e4d3a443fc13892fd971923b947f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:20",
+      "sequence": 21723,
+      "chapter_label": "EZK 48",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 20
+        }
+      ],
+      "en": "All the offering shall be a square of twenty-five thousand by twenty-five thousand. You shall offer it as a holy offering, with the possession of the city.",
+      "ko": "그런즉 예물로 드리는 땅의 도합은 장도 이만 오천척이요 광도 이만 오천척이라 너희가 거룩히 구별하여 드릴 땅은 성읍의 기지와 합하여 네모 반듯할 것이니라",
+      "source_text_hash": "16456b5159816e4543601e300f191c8a7105c8ceae6469c48639d3f6188ec58d",
+      "translation_text_hash": "0deaac0b10347e47f7fb6dd71f32b98973df8cf02b55e053ef083586da6e577e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 예물로 드리는 땅의 도합은 장도 이만 오천척이요 광도 이만 오천척이라 너희가 거룩히 구별하여 드릴 땅은 성읍의 기지와 합하여 네모 반듯할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "0deaac0b10347e47f7fb6dd71f32b98973df8cf02b55e053ef083586da6e577e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:21",
+      "sequence": 21724,
+      "chapter_label": "EZK 48",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 21
+        }
+      ],
+      "en": "“The remainder shall be for the prince, on the one side and on the other of the holy offering and of the possession of the city; in front of the twenty-five thousand of the offering toward the east border, and westward in front of the twenty-five thousand toward the west border, alongside the portions, it shall be for the prince. The holy offering and the sanctuary of the house shall be in the middle of it.",
+      "ko": "거룩히 구별할 땅과 성읍의 기지 좌우편에 남은 땅은 왕에게 돌릴찌니 곧 거룩히 구별할 땅의 동향한 그 지계 앞 이만 오천척과 서향한 그 지계 앞 이만 오천척이라 다른 분깃들과 연접한 땅이니 이것을 왕에게 돌릴 것이며 거룩히 구별할 땅과 전의 성소가 그 중간에 있으리라",
+      "source_text_hash": "89fa555c62b50a8af4928ebfb906bc039498146d200a64344fc53f4332b1c954",
+      "translation_text_hash": "868262811d3402339c10bcfcff6c6e8615befc1c7ba71b1b973f209acc02b20a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩히 구별할 땅과 성읍의 기지 좌우편에 남은 땅은 왕에게 돌릴찌니 곧 거룩히 구별할 땅의 동향한 그 지계 앞 이만 오천척과 서향한 그 지계 앞 이만 오천척이라 다른 분깃들과 연접한 땅이니 이것을 왕에게 돌릴 것이며 거룩히 구별할 땅과 전의 성소가 그 중간에 있으리라"
+      ],
+      "raw_text_hashes": [
+        "868262811d3402339c10bcfcff6c6e8615befc1c7ba71b1b973f209acc02b20a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:22",
+      "sequence": 21725,
+      "chapter_label": "EZK 48",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 22
+        }
+      ],
+      "en": "Moreover, from the possession of the Levites, and from the possession of the city, being in the middle of that which is the prince’s, between the border of Judah and the border of Benjamin, shall be for the prince.",
+      "ko": "그런즉 왕에게 돌려 그에게 속할 땅은 레위 사람의 기업 좌우편과 성읍의 기지 좌우편이며 유다 지경과 베냐민 지경 사이에 있을찌니라",
+      "source_text_hash": "e96bdeaad6a9a9ea67ae9b4639edf18ac670d99161e123cd25ae74ce6e842094",
+      "translation_text_hash": "a906550f2226bc3cde94858fcba18b792dd4576d31fb0c708b504cd7e4dba22e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 왕에게 돌려 그에게 속할 땅은 레위 사람의 기업 좌우편과 성읍의 기지 좌우편이며 유다 지경과 베냐민 지경 사이에 있을찌니라"
+      ],
+      "raw_text_hashes": [
+        "a906550f2226bc3cde94858fcba18b792dd4576d31fb0c708b504cd7e4dba22e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:23",
+      "sequence": 21726,
+      "chapter_label": "EZK 48",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 23
+        }
+      ],
+      "en": "“As for the rest of the tribes: from the east side to the west side, Benjamin, one portion.",
+      "ko": "그 나머지 모든 지파는 동편에서 서편까지는 베냐민의 분깃이요",
+      "source_text_hash": "e44ec4c92cfdac8f65e0a5e90837d3ca85df6c89ae7d349137bc291aaabf541f",
+      "translation_text_hash": "d9b543fae3f6f8350449c2c0cb942b5f929902e14a033d4e7803da3154666492",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지 모든 지파는 동편에서 서편까지는 베냐민의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "d9b543fae3f6f8350449c2c0cb942b5f929902e14a033d4e7803da3154666492"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:24",
+      "sequence": 21727,
+      "chapter_label": "EZK 48",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 24
+        }
+      ],
+      "en": "“By the border of Benjamin, from the east side to the west side, Simeon, one portion.",
+      "ko": "베냐민 지계 다음으로 동편에서 서편까지는 시므온의 분깃이요",
+      "source_text_hash": "08419aed697fc65543ef9534a453e20c42a9062b66bdc7b5cd38c2e5ec0fe2bc",
+      "translation_text_hash": "14950a6e30649c85bd3b4c13c389cf8b9a36d19e9d121376a06b60792b7cedf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 지계 다음으로 동편에서 서편까지는 시므온의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "14950a6e30649c85bd3b4c13c389cf8b9a36d19e9d121376a06b60792b7cedf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:25",
+      "sequence": 21728,
+      "chapter_label": "EZK 48",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 25
+        }
+      ],
+      "en": "“By the border of Simeon, from the east side to the west side, Issachar, one portion.",
+      "ko": "시므온 지계 다음으로 동편에서 서편까지는 잇사갈의 분깃이요",
+      "source_text_hash": "1bf0ecaddb61965c09552246634dc020deb06e9674f07099ab47a21bbe0805f8",
+      "translation_text_hash": "af9e7bc488af6f3516bb2d3c51bf1f207c99910f3ef3a5ca69667ee19152d260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 지계 다음으로 동편에서 서편까지는 잇사갈의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "af9e7bc488af6f3516bb2d3c51bf1f207c99910f3ef3a5ca69667ee19152d260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:26",
+      "sequence": 21729,
+      "chapter_label": "EZK 48",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 26
+        }
+      ],
+      "en": "“By the border of Issachar, from the east side to the west side, Zebulun, one portion.",
+      "ko": "잇사갈 지계 다음으로 동편에서 서편까지는 스불론의 분깃이요",
+      "source_text_hash": "860b05b1b6c643e1bdca9e609b5cc59172b475fbfe8e7ea882b19f9cb52a5bd6",
+      "translation_text_hash": "823edafb82a06e61d25beacaf37699991e546a48deb7cb7ca21bdcbc06107fb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 지계 다음으로 동편에서 서편까지는 스불론의 분깃이요"
+      ],
+      "raw_text_hashes": [
+        "823edafb82a06e61d25beacaf37699991e546a48deb7cb7ca21bdcbc06107fb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:27",
+      "sequence": 21730,
+      "chapter_label": "EZK 48",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 27
+        }
+      ],
+      "en": "“By the border of Zebulun, from the east side to the west side, Gad, one portion.",
+      "ko": "스불론 지계 다음으로 동편에서 서편까지는 갓의 분깃이며",
+      "source_text_hash": "c90a6467da1dc6c8fdd3c612d496db1dca5cc9625ae65ccebbb44a96d1ca4880",
+      "translation_text_hash": "d21fbe8ae323ec26e4b5ee0636009e78be95094ff8cd95e4dce3a02367b9c723",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 지계 다음으로 동편에서 서편까지는 갓의 분깃이며"
+      ],
+      "raw_text_hashes": [
+        "d21fbe8ae323ec26e4b5ee0636009e78be95094ff8cd95e4dce3a02367b9c723"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:28",
+      "sequence": 21731,
+      "chapter_label": "EZK 48",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 28
+        }
+      ],
+      "en": "“By the border of Gad, at the south side southward, the border shall be even from Tamar to the waters of Meribath Kadesh, to the brook, to the great sea.",
+      "ko": "갓 지계 다음으로 남편 지계는 다말에서부터 므리바가데스 물에 이르고 애굽 시내를 따라 대해에 이르나니",
+      "source_text_hash": "a0fc601c431ace9445cb4e4d44eef85803ce146f4beaa308901a5d567b38645b",
+      "translation_text_hash": "c874f83552fef0fa07ca65b2049056532ae37d621c7525b4f7979a7895dc3028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 지계 다음으로 남편 지계는 다말에서부터 므리바가데스 물에 이르고 애굽 시내를 따라 대해에 이르나니"
+      ],
+      "raw_text_hashes": [
+        "c874f83552fef0fa07ca65b2049056532ae37d621c7525b4f7979a7895dc3028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:29",
+      "sequence": 21732,
+      "chapter_label": "EZK 48",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 29
+        }
+      ],
+      "en": "“This is the land which you shall divide by lot to the tribes of Israel for inheritance, and these are their several portions, says the Lord GOD.",
+      "ko": "이것은 너희가 제비 뽑아 이스라엘 지파에게 나누어 주어 기업이 되게 할 땅이요 또 이것들은 그들의 분깃이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "e22dee2efe0ee82803e2cfe225e966d11ed0e7ab9330b2ef00c79f3ac4174de5",
+      "translation_text_hash": "fc5a2fbf8f92d301597c27478f569666f8c9caeabc155302745f654e1d5ca2ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것은 너희가 제비 뽑아 이스라엘 지파에게 나누어 주어 기업이 되게 할 땅이요 또 이것들은 그들의 분깃이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "fc5a2fbf8f92d301597c27478f569666f8c9caeabc155302745f654e1d5ca2ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:30",
+      "sequence": 21733,
+      "chapter_label": "EZK 48",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 30
+        }
+      ],
+      "en": "“These are the exits of the city: On the north side four thousand five hundred reeds by measure;",
+      "ko": "그 성읍의 출입구는 이러하니라 북편의 광이 사천 오백척이라",
+      "source_text_hash": "3c3c3f5d38485dea70719c705ce15acbac2866eb542e103eae740dd6c9361f29",
+      "translation_text_hash": "807858fdadf12486ca586eb58d10ab4959cfb9c315a78954e93fc0758e0d1fdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍의 출입구는 이러하니라 북편의 광이 사천 오백척이라"
+      ],
+      "raw_text_hashes": [
+        "807858fdadf12486ca586eb58d10ab4959cfb9c315a78954e93fc0758e0d1fdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:31",
+      "sequence": 21734,
+      "chapter_label": "EZK 48",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 31
+        }
+      ],
+      "en": "and the gates of the city shall be named after the tribes of Israel, three gates northward: the gate of Reuben, one; the gate of Judah, one; the gate of Levi, one.",
+      "ko": "그 성읍의 문들은 이스라엘 지파들의 이름을 따를 것인데 북으로 문이 셋이라 하나는 르우벤 문이요 하나는 유다 문이요 하나는 레위 문이며",
+      "source_text_hash": "8fb3d46e69be5143eec074d5a93d5e473d2b15c796debfc28b735b4c967807c5",
+      "translation_text_hash": "eea62eef31717d30582db954ff0049ccdc63f1cb820770f1417e6443a046b9f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍의 문들은 이스라엘 지파들의 이름을 따를 것인데 북으로 문이 셋이라 하나는 르우벤 문이요 하나는 유다 문이요 하나는 레위 문이며"
+      ],
+      "raw_text_hashes": [
+        "eea62eef31717d30582db954ff0049ccdc63f1cb820770f1417e6443a046b9f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:32",
+      "sequence": 21735,
+      "chapter_label": "EZK 48",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 32
+        }
+      ],
+      "en": "“At the east side four thousand five hundred reeds, and three gates: even the gate of Joseph, one; the gate of Benjamin, one; the gate of Dan, one.",
+      "ko": "동편의 광이 사천 오백척이니 또한 문이 셋이라 하나는 요셉 문이요 하나는 베냐민 문이요 하나는 단 문이며",
+      "source_text_hash": "0506b3be72f2c31baf44835e46e06c8cec229cab4b24b27afbc7b60dc4797a06",
+      "translation_text_hash": "77010a595f9d234d5393ac23b2db0ab4119a1828f1e6d84d38860ee2165038cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동편의 광이 사천 오백척이니 또한 문이 셋이라 하나는 요셉 문이요 하나는 베냐민 문이요 하나는 단 문이며"
+      ],
+      "raw_text_hashes": [
+        "77010a595f9d234d5393ac23b2db0ab4119a1828f1e6d84d38860ee2165038cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:33",
+      "sequence": 21736,
+      "chapter_label": "EZK 48",
+      "verse_label": "33",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 33
+        }
+      ],
+      "en": "“At the south side four thousand five hundred reeds by measure, and three gates: the gate of Simeon, one; the gate of Issachar, one; the gate of Zebulun, one.",
+      "ko": "남편의 광이 사천 오백척이니 또한 문이 셋이라 하나는 시므온 문이요 하나는 잇사갈 문이요 하나는 스불론 문이며",
+      "source_text_hash": "faa913f299298f7754903cb0d6ee4311fe93b2f52a48d5e02323d144b06e8771",
+      "translation_text_hash": "ad30a1d6c036bf5ec22a1b7d0e7a41592068ba2bfeb34d8707acff0538317212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편의 광이 사천 오백척이니 또한 문이 셋이라 하나는 시므온 문이요 하나는 잇사갈 문이요 하나는 스불론 문이며"
+      ],
+      "raw_text_hashes": [
+        "ad30a1d6c036bf5ec22a1b7d0e7a41592068ba2bfeb34d8707acff0538317212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:34",
+      "sequence": 21737,
+      "chapter_label": "EZK 48",
+      "verse_label": "34",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 34
+        }
+      ],
+      "en": "“At the west side four thousand five hundred reeds, with their three gates: the gate of Gad, one; the gate of Asher, one; the gate of Naphtali, one.",
+      "ko": "서편도 사천 오백척이니 또한 문이 셋이라 하나는 갓 문이요 하나는 아셀 문이요 하나는 납달리 문이며",
+      "source_text_hash": "0569b167d4818303facdcce6975ab8f77a31b672376e067569d2d4a30a462ae7",
+      "translation_text_hash": "d478420ce4bc375534c020a5f1e1c50c6ba821e4075788a0b2344a1aa2da9f30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편도 사천 오백척이니 또한 문이 셋이라 하나는 갓 문이요 하나는 아셀 문이요 하나는 납달리 문이며"
+      ],
+      "raw_text_hashes": [
+        "d478420ce4bc375534c020a5f1e1c50c6ba821e4075788a0b2344a1aa2da9f30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:48:35",
+      "sequence": 21738,
+      "chapter_label": "EZK 48",
+      "verse_label": "35",
+      "locator": {
+        "book": "EZK",
+        "chapter": 48,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 48,
+          "verse": 35
+        }
+      ],
+      "en": "“It shall be eighteen thousand reeds in circumference; and the name of the city from that day shall be, ‘The LORD is there.’",
+      "ko": "그 사면의 도합이 일만 팔천척이라 그 날 후로는 그 성읍의 이름을 여호와삼마라 하리라",
+      "source_text_hash": "41f6aacc3f182b7328e60079f354799f47bf564e6009e799f85e7fb41696c93b",
+      "translation_text_hash": "459b1d27ccd900b564bc582fc38504f0a7e67f6f15997fbe85845db76e2334f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사면의 도합이 일만 팔천척이라 그 날 후로는 그 성읍의 이름을 여호와삼마라 하리라"
+      ],
+      "raw_text_hashes": [
+        "459b1d27ccd900b564bc582fc38504f0a7e67f6f15997fbe85845db76e2334f6"
+      ]
+    }
+  ]
+}

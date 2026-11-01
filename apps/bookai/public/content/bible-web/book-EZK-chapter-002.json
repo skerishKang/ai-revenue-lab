@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:002",
+  "unit_ordinal": 804,
+  "unit_label": "EZK 2",
+  "book_code": "EZK",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:2:1",
+      "sequence": 20494,
+      "chapter_label": "EZK 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "He said to me, “Son of man, stand on your feet, and I will speak with you.”",
+      "ko": "그가 내게 이르시되 인자야 일어서라 내가 네게 말하리라 하시며",
+      "source_text_hash": "dfe2c92a2986caf66d7c8d8c7830c3501d203137ad62880ad9cb5473cabb6137",
+      "translation_text_hash": "cdb9fdde589339ff78ea481175c5e11b5903c608e0aaea8883576bbfcf16e806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르시되 인자야 일어서라 내가 네게 말하리라 하시며"
+      ],
+      "raw_text_hashes": [
+        "cdb9fdde589339ff78ea481175c5e11b5903c608e0aaea8883576bbfcf16e806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:2",
+      "sequence": 20495,
+      "chapter_label": "EZK 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The Spirit entered into me when he spoke to me, and set me on my feet; and I heard him who spoke to me.",
+      "ko": "말씀하실 때에 그 신이 내게 임하사 나를 일으켜 세우시기로 내가 그 말씀하시는 자의 소리를 들으니",
+      "source_text_hash": "bca34e67adee9f556a292dd4bce133b0f3fa6f222ecc9152f9469a94bd82ae58",
+      "translation_text_hash": "0c74a898efe9acb6171ad24a65fa59e068c739a05984947d0fa1dac9152062ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀하실 때에 그 신이 내게 임하사 나를 일으켜 세우시기로 내가 그 말씀하시는 자의 소리를 들으니"
+      ],
+      "raw_text_hashes": [
+        "0c74a898efe9acb6171ad24a65fa59e068c739a05984947d0fa1dac9152062ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:3",
+      "sequence": 20496,
+      "chapter_label": "EZK 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "He said to me, “Son of man, I send you to the children of Israel, to a nation of rebels who have rebelled against me. They and their fathers have transgressed against me even to this very day.",
+      "ko": "내게 이르시되 인자야 내가 너를 이스라엘 자손 곧 패역한 백성, 나를 배반하는 자에게 보내노라 그들과 그 열조가 내게 범죄하여 오늘날까지 이르렀나니",
+      "source_text_hash": "0d067a333551995193c81baa0be69e584a4b9513bcd3b02fa13ab91d9bdc76c6",
+      "translation_text_hash": "0afdafc8e95c1adc368d5dbca33065eeb23ebfe8f1e804114dbef44f93c131ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 인자야 내가 너를 이스라엘 자손 곧 패역한 백성, 나를 배반하는 자에게 보내노라 그들과 그 열조가 내게 범죄하여 오늘날까지 이르렀나니"
+      ],
+      "raw_text_hashes": [
+        "0afdafc8e95c1adc368d5dbca33065eeb23ebfe8f1e804114dbef44f93c131ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:4",
+      "sequence": 20497,
+      "chapter_label": "EZK 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "The children are impudent and stiff-hearted. I am sending you to them, and you shall tell them, ‘This is what the Lord GOD says.’",
+      "ko": "이 자손은 얼굴이 뻔뻔하고 마음이 강퍅한 자니라 내가 너를 그들에게 보내노니 너는 그들에게 이르기를 주 여호와의 말씀이 이러하시다 하라",
+      "source_text_hash": "e897a90598df728cd9a6a5a54bc3443d7b665f0be5831c90822cbdb13563a628",
+      "translation_text_hash": "1c5e804e306fcc0b812b51fa8b67b59151a54804c5e580b71e385147fcf329a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 자손은 얼굴이 뻔뻔하고 마음이 강퍅한 자니라 내가 너를 그들에게 보내노니 너는 그들에게 이르기를 주 여호와의 말씀이 이러하시다 하라"
+      ],
+      "raw_text_hashes": [
+        "1c5e804e306fcc0b812b51fa8b67b59151a54804c5e580b71e385147fcf329a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:5",
+      "sequence": 20498,
+      "chapter_label": "EZK 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "They, whether they will hear, or whether they will refuse—for they are a rebellious house—yet they will know that there has been a prophet among them.",
+      "ko": "그들은 패역한 족속이라 듣든지 아니 듣든지 그들 가운데 선지자 있은 줄은 알찌니라",
+      "source_text_hash": "748f9bf095f34af3ed386e467c95aae5a4727088a041525b782ffa2ccc624ffb",
+      "translation_text_hash": "6cdf34546986a6d5f35186ccb4513f51276706dbd63a80bc6a0d2812ce6559e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 패역한 족속이라 듣든지 아니 듣든지 그들 가운데 선지자 있은 줄은 알찌니라"
+      ],
+      "raw_text_hashes": [
+        "6cdf34546986a6d5f35186ccb4513f51276706dbd63a80bc6a0d2812ce6559e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:6",
+      "sequence": 20499,
+      "chapter_label": "EZK 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "You, son of man, don’t be afraid of them, neither be afraid of their words, though briers and thorns are with you, and you dwell among scorpions. Don’t be afraid of their words, nor be dismayed at their looks, though they are a rebellious house.",
+      "ko": "인자야 너는 비록 가시와 찔레와 함께 처하며 전갈 가운데 거할찌라도 그들을 두려워 말고 그 말을 두려워 말찌어다 그들은 패역한 족속이라도 그 말을 두려워 말며 그 얼굴을 무서워 말찌어다",
+      "source_text_hash": "b3d94bab7f8d6a3f6d556f2b7b6f92a1b86bbddcd8c1cee9e62ffcbed75e5f34",
+      "translation_text_hash": "a3b5f6de964ae41476a6ce8e4f93a137796a5335c238283b4bd75d4123cd75b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 비록 가시와 찔레와 함께 처하며 전갈 가운데 거할찌라도 그들을 두려워 말고 그 말을 두려워 말찌어다 그들은 패역한 족속이라도 그 말을 두려워 말며 그 얼굴을 무서워 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "a3b5f6de964ae41476a6ce8e4f93a137796a5335c238283b4bd75d4123cd75b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:7",
+      "sequence": 20500,
+      "chapter_label": "EZK 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "You shall speak my words to them, whether they will hear or whether they will refuse; for they are most rebellious.",
+      "ko": "그들은 심히 패역한 자라 듣든지 아니 듣든지 너는 내 말로 고할찌어다",
+      "source_text_hash": "08411531350abf0871f24a276e5404697420c4d80de7d00db5517a4ca95242bb",
+      "translation_text_hash": "8cd42b791dcc30a1eb720ed5b81d374b1b3ae2a00c7465fe4dcf9d1cf94a08e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 심히 패역한 자라 듣든지 아니 듣든지 너는 내 말로 고할찌어다"
+      ],
+      "raw_text_hashes": [
+        "8cd42b791dcc30a1eb720ed5b81d374b1b3ae2a00c7465fe4dcf9d1cf94a08e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:8",
+      "sequence": 20501,
+      "chapter_label": "EZK 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "But you, son of man, hear what I tell you. Don’t be rebellious like that rebellious house. Open your mouth, and eat that which I give you.”",
+      "ko": "인자야 내가 네게 이르는 말을 듣고 그 패역한 족속 같이 패역하지 말고 네 입을 벌리고 내가 네게 주는 것을 먹으라 하시기로",
+      "source_text_hash": "3e7ab0aee6711c864c487e51b6f267d6bfc3f9bd80e6a1dc6c1c27d990f50ae7",
+      "translation_text_hash": "381838d5521cc61677d938f6298ea8b67c8d7904603cc300b62e207463336a83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 네게 이르는 말을 듣고 그 패역한 족속 같이 패역하지 말고 네 입을 벌리고 내가 네게 주는 것을 먹으라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "381838d5521cc61677d938f6298ea8b67c8d7904603cc300b62e207463336a83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:9",
+      "sequence": 20502,
+      "chapter_label": "EZK 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "When I looked, behold, a hand was stretched out to me; and behold, a scroll of a book was in it.",
+      "ko": "내가 보니 한 손이 나를 향하여 펴지고 그 손에 두루마리 책이 있더라",
+      "source_text_hash": "b5f7f2794770ebdfc9de4e247b63ab8d0eaede1fa2997fa1a8806cc294ef5fd5",
+      "translation_text_hash": "6d40bea21a40140aa373c00dae3313657cefbe58da50d4d686607539532bd2ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보니 한 손이 나를 향하여 펴지고 그 손에 두루마리 책이 있더라"
+      ],
+      "raw_text_hashes": [
+        "6d40bea21a40140aa373c00dae3313657cefbe58da50d4d686607539532bd2ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:2:10",
+      "sequence": 20503,
+      "chapter_label": "EZK 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "He spread it before me. It was written within and without; and lamentations, mourning, and woe were written in it.",
+      "ko": "그가 그것을 내 앞에 펴시니 그 안팎에 글이 있는데 애가와 애곡과 재앙의 말이 기록되었더라",
+      "source_text_hash": "b265ef419f23996adf15f15b17f554a206b0b5e72ff20f5c14ce422bd5213cd2",
+      "translation_text_hash": "3e4c555afb2b63809710198f9d54ab4bac1a39ee0c1affa3a1f0750d84b62028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그것을 내 앞에 펴시니 그 안팎에 글이 있는데 애가와 애곡과 재앙의 말이 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "3e4c555afb2b63809710198f9d54ab4bac1a39ee0c1affa3a1f0750d84b62028"
+      ]
+    }
+  ]
+}

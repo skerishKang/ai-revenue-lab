@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:039",
+  "unit_ordinal": 718,
+  "unit_label": "ISA 39",
+  "book_code": "ISA",
+  "chapter_number": 39,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:39:1",
+      "sequence": 18414,
+      "chapter_label": "ISA 39",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 1
+        }
+      ],
+      "en": "At that time, Merodach-baladan the son of Baladan, king of Babylon, sent letters and a present to Hezekiah, for he heard that he had been sick, and had recovered.",
+      "ko": "그 때에 발라단의 아들 바벨론 왕 므로닥발라단이 히스기야가 병 들었다가 나았다 함을 듣고 글과 예물을 보낸지라",
+      "source_text_hash": "b6f55bc598b2d6477959445f33047074898f5950e5bbc78e3882461b55247e4e",
+      "translation_text_hash": "b196dd03aba1ee9c53fdb837f7ef8b69bd672fbf3685c2b95d2a30857192a039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 발라단의 아들 바벨론 왕 므로닥발라단이 히스기야가 병 들었다가 나았다 함을 듣고 글과 예물을 보낸지라"
+      ],
+      "raw_text_hashes": [
+        "b196dd03aba1ee9c53fdb837f7ef8b69bd672fbf3685c2b95d2a30857192a039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:2",
+      "sequence": 18415,
+      "chapter_label": "ISA 39",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 2
+        }
+      ],
+      "en": "Hezekiah was pleased with them, and showed them the house of his precious things, the silver, the gold, the spices, and the precious oil, and all the house of his armor, and all that was found in his treasures. There was nothing in his house, nor in all his dominion, that Hezekiah didn’t show them.",
+      "ko": "히스기야가 사자를 인하여 기뻐하여 그에게 궁중 보물 곧 은금과 향료와 보배로운 기름과 모든 무기고와 보물고에 있는 것을 다 보였으니 궁중의 소유와 전 국내의 소유를 보이지 아니한 것이 없은지라",
+      "source_text_hash": "b354d2b70769d52f5fcde77b9639d047215fd882c3e9f404ccb87011f16410f3",
+      "translation_text_hash": "2b8af97448b2f953ff3b59af1c93d9b1ddf500975afca1c5ba9aa56ad59049c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 사자를 인하여 기뻐하여 그에게 궁중 보물 곧 은금과 향료와 보배로운 기름과 모든 무기고와 보물고에 있는 것을 다 보였으니 궁중의 소유와 전 국내의 소유를 보이지 아니한 것이 없은지라"
+      ],
+      "raw_text_hashes": [
+        "2b8af97448b2f953ff3b59af1c93d9b1ddf500975afca1c5ba9aa56ad59049c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:3",
+      "sequence": 18416,
+      "chapter_label": "ISA 39",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 3
+        }
+      ],
+      "en": "Then Isaiah the prophet came to King Hezekiah, and asked him, “What did these men say? From where did they come to you?” Hezekiah said, “They have come from a country far from me, even from Babylon.”",
+      "ko": "이에 선지자 이사야가 히스기야왕에게 나아와 묻되 그 사람들이 무슨 말을 하였으며 어디서 왕에게 왔나이까 히스기야가 가로되 그들이 원방 곧 바벨론에서 내게 왔나이다",
+      "source_text_hash": "26dba62ec482437b933c4c4ac564e4195dbef4708b89c6b6dfdaed73406491ce",
+      "translation_text_hash": "1193325268a1cdb24e5578adc188e20c7da803daca999dbd7a6fd76d150fde55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 선지자 이사야가 히스기야왕에게 나아와 묻되 그 사람들이 무슨 말을 하였으며 어디서 왕에게 왔나이까 히스기야가 가로되 그들이 원방 곧 바벨론에서 내게 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "1193325268a1cdb24e5578adc188e20c7da803daca999dbd7a6fd76d150fde55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:4",
+      "sequence": 18417,
+      "chapter_label": "ISA 39",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 4
+        }
+      ],
+      "en": "Then he asked, “What have they seen in your house?” Hezekiah answered, “They have seen all that is in my house. There is nothing among my treasures that I have not shown them.”",
+      "ko": "이사야가 가로되 그들이 왕의 궁전에서 무엇을 보았나이까 히스기야가 대답하되 그들이 내 궁전에 있는 것을 다 보았나이다 내 보물은 보이지 아니한 것이 하나도 없나이다",
+      "source_text_hash": "95eba2ab27e117555f75ba24ce6a7d3a8c547ccdfe6b972535c42024a5b15445",
+      "translation_text_hash": "e004c11089bc610bfe2ba5fb65b8deec2ed160ea7ccd925e5d8e7b75b028f720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 가로되 그들이 왕의 궁전에서 무엇을 보았나이까 히스기야가 대답하되 그들이 내 궁전에 있는 것을 다 보았나이다 내 보물은 보이지 아니한 것이 하나도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "e004c11089bc610bfe2ba5fb65b8deec2ed160ea7ccd925e5d8e7b75b028f720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:5",
+      "sequence": 18418,
+      "chapter_label": "ISA 39",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 5
+        }
+      ],
+      "en": "Then Isaiah said to Hezekiah, “Hear the word of the LORD of Armies:",
+      "ko": "이사야가 히스기야에게 이르되 왕은 만군의 여호와의 말씀을 들으소서",
+      "source_text_hash": "0115c4adde3c1b2fe5421d91069c227eaca9601465d2b2183b8be113e527e951",
+      "translation_text_hash": "85a909b1bc5ab490a64271832510cb8de2f5ce8ee4a3dc57d9df8ce2bf4736cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 히스기야에게 이르되 왕은 만군의 여호와의 말씀을 들으소서"
+      ],
+      "raw_text_hashes": [
+        "85a909b1bc5ab490a64271832510cb8de2f5ce8ee4a3dc57d9df8ce2bf4736cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:6",
+      "sequence": 18419,
+      "chapter_label": "ISA 39",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 6
+        }
+      ],
+      "en": "‘Behold, the days are coming when all that is in your house, and that which your fathers have stored up until today, will be carried to Babylon. Nothing will be left,’ says the LORD.",
+      "ko": "보라 날이 이르리니 네 집에 있는 모든 소유와 네 열조가 오늘까지 쌓아둔 것이 모두 바벨론으로 옮긴바 되고 남을 것이 없으리라 여호와의 말이니라",
+      "source_text_hash": "f00c31be0d91be1c80bbb57f1e543b7386233ff985953cfcd1d67aa9db86e0b0",
+      "translation_text_hash": "75fcaf9af0699f1647a627e8e5ad89f272c2b1e2f546d722097cb484d8f5d299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 날이 이르리니 네 집에 있는 모든 소유와 네 열조가 오늘까지 쌓아둔 것이 모두 바벨론으로 옮긴바 되고 남을 것이 없으리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "75fcaf9af0699f1647a627e8e5ad89f272c2b1e2f546d722097cb484d8f5d299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:7",
+      "sequence": 18420,
+      "chapter_label": "ISA 39",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 7
+        }
+      ],
+      "en": "‘They will take away your sons who will issue from you, whom you shall father, and they will be eunuchs in the king of Babylon’s palace.’”",
+      "ko": "또 네게서 날 자손 중에서 몇이 사로잡혀 바벨론 왕궁의 환관이 되리라 하셨나이다",
+      "source_text_hash": "319ed8fee57b34598637e018380eaf501bfcb7f856f7459580739865f839d443",
+      "translation_text_hash": "78a0a9d36f72169cdbcd1daf318554033eadcd8448536367a137919580a35214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네게서 날 자손 중에서 몇이 사로잡혀 바벨론 왕궁의 환관이 되리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "78a0a9d36f72169cdbcd1daf318554033eadcd8448536367a137919580a35214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:39:8",
+      "sequence": 18421,
+      "chapter_label": "ISA 39",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 39,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 39,
+          "verse": 8
+        }
+      ],
+      "en": "Then Hezekiah said to Isaiah, “The LORD’s word which you have spoken is good.” He said moreover, “For there will be peace and truth in my days.”",
+      "ko": "히스기야가 이사야에게 이르되 당신의 이른바 여호와의 말씀이 좋소이다 또 가로되 나의 생전에는 평안과 견고함이 있으리로다 하니라",
+      "source_text_hash": "07fe9180481c3e72da6f85e2b182d89c793f1d3d48a4c72804c00ee18e29300a",
+      "translation_text_hash": "af529b317aae756995cb7fa0c72e5aebc8c31aeb73b67509c0fa4723ff62544b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 이사야에게 이르되 당신의 이른바 여호와의 말씀이 좋소이다 또 가로되 나의 생전에는 평안과 견고함이 있으리로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "af529b317aae756995cb7fa0c72e5aebc8c31aeb73b67509c0fa4723ff62544b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,365 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:004",
+  "unit_ordinal": 1171,
+  "unit_label": "REV 4",
+  "book_code": "REV",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:4:1",
+      "sequence": 30766,
+      "chapter_label": "REV 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "After these things I looked and saw a door opened in heaven; and the first voice that I heard, like a trumpet speaking with me, was one saying, “Come up here, and I will show you the things which must happen after this.”",
+      "ko": "이 일 후에 내가 보니 하늘에 열린 문이 있는데 내가 들은바 처음에 내게 말하던 나팔소리 같은 그 음성이 가로되 이리로 올라오라 이 후에 마땅히 될 일을 내가 네게 보이리라 하시더라",
+      "source_text_hash": "8c69918afaeeb2928b7d5cab8f4e53715604b2a4e26c515f1b1b8e7399605b99",
+      "translation_text_hash": "afa7276dcff8bdbcfe48e87f2dd18f62b3ce5c61138513d3770746532a8d4f75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 내가 보니 하늘에 열린 문이 있는데 내가 들은바 처음에 내게 말하던 나팔소리 같은 그 음성이 가로되 이리로 올라오라 이 후에 마땅히 될 일을 내가 네게 보이리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "afa7276dcff8bdbcfe48e87f2dd18f62b3ce5c61138513d3770746532a8d4f75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:2",
+      "sequence": 30767,
+      "chapter_label": "REV 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Immediately I was in the Spirit. Behold, there was a throne set in heaven, and one sitting on the throne",
+      "ko": "내가 곧 성령에 감동하였더니 보라 하늘에 보좌를 베풀었고 그 보좌 위에 앉으신 이가 있는데",
+      "source_text_hash": "a714aee26def15c59da04e2e41775abd2e051cd2e8ff7772df7de076cc437afd",
+      "translation_text_hash": "e05f146cbc467508278537a5add82b00c1ec1621472440c6c3da80a664efd6c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 곧 성령에 감동하였더니 보라 하늘에 보좌를 베풀었고 그 보좌 위에 앉으신 이가 있는데"
+      ],
+      "raw_text_hashes": [
+        "e05f146cbc467508278537a5add82b00c1ec1621472440c6c3da80a664efd6c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:3",
+      "sequence": 30768,
+      "chapter_label": "REV 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "that looked like a jasper stone and a sardius. There was a rainbow around the throne, like an emerald to look at.",
+      "ko": "앉으신 이의 모양이 벽옥과 홍보석 같고 또 무지개가 있어 보좌에 둘렸는데 그 모양이 녹보석 같더라",
+      "source_text_hash": "76b1d9a6df660db31c9dc38d29f04d26cde992b6b7d685db24239c9f897aa842",
+      "translation_text_hash": "aa0f93b6e6868c9ccc787818a38050fd3ad6a27db5d59e15614b2b85670d0367",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앉으신 이의 모양이 벽옥과 홍보석 같고 또 무지개가 있어 보좌에 둘렸는데 그 모양이 녹보석 같더라"
+      ],
+      "raw_text_hashes": [
+        "aa0f93b6e6868c9ccc787818a38050fd3ad6a27db5d59e15614b2b85670d0367"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:4",
+      "sequence": 30769,
+      "chapter_label": "REV 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Around the throne were twenty-four thrones. On the thrones were twenty-four elders sitting, dressed in white garments, with crowns of gold on their heads.",
+      "ko": "또 보좌에 둘려 이십 사 보좌들이 있고 그 보좌들 위에 이십 사 장로들이 흰 옷을 입고 머리에 금 면류관을 쓰고 앉았더라",
+      "source_text_hash": "384774b5fb660565bad82717b53031377df0f45530d063c8b0340ff8829343af",
+      "translation_text_hash": "82a55a528fa27f14851c0a98946c73c3609078d43e6f7555ba1abd03ddde966a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보좌에 둘려 이십 사 보좌들이 있고 그 보좌들 위에 이십 사 장로들이 흰 옷을 입고 머리에 금 면류관을 쓰고 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "82a55a528fa27f14851c0a98946c73c3609078d43e6f7555ba1abd03ddde966a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:5",
+      "sequence": 30770,
+      "chapter_label": "REV 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Out of the throne proceed lightnings, sounds, and thunders. There were seven lamps of fire burning before his throne, which are the seven Spirits of God.",
+      "ko": "보좌로부터 번개와 음성과 뇌성이 나고 보좌 앞에 일곱 등불 켠것이 있으니 이는 하나님의 일곱 영이라",
+      "source_text_hash": "f8683a8be87d439dbbe4ee824d5e8118abe7a95cc593ef0b475bd3a0631d93a5",
+      "translation_text_hash": "37c8ff416fb3b615c3ed69f3e9472bea3ba600f2e621ee69ec88373a8b8bfee3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보좌로부터 번개와 음성과 뇌성이 나고 보좌 앞에 일곱 등불 켠것이 있으니 이는 하나님의 일곱 영이라"
+      ],
+      "raw_text_hashes": [
+        "37c8ff416fb3b615c3ed69f3e9472bea3ba600f2e621ee69ec88373a8b8bfee3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:6",
+      "sequence": 30771,
+      "chapter_label": "REV 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Before the throne was something like a sea of glass, similar to crystal. In the middle of the throne, and around the throne were four living creatures full of eyes before and behind.",
+      "ko": "보좌 앞에 수정과 같은 유리 바다가 있고 보좌 가운데와 보좌 주위에 네 생물이 있는데 앞뒤에 눈이 가득하더라",
+      "source_text_hash": "db74afc0e96ede96d5ecf5a724fddd42cca10fbdbd18f85703442d6daeb5cf30",
+      "translation_text_hash": "1e0801c8e7deab25dc00af7f2d4436c79f5eb7601d7c01c3e644571d0c11707f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보좌 앞에 수정과 같은 유리 바다가 있고 보좌 가운데와 보좌 주위에 네 생물이 있는데 앞뒤에 눈이 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "1e0801c8e7deab25dc00af7f2d4436c79f5eb7601d7c01c3e644571d0c11707f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:7",
+      "sequence": 30772,
+      "chapter_label": "REV 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "The first creature was like a lion, the second creature like a calf, the third creature had a face like a man, and the fourth was like a flying eagle.",
+      "ko": "그 첫째 생물은 사자 같고 그 둘째 생물은 송아지 같고 그 세째 생물은 얼굴이 사람 같고 그 네째 생물은 날아가는 독수리 같은데",
+      "source_text_hash": "8f2f3f849f9f8b2d681358efbcee216483f226513ba661aeb69f061e870b5fb0",
+      "translation_text_hash": "a432870b2140a07ac938ed369784c5697be36a8c38567c2601e7bc0aa4ff2983",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첫째 생물은 사자 같고 그 둘째 생물은 송아지 같고 그 세째 생물은 얼굴이 사람 같고 그 네째 생물은 날아가는 독수리 같은데"
+      ],
+      "raw_text_hashes": [
+        "a432870b2140a07ac938ed369784c5697be36a8c38567c2601e7bc0aa4ff2983"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:8",
+      "sequence": 30773,
+      "chapter_label": "REV 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "The four living creatures, each one of them having six wings, are full of eyes around and within. They have no rest day and night, saying, “Holy, holy, holy is the Lord God, the Almighty, who was and who is and who is to come!”",
+      "ko": "네 생물이 각각 여섯 날개가 있고 그 안과 주위에 눈이 가득하더라 그들이 밤낮 쉬지 않고 이르기를 거룩하다 거룩하다 거룩하다 주 하나님 곧 전능하신 이여 전에도 계셨고 이제도 계시고 장차 오실 자라 하고",
+      "source_text_hash": "934679801cfd586f05367022d76f5c9f91e5b0ab9fea95d362c9305bd7621723",
+      "translation_text_hash": "67f1dfa5a36715e194f421f7cdc4229625214fb6f09ca874db840726a61dc945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생물이 각각 여섯 날개가 있고 그 안과 주위에 눈이 가득하더라 그들이 밤낮 쉬지 않고 이르기를 거룩하다 거룩하다 거룩하다 주 하나님 곧 전능하신 이여 전에도 계셨고 이제도 계시고 장차 오실 자라 하고"
+      ],
+      "raw_text_hashes": [
+        "67f1dfa5a36715e194f421f7cdc4229625214fb6f09ca874db840726a61dc945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:9",
+      "sequence": 30774,
+      "chapter_label": "REV 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "When the living creatures give glory, honor, and thanks to him who sits on the throne, to him who lives forever and ever,",
+      "ko": "그 생물들이 영광과 존귀와 감사를 보좌에 앉으사 세세토록 사시는 이에게 돌릴 때에",
+      "source_text_hash": "bca5f545d4047849c920cce082d3f3c407b6f7ae5f45c91f90e2c8fa79f235fb",
+      "translation_text_hash": "43f03e903fd74fb43121f3f3024862e539768e84de2839ce5192265b2fda2505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 생물들이 영광과 존귀와 감사를 보좌에 앉으사 세세토록 사시는 이에게 돌릴 때에"
+      ],
+      "raw_text_hashes": [
+        "43f03e903fd74fb43121f3f3024862e539768e84de2839ce5192265b2fda2505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:10",
+      "sequence": 30775,
+      "chapter_label": "REV 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "the twenty-four elders fall down before him who sits on the throne and worship him who lives forever and ever, and throw their crowns before the throne, saying,",
+      "ko": "이십사 장로들이 보좌에 앉으신 이 앞에 엎드려 세세토록 사시는 이에게 경배하고 자기의 면류관을 보좌 앞에 던지며 가로되",
+      "source_text_hash": "97d9cbb98eba1f90b97c676982f7e9c1e46bd5873a1f472dada59c6a93e518b2",
+      "translation_text_hash": "a5a76cf4300cdca94497471be6956adeb02fd07fce7a39f09f1a582a72599e85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이십사 장로들이 보좌에 앉으신 이 앞에 엎드려 세세토록 사시는 이에게 경배하고 자기의 면류관을 보좌 앞에 던지며 가로되"
+      ],
+      "raw_text_hashes": [
+        "a5a76cf4300cdca94497471be6956adeb02fd07fce7a39f09f1a582a72599e85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:4:11",
+      "sequence": 30776,
+      "chapter_label": "REV 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "“Worthy are you, our Lord and God, the Holy One, to receive the glory, the honor, and the power, for you created all things, and because of your desire they existed and were created!”",
+      "ko": "우리 주 하나님이여 영광과 존귀와 능력을 받으시는 것이 합당하오니 주께서 만물을 지으신지라 만물이 주의 뜻대로 있었고 또 지으심을 받았나이다 하더라",
+      "source_text_hash": "8c5d3a89f671af739ccc101455547b9d42a62d89643bc572cd46553e8a44badf",
+      "translation_text_hash": "85f0678d9619b67ddcf1974db36fa4eba803434e235514c99ede070c2e809850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 하나님이여 영광과 존귀와 능력을 받으시는 것이 합당하오니 주께서 만물을 지으신지라 만물이 주의 뜻대로 있었고 또 지으심을 받았나이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "85f0678d9619b67ddcf1974db36fa4eba803434e235514c99ede070c2e809850"
+      ]
+    }
+  ]
+}

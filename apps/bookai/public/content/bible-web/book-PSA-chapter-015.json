@@ -1,0 +1,173 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:015",
+  "unit_ordinal": 493,
+  "unit_label": "PSA 15",
+  "book_code": "PSA",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:15:1",
+      "sequence": 14089,
+      "chapter_label": "PSA 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "LORD, who shall dwell in your sanctuary? Who shall live on your holy hill?",
+      "ko": "여호와여 주의 장막에 유할 자 누구오며 주의 성산에 거할 자 누구오니이까",
+      "source_text_hash": "1f3481bb061bcd1a123a9b542ffcb3d22eae57a1bacf2ca97cc0b7b38856cdc4",
+      "translation_text_hash": "6c4d9a250c7e5c74d1ecdd51cb55bf0dc3c26a890a3957431a82ff0437eb113b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 장막에 유할 자 누구오며 주의 성산에 거할 자 누구오니이까"
+      ],
+      "raw_text_hashes": [
+        "6c4d9a250c7e5c74d1ecdd51cb55bf0dc3c26a890a3957431a82ff0437eb113b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:15:2",
+      "sequence": 14090,
+      "chapter_label": "PSA 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "He who walks blamelessly and does what is right, and speaks truth in his heart;",
+      "ko": "정직하게 행하며 공의를 일삼으며 그 마음에 진실을 말하며",
+      "source_text_hash": "83936a9c101b20a343958397fca502f63ace647d2d05fd577f33e4059f72d9a4",
+      "translation_text_hash": "d6b1677c23eb21f78098f92b1b0c0aacdd7d92c032fc9d208b7d9a1ffafe99cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정직하게 행하며 공의를 일삼으며 그 마음에 진실을 말하며"
+      ],
+      "raw_text_hashes": [
+        "d6b1677c23eb21f78098f92b1b0c0aacdd7d92c032fc9d208b7d9a1ffafe99cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:15:3",
+      "sequence": 14091,
+      "chapter_label": "PSA 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "he who doesn’t slander with his tongue, nor does evil to his friend, nor casts slurs against his fellow man;",
+      "ko": "그 혀로 참소치 아니하고 그 벗에게 행악지 아니하며 그 이웃을 훼방치 아니하며",
+      "source_text_hash": "eaa716ef44cf4c7b7a448d8088d38acb397ffca9e1074a77ae2f1b883cc21edd",
+      "translation_text_hash": "84bf4a26b3f8270cab35dcfa5337be881b9246e4799a2f614cc5fc1dba5ae70e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 혀로 참소치 아니하고 그 벗에게 행악지 아니하며 그 이웃을 훼방치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "84bf4a26b3f8270cab35dcfa5337be881b9246e4799a2f614cc5fc1dba5ae70e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:15:4",
+      "sequence": 14092,
+      "chapter_label": "PSA 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "in whose eyes a vile man is despised, but who honors those who fear the LORD; he who keeps an oath even when it hurts, and doesn’t change;",
+      "ko": "그 눈은 망령된 자를 멸시하며 여호와를 두려워하는 자를 존대하며 그 마음에 서원한 것은 해로울찌라도 변치 아니하며",
+      "source_text_hash": "ad1c4db5a91bdc21f6d06f0171c79cc10d5d44d9aee7a8425ba1f63f5fd87c45",
+      "translation_text_hash": "3fa63ea0943f4abdd6ab2c5cded003f0286ab18a36df1570b8c9f5e8e2522a1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 눈은 망령된 자를 멸시하며 여호와를 두려워하는 자를 존대하며 그 마음에 서원한 것은 해로울찌라도 변치 아니하며"
+      ],
+      "raw_text_hashes": [
+        "3fa63ea0943f4abdd6ab2c5cded003f0286ab18a36df1570b8c9f5e8e2522a1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:15:5",
+      "sequence": 14093,
+      "chapter_label": "PSA 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "he who doesn’t lend out his money for usury, nor take a bribe against the innocent. He who does these things shall never be shaken.",
+      "ko": "변리로 대금치 아니하며 뇌물을 받고 무죄한 자를 해치 아니하는 자니 이런 일을 행하는 자는 영영히 요동치 아니하리이다",
+      "source_text_hash": "b0c62d0b8c49dbeb188b4a8189d21b9f9cce8d82befcb2ef70f92da19c42fffc",
+      "translation_text_hash": "c7bf5fff491b6f65394ca1072dcc0e394ae63dabb1f41a00e512b9d0255b1335",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "변리로 대금치 아니하며 뇌물을 받고 무죄한 자를 해치 아니하는 자니 이런 일을 행하는 자는 영영히 요동치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "c7bf5fff491b6f65394ca1072dcc0e394ae63dabb1f41a00e512b9d0255b1335"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:035",
+  "unit_ordinal": 85,
+  "unit_label": "EXO 35",
+  "book_code": "EXO",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:35:1",
+      "sequence": 2533,
+      "chapter_label": "EXO 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "Moses assembled all the congregation of the children of Israel, and said to them, “These are the words which the LORD has commanded, that you should do them.",
+      "ko": "모세가 이스라엘의 온 회중을 모으고 그들에게 이르되 여호와께서 너희에게 명하사 행하게 하신 말씀이 이러하니라",
+      "source_text_hash": "a10195279aea2151d738274adb6076c884cb97c763a2dfc6849e24436ab7475a",
+      "translation_text_hash": "fa431c786edfd98dc669ec4c4f24f4f8a24941edc53d2e90f29b0b53522c9d04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘의 온 회중을 모으고 그들에게 이르되 여호와께서 너희에게 명하사 행하게 하신 말씀이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "fa431c786edfd98dc669ec4c4f24f4f8a24941edc53d2e90f29b0b53522c9d04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:2",
+      "sequence": 2534,
+      "chapter_label": "EXO 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "‘Six days shall work be done, but on the seventh day there shall be a holy day for you, a Sabbath of solemn rest to the LORD: whoever does any work in it shall be put to death.",
+      "ko": "엿새 동안은 일하고 제 칠일은 너희에게 성일이니 여호와께 특별한 안식일이라 무릇 이날에 일하는 자를 죽일지니",
+      "source_text_hash": "42d5b141a88b412cb14b38a93e74398372906534e06b705939c0809323f1f2e0",
+      "translation_text_hash": "b19605c510c917bca0992e5ff20c1ff899a6189c30b489313ddc0a2700f7e856",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 동안은 일하고 제 칠일은 너희에게 성일이니 여호와께 특별한 안식일이라 무릇 이날에 일하는 자를 죽일지니"
+      ],
+      "raw_text_hashes": [
+        "b19605c510c917bca0992e5ff20c1ff899a6189c30b489313ddc0a2700f7e856"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:3",
+      "sequence": 2535,
+      "chapter_label": "EXO 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "You shall kindle no fire throughout your habitations on the Sabbath day.’”",
+      "ko": "안식일에는 너희의 모든 처소에서 불도 피우지 말지니라",
+      "source_text_hash": "c1561eb72482f44e10bddaf8224bcdd3d4fce4716d855420f18d454ae908bcdc",
+      "translation_text_hash": "aa3e083786874f33c18217a2a4345ae4842e91a900a0c1c0d93ef7bf76127f3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에는 너희의 모든 처소에서 불도 피우지 말지니라"
+      ],
+      "raw_text_hashes": [
+        "aa3e083786874f33c18217a2a4345ae4842e91a900a0c1c0d93ef7bf76127f3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:4",
+      "sequence": 2536,
+      "chapter_label": "EXO 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "Moses spoke to all the congregation of the children of Israel, saying, “This is the thing which the LORD commanded, saying,",
+      "ko": "모세가 이스라엘 자손의 온 회중에게 고하여 가로되 여호와의 명하신 일이 이러하니라 이르시기를",
+      "source_text_hash": "abaf2003a0a27df040bc89eb85cbffd244586db999b30df4186c782dafd5a036",
+      "translation_text_hash": "7a1600bc593769c4fcaa12d8b8ed45126509aebc1dd6a23184b82f7b53a65ce4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손의 온 회중에게 고하여 가로되 여호와의 명하신 일이 이러하니라 이르시기를"
+      ],
+      "raw_text_hashes": [
+        "7a1600bc593769c4fcaa12d8b8ed45126509aebc1dd6a23184b82f7b53a65ce4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:5",
+      "sequence": 2537,
+      "chapter_label": "EXO 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "‘Take from among you an offering to the LORD. Whoever is of a willing heart, let him bring it as the LORD’s offering: gold, silver, bronze,",
+      "ko": "너희의 소유 중에서 너희는 여호와께 드릴 것을 취하되 무릇 마음에 원하는 자는 그것을 가져다가 여호와께 드릴지니 곧 금과 은과 놋과",
+      "source_text_hash": "75597812ea0d309b53d5f46e27d978e02abffb6b1eff27506933841a2a36b9e0",
+      "translation_text_hash": "64a2a5630473b3806283897fc97cc95852e9ab91ddc443ef21fac5d5fb3a48ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 소유 중에서 너희는 여호와께 드릴 것을 취하되 무릇 마음에 원하는 자는 그것을 가져다가 여호와께 드릴지니 곧 금과 은과 놋과"
+      ],
+      "raw_text_hashes": [
+        "64a2a5630473b3806283897fc97cc95852e9ab91ddc443ef21fac5d5fb3a48ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:6",
+      "sequence": 2538,
+      "chapter_label": "EXO 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "blue, purple, scarlet, fine linen, goats’ hair,",
+      "ko": "청색 자색 홍색실과 가는 베실과 염소털과",
+      "source_text_hash": "ef3084ba42ecdd247353c39b1c9fd7bf67a14e4fbf5f96f4748bc09f77de616c",
+      "translation_text_hash": "e9ea5691c008b7028fa2aa4826423072b5744a74f61a480ab54eac7eb20f3cd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청색 자색 홍색실과 가는 베실과 염소털과"
+      ],
+      "raw_text_hashes": [
+        "e9ea5691c008b7028fa2aa4826423072b5744a74f61a480ab54eac7eb20f3cd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:7",
+      "sequence": 2539,
+      "chapter_label": "EXO 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "rams’ skins dyed red, sea cow hides, acacia wood,",
+      "ko": "붉은 물 들인 수양의 가죽과 해달의 가죽과 조각목과",
+      "source_text_hash": "f1c0df9fcf4e0a9458b4667765c3842f91cd4e07f825c34086673fadca19924d",
+      "translation_text_hash": "1fe68a5383c4982cbf8361034a68caa9a744a0c87f8ff4613d1baa7702e4fab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "붉은 물 들인 수양의 가죽과 해달의 가죽과 조각목과"
+      ],
+      "raw_text_hashes": [
+        "1fe68a5383c4982cbf8361034a68caa9a744a0c87f8ff4613d1baa7702e4fab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:8",
+      "sequence": 2540,
+      "chapter_label": "EXO 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "oil for the light, spices for the anointing oil and for the sweet incense,",
+      "ko": "등유와 및 관유에 드는 향품과 분향할 향을 만드는 향품과",
+      "source_text_hash": "8afdadf2dc6d8d85eddeeffc7b44209c86fe05bfe4328240a2e5a6dfcca89863",
+      "translation_text_hash": "a6f51e36cc1b4347b1d416a9d1988e6107e7c6e20ec4bfcb720d599957984a93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등유와 및 관유에 드는 향품과 분향할 향을 만드는 향품과"
+      ],
+      "raw_text_hashes": [
+        "a6f51e36cc1b4347b1d416a9d1988e6107e7c6e20ec4bfcb720d599957984a93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:9",
+      "sequence": 2541,
+      "chapter_label": "EXO 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "onyx stones, and stones to be set for the ephod and for the breastplate.",
+      "ko": "호마노며 에봇과 흉패에 물릴 보석이니라",
+      "source_text_hash": "2244d42d433411b7a401dbf758522be944f3759cec74c229803ed6e95c315935",
+      "translation_text_hash": "88953de6903016e368418762b6ddef7e4101d69579a488804abf9c27651c0a40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "호마노며 에봇과 흉패에 물릴 보석이니라"
+      ],
+      "raw_text_hashes": [
+        "88953de6903016e368418762b6ddef7e4101d69579a488804abf9c27651c0a40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:10",
+      "sequence": 2542,
+      "chapter_label": "EXO 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "“‘Let every wise-hearted man among you come, and make all that the LORD has commanded:",
+      "ko": "무릇 너희 중 마음이 지혜로운 자는 와서 여호와의 명하신 것을 다 만들지니",
+      "source_text_hash": "e6934055e108d98726b241ecfc4e07d0f1d36361640b4c480127effc343648b6",
+      "translation_text_hash": "9ecf71124a40fbb3670203bfb85dc1f004437775cbb719782e8bdf28a9fe6de3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 너희 중 마음이 지혜로운 자는 와서 여호와의 명하신 것을 다 만들지니"
+      ],
+      "raw_text_hashes": [
+        "9ecf71124a40fbb3670203bfb85dc1f004437775cbb719782e8bdf28a9fe6de3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:11",
+      "sequence": 2543,
+      "chapter_label": "EXO 35",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 11
+        }
+      ],
+      "en": "the tabernacle, its outer covering, its roof, its clasps, its boards, its bars, its pillars, and its sockets;",
+      "ko": "곧 성막과 그 막과 그 덮개와 그 갈고리와 그 널판과 그 띠와 그 기둥과 그 받침과",
+      "source_text_hash": "b4a7ca533e29b8b7807cfb221097f78d6b6a6aa090240862736b80cad7e885d5",
+      "translation_text_hash": "7051dc5cffab199275e63a8f12c27cbc32f2291f772736ae7e196892650fea65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 성막과 그 막과 그 덮개와 그 갈고리와 그 널판과 그 띠와 그 기둥과 그 받침과"
+      ],
+      "raw_text_hashes": [
+        "7051dc5cffab199275e63a8f12c27cbc32f2291f772736ae7e196892650fea65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:12",
+      "sequence": 2544,
+      "chapter_label": "EXO 35",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 12
+        }
+      ],
+      "en": "the ark, and its poles, the mercy seat, the veil of the screen;",
+      "ko": "증거궤와 그 채와 속죄소와 그 가리는 장과",
+      "source_text_hash": "a8ab1bdfda08f846262cb970546dcfc91c3a108c4c372f8b1d5dabd8cddfdc34",
+      "translation_text_hash": "fc24258bd130666fc255bcbaca341f27688658ee5ebb02fcfc9b423634c1a6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "증거궤와 그 채와 속죄소와 그 가리는 장과"
+      ],
+      "raw_text_hashes": [
+        "fc24258bd130666fc255bcbaca341f27688658ee5ebb02fcfc9b423634c1a6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:13",
+      "sequence": 2545,
+      "chapter_label": "EXO 35",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 13
+        }
+      ],
+      "en": "the table with its poles and all its vessels, and the show bread;",
+      "ko": "상과 그 채와 그 모든 기구와 진설병과",
+      "source_text_hash": "146e3860f263bef6a44d2e63e9f7244f6bb2bdacaa63976e8c77960309712e10",
+      "translation_text_hash": "cdb39db2482994acf365deea78c124f01772ecd51c69a8372d355e2b56f6ff16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상과 그 채와 그 모든 기구와 진설병과"
+      ],
+      "raw_text_hashes": [
+        "cdb39db2482994acf365deea78c124f01772ecd51c69a8372d355e2b56f6ff16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:14",
+      "sequence": 2546,
+      "chapter_label": "EXO 35",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 14
+        }
+      ],
+      "en": "the lamp stand also for the light, with its vessels, its lamps, and the oil for the light;",
+      "ko": "불 켜는 등대와 그 기구와 그 등잔과 등유와",
+      "source_text_hash": "d0e4f42710249a47fbcc45a75254e15d0342408158b2cdd1ffbc608b96fea950",
+      "translation_text_hash": "477c4d15bd49f92f16bafdec731a607dbeaca041581e11f189d4670ebd764d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불 켜는 등대와 그 기구와 그 등잔과 등유와"
+      ],
+      "raw_text_hashes": [
+        "477c4d15bd49f92f16bafdec731a607dbeaca041581e11f189d4670ebd764d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:15",
+      "sequence": 2547,
+      "chapter_label": "EXO 35",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 15
+        }
+      ],
+      "en": "and the altar of incense with its poles, the anointing oil, the sweet incense, the screen for the door, at the door of the tabernacle;",
+      "ko": "분향단과 그 채와 관유와 분향할 향품과 성막문의 장과",
+      "source_text_hash": "b7562add22d4586250ec6d404992280653d472bcbebceaade905df71c2b8eedb",
+      "translation_text_hash": "29dad5cc6bea91cab280b9a06534ee14191bc702cdb94119fdf9b1e166730ad0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분향단과 그 채와 관유와 분향할 향품과 성막문의 장과"
+      ],
+      "raw_text_hashes": [
+        "29dad5cc6bea91cab280b9a06534ee14191bc702cdb94119fdf9b1e166730ad0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:16",
+      "sequence": 2548,
+      "chapter_label": "EXO 35",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 16
+        }
+      ],
+      "en": "the altar of burnt offering, with its grating of bronze, its poles, and all its vessels, the basin and its base;",
+      "ko": "번제단과 그 놋 그물과 그 채와 그 모든 기구와 물두멍과 그 받침과",
+      "source_text_hash": "6983cce07ff4a9f3a1a358e0e4dc08f7d24a217b89df117ae06dea729b918a6f",
+      "translation_text_hash": "d8aee84d395a4f4619ef5e22975bb0f32f233dccd38c224965145f042c78e542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제단과 그 놋 그물과 그 채와 그 모든 기구와 물두멍과 그 받침과"
+      ],
+      "raw_text_hashes": [
+        "d8aee84d395a4f4619ef5e22975bb0f32f233dccd38c224965145f042c78e542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:17",
+      "sequence": 2549,
+      "chapter_label": "EXO 35",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 17
+        }
+      ],
+      "en": "the hangings of the court, its pillars, their sockets, and the screen for the gate of the court;",
+      "ko": "뜰의 포장과 그 기둥과 그 받침과 뜰문의 장과",
+      "source_text_hash": "e46d9f541269d2aeac45417db7e831f016b1178571cb21b57fad4e30d688b46c",
+      "translation_text_hash": "8ba0e3fcc42c9e619d1bacc67012501d379b7a6f6df917e99b37282658a003d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 포장과 그 기둥과 그 받침과 뜰문의 장과"
+      ],
+      "raw_text_hashes": [
+        "8ba0e3fcc42c9e619d1bacc67012501d379b7a6f6df917e99b37282658a003d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:18",
+      "sequence": 2550,
+      "chapter_label": "EXO 35",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 18
+        }
+      ],
+      "en": "the pins of the tabernacle, the pins of the court, and their cords;",
+      "ko": "장막 말뚝과 뜰의 포장 말뚝과 그 줄과",
+      "source_text_hash": "bd45fc2e86bea3be581c001e6540a205f6150c5719eb3cf08c5bcf084234efd5",
+      "translation_text_hash": "93eca118eb9c0e6a941c744149cdbcad7aa3e377e7594c02414372f88e551356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 말뚝과 뜰의 포장 말뚝과 그 줄과"
+      ],
+      "raw_text_hashes": [
+        "93eca118eb9c0e6a941c744149cdbcad7aa3e377e7594c02414372f88e551356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:19",
+      "sequence": 2551,
+      "chapter_label": "EXO 35",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 19
+        }
+      ],
+      "en": "the finely worked garments for ministering in the holy place—the holy garments for Aaron the priest, and the garments of his sons—to minister in the priest’s office.’”",
+      "ko": "성소에서 섬기기 위하여 공교히 만든 옷 곧 제사 직분을 행할 때에 입는 제사장 아론의 거룩한 옷과 그 아들들의 옷이니라",
+      "source_text_hash": "1e15217c0f7c418e83b8dfeb2b2e5787e272c175ca4ea8d6607fca0749ee0193",
+      "translation_text_hash": "171214cbe89dd3b0c6074f6f38aa31c55b840d38a1ccd0e134481a3b49f0a669",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소에서 섬기기 위하여 공교히 만든 옷 곧 제사 직분을 행할 때에 입는 제사장 아론의 거룩한 옷과 그 아들들의 옷이니라"
+      ],
+      "raw_text_hashes": [
+        "171214cbe89dd3b0c6074f6f38aa31c55b840d38a1ccd0e134481a3b49f0a669"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:20",
+      "sequence": 2552,
+      "chapter_label": "EXO 35",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 20
+        }
+      ],
+      "en": "All the congregation of the children of Israel departed from the presence of Moses.",
+      "ko": "이스라엘 자손의 온 회중이 모세 앞에서 물러갔더니",
+      "source_text_hash": "92beaed329d46860f054da2dcee26321d9e9e480d148f0e4434e2f287bcebb62",
+      "translation_text_hash": "c1b01ace0baa1e8c52233eabcae9aedee8b108533cf4291738f63433d31fb6f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중이 모세 앞에서 물러갔더니"
+      ],
+      "raw_text_hashes": [
+        "c1b01ace0baa1e8c52233eabcae9aedee8b108533cf4291738f63433d31fb6f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:21",
+      "sequence": 2553,
+      "chapter_label": "EXO 35",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 21
+        }
+      ],
+      "en": "They came, everyone whose heart stirred him up, and everyone whom his spirit made willing, and brought the LORD’s offering for the work of the Tent of Meeting, and for all of its service, and for the holy garments.",
+      "ko": "무릇 마음이 감동된 자와 무릇 자원하는 자가 와서 성막을 짓기 위하여 그 속에서 쓸 모든 것을 위하여, 거룩한 옷을 위하여 예물을 가져 여호와께 드렸으니",
+      "source_text_hash": "e1ff28a77fcab61f19beb34707caa88e6d9e7b140063e8bf487c338b419a6d45",
+      "translation_text_hash": "f26ac53854724af4841f511fc5f0594b225989d939c845c459980a6b370f0e8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 마음이 감동된 자와 무릇 자원하는 자가 와서 성막을 짓기 위하여 그 속에서 쓸 모든 것을 위하여, 거룩한 옷을 위하여 예물을 가져 여호와께 드렸으니"
+      ],
+      "raw_text_hashes": [
+        "f26ac53854724af4841f511fc5f0594b225989d939c845c459980a6b370f0e8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:22",
+      "sequence": 2554,
+      "chapter_label": "EXO 35",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 22
+        }
+      ],
+      "en": "They came, both men and women, as many as were willing-hearted, and brought brooches, earrings, signet rings, and armlets, all jewels of gold; even every man who offered an offering of gold to the LORD.",
+      "ko": "곧 마음에 원하는 남녀가 와서 가슴 핀과 귀고리와 가락지와 목거리와 여러가지 금품을 가져 왔으되 사람마다 여호와께 금 예물을 드렸으며",
+      "source_text_hash": "f21721803fd87ad154563beb173937e655a729dfc2dd279598ea139601fd9605",
+      "translation_text_hash": "c9540d7b20dbbf65dfa4a0b9729071a012ada47adb6de8ee27d4e870bb0222c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 마음에 원하는 남녀가 와서 가슴 핀과 귀고리와 가락지와 목거리와 여러가지 금품을 가져 왔으되 사람마다 여호와께 금 예물을 드렸으며"
+      ],
+      "raw_text_hashes": [
+        "c9540d7b20dbbf65dfa4a0b9729071a012ada47adb6de8ee27d4e870bb0222c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:23",
+      "sequence": 2555,
+      "chapter_label": "EXO 35",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 23
+        }
+      ],
+      "en": "Everyone with whom was found blue, purple, scarlet, fine linen, goats’ hair, rams’ skins dyed red, and sea cow hides, brought them.",
+      "ko": "무릇 청색 자색 홍색실과 가는 베실과 염소 털과 붉은 물 들인 수양의 가죽과 해달의 가죽이 있는 자도 가져 왔으며",
+      "source_text_hash": "b88a78a445f96bb7fc7f17873185ac708caaed08a5d6484ae32593d7ba082153",
+      "translation_text_hash": "55ba6986045b32270474106b277fba6b9e293c7b08cad6e4630d164bfd0986af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 청색 자색 홍색실과 가는 베실과 염소 털과 붉은 물 들인 수양의 가죽과 해달의 가죽이 있는 자도 가져 왔으며"
+      ],
+      "raw_text_hashes": [
+        "55ba6986045b32270474106b277fba6b9e293c7b08cad6e4630d164bfd0986af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:24",
+      "sequence": 2556,
+      "chapter_label": "EXO 35",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 24
+        }
+      ],
+      "en": "Everyone who offered an offering of silver and bronze brought the LORD’s offering; and everyone with whom was found acacia wood for any work of the service, brought it.",
+      "ko": "무릇 은과 놋으로 예물을 삼는 자는 가져다가 여호와께 드렸으며 무릇 섬기는 일에 소용되는 조각목이 있는 자는 가져 왔으며",
+      "source_text_hash": "dee7756faa6b0cad69e857c9243f044202113c6ab9d27c24d872ef703b79bbd9",
+      "translation_text_hash": "b5eeb7add7543485f7e1aca6c26e84e45503e53b21ec96402646efb7ab0f4d7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 은과 놋으로 예물을 삼는 자는 가져다가 여호와께 드렸으며 무릇 섬기는 일에 소용되는 조각목이 있는 자는 가져 왔으며"
+      ],
+      "raw_text_hashes": [
+        "b5eeb7add7543485f7e1aca6c26e84e45503e53b21ec96402646efb7ab0f4d7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:25",
+      "sequence": 2557,
+      "chapter_label": "EXO 35",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 25
+        }
+      ],
+      "en": "All the women who were wise-hearted spun with their hands, and brought that which they had spun: the blue, the purple, the scarlet, and the fine linen.",
+      "ko": "마음이 슬기로운 모든 여인은 손수 실을 낳고 그 낳은 청색 자색 홍색실과 가는 베실을 가져 왔으며",
+      "source_text_hash": "c7c89fc56998b988425c83607c987ee8b6a09a6bbec35e314d96afcdd40d91c7",
+      "translation_text_hash": "6a0fbda4edda9c05726b63f1cda7147bfa79a50a1b3b65085747bd32fd212092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 슬기로운 모든 여인은 손수 실을 낳고 그 낳은 청색 자색 홍색실과 가는 베실을 가져 왔으며"
+      ],
+      "raw_text_hashes": [
+        "6a0fbda4edda9c05726b63f1cda7147bfa79a50a1b3b65085747bd32fd212092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:26",
+      "sequence": 2558,
+      "chapter_label": "EXO 35",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 26
+        }
+      ],
+      "en": "All the women whose heart stirred them up in wisdom spun the goats’ hair.",
+      "ko": "마음에 감동을 받아 슬기로운 모든 여인은 염소털로 실을 낳았으며",
+      "source_text_hash": "f840c399a7dcde80e6b4b5a234bad8fb36e0f7ade01276c5b4283564d65e9a7f",
+      "translation_text_hash": "0296e2cae4fc8c0333ec6e93b699ee332210644214ba2c253457b2a977ef0d8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음에 감동을 받아 슬기로운 모든 여인은 염소털로 실을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "0296e2cae4fc8c0333ec6e93b699ee332210644214ba2c253457b2a977ef0d8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:27",
+      "sequence": 2559,
+      "chapter_label": "EXO 35",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 27
+        }
+      ],
+      "en": "The rulers brought the onyx stones and the stones to be set for the ephod and for the breastplate;",
+      "ko": "모든 족장은 호마노와 및 에봇과 흉패에 물릴 보석을 가져 왔으며",
+      "source_text_hash": "f9b289ff87c8bb7b6073682a65d0cb9478aafab953807ef76c5de6ecd1fbad38",
+      "translation_text_hash": "7e843d5be5ff117f96d3d383d79777ba19e5bdeeeba4ebecb4cc0ed40231dc44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 족장은 호마노와 및 에봇과 흉패에 물릴 보석을 가져 왔으며"
+      ],
+      "raw_text_hashes": [
+        "7e843d5be5ff117f96d3d383d79777ba19e5bdeeeba4ebecb4cc0ed40231dc44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:28",
+      "sequence": 2560,
+      "chapter_label": "EXO 35",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 28
+        }
+      ],
+      "en": "with the spice and the oil for the light, for the anointing oil, and for the sweet incense.",
+      "ko": "등불과 관유와 분향할 향에 소용되는 기름과 향품을 가져 왔으니",
+      "source_text_hash": "efb819de85e21e637206e3c13bfe8acf88453ee17153d31fd9ebcd6ec48b57a3",
+      "translation_text_hash": "eef343e2bbbde06f41be15513b9f91ba23d96d9610b2e93cf3f032877044ee22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등불과 관유와 분향할 향에 소용되는 기름과 향품을 가져 왔으니"
+      ],
+      "raw_text_hashes": [
+        "eef343e2bbbde06f41be15513b9f91ba23d96d9610b2e93cf3f032877044ee22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:29",
+      "sequence": 2561,
+      "chapter_label": "EXO 35",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 29
+        }
+      ],
+      "en": "The children of Israel brought a free will offering to the LORD; every man and woman whose heart made them willing to bring for all the work, which the LORD had commanded to be made by Moses.",
+      "ko": "마음에 원하는 이스라엘 자손의 남녀마다 여호와께서 모세의 손을 빙자하여 명하신 모든 것을 만들기 위하여 물품을 가져다가 여호와께 즐거이 드림이 이러하였더라",
+      "source_text_hash": "016004d5ef424bc5b76fcbf452a568844b69a075c82c08c445248c7c6bb69200",
+      "translation_text_hash": "4d3725398dd398adeefbd977ca60f3ebb0e16c51c7a710a4e52499fe7ccb5505",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음에 원하는 이스라엘 자손의 남녀마다 여호와께서 모세의 손을 빙자하여 명하신 모든 것을 만들기 위하여 물품을 가져다가 여호와께 즐거이 드림이 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "4d3725398dd398adeefbd977ca60f3ebb0e16c51c7a710a4e52499fe7ccb5505"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:30",
+      "sequence": 2562,
+      "chapter_label": "EXO 35",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 30
+        }
+      ],
+      "en": "Moses said to the children of Israel, “Behold, the LORD has called by name Bezalel the son of Uri, the son of Hur, of the tribe of Judah.",
+      "ko": "모세가 이스라엘 자손에게 이르되 볼찌어다 여호와께서 유다 지파 훌의 손자요 우리의 아들인 브살렐을 지명하여 부르시고",
+      "source_text_hash": "2baa6da56753e29e908bf7d0485e3f2affe430722d42e84c0e8606d518522c51",
+      "translation_text_hash": "e17b0a5f32cc1c19aff7c997ccf69e5c0dfc8c4cdeea6eb02457e2f53dc26111",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 자손에게 이르되 볼찌어다 여호와께서 유다 지파 훌의 손자요 우리의 아들인 브살렐을 지명하여 부르시고"
+      ],
+      "raw_text_hashes": [
+        "e17b0a5f32cc1c19aff7c997ccf69e5c0dfc8c4cdeea6eb02457e2f53dc26111"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:31",
+      "sequence": 2563,
+      "chapter_label": "EXO 35",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 31
+        }
+      ],
+      "en": "He has filled him with the Spirit of God, in wisdom, in understanding, in knowledge, and in all kinds of workmanship;",
+      "ko": "하나님의 신을 그에게 충만케 하여 지혜와 총명과 지식으로 여러가지 일을 하게 하시되",
+      "source_text_hash": "dfe94821af41a49b1dc032595620de383dbcf030552da79ea2a2d8a84e27690e",
+      "translation_text_hash": "3c55de4919fc90f51403ed70439dae3478e1771e8f16b6dc7baca39fee62230d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 신을 그에게 충만케 하여 지혜와 총명과 지식으로 여러가지 일을 하게 하시되"
+      ],
+      "raw_text_hashes": [
+        "3c55de4919fc90f51403ed70439dae3478e1771e8f16b6dc7baca39fee62230d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:32",
+      "sequence": 2564,
+      "chapter_label": "EXO 35",
+      "verse_label": "32",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 32
+        }
+      ],
+      "en": "and to make skillful works, to work in gold, in silver, in bronze,",
+      "ko": "공교한 일을 연구하여 금과 은과 놋으로 일하게 하시며",
+      "source_text_hash": "12f657ef53ff1f120ec81ffb04dc7b6dfc8f0528cf7e68b3cf722e6afe22f554",
+      "translation_text_hash": "03c18c293238fd79f5c72b5824349c107e4ff219be600c1fb54b5b0a4e8fccd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공교한 일을 연구하여 금과 은과 놋으로 일하게 하시며"
+      ],
+      "raw_text_hashes": [
+        "03c18c293238fd79f5c72b5824349c107e4ff219be600c1fb54b5b0a4e8fccd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:33",
+      "sequence": 2565,
+      "chapter_label": "EXO 35",
+      "verse_label": "33",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 33
+        }
+      ],
+      "en": "in cutting of stones for setting, and in carving of wood, to work in all kinds of skillful workmanship.",
+      "ko": "보석을 깎아 물리며 나무를 새기는 여러가지 공교한 일을 하게 하셨고",
+      "source_text_hash": "d9fa34f7b4ce43cea31f8645b5ff8acf9ee373b100e397cd992fa67d1555b69b",
+      "translation_text_hash": "78d871edf8d6129c885213c4d02bd454d94d746955fc7033870f30577ca0b21b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보석을 깎아 물리며 나무를 새기는 여러가지 공교한 일을 하게 하셨고"
+      ],
+      "raw_text_hashes": [
+        "78d871edf8d6129c885213c4d02bd454d94d746955fc7033870f30577ca0b21b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:34",
+      "sequence": 2566,
+      "chapter_label": "EXO 35",
+      "verse_label": "34",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 34
+        }
+      ],
+      "en": "He has put in his heart that he may teach, both he and Oholiab, the son of Ahisamach, of the tribe of Dan.",
+      "ko": "또 그와 단 지파 아히사막의 아들 오홀리압을 감동시키사 가르치게 하시며",
+      "source_text_hash": "68dd06cf3f12ed706554d5d633f767ab640e96bf2c9debc178d7cc918e32ef21",
+      "translation_text_hash": "0a67f7528986ce8059c3bfba9acd4e422e8da66e0ca7573d74898b3b6711f49c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그와 단 지파 아히사막의 아들 오홀리압을 감동시키사 가르치게 하시며"
+      ],
+      "raw_text_hashes": [
+        "0a67f7528986ce8059c3bfba9acd4e422e8da66e0ca7573d74898b3b6711f49c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:35:35",
+      "sequence": 2567,
+      "chapter_label": "EXO 35",
+      "verse_label": "35",
+      "locator": {
+        "book": "EXO",
+        "chapter": 35,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 35,
+          "verse": 35
+        }
+      ],
+      "en": "He has filled them with wisdom of heart to work all kinds of workmanship, of the engraver, of the skillful workman, and of the embroiderer, in blue, in purple, in scarlet, and in fine linen, and of the weaver, even of those who do any workmanship, and of those who make skillful works.",
+      "ko": "지혜로운 마음을 그들에게 충만하게 하사 여러가지 일을 하게 하시되 조각하는 일과 공교로운 일과 청색 자색 홍색실과 가는 베실로 수 놓는 일과 짜는 일과 그 외에 여러가지 일을 하게 하시고 공교로운 일을 연구하게 하셨나니",
+      "source_text_hash": "a8da506375ecf62c9c9664fc328a72af766df6ceab0caf2ac370f8bb779263a2",
+      "translation_text_hash": "554673cd5b28bb73b6164fc419ada9b5f4609809bbf5cd2679420233a8c1356c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜로운 마음을 그들에게 충만하게 하사 여러가지 일을 하게 하시되 조각하는 일과 공교로운 일과 청색 자색 홍색실과 가는 베실로 수 놓는 일과 짜는 일과 그 외에 여러가지 일을 하게 하시고 공교로운 일을 연구하게 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "554673cd5b28bb73b6164fc419ada9b5f4609809bbf5cd2679420233a8c1356c"
+      ]
+    }
+  ]
+}

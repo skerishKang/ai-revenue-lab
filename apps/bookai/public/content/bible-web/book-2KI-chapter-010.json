@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:010",
+  "unit_ordinal": 323,
+  "unit_label": "2KI 10",
+  "book_code": "2KI",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:10:1",
+      "sequence": 9795,
+      "chapter_label": "2KI 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now Ahab had seventy sons in Samaria. Jehu wrote letters and sent them to Samaria, to the rulers of Jezreel, even the elders, and to those who brought up Ahab’s sons, saying,",
+      "ko": "아합의 아들 칠십인이 사마리아에 있는지라 예후가 편지들을 써서 사마리아에 보내어 이스르엘 방백 곧 장로들과 아합의 여러 아들을 교육하는 자들에게 전하니 일렀으되",
+      "source_text_hash": "326005a48c38f09a547f3c630a24829ef30dc05e7d50d9ec6d824e261d3231b5",
+      "translation_text_hash": "37295dbe2d1a1b62e2c258d6d8d25da8a62a54e5fc6ea748505eec7a90434dea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아합의 아들 칠십인이 사마리아에 있는지라 예후가 편지들을 써서 사마리아에 보내어 이스르엘 방백 곧 장로들과 아합의 여러 아들을 교육하는 자들에게 전하니 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "37295dbe2d1a1b62e2c258d6d8d25da8a62a54e5fc6ea748505eec7a90434dea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:2",
+      "sequence": 9796,
+      "chapter_label": "2KI 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "“Now as soon as this letter comes to you, since your master’s sons are with you, and you have chariots and horses, a fortified city also, and armor,",
+      "ko": "너희 주의 아들들이 너희와 함께 있고 또 병거와 말과 견고한 성과 병기가 너희에게 있으니 이 편지가 너희에게 이르거든",
+      "source_text_hash": "e04aa811c8869e1a9c247b33a5a93244e2f36f3e3bfa270e5654c4cdd4ff4ab6",
+      "translation_text_hash": "b6012a079a3a81f98664c7091a2e7b578d2510dbd4af82c7f2e62c2f370ba474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 주의 아들들이 너희와 함께 있고 또 병거와 말과 견고한 성과 병기가 너희에게 있으니 이 편지가 너희에게 이르거든"
+      ],
+      "raw_text_hashes": [
+        "b6012a079a3a81f98664c7091a2e7b578d2510dbd4af82c7f2e62c2f370ba474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:3",
+      "sequence": 9797,
+      "chapter_label": "2KI 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "select the best and fittest of your master’s sons, set him on his father’s throne, and fight for your master’s house.”",
+      "ko": "너희 주의 아들들 중에서 가장 어질고 정직한 자를 택하여 그 아비의 위에 두고 너희 주의 집을 위하여 싸우라 하였더라",
+      "source_text_hash": "b29865b1112a03c165e44424d7c79b6c6c75e7328ff6e1b6f7ace75fd086f5c8",
+      "translation_text_hash": "aeaf4b48e84ea1005e9028e0db97e1b1ed09b6c16a0e97beb0dbb263d483529f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 주의 아들들 중에서 가장 어질고 정직한 자를 택하여 그 아비의 위에 두고 너희 주의 집을 위하여 싸우라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "aeaf4b48e84ea1005e9028e0db97e1b1ed09b6c16a0e97beb0dbb263d483529f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:4",
+      "sequence": 9798,
+      "chapter_label": "2KI 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "But they were exceedingly afraid, and said, “Behold, the two kings didn’t stand before him! How then shall we stand?”",
+      "ko": "저희가 심히 두려워하여 가로되 두 왕이 저를 당치 못하였거든 우리가 어찌 당하리요 하고",
+      "source_text_hash": "1300633845eeb3b1592f181f4774a00e18644c83cd9e0e3ee7c95ca89a9384ab",
+      "translation_text_hash": "b26f23c0c757cffc388c9036cc49755542c8c2833ab0827ce8151e5233ae5c75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 심히 두려워하여 가로되 두 왕이 저를 당치 못하였거든 우리가 어찌 당하리요 하고"
+      ],
+      "raw_text_hashes": [
+        "b26f23c0c757cffc388c9036cc49755542c8c2833ab0827ce8151e5233ae5c75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:5",
+      "sequence": 9799,
+      "chapter_label": "2KI 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "He who was over the household, and he who was over the city, the elders also, and those who raised the children, sent to Jehu, saying, “We are your servants, and will do all that you ask us. We will not make any man king. You do that which is good in your eyes.”",
+      "ko": "궁내 대신과 부윤과 장로들과 왕자를 교육하는 자들이 예후에게 말을 전하여 가로되 우리는 당신의 종이라 무릇 명하는 것을 우리가 행하고 아무 사람이든지 왕으로 세우지 아니하리니 당신의 소견에 좋은대로 행하라 한지라",
+      "source_text_hash": "5bd5906b4591254b13e2f82f5e5b0ceea548b766e7e50caaa7426930d3693935",
+      "translation_text_hash": "c1a86ce2cdf78fa40be395f219b60a6f6e559a1e1f6c6575382720eeb9e16152",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁내 대신과 부윤과 장로들과 왕자를 교육하는 자들이 예후에게 말을 전하여 가로되 우리는 당신의 종이라 무릇 명하는 것을 우리가 행하고 아무 사람이든지 왕으로 세우지 아니하리니 당신의 소견에 좋은대로 행하라 한지라"
+      ],
+      "raw_text_hashes": [
+        "c1a86ce2cdf78fa40be395f219b60a6f6e559a1e1f6c6575382720eeb9e16152"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:6",
+      "sequence": 9800,
+      "chapter_label": "2KI 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Then he wrote a letter the second time to them, saying, “If you are on my side, and if you will listen to my voice, take the heads of the men who are your master’s sons, and come to me to Jezreel by tomorrow this time.” Now the king’s sons, being seventy persons, were with the great men of the city, who brought them up.",
+      "ko": "예후가 다시 저희에게 편지를 부치니 일렀으되 만일 너희가 내 편이 되어 내 말을 들으려거든 너희 주의 아들된 사람들의 머리를 취하고 내일 이맘때에 이스르엘에 이르러 내게 나아오라 하였더라 왕자 칠십인이 성중에서 그 교육하는 존귀한 자들과 함께 있는 중에",
+      "source_text_hash": "ba3ad3218b08e60e7035788c827b1935b43d86f83624ed3700999a4301f4bd0a",
+      "translation_text_hash": "d535a1a5c236570edbadb9a3f1bc620b7314d4702e715409e7b384e2578fc9a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 다시 저희에게 편지를 부치니 일렀으되 만일 너희가 내 편이 되어 내 말을 들으려거든 너희 주의 아들된 사람들의 머리를 취하고 내일 이맘때에 이스르엘에 이르러 내게 나아오라 하였더라 왕자 칠십인이 성중에서 그 교육하는 존귀한 자들과 함께 있는 중에"
+      ],
+      "raw_text_hashes": [
+        "d535a1a5c236570edbadb9a3f1bc620b7314d4702e715409e7b384e2578fc9a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:7",
+      "sequence": 9801,
+      "chapter_label": "2KI 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "When the letter came to them, they took the king’s sons and killed them, even seventy people, and put their heads in baskets, and sent them to him to Jezreel.",
+      "ko": "편지가 이르매 저희가 왕자 칠십인을 잡아 몰수히 죽이고 그 머리를 광주리에 담아 이스르엘 예후에게로 보내니라",
+      "source_text_hash": "6a4e203b57dba6c8972a7a3cb90a1090a7a9f437d5ae955940fae2c624ecffaf",
+      "translation_text_hash": "ae5606d134d9c4ac0f2a592c2c0c48a3e562f598c65663b4771b982fe2e171cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "편지가 이르매 저희가 왕자 칠십인을 잡아 몰수히 죽이고 그 머리를 광주리에 담아 이스르엘 예후에게로 보내니라"
+      ],
+      "raw_text_hashes": [
+        "ae5606d134d9c4ac0f2a592c2c0c48a3e562f598c65663b4771b982fe2e171cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:8",
+      "sequence": 9802,
+      "chapter_label": "2KI 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "A messenger came and told him, “They have brought the heads of the king’s sons.” He said, “Lay them in two heaps at the entrance of the gate until the morning.”",
+      "ko": "사자가 와서 예후에게 고하여 가로되 무리가 왕자들의 머리를 가지고 왔나이다 가로되 두 무더기로 쌓아 내일 아침까지 문 어귀에 두라 하고",
+      "source_text_hash": "ff99c34dee83dd6857a31fb7fa785f0388a313d8cd33a295b37bf1707b1da906",
+      "translation_text_hash": "801463ca69318ad526716647a1fad2215317b5bd9487ac62724a1f6e6ca10136",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 와서 예후에게 고하여 가로되 무리가 왕자들의 머리를 가지고 왔나이다 가로되 두 무더기로 쌓아 내일 아침까지 문 어귀에 두라 하고"
+      ],
+      "raw_text_hashes": [
+        "801463ca69318ad526716647a1fad2215317b5bd9487ac62724a1f6e6ca10136"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:9",
+      "sequence": 9803,
+      "chapter_label": "2KI 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "In the morning, he went out and stood, and said to all the people, “You are righteous. Behold, I conspired against my master and killed him, but who killed all these?",
+      "ko": "이튿날 아침에 저가 나가 서서 뭇 백성에게 이르되 너희는 의롭도다 나는 내 주를 배반하여 죽였거니와 이 여러 사람을 죽인 자는 누구냐",
+      "source_text_hash": "dddf3c953b3dea0207f7069c06c281e5b581e3a3f7a93e4f38d3b7c312d7bcc5",
+      "translation_text_hash": "b01c27d950c8de386e3b9c57a41eb20f8abbef0e49d23a37c1ef0c41e51d6fc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 아침에 저가 나가 서서 뭇 백성에게 이르되 너희는 의롭도다 나는 내 주를 배반하여 죽였거니와 이 여러 사람을 죽인 자는 누구냐"
+      ],
+      "raw_text_hashes": [
+        "b01c27d950c8de386e3b9c57a41eb20f8abbef0e49d23a37c1ef0c41e51d6fc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:10",
+      "sequence": 9804,
+      "chapter_label": "2KI 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "Know now that nothing will fall to the earth of the LORD’s word, which the LORD spoke concerning Ahab’s house. For the LORD has done that which he spoke by his servant Elijah.”",
+      "ko": "그런즉 너희는 알라 곧 여호와께서 아합의 집에 대하여 하신 말씀은 하나도 땅에 떨어지지 아니하리라 여호와께서 그 종 엘리야로 하신 말씀을 이제 이루셨도다 하니라",
+      "source_text_hash": "1d94d52b8028e9c4c10b287c87ce06d4df91a0966a5a0ca64606b44b4b333a3a",
+      "translation_text_hash": "19c85fd27b81f6a3cd16a5ca980e77ebbe593da9032c38bcc796c45b49c5de00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희는 알라 곧 여호와께서 아합의 집에 대하여 하신 말씀은 하나도 땅에 떨어지지 아니하리라 여호와께서 그 종 엘리야로 하신 말씀을 이제 이루셨도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "19c85fd27b81f6a3cd16a5ca980e77ebbe593da9032c38bcc796c45b49c5de00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:11",
+      "sequence": 9805,
+      "chapter_label": "2KI 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "So Jehu struck all that remained of Ahab’s house in Jezreel, with all his great men, his familiar friends, and his priests, until he left him no one remaining.",
+      "ko": "예후가 무릇 아합의 집에 속한 이스르엘에 남아 있는 자를 다 죽이고 또 그 존귀한 자와 가까운 친구와 제사장들을 죽이되 저에게 속한 자를 하나도 남기지 아니하였더라",
+      "source_text_hash": "51b9e2b933d91d6bf3fa18ebf188716a5e0b775b05e3378d283bdd90effe8265",
+      "translation_text_hash": "877d9ca2baea482f24789488b49027c937f4da0c346c47365a0dc320c0f96d75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 무릇 아합의 집에 속한 이스르엘에 남아 있는 자를 다 죽이고 또 그 존귀한 자와 가까운 친구와 제사장들을 죽이되 저에게 속한 자를 하나도 남기지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "877d9ca2baea482f24789488b49027c937f4da0c346c47365a0dc320c0f96d75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:12",
+      "sequence": 9806,
+      "chapter_label": "2KI 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "He arose and departed, and went to Samaria. As he was at the shearing house of the shepherds on the way,",
+      "ko": "예후가 일어나서 사마리아로 가더니 노중에 목자가 양털 깎는 집에 이르러",
+      "source_text_hash": "faea9ff66b91411671c9e451ec569a85c5e792e4db239381435d945acf7bab25",
+      "translation_text_hash": "54f8e49c3209ede26646e980a4b1300fafcf81f8e36ca32ed284762b2d88be05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 일어나서 사마리아로 가더니 노중에 목자가 양털 깎는 집에 이르러"
+      ],
+      "raw_text_hashes": [
+        "54f8e49c3209ede26646e980a4b1300fafcf81f8e36ca32ed284762b2d88be05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:13",
+      "sequence": 9807,
+      "chapter_label": "2KI 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "Jehu met with the brothers of Ahaziah king of Judah, and said, “Who are you?” They answered, “We are the brothers of Ahaziah. We are going down to greet the children of the king and the children of the queen.”",
+      "ko": "유다 왕 아하시야의 형제들을 만나 묻되 너희는 누구냐 대답하되 우리는 아하시야의 형제라 이제 왕자들과 태후의 아들들에게 문안하러 내려가노라",
+      "source_text_hash": "081d4cd77f6c629dd000a874dc04333de0253ce03e2fca0c94c1e8080d5f8040",
+      "translation_text_hash": "2de76694d5a983195e40c125b7a39d41dd4bc51c7cdbc4e980918f25ae496b85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 아하시야의 형제들을 만나 묻되 너희는 누구냐 대답하되 우리는 아하시야의 형제라 이제 왕자들과 태후의 아들들에게 문안하러 내려가노라"
+      ],
+      "raw_text_hashes": [
+        "2de76694d5a983195e40c125b7a39d41dd4bc51c7cdbc4e980918f25ae496b85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:14",
+      "sequence": 9808,
+      "chapter_label": "2KI 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “Take them alive!” They took them alive, and killed them at the pit of the shearing house, even forty-two men. He didn’t leave any of them.",
+      "ko": "가로되 사로잡으라 하매 곧 사로잡아 목자가 양털 깎는 집 웅덩이 곁에서 죽이니 사십 이인이 하나도 남지 아니하였더라",
+      "source_text_hash": "a1853960fe749e497ebcb9f83ca0c78259e7f4c8dc9103e862da5572d2141e99",
+      "translation_text_hash": "fc9c3b23a2b1eb3b1b2642a797b2f3884bf157375c626e626073f9480a8cfda2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 사로잡으라 하매 곧 사로잡아 목자가 양털 깎는 집 웅덩이 곁에서 죽이니 사십 이인이 하나도 남지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "fc9c3b23a2b1eb3b1b2642a797b2f3884bf157375c626e626073f9480a8cfda2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:15",
+      "sequence": 9809,
+      "chapter_label": "2KI 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "When he had departed from there, he met Jehonadab the son of Rechab coming to meet him. He greeted him, and said to him, “Is your heart right, as my heart is with your heart?” Jehonadab answered, “It is.” “If it is, give me your hand.” He gave him his hand; and he took him up to him into the chariot.",
+      "ko": "예후가 거기서 떠나가다가 레갑의 아들 여호나답이 맞으러 오는 것을 만난지라 그 안부를 묻고 가로되 내 마음이 네 마음을 향하여 진실함과 같이 네 마음도 진실하냐 여호나답이 대답하되 그러하니이다 가로되 그러면 나와 손을 잡자 손을 잡으니 예후가 끌어 병거에 올리며",
+      "source_text_hash": "137f724c5a3584ef18c06e4e96b3e6dba66be56967117bce8004182349863e4b",
+      "translation_text_hash": "ca081a07f525cf81c9c7c545df48a7070f29344ddd67d3f493f8604025e63c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 거기서 떠나가다가 레갑의 아들 여호나답이 맞으러 오는 것을 만난지라 그 안부를 묻고 가로되 내 마음이 네 마음을 향하여 진실함과 같이 네 마음도 진실하냐 여호나답이 대답하되 그러하니이다 가로되 그러면 나와 손을 잡자 손을 잡으니 예후가 끌어 병거에 올리며"
+      ],
+      "raw_text_hashes": [
+        "ca081a07f525cf81c9c7c545df48a7070f29344ddd67d3f493f8604025e63c2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:16",
+      "sequence": 9810,
+      "chapter_label": "2KI 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “Come with me, and see my zeal for the LORD.” So they made him ride in his chariot.",
+      "ko": "가로되 나와 함께 가서 여호와를 위한 나의 열심을 보라 하고 이에 자기 병거에 태우고",
+      "source_text_hash": "435f9cf5fb9486616c075969d21044b6aed906eca7f6abce8c3a36c2ae5c70b2",
+      "translation_text_hash": "3ee49fde740eea6c379825bece497a280593a3032ad852ee45de9cf6bda3e4ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 나와 함께 가서 여호와를 위한 나의 열심을 보라 하고 이에 자기 병거에 태우고"
+      ],
+      "raw_text_hashes": [
+        "3ee49fde740eea6c379825bece497a280593a3032ad852ee45de9cf6bda3e4ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:17",
+      "sequence": 9811,
+      "chapter_label": "2KI 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "When he came to Samaria, he struck all who remained to Ahab in Samaria, until he had destroyed them, according to the LORD’s word which he spoke to Elijah.",
+      "ko": "사마리아에 이르러 거기 남아 있는바 아합에게 속한 자를 죽여 진멸하였으니 여호와께서 엘리야에게 이르신 말씀과 같이 되었더라",
+      "source_text_hash": "571e73f707bbd8f8b7a6196bd78455f059a8c872b0eb78410395a555beb542d2",
+      "translation_text_hash": "9192ef3826e19a04a546c15d97ae58d204d7cae760dc09ca7a089a6114977d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사마리아에 이르러 거기 남아 있는바 아합에게 속한 자를 죽여 진멸하였으니 여호와께서 엘리야에게 이르신 말씀과 같이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "9192ef3826e19a04a546c15d97ae58d204d7cae760dc09ca7a089a6114977d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:18",
+      "sequence": 9812,
+      "chapter_label": "2KI 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Jehu gathered all the people together, and said to them, “Ahab served Baal a little, but Jehu will serve him much.",
+      "ko": "예후가 뭇백성을 모으고 이르되 아합은 바알을 조금 섬겼으나 예후는 많이 섬기리라",
+      "source_text_hash": "a9deda2e57e57f632fe09df1bdcb27f0f3420690cbde2592eec3c906a46fccf6",
+      "translation_text_hash": "05a4a7a67ac971586b10c4292abf7e0e2f3b6fca2e22f2da6269936de9520705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 뭇백성을 모으고 이르되 아합은 바알을 조금 섬겼으나 예후는 많이 섬기리라"
+      ],
+      "raw_text_hashes": [
+        "05a4a7a67ac971586b10c4292abf7e0e2f3b6fca2e22f2da6269936de9520705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:19",
+      "sequence": 9813,
+      "chapter_label": "2KI 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore call to me all the prophets of Baal, all of his worshipers, and all of his priests. Let no one be absent, for I have a great sacrifice to Baal. Whoever is absent, he shall not live.” But Jehu did deceptively, intending to destroy the worshipers of Baal.",
+      "ko": "그러므로 내가 이제 큰 제사를 바알에게 드리고자 하노니 바알의 모든 선지자와 모든 섬기는 자와 모든 제사장들을 한 사람도 빠치지 말고 불러 내게로 나오게 하라 무릇 오지 아니하는 자는 살리지 아니하리라 하니 이는 예후가 바알 섬기는 자를 멸하려 하여 궤계를 씀이라",
+      "source_text_hash": "1c2314f5f9c23d826e963ea1dacc453640fa69a1a4b47d92302555c8bb217a61",
+      "translation_text_hash": "4e072a5dce5495e0160e25f11b46c4053540164a6c7e24be3839a8df193b2c0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이제 큰 제사를 바알에게 드리고자 하노니 바알의 모든 선지자와 모든 섬기는 자와 모든 제사장들을 한 사람도 빠치지 말고 불러 내게로 나오게 하라 무릇 오지 아니하는 자는 살리지 아니하리라 하니 이는 예후가 바알 섬기는 자를 멸하려 하여 궤계를 씀이라"
+      ],
+      "raw_text_hashes": [
+        "4e072a5dce5495e0160e25f11b46c4053540164a6c7e24be3839a8df193b2c0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:20",
+      "sequence": 9814,
+      "chapter_label": "2KI 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "Jehu said, “Sanctify a solemn assembly for Baal!” So they proclaimed it.",
+      "ko": "예후가 바알을 위하는 대회를 거룩히 열라 하매 드디어 공포하였더라",
+      "source_text_hash": "0e3bcda81eebe5d4648158e29a192949f6f2cab185066fbc76ed3a1da4dc06f6",
+      "translation_text_hash": "04b997fb0be941bc92f99651967530bbf570609255853a37125bdd7275fa35b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 바알을 위하는 대회를 거룩히 열라 하매 드디어 공포하였더라"
+      ],
+      "raw_text_hashes": [
+        "04b997fb0be941bc92f99651967530bbf570609255853a37125bdd7275fa35b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:21",
+      "sequence": 9815,
+      "chapter_label": "2KI 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Jehu sent through all Israel; and all the worshipers of Baal came, so that there was not a man left that didn’t come. They came into the house of Baal; and the house of Baal was filled from one end to another.",
+      "ko": "예후가 온 이스라엘에 두루 보내었더니 무릇 바알을 섬기는 사람이 하나도 빠진 자가 없이 다 이르렀고 무리가 바알의 당에 들어가매 이편부터 저편까지 가득하였더라",
+      "source_text_hash": "f989cd080431110d798130f8e90904c07fd0c2890ce69c17f7b4ef3884d807e9",
+      "translation_text_hash": "2a8fa104ef1724040f7e3015545a61e3df558d552b86f64c39ee5c3b9e6d8276",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 온 이스라엘에 두루 보내었더니 무릇 바알을 섬기는 사람이 하나도 빠진 자가 없이 다 이르렀고 무리가 바알의 당에 들어가매 이편부터 저편까지 가득하였더라"
+      ],
+      "raw_text_hashes": [
+        "2a8fa104ef1724040f7e3015545a61e3df558d552b86f64c39ee5c3b9e6d8276"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:22",
+      "sequence": 9816,
+      "chapter_label": "2KI 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "He said to him who kept the wardrobe, “Bring out robes for all the worshipers of Baal!” So he brought robes out to them.",
+      "ko": "예후가 예복 맡은 자에게 이르되 예복을 내어다가 무릇 바알 섬기는 자에게 주라 하매 저희에게로 예복을 가져온지라",
+      "source_text_hash": "e04fede74e6938cfca6fb58af0b5a4eb0cedd68a61330af911c79f8ab67b5a16",
+      "translation_text_hash": "aa3b46a27749232919e4dec9779698dd5aa50bb1314cd35c8efbb2cfade6a1b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 예복 맡은 자에게 이르되 예복을 내어다가 무릇 바알 섬기는 자에게 주라 하매 저희에게로 예복을 가져온지라"
+      ],
+      "raw_text_hashes": [
+        "aa3b46a27749232919e4dec9779698dd5aa50bb1314cd35c8efbb2cfade6a1b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:23",
+      "sequence": 9817,
+      "chapter_label": "2KI 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "Jehu went with Jehonadab the son of Rechab into the house of Baal. Then he said to the worshipers of Baal, “Search, and see that none of the servants of the LORD are here with you, but only the worshipers of Baal.”",
+      "ko": "예후가 레갑의 아들 여호나답으로 더불어 바알의 당에 들어가서 바알을 섬기는 자에게 이르되 너희는 살펴보아 바알을 섬기는 자만 여기 있게 하고 여호와의 종은 하나도 너희 중에 있지 못하게 하라 하고",
+      "source_text_hash": "9c52176964ef648e1778d1a629f82aabedea9ec9cec9c4709fbb299237afe0dc",
+      "translation_text_hash": "440ed4ed3c7c469e57f737d95c2f971881e6f669679df7e050ebee40759f36c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 레갑의 아들 여호나답으로 더불어 바알의 당에 들어가서 바알을 섬기는 자에게 이르되 너희는 살펴보아 바알을 섬기는 자만 여기 있게 하고 여호와의 종은 하나도 너희 중에 있지 못하게 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "440ed4ed3c7c469e57f737d95c2f971881e6f669679df7e050ebee40759f36c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:24",
+      "sequence": 9818,
+      "chapter_label": "2KI 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "So they went in to offer sacrifices and burnt offerings. Now Jehu had appointed for himself eighty men outside, and said, “If any of the men whom I bring into your hands escape, he who lets him go, his life shall be for the life of him.”",
+      "ko": "무리가 번제와 다른 제사를 드리려고 들어간 때에 예후가 팔십인을 밖에 두며 이르되 내가 너희 손에 붙이는 사람을 한 사람이라도 도망하게 하는 자는 자기의 생명으로 그 사람의 생명을 대신하리라 하니라",
+      "source_text_hash": "af5aa257404c5f2f6ebc59ce2cad4d3ce75ae238baab6457a2df1110c5343bea",
+      "translation_text_hash": "9da9c826d488742c977e1e7c162c081bbc0320bad4d58eece7957dff0bad6af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 번제와 다른 제사를 드리려고 들어간 때에 예후가 팔십인을 밖에 두며 이르되 내가 너희 손에 붙이는 사람을 한 사람이라도 도망하게 하는 자는 자기의 생명으로 그 사람의 생명을 대신하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9da9c826d488742c977e1e7c162c081bbc0320bad4d58eece7957dff0bad6af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:25",
+      "sequence": 9819,
+      "chapter_label": "2KI 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "As soon as he had finished offering the burnt offering, Jehu said to the guard and to the captains, “Go in and kill them! Let no one escape.” So they struck them with the edge of the sword. The guard and the captains threw the bodies out, and went to the inner shrine of the house of Baal.",
+      "ko": "번제 드리기를 다하매 예후가 호위병과 장관들에게 이르되 들어가서 한 사람도 나가지 못하게 하고 죽이라 하매 호위병과 장관들이 칼로 저희를 죽여 밖에 던지고",
+      "source_text_hash": "be65c05d1a094e96cdcf3a10bbb3a24b86f757903885d7169ca3d4ea64587654",
+      "translation_text_hash": "190d56f1355989427a71c7c41d97a51848ada054343e3b7596959e9196843e65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제 드리기를 다하매 예후가 호위병과 장관들에게 이르되 들어가서 한 사람도 나가지 못하게 하고 죽이라 하매 호위병과 장관들이 칼로 저희를 죽여 밖에 던지고"
+      ],
+      "raw_text_hashes": [
+        "190d56f1355989427a71c7c41d97a51848ada054343e3b7596959e9196843e65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:26",
+      "sequence": 9820,
+      "chapter_label": "2KI 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "They brought out the pillars that were in the house of Baal and burned them.",
+      "ko": "바알의 당 있는 성으로 가서 바알의 당에서 목상들을 가져다가 불사르고",
+      "source_text_hash": "db27e3086e2de27cddb6a65ece612a521d4a6782cb5e57062d1ccfc2c8560a30",
+      "translation_text_hash": "8934aa87c312756b26c94274161814bb7a57a2a84c144f81c157cf5a18b27d5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바알의 당 있는 성으로 가서 바알의 당에서 목상들을 가져다가 불사르고"
+      ],
+      "raw_text_hashes": [
+        "8934aa87c312756b26c94274161814bb7a57a2a84c144f81c157cf5a18b27d5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:27",
+      "sequence": 9821,
+      "chapter_label": "2KI 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "They broke down the pillar of Baal, and broke down the house of Baal, and made it a latrine, to this day.",
+      "ko": "바알의 목상을 헐며 바알의 당을 훼파하여 변소를 만들었더니 오늘날까지 이르니라",
+      "source_text_hash": "39c5e575231823298c53d86cf66d44bf1e272d8b2280bfba33562809c6bbe558",
+      "translation_text_hash": "c9eac45ecb1f7d7cf2d5515769aa4faff9fdc9f61ce44717d82b809791dbe73e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바알의 목상을 헐며 바알의 당을 훼파하여 변소를 만들었더니 오늘날까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "c9eac45ecb1f7d7cf2d5515769aa4faff9fdc9f61ce44717d82b809791dbe73e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:28",
+      "sequence": 9822,
+      "chapter_label": "2KI 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Thus Jehu destroyed Baal out of Israel.",
+      "ko": "예후가 이와 같이 이스라엘 중에서 바알을 멸하였으나",
+      "source_text_hash": "11d886da1d254a9cbb6b1c2e637b8590d6ee8da795d9a0b1db7145becba6f0e5",
+      "translation_text_hash": "87493a6e79b79f9245dbda43afc8e13d3f680b897b09cb1e38ac2c4a697e0de6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 이와 같이 이스라엘 중에서 바알을 멸하였으나"
+      ],
+      "raw_text_hashes": [
+        "87493a6e79b79f9245dbda43afc8e13d3f680b897b09cb1e38ac2c4a697e0de6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:29",
+      "sequence": 9823,
+      "chapter_label": "2KI 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "However, Jehu didn’t depart from the sins of Jeroboam the son of Nebat, with which he made Israel to sin—the golden calves that were in Bethel and that were in Dan.",
+      "ko": "이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄 곧 벧엘과 단에 있는 금송아지를 섬기는 죄에서는 떠나지 아니하였더라",
+      "source_text_hash": "43a68cf398f8f5d1bafed4667cdc3392b91268ae186de24121064989824e960a",
+      "translation_text_hash": "ca1c88c7b4928243fd80f6982baff08cd9641b62258f7df617b2602185e800c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘로 범죄케 한 느밧의 아들 여로보암의 죄 곧 벧엘과 단에 있는 금송아지를 섬기는 죄에서는 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "ca1c88c7b4928243fd80f6982baff08cd9641b62258f7df617b2602185e800c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:30",
+      "sequence": 9824,
+      "chapter_label": "2KI 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD said to Jehu, “Because you have done well in executing that which is right in my eyes, and have done to Ahab’s house according to all that was in my heart, your descendants shall sit on the throne of Israel to the fourth generation.”",
+      "ko": "여호와께서 예후에게 이르시되 네가 나보기에 정직한 일을 행하되 잘 행하여 내 마음에 있는대로 아합 집에 다 행하였은즉 네 자손이 이스라엘 왕위를 이어 사대를 지나리라 하시니라",
+      "source_text_hash": "2335455a473dd16c70a7b8f7d44d09ab62f00ade40bce35e18a298a98c51162e",
+      "translation_text_hash": "d706dc02455a914c5708f86bd5640862f50f6176131241339132e622be34fbdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 예후에게 이르시되 네가 나보기에 정직한 일을 행하되 잘 행하여 내 마음에 있는대로 아합 집에 다 행하였은즉 네 자손이 이스라엘 왕위를 이어 사대를 지나리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "d706dc02455a914c5708f86bd5640862f50f6176131241339132e622be34fbdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:31",
+      "sequence": 9825,
+      "chapter_label": "2KI 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "But Jehu took no heed to walk in the law of the LORD, the God of Israel, with all his heart. He didn’t depart from the sins of Jeroboam, with which he made Israel to sin.",
+      "ko": "그러나 예후가 전심으로 이스라엘 하나님 여호와의 율법을 지켜 행하지 아니하며 여로보암이 이스라엘로 범하게 한 그 죄에서 떠나지 아니하였더라",
+      "source_text_hash": "12e458e965db8d0bfed8789130f55a79598c46aeac00124c93c7b84eaa97a95a",
+      "translation_text_hash": "26b23da82123681d3f2552fd89d91dbedd6ff8d13cadc2ff78f4288f298bdded",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 예후가 전심으로 이스라엘 하나님 여호와의 율법을 지켜 행하지 아니하며 여로보암이 이스라엘로 범하게 한 그 죄에서 떠나지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "26b23da82123681d3f2552fd89d91dbedd6ff8d13cadc2ff78f4288f298bdded"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:32",
+      "sequence": 9826,
+      "chapter_label": "2KI 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "In those days the LORD began to cut away parts of Israel; and Hazael struck them in all the borders of Israel",
+      "ko": "이 때에 여호와께서 비로소 이스라엘을 찢으시매 하사엘이 그 사방을 치되",
+      "source_text_hash": "6853b0be2fa002bf7a251b8a200b15bc85bf460d8fb113c3f137e016bd47ac82",
+      "translation_text_hash": "0845dd3dd00f364d1ada7625d8a20d46c83bd16eca80378e55df01b4e6bbf6da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 여호와께서 비로소 이스라엘을 찢으시매 하사엘이 그 사방을 치되"
+      ],
+      "raw_text_hashes": [
+        "0845dd3dd00f364d1ada7625d8a20d46c83bd16eca80378e55df01b4e6bbf6da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:33",
+      "sequence": 9827,
+      "chapter_label": "2KI 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "from the Jordan eastward, all the land of Gilead, the Gadites, and the Reubenites, and the Manassites, from Aroer, which is by the valley of the Arnon, even Gilead and Bashan.",
+      "ko": "요단 동편 길르앗 온 땅 곧 갓 사람과 르우벤 사람과 므낫세 사람의 땅 아르논 골짜기에 있는 아로엘에서부터 길르앗과 바산까지 하였더라",
+      "source_text_hash": "e7a24b65b88b35b6790816df774e17594562b378c724956d714b83b8662c82b1",
+      "translation_text_hash": "5aa1693f0b327a15f3361deb3816c421408d9ee909f559d0b0f739b712b7db72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요단 동편 길르앗 온 땅 곧 갓 사람과 르우벤 사람과 므낫세 사람의 땅 아르논 골짜기에 있는 아로엘에서부터 길르앗과 바산까지 하였더라"
+      ],
+      "raw_text_hashes": [
+        "5aa1693f0b327a15f3361deb3816c421408d9ee909f559d0b0f739b712b7db72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:34",
+      "sequence": 9828,
+      "chapter_label": "2KI 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "Now the rest of the acts of Jehu, and all that he did, and all his might, aren’t they written in the book of the chronicles of the kings of Israel?",
+      "ko": "예후의 남은 사적과 무릇 행한 일과 모든 권세는 이스라엘 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "cf00d5f673b59c0297d9916e79ec9b8580fa845fcae3dddf10780426da8baaf8",
+      "translation_text_hash": "6369a210929d7d84e9c0417dbb3a6c34a99b67d97ebd8d11bb111e8f7d1522eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후의 남은 사적과 무릇 행한 일과 모든 권세는 이스라엘 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "6369a210929d7d84e9c0417dbb3a6c34a99b67d97ebd8d11bb111e8f7d1522eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:35",
+      "sequence": 9829,
+      "chapter_label": "2KI 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "Jehu slept with his fathers; and they buried him in Samaria. Jehoahaz his son reigned in his place.",
+      "ko": "예후가 그 열조와 함께 자매 사마리아에 장사되고 그 아들 여호아하스가 대신하여 왕이 되니라",
+      "source_text_hash": "a40ebd202ea7616bb2fd91703bdc47b1ab7b336f3e0f3871034daaee4b67ae92",
+      "translation_text_hash": "3fa6f7f8f299d9771d75d103139d6d3d9b32e177a27be94f221c483cdc37447e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 그 열조와 함께 자매 사마리아에 장사되고 그 아들 여호아하스가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "3fa6f7f8f299d9771d75d103139d6d3d9b32e177a27be94f221c483cdc37447e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:10:36",
+      "sequence": 9830,
+      "chapter_label": "2KI 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "The time that Jehu reigned over Israel in Samaria was twenty-eight years.",
+      "ko": "예후가 사마리아에서 이스라엘을 다스린 햇수는 이십 팔년이더라",
+      "source_text_hash": "31313a407e56c0a976a5e4a89ef88cec53e488e502ddd3260313f5890a36dc84",
+      "translation_text_hash": "9fae64335fd72c9f6fa24bd19ec366008cdb354e2279fdc000afcb3e59ee88cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후가 사마리아에서 이스라엘을 다스린 햇수는 이십 팔년이더라"
+      ],
+      "raw_text_hashes": [
+        "9fae64335fd72c9f6fa24bd19ec366008cdb354e2279fdc000afcb3e59ee88cb"
+      ]
+    }
+  ]
+}

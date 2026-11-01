@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:098",
+  "unit_ordinal": 576,
+  "unit_label": "PSA 98",
+  "book_code": "PSA",
+  "chapter_number": 98,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:98:1",
+      "sequence": 15492,
+      "chapter_label": "PSA 98",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 1
+        }
+      ],
+      "en": "Sing to the LORD a new song, for he has done marvelous things! His right hand and his holy arm have worked salvation for him.",
+      "ko": "새 노래로 여호와께 찬송하라 대저 기이한 일을 행하사 그 오른손과 거룩한 팔로 자기를 위하여 구원을 베푸셨도다",
+      "source_text_hash": "f55b2818e1d358bcd36d9b8befbe008913d6185500cebce0a059d491b37df164",
+      "translation_text_hash": "1dd86981f0b0a959b7d8c685cf114e05d7571d97eca16b07860c1ac9a1619a1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 노래로 여호와께 찬송하라 대저 기이한 일을 행하사 그 오른손과 거룩한 팔로 자기를 위하여 구원을 베푸셨도다"
+      ],
+      "raw_text_hashes": [
+        "1dd86981f0b0a959b7d8c685cf114e05d7571d97eca16b07860c1ac9a1619a1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:2",
+      "sequence": 15493,
+      "chapter_label": "PSA 98",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD has made known his salvation. He has openly shown his righteousness in the sight of the nations.",
+      "ko": "여호와께서 그 구원을 알게 하시며 그 의를 열방의 목전에 명백히 나타내셨도다",
+      "source_text_hash": "43ea13ffb2dfa38f5b71c7fb72f787f70c176478fb86a90344ab08bebd1051c3",
+      "translation_text_hash": "a888d3a344afdb223e6d2b76bcc373bfe873e70c49b5431097eb1052f530ac49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그 구원을 알게 하시며 그 의를 열방의 목전에 명백히 나타내셨도다"
+      ],
+      "raw_text_hashes": [
+        "a888d3a344afdb223e6d2b76bcc373bfe873e70c49b5431097eb1052f530ac49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:3",
+      "sequence": 15494,
+      "chapter_label": "PSA 98",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 3
+        }
+      ],
+      "en": "He has remembered his loving kindness and his faithfulness toward the house of Israel. All the ends of the earth have seen the salvation of our God.",
+      "ko": "저가 이스라엘 집에 향하신 인자와 성실을 기억하셨으므로 땅의 모든 끝이 우리 하나님의 구원을 보았도다",
+      "source_text_hash": "4cd6aa4ed20293bc8af46401d8f63f2a75f80303094a5557e913b63def015d70",
+      "translation_text_hash": "1ee55e825455526a3df28ce9cbae4f2634632a67ed34011e6038b5b2c87729a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘 집에 향하신 인자와 성실을 기억하셨으므로 땅의 모든 끝이 우리 하나님의 구원을 보았도다"
+      ],
+      "raw_text_hashes": [
+        "1ee55e825455526a3df28ce9cbae4f2634632a67ed34011e6038b5b2c87729a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:4",
+      "sequence": 15495,
+      "chapter_label": "PSA 98",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 4
+        }
+      ],
+      "en": "Make a joyful noise to the LORD, all the earth! Burst out and sing for joy, yes, sing praises!",
+      "ko": "온 땅이여 여호와께 즐거이 소리할찌어다 소리를 발하여 즐거이 노래하며 찬송할찌어다",
+      "source_text_hash": "a15de9cfcb07962b83910f47d4b54aaf658b4a9d3d329c0027027624b34b89d1",
+      "translation_text_hash": "06e944633d661986503c12e7ff6eb3eae5d17e92169066fd114989d2511d6092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅이여 여호와께 즐거이 소리할찌어다 소리를 발하여 즐거이 노래하며 찬송할찌어다"
+      ],
+      "raw_text_hashes": [
+        "06e944633d661986503c12e7ff6eb3eae5d17e92169066fd114989d2511d6092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:5",
+      "sequence": 15496,
+      "chapter_label": "PSA 98",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 5
+        }
+      ],
+      "en": "Sing praises to the LORD with the harp, with the harp and the voice of melody.",
+      "ko": "수금으로 여호와를 찬양하라 수금과 음성으로 찬양할찌어다",
+      "source_text_hash": "f0179d6e761460784dd6f380482703a42a9e11750bc557961373d20932d4b712",
+      "translation_text_hash": "de328fa4c70efa08f42ed869996938ffdf9b271479534cc03958f1b90d8c2482",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수금으로 여호와를 찬양하라 수금과 음성으로 찬양할찌어다"
+      ],
+      "raw_text_hashes": [
+        "de328fa4c70efa08f42ed869996938ffdf9b271479534cc03958f1b90d8c2482"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:6",
+      "sequence": 15497,
+      "chapter_label": "PSA 98",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 6
+        }
+      ],
+      "en": "With trumpets and sound of the ram’s horn, make a joyful noise before the King, the LORD.",
+      "ko": "나팔과 호각으로 왕 여호와 앞에 즐거이 소리할찌어다",
+      "source_text_hash": "266a25206f9cf967cdf13c15cd4434026607624fcef6dbba63f15d10a091c471",
+      "translation_text_hash": "4b26e64aaa6c77f6daa87d4df1fc655ddd6ea05f8671178c68ba1d7c13a1479b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나팔과 호각으로 왕 여호와 앞에 즐거이 소리할찌어다"
+      ],
+      "raw_text_hashes": [
+        "4b26e64aaa6c77f6daa87d4df1fc655ddd6ea05f8671178c68ba1d7c13a1479b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:7",
+      "sequence": 15498,
+      "chapter_label": "PSA 98",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 7
+        }
+      ],
+      "en": "Let the sea roar with its fullness; the world, and those who dwell therein.",
+      "ko": "바다와 거기 충만한 것과 세계와 그 중에 거하는 자는 다 외칠찌어다",
+      "source_text_hash": "2b8cbeaac57d2b1376978e28dd6c7d8cbece5e6ce90d6ea38d13d51fb4ff1779",
+      "translation_text_hash": "c7b7afe0ad0b5f95d2a7e20f4efbb8ea3efdc9dd7a3e99ed93accb484c2c3e87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다와 거기 충만한 것과 세계와 그 중에 거하는 자는 다 외칠찌어다"
+      ],
+      "raw_text_hashes": [
+        "c7b7afe0ad0b5f95d2a7e20f4efbb8ea3efdc9dd7a3e99ed93accb484c2c3e87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:8",
+      "sequence": 15499,
+      "chapter_label": "PSA 98",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 8
+        }
+      ],
+      "en": "Let the rivers clap their hands. Let the mountains sing for joy together.",
+      "ko": "여호와 앞에서 큰 물이 박수하며 산악이 함께 즐거이 노래할찌어다",
+      "source_text_hash": "21e7c17eddc05ee3e82b63743a18fa1ea6e1245a79402df3f01a725362eb8de6",
+      "translation_text_hash": "9594741e094e5a76d2265acd2cf482fbe7f6ed108d749d8711392a1e941f1de7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에서 큰 물이 박수하며 산악이 함께 즐거이 노래할찌어다"
+      ],
+      "raw_text_hashes": [
+        "9594741e094e5a76d2265acd2cf482fbe7f6ed108d749d8711392a1e941f1de7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:98:9",
+      "sequence": 15500,
+      "chapter_label": "PSA 98",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 98,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 98,
+          "verse": 9
+        }
+      ],
+      "en": "Let them sing before the LORD, for he comes to judge the earth. He will judge the world with righteousness, and the peoples with equity.",
+      "ko": "저가 땅을 판단하려 임하실 것임이로다 저가 의로 세계를 판단하시며 공평으로 그 백성을 판단하시리로다",
+      "source_text_hash": "62a2b1628f5ff5b907d04c1358c290e67576ef3807388ae9dbb8164faaf9fddb",
+      "translation_text_hash": "1594e888d4544556d8c9414d544795ac983a9b93f095c5b033d819bce0933016",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 땅을 판단하려 임하실 것임이로다 저가 의로 세계를 판단하시며 공평으로 그 백성을 판단하시리로다"
+      ],
+      "raw_text_hashes": [
+        "1594e888d4544556d8c9414d544795ac983a9b93f095c5b033d819bce0933016"
+      ]
+    }
+  ]
+}

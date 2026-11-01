@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:026",
+  "unit_ordinal": 1044,
+  "unit_label": "ACT 26",
+  "book_code": "ACT",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:26:1",
+      "sequence": 27821,
+      "chapter_label": "ACT 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "Agrippa said to Paul, “You may speak for yourself.” Then Paul stretched out his hand, and made his defense.",
+      "ko": "아그립바가 바울더러 이르되 너를 위하여 말하기를 네게 허락하노라 하니 이에 바울이 손을 들어 변명하되",
+      "source_text_hash": "bc4006301345edd5f0e0380d74670738f1cd4afa2779c1ba74ae64a994b3cfea",
+      "translation_text_hash": "978c18a91b93b1b93c719e42161ec9e0868daaac6037c27707109fe487151db6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바가 바울더러 이르되 너를 위하여 말하기를 네게 허락하노라 하니 이에 바울이 손을 들어 변명하되"
+      ],
+      "raw_text_hashes": [
+        "978c18a91b93b1b93c719e42161ec9e0868daaac6037c27707109fe487151db6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:2",
+      "sequence": 27822,
+      "chapter_label": "ACT 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“I think myself happy, King Agrippa, that I am to make my defense before you today concerning all the things the Jews accuse me of,",
+      "ko": "아그립바왕이여 유대인이 모든 송사하는 일을 오늘 당신 앞에서 변명하게 된 것을 다행히 여기옵나이다",
+      "source_text_hash": "0d7211c1b81d8bfdfc316804d936af8b28d25be28d2471e0918f4a91882b264f",
+      "translation_text_hash": "13155655fa9fbbbd5e94d2cc1d9688fa1cc147231577d5663bc7dc6bbe5f1b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바왕이여 유대인이 모든 송사하는 일을 오늘 당신 앞에서 변명하게 된 것을 다행히 여기옵나이다"
+      ],
+      "raw_text_hashes": [
+        "13155655fa9fbbbd5e94d2cc1d9688fa1cc147231577d5663bc7dc6bbe5f1b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:3",
+      "sequence": 27823,
+      "chapter_label": "ACT 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "especially because you are expert in all customs and questions which are among the Jews. Therefore I beg you to hear me patiently.",
+      "ko": "특히 당신이 유대인의 모든 풍속과 및 문제를 아심이니이다 그러므로 내 말을 너그러이 들으시기를 바라옵나이다",
+      "source_text_hash": "de166fa6137104dc7036181c61b6536f36af8ccc7465eae692d3a4c55ac1d70e",
+      "translation_text_hash": "164d355ee6ac280f5fda56f272a5b3d9e820646934fda7979204139d55c3b092",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "특히 당신이 유대인의 모든 풍속과 및 문제를 아심이니이다 그러므로 내 말을 너그러이 들으시기를 바라옵나이다"
+      ],
+      "raw_text_hashes": [
+        "164d355ee6ac280f5fda56f272a5b3d9e820646934fda7979204139d55c3b092"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:4",
+      "sequence": 27824,
+      "chapter_label": "ACT 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "“Indeed, all the Jews know my way of life from my youth up, which was from the beginning among my own nation and at Jerusalem;",
+      "ko": "내가 처음부터 내 민족 중에와 예루살렘에서 젊었을 때 생활한 상태를 유대인이 다 아는바라",
+      "source_text_hash": "5a65521b901b942de1e9eba102d7752eb073ea881ea6ac4a6a2208af4ca153f1",
+      "translation_text_hash": "9a319cb96398000ac9ed7bc57906b1f57bccebb7c274c53c0f31a2d05f83934d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 처음부터 내 민족 중에와 예루살렘에서 젊었을 때 생활한 상태를 유대인이 다 아는바라"
+      ],
+      "raw_text_hashes": [
+        "9a319cb96398000ac9ed7bc57906b1f57bccebb7c274c53c0f31a2d05f83934d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:5",
+      "sequence": 27825,
+      "chapter_label": "ACT 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "having known me from the first, if they are willing to testify, that after the strictest sect of our religion I lived a Pharisee.",
+      "ko": "일찍부터 나를 알았으니 저희가 증거하려 하면 내가 우리 종교의 가장 엄한 파를 좇아 바리새인의 생활을 하였다고 할 것이라",
+      "source_text_hash": "8007b8d55de8c761deae7f1c2422260b00da40fa5b1e92b320ac1ee4f3bf80c3",
+      "translation_text_hash": "bbf685b6e9a6a2d442c51cc2fb4fe2e215d4729b92a012d573c75e7260fbebd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일찍부터 나를 알았으니 저희가 증거하려 하면 내가 우리 종교의 가장 엄한 파를 좇아 바리새인의 생활을 하였다고 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "bbf685b6e9a6a2d442c51cc2fb4fe2e215d4729b92a012d573c75e7260fbebd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:6",
+      "sequence": 27826,
+      "chapter_label": "ACT 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Now I stand here to be judged for the hope of the promise made by God to our fathers,",
+      "ko": "이제도 여기 서서 신문받는 것은 하나님이 우리 조상에게 약속하신 것을 바라는 까닭이니",
+      "source_text_hash": "91b4a825c6a41dcd642f6743461e60e0a963f603bd7953074d3307466a1f3fff",
+      "translation_text_hash": "89c568af3226ae0083d806b37c7e3bd8611099f70e03e69e049f6afa375a38e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제도 여기 서서 신문받는 것은 하나님이 우리 조상에게 약속하신 것을 바라는 까닭이니"
+      ],
+      "raw_text_hashes": [
+        "89c568af3226ae0083d806b37c7e3bd8611099f70e03e69e049f6afa375a38e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:7",
+      "sequence": 27827,
+      "chapter_label": "ACT 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "which our twelve tribes, earnestly serving night and day, hope to attain. Concerning this hope I am accused by the Jews, King Agrippa!",
+      "ko": "이 약속은 우리 열 두 지파가 밤낮으로 간절히 하나님을 받들어 섬김으로 얻기를 바라는 바인데 아그립바왕이여 이 소망을 인하여 내가 유대인들에게 송사를 받는 것이니이다",
+      "source_text_hash": "d771889f14bfc86b702f01ea0b369a73fc1eb1434e8a5a9e66d03da1fc966157",
+      "translation_text_hash": "b1e32bc8959a2bc6e6f7b498ee0e3536c701beb6c5a1d3b82b8a937340882dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 약속은 우리 열 두 지파가 밤낮으로 간절히 하나님을 받들어 섬김으로 얻기를 바라는 바인데 아그립바왕이여 이 소망을 인하여 내가 유대인들에게 송사를 받는 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "b1e32bc8959a2bc6e6f7b498ee0e3536c701beb6c5a1d3b82b8a937340882dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:8",
+      "sequence": 27828,
+      "chapter_label": "ACT 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "Why is it judged incredible with you if God does raise the dead?",
+      "ko": "당신들은 하나님이 죽은 사람 다시 살리심을 어찌하여 못 믿을 것으로 여기나이까",
+      "source_text_hash": "dd2fbf53f57a3d3602ae3434efb3753d49eb95b30e2b0e1cc2122afbf4de3b89",
+      "translation_text_hash": "711d4ff7df77b8d6e4a4ecfc3dd327e5ee1ec6a9e2d66266e5b4b506a1a4bce0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신들은 하나님이 죽은 사람 다시 살리심을 어찌하여 못 믿을 것으로 여기나이까"
+      ],
+      "raw_text_hashes": [
+        "711d4ff7df77b8d6e4a4ecfc3dd327e5ee1ec6a9e2d66266e5b4b506a1a4bce0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:9",
+      "sequence": 27829,
+      "chapter_label": "ACT 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "“I myself most certainly thought that I ought to do many things contrary to the name of Jesus of Nazareth.",
+      "ko": "나도 나사렛 예수의 이름을 대적하여 범사를 행하여야 될줄 스스로 생각하고",
+      "source_text_hash": "7ff40154cd10ea63b983ce1fdc4aab62e5698279822d8cbcbe5a8b9c77b0aac7",
+      "translation_text_hash": "726633ef1c176b4de03fcb91d639a6c1d925cf322880824b11ed1f8356b7ee2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 나사렛 예수의 이름을 대적하여 범사를 행하여야 될줄 스스로 생각하고"
+      ],
+      "raw_text_hashes": [
+        "726633ef1c176b4de03fcb91d639a6c1d925cf322880824b11ed1f8356b7ee2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:10",
+      "sequence": 27830,
+      "chapter_label": "ACT 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "I also did this in Jerusalem. I both shut up many of the saints in prisons, having received authority from the chief priests; and when they were put to death I gave my vote against them.",
+      "ko": "예루살렘에서 이런 일을 행하여 대제사장들에게서 권세를 얻어 가지고 많은 성도를 옥에 가두며 또 죽일 때에 내가 가편 투표를 하였고",
+      "source_text_hash": "219b11151709e7ccb4639dd26abc4ca371d4024aacc3327998aac6746cbadc71",
+      "translation_text_hash": "6168ae56dc07552d7736e153531553852c57156f685444a1b3df0077042e3ef9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 이런 일을 행하여 대제사장들에게서 권세를 얻어 가지고 많은 성도를 옥에 가두며 또 죽일 때에 내가 가편 투표를 하였고"
+      ],
+      "raw_text_hashes": [
+        "6168ae56dc07552d7736e153531553852c57156f685444a1b3df0077042e3ef9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:11",
+      "sequence": 27831,
+      "chapter_label": "ACT 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Punishing them often in all the synagogues, I tried to make them blaspheme. Being exceedingly enraged against them, I persecuted them even to foreign cities.",
+      "ko": "또 모든 회당에서 여러번 형벌하여 강제로 모독하는 말을 하게 하고 저희를 대하여 심히 격분하여 외국 성까지도 가서 핍박하였고",
+      "source_text_hash": "3825aedcd7f667915c8d8cece5337bc5c4bfb47af3200341a62c8ab8fb6dbe0d",
+      "translation_text_hash": "b03a29b7087cd7df8f0cf058fff68e8f8c2013698fc86f74e545c260d0775631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 모든 회당에서 여러번 형벌하여 강제로 모독하는 말을 하게 하고 저희를 대하여 심히 격분하여 외국 성까지도 가서 핍박하였고"
+      ],
+      "raw_text_hashes": [
+        "b03a29b7087cd7df8f0cf058fff68e8f8c2013698fc86f74e545c260d0775631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:12",
+      "sequence": 27832,
+      "chapter_label": "ACT 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "“Whereupon as I traveled to Damascus with the authority and commission from the chief priests,",
+      "ko": "그 일로 대제사장들의 권세와 위임을 받고 다메섹으로 갔나이다",
+      "source_text_hash": "586ac19d4e976f0955788d299a6ca3f0b520619b7354a18298ce220adeab2c6b",
+      "translation_text_hash": "254cca9ea8574a7ee64b5e23004780ee4e0752726363b09357feabc1238a1ac4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 일로 대제사장들의 권세와 위임을 받고 다메섹으로 갔나이다"
+      ],
+      "raw_text_hashes": [
+        "254cca9ea8574a7ee64b5e23004780ee4e0752726363b09357feabc1238a1ac4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:13",
+      "sequence": 27833,
+      "chapter_label": "ACT 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "at noon, O king, I saw on the way a light from the sky, brighter than the sun, shining around me and those who traveled with me.",
+      "ko": "왕이여 때가 정오나 되어 길에서 보니 하늘로서 해보다 더 밝은 빛이 나와 내 동행들을 둘러 비추는지라",
+      "source_text_hash": "5509178655b217f050579349af9c7a270f58ae23f6de0364a33b26376bcbaa2c",
+      "translation_text_hash": "74f74f42ea668bfb1e7b6f6887a5931d4fb29d9d2bcc655b5e09c72275a9ebcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 때가 정오나 되어 길에서 보니 하늘로서 해보다 더 밝은 빛이 나와 내 동행들을 둘러 비추는지라"
+      ],
+      "raw_text_hashes": [
+        "74f74f42ea668bfb1e7b6f6887a5931d4fb29d9d2bcc655b5e09c72275a9ebcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:14",
+      "sequence": 27834,
+      "chapter_label": "ACT 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "When we had all fallen to the earth, I heard a voice saying to me in the Hebrew language, ‘Saul, Saul, why are you persecuting me? It is hard for you to kick against the goads.’",
+      "ko": "우리가 다 땅에 엎드러지매 내가 소리를 들으니 히브리 방언으로 이르되 사울아 사울아 네가 어찌하여 나를 핍박하느냐 가시채를 뒤발질하기가 네게 고생이니라",
+      "source_text_hash": "eb83546a0aca3190527ed163d8e4239c161fdec26ee97ba0d7dbd65ab2599774",
+      "translation_text_hash": "1020fcf6ad10a414e50125498a9688f9b91c2e4b58eac5e42996e9173e058d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다 땅에 엎드러지매 내가 소리를 들으니 히브리 방언으로 이르되 사울아 사울아 네가 어찌하여 나를 핍박하느냐 가시채를 뒤발질하기가 네게 고생이니라"
+      ],
+      "raw_text_hashes": [
+        "1020fcf6ad10a414e50125498a9688f9b91c2e4b58eac5e42996e9173e058d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:15",
+      "sequence": 27835,
+      "chapter_label": "ACT 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "“I said, ‘Who are you, Lord?’ “He said, ‘I am Jesus, whom you are persecuting.",
+      "ko": "내가 대답하되 주여 뉘시니이까 주께서 가라사대 나는 네가 핍박하는 예수라",
+      "source_text_hash": "15db52e8929c1cc448917aa9f5656ba23a6218d855bd681c3ceb2bcb60972e69",
+      "translation_text_hash": "97d8c13fc64bbc81dea8b46cbc20ff519b67b89581e916561a99b61df4bb66d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대답하되 주여 뉘시니이까 주께서 가라사대 나는 네가 핍박하는 예수라"
+      ],
+      "raw_text_hashes": [
+        "97d8c13fc64bbc81dea8b46cbc20ff519b67b89581e916561a99b61df4bb66d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:16",
+      "sequence": 27836,
+      "chapter_label": "ACT 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "But arise, and stand on your feet, for I have appeared to you for this purpose: to appoint you a servant and a witness both of the things which you have seen and of the things which I will reveal to you;",
+      "ko": "일어나 네 발로 서라 내가 네게 나타난 것은 곧 네가 나를 본 일과 장차 내가 네게 나타날 일에 너로 사환과 증인을 삼으려 함이니",
+      "source_text_hash": "3dd7c65274e9a0e319dc8683f97c166e2dd6a2ccab64c92c44a15539971813fd",
+      "translation_text_hash": "23bf4ba6c5bc42397405afca88434038c91bde91b974962224ecdceb36699f47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 네 발로 서라 내가 네게 나타난 것은 곧 네가 나를 본 일과 장차 내가 네게 나타날 일에 너로 사환과 증인을 삼으려 함이니"
+      ],
+      "raw_text_hashes": [
+        "23bf4ba6c5bc42397405afca88434038c91bde91b974962224ecdceb36699f47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:17",
+      "sequence": 27837,
+      "chapter_label": "ACT 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "delivering you from the people and from the Gentiles, to whom I send you,",
+      "ko": "이스라엘과 이방인들에게서 내가 너를 구원하여 저희에게 보내어",
+      "source_text_hash": "1bde6d7ca470fbb3bcfca331e5c3fd410b69b369dc4e9aa2f8738c3bd6eba331",
+      "translation_text_hash": "79cbf21ed17834532e9bacd25d009532dde913437f02f3f6e44d3872b4c17ccf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘과 이방인들에게서 내가 너를 구원하여 저희에게 보내어"
+      ],
+      "raw_text_hashes": [
+        "79cbf21ed17834532e9bacd25d009532dde913437f02f3f6e44d3872b4c17ccf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:18",
+      "sequence": 27838,
+      "chapter_label": "ACT 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "to open their eyes, that they may turn from darkness to light and from the power of Satan to God, that they may receive remission of sins and an inheritance among those who are sanctified by faith in me.’",
+      "ko": "그 눈을 뜨게 하여 어두움에서 빛으로, 사단의 권세에서 하나님께로 돌아가게 하고 죄 사함과 나를 믿어 거룩케 된 무리 가운데서 기업을 얻게 하리라 하더이다",
+      "source_text_hash": "e632eb1d0c49f10f6f370aeaea4dfcfdc23c36bc1719518805c1bf925ccdb99c",
+      "translation_text_hash": "91c7b908c8048adc900b8834c2ae7235a5a4d1c59ab58b0d5ba0c07c56343c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 눈을 뜨게 하여 어두움에서 빛으로, 사단의 권세에서 하나님께로 돌아가게 하고 죄 사함과 나를 믿어 거룩케 된 무리 가운데서 기업을 얻게 하리라 하더이다"
+      ],
+      "raw_text_hashes": [
+        "91c7b908c8048adc900b8834c2ae7235a5a4d1c59ab58b0d5ba0c07c56343c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:19",
+      "sequence": 27839,
+      "chapter_label": "ACT 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "“Therefore, King Agrippa, I was not disobedient to the heavenly vision,",
+      "ko": "아그립바왕이여 그러므로 하늘에서 보이신 것을 내가 거스리지 아니하고",
+      "source_text_hash": "da846556793d132b739470c2fbbeb5de0f6d5d16f8c48e4a94721a2512d89aeb",
+      "translation_text_hash": "a0ff58174872d9e303b4303660fd63608e2aaf445a246fd890907789ab51226c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바왕이여 그러므로 하늘에서 보이신 것을 내가 거스리지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "a0ff58174872d9e303b4303660fd63608e2aaf445a246fd890907789ab51226c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:20",
+      "sequence": 27840,
+      "chapter_label": "ACT 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "but declared first to them of Damascus, at Jerusalem, and throughout all the country of Judea, and also to the Gentiles, that they should repent and turn to God, doing works worthy of repentance.",
+      "ko": "먼저 다메섹에와 또 예루살렘에 있는 사람과 유대 온 땅과 이방인에게까지 회개하고 하나님께로 돌아가서 회개에 합당한 일을 행하라 선전하므로",
+      "source_text_hash": "93af2ecfd4cda34c2a6940a93a661fc86acb24b059f83c6d21aef04ebe13a59c",
+      "translation_text_hash": "7a5c2ee5751a1e84181e427a7cf444d21edd31b5e38342daa7fc7a10e50b7c68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 다메섹에와 또 예루살렘에 있는 사람과 유대 온 땅과 이방인에게까지 회개하고 하나님께로 돌아가서 회개에 합당한 일을 행하라 선전하므로"
+      ],
+      "raw_text_hashes": [
+        "7a5c2ee5751a1e84181e427a7cf444d21edd31b5e38342daa7fc7a10e50b7c68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:21",
+      "sequence": 27841,
+      "chapter_label": "ACT 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "For this reason the Jews seized me in the temple and tried to kill me.",
+      "ko": "유대인들이 성전에서 나를 잡아 죽이고자 하였으나",
+      "source_text_hash": "6c75d397cb84db53fdbf9980ed1d21634949086fbbff0feb95f8645fe176c377",
+      "translation_text_hash": "3c48559ad91c0563e65548b1f2373ef52610916a7f92e8c5211de571be88bf24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 성전에서 나를 잡아 죽이고자 하였으나"
+      ],
+      "raw_text_hashes": [
+        "3c48559ad91c0563e65548b1f2373ef52610916a7f92e8c5211de571be88bf24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:22",
+      "sequence": 27842,
+      "chapter_label": "ACT 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "Having therefore obtained the help that is from God, I stand to this day testifying both to small and great, saying nothing but what the prophets and Moses said would happen,",
+      "ko": "하나님의 도우심을 받아 내가 오늘까지 서서 높고 낮은 사람 앞에서 증거하는 것은 선지자들과 모세가 반드시 되리라고 말한것 밖에 없으니",
+      "source_text_hash": "ef3c5a82849f9f6dba7c28daee781c580024a27623c42cfc9fc780612536945f",
+      "translation_text_hash": "40aec81b5777920458bc11c339a2f9db8fb0175204340a2ca5d3e9a9ead1224a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 도우심을 받아 내가 오늘까지 서서 높고 낮은 사람 앞에서 증거하는 것은 선지자들과 모세가 반드시 되리라고 말한것 밖에 없으니"
+      ],
+      "raw_text_hashes": [
+        "40aec81b5777920458bc11c339a2f9db8fb0175204340a2ca5d3e9a9ead1224a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:23",
+      "sequence": 27843,
+      "chapter_label": "ACT 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "how the Christ must suffer, and how, by the resurrection of the dead, he would be first to proclaim light both to these people and to the Gentiles.”",
+      "ko": "곧 그리스도가 고난을 받으실 것과 죽은자 가운데서 먼저 다시 살아나사 이스라엘과 이방인들에게 빛을 선전하시리라 함이니이다 하니라",
+      "source_text_hash": "6392d458ee6b6f339154c3fb22cae4d2ce7ca4fe46c1043dc00c0e019692ed37",
+      "translation_text_hash": "c87289efe56cb6d0f1ddcfdcacbf165de9a658fbf40926617916a75be71bcc94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그리스도가 고난을 받으실 것과 죽은자 가운데서 먼저 다시 살아나사 이스라엘과 이방인들에게 빛을 선전하시리라 함이니이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "c87289efe56cb6d0f1ddcfdcacbf165de9a658fbf40926617916a75be71bcc94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:24",
+      "sequence": 27844,
+      "chapter_label": "ACT 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "As he thus made his defense, Festus said with a loud voice, “Paul, you are crazy! Your great learning is driving you insane!”",
+      "ko": "바울이 이같이 변명하매 베스도가 크게 소리하여 가로되 바울아 네가 미쳤도다 네 많은 학문이 너를 미치게 한다 하니",
+      "source_text_hash": "d6b6f826206e49bbea16dabbad79f6499570d460293c5073f16675768671e9e3",
+      "translation_text_hash": "25adbbc8cb32eea95072f47a10e303c13ef8758cd767b55464e0ee7dd7b4f32a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 이같이 변명하매 베스도가 크게 소리하여 가로되 바울아 네가 미쳤도다 네 많은 학문이 너를 미치게 한다 하니"
+      ],
+      "raw_text_hashes": [
+        "25adbbc8cb32eea95072f47a10e303c13ef8758cd767b55464e0ee7dd7b4f32a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:25",
+      "sequence": 27845,
+      "chapter_label": "ACT 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "But he said, “I am not crazy, most excellent Festus, but boldly declare words of truth and reasonableness.",
+      "ko": "바울이 가로되 베스도 각하여 내가 미친 것이 아니요 참되고 정신차린 말을 하나이다",
+      "source_text_hash": "276c2829df8f265135a4ffafb7ff6a708b2f09028631198aef564213eb397c15",
+      "translation_text_hash": "a30da98e2285f7d677ee0b62ef137f26a39f32f47fbb57e5d6a47d168bee703c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 베스도 각하여 내가 미친 것이 아니요 참되고 정신차린 말을 하나이다"
+      ],
+      "raw_text_hashes": [
+        "a30da98e2285f7d677ee0b62ef137f26a39f32f47fbb57e5d6a47d168bee703c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:26",
+      "sequence": 27846,
+      "chapter_label": "ACT 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "For the king knows of these things, to whom also I speak freely. For I am persuaded that none of these things is hidden from him, for this has not been done in a corner.",
+      "ko": "왕께서는 이 일을 아시기로 내가 왕께 담대히 말하노니 이 일에 하나라도 아시지 못함이 없는줄 믿나이다 이 일은 한편 구석에서 행한 것이 아니로소이다",
+      "source_text_hash": "cc9b5262c499c6fc5b87d6bf32d67519c828340081e15c50c5dfe110e3e5d4be",
+      "translation_text_hash": "02384bb48c0fee76ffcb62decec5424a90683be704acd1c9c0bfe4042c65bcf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께서는 이 일을 아시기로 내가 왕께 담대히 말하노니 이 일에 하나라도 아시지 못함이 없는줄 믿나이다 이 일은 한편 구석에서 행한 것이 아니로소이다"
+      ],
+      "raw_text_hashes": [
+        "02384bb48c0fee76ffcb62decec5424a90683be704acd1c9c0bfe4042c65bcf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:27",
+      "sequence": 27847,
+      "chapter_label": "ACT 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "King Agrippa, do you believe the prophets? I know that you believe.”",
+      "ko": "아그립바왕이여 선지자를 믿으시나이까 믿으시는 줄 아나이다",
+      "source_text_hash": "fdf76f6075c826b81897098dce49dd6c62f12140994243ed737ad15fce85f581",
+      "translation_text_hash": "3dba19ad4d7a270aedda87863c949cffbe4c0931283023ad6554ea299a17644d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바왕이여 선지자를 믿으시나이까 믿으시는 줄 아나이다"
+      ],
+      "raw_text_hashes": [
+        "3dba19ad4d7a270aedda87863c949cffbe4c0931283023ad6554ea299a17644d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:28",
+      "sequence": 27848,
+      "chapter_label": "ACT 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "Agrippa said to Paul, “With a little persuasion are you trying to make me a Christian?”",
+      "ko": "아그립바가 바울더러 이르되 네가 적은 말로 나를 권하여 그리스도인이 되게 하려 하는도다",
+      "source_text_hash": "b7af6370874dcf71f6bde9ca2b7b8f0c10c45d3838b78c81ea7759021230bbcb",
+      "translation_text_hash": "a248515598b8168dbc820656cf41c87a612a4cc00329a578a4e8edd400bd346e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아그립바가 바울더러 이르되 네가 적은 말로 나를 권하여 그리스도인이 되게 하려 하는도다"
+      ],
+      "raw_text_hashes": [
+        "a248515598b8168dbc820656cf41c87a612a4cc00329a578a4e8edd400bd346e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:29",
+      "sequence": 27849,
+      "chapter_label": "ACT 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "Paul said, “I pray to God, that whether with little or with much, not only you, but also all that hear me today, might become such as I am, except for these bonds.”",
+      "ko": "바울이 가로되 말이 적으나 많으나 당신 뿐아니라 오늘 내 말을 듣는 모든 사람도 다 이렇게 결박한 것 외에는 나와 같이 되기를 하나님께 원하노이다 하니라",
+      "source_text_hash": "ad842222f1bfa24bb66ddc35474b8db3e93afdb940c2155eca783a1c42465e69",
+      "translation_text_hash": "b2256745fab86cc0ede391674ac1244cf1f1c4c8355ee09a8b4caf78045b984f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이 가로되 말이 적으나 많으나 당신 뿐아니라 오늘 내 말을 듣는 모든 사람도 다 이렇게 결박한 것 외에는 나와 같이 되기를 하나님께 원하노이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "b2256745fab86cc0ede391674ac1244cf1f1c4c8355ee09a8b4caf78045b984f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:30",
+      "sequence": 27850,
+      "chapter_label": "ACT 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "The king rose up with the governor and Bernice, and those who sat with them.",
+      "ko": "왕과 총독과 버니게와 그 함께 앉은 사람들이 다 일어나서",
+      "source_text_hash": "e49744563c3bd65ddda1d7dc39ce10e75cc5abea90e1d6e0a51867d3c3985728",
+      "translation_text_hash": "638c80aecb9823651d5ed5009e65fa82e3bbd03581dd3b0ebd4d847405cb11a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 총독과 버니게와 그 함께 앉은 사람들이 다 일어나서"
+      ],
+      "raw_text_hashes": [
+        "638c80aecb9823651d5ed5009e65fa82e3bbd03581dd3b0ebd4d847405cb11a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:31",
+      "sequence": 27851,
+      "chapter_label": "ACT 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "When they had withdrawn, they spoke to one another, saying, “This man does nothing worthy of death or of bonds.”",
+      "ko": "물러가 서로 말하되 이 사람은 사형이나 결박을 당할만한 행사가 없다 하더라",
+      "source_text_hash": "1ffabe47bd5a281c32969e6c4521012e96546d125c50cafd2ee03127261ac74f",
+      "translation_text_hash": "e4154d798a09f29aee840687f9105f71ded649b4df006a39d499f4e1742cc926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물러가 서로 말하되 이 사람은 사형이나 결박을 당할만한 행사가 없다 하더라"
+      ],
+      "raw_text_hashes": [
+        "e4154d798a09f29aee840687f9105f71ded649b4df006a39d499f4e1742cc926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:26:32",
+      "sequence": 27852,
+      "chapter_label": "ACT 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "Agrippa said to Festus, “This man might have been set free if he had not appealed to Caesar.”",
+      "ko": "이에 아그립바가 베스도더러 일러 가로되 이 사람이 만일 가이사에게 호소하지 아니하였더면 놓을 수 있을뻔하였다 하니라",
+      "source_text_hash": "9738e599f2d7d6f49c284b6cd15131974ffda98703d14749ef2dee639a963ffc",
+      "translation_text_hash": "c379b4dce86f3e79920619e7466878cafff35ea51c5bd73cf257712dccb57573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아그립바가 베스도더러 일러 가로되 이 사람이 만일 가이사에게 호소하지 아니하였더면 놓을 수 있을뻔하였다 하니라"
+      ],
+      "raw_text_hashes": [
+        "c379b4dce86f3e79920619e7466878cafff35ea51c5bd73cf257712dccb57573"
+      ]
+    }
+  ]
+}

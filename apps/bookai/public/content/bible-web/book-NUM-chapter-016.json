@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:016",
+  "unit_ordinal": 133,
+  "unit_label": "NUM 16",
+  "book_code": "NUM",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:16:1",
+      "sequence": 4196,
+      "chapter_label": "NUM 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "Now Korah, the son of Izhar, the son of Kohath, the son of Levi, with Dathan and Abiram, the sons of Eliab, and On, the son of Peleth, sons of Reuben, took some men.",
+      "ko": "레위의 증손 고핫의 손자 이스할의 아들 고라와 르우벤 자손 엘리압의 아들 다단과 아비람과 벨렛의 아들 온이 당을 짓고",
+      "source_text_hash": "25f5ef94dafb29255416f45291d610dd44f8017a4722cb8a8da94c6270a9930b",
+      "translation_text_hash": "40ec8190cec6f71e817e7c77bff1a43c66181dabe1239b30d873c41c93081d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 증손 고핫의 손자 이스할의 아들 고라와 르우벤 자손 엘리압의 아들 다단과 아비람과 벨렛의 아들 온이 당을 짓고"
+      ],
+      "raw_text_hashes": [
+        "40ec8190cec6f71e817e7c77bff1a43c66181dabe1239b30d873c41c93081d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:2",
+      "sequence": 4197,
+      "chapter_label": "NUM 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "They rose up before Moses, with some of the children of Israel, two hundred fifty princes of the congregation, called to the assembly, men of renown.",
+      "ko": "이스라엘 자손 총회에 택함을 받은 자 곧 회중에 유명한 어떤 족장 이백 오십인과 함께 일어나서 모세를 거스리니라",
+      "source_text_hash": "372e572c7e33bdb3cf4db30d2dec757ad172accf884b20690e80dfaa51179671",
+      "translation_text_hash": "efd303d316f9a8a8d3da86b889d207a331d6a72a5336fcbab499ed3d0d3658ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 총회에 택함을 받은 자 곧 회중에 유명한 어떤 족장 이백 오십인과 함께 일어나서 모세를 거스리니라"
+      ],
+      "raw_text_hashes": [
+        "efd303d316f9a8a8d3da86b889d207a331d6a72a5336fcbab499ed3d0d3658ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:3",
+      "sequence": 4198,
+      "chapter_label": "NUM 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "They assembled themselves together against Moses and against Aaron, and said to them, “You take too much on yourself, since all the congregation are holy, everyone of them, and the LORD is among them! Why do you lift yourselves up above the LORD’s assembly?”",
+      "ko": "그들이 모여서 모세와 아론을 거스려 그들에게 이르되 너희가 분수에 지나도다 회중이 다 각각 거룩하고 여호와께서도 그들 중에 계시거늘 너희가 어찌하여 여호와의 총회 위에 스스로 높이느뇨",
+      "source_text_hash": "dc364fbf0fc8ec7b6290219d0e52d41eb8634cd74e6f37ae019a31f1a0535785",
+      "translation_text_hash": "12fd7629f9d089342800e9cfec6c1a3b6bb64eadba13548b96dfe1ccbfc27a5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모여서 모세와 아론을 거스려 그들에게 이르되 너희가 분수에 지나도다 회중이 다 각각 거룩하고 여호와께서도 그들 중에 계시거늘 너희가 어찌하여 여호와의 총회 위에 스스로 높이느뇨"
+      ],
+      "raw_text_hashes": [
+        "12fd7629f9d089342800e9cfec6c1a3b6bb64eadba13548b96dfe1ccbfc27a5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:4",
+      "sequence": 4199,
+      "chapter_label": "NUM 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "When Moses heard it, he fell on his face.",
+      "ko": "모세가 듣고 엎드렸다가",
+      "source_text_hash": "c5e6f2cde4da8833f5ea945fa9e9ae5a198a064ebc6ca46ece13fa5c869a8422",
+      "translation_text_hash": "63dce1a23f2566e462a04fdff94636c60db9c91aecf0f63f6ce9f21d0e21014a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 듣고 엎드렸다가"
+      ],
+      "raw_text_hashes": [
+        "63dce1a23f2566e462a04fdff94636c60db9c91aecf0f63f6ce9f21d0e21014a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:5",
+      "sequence": 4200,
+      "chapter_label": "NUM 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "He said to Korah and to all his company, “In the morning, the LORD will show who are his, and who is holy, and will cause him to come near to him. Even him whom he shall choose, he will cause to come near to him.",
+      "ko": "고라와 그 모든 무리에게 말하여 가로되 아침에 여호와께서 자기에게 속한 자가 누구인지, 거룩한 자가 누구인지 보이시고 그 자를 자기에게 가까이 나아오게 하시되 곧 그가 택하신 자를 자기에게 가까이 나아오게 하시리니",
+      "source_text_hash": "766a86953735525f9286afc8cb25ed4516cf1cf0f44cfd4fb272e2110987d027",
+      "translation_text_hash": "6ced2fd50bd90d452cee014f2b3b1c8893611040a240b0751b12fef59994a274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라와 그 모든 무리에게 말하여 가로되 아침에 여호와께서 자기에게 속한 자가 누구인지, 거룩한 자가 누구인지 보이시고 그 자를 자기에게 가까이 나아오게 하시되 곧 그가 택하신 자를 자기에게 가까이 나아오게 하시리니"
+      ],
+      "raw_text_hashes": [
+        "6ced2fd50bd90d452cee014f2b3b1c8893611040a240b0751b12fef59994a274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:6",
+      "sequence": 4201,
+      "chapter_label": "NUM 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "Do this: have Korah and all his company take censers,",
+      "ko": "이렇게 하라 너 고라와 너의 모든 무리는 향로를 취하고",
+      "source_text_hash": "ac30788d813a7217f152688531b0a29188c5e323cad8d9e8754eb67434f90d0c",
+      "translation_text_hash": "6c22fe3709ba724e1d9d9b0533ac94d7242ee8a3ad5f5b424bbf0d8e38ab6db2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 하라 너 고라와 너의 모든 무리는 향로를 취하고"
+      ],
+      "raw_text_hashes": [
+        "6c22fe3709ba724e1d9d9b0533ac94d7242ee8a3ad5f5b424bbf0d8e38ab6db2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:7",
+      "sequence": 4202,
+      "chapter_label": "NUM 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "put fire in them, and put incense on them before the LORD tomorrow. It shall be that the man whom the LORD chooses, he shall be holy. You have gone too far, you sons of Levi!”",
+      "ko": "내일 여호와 앞에서 그 향로에 불을 담고 그 위에 향을 두라 그 때에 여호와의 택하신 자는 거룩하게 되리라 레위 자손들아 너희가 너무 분수에 지나치느니라",
+      "source_text_hash": "c29c14491f599f876e6e6de7cca5af2530f5d2eccd884a679eebc8c97063990a",
+      "translation_text_hash": "33684be8f83f9671f5fc9d16cc5939610d6a9b8731ef52186f36fe0686fe4365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내일 여호와 앞에서 그 향로에 불을 담고 그 위에 향을 두라 그 때에 여호와의 택하신 자는 거룩하게 되리라 레위 자손들아 너희가 너무 분수에 지나치느니라"
+      ],
+      "raw_text_hashes": [
+        "33684be8f83f9671f5fc9d16cc5939610d6a9b8731ef52186f36fe0686fe4365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:8",
+      "sequence": 4203,
+      "chapter_label": "NUM 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "Moses said to Korah, “Hear now, you sons of Levi!",
+      "ko": "모세가 또 고라에게 이르되 너희 레위 자손들아 들으라",
+      "source_text_hash": "4192a6a479b7b657d682ad4fa4332875672760f4735a96c52f7f44a5e7239561",
+      "translation_text_hash": "c16efa9b3f33f31ce7bacf7212b57cf892aa781c2fd77478a57c93334a80c4ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 또 고라에게 이르되 너희 레위 자손들아 들으라"
+      ],
+      "raw_text_hashes": [
+        "c16efa9b3f33f31ce7bacf7212b57cf892aa781c2fd77478a57c93334a80c4ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:9",
+      "sequence": 4204,
+      "chapter_label": "NUM 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Is it a small thing to you that the God of Israel has separated you from the congregation of Israel, to bring you near to himself, to do the service of the LORD’s tabernacle, and to stand before the congregation to minister to them;",
+      "ko": "이스라엘의 하나님이 이스라엘 회중에서 너희를 구별하여 자기에게 가까이 하게 하사 여호와의 성막에서 봉사하게 하시며 회중 앞에 서서 그들을 대신하여 섬기게 하심이 너희에게 작은 일이겠느냐",
+      "source_text_hash": "249e1edad13689c9298779b4acb32170121da4f382ef76ecc04449473e05dc29",
+      "translation_text_hash": "a23ba52b778dac00b59c500ce675f18b1fc39f0fcfbdec555745b89695699a3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님이 이스라엘 회중에서 너희를 구별하여 자기에게 가까이 하게 하사 여호와의 성막에서 봉사하게 하시며 회중 앞에 서서 그들을 대신하여 섬기게 하심이 너희에게 작은 일이겠느냐"
+      ],
+      "raw_text_hashes": [
+        "a23ba52b778dac00b59c500ce675f18b1fc39f0fcfbdec555745b89695699a3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:10",
+      "sequence": 4205,
+      "chapter_label": "NUM 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "and that he has brought you near, and all your brothers the sons of Levi with you? Do you seek the priesthood also?",
+      "ko": "하나님이 너와 네 모든 형제 레위 자손으로 너와 함께 가까이 오게 하신 것이 작은 일이 아니어늘 너희가 오히려 제사장의 직분을 구하느냐",
+      "source_text_hash": "cc6a9f5b59e63712dd0114b9638c753f2b5231f7a2e2354cc86dbc25123953ed",
+      "translation_text_hash": "d3fa5a54342bd73ef265f68e86ed9ef727b897eaee153ca3eee2e9917dc56fb9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 너와 네 모든 형제 레위 자손으로 너와 함께 가까이 오게 하신 것이 작은 일이 아니어늘 너희가 오히려 제사장의 직분을 구하느냐"
+      ],
+      "raw_text_hashes": [
+        "d3fa5a54342bd73ef265f68e86ed9ef727b897eaee153ca3eee2e9917dc56fb9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:11",
+      "sequence": 4206,
+      "chapter_label": "NUM 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "Therefore you and all your company have gathered together against the LORD! What is Aaron that you complain against him?”",
+      "ko": "이를 위하여 너와 너의 무리가 다 모여서 여호와를 거스리는도다 아론은 어떠한 사람이관대 너희가 그를 원망하느냐",
+      "source_text_hash": "ecef2b27144a988cfabfebc3a84fd37258aa1bce4970c12239ad4ac1d9297784",
+      "translation_text_hash": "cc164955d07e2b9930973bb894003b4b7379e157577c4586857ae079f8405d63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 너와 너의 무리가 다 모여서 여호와를 거스리는도다 아론은 어떠한 사람이관대 너희가 그를 원망하느냐"
+      ],
+      "raw_text_hashes": [
+        "cc164955d07e2b9930973bb894003b4b7379e157577c4586857ae079f8405d63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:12",
+      "sequence": 4207,
+      "chapter_label": "NUM 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "Moses sent to call Dathan and Abiram, the sons of Eliab; and they said, “We won’t come up!",
+      "ko": "모세가 엘리압의 아들 다단과 아비람을 부르러 보내었더니 그들이 가로되 우리는 올라가지 않겠노라",
+      "source_text_hash": "7d204a235e7cd5a3a59954763680cb9b37d28ff4f9b517c48350eb811f44e579",
+      "translation_text_hash": "83d9950df22c55a199a01db7fe81f16ab3fc02ed5179b356b9e346600c26df96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 엘리압의 아들 다단과 아비람을 부르러 보내었더니 그들이 가로되 우리는 올라가지 않겠노라"
+      ],
+      "raw_text_hashes": [
+        "83d9950df22c55a199a01db7fe81f16ab3fc02ed5179b356b9e346600c26df96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:13",
+      "sequence": 4208,
+      "chapter_label": "NUM 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "Is it a small thing that you have brought us up out of a land flowing with milk and honey, to kill us in the wilderness, but you must also make yourself a prince over us?",
+      "ko": "네가 우리를 젖과 꿀이 흐르는 땅에서 이끌어 내어 광야에서 죽이려 함이 어찌 작은 일이기에 오히려 스스로 우리 위에 왕이 되려 하느냐",
+      "source_text_hash": "e77dc1bf9805b4436e2a511601ab2de6a5ffff65a9053f8f47d78bb8f8c6874e",
+      "translation_text_hash": "eccdcebb153a7b9aeb0de93196c75dd6310cce5a4f3d0722965197ac2d34c071",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 우리를 젖과 꿀이 흐르는 땅에서 이끌어 내어 광야에서 죽이려 함이 어찌 작은 일이기에 오히려 스스로 우리 위에 왕이 되려 하느냐"
+      ],
+      "raw_text_hashes": [
+        "eccdcebb153a7b9aeb0de93196c75dd6310cce5a4f3d0722965197ac2d34c071"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:14",
+      "sequence": 4209,
+      "chapter_label": "NUM 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "Moreover you haven’t brought us into a land flowing with milk and honey, nor given us inheritance of fields and vineyards. Will you put out the eyes of these men? We won’t come up.”",
+      "ko": "이뿐 아니라 네가 우리를 젖과 꿀이 흐르는 땅으로 인도하여 들이지도 아니하고 밭도 포도원도 우리에게 기업으로 주지 아니하니 네가 이 사람들의 눈을 빼려느냐 우리는 올라가지 아니하겠노라",
+      "source_text_hash": "eecf2b8d66c12b85fe2a3f7c42b6904503bda04c4d531613b5709195c615e3e3",
+      "translation_text_hash": "02374dc7b7a65d1bcd4af1d811b57d3adbc2df2335605cb6e063ca4cf58eef1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 네가 우리를 젖과 꿀이 흐르는 땅으로 인도하여 들이지도 아니하고 밭도 포도원도 우리에게 기업으로 주지 아니하니 네가 이 사람들의 눈을 빼려느냐 우리는 올라가지 아니하겠노라"
+      ],
+      "raw_text_hashes": [
+        "02374dc7b7a65d1bcd4af1d811b57d3adbc2df2335605cb6e063ca4cf58eef1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:15",
+      "sequence": 4210,
+      "chapter_label": "NUM 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "Moses was very angry, and said to the LORD, “Don’t respect their offering. I have not taken one donkey from them, neither have I hurt one of them.”",
+      "ko": "모세가 심히 노하여 여호와께 여짜오되 주는 그들의 예물을 돌아보지 마옵소서 나는 그들의 한 나귀도 취하지 아니하였고 그들의 한 사람도 해하지 아니하였나이다 하고",
+      "source_text_hash": "cc8a67736a24f3721752d0b5a2833b976fc67bc5130a95b48fb313f8a265ebd0",
+      "translation_text_hash": "9e7146b71714a34a93ce1f1392764af78edd60dc173db385729748dca3812dbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 심히 노하여 여호와께 여짜오되 주는 그들의 예물을 돌아보지 마옵소서 나는 그들의 한 나귀도 취하지 아니하였고 그들의 한 사람도 해하지 아니하였나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "9e7146b71714a34a93ce1f1392764af78edd60dc173db385729748dca3812dbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:16",
+      "sequence": 4211,
+      "chapter_label": "NUM 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "Moses said to Korah, “You and all your company go before the LORD, you, and they, and Aaron, tomorrow.",
+      "ko": "이에 고라에게 이르되 너와 너의 온 무리는 아론과 함께 내일 여호와 앞으로 나아오되",
+      "source_text_hash": "80cdb16756fd18a4735978ccea7a46631f1041cde76c59818826681b9109942c",
+      "translation_text_hash": "bc45aa541ba607fe9c7b43c5512ed8e33e1cca6c8550d279d12b820e9d85d7d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 고라에게 이르되 너와 너의 온 무리는 아론과 함께 내일 여호와 앞으로 나아오되"
+      ],
+      "raw_text_hashes": [
+        "bc45aa541ba607fe9c7b43c5512ed8e33e1cca6c8550d279d12b820e9d85d7d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:17",
+      "sequence": 4212,
+      "chapter_label": "NUM 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "Each man take his censer and put incense on it, and each man bring before the LORD his censer, two hundred fifty censers; you also, and Aaron, each with his censer.”",
+      "ko": "너희는 각기 향로를 잡고 그 위에 향을 두고 각 사람이 그 향로를 여호와 앞으로 가져오라 향로는 모두 이백 오십이라 너와 아론도 각각 향로를 가지고 올찌니라",
+      "source_text_hash": "a068029c04f3294edf2d48f16c40c1eb99d2235a9992c27f0f404646555fc7f3",
+      "translation_text_hash": "ad2a7db848bddcb14172cb6d2f5628ba74c30113033c4e2976776445ce4980f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 각기 향로를 잡고 그 위에 향을 두고 각 사람이 그 향로를 여호와 앞으로 가져오라 향로는 모두 이백 오십이라 너와 아론도 각각 향로를 가지고 올찌니라"
+      ],
+      "raw_text_hashes": [
+        "ad2a7db848bddcb14172cb6d2f5628ba74c30113033c4e2976776445ce4980f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:18",
+      "sequence": 4213,
+      "chapter_label": "NUM 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "They each took his censer, and put fire in it, and laid incense on it, and stood at the door of the Tent of Meeting with Moses and Aaron.",
+      "ko": "그들이 각기 향로를 취하여 불을 담고 향을 그 위에 두고 모세와 아론으로 더불어 회막문에 서니라",
+      "source_text_hash": "0dd1495a392399bf0de264fcdbc5555d21d81ccb26f9205ff5c139431f44d09a",
+      "translation_text_hash": "2c24b451c17119ddc2fe2c073cce300858fb9276d9739c66c4f99ad4e0fc3c43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 각기 향로를 취하여 불을 담고 향을 그 위에 두고 모세와 아론으로 더불어 회막문에 서니라"
+      ],
+      "raw_text_hashes": [
+        "2c24b451c17119ddc2fe2c073cce300858fb9276d9739c66c4f99ad4e0fc3c43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:19",
+      "sequence": 4214,
+      "chapter_label": "NUM 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "Korah assembled all the congregation opposite them to the door of the Tent of Meeting. The LORD’s glory appeared to all the congregation.",
+      "ko": "고라가 온 회중을 회막문에 모아 놓고 그 두 사람을 대적하려 하매 여호와의 영광이 온 회중에게 나타나시니라",
+      "source_text_hash": "56b8dbcfa6d78a625cfabdc3638634008d15f97dab069df51b5ce9eb144ac073",
+      "translation_text_hash": "2c03b1d3745f8542d39124a9919ac30378500b625cf243b3820ef3ab67edc132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라가 온 회중을 회막문에 모아 놓고 그 두 사람을 대적하려 하매 여호와의 영광이 온 회중에게 나타나시니라"
+      ],
+      "raw_text_hashes": [
+        "2c03b1d3745f8542d39124a9919ac30378500b625cf243b3820ef3ab67edc132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:20",
+      "sequence": 4215,
+      "chapter_label": "NUM 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:21",
+      "sequence": 4216,
+      "chapter_label": "NUM 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "“Separate yourselves from among this congregation, that I may consume them in a moment!”",
+      "ko": "너희는 이 회중에게서 떠나라 내가 순식간에 그들을 멸하려 하노라",
+      "source_text_hash": "2b85f9ca9bbba6f5e2aeedb0a2c9ffea8e5c7baca53a5c4e6d825f62bf14ee7b",
+      "translation_text_hash": "020a0bd077b31101c60ec0e8acf95a0416cee07cc002d653082173ebeea52372",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 회중에게서 떠나라 내가 순식간에 그들을 멸하려 하노라"
+      ],
+      "raw_text_hashes": [
+        "020a0bd077b31101c60ec0e8acf95a0416cee07cc002d653082173ebeea52372"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:22",
+      "sequence": 4217,
+      "chapter_label": "NUM 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "They fell on their faces, and said, “God, the God of the spirits of all flesh, shall one man sin, and will you be angry with all the congregation?”",
+      "ko": "그 두 사람이 엎드려 가로되 하나님이여 모든 육체의 생명의 하나님이여 한 사람이 범죄하였거늘 온 회중에게 진노하시나이까",
+      "source_text_hash": "caa9f227bdf107b406d7dc7d8bdea04735da070a5f5bf0bc04d5b4428f88b6c4",
+      "translation_text_hash": "f9a1ad591038858db8cb70564fff42ad4d914a09a4cadf62edcf2edde99bde23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 사람이 엎드려 가로되 하나님이여 모든 육체의 생명의 하나님이여 한 사람이 범죄하였거늘 온 회중에게 진노하시나이까"
+      ],
+      "raw_text_hashes": [
+        "f9a1ad591038858db8cb70564fff42ad4d914a09a4cadf62edcf2edde99bde23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:23",
+      "sequence": 4218,
+      "chapter_label": "NUM 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:24",
+      "sequence": 4219,
+      "chapter_label": "NUM 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "“Speak to the congregation, saying, ‘Get away from around the tent of Korah, Dathan, and Abiram!’”",
+      "ko": "회중에게 명하여 이르기를 너희는 고라와 다단과 아비람의 장막 사면에서 떠나라 하라",
+      "source_text_hash": "119e6e50aa7643097f5b1a2db43be219046e30a0401e009196accaa396aca882",
+      "translation_text_hash": "b170f4051a1465339dcf1ea76fc50c417819f247f74cf91bf56cdb767e72aca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중에게 명하여 이르기를 너희는 고라와 다단과 아비람의 장막 사면에서 떠나라 하라"
+      ],
+      "raw_text_hashes": [
+        "b170f4051a1465339dcf1ea76fc50c417819f247f74cf91bf56cdb767e72aca5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:25",
+      "sequence": 4220,
+      "chapter_label": "NUM 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "Moses rose up and went to Dathan and Abiram; and the elders of Israel followed him.",
+      "ko": "모세가 일어나 다단과 아비람에게로 가니 이스라엘 장로들이 좇았더라",
+      "source_text_hash": "cac97e0ab20ed27dca24cfc039eb6108df6360ce18e72cb52dd936a0217d925a",
+      "translation_text_hash": "79107304c105f6c62680dca3050b1f4a7b34e8d8753613cebd6be627bd5b943d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 일어나 다단과 아비람에게로 가니 이스라엘 장로들이 좇았더라"
+      ],
+      "raw_text_hashes": [
+        "79107304c105f6c62680dca3050b1f4a7b34e8d8753613cebd6be627bd5b943d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:26",
+      "sequence": 4221,
+      "chapter_label": "NUM 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "He spoke to the congregation, saying, “Depart, please, from the tents of these wicked men, and touch nothing of theirs, lest you be consumed in all their sins!”",
+      "ko": "모세가 회중에게 일러 가로되 이 악인들의 장막에서 떠나고 그들의 물건은 아무 것도 만지지 말라 그들의 모든 죄중에서 너희도 멸망할까 두려워 하노라 하매",
+      "source_text_hash": "6244a93379fe324fbff37b2abaf5ad403a823e43b22326cd23b3b77fb516bdb7",
+      "translation_text_hash": "031192d3280e475dce14f474204a9080870d84989bc0152507782ff2adc6d743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회중에게 일러 가로되 이 악인들의 장막에서 떠나고 그들의 물건은 아무 것도 만지지 말라 그들의 모든 죄중에서 너희도 멸망할까 두려워 하노라 하매"
+      ],
+      "raw_text_hashes": [
+        "031192d3280e475dce14f474204a9080870d84989bc0152507782ff2adc6d743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:27",
+      "sequence": 4222,
+      "chapter_label": "NUM 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "So they went away from the tent of Korah, Dathan, and Abiram, on every side. Dathan and Abiram came out, and stood at the door of their tents with their wives, their sons, and their little ones.",
+      "ko": "무리가 고라와 다단과 아비람의 장막 사면을 떠나고 다단과 아비람은 그 처자와 유아들과 함께 나와서 자기 장막문에 선지라",
+      "source_text_hash": "5e43bffa452a1807938a55321ba9d03afc9f8573e38cbca2b5bd01d43a2cc355",
+      "translation_text_hash": "33bef31916bcd773f383a4f4897a42af2333d7904bed1160a0c2cff600fa1ffc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 고라와 다단과 아비람의 장막 사면을 떠나고 다단과 아비람은 그 처자와 유아들과 함께 나와서 자기 장막문에 선지라"
+      ],
+      "raw_text_hashes": [
+        "33bef31916bcd773f383a4f4897a42af2333d7904bed1160a0c2cff600fa1ffc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:28",
+      "sequence": 4223,
+      "chapter_label": "NUM 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "Moses said, “Hereby you shall know that the LORD has sent me to do all these works; for they are not from my own mind.",
+      "ko": "모세가 가로되 여호와께서 나를 보내사 이 모든 일을 행케 하신 것이요 나의 임의로 함이 아닌줄을 이 일로 인하여 알리라",
+      "source_text_hash": "87481b4da848d6b9f114e91683763b4a021b8c2ce7a439abdc511e238695b0c2",
+      "translation_text_hash": "44d2cace019fbf4589ee19ee304ab11d6576d1e4426743a7e5a951c8083cb101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 여호와께서 나를 보내사 이 모든 일을 행케 하신 것이요 나의 임의로 함이 아닌줄을 이 일로 인하여 알리라"
+      ],
+      "raw_text_hashes": [
+        "44d2cace019fbf4589ee19ee304ab11d6576d1e4426743a7e5a951c8083cb101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:29",
+      "sequence": 4224,
+      "chapter_label": "NUM 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "If these men die the common death of all men, or if they experience what all men experience, then the LORD hasn’t sent me.",
+      "ko": "곧 이 사람들의 죽음이 모든 사람과 일반이요 그들의 당하는 벌이 모든 사람의 당하는 벌과 일반이면 여호와께서 나를 보내심이 아니어니와",
+      "source_text_hash": "8330938faea04525ca202c12be70dfc4663798f336138375541567f67add04d4",
+      "translation_text_hash": "12674206c9368c797a051b775fba1986a642d4fa8c5d4b6cb6d4903fe1231226",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이 사람들의 죽음이 모든 사람과 일반이요 그들의 당하는 벌이 모든 사람의 당하는 벌과 일반이면 여호와께서 나를 보내심이 아니어니와"
+      ],
+      "raw_text_hashes": [
+        "12674206c9368c797a051b775fba1986a642d4fa8c5d4b6cb6d4903fe1231226"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:30",
+      "sequence": 4225,
+      "chapter_label": "NUM 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "But if the LORD makes a new thing, and the ground opens its mouth, and swallows them up with all that belong to them, and they go down alive into Sheol, then you shall understand that these men have despised the LORD.”",
+      "ko": "만일 여호와께서 새 일을 행하사 땅으로 입을 열어 이 사람들과 그들의 모든 소속을 삼켜 산채로 음부에 빠지게 하시면 이 사람들이 과연 여호와를 멸시한 것인줄을 너희가 알리라",
+      "source_text_hash": "6e4b34e3ecc045c9b8bad37d8f56711afee528c780c6db226e4fd4ffeadc3819",
+      "translation_text_hash": "cb037955b05b688fc5a00c42782d68366c4e550d6fa4eaca403afd9da985c3d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 여호와께서 새 일을 행하사 땅으로 입을 열어 이 사람들과 그들의 모든 소속을 삼켜 산채로 음부에 빠지게 하시면 이 사람들이 과연 여호와를 멸시한 것인줄을 너희가 알리라"
+      ],
+      "raw_text_hashes": [
+        "cb037955b05b688fc5a00c42782d68366c4e550d6fa4eaca403afd9da985c3d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:31",
+      "sequence": 4226,
+      "chapter_label": "NUM 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "As he finished speaking all these words, the ground that was under them split apart.",
+      "ko": "이 모든 말을 마치는 동시에 그들의 밑의 땅이 갈라지니라",
+      "source_text_hash": "e5ed1f97c5863b4e0875f19a11d4ce59b8dfa0e77f007e3782521f9203479308",
+      "translation_text_hash": "0c25d60357ac696744a4aa5a1293d95cc4c358cdb6ba846c5f7097a13a6a4d6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 말을 마치는 동시에 그들의 밑의 땅이 갈라지니라"
+      ],
+      "raw_text_hashes": [
+        "0c25d60357ac696744a4aa5a1293d95cc4c358cdb6ba846c5f7097a13a6a4d6c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:32",
+      "sequence": 4227,
+      "chapter_label": "NUM 16",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 32
+        }
+      ],
+      "en": "The earth opened its mouth and swallowed them up with their households, all of Korah’s men, and all their goods.",
+      "ko": "땅이 그 입을 열어 그들과 그 가족과 고라에게 속한 모든 사람과 그 물건을 삼키매",
+      "source_text_hash": "e9ae488d3643df1cc37a9936f5ac07479036cf56711016f68034c402b8dbbb58",
+      "translation_text_hash": "c0eed34ef91bba7ba97b9be0388fdc0a448e249ba8b8b85a61fb4cb5ab92f859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그 입을 열어 그들과 그 가족과 고라에게 속한 모든 사람과 그 물건을 삼키매"
+      ],
+      "raw_text_hashes": [
+        "c0eed34ef91bba7ba97b9be0388fdc0a448e249ba8b8b85a61fb4cb5ab92f859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:33",
+      "sequence": 4228,
+      "chapter_label": "NUM 16",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 33
+        }
+      ],
+      "en": "So they, and all that belonged to them went down alive into Sheol. The earth closed on them, and they perished from among the assembly.",
+      "ko": "그들과 그 모든 소속이 산채로 음부에 빠지며 땅이 그 위에 합하니 그들이 총회 중에서 망하니라",
+      "source_text_hash": "bd3dfa7eb9f239c49ec5af1724f967959d3ffdb7604b17751009d6bb12fba62a",
+      "translation_text_hash": "8dace3483809ead1934d234b1676ca09adff26f5f5ac00f6d86ee91b6bb80a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들과 그 모든 소속이 산채로 음부에 빠지며 땅이 그 위에 합하니 그들이 총회 중에서 망하니라"
+      ],
+      "raw_text_hashes": [
+        "8dace3483809ead1934d234b1676ca09adff26f5f5ac00f6d86ee91b6bb80a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:34",
+      "sequence": 4229,
+      "chapter_label": "NUM 16",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 34
+        }
+      ],
+      "en": "All Israel that were around them fled at their cry; for they said, “Lest the earth swallow us up!”",
+      "ko": "그 주위에 있는 온 이스라엘이 그들의 부르짖음을 듣고 도망하며 가로되 땅이 우리도 삼킬까 두렵다 하였고",
+      "source_text_hash": "2f0cfb35d70697b481e3a797130f86213a2a8c4518b6ea9156e162c3cfc3a797",
+      "translation_text_hash": "e889aedca5aba0f9674692ff27c4e364359485fbc21a88bc48b5e819b984a435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주위에 있는 온 이스라엘이 그들의 부르짖음을 듣고 도망하며 가로되 땅이 우리도 삼킬까 두렵다 하였고"
+      ],
+      "raw_text_hashes": [
+        "e889aedca5aba0f9674692ff27c4e364359485fbc21a88bc48b5e819b984a435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:35",
+      "sequence": 4230,
+      "chapter_label": "NUM 16",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 35
+        }
+      ],
+      "en": "Fire came out from the LORD, and devoured the two hundred fifty men who offered the incense.",
+      "ko": "여호와께로서 불이 나와서 분향하는 이백 오십인을 소멸하였더라",
+      "source_text_hash": "eb372380226258a415e8a15f753b6cb4f1ff27ead1703911a436fe57eddb282a",
+      "translation_text_hash": "60d9ccb74cf21304e14bb976ef79a662948911d7d8466a5ef3ffba636c46253c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께로서 불이 나와서 분향하는 이백 오십인을 소멸하였더라"
+      ],
+      "raw_text_hashes": [
+        "60d9ccb74cf21304e14bb976ef79a662948911d7d8466a5ef3ffba636c46253c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:36",
+      "sequence": 4231,
+      "chapter_label": "NUM 16",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 36
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:37",
+      "sequence": 4232,
+      "chapter_label": "NUM 16",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 37
+        }
+      ],
+      "en": "“Speak to Eleazar the son of Aaron the priest, that he take up the censers out of the burning, and scatter the fire away from the camp; for they are holy,",
+      "ko": "너는 제사장 아론의 아들 엘르아살을 명하여 붙는 불 가운데서 향로를 취하여다가 그 불을 타처에 쏟으라 그 향로는 거룩함이니라",
+      "source_text_hash": "fa0e6ffb57b721258a3f915b9a75f140fd2e08667968ed0e0bc2b673480fe321",
+      "translation_text_hash": "b69b439f88adce5ff0652ee2fcf916005866502690de4edcd35a14613ed3090d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 제사장 아론의 아들 엘르아살을 명하여 붙는 불 가운데서 향로를 취하여다가 그 불을 타처에 쏟으라 그 향로는 거룩함이니라"
+      ],
+      "raw_text_hashes": [
+        "b69b439f88adce5ff0652ee2fcf916005866502690de4edcd35a14613ed3090d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:38",
+      "sequence": 4233,
+      "chapter_label": "NUM 16",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 38
+        }
+      ],
+      "en": "even the censers of those who sinned against their own lives. Let them be beaten into plates for a covering of the altar, for they offered them before the LORD. Therefore they are holy. They shall be a sign to the children of Israel.”",
+      "ko": "사람들은 범죄하여 그 생명을 스스로 해하였거니와 그들이 향로를 여호와 앞에 드렸으므로 그 향로가 거룩하게 되었나니 그 향로를 쳐서 제단을 싸는 편철을 만들라 이스라엘 자손에게 표가 되리라 하신지라",
+      "source_text_hash": "c45f966ae04fee5b5d2bacf67983c06fce7a9e2f4cc771126d25f52933b821fb",
+      "translation_text_hash": "8e6bdf72b85ccd7e02e9ed505104059f5aa50e401f49bedc1ed295f9d21d40bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들은 범죄하여 그 생명을 스스로 해하였거니와 그들이 향로를 여호와 앞에 드렸으므로 그 향로가 거룩하게 되었나니 그 향로를 쳐서 제단을 싸는 편철을 만들라 이스라엘 자손에게 표가 되리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "8e6bdf72b85ccd7e02e9ed505104059f5aa50e401f49bedc1ed295f9d21d40bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:39",
+      "sequence": 4234,
+      "chapter_label": "NUM 16",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 39
+        }
+      ],
+      "en": "Eleazar the priest took the bronze censers which those who were burned had offered; and they beat them out for a covering of the altar,",
+      "ko": "제사장 엘르아살이 불탄 자들의 드렸던 놋 향로를 취하여 쳐서 제단을 싸서",
+      "source_text_hash": "b93f1d315468a085d1ca4125d93bef9babf5278c6007eced8d096604c87b2c36",
+      "translation_text_hash": "c854d764123cf114ed9c1da7923196074c1bc2147dc65eba8110b243cd714dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 엘르아살이 불탄 자들의 드렸던 놋 향로를 취하여 쳐서 제단을 싸서"
+      ],
+      "raw_text_hashes": [
+        "c854d764123cf114ed9c1da7923196074c1bc2147dc65eba8110b243cd714dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:40",
+      "sequence": 4235,
+      "chapter_label": "NUM 16",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 40
+        }
+      ],
+      "en": "to be a memorial to the children of Israel, to the end that no stranger who isn’t of the offspring of Aaron, would come near to burn incense before the LORD, that he not be as Korah and as his company; as the LORD spoke to him by Moses.",
+      "ko": "이스라엘 자손의 기념물이 되게 하였으니 이는 아론 자손이 아닌 외인은 여호와 앞에 분향하러 가까이 오지 못하게 함이며 또 고라와 그 무리와 같이 되지 않게 하기 위함이라 여호와께서 모세로 그에게 명하신대로 하였더라",
+      "source_text_hash": "ccbb2614b53cfb34acd5799d2ea3c7ed5639838ee4c0fc4a631e935a9c4601d7",
+      "translation_text_hash": "ab8290bfcd60e93d07a982288cb21b78d0584b65e02f101843bae36a3fd81513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 기념물이 되게 하였으니 이는 아론 자손이 아닌 외인은 여호와 앞에 분향하러 가까이 오지 못하게 함이며 또 고라와 그 무리와 같이 되지 않게 하기 위함이라 여호와께서 모세로 그에게 명하신대로 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ab8290bfcd60e93d07a982288cb21b78d0584b65e02f101843bae36a3fd81513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:41",
+      "sequence": 4236,
+      "chapter_label": "NUM 16",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 41
+        }
+      ],
+      "en": "But on the next day all the congregation of the children of Israel complained against Moses and against Aaron, saying, “You have killed the LORD’s people!”",
+      "ko": "이튿날 이스라엘 자손의 온 회중이 모세와 아론을 원망하여 가로되 너희가 여호와의 백성을 죽였도다 하고",
+      "source_text_hash": "36a09ff1c86b62e8724fa444ae92df81172a40b827a3d6476b930b35517b1f46",
+      "translation_text_hash": "c2fc364da8839174b973346540c0d31a80f776554fabf19c57ab74b8dfe0acc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 이스라엘 자손의 온 회중이 모세와 아론을 원망하여 가로되 너희가 여호와의 백성을 죽였도다 하고"
+      ],
+      "raw_text_hashes": [
+        "c2fc364da8839174b973346540c0d31a80f776554fabf19c57ab74b8dfe0acc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:42",
+      "sequence": 4237,
+      "chapter_label": "NUM 16",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 42
+        }
+      ],
+      "en": "When the congregation was assembled against Moses and against Aaron, they looked toward the Tent of Meeting. Behold, the cloud covered it, and the LORD’s glory appeared.",
+      "ko": "회중이 모여 모세와 아론을 칠 때에 회막을 바라본즉 구름이 회막을 덮었고 여호와의 영광이 나타났더라",
+      "source_text_hash": "5fb2683759bb2f99a874c35bff5c25ce41b762fd52f7c26ea25dd2f65f739901",
+      "translation_text_hash": "9fdbbc9e8140962065719ae8e0fc9afd4291b1ebb3f899ee347bbd6582401b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중이 모여 모세와 아론을 칠 때에 회막을 바라본즉 구름이 회막을 덮었고 여호와의 영광이 나타났더라"
+      ],
+      "raw_text_hashes": [
+        "9fdbbc9e8140962065719ae8e0fc9afd4291b1ebb3f899ee347bbd6582401b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:43",
+      "sequence": 4238,
+      "chapter_label": "NUM 16",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 43
+        }
+      ],
+      "en": "Moses and Aaron came to the front of the Tent of Meeting.",
+      "ko": "모세와 아론이 회막 앞에 이르매",
+      "source_text_hash": "a30c7a7ccc9e1ccebc5433cb235b0a55f9119042a6070183c6c744204d4c31e4",
+      "translation_text_hash": "83c313249dcec8ff15f599398cfcbe2efcdc59f397c50ad08ec1befa38308472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 회막 앞에 이르매"
+      ],
+      "raw_text_hashes": [
+        "83c313249dcec8ff15f599398cfcbe2efcdc59f397c50ad08ec1befa38308472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:44",
+      "sequence": 4239,
+      "chapter_label": "NUM 16",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 44
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:45",
+      "sequence": 4240,
+      "chapter_label": "NUM 16",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 45
+        }
+      ],
+      "en": "“Get away from among this congregation, that I may consume them in a moment!” They fell on their faces.",
+      "ko": "너희는 이 회중에게서 떠나라 내가 순식간에 그들을 멸하려 하노라 하시매 그 두 사람이 엎드리니라",
+      "source_text_hash": "fc0454a8663e6f799d84ebd610eadffe49aa54fca91ebf3a6c1c267a7b512d75",
+      "translation_text_hash": "e175c428affdf434d680a4739f2014923bb52b33af0d17f0dac608982226b218",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이 회중에게서 떠나라 내가 순식간에 그들을 멸하려 하노라 하시매 그 두 사람이 엎드리니라"
+      ],
+      "raw_text_hashes": [
+        "e175c428affdf434d680a4739f2014923bb52b33af0d17f0dac608982226b218"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:46",
+      "sequence": 4241,
+      "chapter_label": "NUM 16",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 46
+        }
+      ],
+      "en": "Moses said to Aaron, “Take your censer, put fire from the altar in it, lay incense on it, carry it quickly to the congregation, and make atonement for them; for wrath has gone out from the LORD! The plague has begun.”",
+      "ko": "이에 모세가 아론에게 이르되 너는 향로를 취하고 단의 불을 그것에 담고 그 위에 향을 두어가지고 급히 회중에게로 가서 그들을 위하여 속죄하라 여호와께서 진노하셨으므로 염병이 시작되었음이니라",
+      "source_text_hash": "9420cb2e9d777dad8d739de32db05e6c880981467945453f72a348c710d6ae75",
+      "translation_text_hash": "00b637fc62191247d6cddb3354b57a3ced0c0a4b30246c9a36c5a5db70ebfa2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세가 아론에게 이르되 너는 향로를 취하고 단의 불을 그것에 담고 그 위에 향을 두어가지고 급히 회중에게로 가서 그들을 위하여 속죄하라 여호와께서 진노하셨으므로 염병이 시작되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "00b637fc62191247d6cddb3354b57a3ced0c0a4b30246c9a36c5a5db70ebfa2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:47",
+      "sequence": 4242,
+      "chapter_label": "NUM 16",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 47
+        }
+      ],
+      "en": "Aaron did as Moses said, and ran into the middle of the assembly. The plague had already begun among the people. He put on the incense, and made atonement for the people.",
+      "ko": "아론이 모세의 명을 좇아 향로를 가지고 회중에게로 달려 간즉 백성 중에 염병이 시작되었는지라 이에 백성을 위하여 속죄하고",
+      "source_text_hash": "dd549c4c0de8140ff3e816516d96e673db51baafb590554b25cd08dd8ded0b04",
+      "translation_text_hash": "71e8d88a40055060d9897f83feec71c4e037e04f0ff375993d6bebc23739a721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론이 모세의 명을 좇아 향로를 가지고 회중에게로 달려 간즉 백성 중에 염병이 시작되었는지라 이에 백성을 위하여 속죄하고"
+      ],
+      "raw_text_hashes": [
+        "71e8d88a40055060d9897f83feec71c4e037e04f0ff375993d6bebc23739a721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:48",
+      "sequence": 4243,
+      "chapter_label": "NUM 16",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 48
+        }
+      ],
+      "en": "He stood between the dead and the living; and the plague was stayed.",
+      "ko": "죽은 자와 산 자 사이에 섰을 때에 염병이 그치니라",
+      "source_text_hash": "aa28cbc1c2915d92b3dcb8f573e0d99a94c84628ba1466d2b14d5173548aca0d",
+      "translation_text_hash": "e64af9b5dc0dd803b9e22b9666d0d65b08ce74f2862e491aa339b95cf0f9403f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자와 산 자 사이에 섰을 때에 염병이 그치니라"
+      ],
+      "raw_text_hashes": [
+        "e64af9b5dc0dd803b9e22b9666d0d65b08ce74f2862e491aa339b95cf0f9403f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:49",
+      "sequence": 4244,
+      "chapter_label": "NUM 16",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 49
+        }
+      ],
+      "en": "Now those who died by the plague were fourteen thousand seven hundred, in addition to those who died about the matter of Korah.",
+      "ko": "고라의 일로 죽은 자 외에 염병에 죽은 자가 일만 사천 칠백명이었더라",
+      "source_text_hash": "eabf23225b7a7b8d28dda813cc24ff5ec7bab42d9eb162c06fa8348f8869c1d8",
+      "translation_text_hash": "82b8caa408a8903aab992d5c4bf78fdff12c9b38bfdad636cfcdfd9ebdb87632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라의 일로 죽은 자 외에 염병에 죽은 자가 일만 사천 칠백명이었더라"
+      ],
+      "raw_text_hashes": [
+        "82b8caa408a8903aab992d5c4bf78fdff12c9b38bfdad636cfcdfd9ebdb87632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:16:50",
+      "sequence": 4245,
+      "chapter_label": "NUM 16",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 16,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 16,
+          "verse": 50
+        }
+      ],
+      "en": "Aaron returned to Moses to the door of the Tent of Meeting, and the plague was stopped.",
+      "ko": "염병이 그치매 아론이 회막문 모세에게로 돌아오니라",
+      "source_text_hash": "b4d9320853a683784c6fb3ea12f632450d453337fba5c180bb2b5d79804a30a6",
+      "translation_text_hash": "05ce7f3d7132b66c4c5ca0b33da014aa6eff104a01fb6d6d8363bb4a8293b57d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "염병이 그치매 아론이 회막문 모세에게로 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "05ce7f3d7132b66c4c5ca0b33da014aa6eff104a01fb6d6d8363bb4a8293b57d"
+      ]
+    }
+  ]
+}

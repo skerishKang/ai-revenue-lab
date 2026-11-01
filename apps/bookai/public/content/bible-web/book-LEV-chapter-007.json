@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:007",
+  "unit_ordinal": 97,
+  "unit_label": "LEV 7",
+  "book_code": "LEV",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:7:1",
+      "sequence": 2881,
+      "chapter_label": "LEV 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "“‘This is the law of the trespass offering: It is most holy.",
+      "ko": "속건제의 규례는 이러하니라 이는 지극히 거룩하니",
+      "source_text_hash": "3207b712a334ac98d5cf3da9c696bd448395ddd9d6065dc0a29769fd73ebbda1",
+      "translation_text_hash": "7dccabcf022a76a8c18f41321039c077013b709665fef975f640ea309c37159c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속건제의 규례는 이러하니라 이는 지극히 거룩하니"
+      ],
+      "raw_text_hashes": [
+        "7dccabcf022a76a8c18f41321039c077013b709665fef975f640ea309c37159c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:2",
+      "sequence": 2882,
+      "chapter_label": "LEV 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "In the place where they kill the burnt offering, he shall kill the trespass offering; and its blood he shall sprinkle around on the altar.",
+      "ko": "번제 희생을 잡는 곳에서 속건제의 희생을 잡을 것이요 제사장은 그 피를 단 사면에 뿌릴 것이며",
+      "source_text_hash": "81bc1f941e9c46417212f48969abf94e18eb1bc4414cc7ce11b040c006a4efca",
+      "translation_text_hash": "88ab0dba384af7903f937419c176488571fc7059a40c803cbaefccdd3e9e46e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제 희생을 잡는 곳에서 속건제의 희생을 잡을 것이요 제사장은 그 피를 단 사면에 뿌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "88ab0dba384af7903f937419c176488571fc7059a40c803cbaefccdd3e9e46e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:3",
+      "sequence": 2883,
+      "chapter_label": "LEV 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "He shall offer all of its fat: the fat tail, and the fat that covers the innards,",
+      "ko": "그 모든 기름을 드리되 곧 그 기름진 꼬리와 내장에 덮인 기름과",
+      "source_text_hash": "3752700f609f707568788e2fcd04c5b248ce807dcfe226376a1fc9de19a35fe9",
+      "translation_text_hash": "7d8701b72872f8b3956e62ec866ca135eab698f7c20fe9109fca7c5554b0ecca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 모든 기름을 드리되 곧 그 기름진 꼬리와 내장에 덮인 기름과"
+      ],
+      "raw_text_hashes": [
+        "7d8701b72872f8b3956e62ec866ca135eab698f7c20fe9109fca7c5554b0ecca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:4",
+      "sequence": 2884,
+      "chapter_label": "LEV 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "and he shall take away the two kidneys, and the fat that is on them, which is by the loins, and the cover on the liver, with the kidneys;",
+      "ko": "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취하고",
+      "source_text_hash": "26a66a4c3b27b6dc2e2184c8906ab28e688df38f8cdc63268052e9ddaa37eef8",
+      "translation_text_hash": "39da8f41220170d76844d4fe78462ef44316c717239bd0858bc0450bb332ecbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 콩팥과 그 위의 기름 곧 허리 근방에 있는 것과 간에 덮인 꺼풀을 콩팥과 함께 취하고"
+      ],
+      "raw_text_hashes": [
+        "39da8f41220170d76844d4fe78462ef44316c717239bd0858bc0450bb332ecbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:5",
+      "sequence": 2885,
+      "chapter_label": "LEV 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "and the priest shall burn them on the altar for an offering made by fire to the LORD: it is a trespass offering.",
+      "ko": "제사장은 그것을 다 단 위에 불살라 여호와께 화제로 드릴 것이니라 이는 속건제요",
+      "source_text_hash": "5e2aac65dfcaf088832349dc9f153029879601aa0a264951f7edd288cc854488",
+      "translation_text_hash": "270b233a9382436d2d102a3dc6f201e2a92ddc4c183e875404f917ae5e36a99f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그것을 다 단 위에 불살라 여호와께 화제로 드릴 것이니라 이는 속건제요"
+      ],
+      "raw_text_hashes": [
+        "270b233a9382436d2d102a3dc6f201e2a92ddc4c183e875404f917ae5e36a99f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:6",
+      "sequence": 2886,
+      "chapter_label": "LEV 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Every male among the priests may eat of it. It shall be eaten in a holy place. It is most holy.",
+      "ko": "지극히 거룩하니 이것을 제사장의 남자마다 먹되 거룩한 곳에서 먹을찌며",
+      "source_text_hash": "ef3b48bf3a50bd3a8c1ce199b5711d44530dd8e85b028b0a9fabf3086531c5e2",
+      "translation_text_hash": "cdb382db9d58efb562199ada6cb6955be966b5c139785c4e358786dbcf593ab7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 거룩하니 이것을 제사장의 남자마다 먹되 거룩한 곳에서 먹을찌며"
+      ],
+      "raw_text_hashes": [
+        "cdb382db9d58efb562199ada6cb6955be966b5c139785c4e358786dbcf593ab7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:7",
+      "sequence": 2887,
+      "chapter_label": "LEV 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "“‘As is the sin offering, so is the trespass offering; there is one law for them. The priest who makes atonement with them shall have it.",
+      "ko": "속건제나 속죄제는 일례니 그 제육은 속하는 제사장에게로 돌아갈 것이요",
+      "source_text_hash": "a14965163eed577dc2e3799fe03a3057c5e212f34f8520b1fb7aa4fddc7aa514",
+      "translation_text_hash": "f8f205a05a9d9cadc5500df8cdfc28f4de207d3b50b87a1a8e5ed89649e1a602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속건제나 속죄제는 일례니 그 제육은 속하는 제사장에게로 돌아갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "f8f205a05a9d9cadc5500df8cdfc28f4de207d3b50b87a1a8e5ed89649e1a602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:8",
+      "sequence": 2888,
+      "chapter_label": "LEV 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The priest who offers any man’s burnt offering shall have for himself the skin of the burnt offering which he has offered.",
+      "ko": "사람의 번제를 드리는 제사장 곧 그 제사장은 그 드린 번제물의 가죽을 자기가 얻을 것이며",
+      "source_text_hash": "8bb461a2b652dad7a96049f48fbad1e8e6a47dabb3d83319c8d7711a5f29615c",
+      "translation_text_hash": "d47ba222f477c666c1603d3775edacc102b663ecb0b206fa9bfeef1f7ffe724d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 번제를 드리는 제사장 곧 그 제사장은 그 드린 번제물의 가죽을 자기가 얻을 것이며"
+      ],
+      "raw_text_hashes": [
+        "d47ba222f477c666c1603d3775edacc102b663ecb0b206fa9bfeef1f7ffe724d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:9",
+      "sequence": 2889,
+      "chapter_label": "LEV 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Every meal offering that is baked in the oven, and all that is prepared in the pan and on the griddle, shall be the priest’s who offers it.",
+      "ko": "무릇 화덕에 구운 소제물과 솥에나 번철에 만든 소제물은 그 드린 제사장에게로 돌아갈 것이니",
+      "source_text_hash": "ccde20e516fd247ba4814451e766f9e6d268e14f2c4fdd123bac8d7bab6c73ad",
+      "translation_text_hash": "4ce22aaba389a03cd57c8c33a833e28aa9ead7a545873f5df57ab98fc3daa5b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 화덕에 구운 소제물과 솥에나 번철에 만든 소제물은 그 드린 제사장에게로 돌아갈 것이니"
+      ],
+      "raw_text_hashes": [
+        "4ce22aaba389a03cd57c8c33a833e28aa9ead7a545873f5df57ab98fc3daa5b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:10",
+      "sequence": 2890,
+      "chapter_label": "LEV 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Every meal offering, mixed with oil or dry, belongs to all the sons of Aaron, one as well as another.",
+      "ko": "무릇 소제물은 기름 섞은 것이나 마른 것이나 아론의 모든 자손이 평균히 분배할 것이니라",
+      "source_text_hash": "7bc4ed8e038669001dc559af37b542086ae7a71aab0fa3652891f41b25b3f32a",
+      "translation_text_hash": "a40819fb0d423a1e4ca6a8a48275157b77363eb9bc9df8b798186c3e696ca391",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 소제물은 기름 섞은 것이나 마른 것이나 아론의 모든 자손이 평균히 분배할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "a40819fb0d423a1e4ca6a8a48275157b77363eb9bc9df8b798186c3e696ca391"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:11",
+      "sequence": 2891,
+      "chapter_label": "LEV 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "“‘This is the law of the sacrifice of peace offerings, which one shall offer to the LORD:",
+      "ko": "여호와께 드릴 화목제 희생의 규례는 이러하니라",
+      "source_text_hash": "5996b032c4ddf837a0dfa16484774006a49f764f781c44a2b9e91eec1479113e",
+      "translation_text_hash": "6694629f5b375b7f59a7ae5dc825170f7d54b0f0e7ee54cf5528419f833c2eea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 드릴 화목제 희생의 규례는 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "6694629f5b375b7f59a7ae5dc825170f7d54b0f0e7ee54cf5528419f833c2eea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:12",
+      "sequence": 2892,
+      "chapter_label": "LEV 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "If he offers it for a thanksgiving, then he shall offer with the sacrifice of thanksgiving unleavened cakes mixed with oil, and unleavened wafers anointed with oil, and cakes mixed with oil.",
+      "ko": "만일 그것을 감사하므로 드리거든 기름 섞은 무교병과 기름 바른 무교전병과 고운 가루에 기름 섞어 구운 과자를 그 감사 희생과 함께 드리고",
+      "source_text_hash": "c0267bfc39b28ae0527d7527b9494b7c228ca5c89fef2f6dc0fc5029f97f310e",
+      "translation_text_hash": "89d301dd78463537367a6c221c276de2016f6f575d1bab474fa0500038217ad6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그것을 감사하므로 드리거든 기름 섞은 무교병과 기름 바른 무교전병과 고운 가루에 기름 섞어 구운 과자를 그 감사 희생과 함께 드리고"
+      ],
+      "raw_text_hashes": [
+        "89d301dd78463537367a6c221c276de2016f6f575d1bab474fa0500038217ad6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:13",
+      "sequence": 2893,
+      "chapter_label": "LEV 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "He shall offer his offering with the sacrifice of his peace offerings for thanksgiving with cakes of leavened bread.",
+      "ko": "또 유교병을 화목제의 감사 희생과 함께 그 예물에 드리되",
+      "source_text_hash": "8b351cd223dfe497fbd5d4164cd207d21d787e780be93d82eeac2cd16724a94a",
+      "translation_text_hash": "cbfbab00a2b28713cac50e87a053ce5bc9368b690f59c5235edb1b0fa370e60c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 유교병을 화목제의 감사 희생과 함께 그 예물에 드리되"
+      ],
+      "raw_text_hashes": [
+        "cbfbab00a2b28713cac50e87a053ce5bc9368b690f59c5235edb1b0fa370e60c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:14",
+      "sequence": 2894,
+      "chapter_label": "LEV 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Of it he shall offer one out of each offering for a heave offering to the LORD. It shall be the priest’s who sprinkles the blood of the peace offerings.",
+      "ko": "그 전체의 예물 중에서 하나씩 여호와께 거제로 드리고 그것을 화목제의 피를 뿌린 제사장들에게로 돌릴찌니라",
+      "source_text_hash": "f8eb3fc41166388e13f1095e712cec2ff6665417ff2c7ba960e9b3b215abd745",
+      "translation_text_hash": "2f06c7c9780ba0895ffcc65c6196f468657f54e27b04b65183999ca9c9ccf78a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 전체의 예물 중에서 하나씩 여호와께 거제로 드리고 그것을 화목제의 피를 뿌린 제사장들에게로 돌릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "2f06c7c9780ba0895ffcc65c6196f468657f54e27b04b65183999ca9c9ccf78a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:15",
+      "sequence": 2895,
+      "chapter_label": "LEV 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "The flesh of the sacrifice of his peace offerings for thanksgiving shall be eaten on the day of his offering. He shall not leave any of it until the morning.",
+      "ko": "감사함으로 드리는 화목제 희생의 고기는 드리는 그 날에 먹을 것이요 조금이라도 이튿날 아침까지 두지 말 것이니라",
+      "source_text_hash": "3333f187edb509d58c47c984339b47cfe1e76c9c945a2794ef7e1d7ef19cb51a",
+      "translation_text_hash": "e4ad9f6aaf7ecfc58d26eac797e20bf40c5b3f2b9bcfafb588d40582c8ec27b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "감사함으로 드리는 화목제 희생의 고기는 드리는 그 날에 먹을 것이요 조금이라도 이튿날 아침까지 두지 말 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e4ad9f6aaf7ecfc58d26eac797e20bf40c5b3f2b9bcfafb588d40582c8ec27b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:16",
+      "sequence": 2896,
+      "chapter_label": "LEV 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "“‘But if the sacrifice of his offering is a vow, or a free will offering, it shall be eaten on the day that he offers his sacrifice. On the next day what remains of it shall be eaten,",
+      "ko": "그러나 그 희생의 예물이 서원이나 자원의 예물이면 그 희생을 드린 날에 먹을 것이요 그 남은 것은 이튿날에도 먹되",
+      "source_text_hash": "2d33578c25a80236241fe3888177d58f2f1475f628080b5b8d346de328766ce3",
+      "translation_text_hash": "3aec12f1ffcb27fcfa630451a7ca0629670b965363089fa5bdef26647ee8cd10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 희생의 예물이 서원이나 자원의 예물이면 그 희생을 드린 날에 먹을 것이요 그 남은 것은 이튿날에도 먹되"
+      ],
+      "raw_text_hashes": [
+        "3aec12f1ffcb27fcfa630451a7ca0629670b965363089fa5bdef26647ee8cd10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:17",
+      "sequence": 2897,
+      "chapter_label": "LEV 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "but what remains of the meat of the sacrifice on the third day shall be burned with fire.",
+      "ko": "그 희생의 고기가 제 삼일까지 남았으면 불사를찌니",
+      "source_text_hash": "2c0486d88c2473fb5c1420dc304cd378493faecee2838198eb42c8db7999d848",
+      "translation_text_hash": "159dc0b097f2a03e9e4b3ac1dbe325051304121ca315de7ce1442ccd0c199138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 희생의 고기가 제 삼일까지 남았으면 불사를찌니"
+      ],
+      "raw_text_hashes": [
+        "159dc0b097f2a03e9e4b3ac1dbe325051304121ca315de7ce1442ccd0c199138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:18",
+      "sequence": 2898,
+      "chapter_label": "LEV 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "If any of the meat of the sacrifice of his peace offerings is eaten on the third day, it will not be accepted, and it shall not be credited to him who offers it. It will be an abomination, and the soul who eats any of it will bear his iniquity.",
+      "ko": "만일 그 화목제 희생의 고기를 제 삼일에 조금이라도 먹으면 그 제사는 열납되지 않을 것이라 드린 자에게도 예물답게 못되고 도리어 가증한 것이 될 것이며 그것을 먹는 자는 죄를 당하리라",
+      "source_text_hash": "43817b82c601e99deb046fcbfe4deb3bcc8985341b64ee5a240a2e58e91bd70a",
+      "translation_text_hash": "669a90d4ebe01201c58a7fccc6695aa95f36eee50ab132966f89ee89fa71d220",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 화목제 희생의 고기를 제 삼일에 조금이라도 먹으면 그 제사는 열납되지 않을 것이라 드린 자에게도 예물답게 못되고 도리어 가증한 것이 될 것이며 그것을 먹는 자는 죄를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "669a90d4ebe01201c58a7fccc6695aa95f36eee50ab132966f89ee89fa71d220"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:19",
+      "sequence": 2899,
+      "chapter_label": "LEV 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "“‘The meat that touches any unclean thing shall not be eaten. It shall be burned with fire. As for the meat, everyone who is clean may eat it;",
+      "ko": "그 고기가 부정한 물건에 접촉되었으면 먹지 말고 불사를 것이라 그 고기는 깨끗한 자만 먹을 것이니",
+      "source_text_hash": "666b53c0208760e43097077a27e1c9b9361fcd4b2f19578a1aa29fae32a2a275",
+      "translation_text_hash": "2d9b09f8c9e7b4b67ae29d5f255bbbfb6dea8c412ad80ef51e21c85695a8ce43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고기가 부정한 물건에 접촉되었으면 먹지 말고 불사를 것이라 그 고기는 깨끗한 자만 먹을 것이니"
+      ],
+      "raw_text_hashes": [
+        "2d9b09f8c9e7b4b67ae29d5f255bbbfb6dea8c412ad80ef51e21c85695a8ce43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:20",
+      "sequence": 2900,
+      "chapter_label": "LEV 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "but the soul who eats of the meat of the sacrifice of peace offerings that belongs to the LORD, having his uncleanness on him, that soul shall be cut off from his people.",
+      "ko": "만일 몸이 부정한 자가 여호와께 속한 화목제 희생의 고기를 먹으면 그 사람은 자기 백성 중에서 끊쳐질 것이요",
+      "source_text_hash": "4a4edb955abca6cd1d63cc6bc4eb21fd5c752d1a08c35bec34e0a4a931ffc484",
+      "translation_text_hash": "61293356b2d2605d15c754b7a45dc3c27de7ad764b1ded1f2ab8081c8c4c5ae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 몸이 부정한 자가 여호와께 속한 화목제 희생의 고기를 먹으면 그 사람은 자기 백성 중에서 끊쳐질 것이요"
+      ],
+      "raw_text_hashes": [
+        "61293356b2d2605d15c754b7a45dc3c27de7ad764b1ded1f2ab8081c8c4c5ae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:21",
+      "sequence": 2901,
+      "chapter_label": "LEV 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "When anyone touches any unclean thing, the uncleanness of man, or an unclean animal, or any unclean abomination, and eats some of the meat of the sacrifice of peace offerings which belong to the LORD, that soul shall be cut off from his people.’”",
+      "ko": "만일 누구든지 부정한 것 곧 사람의 부정이나 부정한 짐승이나 부정하고 가증한 아무 물건이든지 만지고 여호와께 속한 화목제 희생의 고기를 먹으면 그 사람도 자기 백성 중에서 끊쳐지리라",
+      "source_text_hash": "49f9fa94d2c6c9fcfd639e9bc296d8fd56664c5ba1cf332c52f2685915f918fe",
+      "translation_text_hash": "a3cfe10eb201dc46340867147e0fe10a1f4c1a71a8863d99f520504e73f1b114",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 부정한 것 곧 사람의 부정이나 부정한 짐승이나 부정하고 가증한 아무 물건이든지 만지고 여호와께 속한 화목제 희생의 고기를 먹으면 그 사람도 자기 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "a3cfe10eb201dc46340867147e0fe10a1f4c1a71a8863d99f520504e73f1b114"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:22",
+      "sequence": 2902,
+      "chapter_label": "LEV 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:23",
+      "sequence": 2903,
+      "chapter_label": "LEV 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘You shall eat no fat, of bull, or sheep, or goat.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희는 소나 양이나 염소의 기름을 먹지 말 것이요",
+      "source_text_hash": "266d2183e8c2b9ad211cb550eb14255c73c5b28b316d5b291179baee42b3e9d1",
+      "translation_text_hash": "898bab00c1efddbf40d24f80d8cc0e695b2feaf11f16a504c15b746bfad5f99b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희는 소나 양이나 염소의 기름을 먹지 말 것이요"
+      ],
+      "raw_text_hashes": [
+        "898bab00c1efddbf40d24f80d8cc0e695b2feaf11f16a504c15b746bfad5f99b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:24",
+      "sequence": 2904,
+      "chapter_label": "LEV 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "The fat of that which dies of itself, and the fat of that which is torn of animals, may be used for any other service, but you shall in no way eat of it.",
+      "ko": "스스로 죽은 것의 기름이나 짐승에게 찢긴 것의 기름은 달리는 쓰려니와 결단코 먹지 말찌니라",
+      "source_text_hash": "521b8f8202adb9577f6b4c9e30b9feae09cbfff7f317e8e8f9377680f0f7eeef",
+      "translation_text_hash": "633ca74d20ae6350652cc4ec7bb181570ba9ba5703e05166c2545c2040a002b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 죽은 것의 기름이나 짐승에게 찢긴 것의 기름은 달리는 쓰려니와 결단코 먹지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "633ca74d20ae6350652cc4ec7bb181570ba9ba5703e05166c2545c2040a002b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:25",
+      "sequence": 2905,
+      "chapter_label": "LEV 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "For whoever eats the fat of the animal which men offer as an offering made by fire to the LORD, even the soul who eats it shall be cut off from his people.",
+      "ko": "사람이 여호와께 화제로 드리는 희생의 기름을 먹으면 그 먹는 자는 자기 백성 중에서 끊쳐지리라",
+      "source_text_hash": "4f8729f9d38815e86602c236da34b0ec1417beae4a8d3349f4b275b23baeba05",
+      "translation_text_hash": "92a1de33b37bf26ca3ab3c8c1305d55e7f9db40e44aff16d0761017e45bd6021",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 여호와께 화제로 드리는 희생의 기름을 먹으면 그 먹는 자는 자기 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "92a1de33b37bf26ca3ab3c8c1305d55e7f9db40e44aff16d0761017e45bd6021"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:26",
+      "sequence": 2906,
+      "chapter_label": "LEV 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "You shall not eat any blood, whether it is of bird or of animal, in any of your dwellings.",
+      "ko": "너희의 모든 사는 곳에서 무슨 피든지 새나 짐승의 피를 먹지 말라",
+      "source_text_hash": "81af0437919736f044b7b0c486db714fd563365154d0767ba987188c1b404b3b",
+      "translation_text_hash": "9d2888e174d972c8fd7bd2087bf1daef64d5bd9885000aef6330623bce45a3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 모든 사는 곳에서 무슨 피든지 새나 짐승의 피를 먹지 말라"
+      ],
+      "raw_text_hashes": [
+        "9d2888e174d972c8fd7bd2087bf1daef64d5bd9885000aef6330623bce45a3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:27",
+      "sequence": 2907,
+      "chapter_label": "LEV 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "Whoever it is who eats any blood, that soul shall be cut off from his people.’”",
+      "ko": "무슨 피든지 먹는 사람이 있으면 그 사람은 다 자기 백성 중에서 끊쳐지리라",
+      "source_text_hash": "6d830c240cf027f87db256df1e632dbae0a17ce18da204613bb62ebeacc0d369",
+      "translation_text_hash": "31ca791e4573fb9ab7b2f97c7f4f8abaacaca838db5079313709a23685b7fd7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무슨 피든지 먹는 사람이 있으면 그 사람은 다 자기 백성 중에서 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "31ca791e4573fb9ab7b2f97c7f4f8abaacaca838db5079313709a23685b7fd7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:28",
+      "sequence": 2908,
+      "chapter_label": "LEV 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:29",
+      "sequence": 2909,
+      "chapter_label": "LEV 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘He who offers the sacrifice of his peace offerings to the LORD shall bring his offering to the LORD out of the sacrifice of his peace offerings.",
+      "ko": "이스라엘 자손에게 고하여 이르라 화목제의 희생을 여호와께 드리려는 자는 그 화목제 희생 중에서 그 예물을 취하여 여호와께 가져오되",
+      "source_text_hash": "b58cbafa1ee4dd5d9439d2670c5dd37eefd44d9b35409d048dba9ca88916d8c7",
+      "translation_text_hash": "8c47d7498f5e6096f9b6a378515a23d70793a74ef4a0c2bbf64145faf39ab42c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 화목제의 희생을 여호와께 드리려는 자는 그 화목제 희생 중에서 그 예물을 취하여 여호와께 가져오되"
+      ],
+      "raw_text_hashes": [
+        "8c47d7498f5e6096f9b6a378515a23d70793a74ef4a0c2bbf64145faf39ab42c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:30",
+      "sequence": 2910,
+      "chapter_label": "LEV 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "With his own hands he shall bring the offerings of the LORD made by fire. He shall bring the fat with the breast, that the breast may be waved for a wave offering before the LORD.",
+      "ko": "여호와의 화제는 그 사람이 자기 손으로 가져올찌니 곧 그 제물의 기름과 가슴을 가져올 것이요 제사장은 그 가슴을 여호와 앞에 흔들어 요제를 삼고",
+      "source_text_hash": "a959b6430926a03756a2e3c7bf077b8d23a37324d5d6fa135f322cea6896e832",
+      "translation_text_hash": "da0cf32323563b43de053e258d5bbfa5202ca8820b5d0af2aea1761a809b886e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 화제는 그 사람이 자기 손으로 가져올찌니 곧 그 제물의 기름과 가슴을 가져올 것이요 제사장은 그 가슴을 여호와 앞에 흔들어 요제를 삼고"
+      ],
+      "raw_text_hashes": [
+        "da0cf32323563b43de053e258d5bbfa5202ca8820b5d0af2aea1761a809b886e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:31",
+      "sequence": 2911,
+      "chapter_label": "LEV 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "The priest shall burn the fat on the altar, but the breast shall be Aaron’s and his sons’.",
+      "ko": "그 기름은 단 위에 불사를 것이며 가슴은 아론과 그 자손들에게 돌릴 것이며",
+      "source_text_hash": "d6d19d0a71285b06bb502729fd2a402352394373c49bf27219f2d0849e886e57",
+      "translation_text_hash": "c08d7cf1595f8955e3a62aeb07264001d79f7588a6f201ca5a5bf605cfb9ec37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기름은 단 위에 불사를 것이며 가슴은 아론과 그 자손들에게 돌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "c08d7cf1595f8955e3a62aeb07264001d79f7588a6f201ca5a5bf605cfb9ec37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:32",
+      "sequence": 2912,
+      "chapter_label": "LEV 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "The right thigh you shall give to the priest for a heave offering out of the sacrifices of your peace offerings.",
+      "ko": "또 너희는 그 화목제 희생의 우편 뒷다리를 제사장에게 주어 거제를 삼을찌니",
+      "source_text_hash": "c5cd5c4db356686e39f1f16296800afe9baa7d6c03acd8d8ad35990ef30990a7",
+      "translation_text_hash": "d2cab67ea526f4feb5ee3ea68b1427d247c328b96e12b003e2e1a2bdfe89b490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희는 그 화목제 희생의 우편 뒷다리를 제사장에게 주어 거제를 삼을찌니"
+      ],
+      "raw_text_hashes": [
+        "d2cab67ea526f4feb5ee3ea68b1427d247c328b96e12b003e2e1a2bdfe89b490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:33",
+      "sequence": 2913,
+      "chapter_label": "LEV 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "He among the sons of Aaron who offers the blood of the peace offerings, and the fat, shall have the right thigh for a portion.",
+      "ko": "아론의 자손중 화목제 희생의 피와 기름을 드리는 자가 그 우편 뒷다리를 자기의 소득으로 삼을 것이라",
+      "source_text_hash": "cc029dd7f7b1ef5eb23bc28120b1c80713c805ff4159eac04f538fff70b7b086",
+      "translation_text_hash": "bb8309467dff38c285fe767cda33f86d97790e5229861d563708ca1d020aaa0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 자손중 화목제 희생의 피와 기름을 드리는 자가 그 우편 뒷다리를 자기의 소득으로 삼을 것이라"
+      ],
+      "raw_text_hashes": [
+        "bb8309467dff38c285fe767cda33f86d97790e5229861d563708ca1d020aaa0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:34",
+      "sequence": 2914,
+      "chapter_label": "LEV 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "For the waved breast and the heaved thigh I have taken from the children of Israel out of the sacrifices of their peace offerings, and have given them to Aaron the priest and to his sons as their portion forever from the children of Israel.’”",
+      "ko": "내가 이스라엘 자손의 화목제 중에서 그 흔든 가슴과 든 뒷다리를 취하여 제사장 아론과 그 자손에게 주었나니 이는 이스라엘 자손에게 받을 영원한 소득이니라",
+      "source_text_hash": "58928d4bec20652f7854b55d94baa4d46c38813feab41ec24e36375db00a6e54",
+      "translation_text_hash": "b185b674d6a049f70c71c3d7ff635671a4f2b7f44538d50c9e8d894ebc20a390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이스라엘 자손의 화목제 중에서 그 흔든 가슴과 든 뒷다리를 취하여 제사장 아론과 그 자손에게 주었나니 이는 이스라엘 자손에게 받을 영원한 소득이니라"
+      ],
+      "raw_text_hashes": [
+        "b185b674d6a049f70c71c3d7ff635671a4f2b7f44538d50c9e8d894ebc20a390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:35",
+      "sequence": 2915,
+      "chapter_label": "LEV 7",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 35
+        }
+      ],
+      "en": "This is the consecrated portion of Aaron, and the consecrated portion of his sons, out of the offerings of the LORD made by fire, in the day when he presented them to minister to the LORD in the priest’s office;",
+      "ko": "이는 여호와의 화제 중에서 아론에게 돌릴 것과 그 자손에게 돌릴 것이니 그들을 세워 여호와의 제사장의 직분을 행하게 한 날",
+      "source_text_hash": "3c28b939d9fd1b6d128898710d9c3dfe6df2be324e316355ce90a59d93c3bccd",
+      "translation_text_hash": "472533b9602b6115748735c7b832513f23955ee65e6e092da1e6535c1f68ce04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 화제 중에서 아론에게 돌릴 것과 그 자손에게 돌릴 것이니 그들을 세워 여호와의 제사장의 직분을 행하게 한 날"
+      ],
+      "raw_text_hashes": [
+        "472533b9602b6115748735c7b832513f23955ee65e6e092da1e6535c1f68ce04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:36",
+      "sequence": 2916,
+      "chapter_label": "LEV 7",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 36
+        }
+      ],
+      "en": "which the LORD commanded to be given them of the children of Israel, in the day that he anointed them. It is their portion forever throughout their generations.",
+      "ko": "곧 그들에게 기름 부은 날에 여호와께서 명하사 이스라엘 자손 중에서 그들에게 돌리게 하신 것이라 대대로 영원히 받을 소득이니라",
+      "source_text_hash": "0d268fbcdbf98f47beee627f0ec8606c2706e56cad90afa2ad6f87b6aa0a6f88",
+      "translation_text_hash": "da3db92207e0f0cab449d63d690b5815b78323139047c0843b05702cecf60ff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들에게 기름 부은 날에 여호와께서 명하사 이스라엘 자손 중에서 그들에게 돌리게 하신 것이라 대대로 영원히 받을 소득이니라"
+      ],
+      "raw_text_hashes": [
+        "da3db92207e0f0cab449d63d690b5815b78323139047c0843b05702cecf60ff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:37",
+      "sequence": 2917,
+      "chapter_label": "LEV 7",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 37
+        }
+      ],
+      "en": "This is the law of the burnt offering, the meal offering, the sin offering, the trespass offering, the consecration, and the sacrifice of peace offerings",
+      "ko": "이는 번제와 소제와 속죄제와 속건제와 위임제와 화목제의 규례라",
+      "source_text_hash": "f25d4b3b5fbe67c8138427ec430fb255f496117e76fa63bbea4104f428518e5a",
+      "translation_text_hash": "46cea2158c991308127998f931454886dcbc1c1b0a8ee7963bd05be8e31d688a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 번제와 소제와 속죄제와 속건제와 위임제와 화목제의 규례라"
+      ],
+      "raw_text_hashes": [
+        "46cea2158c991308127998f931454886dcbc1c1b0a8ee7963bd05be8e31d688a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:7:38",
+      "sequence": 2918,
+      "chapter_label": "LEV 7",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 7,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 7,
+          "verse": 38
+        }
+      ],
+      "en": "which the LORD commanded Moses in Mount Sinai in the day that he commanded the children of Israel to offer their offerings to the LORD, in the wilderness of Sinai.",
+      "ko": "여호와께서 시내 광야에서 이스라엘 자손에게 그 예물을 여호와께 드리라 명하신 날에 시내산에서 이같이 모세에게 명하셨더라",
+      "source_text_hash": "4c9c5aad6c56f6299703b937613f0d15c53d4902577cfab51740add04205b318",
+      "translation_text_hash": "e6368fd20c99659bbf3b4c5e706da9c864d82bda3b0ba6e907fc605b7a338253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내 광야에서 이스라엘 자손에게 그 예물을 여호와께 드리라 명하신 날에 시내산에서 이같이 모세에게 명하셨더라"
+      ],
+      "raw_text_hashes": [
+        "e6368fd20c99659bbf3b4c5e706da9c864d82bda3b0ba6e907fc605b7a338253"
+      ]
+    }
+  ]
+}

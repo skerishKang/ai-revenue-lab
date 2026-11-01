@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:046",
+  "unit_ordinal": 725,
+  "unit_label": "ISA 46",
+  "book_code": "ISA",
+  "chapter_number": 46,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:46:1",
+      "sequence": 18588,
+      "chapter_label": "ISA 46",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 1
+        }
+      ],
+      "en": "Bel bows down. Nebo stoops. Their idols are carried by animals, and on the livestock. The things that you carried around are heavy loads, a burden for the weary.",
+      "ko": "벨은 엎드러졌고 느보는 구부러졌도다 그들의 우상들은 짐승과 가축에게 실리웠으니 너희가 떠메고 다니던 그것은 피곤한 짐승의 무거운 짐이 되었도다",
+      "source_text_hash": "aae1ba4c093019ae85a9c50aad439914fafb0ffb5d2d0e7317a58db592931680",
+      "translation_text_hash": "a1628f9a42217b764eedce580898497e1ae4dea76ba29eac59fe1e6df4bb4e51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨은 엎드러졌고 느보는 구부러졌도다 그들의 우상들은 짐승과 가축에게 실리웠으니 너희가 떠메고 다니던 그것은 피곤한 짐승의 무거운 짐이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "a1628f9a42217b764eedce580898497e1ae4dea76ba29eac59fe1e6df4bb4e51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:2",
+      "sequence": 18589,
+      "chapter_label": "ISA 46",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 2
+        }
+      ],
+      "en": "They stoop and they bow down together. They could not deliver the burden, but they have gone into captivity.",
+      "ko": "그들은 구부러졌고 그들은 일제히 엎드러졌으므로 그 짐을 구하여 내지 못하고 자기도 잡혀 갔느니라",
+      "source_text_hash": "cfbb8e025c86f859c40031fee3648d31d1909843510def2d3e5cd0b17d457ea5",
+      "translation_text_hash": "9a7c0e89d2928a273ebde7803b558343b8081eca1be762767a5ea36c2136fb00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 구부러졌고 그들은 일제히 엎드러졌으므로 그 짐을 구하여 내지 못하고 자기도 잡혀 갔느니라"
+      ],
+      "raw_text_hashes": [
+        "9a7c0e89d2928a273ebde7803b558343b8081eca1be762767a5ea36c2136fb00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:3",
+      "sequence": 18590,
+      "chapter_label": "ISA 46",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 3
+        }
+      ],
+      "en": "“Listen to me, house of Jacob, and all the remnant of the house of Israel, that have been carried from their birth, that have been carried from the womb.",
+      "ko": "야곱 집이여 이스라엘 집의 남은 모든 자여 나를 들을찌어다 배에서 남으로부터 내게 안겼고 태에서 남으로부터 내게 품기운 너희여",
+      "source_text_hash": "703179d6409b7f4c72dd09e8f51209713272c25ce72484d40acee9b1d1177503",
+      "translation_text_hash": "72314500cd24206eedff3294cd5bff65383f4a8d7b209b52ae7628d1ea25e753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱 집이여 이스라엘 집의 남은 모든 자여 나를 들을찌어다 배에서 남으로부터 내게 안겼고 태에서 남으로부터 내게 품기운 너희여"
+      ],
+      "raw_text_hashes": [
+        "72314500cd24206eedff3294cd5bff65383f4a8d7b209b52ae7628d1ea25e753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:4",
+      "sequence": 18591,
+      "chapter_label": "ISA 46",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 4
+        }
+      ],
+      "en": "Even to old age I am he, and even to gray hairs I will carry you. I have made, and I will bear. Yes, I will carry, and will deliver.",
+      "ko": "너희가 노년에 이르기까지 내가 그리하겠고 백발이 되기까지 내가 너희를 품을 것이라 내가 지었은즉 안을 것이요 품을 것이요 구하여 내리라",
+      "source_text_hash": "6d7f01c447516ec26d3cd6ab325f7a169a8ed10374364543975df587399c833d",
+      "translation_text_hash": "5f119b71fd28e8b0bf3168038044856e0bace8cd6074dd666fc7c71f96772cba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 노년에 이르기까지 내가 그리하겠고 백발이 되기까지 내가 너희를 품을 것이라 내가 지었은즉 안을 것이요 품을 것이요 구하여 내리라"
+      ],
+      "raw_text_hashes": [
+        "5f119b71fd28e8b0bf3168038044856e0bace8cd6074dd666fc7c71f96772cba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:5",
+      "sequence": 18592,
+      "chapter_label": "ISA 46",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 5
+        }
+      ],
+      "en": "“To whom will you compare me, and consider my equal, and compare me, as if we were the same?",
+      "ko": "너희가 나를 누구에 비기며 누구와 짝하며 누구와 비교하여 서로 같다 하겠느냐",
+      "source_text_hash": "100229376204ae5961c4dc39dcd60e872e1db49d538e0890b1d285b1e49d2776",
+      "translation_text_hash": "3577ec277460c5fad10c92f7dc6aa21a6046d704eea253d89fb324ba8742c636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 누구에 비기며 누구와 짝하며 누구와 비교하여 서로 같다 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3577ec277460c5fad10c92f7dc6aa21a6046d704eea253d89fb324ba8742c636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:6",
+      "sequence": 18593,
+      "chapter_label": "ISA 46",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 6
+        }
+      ],
+      "en": "Some pour out gold from the bag, and weigh silver in the balance. They hire a goldsmith, and he makes it a god. They fall down— yes, they worship.",
+      "ko": "사람들이 주머니에서 금을 쏟아 내며 은을 저울에 달아 장색에게 주고 그것으로 신을 만들게 하고 그것에게 엎드려 경배하고",
+      "source_text_hash": "9b5bea2f7f3e5c89d3fbd0978354365b1118d42ae587b08344100b4307ceca38",
+      "translation_text_hash": "371dcdbda552ddb19d158ed69ead25f2a73b33d87aea6b0e227d75833fa523dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 주머니에서 금을 쏟아 내며 은을 저울에 달아 장색에게 주고 그것으로 신을 만들게 하고 그것에게 엎드려 경배하고"
+      ],
+      "raw_text_hashes": [
+        "371dcdbda552ddb19d158ed69ead25f2a73b33d87aea6b0e227d75833fa523dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:7",
+      "sequence": 18594,
+      "chapter_label": "ISA 46",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 7
+        }
+      ],
+      "en": "They bear it on their shoulder. They carry it, and set it in its place, and it stands there. It cannot move from its place. Yes, one may cry to it, yet it can not answer. It cannot save him out of his trouble.",
+      "ko": "그것을 들어 어깨에 메어다가 그의 처소에 두면 그것이 서서 있고 거기서 능히 움직이지 못하며 그에게 부르짖어도 능히 응답지 못하며 고난에서 구하여 내지도 못하느니라",
+      "source_text_hash": "4cdd3f73e2655647ff6edfa8d00eea7388074ff75972b2326b64a4864bc4041f",
+      "translation_text_hash": "62a2ebd04b6b81f48db381c3271f643e0daeba075f6a5476bd45eb0de9ade314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 들어 어깨에 메어다가 그의 처소에 두면 그것이 서서 있고 거기서 능히 움직이지 못하며 그에게 부르짖어도 능히 응답지 못하며 고난에서 구하여 내지도 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "62a2ebd04b6b81f48db381c3271f643e0daeba075f6a5476bd45eb0de9ade314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:8",
+      "sequence": 18595,
+      "chapter_label": "ISA 46",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 8
+        }
+      ],
+      "en": "“Remember this, and show yourselves men. Bring it to mind again, you transgressors.",
+      "ko": "너희 패역한 자들아 이 일을 기억하고 장부가 되라 이 일을 다시 생각하라",
+      "source_text_hash": "de4089dfe071230665e99850d166f446e955c7003b502deab75ec31b4f7fbf52",
+      "translation_text_hash": "db30263679f2f0f5784ad0a58e8fd95e54f389c938d532a2646e0b52298b7d29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 패역한 자들아 이 일을 기억하고 장부가 되라 이 일을 다시 생각하라"
+      ],
+      "raw_text_hashes": [
+        "db30263679f2f0f5784ad0a58e8fd95e54f389c938d532a2646e0b52298b7d29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:9",
+      "sequence": 18596,
+      "chapter_label": "ISA 46",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 9
+        }
+      ],
+      "en": "Remember the former things of old; for I am God, and there is no other. I am God, and there is none like me.",
+      "ko": "너희는 옛적 일을 기억하라 나는 하나님이라 나 외에 다른이가 없느니라 나는 하나님이라 나 같은이가 없느니라",
+      "source_text_hash": "6b1ed9cc188214bdb727b10887fb360d41ed370494f541034da9138943f781a3",
+      "translation_text_hash": "ff51a288c0c4193a304b9f3bf7613b278cd97040c31b9f99079ddbb4ad053906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 옛적 일을 기억하라 나는 하나님이라 나 외에 다른이가 없느니라 나는 하나님이라 나 같은이가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "ff51a288c0c4193a304b9f3bf7613b278cd97040c31b9f99079ddbb4ad053906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:10",
+      "sequence": 18597,
+      "chapter_label": "ISA 46",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 10
+        }
+      ],
+      "en": "I declare the end from the beginning, and from ancient times things that are not yet done. I say: My counsel will stand, and I will do all that I please.",
+      "ko": "내가 종말을 처음부터 고하며 아직 이루지 아니한 일을 옛적부터 보이고 이르기를 나의 모략이 설 것이니 내가 나의 모든 기뻐하는 것을 이루리라 하였노라",
+      "source_text_hash": "9a0683762c03841fde45db325d334d1400c9e6893037ddffe4991c9bf1f8334c",
+      "translation_text_hash": "51e2303ff5cf8e4a8bb37611b1067a42b1086c0f233d06fc5654b6335020db46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 종말을 처음부터 고하며 아직 이루지 아니한 일을 옛적부터 보이고 이르기를 나의 모략이 설 것이니 내가 나의 모든 기뻐하는 것을 이루리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "51e2303ff5cf8e4a8bb37611b1067a42b1086c0f233d06fc5654b6335020db46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:11",
+      "sequence": 18598,
+      "chapter_label": "ISA 46",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 11
+        }
+      ],
+      "en": "I call a ravenous bird from the east, the man of my counsel from a far country. Yes, I have spoken. I will also bring it to pass. I have planned. I will also do it.",
+      "ko": "내가 동방에서 독수리를 부르며 먼 나라에서 나의 모략을 이룰 사람을 부를 것이라 내가 말하였은즉 정녕 이룰 것이요 경영하였은즉 정녕 행하리라",
+      "source_text_hash": "1be0d57d030fa6acc8914a185b448402c8dc8f2e367742439b4a2d557a3d57f3",
+      "translation_text_hash": "74151839f1b38eea9cfc9cbb929413a3eba4c7adb01bb53c16f90556ab6062fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 동방에서 독수리를 부르며 먼 나라에서 나의 모략을 이룰 사람을 부를 것이라 내가 말하였은즉 정녕 이룰 것이요 경영하였은즉 정녕 행하리라"
+      ],
+      "raw_text_hashes": [
+        "74151839f1b38eea9cfc9cbb929413a3eba4c7adb01bb53c16f90556ab6062fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:12",
+      "sequence": 18599,
+      "chapter_label": "ISA 46",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 12
+        }
+      ],
+      "en": "Listen to me, you stubborn-hearted, who are far from righteousness!",
+      "ko": "마음이 완악하여 의에서 멀리 떠난 너희여 나를 들으라",
+      "source_text_hash": "ca780d7c94d1583f066b92f87bb955711ec65f999e5efa27e8af311932744630",
+      "translation_text_hash": "562b1ad193295df7484a04b89520b245f549cc0c899ed55ca5ce58ec0762df7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 완악하여 의에서 멀리 떠난 너희여 나를 들으라"
+      ],
+      "raw_text_hashes": [
+        "562b1ad193295df7484a04b89520b245f549cc0c899ed55ca5ce58ec0762df7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:46:13",
+      "sequence": 18600,
+      "chapter_label": "ISA 46",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 46,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 46,
+          "verse": 13
+        }
+      ],
+      "en": "I bring my righteousness near. It is not far off, and my salvation will not wait. I will grant salvation to Zion, my glory to Israel.",
+      "ko": "내가 나의 의를 가깝게 할것인즉 상거가 멀지 아니하니 나의 구원이 지체치 아니할 것이라 내가 나의 영광인 이스라엘을 위하여 구원을 시온에 베풀리라",
+      "source_text_hash": "16c39c35979016b327b60fa4a4ff88c6f11dea228eebc626dacad7111f6ad3cd",
+      "translation_text_hash": "da6f1ed1350b955f4aedddf0398ce7d6488d0ec56db0bd2a8d84baa18712c303",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나의 의를 가깝게 할것인즉 상거가 멀지 아니하니 나의 구원이 지체치 아니할 것이라 내가 나의 영광인 이스라엘을 위하여 구원을 시온에 베풀리라"
+      ],
+      "raw_text_hashes": [
+        "da6f1ed1350b955f4aedddf0398ce7d6488d0ec56db0bd2a8d84baa18712c303"
+      ]
+    }
+  ]
+}

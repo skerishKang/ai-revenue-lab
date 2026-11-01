@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:017",
+  "unit_ordinal": 228,
+  "unit_label": "JDG 17",
+  "book_code": "JDG",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:17:1",
+      "sequence": 6982,
+      "chapter_label": "JDG 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "There was a man of the hill country of Ephraim, whose name was Micah.",
+      "ko": "에브라임 산지에 미가라 이름하는 사람이 있더니",
+      "source_text_hash": "59ea2c4989fdafc497cf402dcf0e41afba4eee6c22dda011f665b332121d7e64",
+      "translation_text_hash": "6235eade223b3693c0151ad695037c569f729ca3114b8babf3849cffba7c739f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 산지에 미가라 이름하는 사람이 있더니"
+      ],
+      "raw_text_hashes": [
+        "6235eade223b3693c0151ad695037c569f729ca3114b8babf3849cffba7c739f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:2",
+      "sequence": 6983,
+      "chapter_label": "JDG 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "He said to his mother, “The eleven hundred pieces of silver that were taken from you, about which you uttered a curse, and also spoke it in my ears—behold, the silver is with me. I took it.” His mother said, “May the LORD bless my son!”",
+      "ko": "그 어미에게 이르되 어머니께서 은 일천 일백을 잃어버리셨으므로 저주하시고 내 귀에도 말씀하셨더니 보소서 그 은이 내게 있나이다 내가 그것을 취하였나이다 어미가 가로되 내 아들이 여호와께 복 받기를 원하노라 하니라",
+      "source_text_hash": "48aa2090f12e1a0d8facb1ef528059befed790887adb04f09a742b8010ad8ec4",
+      "translation_text_hash": "75bb02c14c9ef94a5efdd26b71d1928f460f5a4491bb64304de2aff6c716055c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어미에게 이르되 어머니께서 은 일천 일백을 잃어버리셨으므로 저주하시고 내 귀에도 말씀하셨더니 보소서 그 은이 내게 있나이다 내가 그것을 취하였나이다 어미가 가로되 내 아들이 여호와께 복 받기를 원하노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "75bb02c14c9ef94a5efdd26b71d1928f460f5a4491bb64304de2aff6c716055c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:3",
+      "sequence": 6984,
+      "chapter_label": "JDG 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "He restored the eleven hundred pieces of silver to his mother, then his mother said, “I most certainly dedicate the silver to the LORD from my hand for my son, to make a carved image and a molten image. Now therefore I will restore it to you.”",
+      "ko": "미가가 은 일천 일백을 그 어미에게 도로 주매 어미가 가로되 내가 내 아들을 위하여 한 신상을 새기며 한 신상을 부어 만들 차로 내 손에서 이 은을 여호와께 거룩히 드리노라 그러므로 내가 이제 이 은을 네게 도로 돌리리라",
+      "source_text_hash": "6b5046d63e4a661e82403e0caa123c01d4bcb0fdbeb23b48d911f2590533d245",
+      "translation_text_hash": "09c7435ba3e2bdeb332e7b5c69f0351276e8c49900bb4322e788a62c2b5b2192",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 은 일천 일백을 그 어미에게 도로 주매 어미가 가로되 내가 내 아들을 위하여 한 신상을 새기며 한 신상을 부어 만들 차로 내 손에서 이 은을 여호와께 거룩히 드리노라 그러므로 내가 이제 이 은을 네게 도로 돌리리라"
+      ],
+      "raw_text_hashes": [
+        "09c7435ba3e2bdeb332e7b5c69f0351276e8c49900bb4322e788a62c2b5b2192"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:4",
+      "sequence": 6985,
+      "chapter_label": "JDG 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "When he restored the money to his mother, his mother took two hundred pieces of silver, and gave them to a silversmith, who made a carved image and a molten image out of it. It was in the house of Micah.",
+      "ko": "미가가 그 은을 어미에게 도로 주었으므로 어미가 그 은 이백을 취하여 은장색에게 주어 한 신상을 새기며 한 신상을 부어만들었더니 그 신상이 미가의 집에 있더라",
+      "source_text_hash": "46b6a28a75b95c98d7b35926720aa188dd280fe8f8aaf55ef507c35ecf79325c",
+      "translation_text_hash": "a85a86bac7bc8896bb49b10598154ff18371b8eb2d9df87fc61106726212f211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 그 은을 어미에게 도로 주었으므로 어미가 그 은 이백을 취하여 은장색에게 주어 한 신상을 새기며 한 신상을 부어만들었더니 그 신상이 미가의 집에 있더라"
+      ],
+      "raw_text_hashes": [
+        "a85a86bac7bc8896bb49b10598154ff18371b8eb2d9df87fc61106726212f211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:5",
+      "sequence": 6986,
+      "chapter_label": "JDG 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "The man Micah had a house of gods, and he made an ephod, and teraphim, and consecrated one of his sons, who became his priest.",
+      "ko": "이 사람 미가에게 신당이 있으므로 또 에봇과 드라빔을 만들고 한 아들을 세워 제사장을 삼았더라",
+      "source_text_hash": "b8e1ddfd78938fffbfae254b9853e8c4d18ce351537ac24665bf3c49bdf0bb3e",
+      "translation_text_hash": "2dfc4f7ef51ab069e0076784ef082d1dd2e24f384e2296290499bd742dba4cf9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람 미가에게 신당이 있으므로 또 에봇과 드라빔을 만들고 한 아들을 세워 제사장을 삼았더라"
+      ],
+      "raw_text_hashes": [
+        "2dfc4f7ef51ab069e0076784ef082d1dd2e24f384e2296290499bd742dba4cf9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:6",
+      "sequence": 6987,
+      "chapter_label": "JDG 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "In those days there was no king in Israel. Everyone did that which was right in his own eyes.",
+      "ko": "그 때에는 이스라엘에 왕이 없으므로 사람마다 자기 소견에 옳은대로 행하였더라",
+      "source_text_hash": "8b8cf3679f78bc6ba2461ab0a4d43eacd54ee3be9a8f295d4ff6a7b3fff41c2f",
+      "translation_text_hash": "cb010aced1c20036e4d2a09073eaa7a70a57db932befac2f43e1880a4e28df65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에는 이스라엘에 왕이 없으므로 사람마다 자기 소견에 옳은대로 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "cb010aced1c20036e4d2a09073eaa7a70a57db932befac2f43e1880a4e28df65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:7",
+      "sequence": 6988,
+      "chapter_label": "JDG 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "There was a young man out of Bethlehem Judah, of the family of Judah, who was a Levite; and he lived there.",
+      "ko": "유다 가족에 속한 유다 베들레헴에 한 소년이 있으니 그는 레위인으로서 거기 우거하였더라",
+      "source_text_hash": "7dbd5542ca45724ec04069789c3c9c51aec5d7be0f223e70caf5c3831104a04c",
+      "translation_text_hash": "cca4db9fb135597a7c240255be47b589dc54df6a6712b4c44bd6d74a801184dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 가족에 속한 유다 베들레헴에 한 소년이 있으니 그는 레위인으로서 거기 우거하였더라"
+      ],
+      "raw_text_hashes": [
+        "cca4db9fb135597a7c240255be47b589dc54df6a6712b4c44bd6d74a801184dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:8",
+      "sequence": 6989,
+      "chapter_label": "JDG 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "The man departed out of the city, out of Bethlehem Judah, to live where he could find a place, and he came to the hill country of Ephraim, to the house of Micah, as he traveled.",
+      "ko": "이 사람이 거할 곳을 찾고자 하여 그 성읍 유다 베들레헴을 떠나서 행하다가 에브라임 산지로 가서 미가의 집에 이르매",
+      "source_text_hash": "2b534cfe1190118cfe7f11269432e337d0dd516d24ea746a460ca2187646b14a",
+      "translation_text_hash": "696e67dfe84892d58540d4bb53797cca90e620bf26c348ec774cded66969d49e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사람이 거할 곳을 찾고자 하여 그 성읍 유다 베들레헴을 떠나서 행하다가 에브라임 산지로 가서 미가의 집에 이르매"
+      ],
+      "raw_text_hashes": [
+        "696e67dfe84892d58540d4bb53797cca90e620bf26c348ec774cded66969d49e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:9",
+      "sequence": 6990,
+      "chapter_label": "JDG 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "Micah said to him, “Where did you come from?” He said to him, “I am a Levite of Bethlehem Judah, and I am looking for a place to live.”",
+      "ko": "미가가 그에게 묻되 너는 어디서부터 오느뇨 그가 이르되 나는 유다 베들레헴의 레위인으로서 거할 곳을 찾으러 가노라",
+      "source_text_hash": "07786a64dd361f7efd58f01c2995327ea783a58a0636514637ada3dd0b955395",
+      "translation_text_hash": "38b3d160fa1f69774bd02977c82ce34d994df1a3041dd83fea82eab14c42eee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 그에게 묻되 너는 어디서부터 오느뇨 그가 이르되 나는 유다 베들레헴의 레위인으로서 거할 곳을 찾으러 가노라"
+      ],
+      "raw_text_hashes": [
+        "38b3d160fa1f69774bd02977c82ce34d994df1a3041dd83fea82eab14c42eee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:10",
+      "sequence": 6991,
+      "chapter_label": "JDG 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "Micah said to him, “Dwell with me, and be to me a father and a priest, and I will give you ten pieces of silver per year, a suit of clothing, and your food.” So the Levite went in.",
+      "ko": "미가가 그에게 이르되 네가 나와 함께 거하여 나를 위하여 아비와 제사장이 되라 내가 해마다 은 열과 의복 한벌과 식물을 주리라 하므로 레위인이 들어갔더니",
+      "source_text_hash": "990a9777856cab506ad90c1c7726940e4866a347d9d54e3491ee1adf85bc477d",
+      "translation_text_hash": "7b7b8c3b123ea7b1b7d7da8541e85b149ae20acea551b213c297e65222200fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 그에게 이르되 네가 나와 함께 거하여 나를 위하여 아비와 제사장이 되라 내가 해마다 은 열과 의복 한벌과 식물을 주리라 하므로 레위인이 들어갔더니"
+      ],
+      "raw_text_hashes": [
+        "7b7b8c3b123ea7b1b7d7da8541e85b149ae20acea551b213c297e65222200fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:11",
+      "sequence": 6992,
+      "chapter_label": "JDG 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "The Levite was content to dwell with the man; and the young man was to him as one of his sons.",
+      "ko": "레위인이 그 사람과 함께 거하기를 만족히 여겼으니 이는 그 소년이 미가의 아들 중 하나 같이 됨이라",
+      "source_text_hash": "e03258897c72a56d30afa4082787f22dfd921322cb68e109622450bf1faf8522",
+      "translation_text_hash": "4bd1ef5e337bd93e19a1e1149612dcd6b7e0164729ceff281ffe0e2c9cdddbf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인이 그 사람과 함께 거하기를 만족히 여겼으니 이는 그 소년이 미가의 아들 중 하나 같이 됨이라"
+      ],
+      "raw_text_hashes": [
+        "4bd1ef5e337bd93e19a1e1149612dcd6b7e0164729ceff281ffe0e2c9cdddbf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:12",
+      "sequence": 6993,
+      "chapter_label": "JDG 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "Micah consecrated the Levite, and the young man became his priest, and was in the house of Micah.",
+      "ko": "미가가 레위인을 거룩히 구별하매 소년이 미가의 제사장이 되어 그 집에 거한지라",
+      "source_text_hash": "2a8e6d9ffdf7f68c1a46d3fa9f1687b83d43db57114dcb30e8204b2f52a161fd",
+      "translation_text_hash": "bd13baa1724890cf17a768c58c68bb0ea0c2a48d7c62759df4401f9efde4c0ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미가가 레위인을 거룩히 구별하매 소년이 미가의 제사장이 되어 그 집에 거한지라"
+      ],
+      "raw_text_hashes": [
+        "bd13baa1724890cf17a768c58c68bb0ea0c2a48d7c62759df4401f9efde4c0ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:17:13",
+      "sequence": 6994,
+      "chapter_label": "JDG 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "Then Micah said, “Now I know that the LORD will do good to me, since I have a Levite as my priest.”",
+      "ko": "이에 미가가 가로되 레위인이 내 제사장이 되었으니 이제 여호와께서 내게 복 주실 줄을 아노라 하니라",
+      "source_text_hash": "2b9fc97757704932f65281b9874fa2ae113697eed142884db287bde420ca2f16",
+      "translation_text_hash": "4eb56966fc9a13fe68b991b227a910f5d49cd73a3b2a80b9ae0bfad766fa109f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 미가가 가로되 레위인이 내 제사장이 되었으니 이제 여호와께서 내게 복 주실 줄을 아노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "4eb56966fc9a13fe68b991b227a910f5d49cd73a3b2a80b9ae0bfad766fa109f"
+      ]
+    }
+  ]
+}

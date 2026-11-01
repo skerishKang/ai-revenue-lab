@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JAS:chapter:001",
+  "unit_ordinal": 1147,
+  "unit_label": "JAS 1",
+  "book_code": "JAS",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JAS:1:1",
+      "sequence": 30264,
+      "chapter_label": "JAS 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "James, a servant of God and of the Lord Jesus Christ, to the twelve tribes which are in the Dispersion: Greetings.",
+      "ko": "하나님과 주 예수 그리스도의 종 야고보는 흩어져 있는 열 두 지파에게 문안하노라",
+      "source_text_hash": "d9016b1cdbf94a1a8ff8febbfef9f003d824caacf88b279add503b19539bf51f",
+      "translation_text_hash": "d2876c595034cd0fe1c2c52bf3abc989d04b0d90bd003444b58250d3ed2426b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님과 주 예수 그리스도의 종 야고보는 흩어져 있는 열 두 지파에게 문안하노라"
+      ],
+      "raw_text_hashes": [
+        "d2876c595034cd0fe1c2c52bf3abc989d04b0d90bd003444b58250d3ed2426b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:2",
+      "sequence": 30265,
+      "chapter_label": "JAS 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Count it all joy, my brothers, when you fall into various temptations,",
+      "ko": "내 형제들아 너희가 여러가지 시험을 만나거든 온전히 기쁘게 여기라",
+      "source_text_hash": "33e13b40378eafb7cf9805727ca0ab93e4bcfe2d5a32e3bddc243ade05ad4704",
+      "translation_text_hash": "7923e7a3f4f238448444b1a1973f032a1214f7df66431f8145f05cf528922f1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제들아 너희가 여러가지 시험을 만나거든 온전히 기쁘게 여기라"
+      ],
+      "raw_text_hashes": [
+        "7923e7a3f4f238448444b1a1973f032a1214f7df66431f8145f05cf528922f1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:3",
+      "sequence": 30266,
+      "chapter_label": "JAS 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "knowing that the testing of your faith produces endurance.",
+      "ko": "이는 너희 믿음의 시련이 인내를 만들어 내는줄 너희가 앎이라",
+      "source_text_hash": "a413cc8d9c1ca5e83a401f7e19a71af3f18b4cc2ab5a499764aa63f142419076",
+      "translation_text_hash": "de98baebc9d12a6c1c33f053841966ee2d805ab8edc59f307621dabee4e1f420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희 믿음의 시련이 인내를 만들어 내는줄 너희가 앎이라"
+      ],
+      "raw_text_hashes": [
+        "de98baebc9d12a6c1c33f053841966ee2d805ab8edc59f307621dabee4e1f420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:4",
+      "sequence": 30267,
+      "chapter_label": "JAS 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Let endurance have its perfect work, that you may be perfect and complete, lacking in nothing.",
+      "ko": "인내를 온전히 이루라 이는 너희로 온전하고 구비하여 조금도 부족함이 없게 하려 함이라",
+      "source_text_hash": "51ac560bc3902d9d4164707ffeb836218ae2d050f3a702e92e00a98a40b5f2d6",
+      "translation_text_hash": "1b2569963f146f16ca6e52cf2a5aca81fe93ebe72c9d9bc9928a4bd743095818",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인내를 온전히 이루라 이는 너희로 온전하고 구비하여 조금도 부족함이 없게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "1b2569963f146f16ca6e52cf2a5aca81fe93ebe72c9d9bc9928a4bd743095818"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:5",
+      "sequence": 30268,
+      "chapter_label": "JAS 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "But if any of you lacks wisdom, let him ask of God, who gives to all liberally and without reproach, and it will be given to him.",
+      "ko": "너희 중에 누구든지 지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라 그리하면 주시리라",
+      "source_text_hash": "7e0829f51cdb0aee5785c003554affa2a3c57daa1c7b08935f100a3b53c85649",
+      "translation_text_hash": "2a3e23f4f30c0aa7216d273e06f3eee40ae99089f6c8cc2afc3233bafa464118",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누구든지 지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라 그리하면 주시리라"
+      ],
+      "raw_text_hashes": [
+        "2a3e23f4f30c0aa7216d273e06f3eee40ae99089f6c8cc2afc3233bafa464118"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:6",
+      "sequence": 30269,
+      "chapter_label": "JAS 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "But let him ask in faith, without any doubting, for he who doubts is like a wave of the sea, driven by the wind and tossed.",
+      "ko": "오직 믿음으로 구하고 조금도 의심하지 말라 의심하는 자는 마치 바람에 밀려 요동하는 바다 물결 같으니",
+      "source_text_hash": "cbe2b33b24e425e014168d973983c16bb673447008cb31bd7285e9e7610feea8",
+      "translation_text_hash": "72567b7955907cb2f95edf7c684ebacace2ea580c5df9e75a286965fd2efdce7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 믿음으로 구하고 조금도 의심하지 말라 의심하는 자는 마치 바람에 밀려 요동하는 바다 물결 같으니"
+      ],
+      "raw_text_hashes": [
+        "72567b7955907cb2f95edf7c684ebacace2ea580c5df9e75a286965fd2efdce7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:7",
+      "sequence": 30270,
+      "chapter_label": "JAS 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "For that man shouldn’t think that he will receive anything from the Lord.",
+      "ko": "이런 사람은 무엇이든지 주께 얻기를 생각하지 말라",
+      "source_text_hash": "d3d05689b91bad0ed8e128f433b0c568342e9910d6478729b83b9202bc147f81",
+      "translation_text_hash": "c22d87430aa37cb706492722ea41a89d643bc0ed20cb5bc271361e01124c08e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 사람은 무엇이든지 주께 얻기를 생각하지 말라"
+      ],
+      "raw_text_hashes": [
+        "c22d87430aa37cb706492722ea41a89d643bc0ed20cb5bc271361e01124c08e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:8",
+      "sequence": 30271,
+      "chapter_label": "JAS 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "He is a double-minded man, unstable in all his ways.",
+      "ko": "두 마음을 품어 모든 일에 정함이 없는 자로다",
+      "source_text_hash": "85d86c81c693c2b8524fffdf2256644e878154a989317e7d28a49be112b43467",
+      "translation_text_hash": "64f61b5ca2a2de7764d820ab7eec094f00c885aa0cbd35c4d3546373abecc96d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 마음을 품어 모든 일에 정함이 없는 자로다"
+      ],
+      "raw_text_hashes": [
+        "64f61b5ca2a2de7764d820ab7eec094f00c885aa0cbd35c4d3546373abecc96d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:9",
+      "sequence": 30272,
+      "chapter_label": "JAS 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Let the brother in humble circumstances glory in his high position;",
+      "ko": "낮은 형제는 자기의 높음을 자랑하고",
+      "source_text_hash": "b14580004c68a126cc5015767697e3fb565322f44817ce589bb2cd68e95a523f",
+      "translation_text_hash": "608d680f5e048718b06fa44db7d52644be65add8d25999082feedee82651b4f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낮은 형제는 자기의 높음을 자랑하고"
+      ],
+      "raw_text_hashes": [
+        "608d680f5e048718b06fa44db7d52644be65add8d25999082feedee82651b4f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:10",
+      "sequence": 30273,
+      "chapter_label": "JAS 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "and the rich, in that he is made humble, because like the flower in the grass, he will pass away.",
+      "ko": "부한 형제는 자기의 낮아짐을 자랑할찌니 이는 풀의 꽃과 같이 지나감이라",
+      "source_text_hash": "b19a148fd05f14b340655f6b70e2641dbf658ec869cb86c5aeb4f688f53d0cc3",
+      "translation_text_hash": "463a263417de64c01d2f1a9ed3c40bff90ba2edb0990563751cff9d192b3d443",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부한 형제는 자기의 낮아짐을 자랑할찌니 이는 풀의 꽃과 같이 지나감이라"
+      ],
+      "raw_text_hashes": [
+        "463a263417de64c01d2f1a9ed3c40bff90ba2edb0990563751cff9d192b3d443"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:11",
+      "sequence": 30274,
+      "chapter_label": "JAS 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "For the sun arises with the scorching wind and withers the grass; and the flower in it falls, and the beauty of its appearance perishes. So the rich man will also fade away in his pursuits.",
+      "ko": "해가 돋고 뜨거운 바람이 불어 풀을 말리우면 꽃이 떨어져 그 모양의 아름다움이 없어지나니 부한 자도 그 행하는 일에 이와 같이 쇠잔하리라",
+      "source_text_hash": "df720080cf691d4b4c28918c6ef6faf4c234c2dc9207578c93f1e8f5ceaf858b",
+      "translation_text_hash": "24e89caf407990cdbb126f3335b7483c92f545c1a0762a70505daec9306030b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 돋고 뜨거운 바람이 불어 풀을 말리우면 꽃이 떨어져 그 모양의 아름다움이 없어지나니 부한 자도 그 행하는 일에 이와 같이 쇠잔하리라"
+      ],
+      "raw_text_hashes": [
+        "24e89caf407990cdbb126f3335b7483c92f545c1a0762a70505daec9306030b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:12",
+      "sequence": 30275,
+      "chapter_label": "JAS 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "Blessed is a person who endures temptation, for when he has been approved, he will receive the crown of life which the Lord promised to those who love him.",
+      "ko": "시험을 참는 자는 복이 있도다 이것에 옳다 인정하심을 받은 후에 주께서 자기를 사랑하는 자들에게 약속하신 생명의 면류관을 얻을 것임이니라",
+      "source_text_hash": "58e5bce7e6b1a787a0ae4548a4d5a13f60e8fee1f92096aa22484793fdf4aca8",
+      "translation_text_hash": "c8d29a6b2328b7005a843697dec62c6ca1929460c5bab54490a8be83bd631af9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시험을 참는 자는 복이 있도다 이것에 옳다 인정하심을 받은 후에 주께서 자기를 사랑하는 자들에게 약속하신 생명의 면류관을 얻을 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "c8d29a6b2328b7005a843697dec62c6ca1929460c5bab54490a8be83bd631af9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:13",
+      "sequence": 30276,
+      "chapter_label": "JAS 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Let no man say when he is tempted, “I am tempted by God,” for God can’t be tempted by evil, and he himself tempts no one.",
+      "ko": "사람이 시험을 받을 때에 내가 하나님께 시험을 받는다 하지 말찌니 하나님은 악에게 시험을 받지도 아니하시고 친히 아무도 시험하지 아니하시느니라",
+      "source_text_hash": "c52891f4e72c09dfe21e29b1721303bef0871d1b6a14458a8e0a1a174a29d722",
+      "translation_text_hash": "da110ba69edc8d0f7d1f344ab2da57f9294ed794e056f3e628560660e73a9b91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 시험을 받을 때에 내가 하나님께 시험을 받는다 하지 말찌니 하나님은 악에게 시험을 받지도 아니하시고 친히 아무도 시험하지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "da110ba69edc8d0f7d1f344ab2da57f9294ed794e056f3e628560660e73a9b91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:14",
+      "sequence": 30277,
+      "chapter_label": "JAS 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "But each one is tempted when he is drawn away by his own lust and enticed.",
+      "ko": "오직 각 사람이 시험을 받는 것은 자기 욕심에 끌려 미혹됨이니",
+      "source_text_hash": "13742bed024aabc9f1e9713a023d2b06c14c5003f72f9c980152fb3a13d227b4",
+      "translation_text_hash": "dd61fafe39c86f8b7a58ec651db3c01c6039c92b9b91b27bbd14876108b52a9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 각 사람이 시험을 받는 것은 자기 욕심에 끌려 미혹됨이니"
+      ],
+      "raw_text_hashes": [
+        "dd61fafe39c86f8b7a58ec651db3c01c6039c92b9b91b27bbd14876108b52a9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:15",
+      "sequence": 30278,
+      "chapter_label": "JAS 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Then the lust, when it has conceived, bears sin. The sin, when it is full grown, produces death.",
+      "ko": "욕심이 잉태한즉 죄를 낳고 죄가 장성한즉 사망을 낳느니라",
+      "source_text_hash": "004b6d9e6ededecd00c1c88c91bcd16fe7b9b9a9ac8560d3863863f3f3409556",
+      "translation_text_hash": "4eacad72f8f9a11feb90c21cc88fe7c52a0225fdb421afa38be8011ad1ecd2ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욕심이 잉태한즉 죄를 낳고 죄가 장성한즉 사망을 낳느니라"
+      ],
+      "raw_text_hashes": [
+        "4eacad72f8f9a11feb90c21cc88fe7c52a0225fdb421afa38be8011ad1ecd2ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:16",
+      "sequence": 30279,
+      "chapter_label": "JAS 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t be deceived, my beloved brothers.",
+      "ko": "내 사랑하는 형제들아 속지 말라",
+      "source_text_hash": "c3e09dd825f62bc7d5fef407fc8c1bb841a60664830ea4073d88a8fabe63cbea",
+      "translation_text_hash": "fa16930cf6e7f83fabd865effcd195ec1a6033c0ce14bd83fc86416fe583319c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑하는 형제들아 속지 말라"
+      ],
+      "raw_text_hashes": [
+        "fa16930cf6e7f83fabd865effcd195ec1a6033c0ce14bd83fc86416fe583319c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:17",
+      "sequence": 30280,
+      "chapter_label": "JAS 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Every good gift and every perfect gift is from above, coming down from the Father of lights, with whom can be no variation nor turning shadow.",
+      "ko": "각양 좋은 은사와 온전한 선물이 다 위로부터 빛들의 아버지께로서 내려오나니 그는 변함도 없으시고 회전하는 그림자도 없으시니라",
+      "source_text_hash": "5aa6b8c636b55804d51b9c65784c1e73461f01990ad2b62013a14172c36c79ef",
+      "translation_text_hash": "dd116f90cc7bf798c546f4d6024b74f091ea15042efee5a2bc6f2bcd3ded8c1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각양 좋은 은사와 온전한 선물이 다 위로부터 빛들의 아버지께로서 내려오나니 그는 변함도 없으시고 회전하는 그림자도 없으시니라"
+      ],
+      "raw_text_hashes": [
+        "dd116f90cc7bf798c546f4d6024b74f091ea15042efee5a2bc6f2bcd3ded8c1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:18",
+      "sequence": 30281,
+      "chapter_label": "JAS 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Of his own will he gave birth to us by the word of truth, that we should be a kind of first fruits of his creatures.",
+      "ko": "그가 그 조물 중에 우리로 한 첫 열매가 되게 하시려고 자기의 뜻을 좇아 진리의 말씀으로 우리를 낳으셨느니라",
+      "source_text_hash": "5c78483e5b74b59034d6c58513c4118c81f144cce16bc1f68a68414a31ccf18b",
+      "translation_text_hash": "eb502e963b9e828b7cb2bc34fa5312eb4d0a6c62835de4f2bfa5fce8c36634b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 조물 중에 우리로 한 첫 열매가 되게 하시려고 자기의 뜻을 좇아 진리의 말씀으로 우리를 낳으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "eb502e963b9e828b7cb2bc34fa5312eb4d0a6c62835de4f2bfa5fce8c36634b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:19",
+      "sequence": 30282,
+      "chapter_label": "JAS 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "So, then, my beloved brothers, let every man be swift to hear, slow to speak, and slow to anger;",
+      "ko": "내 사랑하는 형제들아 너희가 알거니와 사람마다 듣기는 속히 하고 말하기는 더디 하며 성내기도 더디 하라",
+      "source_text_hash": "3a52741bf7c62e731a0a7725fcdbf969cc7290821761f2b6c6487044f49b9b47",
+      "translation_text_hash": "23d355bc0853ae7b1ca28ece4dae277a4ae987bae39d8650aa499b9ad2fb0964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 사랑하는 형제들아 너희가 알거니와 사람마다 듣기는 속히 하고 말하기는 더디 하며 성내기도 더디 하라"
+      ],
+      "raw_text_hashes": [
+        "23d355bc0853ae7b1ca28ece4dae277a4ae987bae39d8650aa499b9ad2fb0964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:20",
+      "sequence": 30283,
+      "chapter_label": "JAS 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "for the anger of man doesn’t produce the righteousness of God.",
+      "ko": "사람의 성내는 것이 하나님의 의를 이루지 못함이니라",
+      "source_text_hash": "0675257c1440159ce9f251af8fa1eabafaaca5c836eac9f19a33b9ddf7891d85",
+      "translation_text_hash": "f4da19bfd7381be9a196cb1374074acd0995fa284653cdabcb1c2f1bfdc6b119",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 성내는 것이 하나님의 의를 이루지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "f4da19bfd7381be9a196cb1374074acd0995fa284653cdabcb1c2f1bfdc6b119"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:21",
+      "sequence": 30284,
+      "chapter_label": "JAS 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore, putting away all filthiness and overflowing of wickedness, receive with humility the implanted word, which is able to save your souls.",
+      "ko": "그러므로 모든 더러운 것과 넘치는 악을 내어 버리고 능히 너희 영혼을 구원할바 마음에 심긴 도를 온유함으로 받으라",
+      "source_text_hash": "ff02b8199695505dc19febf0fcad22a7d7e285f06a4ebdcd5771107ad6ba5e06",
+      "translation_text_hash": "24d729df4d09cc956c4888dfea07b223bccfe7a0e67880da12fa728d8bc5c635",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 모든 더러운 것과 넘치는 악을 내어 버리고 능히 너희 영혼을 구원할바 마음에 심긴 도를 온유함으로 받으라"
+      ],
+      "raw_text_hashes": [
+        "24d729df4d09cc956c4888dfea07b223bccfe7a0e67880da12fa728d8bc5c635"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:22",
+      "sequence": 30285,
+      "chapter_label": "JAS 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "But be doers of the word, and not only hearers, deluding your own selves.",
+      "ko": "너희는 도를 행하는 자가 되고 듣기만 하여 자신을 속이는 자가 되지말라",
+      "source_text_hash": "771236457310d5fa844cfe3e0209078e9658e8aac4927e0ca173ace9e2c39bfd",
+      "translation_text_hash": "e1ccf0ae36cce7d7941a15d01f0141d499e3c6b8ea06267bb584747758b321e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 도를 행하는 자가 되고 듣기만 하여 자신을 속이는 자가 되지말라"
+      ],
+      "raw_text_hashes": [
+        "e1ccf0ae36cce7d7941a15d01f0141d499e3c6b8ea06267bb584747758b321e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:23",
+      "sequence": 30286,
+      "chapter_label": "JAS 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "For if anyone is a hearer of the word and not a doer, he is like a man looking at his natural face in a mirror;",
+      "ko": "누구든지 도를 듣고 행하지 아니하면 그는 거울로 자기의 생긴 얼굴을 보는 사람과 같으니",
+      "source_text_hash": "c97cbdb460fd6c4b792a37448e8b149061720c88fc2eebaa8c7ae08777a83862",
+      "translation_text_hash": "2e776058dec11dc85abbd987129b383da67bf105a4d3bf384b17c527a32d7c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 도를 듣고 행하지 아니하면 그는 거울로 자기의 생긴 얼굴을 보는 사람과 같으니"
+      ],
+      "raw_text_hashes": [
+        "2e776058dec11dc85abbd987129b383da67bf105a4d3bf384b17c527a32d7c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:24",
+      "sequence": 30287,
+      "chapter_label": "JAS 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "for he sees himself, and goes away, and immediately forgets what kind of man he was.",
+      "ko": "제 자신을 보고 가서 그 모양이 어떠한 것을 곧 잊어버리거니와",
+      "source_text_hash": "e482be1a7ec260635324344819dbcc22704cc87bda8849daa855064e7047dd70",
+      "translation_text_hash": "69da41a964932f1d0d725b371190e66e1ad67a181e636ff2ace44d383422f0b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 자신을 보고 가서 그 모양이 어떠한 것을 곧 잊어버리거니와"
+      ],
+      "raw_text_hashes": [
+        "69da41a964932f1d0d725b371190e66e1ad67a181e636ff2ace44d383422f0b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:25",
+      "sequence": 30288,
+      "chapter_label": "JAS 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "But he who looks into the perfect law of freedom and continues, not being a hearer who forgets but a doer of the work, this man will be blessed in what he does.",
+      "ko": "자유하게 하는 온전한 율법을 들여다보고 있는 자는 듣고 잊어버리는 자가 아니요 실행하는 자니 이 사람이 그 행하는 일에 복을 받으리라",
+      "source_text_hash": "9ced570431fdc57c06275b39e4d4b611c7508402501fb1ba60abb71ca6304be7",
+      "translation_text_hash": "5a1abad40a3cd98470d12d7ce6aaae2b5ad810e82219d12b5d194d3af311833f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자유하게 하는 온전한 율법을 들여다보고 있는 자는 듣고 잊어버리는 자가 아니요 실행하는 자니 이 사람이 그 행하는 일에 복을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "5a1abad40a3cd98470d12d7ce6aaae2b5ad810e82219d12b5d194d3af311833f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:26",
+      "sequence": 30289,
+      "chapter_label": "JAS 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "If anyone among you thinks himself to be religious while he doesn’t bridle his tongue, but deceives his heart, this man’s religion is worthless.",
+      "ko": "누구든지 스스로 경건하다 생각하며 자기 혀를 재갈 먹이지 아니하고 자기 마음을 속이면 이 사람의 경건은 헛것이라",
+      "source_text_hash": "a543996ab8e72a66c07c0053c4c0aa701140a608ec83d86085c871c0b94493af",
+      "translation_text_hash": "b9c54aa4504a69861fc1a911ebdf9a93811d3a42314dcb59357128bcf88ab097",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 스스로 경건하다 생각하며 자기 혀를 재갈 먹이지 아니하고 자기 마음을 속이면 이 사람의 경건은 헛것이라"
+      ],
+      "raw_text_hashes": [
+        "b9c54aa4504a69861fc1a911ebdf9a93811d3a42314dcb59357128bcf88ab097"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JAS:1:27",
+      "sequence": 30290,
+      "chapter_label": "JAS 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "JAS",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JAS",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "Pure religion and undefiled before our God and Father is this: to visit the fatherless and widows in their affliction, and to keep oneself unstained by the world.",
+      "ko": "하나님 아버지 앞에서 정결하고 더러움이 없는 경건은 곧 고아와 과부를 그 환난 중에 돌아보고 또 자기를 지켜 세속에 물들지 아니하는 이것이니라",
+      "source_text_hash": "cb405bbfa86bcb94e2bd338a2d7d6d5db8480b761ecee88a970bd4b69925a3b1",
+      "translation_text_hash": "6d7ceb378e6578b6e2fa474a406a528a2d62926dd3b0a3e88809da867b3c1766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 아버지 앞에서 정결하고 더러움이 없는 경건은 곧 고아와 과부를 그 환난 중에 돌아보고 또 자기를 지켜 세속에 물들지 아니하는 이것이니라"
+      ],
+      "raw_text_hashes": [
+        "6d7ceb378e6578b6e2fa474a406a528a2d62926dd3b0a3e88809da867b3c1766"
+      ]
+    }
+  ]
+}

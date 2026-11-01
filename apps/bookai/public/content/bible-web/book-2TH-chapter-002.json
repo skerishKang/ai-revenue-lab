@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TH:chapter:002",
+  "unit_ordinal": 1118,
+  "unit_label": "2TH 2",
+  "book_code": "2TH",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TH:2:1",
+      "sequence": 29659,
+      "chapter_label": "2TH 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Now, brothers, concerning the coming of our Lord Jesus Christ and our gathering together to him, we ask you",
+      "ko": "형제들아 우리가 너희에게 구하는 것은 우리 주 예수 그리스도의 강림하심과 우리가 그 앞에 모임에 관하여",
+      "source_text_hash": "461946d740c138c09a9f26a48284d51b7dc8cfcfe096a49e5b6e58879c439cc5",
+      "translation_text_hash": "73bf4e23ce63b0defecac34aba3c152548d7a7b6fb24f89e531de939a41e29eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 우리가 너희에게 구하는 것은 우리 주 예수 그리스도의 강림하심과 우리가 그 앞에 모임에 관하여"
+      ],
+      "raw_text_hashes": [
+        "73bf4e23ce63b0defecac34aba3c152548d7a7b6fb24f89e531de939a41e29eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:2",
+      "sequence": 29660,
+      "chapter_label": "2TH 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "not to be quickly shaken in your mind or troubled, either by spirit or by word or by letter as if from us, saying that the day of Christ has already come.",
+      "ko": "혹 영으로나 혹 말로나 혹 우리에게서 받았다 하는 편지로나 주의 날이 이르렀다고 쉬 동심하거나 두려워하거나 하지 아니할 그것이라",
+      "source_text_hash": "238c6f9a68dfb00a45944dc046b8eccc95cd7bd757666e7bc49cd3a60481c14b",
+      "translation_text_hash": "68282393070eb36e4a8ea92a2f434332d12884a63b93f2d52a01790cb1633135",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 영으로나 혹 말로나 혹 우리에게서 받았다 하는 편지로나 주의 날이 이르렀다고 쉬 동심하거나 두려워하거나 하지 아니할 그것이라"
+      ],
+      "raw_text_hashes": [
+        "68282393070eb36e4a8ea92a2f434332d12884a63b93f2d52a01790cb1633135"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:3",
+      "sequence": 29661,
+      "chapter_label": "2TH 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Let no one deceive you in any way. For it will not be unless the rebellion comes first, and the man of sin is revealed, the son of destruction.",
+      "ko": "누가 아무렇게 하여도 너희가 미혹하지 말라 먼저 배도하는 일이 있고 저 불법의 사람 곧 멸망의 아들이 나타나기 전에는 이르지 아니하리니",
+      "source_text_hash": "b71a119df2bfe786229f95a19f598ca9cb39fcb33e541a79f2f10abfa8c0e536",
+      "translation_text_hash": "72b6958f0787551cf7c04fdcf004f2c03e8cd8afa848821e9e302dbbc84c929f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 아무렇게 하여도 너희가 미혹하지 말라 먼저 배도하는 일이 있고 저 불법의 사람 곧 멸망의 아들이 나타나기 전에는 이르지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "72b6958f0787551cf7c04fdcf004f2c03e8cd8afa848821e9e302dbbc84c929f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:4",
+      "sequence": 29662,
+      "chapter_label": "2TH 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "He opposes and exalts himself against all that is called God or that is worshiped, so that he sits as God in the temple of God, setting himself up as God.",
+      "ko": "저는 대적하는 자라 범사에 일컫는 하나님이나 숭배함을 받는 자 위에 뛰어나 자존하여 하나님 성전에 앉아 자기를 보여 하나님이라 하느니라",
+      "source_text_hash": "e4295d643a8b325a2c625c71c09964e157646e45c6b681210b1128b0f7dc3269",
+      "translation_text_hash": "e05973cc7c3fcfa015c1afddd7cb58204589b707f210231fcddc1dc60e9d99dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 대적하는 자라 범사에 일컫는 하나님이나 숭배함을 받는 자 위에 뛰어나 자존하여 하나님 성전에 앉아 자기를 보여 하나님이라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "e05973cc7c3fcfa015c1afddd7cb58204589b707f210231fcddc1dc60e9d99dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:5",
+      "sequence": 29663,
+      "chapter_label": "2TH 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Don’t you remember that when I was still with you, I told you these things?",
+      "ko": "내가 너희와 함께 있을 때에 이 일을 너희에게 말한 것을 기억하지 못하느냐",
+      "source_text_hash": "64c6dc9eb90fb1954f0a32db0d45928ddebd1255c7667a9c1ae9a47ca6792c1b",
+      "translation_text_hash": "16b054ce92b8aeb1123712dff4a47378ac9aa1e95e9e395aafae0bb323cffd03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희와 함께 있을 때에 이 일을 너희에게 말한 것을 기억하지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "16b054ce92b8aeb1123712dff4a47378ac9aa1e95e9e395aafae0bb323cffd03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:6",
+      "sequence": 29664,
+      "chapter_label": "2TH 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Now you know what is restraining him, to the end that he may be revealed in his own season.",
+      "ko": "저로 하여금 저의 때에 나타나게 하려 하여 막는 것을 지금도 너희가 아나니",
+      "source_text_hash": "a7cba7d6a7412fbaca1e7b9226b0e417c68380713ebeae356c549e5e37c48a00",
+      "translation_text_hash": "6f7b869ba1d9aa37f36a0fd657f49700b68640f220f2748e3dd80f3c02d61394",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저로 하여금 저의 때에 나타나게 하려 하여 막는 것을 지금도 너희가 아나니"
+      ],
+      "raw_text_hashes": [
+        "6f7b869ba1d9aa37f36a0fd657f49700b68640f220f2748e3dd80f3c02d61394"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:7",
+      "sequence": 29665,
+      "chapter_label": "2TH 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "For the mystery of lawlessness already works. Only there is one who restrains now, until he is taken out of the way.",
+      "ko": "불법의 비밀이 이미 활동하였으나 지금 막는 자가 있어 그 중에서 옮길 때까지 하리라",
+      "source_text_hash": "d7dda9f0981c22b24370d7059508e942d73b7166ae6f22c59bf838f683eeae4e",
+      "translation_text_hash": "0e3fc39ace63e76ea74e8069619516a1f096921181a9efab8e8b92f41ac13142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불법의 비밀이 이미 활동하였으나 지금 막는 자가 있어 그 중에서 옮길 때까지 하리라"
+      ],
+      "raw_text_hashes": [
+        "0e3fc39ace63e76ea74e8069619516a1f096921181a9efab8e8b92f41ac13142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:8",
+      "sequence": 29666,
+      "chapter_label": "2TH 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Then the lawless one will be revealed, whom the Lord will kill with the breath of his mouth and destroy by the manifestation of his coming;",
+      "ko": "그 때에 불법한 자가 나타나리니 주 예수께서 그 입의 기운으로 저를 죽이시고 강림하여 나타나심으로 폐하시리라",
+      "source_text_hash": "499cc6a2ea8a9e3dd5c8df051addd7df914b82abc24fb53bf162511367335afc",
+      "translation_text_hash": "b84ee071f91443ae4b1c352e4639dc8491f364d523b0c33baa215bb365a6e679",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 불법한 자가 나타나리니 주 예수께서 그 입의 기운으로 저를 죽이시고 강림하여 나타나심으로 폐하시리라"
+      ],
+      "raw_text_hashes": [
+        "b84ee071f91443ae4b1c352e4639dc8491f364d523b0c33baa215bb365a6e679"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:9",
+      "sequence": 29667,
+      "chapter_label": "2TH 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "even he whose coming is according to the working of Satan with all power and signs and lying wonders,",
+      "ko": "악한 자의 임함은 사단의 역사를 따라 모든 능력과 표적과 거짓 기적과",
+      "source_text_hash": "e584fef44ebd2cbeeb435a74d0c304aad5ef8acc6073f56c1917dfdff452cbd9",
+      "translation_text_hash": "e9fff465c5ee690dff6d78f4c3f5d23e92f2cb2964150b07a9086b4f5a95f569",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 자의 임함은 사단의 역사를 따라 모든 능력과 표적과 거짓 기적과"
+      ],
+      "raw_text_hashes": [
+        "e9fff465c5ee690dff6d78f4c3f5d23e92f2cb2964150b07a9086b4f5a95f569"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:10",
+      "sequence": 29668,
+      "chapter_label": "2TH 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "and with all deception of wickedness for those who are being lost, because they didn’t receive the love of the truth, that they might be saved.",
+      "ko": "불의의 모든 속임으로 멸망하는 자들에게 임하리니 이는 저희가 진리의 사랑을 받지 아니하여 구원함을 얻지 못함이니라",
+      "source_text_hash": "14474ede78895f4a0e6fdd3855fb33f7b118a2e0ce12a9a9c5b6c0732264ffe2",
+      "translation_text_hash": "df72288534895dc96705e4c97e38d93cfa51c5882ea95aa25d2458bbfb6ed003",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불의의 모든 속임으로 멸망하는 자들에게 임하리니 이는 저희가 진리의 사랑을 받지 아니하여 구원함을 얻지 못함이니라"
+      ],
+      "raw_text_hashes": [
+        "df72288534895dc96705e4c97e38d93cfa51c5882ea95aa25d2458bbfb6ed003"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:11",
+      "sequence": 29669,
+      "chapter_label": "2TH 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Because of this, God sends them a powerful delusion, that they should believe a lie,",
+      "ko": "이러므로 하나님이 유혹을 저의 가운데 역사하게 하사 거짓 것을 믿게 하심은",
+      "source_text_hash": "294adda9f093f5e43f927159f22605614622090a4affc50b095d32dc3497ef5f",
+      "translation_text_hash": "d6795a9855521397eabc1a77464b841031d4f32c04a82e89537b1b4b2203b53c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 하나님이 유혹을 저의 가운데 역사하게 하사 거짓 것을 믿게 하심은"
+      ],
+      "raw_text_hashes": [
+        "d6795a9855521397eabc1a77464b841031d4f32c04a82e89537b1b4b2203b53c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:12",
+      "sequence": 29670,
+      "chapter_label": "2TH 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "that they all might be judged who didn’t believe the truth, but had pleasure in unrighteousness.",
+      "ko": "진리를 믿지 않고 불의를 좋아하는 모든 자로 심판을 받게 하려 하심이니라",
+      "source_text_hash": "d2cac572f5324b07102bf439ef57d36c15a666a2fd76ed9afd936295c8a68a18",
+      "translation_text_hash": "e0b60a714030c8969c367db0248c05d02b201b8e2fb38ef875c42c2cf10c7fda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리를 믿지 않고 불의를 좋아하는 모든 자로 심판을 받게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "e0b60a714030c8969c367db0248c05d02b201b8e2fb38ef875c42c2cf10c7fda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:13",
+      "sequence": 29671,
+      "chapter_label": "2TH 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "But we are bound to always give thanks to God for you, brothers loved by the Lord, because God chose you from the beginning for salvation through sanctification of the Spirit and belief in the truth,",
+      "ko": "주의 사랑하시는 형제들아 우리가 항상 너희를 위하여 마땅히 하나님께 감사할 것은 하나님이 처음부터 너희를 택하사 성령의 거룩하게 하심과 진리를 믿음으로 구원을 얻게 하심이니",
+      "source_text_hash": "946b5249051733bfdc2068d9a9044a13eb5918f158770d9eb621bb8bb35865b2",
+      "translation_text_hash": "5c689c1f37b18d48f3ebcdac943de883a83a20600e6496ffbb7b52c381999d0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사랑하시는 형제들아 우리가 항상 너희를 위하여 마땅히 하나님께 감사할 것은 하나님이 처음부터 너희를 택하사 성령의 거룩하게 하심과 진리를 믿음으로 구원을 얻게 하심이니"
+      ],
+      "raw_text_hashes": [
+        "5c689c1f37b18d48f3ebcdac943de883a83a20600e6496ffbb7b52c381999d0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:14",
+      "sequence": 29672,
+      "chapter_label": "2TH 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "to which he called you through our Good News, for the obtaining of the glory of our Lord Jesus Christ.",
+      "ko": "이를 위하여 우리 복음으로 너희를 부르사 우리 주 예수 그리스도의 영광을 얻게 하려 하심이니라",
+      "source_text_hash": "d38563775db52228e75a585bb49378ad923b71927a1226be508afb95d284f7be",
+      "translation_text_hash": "7618c00429b04feebc918d6bc49d2af4210322f538dde8068499199e7a6fc05d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 우리 복음으로 너희를 부르사 우리 주 예수 그리스도의 영광을 얻게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "7618c00429b04feebc918d6bc49d2af4210322f538dde8068499199e7a6fc05d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:15",
+      "sequence": 29673,
+      "chapter_label": "2TH 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "So then, brothers, stand firm and hold the traditions which you were taught by us, whether by word or by letter.",
+      "ko": "이러므로 형제들아 굳게 서서 말로나 우리 편지로 가르침을 받은 유전을 지키라",
+      "source_text_hash": "e1a230e2ce284c7921fbe24d926b9a6ade456098d7203c0b5795b5cc4f276662",
+      "translation_text_hash": "8ffb7070b57a69b419ca1bab6712da200de8b08708bffb65ec833156b2b569c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 형제들아 굳게 서서 말로나 우리 편지로 가르침을 받은 유전을 지키라"
+      ],
+      "raw_text_hashes": [
+        "8ffb7070b57a69b419ca1bab6712da200de8b08708bffb65ec833156b2b569c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:16",
+      "sequence": 29674,
+      "chapter_label": "2TH 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Now our Lord Jesus Christ himself, and God our Father, who loved us and gave us eternal comfort and good hope through grace,",
+      "ko": "우리 주 예수 그리스도와 우리를 사랑하시고 영원한 위로와 좋은 소망을 은혜로 주신 하나님 우리 아버지께서",
+      "source_text_hash": "22e62c895c4b3999f9733e3453ad41b935106bac57de280355cd2e7904a1cc73",
+      "translation_text_hash": "7d5059386686d042794e34b97cd1b1c55bac543f875bbd13e802e7baf192449b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도와 우리를 사랑하시고 영원한 위로와 좋은 소망을 은혜로 주신 하나님 우리 아버지께서"
+      ],
+      "raw_text_hashes": [
+        "7d5059386686d042794e34b97cd1b1c55bac543f875bbd13e802e7baf192449b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TH:2:17",
+      "sequence": 29675,
+      "chapter_label": "2TH 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "2TH",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2TH",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "comfort your hearts and establish you in every good work and word.",
+      "ko": "너희 마음을 위로하시고 모든 선한 일과 말에 굳게 하시기를 원하노라",
+      "source_text_hash": "9b23fe5304d1e94212b31b92fafa943e93eb82d2a2d96e4928fd004ea4399732",
+      "translation_text_hash": "d43ca52a012ea68bccc9a04a01c1156235b9b7111f5d16614846c101bad3eada",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 마음을 위로하시고 모든 선한 일과 말에 굳게 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "d43ca52a012ea68bccc9a04a01c1156235b9b7111f5d16614846c101bad3eada"
+      ]
+    }
+  ]
+}

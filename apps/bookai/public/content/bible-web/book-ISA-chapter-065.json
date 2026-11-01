@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:065",
+  "unit_ordinal": 744,
+  "unit_label": "ISA 65",
+  "book_code": "ISA",
+  "chapter_number": 65,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:65:1",
+      "sequence": 18899,
+      "chapter_label": "ISA 65",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 1
+        }
+      ],
+      "en": "“I am inquired of by those who didn’t ask. I am found by those who didn’t seek me. I said, ‘See me, see me,’ to a nation that was not called by my name.",
+      "ko": "나는 나를 구하지 아니하던 자에게 물음을 받았으며 나를 찾지 아니하던 자에게 찾아냄이 되었으며 내 이름을 부르지 아니하던 나라에게 내가 여기 있노라 내가 여기 있노라 하였노라",
+      "source_text_hash": "7614aeca61f661dcf4528f3fb8bb0907a5190e6b1e2147c8396b6594f164b2ea",
+      "translation_text_hash": "1dabd2ee6e153410ad39a36898bbc9becda0d0c2012c24f7c12e99cbd56945fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 나를 구하지 아니하던 자에게 물음을 받았으며 나를 찾지 아니하던 자에게 찾아냄이 되었으며 내 이름을 부르지 아니하던 나라에게 내가 여기 있노라 내가 여기 있노라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "1dabd2ee6e153410ad39a36898bbc9becda0d0c2012c24f7c12e99cbd56945fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:2",
+      "sequence": 18900,
+      "chapter_label": "ISA 65",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 2
+        }
+      ],
+      "en": "I have spread out my hands all day to a rebellious people, who walk in a way that is not good, after their own thoughts;",
+      "ko": "내가 종일 손을 펴서 자기 생각을 좇아 불선한 길을 행하는 패역한 백성들을 불렀나니",
+      "source_text_hash": "e66c20e989d1b47941b514e1f97e5da8d4536849869f17b6cff11850d38eb276",
+      "translation_text_hash": "4ea4947012c6d893e229f141369d89070295cf57ee5673455ec9c0580291bc8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 종일 손을 펴서 자기 생각을 좇아 불선한 길을 행하는 패역한 백성들을 불렀나니"
+      ],
+      "raw_text_hashes": [
+        "4ea4947012c6d893e229f141369d89070295cf57ee5673455ec9c0580291bc8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:3",
+      "sequence": 18901,
+      "chapter_label": "ISA 65",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 3
+        }
+      ],
+      "en": "a people who provoke me to my face continually, sacrificing in gardens, and burning incense on bricks;",
+      "ko": "곧 동산에서 제사하며 벽돌 위에서 분향하여 내 앞에서 항상 내 노를 일으키는 백성이라",
+      "source_text_hash": "05733af10d05ea36a7bfc1b0e9c266b2ccfbb4846dd246ce6d66cf29e20c03a6",
+      "translation_text_hash": "fc13fb73062c31d7b09a82e269ac50744a534054af137b1a19699f6ac63dcf20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 동산에서 제사하며 벽돌 위에서 분향하여 내 앞에서 항상 내 노를 일으키는 백성이라"
+      ],
+      "raw_text_hashes": [
+        "fc13fb73062c31d7b09a82e269ac50744a534054af137b1a19699f6ac63dcf20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:4",
+      "sequence": 18902,
+      "chapter_label": "ISA 65",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 4
+        }
+      ],
+      "en": "who sit among the graves, and spend nights in secret places; who eat pig’s meat, and broth of abominable things is in their vessels;",
+      "ko": "그들이 무덤 사이에 앉으며 은밀한 처소에서 지내며 돼지 고기를 먹으며 가증한 물건의 국을 그릇에 담으면서",
+      "source_text_hash": "be683740a081cce5c322a39a17231c29f9526e727f52e6297a85b0a1b8a37c50",
+      "translation_text_hash": "7248cc860940aa2f7b67e9fa2c7f28b0f2badfcf25942b7471257e1c5ad39501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 무덤 사이에 앉으며 은밀한 처소에서 지내며 돼지 고기를 먹으며 가증한 물건의 국을 그릇에 담으면서"
+      ],
+      "raw_text_hashes": [
+        "7248cc860940aa2f7b67e9fa2c7f28b0f2badfcf25942b7471257e1c5ad39501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:5",
+      "sequence": 18903,
+      "chapter_label": "ISA 65",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 5
+        }
+      ],
+      "en": "who say, ‘Stay by yourself, don’t come near to me, for I am holier than you.’ These are smoke in my nose, a fire that burns all day.",
+      "ko": "사람에게 이르기를 너는 네 자리에 섰고 내게 가까이 하지 말라 나는 너보다 거룩함이니라 하나니 이런 자들은 내 코의 연기요 종일 타는 불이로다",
+      "source_text_hash": "4ae34a6c57f6c5a5a2e0416dbbd997330c600d1a319137f9e9b7d1f9bc49169d",
+      "translation_text_hash": "87f9d5723aac959b05a61119e75296bc8296ecd1a7ee2e77f4ac6a4217039652",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람에게 이르기를 너는 네 자리에 섰고 내게 가까이 하지 말라 나는 너보다 거룩함이니라 하나니 이런 자들은 내 코의 연기요 종일 타는 불이로다"
+      ],
+      "raw_text_hashes": [
+        "87f9d5723aac959b05a61119e75296bc8296ecd1a7ee2e77f4ac6a4217039652"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:6",
+      "sequence": 18904,
+      "chapter_label": "ISA 65",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 6
+        }
+      ],
+      "en": "“Behold, it is written before me: I will not keep silence, but will repay, yes, I will repay into their bosom",
+      "ko": "보라 이것이 내 앞에 기록되었으니 내가 잠잠치 아니하고 반드시 보응하되 그들의 품에 보응할찌라",
+      "source_text_hash": "54dcecfff28798d5aaca50884d2bfef6b27d39839b0899af94ffe5e8fe73e003",
+      "translation_text_hash": "e92735fc8b7d1f81a857e2194f95459e87835c0f0d2f2dccef5447cf2d114b03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 이것이 내 앞에 기록되었으니 내가 잠잠치 아니하고 반드시 보응하되 그들의 품에 보응할찌라"
+      ],
+      "raw_text_hashes": [
+        "e92735fc8b7d1f81a857e2194f95459e87835c0f0d2f2dccef5447cf2d114b03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:7",
+      "sequence": 18905,
+      "chapter_label": "ISA 65",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 7
+        }
+      ],
+      "en": "your own iniquities and the iniquities of your fathers together”, says the LORD, “who have burned incense on the mountains, and blasphemed me on the hills. Therefore I will first measure their work into their bosom.”",
+      "ko": "너희의 죄악과 너희 열조의 죄악을 함께 하리니 그들이 산 위에서 분향하며 작은 산 위에서 나를 능욕하였음이라 그러므로 내가 먼저 그 행위를 헤아리고 그 품에 보응하리라 여호와가 말하였느니라",
+      "source_text_hash": "a0311d8dee4a8e56ea0cf80d4d78e9eba38b118a61c6e234d42fb3951f46e00d",
+      "translation_text_hash": "1683b98244ecac50474c547612bfc3b32755b4720751eb7a65a7988ad6884757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 죄악과 너희 열조의 죄악을 함께 하리니 그들이 산 위에서 분향하며 작은 산 위에서 나를 능욕하였음이라 그러므로 내가 먼저 그 행위를 헤아리고 그 품에 보응하리라 여호와가 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1683b98244ecac50474c547612bfc3b32755b4720751eb7a65a7988ad6884757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:8",
+      "sequence": 18906,
+      "chapter_label": "ISA 65",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD says, “As the new wine is found in the cluster, and one says, ‘Don’t destroy it, for a blessing is in it:’ so I will do for my servants’ sake, that I may not destroy them all.",
+      "ko": "여호와께서 이같이 말씀하시되 포도송이에는 즙이 있으므로 혹이 말하기를 그것을 상하지 말라 거기 복이 있느니라 하나니 나도 내 종들을 위하여 그같이 행하여 다 멸하지 아니하고",
+      "source_text_hash": "c529b5665bbaf20985dc8bd8f46b42e71000e8761d1e0d0754b4adb70cb4bd68",
+      "translation_text_hash": "9a6c430a58603c8ac2d8dcf752b967cff7256467cd9f917e00a09584ee91853e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이같이 말씀하시되 포도송이에는 즙이 있으므로 혹이 말하기를 그것을 상하지 말라 거기 복이 있느니라 하나니 나도 내 종들을 위하여 그같이 행하여 다 멸하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "9a6c430a58603c8ac2d8dcf752b967cff7256467cd9f917e00a09584ee91853e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:9",
+      "sequence": 18907,
+      "chapter_label": "ISA 65",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 9
+        }
+      ],
+      "en": "I will bring offspring out of Jacob, and out of Judah an inheritor of my mountains. My chosen will inherit it, and my servants will dwell there.",
+      "ko": "내가 야곱 중에서 씨를 내며 유다 중에서 나의 산들을 기업으로 얻을 자를 내리니 나의 택한 자가 이를 기업으로 얻을 것이요 나의 종들이 거기 거할 것이라",
+      "source_text_hash": "9eeab264b58bdc2a8faa6d41836b66a5420ed4d763a3ed13d1dcd37837b2db3f",
+      "translation_text_hash": "797fdb97a1b4ea3118901017e471cc0db57cc69550019d7aa5893ef6eaade833",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 야곱 중에서 씨를 내며 유다 중에서 나의 산들을 기업으로 얻을 자를 내리니 나의 택한 자가 이를 기업으로 얻을 것이요 나의 종들이 거기 거할 것이라"
+      ],
+      "raw_text_hashes": [
+        "797fdb97a1b4ea3118901017e471cc0db57cc69550019d7aa5893ef6eaade833"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:10",
+      "sequence": 18908,
+      "chapter_label": "ISA 65",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 10
+        }
+      ],
+      "en": "Sharon will be a fold of flocks, and the valley of Achor a place for herds to lie down in, for my people who have sought me.",
+      "ko": "사론은 양떼의 우리가 되겠고 아골 골짜기는 소떼의 눕는 곳이 되어 나를 찾은 내 백성의 소유가 되려니와",
+      "source_text_hash": "dc155e5d52a0cd17daa21cc884dc36cd89671874a97749bcc1e49b5478012f24",
+      "translation_text_hash": "036fbc3b33d39fa56098e3065f04d82998d46630842966d055490677a2c0e9e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사론은 양떼의 우리가 되겠고 아골 골짜기는 소떼의 눕는 곳이 되어 나를 찾은 내 백성의 소유가 되려니와"
+      ],
+      "raw_text_hashes": [
+        "036fbc3b33d39fa56098e3065f04d82998d46630842966d055490677a2c0e9e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:11",
+      "sequence": 18909,
+      "chapter_label": "ISA 65",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 11
+        }
+      ],
+      "en": "“But you who forsake the LORD, who forget my holy mountain, who prepare a table for Fortune, and who fill up mixed wine to Destiny;",
+      "ko": "오직 나 여호와를 버리며 나의 성산을 잊고 갓에게 상을 베풀어 놓으며 므니에게 섞은 술을 가득히 붓는 너희여",
+      "source_text_hash": "6fbeb53b88d1a94c9a5635cc4b487238e568596cea0c83630ac4708d061461bb",
+      "translation_text_hash": "150f32617efa5339d355440a459a5fad6381992ff90d1d0ebe29056db3b60f15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 나 여호와를 버리며 나의 성산을 잊고 갓에게 상을 베풀어 놓으며 므니에게 섞은 술을 가득히 붓는 너희여"
+      ],
+      "raw_text_hashes": [
+        "150f32617efa5339d355440a459a5fad6381992ff90d1d0ebe29056db3b60f15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:12",
+      "sequence": 18910,
+      "chapter_label": "ISA 65",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 12
+        }
+      ],
+      "en": "I will destine you to the sword, and you will all bow down to the slaughter; because when I called, you didn’t answer. When I spoke, you didn’t listen; but you did that which was evil in my eyes, and chose that in which I didn’t delight.”",
+      "ko": "내가 너희를 칼에 붙일 것인즉 다 구푸리고 살륙을 당하리니 이는 내가 불러도 너희가 대답지 아니하며 내가 말하여도 듣지 아니하고 나의 눈에 악을 행하였으며 나의 즐겨하지 아니하는 일을 택하였음이니라",
+      "source_text_hash": "503e2349e1be394f439eed7d296036dcd687d42bf5402ef3d9f8f409fc84c5f6",
+      "translation_text_hash": "22d7ee05621335e762d00797ccb99b1c5b2d63cf8de370348ee3dfa22d134897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 칼에 붙일 것인즉 다 구푸리고 살륙을 당하리니 이는 내가 불러도 너희가 대답지 아니하며 내가 말하여도 듣지 아니하고 나의 눈에 악을 행하였으며 나의 즐겨하지 아니하는 일을 택하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "22d7ee05621335e762d00797ccb99b1c5b2d63cf8de370348ee3dfa22d134897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:13",
+      "sequence": 18911,
+      "chapter_label": "ISA 65",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore the Lord GOD says, “Behold, my servants will eat, but you will be hungry; behold, my servants will drink, but you will be thirsty. Behold, my servants will rejoice, but you will be disappointed.",
+      "ko": "이러므로 주 여호와가 말하노라 보라 나의 종들은 먹을 것이로되 너희는 주릴 것이니라 보라 나의 종들은 마실 것이로되 너희는 갈할 것이니라 보라 나의 종들은 기뻐할 것이로되 너희는 수치를 당할 것이니라",
+      "source_text_hash": "6e3d3261a543e1d279a754e74416bf5f9f94d14854273504c3a992d16f1b0ba0",
+      "translation_text_hash": "99c42a3594d1fcb76c631f440879464fcaba5635797bc28d2b9398caf964f90d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 주 여호와가 말하노라 보라 나의 종들은 먹을 것이로되 너희는 주릴 것이니라 보라 나의 종들은 마실 것이로되 너희는 갈할 것이니라 보라 나의 종들은 기뻐할 것이로되 너희는 수치를 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "99c42a3594d1fcb76c631f440879464fcaba5635797bc28d2b9398caf964f90d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:14",
+      "sequence": 18912,
+      "chapter_label": "ISA 65",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 14
+        }
+      ],
+      "en": "Behold, my servants will sing for joy of heart, but you will cry for sorrow of heart, and will wail for anguish of spirit.",
+      "ko": "보라 나의 종들은 마음이 즐거우므로 노래할 것이로되 너희는 마음이 슬프므로 울며 심령이 상하므로 통곡할 것이며",
+      "source_text_hash": "9ba2cedccd52c41e7ee41350ae2f476a122d9314364b0e72166d804eacd6a5d6",
+      "translation_text_hash": "f6ea58c0346820d3fd2ec2ac59deb561a3d16c8c7b980a96336a1815d6b807e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나의 종들은 마음이 즐거우므로 노래할 것이로되 너희는 마음이 슬프므로 울며 심령이 상하므로 통곡할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f6ea58c0346820d3fd2ec2ac59deb561a3d16c8c7b980a96336a1815d6b807e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:15",
+      "sequence": 18913,
+      "chapter_label": "ISA 65",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 15
+        }
+      ],
+      "en": "You will leave your name for a curse to my chosen, and the Lord GOD will kill you. He will call his servants by another name,",
+      "ko": "또 너희의 끼친 이름은 나의 택한 자의 저줏거리가 될 것이니라 주 여호와 내가 너를 죽이고 내 종들은 다른 이름으로 칭하리라",
+      "source_text_hash": "52058f2add0be05f42c57a50e9472d19ed84d4ffcd5d1993794546a8c45c3120",
+      "translation_text_hash": "bb1a0d2211f4814cbb399be357ffeaed040fba754c1311b8dd460a0ac982c742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희의 끼친 이름은 나의 택한 자의 저줏거리가 될 것이니라 주 여호와 내가 너를 죽이고 내 종들은 다른 이름으로 칭하리라"
+      ],
+      "raw_text_hashes": [
+        "bb1a0d2211f4814cbb399be357ffeaed040fba754c1311b8dd460a0ac982c742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:16",
+      "sequence": 18914,
+      "chapter_label": "ISA 65",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 16
+        }
+      ],
+      "en": "so that he who blesses himself on the earth will bless himself in the God of truth; and he who swears on the earth will swear by the God of truth; because the former troubles are forgotten, and because they are hidden from my eyes.",
+      "ko": "이러므로 땅에서 자기를 위하여 복을 구하는 자는 진리의 하나님을 향하여 복을 구할 것이요 땅에서 맹세하는 자는 진리의 하나님으로 맹세하리니 이는 이전 환난이 잊어졌고 내 눈앞에 숨겨졌음이니라",
+      "source_text_hash": "60c3acadcba32c9f52f700e31987a158a1dfddac1cd1ae8369249477bc178730",
+      "translation_text_hash": "e0fa0c9e3fe91f0a72b8d216f742ec835dff24f853dd9e60e36e5e0fcc5c7d49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 땅에서 자기를 위하여 복을 구하는 자는 진리의 하나님을 향하여 복을 구할 것이요 땅에서 맹세하는 자는 진리의 하나님으로 맹세하리니 이는 이전 환난이 잊어졌고 내 눈앞에 숨겨졌음이니라"
+      ],
+      "raw_text_hashes": [
+        "e0fa0c9e3fe91f0a72b8d216f742ec835dff24f853dd9e60e36e5e0fcc5c7d49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:17",
+      "sequence": 18915,
+      "chapter_label": "ISA 65",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 17
+        }
+      ],
+      "en": "“For, behold, I create new heavens and a new earth; and the former things will not be remembered, nor come into mind.",
+      "ko": "보라 내가 새 하늘과 새 땅을 창조하나니 이전 것은 기억되거나 마음에 생각나지 아니할 것이라",
+      "source_text_hash": "ed97d1b555889dcb74e54b438fa362074ce40f82b425c7ba0334a65f832a8a64",
+      "translation_text_hash": "a221ffc3073f4d4605a742fa52b70d187373a7b3e89dae1eb2cb67cf9047574e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 새 하늘과 새 땅을 창조하나니 이전 것은 기억되거나 마음에 생각나지 아니할 것이라"
+      ],
+      "raw_text_hashes": [
+        "a221ffc3073f4d4605a742fa52b70d187373a7b3e89dae1eb2cb67cf9047574e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:18",
+      "sequence": 18916,
+      "chapter_label": "ISA 65",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 18
+        }
+      ],
+      "en": "But be glad and rejoice forever in that which I create; for, behold, I create Jerusalem to be a delight, and her people a joy.",
+      "ko": "너희는 나의 창조하는 것을 인하여 영원히 기뻐하며 즐거워할지니라 보라 내가 예루살렘으로 즐거움을 창조하며 그 백성으로 기쁨을 삼고",
+      "source_text_hash": "6da3b9cdb1fac1c9311bad5283c551fa2b7989b9ab8eadb2f119f937c8c672d4",
+      "translation_text_hash": "232ff5a07670f1b9649336c7880c9478a74a659abc8d2e8449c96c87f12251bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나의 창조하는 것을 인하여 영원히 기뻐하며 즐거워할지니라 보라 내가 예루살렘으로 즐거움을 창조하며 그 백성으로 기쁨을 삼고"
+      ],
+      "raw_text_hashes": [
+        "232ff5a07670f1b9649336c7880c9478a74a659abc8d2e8449c96c87f12251bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:19",
+      "sequence": 18917,
+      "chapter_label": "ISA 65",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 19
+        }
+      ],
+      "en": "I will rejoice in Jerusalem, and delight in my people; and the voice of weeping and the voice of crying will be heard in her no more.",
+      "ko": "내가 예루살렘을 즐거워하며 나의 백성을 기뻐하리니 우는 소리와 부르짖는 소리가 그 가운데서 다시는 들리지 아니할 것이며",
+      "source_text_hash": "b8d66f397678b69b51f89a24b5a617ccec4920206af27b6cb236e53ff278dd2e",
+      "translation_text_hash": "045dc2023c79b44a67f7ad2ae0701cd7464c7f034e23248d2c368676acf4c30a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 예루살렘을 즐거워하며 나의 백성을 기뻐하리니 우는 소리와 부르짖는 소리가 그 가운데서 다시는 들리지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "045dc2023c79b44a67f7ad2ae0701cd7464c7f034e23248d2c368676acf4c30a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:20",
+      "sequence": 18918,
+      "chapter_label": "ISA 65",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 20
+        }
+      ],
+      "en": "“No more will there be an infant who only lives a few days, nor an old man who has not filled his days; for the child will die one hundred years old, and the sinner being one hundred years old will be accursed.",
+      "ko": "거기는 날 수가 많지 못하여 죽는 유아와 수한이 차지 못한 노인이 다시는 없을 것이라 곧 백세에 죽는 자가 아이겠고 백세 못되어 죽는 자는 저주 받은 것이리라",
+      "source_text_hash": "82d6996ff1364a8b4457df9c31d3bc36d2fd7c28c01662b94cdf95482dedd320",
+      "translation_text_hash": "46956f7cce5b7cdae56ba48b8642a84e8e3dc651864b99787f84595c7cd13f9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 날 수가 많지 못하여 죽는 유아와 수한이 차지 못한 노인이 다시는 없을 것이라 곧 백세에 죽는 자가 아이겠고 백세 못되어 죽는 자는 저주 받은 것이리라"
+      ],
+      "raw_text_hashes": [
+        "46956f7cce5b7cdae56ba48b8642a84e8e3dc651864b99787f84595c7cd13f9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:21",
+      "sequence": 18919,
+      "chapter_label": "ISA 65",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 21
+        }
+      ],
+      "en": "They will build houses and inhabit them. They will plant vineyards and eat their fruit.",
+      "ko": "그들이 가옥을 건축하고 그것에 거하겠고 포도원을 재배하고 열매를 먹을 것이며",
+      "source_text_hash": "d4cbc9ca2a227640bdf42ead199f03891e909d693748f7fc2e61ab0ec14c090c",
+      "translation_text_hash": "cb8082e5ba37e2eed2dd7f514ac235790821033fab77a7665f88c60742d2414b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가옥을 건축하고 그것에 거하겠고 포도원을 재배하고 열매를 먹을 것이며"
+      ],
+      "raw_text_hashes": [
+        "cb8082e5ba37e2eed2dd7f514ac235790821033fab77a7665f88c60742d2414b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:22",
+      "sequence": 18920,
+      "chapter_label": "ISA 65",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 22
+        }
+      ],
+      "en": "They will not build and another inhabit. They will not plant and another eat; for the days of my people will be like the days of a tree, and my chosen will long enjoy the work of their hands.",
+      "ko": "그들의 건축한데 타인이 거하지 아니할 것이며 그들의 재배한 것을 타인이 먹지 아니하리니 이는 내 백성의 수한이 나무의 수한과 같겠고 나의 택한 자가 그 손으로 일한 것을 길이 누릴 것임이며",
+      "source_text_hash": "c672d6e2294024a09508dfb78f5e094f16e8ea9edccb67d690c26064b3ca9c95",
+      "translation_text_hash": "0e55ad0a015baba4f32315d787afcf0cfc2bfcbc926f51106a5358c94054b421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 건축한데 타인이 거하지 아니할 것이며 그들의 재배한 것을 타인이 먹지 아니하리니 이는 내 백성의 수한이 나무의 수한과 같겠고 나의 택한 자가 그 손으로 일한 것을 길이 누릴 것임이며"
+      ],
+      "raw_text_hashes": [
+        "0e55ad0a015baba4f32315d787afcf0cfc2bfcbc926f51106a5358c94054b421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:23",
+      "sequence": 18921,
+      "chapter_label": "ISA 65",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 23
+        }
+      ],
+      "en": "They will not labor in vain nor give birth for calamity; for they are the offspring of the LORD’s blessed and their descendants with them.",
+      "ko": "그들의 수고가 헛되지 않겠고 그들의 생산한 것이 재난에 걸리지 아니하리니 그들은 여호와의 복된 자의 자손이요 그 소생도 그들과 함께 될 것임이라",
+      "source_text_hash": "c11699b89bb4240c55c017edc06cb7f16b2161998bc8a450659e340db0a5528e",
+      "translation_text_hash": "b615811991e6619474eeae5d7886273b8b8c0295140b430df4cc16d50444d4cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 수고가 헛되지 않겠고 그들의 생산한 것이 재난에 걸리지 아니하리니 그들은 여호와의 복된 자의 자손이요 그 소생도 그들과 함께 될 것임이라"
+      ],
+      "raw_text_hashes": [
+        "b615811991e6619474eeae5d7886273b8b8c0295140b430df4cc16d50444d4cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:24",
+      "sequence": 18922,
+      "chapter_label": "ISA 65",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 24
+        }
+      ],
+      "en": "It will happen that before they call, I will answer; and while they are yet speaking, I will hear.",
+      "ko": "그들이 부르기 전에 내가 응답하겠고 그들이 말을 마치기 전에 내가 들을 것이며",
+      "source_text_hash": "118371b46d4f3a891217934d9126d24ad18a40dee18bf7ec9644bfc6b78b050c",
+      "translation_text_hash": "0cf17d86ed33c37335dc27583f4036e35c5d123f553caacc9beb673a817a3873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 부르기 전에 내가 응답하겠고 그들이 말을 마치기 전에 내가 들을 것이며"
+      ],
+      "raw_text_hashes": [
+        "0cf17d86ed33c37335dc27583f4036e35c5d123f553caacc9beb673a817a3873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:65:25",
+      "sequence": 18923,
+      "chapter_label": "ISA 65",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 65,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 65,
+          "verse": 25
+        }
+      ],
+      "en": "The wolf and the lamb will feed together. The lion will eat straw like the ox. Dust will be the serpent’s food. They will not hurt nor destroy in all my holy mountain,” says the LORD.",
+      "ko": "이리와 어린 양이 함께 먹을 것이며 사자가 소처럼 짚을 먹을 것이며 뱀은 흙으로 식물을 삼을 것이니 나의 성산에서는 해함도 없겠고 상함도 없으리라 여호와의 말이니라",
+      "source_text_hash": "1f887cd311c9a657a6de3a8f7f10863bea0f80f2618c59afbe59ba94321ff21f",
+      "translation_text_hash": "f1da7197a6e0ac0b4a0ac1bd0fac93eb01e777d3f6a52c94a983eaf2cf3e2a20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이리와 어린 양이 함께 먹을 것이며 사자가 소처럼 짚을 먹을 것이며 뱀은 흙으로 식물을 삼을 것이니 나의 성산에서는 해함도 없겠고 상함도 없으리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f1da7197a6e0ac0b4a0ac1bd0fac93eb01e777d3f6a52c94a983eaf2cf3e2a20"
+      ]
+    }
+  ]
+}

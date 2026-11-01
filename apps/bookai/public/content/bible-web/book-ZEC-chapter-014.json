@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:014",
+  "unit_ordinal": 925,
+  "unit_label": "ZEC 14",
+  "book_code": "ZEC",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:14:1",
+      "sequence": 23070,
+      "chapter_label": "ZEC 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, a day of the LORD comes, when your plunder will be divided within you.",
+      "ko": "여호와의 날이 이르리라 그 날에 네 재물이 약탈되어 너의 중에서 나누이리라",
+      "source_text_hash": "63386361508eea2c85984abf4928980e0621512f52c00af7bd2769c62567a548",
+      "translation_text_hash": "34f7eb37ed96f1156d2006501a7feb3217e2ed3c8daf23cc58d9599eae208f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 날이 이르리라 그 날에 네 재물이 약탈되어 너의 중에서 나누이리라"
+      ],
+      "raw_text_hashes": [
+        "34f7eb37ed96f1156d2006501a7feb3217e2ed3c8daf23cc58d9599eae208f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:2",
+      "sequence": 23071,
+      "chapter_label": "ZEC 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "For I will gather all nations against Jerusalem to battle; and the city will be taken, the houses rifled, and the women ravished. Half of the city will go out into captivity, and the rest of the people will not be cut off from the city.",
+      "ko": "내가 열국을 모아 예루살렘과 싸우게 하리니 성읍이 함락되며 가옥이 약탈되며 부녀가 욕을 보며 성읍 백성이 절반이나 사로잡혀 가려니와 남은 백성은 성읍에서 끊쳐지지 아니하리라",
+      "source_text_hash": "7e350a14566b20b72bc29c62e7f2d59d2a9c6d33c71cca67d350ba4713e2c8c2",
+      "translation_text_hash": "c152c3641cc607bf18dca48b0d32f44a06a51bc1450973caef14d12aaf735e9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 열국을 모아 예루살렘과 싸우게 하리니 성읍이 함락되며 가옥이 약탈되며 부녀가 욕을 보며 성읍 백성이 절반이나 사로잡혀 가려니와 남은 백성은 성읍에서 끊쳐지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "c152c3641cc607bf18dca48b0d32f44a06a51bc1450973caef14d12aaf735e9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:3",
+      "sequence": 23072,
+      "chapter_label": "ZEC 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Then the LORD will go out and fight against those nations, as when he fought in the day of battle.",
+      "ko": "그 때에 여호와께서 나가사 그 열국을 치시되 이왕 전쟁 날에 싸운 것 같이 하시리라",
+      "source_text_hash": "c28732845cc438e8817cf26b4d2a3d24838c2a0245d0ff608f9f795f6ce168de",
+      "translation_text_hash": "a4f83508d9dfb0e8d249ee547946ec4b033d6153841f40907180e6f8ed887b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와께서 나가사 그 열국을 치시되 이왕 전쟁 날에 싸운 것 같이 하시리라"
+      ],
+      "raw_text_hashes": [
+        "a4f83508d9dfb0e8d249ee547946ec4b033d6153841f40907180e6f8ed887b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:4",
+      "sequence": 23073,
+      "chapter_label": "ZEC 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "His feet will stand in that day on the Mount of Olives, which is before Jerusalem on the east; and the Mount of Olives will be split in two from east to west, making a very great valley. Half of the mountain will move toward the north, and half of it toward the south.",
+      "ko": "그 날에 그의 발이 예루살렘 앞 곧 동편 감람산에 서실 것이요 감람산은 그 한가운데가 동서로 갈라져 매우 큰 골짜기가 되어서 산 절반은 북으로, 절반은 남으로 옮기고",
+      "source_text_hash": "e45f316c758e3415dc6712615559f2e03e38cad6799fddbf2b69dc3217af5495",
+      "translation_text_hash": "4b186b5109cbc89b824a7d83dea1bfcb0e3687e55f951fcd29e67a312fd0b457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그의 발이 예루살렘 앞 곧 동편 감람산에 서실 것이요 감람산은 그 한가운데가 동서로 갈라져 매우 큰 골짜기가 되어서 산 절반은 북으로, 절반은 남으로 옮기고"
+      ],
+      "raw_text_hashes": [
+        "4b186b5109cbc89b824a7d83dea1bfcb0e3687e55f951fcd29e67a312fd0b457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:5",
+      "sequence": 23074,
+      "chapter_label": "ZEC 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "You shall flee by the valley of my mountains, for the valley of the mountains shall reach to Azel. Yes, you shall flee, just like you fled from before the earthquake in the days of Uzziah king of Judah. The LORD my God will come, and all the holy ones with you.",
+      "ko": "그 산 골짜기는 아셀까지 미칠찌라 너희가 그의 산 골짜기로 도망하되 유다 왕 웃시야 때에 지진을 피하여 도망하던 것 같이 하리라 나의 하나님 여호와께서 임하실 것이요 모든 거룩한 자가 주와 함께하리라",
+      "source_text_hash": "1e51297c6e8949367864dfb3ba744437a901d238e860f1f1f642546014c64a91",
+      "translation_text_hash": "81b25074577fa31434a8929506c74a601fd35dc55873e7ce1b1f8ebafe691ee8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 산 골짜기는 아셀까지 미칠찌라 너희가 그의 산 골짜기로 도망하되 유다 왕 웃시야 때에 지진을 피하여 도망하던 것 같이 하리라 나의 하나님 여호와께서 임하실 것이요 모든 거룩한 자가 주와 함께하리라"
+      ],
+      "raw_text_hashes": [
+        "81b25074577fa31434a8929506c74a601fd35dc55873e7ce1b1f8ebafe691ee8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:6",
+      "sequence": 23075,
+      "chapter_label": "ZEC 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "It will happen in that day that there will not be light, cold, or frost.",
+      "ko": "그 날에는 빛이 없겠고 광명한 자들이 떠날 것이라",
+      "source_text_hash": "b6dafc48fe850cf939b7e1775cf33cf003c8864581cb23daaac80881819a5604",
+      "translation_text_hash": "f6a702d3a1df4adca5df526f6d9141c2b5aaa323c29a66774dfd94a4686e7757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 빛이 없겠고 광명한 자들이 떠날 것이라"
+      ],
+      "raw_text_hashes": [
+        "f6a702d3a1df4adca5df526f6d9141c2b5aaa323c29a66774dfd94a4686e7757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:7",
+      "sequence": 23076,
+      "chapter_label": "ZEC 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "It will be a unique day which is known to the LORD—not day, and not night; but it will come to pass that at evening time there will be light.",
+      "ko": "여호와의 아시는 한 날이 있으리니 낮도 아니요 밤도 아니라 어두워 갈 때에 빛이 있으리로다",
+      "source_text_hash": "183cc350a7eeaec6f3b3569c72cfeec1b33b5c2dc2b5dd5cbf070ceebbf6944e",
+      "translation_text_hash": "4f7f3a33e7637d8a1728ffb9b34f45071f7bd9ddfa8d4903821ec29a42228830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 아시는 한 날이 있으리니 낮도 아니요 밤도 아니라 어두워 갈 때에 빛이 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "4f7f3a33e7637d8a1728ffb9b34f45071f7bd9ddfa8d4903821ec29a42228830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:8",
+      "sequence": 23077,
+      "chapter_label": "ZEC 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "It will happen in that day that living waters will go out from Jerusalem, half of them toward the eastern sea, and half of them toward the western sea. It will be so in summer and in winter.",
+      "ko": "그 날에 생수가 예루살렘에서 솟아나서 절반은 동해로, 절반은 서해로 흐를 것이라 여름에도 겨울에도 그러하리라",
+      "source_text_hash": "6eea2fb6d57cd8002b81293bc332ebad92cba156fc18f844452096d678553bd6",
+      "translation_text_hash": "120daadb13e5f4c4cd509f043faec3bf06b9bc27ffc81d81f3b49d2055c80d01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 생수가 예루살렘에서 솟아나서 절반은 동해로, 절반은 서해로 흐를 것이라 여름에도 겨울에도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "120daadb13e5f4c4cd509f043faec3bf06b9bc27ffc81d81f3b49d2055c80d01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:9",
+      "sequence": 23078,
+      "chapter_label": "ZEC 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD will be King over all the earth. In that day the LORD will be one, and his name one.",
+      "ko": "여호와께서 천하의 왕이 되시리니 그 날에는 여호와께서 홀로 하나이실 것이요 그 이름이 홀로 하나이실 것이며",
+      "source_text_hash": "b3635281f6a700fa49b906edcdefee6eedd536a50a03cda32785bfcf0438e3cc",
+      "translation_text_hash": "d2912535e3177fe6a42fc536a04ae5e78cf8e96267a1b00f91e2b0fc829d06f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 천하의 왕이 되시리니 그 날에는 여호와께서 홀로 하나이실 것이요 그 이름이 홀로 하나이실 것이며"
+      ],
+      "raw_text_hashes": [
+        "d2912535e3177fe6a42fc536a04ae5e78cf8e96267a1b00f91e2b0fc829d06f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:10",
+      "sequence": 23079,
+      "chapter_label": "ZEC 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "All the land will be made like the Arabah, from Geba to Rimmon south of Jerusalem; and she will be lifted up and will dwell in her place, from Benjamin’s gate to the place of the first gate, to the corner gate, and from the tower of Hananel to the king’s wine presses.",
+      "ko": "온 땅이 아라바 같이 되되 게바에서 예루살렘 남편 림몬까지 미칠 것이며 예루살렘이 높이 들려 그 본처에 있으리니 베냐민 문에서부터 첫문 자리와 성 모퉁이 문까지 또 하나넬 망대에서부터 왕의 포도주 짜는 곳까지라",
+      "source_text_hash": "daebc3ef71868d29ca470e0d569e8ad934f4078fef30f1123afe52824d1a42cb",
+      "translation_text_hash": "6381949ac91bdcb0100cc046219d96f4ebdbd901ff128f639aa386616738f34d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅이 아라바 같이 되되 게바에서 예루살렘 남편 림몬까지 미칠 것이며 예루살렘이 높이 들려 그 본처에 있으리니 베냐민 문에서부터 첫문 자리와 성 모퉁이 문까지 또 하나넬 망대에서부터 왕의 포도주 짜는 곳까지라"
+      ],
+      "raw_text_hashes": [
+        "6381949ac91bdcb0100cc046219d96f4ebdbd901ff128f639aa386616738f34d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:11",
+      "sequence": 23080,
+      "chapter_label": "ZEC 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "Men will dwell therein, and there will be no more curse; but Jerusalem will dwell safely.",
+      "ko": "사람이 그 가운데 거하며 다시는 저주가 있지 아니하리니 예루살렘이 안연히 서리로다",
+      "source_text_hash": "e6733c2a300d404cdff278b2dbbd04be7bfe348bdd8edcf3b7d78ff778ae3517",
+      "translation_text_hash": "3ce448c4ef3476580319f81f5235beb2a51c1b9a42451add921b6725ccc48f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 가운데 거하며 다시는 저주가 있지 아니하리니 예루살렘이 안연히 서리로다"
+      ],
+      "raw_text_hashes": [
+        "3ce448c4ef3476580319f81f5235beb2a51c1b9a42451add921b6725ccc48f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:12",
+      "sequence": 23081,
+      "chapter_label": "ZEC 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "This will be the plague with which the LORD will strike all the peoples who have fought against Jerusalem: their flesh will consume away while they stand on their feet, and their eyes will consume away in their sockets, and their tongue will consume away in their mouth.",
+      "ko": "예루살렘을 친 모든 백성에게 여호와께서 내리실 재앙이 이러하니 곧 섰을 때에 그 살이 썩으며 그 눈이 구멍 속에서 썩으며 그 혀가 입속에서 썩을 것이요",
+      "source_text_hash": "629eb238581f4664f81f1ec3d0f067e126a3ddb1d983da5110e7eebdd46bb370",
+      "translation_text_hash": "969c9316d16705cbbfb523809f652dd9de3ced0690bfd71ef1f9f4b712d0578e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘을 친 모든 백성에게 여호와께서 내리실 재앙이 이러하니 곧 섰을 때에 그 살이 썩으며 그 눈이 구멍 속에서 썩으며 그 혀가 입속에서 썩을 것이요"
+      ],
+      "raw_text_hashes": [
+        "969c9316d16705cbbfb523809f652dd9de3ced0690bfd71ef1f9f4b712d0578e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:13",
+      "sequence": 23082,
+      "chapter_label": "ZEC 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "It will happen in that day that a great panic from the LORD will be among them; and they will each seize the hand of his neighbor, and his hand will rise up against the hand of his neighbor.",
+      "ko": "그 날에 여호와께서 그들로 크게 요란케 하시리니 피차 손으로 붙잡으며 피차 손을 들어 칠 것이며",
+      "source_text_hash": "9dd1f6ed3055d355a61b07d699501a1e7d6efc3203858077debe0ed7c2ab0374",
+      "translation_text_hash": "dbada911b0b3dbc5c093c24f883c589ae00062d7037a871d14781367f5737e44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와께서 그들로 크게 요란케 하시리니 피차 손으로 붙잡으며 피차 손을 들어 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "dbada911b0b3dbc5c093c24f883c589ae00062d7037a871d14781367f5737e44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:14",
+      "sequence": 23083,
+      "chapter_label": "ZEC 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "Judah also will fight at Jerusalem; and the wealth of all the surrounding nations will be gathered together: gold, silver, and clothing, in great abundance.",
+      "ko": "유다도 예루살렘에서 싸우리니 이 때에 사면에 있는 열국의 보화 곧 금 은과 의복이 심히 많이 모여질 것이요",
+      "source_text_hash": "c7e2f8d841237ce3cad9ba99aa0c92a76eb1cff713e68b750517d6e8cefb2376",
+      "translation_text_hash": "8350b33d65fb3b2b085d2041843459d0f60ef4e0280436953448e7c49f0c124c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다도 예루살렘에서 싸우리니 이 때에 사면에 있는 열국의 보화 곧 금 은과 의복이 심히 많이 모여질 것이요"
+      ],
+      "raw_text_hashes": [
+        "8350b33d65fb3b2b085d2041843459d0f60ef4e0280436953448e7c49f0c124c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:15",
+      "sequence": 23084,
+      "chapter_label": "ZEC 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "A plague like this will fall on the horse, on the mule, on the camel, on the donkey, and on all the animals that will be in those camps.",
+      "ko": "또 말과 노새와 약대와 나귀와 그 진에 있는 모든 육축에게 미칠 재앙도 그 재앙과 같으리라",
+      "source_text_hash": "8bb96065bcf3b0dc4c55a23dcd0fc0b2afeb02df4c30b252eace74f1e3f7afb5",
+      "translation_text_hash": "1eea4772da8f00f73c5518692e79be6a7d142532dc125f96a8217aea91dd4b3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말과 노새와 약대와 나귀와 그 진에 있는 모든 육축에게 미칠 재앙도 그 재앙과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "1eea4772da8f00f73c5518692e79be6a7d142532dc125f96a8217aea91dd4b3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:16",
+      "sequence": 23085,
+      "chapter_label": "ZEC 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "It will happen that everyone who is left of all the nations that came against Jerusalem will go up from year to year to worship the King, the LORD of Armies, and to keep the feast of booths.",
+      "ko": "예루살렘을 치러 왔던 열국 중에 남은 자가 해마다 올라와서 그 왕 만군의 여호와께 숭배하며 초막절을 지킬 것이라",
+      "source_text_hash": "a1607037835f476224f0933926a89be60f178349ebe5eab90a9afa7e451f6b04",
+      "translation_text_hash": "77c74c48bb6d4846e05fb39e2aef54a950672787b0cb4e15ee21d8eff6e41ed9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘을 치러 왔던 열국 중에 남은 자가 해마다 올라와서 그 왕 만군의 여호와께 숭배하며 초막절을 지킬 것이라"
+      ],
+      "raw_text_hashes": [
+        "77c74c48bb6d4846e05fb39e2aef54a950672787b0cb4e15ee21d8eff6e41ed9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:17",
+      "sequence": 23086,
+      "chapter_label": "ZEC 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "It will be that whoever of all the families of the earth doesn’t go up to Jerusalem to worship the King, the LORD of Armies, on them there will be no rain.",
+      "ko": "천하 만국 중에 그 왕 만군의 여호와께 숭배하러 예루살렘에 올라 오지 아니하는 자에게는 비를 내리지 아니하실 것인즉",
+      "source_text_hash": "a14c76070fcaca61d557a72a1daff86014dbd889b9ed13cf927d19e11a1289d2",
+      "translation_text_hash": "a7f29159da7857020dfdfdba4466e386f62e4d8aeab857ed3e0522730ee03768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천하 만국 중에 그 왕 만군의 여호와께 숭배하러 예루살렘에 올라 오지 아니하는 자에게는 비를 내리지 아니하실 것인즉"
+      ],
+      "raw_text_hashes": [
+        "a7f29159da7857020dfdfdba4466e386f62e4d8aeab857ed3e0522730ee03768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:18",
+      "sequence": 23087,
+      "chapter_label": "ZEC 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "If the family of Egypt doesn’t go up and doesn’t come, neither will it rain on them. This will be the plague with which the LORD will strike the nations that don’t go up to keep the feast of booths.",
+      "ko": "만일 애굽 족속이 올라 오지 아니할 때에는 창일함이 있지 아니하리니 여호와께서 초막절을 지키러 올라오지 아니하는 열국 사람을 치시는 재앙을 그에게 내리실 것이라",
+      "source_text_hash": "aa99c3f7fc4530225fe074a9c1b056309eb6aeee486579ab8b21757b0177eef1",
+      "translation_text_hash": "34198791ec5200acd791e901e442a5844066f204b7307d513ce9b2c78f93019f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 애굽 족속이 올라 오지 아니할 때에는 창일함이 있지 아니하리니 여호와께서 초막절을 지키러 올라오지 아니하는 열국 사람을 치시는 재앙을 그에게 내리실 것이라"
+      ],
+      "raw_text_hashes": [
+        "34198791ec5200acd791e901e442a5844066f204b7307d513ce9b2c78f93019f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:19",
+      "sequence": 23088,
+      "chapter_label": "ZEC 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "This will be the punishment of Egypt and the punishment of all the nations that don’t go up to keep the feast of booths.",
+      "ko": "애굽 사람이나 열국 사람이나 초막절을 지키러 올라오지 아니하는 자의 받을 벌이 이러하니라",
+      "source_text_hash": "8bc1068443dce60be29b73c298787140a16adde9995250991f364da5b88d49d3",
+      "translation_text_hash": "1d657c683bc039f67671a23c655751cfe102672aa9cc2b02d28a641d6744e3d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람이나 열국 사람이나 초막절을 지키러 올라오지 아니하는 자의 받을 벌이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "1d657c683bc039f67671a23c655751cfe102672aa9cc2b02d28a641d6744e3d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:20",
+      "sequence": 23089,
+      "chapter_label": "ZEC 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "In that day there will be inscribed on the bells of the horses, “HOLY TO THE LORD”; and the pots in the LORD’s house will be like the bowls before the altar.",
+      "ko": "그 날에는 말 방울에까지 여호와께 성결이라 기록될 것이라 여호와의 전에 모든 솥이 제단 앞 주발과 다름이 없을 것이니",
+      "source_text_hash": "a0ca31873a4d193750c754d796ba0e158eb14d6d532f30fca6df5ffa224deeb9",
+      "translation_text_hash": "9256b7599414d0a467e9c6cc8cdfcb2c94493bf25b3596afab9070eec7196dbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 말 방울에까지 여호와께 성결이라 기록될 것이라 여호와의 전에 모든 솥이 제단 앞 주발과 다름이 없을 것이니"
+      ],
+      "raw_text_hashes": [
+        "9256b7599414d0a467e9c6cc8cdfcb2c94493bf25b3596afab9070eec7196dbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:14:21",
+      "sequence": 23090,
+      "chapter_label": "ZEC 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "Yes, every pot in Jerusalem and in Judah will be holy to the LORD of Armies; and all those who sacrifice will come and take of them, and cook in them. In that day there will no longer be a Canaanite in the house of the LORD of Armies.",
+      "ko": "예루살렘과 유다의 모든 솥이 만군의 여호와의 성물이 될 것인즉 제사 드리는 자가 와서 이 솥을 취하여 그 가운데 고기를 삶으리라 그 날에는 만군의 여호와의 전에 가나안 사람이 다시 있지 아니하리라",
+      "source_text_hash": "c630444c19df655c51ead8767694a43ac6e28316b3442da2aa91bbfdc967122f",
+      "translation_text_hash": "28db6ede64ed0eba84fd299c7a9742c957af0e8ed41bc60ee0a02fb2bc07d59c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘과 유다의 모든 솥이 만군의 여호와의 성물이 될 것인즉 제사 드리는 자가 와서 이 솥을 취하여 그 가운데 고기를 삶으리라 그 날에는 만군의 여호와의 전에 가나안 사람이 다시 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "28db6ede64ed0eba84fd299c7a9742c957af0e8ed41bc60ee0a02fb2bc07d59c"
+      ]
+    }
+  ]
+}

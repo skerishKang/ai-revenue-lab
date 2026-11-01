@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:009",
+  "unit_ordinal": 859,
+  "unit_label": "DAN 9",
+  "book_code": "DAN",
+  "chapter_number": 9,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:9:1",
+      "sequence": 21990,
+      "chapter_label": "DAN 9",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 1
+        }
+      ],
+      "en": "In the first year of Darius the son of Ahasuerus, of the offspring of the Medes, who was made king over the realm of the Chaldeans—",
+      "ko": "메대 족속 아하수에로의 아들 다리오가 갈대아 나라 왕으로 세움을 입던 원년",
+      "source_text_hash": "d55489733faafae41eaaafcda69612dea4816367434b227f3e5846f0e01833a2",
+      "translation_text_hash": "0761ce004000541d587cde536466a88878dd45f3cfdc4a4188682adb3c15db5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메대 족속 아하수에로의 아들 다리오가 갈대아 나라 왕으로 세움을 입던 원년"
+      ],
+      "raw_text_hashes": [
+        "0761ce004000541d587cde536466a88878dd45f3cfdc4a4188682adb3c15db5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:2",
+      "sequence": 21991,
+      "chapter_label": "DAN 9",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 2
+        }
+      ],
+      "en": "in the first year of his reign I, Daniel, understood by the books the number of the years about which the LORD’s word came to Jeremiah the prophet for the accomplishing of the desolations of Jerusalem, even seventy years.",
+      "ko": "곧 그 통치 원년에 나 다니엘이 서책으로 말미암아 여호와의 말씀이 선지자 예레미야에게 임하여 고하신 그 년수를 깨달았나니 곧 예루살렘의 황무함이 칠십년만에 마치리라 하신 것이니라",
+      "source_text_hash": "e4b7efc5a39ffba9018271b44dd9b0eac8c9ae4d642c94c177024c92e91c2e0a",
+      "translation_text_hash": "56a1112d774381598537948d7956fea3b746a4d1b1f68ea4f673aff2cd86ef30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그 통치 원년에 나 다니엘이 서책으로 말미암아 여호와의 말씀이 선지자 예레미야에게 임하여 고하신 그 년수를 깨달았나니 곧 예루살렘의 황무함이 칠십년만에 마치리라 하신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "56a1112d774381598537948d7956fea3b746a4d1b1f68ea4f673aff2cd86ef30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:3",
+      "sequence": 21992,
+      "chapter_label": "DAN 9",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 3
+        }
+      ],
+      "en": "I set my face to the Lord God, to seek by prayer and petitions, with fasting and sackcloth and ashes.",
+      "ko": "내가 금식하며 베옷을 입고 재를 무릅쓰고 주 하나님께 기도하며 간구하기를 결심하고",
+      "source_text_hash": "85fee9ec8d50a5d5b9397752f680bd514459a9ff085387b24c883cc819f0ab97",
+      "translation_text_hash": "c5b364adcb393c815ecb36ac0143b5b88eedb9279c81932f49d085297e8f8eda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 금식하며 베옷을 입고 재를 무릅쓰고 주 하나님께 기도하며 간구하기를 결심하고"
+      ],
+      "raw_text_hashes": [
+        "c5b364adcb393c815ecb36ac0143b5b88eedb9279c81932f49d085297e8f8eda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:4",
+      "sequence": 21993,
+      "chapter_label": "DAN 9",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 4
+        }
+      ],
+      "en": "I prayed to the LORD my God, and made confession, and said, i1 “Oh, Lord, the great and dreadful God, who keeps covenant and loving kindness with those who love him and keep his commandments,",
+      "ko": "내 하나님 여호와께 기도하며 자복하여 이르기를 크시고 두려워할 주 하나님, 주를 사랑하고 주의 계명을 지키는 자를 위하여 언약을 지키시고 그에게 인자를 베푸시는 자시여",
+      "source_text_hash": "f948b4b2127057533137ae85fc87827ce308031214efae0054c6497c7a9c880d",
+      "translation_text_hash": "05dd061d8a6b6472d275619b17809c7e2222ed57e252bf3142389560478eb8f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 하나님 여호와께 기도하며 자복하여 이르기를 크시고 두려워할 주 하나님, 주를 사랑하고 주의 계명을 지키는 자를 위하여 언약을 지키시고 그에게 인자를 베푸시는 자시여"
+      ],
+      "raw_text_hashes": [
+        "05dd061d8a6b6472d275619b17809c7e2222ed57e252bf3142389560478eb8f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:5",
+      "sequence": 21994,
+      "chapter_label": "DAN 9",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 5
+        }
+      ],
+      "en": "we have sinned, and have dealt perversely, and have done wickedly, and have rebelled, even turning aside from your precepts and from your ordinances.",
+      "ko": "우리는 이미 범죄하여 패역하며 행악하며 반역하여 주의 법도와 규례를 떠났사오며",
+      "source_text_hash": "2b1927611d8b6819f35a77d94a8dabdfe961eeb2485d7aec5cd28e3828ac7929",
+      "translation_text_hash": "51847a7296a4eb4768bdb9c91ae04062b58eac5861b9288581ece1790f00220e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 이미 범죄하여 패역하며 행악하며 반역하여 주의 법도와 규례를 떠났사오며"
+      ],
+      "raw_text_hashes": [
+        "51847a7296a4eb4768bdb9c91ae04062b58eac5861b9288581ece1790f00220e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:6",
+      "sequence": 21995,
+      "chapter_label": "DAN 9",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 6
+        }
+      ],
+      "en": "We haven’t listened to your servants the prophets, who spoke in your name to our kings, our princes, and our fathers, and to all the people of the land. i1",
+      "ko": "우리가 또 주의 종 선지자들이 주의 이름으로 우리의 열왕과 우리의 방백과 열조와 온 국민에게 말씀한 것을 듣지 아니하였나이다",
+      "source_text_hash": "858bdcd46946d2352f563cbb41a0621107985d3d39558a19e063132a7c77b140",
+      "translation_text_hash": "03fe34803ee777329e12654053922a461efb3bb12820c809e2eed7fa600bd107",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 또 주의 종 선지자들이 주의 이름으로 우리의 열왕과 우리의 방백과 열조와 온 국민에게 말씀한 것을 듣지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "03fe34803ee777329e12654053922a461efb3bb12820c809e2eed7fa600bd107"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:7",
+      "sequence": 21996,
+      "chapter_label": "DAN 9",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 7
+        }
+      ],
+      "en": "“Lord, righteousness belongs to you, but to us confusion of face, as it is today; to the men of Judah, and to the inhabitants of Jerusalem, and to all Israel, who are near and who are far off, through all the countries where you have driven them, because of their trespass that they have trespassed against you.",
+      "ko": "주여 공의는 주께로 돌아가고 수욕은 우리 얼굴로 돌아옴이 오늘날과 같아서 유다 사람들과 예루살렘 거민들과 이스라엘이 가까운데 있는 자나 먼데 있는 자가 다 주께서 쫓아 보내신 각국에서 수욕을 입었사오니 이는 그들이 주께 죄를 범하였음이니이다",
+      "source_text_hash": "2cde1c7e851c296c61851b45d16b27b7492402b04b459dc885b6ca53a8c85f43",
+      "translation_text_hash": "affc34c8a6366660ed5f0b4bfea83ae6cb012fa44c83d59ef2be6c491162863d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 공의는 주께로 돌아가고 수욕은 우리 얼굴로 돌아옴이 오늘날과 같아서 유다 사람들과 예루살렘 거민들과 이스라엘이 가까운데 있는 자나 먼데 있는 자가 다 주께서 쫓아 보내신 각국에서 수욕을 입었사오니 이는 그들이 주께 죄를 범하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "affc34c8a6366660ed5f0b4bfea83ae6cb012fa44c83d59ef2be6c491162863d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:8",
+      "sequence": 21997,
+      "chapter_label": "DAN 9",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 8
+        }
+      ],
+      "en": "Lord, to us belongs confusion of face, to our kings, to our princes, and to our fathers, because we have sinned against you.",
+      "ko": "주여 수욕이 우리에게 돌아오고 우리의 열왕과 우리의 방백과 열조에게 돌아온 것은 우리가 주께 범죄하였음이니이다 마는",
+      "source_text_hash": "14185b909d460cc546f1b039ea1202a6166bec082cbeddf4d0acfb6388300917",
+      "translation_text_hash": "cee6af8bef6287b33eb4e82fbd2494d8a808cbc3363aed380eddbab7a8ee6425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 수욕이 우리에게 돌아오고 우리의 열왕과 우리의 방백과 열조에게 돌아온 것은 우리가 주께 범죄하였음이니이다 마는"
+      ],
+      "raw_text_hashes": [
+        "cee6af8bef6287b33eb4e82fbd2494d8a808cbc3363aed380eddbab7a8ee6425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:9",
+      "sequence": 21998,
+      "chapter_label": "DAN 9",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 9
+        }
+      ],
+      "en": "To the Lord our God belong mercies and forgiveness, for we have rebelled against him.",
+      "ko": "주 우리 하나님께는 긍휼과 사유하심이 있사오니 이는 우리가 주께 패역하였음이오며",
+      "source_text_hash": "27c475215d7ebebf715175f2550719987321caa0b58469cd2aa9c9c343d9f8c1",
+      "translation_text_hash": "241a7af7199f675cba8dc13dca8e6e29cd85168e9241254a265a8ea5433afcbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 우리 하나님께는 긍휼과 사유하심이 있사오니 이는 우리가 주께 패역하였음이오며"
+      ],
+      "raw_text_hashes": [
+        "241a7af7199f675cba8dc13dca8e6e29cd85168e9241254a265a8ea5433afcbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:10",
+      "sequence": 21999,
+      "chapter_label": "DAN 9",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 10
+        }
+      ],
+      "en": "We haven’t obeyed the LORD our God’s voice, to walk in his laws, which he set before us by his servants the prophets.",
+      "ko": "우리 하나님 여호와의 목소리를 청종치 아니하며 여호와께서 그 종 선지자들에게 부탁하여 우리 앞에 세우신 율법을 행치 아니하였음이니이다",
+      "source_text_hash": "e0d222044daf4b97cc5344b57ebb85f11bfef730bf3315a13f744213275ec797",
+      "translation_text_hash": "44c8c95df471221f0908150e5dfc0d5ce3d85bb529821d1774ff5286f03ee9be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와의 목소리를 청종치 아니하며 여호와께서 그 종 선지자들에게 부탁하여 우리 앞에 세우신 율법을 행치 아니하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "44c8c95df471221f0908150e5dfc0d5ce3d85bb529821d1774ff5286f03ee9be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:11",
+      "sequence": 22000,
+      "chapter_label": "DAN 9",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 11
+        }
+      ],
+      "en": "Yes, all Israel have transgressed your law, turning aside, that they should not obey your voice. i1 “Therefore the curse and the oath written in the law of Moses the servant of God has been poured out on us, for we have sinned against him.",
+      "ko": "온 이스라엘이 주의 율법을 범하고 치우쳐 가서 주의 목소리를 청종치 아니하였으므로 이 저주가 우리에게 내렸으되 곧 하나님의 종 모세의 율법 가운데 기록된 맹세대로 되었사오니 이는 우리가 주께 범죄하였음이니이다",
+      "source_text_hash": "9f2af2935e61b72b4ad3af44a448f4e97287960beabe6cde680c61444618e746",
+      "translation_text_hash": "90fccc8b8a857bf1c3a5be91d738c852479b694948e74b65816fac52b49426b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 주의 율법을 범하고 치우쳐 가서 주의 목소리를 청종치 아니하였으므로 이 저주가 우리에게 내렸으되 곧 하나님의 종 모세의 율법 가운데 기록된 맹세대로 되었사오니 이는 우리가 주께 범죄하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "90fccc8b8a857bf1c3a5be91d738c852479b694948e74b65816fac52b49426b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:12",
+      "sequence": 22001,
+      "chapter_label": "DAN 9",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 12
+        }
+      ],
+      "en": "He has confirmed his words, which he spoke against us and against our judges who judged us, by bringing on us a great evil; for under the whole sky, such has not been done as has been done to Jerusalem.",
+      "ko": "주께서 큰 재앙을 우리에게 내리사 우리와 및 우리를 재판하던 재판관을 쳐서 하신 말씀을 이루셨사오니 온 천하에 예루살렘에 임한 일 같은 것이 없나이다",
+      "source_text_hash": "333275c7a027f1ccb5f48ab679886cb00be7257caf6b8d5f0e52411602278b1a",
+      "translation_text_hash": "8090217ae4790bd1710123a31f598c8f2c01f316157076455858d96fbfdab253",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 큰 재앙을 우리에게 내리사 우리와 및 우리를 재판하던 재판관을 쳐서 하신 말씀을 이루셨사오니 온 천하에 예루살렘에 임한 일 같은 것이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "8090217ae4790bd1710123a31f598c8f2c01f316157076455858d96fbfdab253"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:13",
+      "sequence": 22002,
+      "chapter_label": "DAN 9",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 13
+        }
+      ],
+      "en": "As it is written in the law of Moses, all this evil has come on us. Yet we have not entreated the favor of the LORD our God, that we should turn from our iniquities and have discernment in your truth.",
+      "ko": "모세의 율법에 기록된 대로 이 모든 재앙이 이미 우리에게 임하였사오나 우리는 우리의 죄악을 떠나고 주의 진리를 깨닫도록 우리 하나님 여호와의 은총을 간구치 아니하였나이다",
+      "source_text_hash": "85681cb2cd9ecaeb3331af0cf616fcc4f086472532f10681d68490b2f8d95093",
+      "translation_text_hash": "207c19aa0c8710fec79dbd6a4c1cbe4b7638c1e8beba15a8a06e143a47ac6e0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 율법에 기록된 대로 이 모든 재앙이 이미 우리에게 임하였사오나 우리는 우리의 죄악을 떠나고 주의 진리를 깨닫도록 우리 하나님 여호와의 은총을 간구치 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "207c19aa0c8710fec79dbd6a4c1cbe4b7638c1e8beba15a8a06e143a47ac6e0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:14",
+      "sequence": 22003,
+      "chapter_label": "DAN 9",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore the LORD has watched over the evil, and brought it on us; for the LORD our God is righteous in all his works which he does, and we have not obeyed his voice. i1",
+      "ko": "이러므로 여호와께서 이 재앙을 간직하여 두셨다가 우리에게 임하게 하셨사오니 우리의 하나님 여호와는 행하시는 모든 일이 공의로우시나 우리가 그 목소리를 청종치 아니하였음이니이다",
+      "source_text_hash": "9401eea49e3b7e0184023b2fa303dc593aa21b87646a35cae2376db752759bc6",
+      "translation_text_hash": "561039b39d45c68e23a426b37221eb6b399d9f8f955246444a56a122e77cda77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 여호와께서 이 재앙을 간직하여 두셨다가 우리에게 임하게 하셨사오니 우리의 하나님 여호와는 행하시는 모든 일이 공의로우시나 우리가 그 목소리를 청종치 아니하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "561039b39d45c68e23a426b37221eb6b399d9f8f955246444a56a122e77cda77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:15",
+      "sequence": 22004,
+      "chapter_label": "DAN 9",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 15
+        }
+      ],
+      "en": "“Now, Lord our God, who has brought your people out of the land of Egypt with a mighty hand, and have gotten yourself renown, as it is today, we have sinned. We have done wickedly.",
+      "ko": "강한 손으로 주의 백성을 애굽 땅에서 인도하여 내시고 오늘과 같이 명성을 얻으신 우리 주 하나님이여 우리가 범죄하였고 악을 행하였나이다",
+      "source_text_hash": "dfe24eedf92f8deef33277888285f13f2f19e3182d3ec3f8692fdb37c54cb6a9",
+      "translation_text_hash": "14b4ecb827ecc4ab41b844c3705746e431b9e19efa47978ba5ceb01815304951",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강한 손으로 주의 백성을 애굽 땅에서 인도하여 내시고 오늘과 같이 명성을 얻으신 우리 주 하나님이여 우리가 범죄하였고 악을 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "14b4ecb827ecc4ab41b844c3705746e431b9e19efa47978ba5ceb01815304951"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:16",
+      "sequence": 22005,
+      "chapter_label": "DAN 9",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 16
+        }
+      ],
+      "en": "Lord, according to all your righteousness, please let your anger and your wrath be turned away from your city Jerusalem, your holy mountain; because for our sins and for the iniquities of our fathers, Jerusalem and your people have become a reproach to all who are around us. i1",
+      "ko": "주여 내가 구하옵나니 주는 주의 공의를 좇으사 주의 분노를 주의 성 예루살렘, 주의 거룩한 산에서 떠나게 하옵소서 이는 우리의 죄와 우리의 열조의 죄악을 인하여 예루살렘과 주의 백성이 사면에 있는 자에게 수욕을 받음이니이다",
+      "source_text_hash": "c6af6ba3f39f709d2123691de8c537a2e8fdd7c785da04be2925f56baac0764c",
+      "translation_text_hash": "9b7f849b33dfbefb3dabf8f9f047674adb7cd05b066f126a558a6a74c0cd97a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내가 구하옵나니 주는 주의 공의를 좇으사 주의 분노를 주의 성 예루살렘, 주의 거룩한 산에서 떠나게 하옵소서 이는 우리의 죄와 우리의 열조의 죄악을 인하여 예루살렘과 주의 백성이 사면에 있는 자에게 수욕을 받음이니이다"
+      ],
+      "raw_text_hashes": [
+        "9b7f849b33dfbefb3dabf8f9f047674adb7cd05b066f126a558a6a74c0cd97a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:17",
+      "sequence": 22006,
+      "chapter_label": "DAN 9",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 17
+        }
+      ],
+      "en": "“Now therefore, our God, listen to the prayer of your servant and to his petitions, and cause your face to shine on your sanctuary that is desolate, for the Lord’s sake.",
+      "ko": "그러하온즉 우리 하나님이여 지금 주의 종의 기도와 간구를 들으시고 주를 위하여 주의 얼굴 빛을 주의 황폐한 성소에 비취시옵소서",
+      "source_text_hash": "1bba83e3c0a37ad2f8f07d83f9a452a8145e657da76afe028046daf446db3718",
+      "translation_text_hash": "ceaf4fc796a6cdc991b3575ff7f771c2cd77dba1a5c4503b010f8ebdfaf6b2ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하온즉 우리 하나님이여 지금 주의 종의 기도와 간구를 들으시고 주를 위하여 주의 얼굴 빛을 주의 황폐한 성소에 비취시옵소서"
+      ],
+      "raw_text_hashes": [
+        "ceaf4fc796a6cdc991b3575ff7f771c2cd77dba1a5c4503b010f8ebdfaf6b2ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:18",
+      "sequence": 22007,
+      "chapter_label": "DAN 9",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 18
+        }
+      ],
+      "en": "My God, turn your ear and hear. Open your eyes and see our desolations, and the city which is called by your name; for we do not present our petitions before you for our righteousness, but for your great mercies’ sake.",
+      "ko": "나의 하나님이여 귀를 기울여 들으시며 눈을 떠서 우리의 황폐된 상황과 주의 이름으로 일컫는 성을 보옵소서 우리가 주의 앞에 간구하옵는 것은 우리의 의를 의지하여 하는 것이 아니요 주의 큰 긍휼을 의지하여 함이오니",
+      "source_text_hash": "05886063b5e6899cde7615f1168cf2d354228ef8b5588e745ea877b4f3d6efc0",
+      "translation_text_hash": "e9104e6c2db0311a5fa9cc9d620587a14c4e5cf0cedea4863e9808e1941fe879",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이여 귀를 기울여 들으시며 눈을 떠서 우리의 황폐된 상황과 주의 이름으로 일컫는 성을 보옵소서 우리가 주의 앞에 간구하옵는 것은 우리의 의를 의지하여 하는 것이 아니요 주의 큰 긍휼을 의지하여 함이오니"
+      ],
+      "raw_text_hashes": [
+        "e9104e6c2db0311a5fa9cc9d620587a14c4e5cf0cedea4863e9808e1941fe879"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:19",
+      "sequence": 22008,
+      "chapter_label": "DAN 9",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 19
+        }
+      ],
+      "en": "Lord, hear. Lord, forgive. Lord, listen and do. Don’t defer, for your own sake, my God, because your city and your people are called by your name.”",
+      "ko": "주여 들으소서 주여 용서하소서 주여 들으시고 행하소서 지체치 마옵소서 나의 하나님이여 주 자신을 위하여 하시옵소서 이는 주의 성과 주의 백성이 주의 이름으로 일컫는바 됨이니이다",
+      "source_text_hash": "e8790f5cd351f7df9d9259155848b2d3428b187118bd073322e9da1439a40a33",
+      "translation_text_hash": "76a0448e39bb2c9441272395ff16af69606070986415bcb9746d6fc99e21043f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 들으소서 주여 용서하소서 주여 들으시고 행하소서 지체치 마옵소서 나의 하나님이여 주 자신을 위하여 하시옵소서 이는 주의 성과 주의 백성이 주의 이름으로 일컫는바 됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "76a0448e39bb2c9441272395ff16af69606070986415bcb9746d6fc99e21043f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:20",
+      "sequence": 22009,
+      "chapter_label": "DAN 9",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 20
+        }
+      ],
+      "en": "While I was speaking, praying, and confessing my sin and the sin of my people Israel, and presenting my supplication before the LORD my God for the holy mountain of my God—",
+      "ko": "내가 이같이 말하여 기도하며 내 죄와 및 내 백성 이스라엘의 죄를 자복하고 내 하나님의 거룩한 산을 위하여 내 하나님 여호와 앞에 간구할 때",
+      "source_text_hash": "86ecec36ba09b05ff27c2b425e891f4f28a29a4020d95495e29889b71ad14cd3",
+      "translation_text_hash": "cf7b17ad7ef625b7d9fad02a45bbeaf6440e74310b7244252a14febd5438f2ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이같이 말하여 기도하며 내 죄와 및 내 백성 이스라엘의 죄를 자복하고 내 하나님의 거룩한 산을 위하여 내 하나님 여호와 앞에 간구할 때"
+      ],
+      "raw_text_hashes": [
+        "cf7b17ad7ef625b7d9fad02a45bbeaf6440e74310b7244252a14febd5438f2ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:21",
+      "sequence": 22010,
+      "chapter_label": "DAN 9",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 21
+        }
+      ],
+      "en": "yes, while I was speaking in prayer—the man Gabriel, whom I had seen in the vision at the beginning, being caused to fly swiftly, touched me about the time of the evening offering.",
+      "ko": "곧 내가 말하여 기도할 때에 이전 이상 중에 본 그 사람 가브리엘이 빨리 날아서 저녁 제사를 드릴 때 즈음에 내게 이르더니",
+      "source_text_hash": "ebb3f98912ab95851ea4e3aafb0d69d1e06386a09fdced87b475e34c823a1f56",
+      "translation_text_hash": "36b92a7eda79e81730e1fda9f9e2e2e859daaa7b483b6a09d58a597331a7d140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내가 말하여 기도할 때에 이전 이상 중에 본 그 사람 가브리엘이 빨리 날아서 저녁 제사를 드릴 때 즈음에 내게 이르더니"
+      ],
+      "raw_text_hashes": [
+        "36b92a7eda79e81730e1fda9f9e2e2e859daaa7b483b6a09d58a597331a7d140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:22",
+      "sequence": 22011,
+      "chapter_label": "DAN 9",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 22
+        }
+      ],
+      "en": "He instructed me and talked with me, and said, “Daniel, I have now come to give you wisdom and understanding.",
+      "ko": "내게 가르치며 내게 말하여 가로되 다니엘아 내가 이제 네게 지혜와 총명을 주려고 나왔나니",
+      "source_text_hash": "9349de09049fec365435579982f4b647ab3c20446407fde8507622bb51fde6fb",
+      "translation_text_hash": "8d0808410ccce86b09f91cbfbd53b3b7ae4e0bfa60de7b08533a2b20e18e776a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 가르치며 내게 말하여 가로되 다니엘아 내가 이제 네게 지혜와 총명을 주려고 나왔나니"
+      ],
+      "raw_text_hashes": [
+        "8d0808410ccce86b09f91cbfbd53b3b7ae4e0bfa60de7b08533a2b20e18e776a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:23",
+      "sequence": 22012,
+      "chapter_label": "DAN 9",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 23
+        }
+      ],
+      "en": "At the beginning of your petitions the commandment went out, and I have come to tell you, for you are greatly beloved. Therefore consider the matter and understand the vision.",
+      "ko": "곧 네가 기도를 시작할 즈음에 명령이 내렸으므로 이제 네게 고하러 왔느니라 너는 크게 은총을 입은 자라 그런즉 너는 이 일을 생각하고 그 이상을 깨달을찌니라",
+      "source_text_hash": "da3cb28ea11cd33bdd2b6b3c7f98e974a251953ea5b6fd27d042329351cf2074",
+      "translation_text_hash": "79eb125c2a43b3f5ee15a6ac5e504c31eaf87907252df645ee3a1bb7b2e7e705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 네가 기도를 시작할 즈음에 명령이 내렸으므로 이제 네게 고하러 왔느니라 너는 크게 은총을 입은 자라 그런즉 너는 이 일을 생각하고 그 이상을 깨달을찌니라"
+      ],
+      "raw_text_hashes": [
+        "79eb125c2a43b3f5ee15a6ac5e504c31eaf87907252df645ee3a1bb7b2e7e705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:24",
+      "sequence": 22013,
+      "chapter_label": "DAN 9",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 24
+        }
+      ],
+      "en": "“Seventy weeks are decreed on your people and on your holy city, to finish disobedience, to make an end of sins, to make reconciliation for iniquity, to bring in everlasting righteousness, to seal up vision and prophecy, and to anoint the most holy.",
+      "ko": "네 백성과 네 거룩한 성을 위하여 칠십 이레로 기한을 정하였나니 허물이 마치며 죄가 끝나며 죄악이 영속되며 영원한 의가 드러나며 이상과 예언이 응하며 또 지극히 거룩한 자가 기름부음을 받으리라",
+      "source_text_hash": "366fe0fb80bcc684a7e8dca6b59afbd43cf30fd58c06d764cffe61643ed50d8f",
+      "translation_text_hash": "9f8e3f72f7cddf2bd2e955503605ebc1d03ea535ab12fd8bf6898128dc84624a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 백성과 네 거룩한 성을 위하여 칠십 이레로 기한을 정하였나니 허물이 마치며 죄가 끝나며 죄악이 영속되며 영원한 의가 드러나며 이상과 예언이 응하며 또 지극히 거룩한 자가 기름부음을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "9f8e3f72f7cddf2bd2e955503605ebc1d03ea535ab12fd8bf6898128dc84624a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:25",
+      "sequence": 22014,
+      "chapter_label": "DAN 9",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 25
+        }
+      ],
+      "en": "“Know therefore and discern that from the going out of the commandment to restore and build Jerusalem to the Anointed One, the prince, will be seven weeks and sixty-two weeks. It will be built again, with street and moat, even in troubled times.",
+      "ko": "그러므로 너는 깨달아 알찌니라 예루살렘을 중건하라는 영이 날 때부터 기름부음을 받은 자 곧 왕이 일어나기까지 일곱 이레와 육십 이 이레가 지날 것이요 그 때 곤란한 동안에 성이 중건되어 거리와 해자가 이룰 것이며",
+      "source_text_hash": "dfc518875c9879501ae43e8016d2415e39351f0ae0ce2f2a09bf94517d4dbb0a",
+      "translation_text_hash": "7669d055989e70ef77ab99b75e3fcf67397238d9d1fc1671ca804c0a19aa5412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 깨달아 알찌니라 예루살렘을 중건하라는 영이 날 때부터 기름부음을 받은 자 곧 왕이 일어나기까지 일곱 이레와 육십 이 이레가 지날 것이요 그 때 곤란한 동안에 성이 중건되어 거리와 해자가 이룰 것이며"
+      ],
+      "raw_text_hashes": [
+        "7669d055989e70ef77ab99b75e3fcf67397238d9d1fc1671ca804c0a19aa5412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:26",
+      "sequence": 22015,
+      "chapter_label": "DAN 9",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 26
+        }
+      ],
+      "en": "After the sixty-two weeks the Anointed One will be cut off, and will have nothing. The people of the prince who come will destroy the city and the sanctuary. Its end will be with a flood, and war will be even to the end. Desolations are determined.",
+      "ko": "육십 이 이레 후에 기름부음을 받은 자가 끊어져 없어질 것이며 장차 한 왕의 백성이 와서 그 성읍과 성소를 훼파하려니와 그의 종말은 홍수에 엄몰됨 같을 것이며 또 끝까지 전쟁이 있으리니 황폐할 것이 작정되었느니라",
+      "source_text_hash": "cd0afb7c9ba479c4ec0f53479a283bee4e28acd0b911424c8a9f99ab4b70dd74",
+      "translation_text_hash": "ceae3716ae82235510755c628a1e3d94f47af818c42ba7f3beaae54fdc87b0a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육십 이 이레 후에 기름부음을 받은 자가 끊어져 없어질 것이며 장차 한 왕의 백성이 와서 그 성읍과 성소를 훼파하려니와 그의 종말은 홍수에 엄몰됨 같을 것이며 또 끝까지 전쟁이 있으리니 황폐할 것이 작정되었느니라"
+      ],
+      "raw_text_hashes": [
+        "ceae3716ae82235510755c628a1e3d94f47af818c42ba7f3beaae54fdc87b0a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:9:27",
+      "sequence": 22016,
+      "chapter_label": "DAN 9",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 9,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 9,
+          "verse": 27
+        }
+      ],
+      "en": "He will make a firm covenant with many for one week. In the middle of the week he will cause the sacrifice and the offering to cease. On the wing of abominations will come one who makes desolate; and even to the decreed full end, wrath will be poured out on the desolate.”",
+      "ko": "그가 장차 많은 사람으로 더불어 한 이레 동안의 언약을 굳게 정하겠고 그가 그 이레의 절반에 제사와 예물을 금지할 것이며 또 잔포하여 미운 물건이 날개를 의지하여 설 것이며 또 이미 정한 종말까지 진노가 황폐케 하는 자에게 쏟아지리라 하였느니라",
+      "source_text_hash": "84ff209ba37fb77dbc097584dfb9a3f589271a62dab1fee547f72ebec4e905da",
+      "translation_text_hash": "755ef015b5a152f7397c8b0d05d4a11f971f65a91787c75ab4e85ce002adc521",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 장차 많은 사람으로 더불어 한 이레 동안의 언약을 굳게 정하겠고 그가 그 이레의 절반에 제사와 예물을 금지할 것이며 또 잔포하여 미운 물건이 날개를 의지하여 설 것이며 또 이미 정한 종말까지 진노가 황폐케 하는 자에게 쏟아지리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "755ef015b5a152f7397c8b0d05d4a11f971f65a91787c75ab4e85ce002adc521"
+      ]
+    }
+  ]
+}

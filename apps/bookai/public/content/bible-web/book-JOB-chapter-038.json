@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:038",
+  "unit_ordinal": 474,
+  "unit_label": "JOB 38",
+  "book_code": "JOB",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:38:1",
+      "sequence": 13795,
+      "chapter_label": "JOB 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "Then the LORD answered Job out of the whirlwind,",
+      "ko": "때에 여호와께서 폭풍 가운데로서 욥에게 말씀하여 가라사대",
+      "source_text_hash": "91524aabc739a0d2419d4b219ccf52cc5c203b8ac7ddddc0e49544a264b008c9",
+      "translation_text_hash": "5349ddcc390a614aaac560cd2d72674f5c95f59c6b2efd4048fd8d343ebfa54f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 폭풍 가운데로서 욥에게 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "5349ddcc390a614aaac560cd2d72674f5c95f59c6b2efd4048fd8d343ebfa54f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:2",
+      "sequence": 13796,
+      "chapter_label": "JOB 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "“Who is this who darkens counsel by words without knowledge?",
+      "ko": "무지한 말로 이치를 어둡게 하는 자가 누구냐",
+      "source_text_hash": "53bbcb33fef8a206943fe6e5abab7214093275b97b303010c522486e55894507",
+      "translation_text_hash": "e5279ee8bc8ef2d3306c3bdf95b29372dc1037e47b8bdcb874c77f344249d59a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무지한 말로 이치를 어둡게 하는 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "e5279ee8bc8ef2d3306c3bdf95b29372dc1037e47b8bdcb874c77f344249d59a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:3",
+      "sequence": 13797,
+      "chapter_label": "JOB 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "Brace yourself like a man, for I will question you, then you answer me!",
+      "ko": "너는 대장부처럼 허리를 묶고 내가 네게 묻는 것을 대답할찌니라",
+      "source_text_hash": "a04636e23537deedba3cebcdc3a60cb8c67bed492403de4bf125ff039228c083",
+      "translation_text_hash": "92400c00a8a840356fc38ae6f3c16fdc4a42bb200aeadb8204e7b38724c2e695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 대장부처럼 허리를 묶고 내가 네게 묻는 것을 대답할찌니라"
+      ],
+      "raw_text_hashes": [
+        "92400c00a8a840356fc38ae6f3c16fdc4a42bb200aeadb8204e7b38724c2e695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:4",
+      "sequence": 13798,
+      "chapter_label": "JOB 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "“Where were you when I laid the foundations of the earth? Declare, if you have understanding.",
+      "ko": "내가 땅의 기초를 놓을 때에 네가 어디 있었느냐 네가 깨달아 알았거든 말할찌니라",
+      "source_text_hash": "08ebb0858c79f73100158cd5ee506e6a11d62db68cc539d745ac7c418592e806",
+      "translation_text_hash": "c742dffb051b3b1d6362c604cdbbc5928d84757521aa36c817798caa3f6f3837",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅의 기초를 놓을 때에 네가 어디 있었느냐 네가 깨달아 알았거든 말할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c742dffb051b3b1d6362c604cdbbc5928d84757521aa36c817798caa3f6f3837"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:5",
+      "sequence": 13799,
+      "chapter_label": "JOB 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "Who determined its measures, if you know? Or who stretched the line on it?",
+      "ko": "누가 그 도량을 정하였었는지, 누가 그 준승을 그 위에 띄웠었는지 네가 아느냐",
+      "source_text_hash": "787f1e05dc6790c2a2c54d1f457650e6166d4a4e93ca2ef256d20011d45fc21f",
+      "translation_text_hash": "d4e368cff46b168c69bcc2536b6847565cbbda55884876c3b688d2059af199a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 그 도량을 정하였었는지, 누가 그 준승을 그 위에 띄웠었는지 네가 아느냐"
+      ],
+      "raw_text_hashes": [
+        "d4e368cff46b168c69bcc2536b6847565cbbda55884876c3b688d2059af199a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:6",
+      "sequence": 13800,
+      "chapter_label": "JOB 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "What were its foundations fastened on? Or who laid its cornerstone,",
+      "ko": "그 주초는 무엇 위에 세웠으며 그 모퉁이 돌은 누가 놓았었느냐",
+      "source_text_hash": "25bdc27d63b8b2bdd1504bafcb5fd442d67df26dab050da73ac849f8c1b68998",
+      "translation_text_hash": "c46803ffbbc3ca6da4cdf9ac459376859513cc21df1fcec87b7392a5fc9c0814",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주초는 무엇 위에 세웠으며 그 모퉁이 돌은 누가 놓았었느냐"
+      ],
+      "raw_text_hashes": [
+        "c46803ffbbc3ca6da4cdf9ac459376859513cc21df1fcec87b7392a5fc9c0814"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:7",
+      "sequence": 13801,
+      "chapter_label": "JOB 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "when the morning stars sang together, and all the sons of God shouted for joy?",
+      "ko": "그 때에 새벽 별들이 함께 노래하며 하나님의 아들들이 다 기쁘게 소리하였었느니라",
+      "source_text_hash": "4af4563c900bd18618fddb7a871d2ad2d360a177791b80f0375ccde26eaaf60c",
+      "translation_text_hash": "b705db6e733f6d2f2b75dd7dfc1e74f35883ac9cf0e9ea4fe8031b27563f391f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 새벽 별들이 함께 노래하며 하나님의 아들들이 다 기쁘게 소리하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "b705db6e733f6d2f2b75dd7dfc1e74f35883ac9cf0e9ea4fe8031b27563f391f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:8",
+      "sequence": 13802,
+      "chapter_label": "JOB 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "“Or who shut up the sea with doors, when it broke out of the womb,",
+      "ko": "바닷물이 태에서 나옴 같이 넘쳐 흐를 때에 문으로 그것을 막은 자가 누구냐",
+      "source_text_hash": "f578e88503c861b00a775d581e258dbeb20dafadbdf0bae15ef2699ad398a1ab",
+      "translation_text_hash": "912948e8ff98ab5de6c715e011f8ede7ddb1a081dac66c709c08e0798f13f138",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바닷물이 태에서 나옴 같이 넘쳐 흐를 때에 문으로 그것을 막은 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "912948e8ff98ab5de6c715e011f8ede7ddb1a081dac66c709c08e0798f13f138"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:9",
+      "sequence": 13803,
+      "chapter_label": "JOB 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "when I made clouds its garment, and wrapped it in thick darkness,",
+      "ko": "그 때에 내가 구름으로 그 의복을 만들고 흑암으로 그 강보를 만들고",
+      "source_text_hash": "7ee7285b1fecc3b83fa01872c3ce61805e23c2b4a2b1b099c98e2e3987cb2e0b",
+      "translation_text_hash": "b9a94e483d5fba5ee687bde5142d5529b089c0ca56575b6eb08d4dc834b9ec9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 구름으로 그 의복을 만들고 흑암으로 그 강보를 만들고"
+      ],
+      "raw_text_hashes": [
+        "b9a94e483d5fba5ee687bde5142d5529b089c0ca56575b6eb08d4dc834b9ec9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:10",
+      "sequence": 13804,
+      "chapter_label": "JOB 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "marked out for it my bound, set bars and doors,",
+      "ko": "계한을 정하여 문과 빗장을 베풀고",
+      "source_text_hash": "863d26455907cc2a8df2a581366272c615cc1ffc70ebf040d52c71ce401e6fc9",
+      "translation_text_hash": "86476b88c5282e1d57a5ee79db141679a3202b2c0fa88301d9dd5c972485f32a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계한을 정하여 문과 빗장을 베풀고"
+      ],
+      "raw_text_hashes": [
+        "86476b88c5282e1d57a5ee79db141679a3202b2c0fa88301d9dd5c972485f32a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:11",
+      "sequence": 13805,
+      "chapter_label": "JOB 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "and said, ‘You may come here, but no further. Your proud waves shall be stopped here’?",
+      "ko": "이르기를 네가 여기까지 오고 넘어가지 못하리니 네 교만한 물결이 여기 그칠찌니라 하였었노라",
+      "source_text_hash": "0636a8c9fdcc8a7482e4224a0716c9731ee6e21c6682909e626de470c597e417",
+      "translation_text_hash": "52e8f7154a65ee13dca931ab89a1cbc8f1cc3179aab3a94aa55267839b9516cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 네가 여기까지 오고 넘어가지 못하리니 네 교만한 물결이 여기 그칠찌니라 하였었노라"
+      ],
+      "raw_text_hashes": [
+        "52e8f7154a65ee13dca931ab89a1cbc8f1cc3179aab3a94aa55267839b9516cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:12",
+      "sequence": 13806,
+      "chapter_label": "JOB 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "“Have you commanded the morning in your days, and caused the dawn to know its place,",
+      "ko": "네가 나던 날부터 아침을 명하였었느냐 새벽으로 그 처소를 알게 하여",
+      "source_text_hash": "48de58b4e57e4755346454d7cc785f7932a3cfb5e7551099750817536c87bac5",
+      "translation_text_hash": "25581b7bee73ce35535b3bda634cc9c9fb398105d09639c42c0985183e405796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나던 날부터 아침을 명하였었느냐 새벽으로 그 처소를 알게 하여"
+      ],
+      "raw_text_hashes": [
+        "25581b7bee73ce35535b3bda634cc9c9fb398105d09639c42c0985183e405796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:13",
+      "sequence": 13807,
+      "chapter_label": "JOB 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "that it might take hold of the ends of the earth, and shake the wicked out of it?",
+      "ko": "그것으로 땅끝에 비취게 하고 악인을 그 가운데서 구축한 일이 있었느냐",
+      "source_text_hash": "fa894aa0347c6472ae27d25b4131fa38d2a22348b3078bf8590eb8169882c4a8",
+      "translation_text_hash": "125be4ce82bf4c302e787d9909c5f910ae09fa27ddd18c141cabacb528237e9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것으로 땅끝에 비취게 하고 악인을 그 가운데서 구축한 일이 있었느냐"
+      ],
+      "raw_text_hashes": [
+        "125be4ce82bf4c302e787d9909c5f910ae09fa27ddd18c141cabacb528237e9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:14",
+      "sequence": 13808,
+      "chapter_label": "JOB 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "It is changed as clay under the seal, and presented as a garment.",
+      "ko": "땅이 변화하여 진흙에 인친것 같고 만물이 옷 같이 나타나되",
+      "source_text_hash": "249cb17582104d02ee0e532874a6a3b3cfa96695677f21dde9e3d06b6d95b56b",
+      "translation_text_hash": "c1cefd2ceff4b903026ef58495f8ecb37dbea5d42a0b84d096dc8135b27e8ac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 변화하여 진흙에 인친것 같고 만물이 옷 같이 나타나되"
+      ],
+      "raw_text_hashes": [
+        "c1cefd2ceff4b903026ef58495f8ecb37dbea5d42a0b84d096dc8135b27e8ac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:15",
+      "sequence": 13809,
+      "chapter_label": "JOB 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "From the wicked, their light is withheld. The high arm is broken.",
+      "ko": "악인에게는 그 빛이 금한바 되고 그들의 높이 든 팔이 꺾이느니라",
+      "source_text_hash": "a9f1641cb51cca16c8557de17f14a4dde7c754451dc9cfbe750bb94817814652",
+      "translation_text_hash": "6214c269f14f8f8b4423698ad82d78090d9d01d8fcd29b628fc150d36a00bd92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인에게는 그 빛이 금한바 되고 그들의 높이 든 팔이 꺾이느니라"
+      ],
+      "raw_text_hashes": [
+        "6214c269f14f8f8b4423698ad82d78090d9d01d8fcd29b628fc150d36a00bd92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:16",
+      "sequence": 13810,
+      "chapter_label": "JOB 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "“Have you entered into the springs of the sea? Or have you walked in the recesses of the deep?",
+      "ko": "네가 바다 근원에 들어갔었느냐 깊은 물밑으로 걸어 다녔었느냐",
+      "source_text_hash": "1f2f5c7f9e141ebef00eacba4390ae683903143820feaa3007d4f769eb485625",
+      "translation_text_hash": "dbd25c5c28efdb71253d76c2d22f0413f36a3cbf53c03d3629531d93d326b313",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 바다 근원에 들어갔었느냐 깊은 물밑으로 걸어 다녔었느냐"
+      ],
+      "raw_text_hashes": [
+        "dbd25c5c28efdb71253d76c2d22f0413f36a3cbf53c03d3629531d93d326b313"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:17",
+      "sequence": 13811,
+      "chapter_label": "JOB 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "Have the gates of death been revealed to you? Or have you seen the gates of the shadow of death?",
+      "ko": "사망의 문이 네게 나타났었느냐 사망의 그늘진 문을 네가 보았었느냐",
+      "source_text_hash": "19f3dd7c6a013bad222d751c96e40dbe96b506e1ab7dcee99d844518e4453e76",
+      "translation_text_hash": "da5b87948b3f0e3f5e9f275439b0370937a6f1e82430572285c0cba3bfb8bae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사망의 문이 네게 나타났었느냐 사망의 그늘진 문을 네가 보았었느냐"
+      ],
+      "raw_text_hashes": [
+        "da5b87948b3f0e3f5e9f275439b0370937a6f1e82430572285c0cba3bfb8bae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:18",
+      "sequence": 13812,
+      "chapter_label": "JOB 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "Have you comprehended the earth in its width? Declare, if you know it all.",
+      "ko": "땅의 넓이를 네가 측량하였었느냐 다 알거든 말할찌니라",
+      "source_text_hash": "b30c0565b1ed4a85e4abe0df1e3fde01e8e4859dff9c241cba1c2ca19c622074",
+      "translation_text_hash": "3d6572d89849aac5d9ccb98771b7268e8e65eceeacf504f0e9ebfcfa55a89eee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 넓이를 네가 측량하였었느냐 다 알거든 말할찌니라"
+      ],
+      "raw_text_hashes": [
+        "3d6572d89849aac5d9ccb98771b7268e8e65eceeacf504f0e9ebfcfa55a89eee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:19",
+      "sequence": 13813,
+      "chapter_label": "JOB 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "“What is the way to the dwelling of light? As for darkness, where is its place,",
+      "ko": "광명의 처소는 어느 길로 가며 흑암의 처소는 어디냐",
+      "source_text_hash": "26879f179b7efa0418f939f89bab85dbd3a496a8bfada03672c6b65e6b336297",
+      "translation_text_hash": "1ddd1d4d261708860457186a185aca6f1ebfd90bed5ae5a9d42dd60d95506afb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광명의 처소는 어느 길로 가며 흑암의 처소는 어디냐"
+      ],
+      "raw_text_hashes": [
+        "1ddd1d4d261708860457186a185aca6f1ebfd90bed5ae5a9d42dd60d95506afb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:20",
+      "sequence": 13814,
+      "chapter_label": "JOB 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "that you should take it to its bound, that you should discern the paths to its house?",
+      "ko": "네가 능히 그 지경으로 인도할 수 있느냐 그 집의 길을 아느냐",
+      "source_text_hash": "1ccb21349bd20f032adb573095893518b3042719c0a449a8fcc963cb4168199e",
+      "translation_text_hash": "d329d8ca467a0c816eb509dadbf1af4a665b24987d6f71616134a7680fabb8a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 능히 그 지경으로 인도할 수 있느냐 그 집의 길을 아느냐"
+      ],
+      "raw_text_hashes": [
+        "d329d8ca467a0c816eb509dadbf1af4a665b24987d6f71616134a7680fabb8a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:21",
+      "sequence": 13815,
+      "chapter_label": "JOB 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "Surely you know, for you were born then, and the number of your days is great!",
+      "ko": "네가 아마 알리라 네가 그 때에 났었나니 너의 년수가 많음이니라",
+      "source_text_hash": "6cd127acb4c9f291016ff3959348ca1eb4797bfa2df9bae55b3a1a99e88ed060",
+      "translation_text_hash": "63ab53ad2a1ac1ff661de07cef433153dc7f4160c111b1a4df3cd27a7b405594",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 아마 알리라 네가 그 때에 났었나니 너의 년수가 많음이니라"
+      ],
+      "raw_text_hashes": [
+        "63ab53ad2a1ac1ff661de07cef433153dc7f4160c111b1a4df3cd27a7b405594"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:22",
+      "sequence": 13816,
+      "chapter_label": "JOB 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "Have you entered the storehouses of the snow, or have you seen the storehouses of the hail,",
+      "ko": "네가 눈 곳간에 들어갔었느냐 우박 창고를 보았느냐",
+      "source_text_hash": "44bccd7a6ccab9b0e8aab63e86529ab678d29680c636ae57fcbd8b70d7c10082",
+      "translation_text_hash": "b30b09b3483af3b7db4ad0e0fa476ca1a659204c1cf00b9f404b47ae9521bd37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 눈 곳간에 들어갔었느냐 우박 창고를 보았느냐"
+      ],
+      "raw_text_hashes": [
+        "b30b09b3483af3b7db4ad0e0fa476ca1a659204c1cf00b9f404b47ae9521bd37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:23",
+      "sequence": 13817,
+      "chapter_label": "JOB 38",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 23
+        }
+      ],
+      "en": "which I have reserved against the time of trouble, against the day of battle and war?",
+      "ko": "내가 환난 때와 전쟁과 격투의 날을 위하여 이것을 저축하였노라",
+      "source_text_hash": "c10cf9cbb4bb8734f88780964f87b39aabb2b865d06d693526dc5d6f6d176b05",
+      "translation_text_hash": "07ee9e8520637e25490d2af1e16d9ce13f07331943723dcc1ff30efd40ef9252",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 환난 때와 전쟁과 격투의 날을 위하여 이것을 저축하였노라"
+      ],
+      "raw_text_hashes": [
+        "07ee9e8520637e25490d2af1e16d9ce13f07331943723dcc1ff30efd40ef9252"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:24",
+      "sequence": 13818,
+      "chapter_label": "JOB 38",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 24
+        }
+      ],
+      "en": "By what way is the lightning distributed, or the east wind scattered on the earth?",
+      "ko": "광명이 어느 길로 말미암아 뻗치며 동풍이 어느 길로 말미암아 땅에 흩어지느냐",
+      "source_text_hash": "7bdd615df754c72a8277486a45ef6a68f4bf45843b8c6394e53078fbdc59f5ae",
+      "translation_text_hash": "517733eaf51c617f901be995f6998cb6e322042f0d0622c9015ddc88f2a7029a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광명이 어느 길로 말미암아 뻗치며 동풍이 어느 길로 말미암아 땅에 흩어지느냐"
+      ],
+      "raw_text_hashes": [
+        "517733eaf51c617f901be995f6998cb6e322042f0d0622c9015ddc88f2a7029a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:25",
+      "sequence": 13819,
+      "chapter_label": "JOB 38",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 25
+        }
+      ],
+      "en": "Who has cut a channel for the flood water, or the path for the thunderstorm,",
+      "ko": "누가 폭우를 위하여 길을 내었으며 우뢰의 번개 길을 내었으며",
+      "source_text_hash": "4fc221ebc9ed807e2b7fd3d9c1c59e07af1e09c0ae4cc217cae10c88f7cb9dee",
+      "translation_text_hash": "fa26f1dc02a16cda582c82ce10c4cfe1650c56699589952bb9c8c5eddedec9b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 폭우를 위하여 길을 내었으며 우뢰의 번개 길을 내었으며"
+      ],
+      "raw_text_hashes": [
+        "fa26f1dc02a16cda582c82ce10c4cfe1650c56699589952bb9c8c5eddedec9b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:26",
+      "sequence": 13820,
+      "chapter_label": "JOB 38",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 26
+        }
+      ],
+      "en": "to cause it to rain on a land where there is no man, on the wilderness, in which there is no man,",
+      "ko": "사람 없는 땅에, 사람 없는 광야에 비를 내리고",
+      "source_text_hash": "19afca470705e89567a96167c4dc6990ddc9b0488d4ef50958dbf1a77031f22d",
+      "translation_text_hash": "b3449cbed4cd9582aa97ef23fbf96ab9bc2caed80643c2ac78274456e283bad7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람 없는 땅에, 사람 없는 광야에 비를 내리고"
+      ],
+      "raw_text_hashes": [
+        "b3449cbed4cd9582aa97ef23fbf96ab9bc2caed80643c2ac78274456e283bad7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:27",
+      "sequence": 13821,
+      "chapter_label": "JOB 38",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 27
+        }
+      ],
+      "en": "to satisfy the waste and desolate ground, to cause the tender grass to grow?",
+      "ko": "황무하고 공허한 토지를 축축하게 하고 연한 풀이 나게 하였느냐",
+      "source_text_hash": "d3ea597a214f0592839c91df64ca77abbac9475161b6ec0eafe85433fbbef0d5",
+      "translation_text_hash": "4544b239b29f392c0051d9793f9d4a4a2f2e6d45badf81fd122a58b2aa72c514",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "황무하고 공허한 토지를 축축하게 하고 연한 풀이 나게 하였느냐"
+      ],
+      "raw_text_hashes": [
+        "4544b239b29f392c0051d9793f9d4a4a2f2e6d45badf81fd122a58b2aa72c514"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:28",
+      "sequence": 13822,
+      "chapter_label": "JOB 38",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 28
+        }
+      ],
+      "en": "Does the rain have a father? Or who fathers the drops of dew?",
+      "ko": "비가 아비가 있느냐 이슬 방울은 누가 낳았느냐",
+      "source_text_hash": "693c4b71b0e880e1811bca87009e234cc5797383393a4ad3cc6190c56abc6f8c",
+      "translation_text_hash": "bc18911bf15a746e5f405bee99df1fbb30dfbca87701e277eec2a9fd6f2b56d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비가 아비가 있느냐 이슬 방울은 누가 낳았느냐"
+      ],
+      "raw_text_hashes": [
+        "bc18911bf15a746e5f405bee99df1fbb30dfbca87701e277eec2a9fd6f2b56d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:29",
+      "sequence": 13823,
+      "chapter_label": "JOB 38",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 29
+        }
+      ],
+      "en": "Whose womb did the ice come out of? Who has given birth to the gray frost of the sky?",
+      "ko": "얼음은 뉘 태에서 났느냐 공중의 서리는 누가 낳았느냐",
+      "source_text_hash": "ce23a25866449f612f8e67d19dc675034f49358214f7185be0eb749ab55e5f66",
+      "translation_text_hash": "5a56b487c37b7879ea40fa99a3bf8c0f446c261409819d0523548d59a4893da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼음은 뉘 태에서 났느냐 공중의 서리는 누가 낳았느냐"
+      ],
+      "raw_text_hashes": [
+        "5a56b487c37b7879ea40fa99a3bf8c0f446c261409819d0523548d59a4893da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:30",
+      "sequence": 13824,
+      "chapter_label": "JOB 38",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 30
+        }
+      ],
+      "en": "The waters become hard like stone, when the surface of the deep is frozen.",
+      "ko": "물이 돌 같이 굳어지고 해면이 어느니라",
+      "source_text_hash": "847bb783d3feab79f34a93da7329e7ec55a19b8341f1aab1c2ca8f09ab9cdd09",
+      "translation_text_hash": "3456e5409f7b30c35ffb242df6a5af4ccaabea4ef7daffa1f9a8de78b7f19d35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물이 돌 같이 굳어지고 해면이 어느니라"
+      ],
+      "raw_text_hashes": [
+        "3456e5409f7b30c35ffb242df6a5af4ccaabea4ef7daffa1f9a8de78b7f19d35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:31",
+      "sequence": 13825,
+      "chapter_label": "JOB 38",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 31
+        }
+      ],
+      "en": "“Can you bind the cluster of the Pleiades, or loosen the cords of Orion?",
+      "ko": "네가 묘성을 매어 떨기 되게 하겠느냐 삼성의 띠를 풀겠느냐",
+      "source_text_hash": "95a804edab07d06205c3a4b0ec26f6f9d736d307c639a36ce3a1a5a1e2b55e64",
+      "translation_text_hash": "cccae75c699f0c67e7d95b1392c0043bb07a273621e8480e407a09a0a8fa7bd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 묘성을 매어 떨기 되게 하겠느냐 삼성의 띠를 풀겠느냐"
+      ],
+      "raw_text_hashes": [
+        "cccae75c699f0c67e7d95b1392c0043bb07a273621e8480e407a09a0a8fa7bd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:32",
+      "sequence": 13826,
+      "chapter_label": "JOB 38",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 32
+        }
+      ],
+      "en": "Can you lead the constellations out in their season? Or can you guide the Bear with her cubs?",
+      "ko": "네가 열두 궁성을 때를 따라 이끌어 내겠느냐 북두성과 그 속한 별들을 인도하겠느냐",
+      "source_text_hash": "01a71f3663029caf4b6b7ebd9769d18b5e5853aecfef9c7a7da5ee3585dfbabb",
+      "translation_text_hash": "617ae0e15f85e38c8c959d37b91705bbb78ed0aa2a3c386a6d064bca407b6503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 열두 궁성을 때를 따라 이끌어 내겠느냐 북두성과 그 속한 별들을 인도하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "617ae0e15f85e38c8c959d37b91705bbb78ed0aa2a3c386a6d064bca407b6503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:33",
+      "sequence": 13827,
+      "chapter_label": "JOB 38",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 33
+        }
+      ],
+      "en": "Do you know the laws of the heavens? Can you establish its dominion over the earth?",
+      "ko": "네가 하늘의 법도를 아느냐 하늘로 그 권능을 땅에 베풀게 하겠느냐",
+      "source_text_hash": "80c38731b472ca9e44c4127c42b3ab795af3efa247564df752c6d401cc67e9ba",
+      "translation_text_hash": "5417ee3c98d46f18232dda13bad12462333a09cf500546a5e110ea19bcf556e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 하늘의 법도를 아느냐 하늘로 그 권능을 땅에 베풀게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5417ee3c98d46f18232dda13bad12462333a09cf500546a5e110ea19bcf556e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:34",
+      "sequence": 13828,
+      "chapter_label": "JOB 38",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 34
+        }
+      ],
+      "en": "“Can you lift up your voice to the clouds, that abundance of waters may cover you?",
+      "ko": "네 소리를 구름에 올려 큰 물로 네게 덮이게 하겠느냐",
+      "source_text_hash": "b1335e6995a3b937e79413e2d493ab26c705fe9c7aff96534319200b17af415a",
+      "translation_text_hash": "11c8853b99ccb08ac758e1396615a567bcd81df094dee7d587934c2527e4582d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 소리를 구름에 올려 큰 물로 네게 덮이게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "11c8853b99ccb08ac758e1396615a567bcd81df094dee7d587934c2527e4582d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:35",
+      "sequence": 13829,
+      "chapter_label": "JOB 38",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 35
+        }
+      ],
+      "en": "Can you send out lightnings, that they may go? Do they report to you, ‘Here we are’?",
+      "ko": "네가 번개를 보내어 가게 하되 그것으로 네게 우리가 여기 있나이다 하게 하겠느냐",
+      "source_text_hash": "88e684fbee5aa240b8029f7fb13628f0af434016f24307624e687fb67fbd7764",
+      "translation_text_hash": "1bdff8736e03e0ed12c803b96e5e20c912e6a334e8c85ab2a742b71b7f428132",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 번개를 보내어 가게 하되 그것으로 네게 우리가 여기 있나이다 하게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "1bdff8736e03e0ed12c803b96e5e20c912e6a334e8c85ab2a742b71b7f428132"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:36",
+      "sequence": 13830,
+      "chapter_label": "JOB 38",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 36
+        }
+      ],
+      "en": "Who has put wisdom in the inward parts? Or who has given understanding to the mind?",
+      "ko": "가슴 속의 지혜는 누가 준 것이냐 마음 속의 총명은 누가 준 것이냐",
+      "source_text_hash": "1a03956c5a19b471ad46b912b9595f2c4c679dd51acebe3b0cf690944d801ba4",
+      "translation_text_hash": "0bdd3280a769d9ee8631d42163ac9566080cfcddcc2c4456b7c6ede325a8369e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가슴 속의 지혜는 누가 준 것이냐 마음 속의 총명은 누가 준 것이냐"
+      ],
+      "raw_text_hashes": [
+        "0bdd3280a769d9ee8631d42163ac9566080cfcddcc2c4456b7c6ede325a8369e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:37",
+      "sequence": 13831,
+      "chapter_label": "JOB 38",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 37
+        }
+      ],
+      "en": "Who can count the clouds by wisdom? Or who can pour out the containers of the sky,",
+      "ko": "누가 지혜로 구름을 계수하겠느냐 누가 하늘의 병을 쏟아",
+      "source_text_hash": "1248fc4f7f6c2fe628e585878af0c377ddf89a48c334fc89ea1bc327c9a1e52d",
+      "translation_text_hash": "673a11661b7656b198a0eb765a1dfda51b0f673737cde20396b4ff5d6548db85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 지혜로 구름을 계수하겠느냐 누가 하늘의 병을 쏟아"
+      ],
+      "raw_text_hashes": [
+        "673a11661b7656b198a0eb765a1dfda51b0f673737cde20396b4ff5d6548db85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:38",
+      "sequence": 13832,
+      "chapter_label": "JOB 38",
+      "verse_label": "38",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 38
+        }
+      ],
+      "en": "when the dust runs into a mass, and the clods of earth stick together?",
+      "ko": "티끌로 진흙을 이루며 흙덩이로 서로 붙게 하겠느냐",
+      "source_text_hash": "103caf545d22b5b82fae2b8ba0d3c6fb79248efc3a4260eeefa143ae02dd429d",
+      "translation_text_hash": "f9e5c447ce88281af122ffc82890f425df6f516ff46dc673b111bf2615e4a447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "티끌로 진흙을 이루며 흙덩이로 서로 붙게 하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f9e5c447ce88281af122ffc82890f425df6f516ff46dc673b111bf2615e4a447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:39",
+      "sequence": 13833,
+      "chapter_label": "JOB 38",
+      "verse_label": "39",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 39
+        }
+      ],
+      "en": "“Can you hunt the prey for the lioness, or satisfy the appetite of the young lions,",
+      "ko": "네가 암사자를 위하여 식물을 사냥하겠느냐 젊은 사자의 식량을 채우겠느냐",
+      "source_text_hash": "4e0393a96f99cbe2f4abf039616511daac64991ac9236a42f6c7d3e4cd01c070",
+      "translation_text_hash": "c054bf51e3dc30e290bd5a1456015afe809eb9dbc84c0a8630705371835149e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 암사자를 위하여 식물을 사냥하겠느냐 젊은 사자의 식량을 채우겠느냐"
+      ],
+      "raw_text_hashes": [
+        "c054bf51e3dc30e290bd5a1456015afe809eb9dbc84c0a8630705371835149e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:40",
+      "sequence": 13834,
+      "chapter_label": "JOB 38",
+      "verse_label": "40",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 40
+        }
+      ],
+      "en": "when they crouch in their dens, and lie in wait in the thicket?",
+      "ko": "그것들이 굴에 엎드리며 삼림에 누워서 기다리는 때에니라",
+      "source_text_hash": "69e087fa5b36f70690f25a5a529ca6656812d1a553397b9a763888a430427f80",
+      "translation_text_hash": "e007093f4c8908a79900ee07ed134fe2dd946fb4c7bee3ba39e9eeef83892715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들이 굴에 엎드리며 삼림에 누워서 기다리는 때에니라"
+      ],
+      "raw_text_hashes": [
+        "e007093f4c8908a79900ee07ed134fe2dd946fb4c7bee3ba39e9eeef83892715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:38:41",
+      "sequence": 13835,
+      "chapter_label": "JOB 38",
+      "verse_label": "41",
+      "locator": {
+        "book": "JOB",
+        "chapter": 38,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 38,
+          "verse": 41
+        }
+      ],
+      "en": "Who provides for the raven his prey, when his young ones cry to God, and wander for lack of food?",
+      "ko": "까마귀 새끼가 하나님을 향하여 부르짖으며 먹을 것이 없어서 오락가락할 때에 그것을 위하여 먹을 것을 예비하는 자가 누구냐",
+      "source_text_hash": "8105caebc9e4b34de500ad0a5952e4dde06a96783e751bc70c353aba2b7c4173",
+      "translation_text_hash": "0a38d024e126faff0429e194b7005b97c4d7c97d01135e88d68104bed8d73133",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀 새끼가 하나님을 향하여 부르짖으며 먹을 것이 없어서 오락가락할 때에 그것을 위하여 먹을 것을 예비하는 자가 누구냐"
+      ],
+      "raw_text_hashes": [
+        "0a38d024e126faff0429e194b7005b97c4d7c97d01135e88d68104bed8d73133"
+      ]
+    }
+  ]
+}

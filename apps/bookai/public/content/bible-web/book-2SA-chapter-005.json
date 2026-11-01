@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:005",
+  "unit_ordinal": 272,
+  "unit_label": "2SA 5",
+  "book_code": "2SA",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:5:1",
+      "sequence": 8134,
+      "chapter_label": "2SA 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Then all the tribes of Israel came to David at Hebron and spoke, saying, “Behold, we are your bone and your flesh.",
+      "ko": "이스라엘 모든 지파가 헤브론에 이르러 다윗에게 나아와 말하여 가로되 보소서 우리는 왕의 골육이니이다",
+      "source_text_hash": "20d028cd715346c4a8ee6c1d4fe193dc7ffdd262b70cb1c4d56721a315909892",
+      "translation_text_hash": "6b20740189fc173133f068fc1cadef63b16aaba2664c6a86bad38c153ad4cd89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파가 헤브론에 이르러 다윗에게 나아와 말하여 가로되 보소서 우리는 왕의 골육이니이다"
+      ],
+      "raw_text_hashes": [
+        "6b20740189fc173133f068fc1cadef63b16aaba2664c6a86bad38c153ad4cd89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:2",
+      "sequence": 8135,
+      "chapter_label": "2SA 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "In times past, when Saul was king over us, it was you who led Israel out and in. The LORD said to you, ‘You will be shepherd of my people Israel, and you will be prince over Israel.’”",
+      "ko": "전일 곧 사울이 우리의 왕이 되었을 때에도 이스라엘을 거느려 출입하게 한 자는 왕이시었고 여호와께서도 왕에게 말씀하시기를 네가 내 백성 이스라엘의 목자가 되며 이스라엘의 주권자가 되리라 하셨나이다 하니라",
+      "source_text_hash": "22512aeaa22b8f4d19e81d6c5f95e60b3b3713851ac584aa4b9743f3f3210989",
+      "translation_text_hash": "e48e7723be378b54bd8a73cc93bb11036a93848a8bb665330ff476be9751a5e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전일 곧 사울이 우리의 왕이 되었을 때에도 이스라엘을 거느려 출입하게 한 자는 왕이시었고 여호와께서도 왕에게 말씀하시기를 네가 내 백성 이스라엘의 목자가 되며 이스라엘의 주권자가 되리라 하셨나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "e48e7723be378b54bd8a73cc93bb11036a93848a8bb665330ff476be9751a5e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:3",
+      "sequence": 8136,
+      "chapter_label": "2SA 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "So all the elders of Israel came to the king to Hebron, and King David made a covenant with them in Hebron before the LORD; and they anointed David king over Israel.",
+      "ko": "이에 이스라엘 모든 장로가 헤브론에 이르러 왕에게 나아오매 다윗왕이 헤브론에서 여호와 앞에서 저희와 언약을 세우매 저희가 다윗에게 기름을 부어 이스라엘 왕을 삼으니라",
+      "source_text_hash": "54488ff6b58e466eb8200f2dd466022120e4d7873b486c9b6ff5166d37434eaa",
+      "translation_text_hash": "cd3886a05d54aa0db4053a14d6b8105938740de3b0b9cb22525b9b48a6e7731b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 이스라엘 모든 장로가 헤브론에 이르러 왕에게 나아오매 다윗왕이 헤브론에서 여호와 앞에서 저희와 언약을 세우매 저희가 다윗에게 기름을 부어 이스라엘 왕을 삼으니라"
+      ],
+      "raw_text_hashes": [
+        "cd3886a05d54aa0db4053a14d6b8105938740de3b0b9cb22525b9b48a6e7731b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:4",
+      "sequence": 8137,
+      "chapter_label": "2SA 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "David was thirty years old when he began to reign, and he reigned forty years.",
+      "ko": "다윗이 삼십세에 위에 나아가서 사십년을 다스렸으되",
+      "source_text_hash": "d96822790774f8942728c57cbb5805bd33ef9d9c51007de63c1f53b7db0c5a18",
+      "translation_text_hash": "0b1dcde941ab2fca0a65153dd29ac7b2b118945b3d99b0a2b6a3237514d45ce2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 삼십세에 위에 나아가서 사십년을 다스렸으되"
+      ],
+      "raw_text_hashes": [
+        "0b1dcde941ab2fca0a65153dd29ac7b2b118945b3d99b0a2b6a3237514d45ce2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:5",
+      "sequence": 8138,
+      "chapter_label": "2SA 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "In Hebron he reigned over Judah seven years and six months, and in Jerusalem he reigned thirty-three years over all Israel and Judah.",
+      "ko": "헤브론에서 칠년 육개월 동안 유다를 다스렸고 예루살렘에서 삼십 삼년 동안 온 이스라엘과 유다를 다스렸더라",
+      "source_text_hash": "22551812f038924bd433ac8d6cea3e85f3474bef8dae88403081c92ae52d014c",
+      "translation_text_hash": "bb8d4acdb734a1aa3c8046ef1f32b7a71ec396832421917f5945b2155cae5575",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론에서 칠년 육개월 동안 유다를 다스렸고 예루살렘에서 삼십 삼년 동안 온 이스라엘과 유다를 다스렸더라"
+      ],
+      "raw_text_hashes": [
+        "bb8d4acdb734a1aa3c8046ef1f32b7a71ec396832421917f5945b2155cae5575"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:6",
+      "sequence": 8139,
+      "chapter_label": "2SA 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "The king and his men went to Jerusalem against the Jebusites, the inhabitants of the land, who spoke to David, saying, “The blind and the lame will keep you out of here,” thinking, “David can’t come in here.”",
+      "ko": "왕과 그 종자들이 예루살렘으로 가서 그 땅 거민 여부스 사람을 치려 하매 그 사람들이 다윗에게 말하여 가로되 네가 이리로 들어오지 못하리라 소경과 절뚝발이라도 너를 물리치리라 하니 저희 생각에는 다윗이 이리로 들어오지 못하리라 함이나",
+      "source_text_hash": "6d98dae37f1d65a4443bef8f2562b67d6aed619690a66e1cd51bcc2c75278e1e",
+      "translation_text_hash": "94760252abdcaf7b3bc6b33e642a4d7277a804f7e7456f1b35e64f74d6c8417a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 그 종자들이 예루살렘으로 가서 그 땅 거민 여부스 사람을 치려 하매 그 사람들이 다윗에게 말하여 가로되 네가 이리로 들어오지 못하리라 소경과 절뚝발이라도 너를 물리치리라 하니 저희 생각에는 다윗이 이리로 들어오지 못하리라 함이나"
+      ],
+      "raw_text_hashes": [
+        "94760252abdcaf7b3bc6b33e642a4d7277a804f7e7456f1b35e64f74d6c8417a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:7",
+      "sequence": 8140,
+      "chapter_label": "2SA 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "Nevertheless David took the stronghold of Zion. This is David’s city.",
+      "ko": "다윗이 시온 산성을 빼앗았으니 이는 다윗성이더라",
+      "source_text_hash": "e975557a11cc6b179f7d00c540a72f55540c1b49ebdd2f0683d78d9ffa59ecc8",
+      "translation_text_hash": "4eec68f88eca8289b2821ea76910c15125af9b686ed99d7cae8d703a8d399ea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 시온 산성을 빼앗았으니 이는 다윗성이더라"
+      ],
+      "raw_text_hashes": [
+        "4eec68f88eca8289b2821ea76910c15125af9b686ed99d7cae8d703a8d399ea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:8",
+      "sequence": 8141,
+      "chapter_label": "2SA 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "David said on that day, “Whoever strikes the Jebusites, let him go up to the watercourse and strike those lame and blind, who are hated by David’s soul.” Therefore they say, “The blind and the lame can’t come into the house.”",
+      "ko": "그 날에 다윗이 이르기를 누구든지 여부스 사람을 치거든 수구로 올라가서 다윗의 마음에 미워하는 절뚝발이와 소경을 치라 하였으므로 속담이 되어 이르기를 소경과 절뚝발이는 집에 들어 오지 못하리라 하더라",
+      "source_text_hash": "ce42b80e64e0968858b3901f30377e9f122e57600452eb31df719bb4f9860115",
+      "translation_text_hash": "63badcadbd57acda1d83ba84dc146cacf77022bb86e44ba3cac88e856d32f738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 다윗이 이르기를 누구든지 여부스 사람을 치거든 수구로 올라가서 다윗의 마음에 미워하는 절뚝발이와 소경을 치라 하였으므로 속담이 되어 이르기를 소경과 절뚝발이는 집에 들어 오지 못하리라 하더라"
+      ],
+      "raw_text_hashes": [
+        "63badcadbd57acda1d83ba84dc146cacf77022bb86e44ba3cac88e856d32f738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:9",
+      "sequence": 8142,
+      "chapter_label": "2SA 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "David lived in the stronghold, and called it David’s city. David built around from Millo and inward.",
+      "ko": "다윗이 그 산성에 거하여 다윗성이라 이름하고 밀로에서부터 안으로 성을 둘러 쌓으니라",
+      "source_text_hash": "864c06a366f3ba7a6915b92899d166b94c29b55c58e8ca9ab8b651fe511e600c",
+      "translation_text_hash": "0e7faf76f2f98e7793e1ab99d75ac2fa03273143833685f2b78c2b7589fe55b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 그 산성에 거하여 다윗성이라 이름하고 밀로에서부터 안으로 성을 둘러 쌓으니라"
+      ],
+      "raw_text_hashes": [
+        "0e7faf76f2f98e7793e1ab99d75ac2fa03273143833685f2b78c2b7589fe55b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:10",
+      "sequence": 8143,
+      "chapter_label": "2SA 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "David grew greater and greater, for the LORD, the God of Armies, was with him.",
+      "ko": "만군의 하나님 여호와께서 함께 계시니 다윗이 점점 강성하여 가니라",
+      "source_text_hash": "1aa8bce68923fdacf6253205b732fae111665582081b15c1d51566394be89597",
+      "translation_text_hash": "b0df497c6afc7d7f07dc7e58564fa325327bb9ab1c8954daa3d9110712e20f46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 하나님 여호와께서 함께 계시니 다윗이 점점 강성하여 가니라"
+      ],
+      "raw_text_hashes": [
+        "b0df497c6afc7d7f07dc7e58564fa325327bb9ab1c8954daa3d9110712e20f46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:11",
+      "sequence": 8144,
+      "chapter_label": "2SA 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Hiram king of Tyre sent messengers to David, with cedar trees, carpenters, and masons; and they built David a house.",
+      "ko": "두로 왕 히람이 다윗에게 사자들과 백향목과 목수와 석수를 보내매 저희가 다윗을 위하여 집을 지으니",
+      "source_text_hash": "82fe4bc637dec2026704512b199d321311d5f4a701e66015ad5f0910eb9050ed",
+      "translation_text_hash": "b77ae865e1f18943b27c9dc58f78a86bf2158be0fa8c11272205cd5cd0dc72a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로 왕 히람이 다윗에게 사자들과 백향목과 목수와 석수를 보내매 저희가 다윗을 위하여 집을 지으니"
+      ],
+      "raw_text_hashes": [
+        "b77ae865e1f18943b27c9dc58f78a86bf2158be0fa8c11272205cd5cd0dc72a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:12",
+      "sequence": 8145,
+      "chapter_label": "2SA 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "David perceived that the LORD had established him king over Israel, and that he had exalted his kingdom for his people Israel’s sake.",
+      "ko": "다윗이 여호와께서 자기를 세우사 이스라엘 왕을 삼으신 것과 그 백성 이스라엘을 위하여 그 나라를 높이신 것을 아니라",
+      "source_text_hash": "3770d6402cc12467f53dbda3f564cf4e3de590a2f370bc885d68f8d85db76df7",
+      "translation_text_hash": "e94fb3398473d8bc28b6354a70e294e25474c43c2ac8aad2085b7e890e6ff989",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께서 자기를 세우사 이스라엘 왕을 삼으신 것과 그 백성 이스라엘을 위하여 그 나라를 높이신 것을 아니라"
+      ],
+      "raw_text_hashes": [
+        "e94fb3398473d8bc28b6354a70e294e25474c43c2ac8aad2085b7e890e6ff989"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:13",
+      "sequence": 8146,
+      "chapter_label": "2SA 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "David took more concubines and wives for himself out of Jerusalem, after he had come from Hebron; and more sons and daughters were born to David.",
+      "ko": "다윗이 헤브론에서 올라온 후에 예루살렘에서 처첩들을 더 취하였으므로 아들과 딸들이 또 다윗에게서 나니",
+      "source_text_hash": "3d3fcbaa970eaf83822e42ff049823d8c24222725e70166dc91eb2af7e42fc96",
+      "translation_text_hash": "56a5ec0739acc408e670f2e24f403123f698e016c2e353765b100113d73ecb17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 헤브론에서 올라온 후에 예루살렘에서 처첩들을 더 취하였으므로 아들과 딸들이 또 다윗에게서 나니"
+      ],
+      "raw_text_hashes": [
+        "56a5ec0739acc408e670f2e24f403123f698e016c2e353765b100113d73ecb17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:14",
+      "sequence": 8147,
+      "chapter_label": "2SA 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "These are the names of those who were born to him in Jerusalem: Shammua, Shobab, Nathan, Solomon,",
+      "ko": "예루살렘에서 그에게서 난 자의 이름은 삼무아와 소밥과 나단과 솔로몬과",
+      "source_text_hash": "c139f059632da13894e287ba9f6af1986c9c828a70d20ad58e7bf1d33a2dbb8d",
+      "translation_text_hash": "33ab8ca524ef1c433a6d12c297ef40284d2f3bdbfe94132317e4527b15d9591b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에서 그에게서 난 자의 이름은 삼무아와 소밥과 나단과 솔로몬과"
+      ],
+      "raw_text_hashes": [
+        "33ab8ca524ef1c433a6d12c297ef40284d2f3bdbfe94132317e4527b15d9591b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:15",
+      "sequence": 8148,
+      "chapter_label": "2SA 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Ibhar, Elishua, Nepheg, Japhia,",
+      "ko": "입할과 엘리수아와 네벡과 야비아와",
+      "source_text_hash": "602a9aeff083a9dec4f7edc07586c40ef458c4ff09ee80ca4f7f4416315252b0",
+      "translation_text_hash": "af94f9da872b99dcd287c816bed62e9c284b168837078ccb703f61e1f5e614ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입할과 엘리수아와 네벡과 야비아와"
+      ],
+      "raw_text_hashes": [
+        "af94f9da872b99dcd287c816bed62e9c284b168837078ccb703f61e1f5e614ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:16",
+      "sequence": 8149,
+      "chapter_label": "2SA 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Elishama, Eliada, and Eliphelet.",
+      "ko": "엘리사마와 엘랴다와 엘리벨렛이었더라",
+      "source_text_hash": "df6ae48df3866b139a2f41e85a034241f82c0af618ba302a52c5ac3e2ce989bb",
+      "translation_text_hash": "fff278992cc805c7e09889c495808e986184e601c7578e309a8feb6335f0adfb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사마와 엘랴다와 엘리벨렛이었더라"
+      ],
+      "raw_text_hashes": [
+        "fff278992cc805c7e09889c495808e986184e601c7578e309a8feb6335f0adfb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:17",
+      "sequence": 8150,
+      "chapter_label": "2SA 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "When the Philistines heard that they had anointed David king over Israel, all the Philistines went up to seek David, but David heard about it and went down to the stronghold.",
+      "ko": "이스라엘이 다윗에게 기름을 부어 이스라엘 왕을 삼았다 함을 블레셋 사람이 듣고 다윗을 찾으러 다 올라오매 다윗이 듣고 요해처로 나가니라",
+      "source_text_hash": "236fce033178d4e4b799a078c26abb8074e047b62fced1147802d26df6c710a5",
+      "translation_text_hash": "9360f099d5c2a1590c700507f92da0569dc9ed8b64a7905414a935b86f7bb07c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 다윗에게 기름을 부어 이스라엘 왕을 삼았다 함을 블레셋 사람이 듣고 다윗을 찾으러 다 올라오매 다윗이 듣고 요해처로 나가니라"
+      ],
+      "raw_text_hashes": [
+        "9360f099d5c2a1590c700507f92da0569dc9ed8b64a7905414a935b86f7bb07c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:18",
+      "sequence": 8151,
+      "chapter_label": "2SA 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "Now the Philistines had come and spread themselves in the valley of Rephaim.",
+      "ko": "블레셋 사람이 이미 이르러 르바임 골짜기에 편만한지라",
+      "source_text_hash": "bfee3fe121044faa036df90b0fb2c9202b1fa9c056758185b5450aa468aa7cb4",
+      "translation_text_hash": "37f24165d0a6f54ec474009431debf9a3e73bbef7695f83c4af031344bff5002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 이미 이르러 르바임 골짜기에 편만한지라"
+      ],
+      "raw_text_hashes": [
+        "37f24165d0a6f54ec474009431debf9a3e73bbef7695f83c4af031344bff5002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:19",
+      "sequence": 8152,
+      "chapter_label": "2SA 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "David inquired of the LORD, saying, “Shall I go up against the Philistines? Will you deliver them into my hand?” The LORD said to David, “Go up; for I will certainly deliver the Philistines into your hand.”",
+      "ko": "다윗이 여호와께 물어 가로되 내가 블레셋 사람에게로 올라가리이까 여호와께서 저희를 내 손에 붙이시겠나이까 여호와께서 다윗에게 말씀하시되 올라가라 내가 단정코 블레셋 사람을 네 손에 붙이리라 하신지라",
+      "source_text_hash": "91cd5481dd7e0fb2765c417910f12d00eedbd844934bedb787881e92ef0b98eb",
+      "translation_text_hash": "cb858ccf08862d16d0c5ebdb14ce7eb3124aebb9f7f4d4e97e65aab5fc835bf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께 물어 가로되 내가 블레셋 사람에게로 올라가리이까 여호와께서 저희를 내 손에 붙이시겠나이까 여호와께서 다윗에게 말씀하시되 올라가라 내가 단정코 블레셋 사람을 네 손에 붙이리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "cb858ccf08862d16d0c5ebdb14ce7eb3124aebb9f7f4d4e97e65aab5fc835bf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:20",
+      "sequence": 8153,
+      "chapter_label": "2SA 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "David came to Baal Perazim, and David struck them there. Then he said, “The LORD has broken my enemies before me, like the breach of waters.” Therefore he called the name of that place Baal Perazim.",
+      "ko": "다윗이 바알브라심에 이르러 거기서 저희를 치고 가로되 여호와께서 물을 흩음 같이 내 앞에서 내 대적을 흩으셨다 하므로 그곳 이름을 바알브라심이라 칭하니라",
+      "source_text_hash": "4942dd07cdaabe1db90c62c08cfe53a3f5afdbcbff17df9d94e6c1f4000de3f3",
+      "translation_text_hash": "2c1e7df77f5f2eab988747dd437a6d4d75ba83b662553ddbc09df4c1d6286e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 바알브라심에 이르러 거기서 저희를 치고 가로되 여호와께서 물을 흩음 같이 내 앞에서 내 대적을 흩으셨다 하므로 그곳 이름을 바알브라심이라 칭하니라"
+      ],
+      "raw_text_hashes": [
+        "2c1e7df77f5f2eab988747dd437a6d4d75ba83b662553ddbc09df4c1d6286e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:21",
+      "sequence": 8154,
+      "chapter_label": "2SA 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "They left their images there, and David and his men took them away.",
+      "ko": "거기서 블레셋 사람들이 그 우상을 버렸으므로 다윗과 그 종자들이 치우니라",
+      "source_text_hash": "7ca5e784ee6701ac00d55bcade5358256a6b704594bfcb9652a9502c4e87b22d",
+      "translation_text_hash": "109db06724fad4c8255199e14e8f27793132fcbecdbe6531a704fdbec133e141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 블레셋 사람들이 그 우상을 버렸으므로 다윗과 그 종자들이 치우니라"
+      ],
+      "raw_text_hashes": [
+        "109db06724fad4c8255199e14e8f27793132fcbecdbe6531a704fdbec133e141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:22",
+      "sequence": 8155,
+      "chapter_label": "2SA 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "The Philistines came up yet again and spread themselves in the valley of Rephaim.",
+      "ko": "블레셋 사람이 다시 올라와서 르바임 골짜기에 편만한지라",
+      "source_text_hash": "be15237247fc1edb551d301750c600ea342ad7f9b051524ceb130f5b6246f887",
+      "translation_text_hash": "ba9f50b9758d06391a101b57eb3c928e89b51f7020b0e2abee895313dfe57d1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 다시 올라와서 르바임 골짜기에 편만한지라"
+      ],
+      "raw_text_hashes": [
+        "ba9f50b9758d06391a101b57eb3c928e89b51f7020b0e2abee895313dfe57d1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:23",
+      "sequence": 8156,
+      "chapter_label": "2SA 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "When David inquired of the LORD, he said, “You shall not go up. Circle around behind them, and attack them in front of the mulberry trees.",
+      "ko": "다윗이 여호와께 묻자온대 가라사대 올라가지 말고 저희 뒤로 돌아서 뽕나무 수풀 맞은편에서 저희를 엄습하되",
+      "source_text_hash": "29f0ba3eaf5b606d335e133518152e7e61adc5c13c34959d439a9c2c50c7e898",
+      "translation_text_hash": "cc1b45662550eb9e7885b462fbb1f809332f7a5892dbf0f356f9f4a7a96ff977",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 여호와께 묻자온대 가라사대 올라가지 말고 저희 뒤로 돌아서 뽕나무 수풀 맞은편에서 저희를 엄습하되"
+      ],
+      "raw_text_hashes": [
+        "cc1b45662550eb9e7885b462fbb1f809332f7a5892dbf0f356f9f4a7a96ff977"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:24",
+      "sequence": 8157,
+      "chapter_label": "2SA 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "When you hear the sound of marching in the tops of the mulberry trees, then stir yourself up; for then the LORD has gone out before you to strike the army of the Philistines.”",
+      "ko": "뽕나무 꼭대기에서 걸음 걷는 소리가 들리거든 곧 동작하라 그 때에 여호와가 네 앞서 나아가서 블레셋 군대를 치리라 하신지라",
+      "source_text_hash": "885e8f8d5ca471ba82a4727e91e7dea8ec30750f47b6aaac3467c0b072db7edf",
+      "translation_text_hash": "765d48be547d92a16aff5b030fd3acddadd5485f34d1fd576fb5d08f34f1ea08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뽕나무 꼭대기에서 걸음 걷는 소리가 들리거든 곧 동작하라 그 때에 여호와가 네 앞서 나아가서 블레셋 군대를 치리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "765d48be547d92a16aff5b030fd3acddadd5485f34d1fd576fb5d08f34f1ea08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:5:25",
+      "sequence": 8158,
+      "chapter_label": "2SA 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "David did so, as the LORD commanded him, and struck the Philistines all the way from Geba to Gezer.",
+      "ko": "이에 다윗이 여호와의 명대로 행하여 블레셋 사람을 쳐서 게바에서 게셀까지 이르니라",
+      "source_text_hash": "2952d369833393e6ae5d1a97b5ee3374f156a5dc62239db43692d15a673973ce",
+      "translation_text_hash": "b0412943e1077b74df3f8a1dc8d961b802e74a755ed40a1c250f2d1a7d09dcc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 여호와의 명대로 행하여 블레셋 사람을 쳐서 게바에서 게셀까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "b0412943e1077b74df3f8a1dc8d961b802e74a755ed40a1c250f2d1a7d09dcc5"
+      ]
+    }
+  ]
+}

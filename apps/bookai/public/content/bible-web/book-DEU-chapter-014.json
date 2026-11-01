@@ -1,0 +1,941 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:014",
+  "unit_ordinal": 167,
+  "unit_label": "DEU 14",
+  "book_code": "DEU",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:14:1",
+      "sequence": 5292,
+      "chapter_label": "DEU 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "You are the children of the LORD your God. You shall not cut yourselves, nor make any baldness between your eyes for the dead.",
+      "ko": "너희는 너희 하나님 여호와의 자녀니 죽은 자를 위하여 자기 몸을 베지 말며 눈썹 사이 이마 위의 털을 밀지 말라",
+      "source_text_hash": "84573b2422edf3650405d02ca248052d845839ed57ba3b81831373666dc2cfbd",
+      "translation_text_hash": "54427385f36f0d4b07d50f2ba639178c62e81c6fc002ffb79209f159ea41340d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님 여호와의 자녀니 죽은 자를 위하여 자기 몸을 베지 말며 눈썹 사이 이마 위의 털을 밀지 말라"
+      ],
+      "raw_text_hashes": [
+        "54427385f36f0d4b07d50f2ba639178c62e81c6fc002ffb79209f159ea41340d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:2",
+      "sequence": 5293,
+      "chapter_label": "DEU 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "For you are a holy people to the LORD your God, and the LORD has chosen you to be a people for his own possession, above all peoples who are on the face of the earth.",
+      "ko": "너는 너의 하나님 여호와의 성민이라 여호와께서 지상 만민 중에서 너를 택하여 자기의 기업의 백성을 삼으셨느니라",
+      "source_text_hash": "8e3b078eac625025dd0e1fb97007406d929feead7db3fe7190afa16a4561ae14",
+      "translation_text_hash": "035da3351ccfda1f53847a035b449d434dc1124d43c7eed607787a785c1321d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 너의 하나님 여호와의 성민이라 여호와께서 지상 만민 중에서 너를 택하여 자기의 기업의 백성을 삼으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "035da3351ccfda1f53847a035b449d434dc1124d43c7eed607787a785c1321d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:3",
+      "sequence": 5294,
+      "chapter_label": "DEU 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "You shall not eat any abominable thing.",
+      "ko": "너는 가증한 물건은 무엇이든지 먹지 말라",
+      "source_text_hash": "58c088c3da668ff6d140bb54d4d7b60535e43481181569e247143cf17fd7694c",
+      "translation_text_hash": "ee64724b956bca471e171447caf4c9e5e506599f1e87585a7b05e68b43eb8f2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가증한 물건은 무엇이든지 먹지 말라"
+      ],
+      "raw_text_hashes": [
+        "ee64724b956bca471e171447caf4c9e5e506599f1e87585a7b05e68b43eb8f2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:4",
+      "sequence": 5295,
+      "chapter_label": "DEU 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "These are the animals which you may eat: the ox, the sheep, the goat,",
+      "ko": "너희의 먹을만한 짐승은 이러하니 곧 소와 양과 염소와",
+      "source_text_hash": "92e535c895217f1ac74b1f34b0514dbc75acb3f17807fd4a4663b3d02c27e028",
+      "translation_text_hash": "032f20162bceb5694f4a56f00eff75dd9945f721f8a26ee479be85eb59ef4e8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 먹을만한 짐승은 이러하니 곧 소와 양과 염소와"
+      ],
+      "raw_text_hashes": [
+        "032f20162bceb5694f4a56f00eff75dd9945f721f8a26ee479be85eb59ef4e8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:5",
+      "sequence": 5296,
+      "chapter_label": "DEU 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "the deer, the gazelle, the roebuck, the wild goat, the ibex, the antelope, and the chamois.",
+      "ko": "사슴과 노루와 불그스럼한 사슴과 산 염소와 볼기 흰 노루와 뿔 긴 사슴과 산양들",
+      "source_text_hash": "036d329f14585533d95baff887d8f8e1ee7b2e864edfd3dc82efccba02094129",
+      "translation_text_hash": "971691735a6f941ef13545fb81f1d2c6c6856cd242430d2eb820437a00615f58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사슴과 노루와 불그스럼한 사슴과 산 염소와 볼기 흰 노루와 뿔 긴 사슴과 산양들"
+      ],
+      "raw_text_hashes": [
+        "971691735a6f941ef13545fb81f1d2c6c6856cd242430d2eb820437a00615f58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:6",
+      "sequence": 5297,
+      "chapter_label": "DEU 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "Every animal that parts the hoof, and has the hoof split in two and chews the cud, among the animals, you may eat.",
+      "ko": "무릇 짐승 중에 굽이 갈라져 쪽발도 되고 새김질도 하는 것은 너희가 먹을 것이니라",
+      "source_text_hash": "0316fa2b74d34687848928adfa84a0a366b06b7f3b1a42c90977f0e687bef902",
+      "translation_text_hash": "329d0d07cda91a7d4441c62cd309c78b3247a108294657ea5b22693b5e6d7945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 짐승 중에 굽이 갈라져 쪽발도 되고 새김질도 하는 것은 너희가 먹을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "329d0d07cda91a7d4441c62cd309c78b3247a108294657ea5b22693b5e6d7945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:7",
+      "sequence": 5298,
+      "chapter_label": "DEU 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "Nevertheless these you shall not eat of them that chew the cud, or of those who have the hoof split: the camel, the hare, and the rabbit. Because they chew the cud but don’t part the hoof, they are unclean to you.",
+      "ko": "다만 새김질을 하거나 굽이 갈라진 짐승 중에도 너희가 먹지 못할 것은 이것이니 곧 약대와 토끼와 사반 그것들은 새김질은 하나 굽이 갈라지지 아니하였으니 너희에게 부정하고",
+      "source_text_hash": "d83b0c46e2ad87861a21f5833338792a92d1c8a43011d58644fb2b09e8b57da7",
+      "translation_text_hash": "e39cadf5dac5d5894befbefdb438d5deba30da893e0b48bd8f012eb4a4c5f99d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 새김질을 하거나 굽이 갈라진 짐승 중에도 너희가 먹지 못할 것은 이것이니 곧 약대와 토끼와 사반 그것들은 새김질은 하나 굽이 갈라지지 아니하였으니 너희에게 부정하고"
+      ],
+      "raw_text_hashes": [
+        "e39cadf5dac5d5894befbefdb438d5deba30da893e0b48bd8f012eb4a4c5f99d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:8",
+      "sequence": 5299,
+      "chapter_label": "DEU 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "The pig, because it has a split hoof but doesn’t chew the cud, is unclean to you. You shall not eat their meat. You shall not touch their carcasses.",
+      "ko": "돼지는 굽은 갈라졌으나 새김질을 못하므로 너희에게 부정하니 너희는 이런 것의 고기를 먹지 말 것이며 그 사체도 만지지 말 것이니라",
+      "source_text_hash": "04f3ef66d90ac1f88021e9b992fd553dffc79f734c77f07c74634c10c896f8cc",
+      "translation_text_hash": "76605bf6b0aa203fff47a46f5741f114343e3d9f2e9dd6273a0fbe1a932fec85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돼지는 굽은 갈라졌으나 새김질을 못하므로 너희에게 부정하니 너희는 이런 것의 고기를 먹지 말 것이며 그 사체도 만지지 말 것이니라"
+      ],
+      "raw_text_hashes": [
+        "76605bf6b0aa203fff47a46f5741f114343e3d9f2e9dd6273a0fbe1a932fec85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:9",
+      "sequence": 5300,
+      "chapter_label": "DEU 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "These you may eat of all that are in the waters: you may eat whatever has fins and scales.",
+      "ko": "물에 있는 어족 중에 이런 것은 너희가 먹을 것이니 무릇 지느러미와 비늘 있는 것은 너희가 먹을 것이요",
+      "source_text_hash": "2c6923d4abfca062a1be424f8a7102deec5a163573f69ee019b4eb01fe3b3c75",
+      "translation_text_hash": "90e72dc68dcf7e7d4ac6a0f5e6d3d9bccae77f6576d82c3cf92f3f19915c9175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "물에 있는 어족 중에 이런 것은 너희가 먹을 것이니 무릇 지느러미와 비늘 있는 것은 너희가 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "90e72dc68dcf7e7d4ac6a0f5e6d3d9bccae77f6576d82c3cf92f3f19915c9175"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:10",
+      "sequence": 5301,
+      "chapter_label": "DEU 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "You shall not eat whatever doesn’t have fins and scales. It is unclean to you.",
+      "ko": "무릇 지느러미와 비늘이 없는 것은 너희가 먹지 말찌니 이는 너희에게 부정하니라",
+      "source_text_hash": "32fb6b92132167897a9969d38c414f8890a5914d66b97560c951b897295e746e",
+      "translation_text_hash": "b2bdad83b3327d455a56fcb7d0501df6c2d1b8f5978fa245e929b7bbac16be30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 지느러미와 비늘이 없는 것은 너희가 먹지 말찌니 이는 너희에게 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "b2bdad83b3327d455a56fcb7d0501df6c2d1b8f5978fa245e929b7bbac16be30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:11",
+      "sequence": 5302,
+      "chapter_label": "DEU 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "Of all clean birds you may eat.",
+      "ko": "무릇 정한 새는 너희가 먹으려니와",
+      "source_text_hash": "a39ef9e7b56d296efe83d246332839c7a1b1ada0611343f6b806b571ad3b3834",
+      "translation_text_hash": "5a852d83e20d33abb355be2b7a1a3e30f4ccaa73dadf05bdabded3d77503b072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 정한 새는 너희가 먹으려니와"
+      ],
+      "raw_text_hashes": [
+        "5a852d83e20d33abb355be2b7a1a3e30f4ccaa73dadf05bdabded3d77503b072"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:12",
+      "sequence": 5303,
+      "chapter_label": "DEU 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "But these are they of which you shall not eat: the eagle, the vulture, the osprey,",
+      "ko": "이런 것은 먹지 못할찌니 곧 독수리와 솔개와 어응과",
+      "source_text_hash": "5552ebd4baa157ab8ec0200edd466c6c5c0198b0e4163e3e7b7f5cf4ed4b415d",
+      "translation_text_hash": "bebcd020360b30f0e8505d04f6be1b54a6d7df5b9b77ccdc24318476e183c183",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것은 먹지 못할찌니 곧 독수리와 솔개와 어응과"
+      ],
+      "raw_text_hashes": [
+        "bebcd020360b30f0e8505d04f6be1b54a6d7df5b9b77ccdc24318476e183c183"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:13",
+      "sequence": 5304,
+      "chapter_label": "DEU 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "the red kite, the falcon, the kite of any kind,",
+      "ko": "매와 새매와 매의 종류와",
+      "source_text_hash": "70cb8fac4528ea3ba35469adbf60ff77dc48ad879c5f0dc7dac7303bf9892f44",
+      "translation_text_hash": "8f0117c02712b828fe3adc9c765e28cc9055a73316f9136c27c12581ede8a18c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매와 새매와 매의 종류와"
+      ],
+      "raw_text_hashes": [
+        "8f0117c02712b828fe3adc9c765e28cc9055a73316f9136c27c12581ede8a18c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:14",
+      "sequence": 5305,
+      "chapter_label": "DEU 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "every raven of any kind,",
+      "ko": "까마귀 종류와",
+      "source_text_hash": "bd8d8108340d45bd84aa39bdf1f91c9190fdd30882eb7ef70469f49767e7a498",
+      "translation_text_hash": "84650039264074cc2f7669ee878731dd99f38c3c7a6656a88df14a369ae3a79e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "까마귀 종류와"
+      ],
+      "raw_text_hashes": [
+        "84650039264074cc2f7669ee878731dd99f38c3c7a6656a88df14a369ae3a79e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:15",
+      "sequence": 5306,
+      "chapter_label": "DEU 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "the ostrich, the owl, the seagull, the hawk of any kind,",
+      "ko": "타조와 다호마스와 갈매기와 새매 종류와",
+      "source_text_hash": "a88ff08326b118027e8ccb14a54293cde2a9fc57ca9be745a64c24290f490c85",
+      "translation_text_hash": "c7fe75bf7430fa956b2bbaa4c65d60e61560905056a68cfd2ebe0170929d6c2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "타조와 다호마스와 갈매기와 새매 종류와"
+      ],
+      "raw_text_hashes": [
+        "c7fe75bf7430fa956b2bbaa4c65d60e61560905056a68cfd2ebe0170929d6c2d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:16",
+      "sequence": 5307,
+      "chapter_label": "DEU 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "the little owl, the great owl, the horned owl,",
+      "ko": "올빼미와 부엉이와 따오기와",
+      "source_text_hash": "8cdefd98948fae06ec468580f00323a2122d60293f7a09c5f44d4e2dec416111",
+      "translation_text_hash": "9a9a272e31729b168f868c4d8d9c5f5ce01005950824cb6c14ca319d3fa49268",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올빼미와 부엉이와 따오기와"
+      ],
+      "raw_text_hashes": [
+        "9a9a272e31729b168f868c4d8d9c5f5ce01005950824cb6c14ca319d3fa49268"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:17",
+      "sequence": 5308,
+      "chapter_label": "DEU 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "the pelican, the vulture, the cormorant,",
+      "ko": "당아와 올응과 노자와",
+      "source_text_hash": "72c2bdd1d06b64dbf32aad98a7f09719f8b459840ca3a5e2ad4d632a37c50066",
+      "translation_text_hash": "98d58ec1a3d88172f9a25fd9e0b6c1b9dfc6181e38fefab26e6b09f229638b30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당아와 올응과 노자와"
+      ],
+      "raw_text_hashes": [
+        "98d58ec1a3d88172f9a25fd9e0b6c1b9dfc6181e38fefab26e6b09f229638b30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:18",
+      "sequence": 5309,
+      "chapter_label": "DEU 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "the stork, the heron after its kind, the hoopoe, and the bat.",
+      "ko": "학과 황새 종류와 대승과 박쥐며",
+      "source_text_hash": "73e2699a2a0014dadf4ddbbbf861501160770cd772583032333f47f056370c31",
+      "translation_text_hash": "be6afb7bdc10d3a33e6519d75d3c110256473f8bac70cb84c8c2085912d00265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "학과 황새 종류와 대승과 박쥐며"
+      ],
+      "raw_text_hashes": [
+        "be6afb7bdc10d3a33e6519d75d3c110256473f8bac70cb84c8c2085912d00265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:19",
+      "sequence": 5310,
+      "chapter_label": "DEU 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "All winged creeping things are unclean to you. They shall not be eaten.",
+      "ko": "또 무릇 날기도 하고 기어다니기도 하는 것은 너희에게 부정하니 너희는 먹지 말 것이나",
+      "source_text_hash": "1c0d146a4caf28eaf81d3806756a1fa339608fdd3956109089fc26021b872bc3",
+      "translation_text_hash": "1b2c9c097e7f082c90f3713146d9829c41a911c8761fe49259a68b2422571397",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 무릇 날기도 하고 기어다니기도 하는 것은 너희에게 부정하니 너희는 먹지 말 것이나"
+      ],
+      "raw_text_hashes": [
+        "1b2c9c097e7f082c90f3713146d9829c41a911c8761fe49259a68b2422571397"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:20",
+      "sequence": 5311,
+      "chapter_label": "DEU 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Of all clean birds you may eat.",
+      "ko": "무릇 정한 새는 너희가 먹을찌니라",
+      "source_text_hash": "a39ef9e7b56d296efe83d246332839c7a1b1ada0611343f6b806b571ad3b3834",
+      "translation_text_hash": "5b28eb5a44032ce97cc248b05cc9da11a65935312566b0fad53b178424b27fd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 정한 새는 너희가 먹을찌니라"
+      ],
+      "raw_text_hashes": [
+        "5b28eb5a44032ce97cc248b05cc9da11a65935312566b0fad53b178424b27fd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:21",
+      "sequence": 5312,
+      "chapter_label": "DEU 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "You shall not eat of anything that dies of itself. You may give it to the foreigner living among you who is within your gates, that he may eat it; or you may sell it to a foreigner; for you are a holy people to the LORD your God. You shall not boil a young goat in its mother’s milk.",
+      "ko": "너희는 너희 하나님 여호와의 성민이라 무릇 스스로 죽은 것은 먹지 말 것이니 그것을 성중에 우거하는 객에게 주어 먹게 하거나 이방인에게 팔아도 가하니라 너는 염소 새끼를 그 어미의 젖에 삶지 말찌니라",
+      "source_text_hash": "93f973479fee85fb6a46c11df5e308d962d356d2c5eaf39cbc09ec0e2ca1c0f9",
+      "translation_text_hash": "be33765e6934e55a117f53d8cac30d2c1323d1dd4c44c073a53e0ff843222b73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님 여호와의 성민이라 무릇 스스로 죽은 것은 먹지 말 것이니 그것을 성중에 우거하는 객에게 주어 먹게 하거나 이방인에게 팔아도 가하니라 너는 염소 새끼를 그 어미의 젖에 삶지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "be33765e6934e55a117f53d8cac30d2c1323d1dd4c44c073a53e0ff843222b73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:22",
+      "sequence": 5313,
+      "chapter_label": "DEU 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "You shall surely tithe all the increase of your seed, that which comes out of the field year by year.",
+      "ko": "너는 마땅히 매년에 토지 소산의 십일조를 드릴것이며",
+      "source_text_hash": "8be692ce4733b8cf2b19672164465a6b2dcd450dd1dbc8793927d3eb82d64469",
+      "translation_text_hash": "2af93f285e6351797d2e0657c3d62d227c2eecb8d524fb5199a16e0aefa6fa52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마땅히 매년에 토지 소산의 십일조를 드릴것이며"
+      ],
+      "raw_text_hashes": [
+        "2af93f285e6351797d2e0657c3d62d227c2eecb8d524fb5199a16e0aefa6fa52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:23",
+      "sequence": 5314,
+      "chapter_label": "DEU 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "You shall eat before the LORD your God, in the place which he chooses to cause his name to dwell, the tithe of your grain, of your new wine, and of your oil, and the firstborn of your herd and of your flock; that you may learn to fear the LORD your God always.",
+      "ko": "네 하나님 여호와 앞 곧 여호와께서 그 이름을 두시려고 택하신 곳에서 네 곡식과 포도주와 기름의 십일조를 먹으며 또 네 우양의 처음 난 것을 먹고 네 하나님 여호와 경외하기를 항상 배울 것이니라",
+      "source_text_hash": "c6ed555a5c0c84329a7aa7fe31a1d2ed124f0aefc59a1a192ca93e411e35eec2",
+      "translation_text_hash": "c86102a723314af404150de0785a1b1cf0e2e583ed584813f6b36e75e1339265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와 앞 곧 여호와께서 그 이름을 두시려고 택하신 곳에서 네 곡식과 포도주와 기름의 십일조를 먹으며 또 네 우양의 처음 난 것을 먹고 네 하나님 여호와 경외하기를 항상 배울 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c86102a723314af404150de0785a1b1cf0e2e583ed584813f6b36e75e1339265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:24",
+      "sequence": 5315,
+      "chapter_label": "DEU 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 24
+        }
+      ],
+      "en": "If the way is too long for you, so that you are not able to carry it because the place which the LORD your God shall choose to set his name there is too far from you, when the LORD your God blesses you,",
+      "ko": "그러나 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳이 네게서 너무 멀고 행로가 어려워서 그 풍부히 주신 것을 가지고 갈 수 없거든",
+      "source_text_hash": "634929593373538b4eaed2f3cf618549e48266a20bbdd28a03ac12a8be2fc4f1",
+      "translation_text_hash": "dd0eaef77d86c69784885c24c5932f7b0dfa9731affb2ce8b9cabbe8e0b829e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네 하나님 여호와께서 그 이름을 두시려고 택하신 곳이 네게서 너무 멀고 행로가 어려워서 그 풍부히 주신 것을 가지고 갈 수 없거든"
+      ],
+      "raw_text_hashes": [
+        "dd0eaef77d86c69784885c24c5932f7b0dfa9731affb2ce8b9cabbe8e0b829e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:25",
+      "sequence": 5316,
+      "chapter_label": "DEU 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 25
+        }
+      ],
+      "en": "then you shall turn it into money, bind up the money in your hand, and shall go to the place which the LORD your God shall choose.",
+      "ko": "그것을 돈으로 바꾸어 그 돈을 싸서 가지고 네 하나님 여호와의 택하신 곳으로 가서",
+      "source_text_hash": "e04b3cf82f9aa41c7624fefd0abb9f4ade8c228b695a6631c782cbed28b8d874",
+      "translation_text_hash": "af00687b66ff68980cf2e2c6a40a97ddaa0320a14fa488b45689895a6d66397f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 돈으로 바꾸어 그 돈을 싸서 가지고 네 하나님 여호와의 택하신 곳으로 가서"
+      ],
+      "raw_text_hashes": [
+        "af00687b66ff68980cf2e2c6a40a97ddaa0320a14fa488b45689895a6d66397f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:26",
+      "sequence": 5317,
+      "chapter_label": "DEU 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 26
+        }
+      ],
+      "en": "You shall trade the money for whatever your soul desires: for cattle, or for sheep, or for wine, or for strong drink, or for whatever your soul asks of you. You shall eat there before the LORD your God, and you shall rejoice, you and your household.",
+      "ko": "무릇 네 마음에 좋아하는 것을 그 돈으로 사되 우양이나 포도주나 독주등 무릇 네 마음에 원하는 것을 구하고 거기 네 하나님 여호와의 앞에서 너와 네 권속이 함께 먹고 즐거워할 것이며",
+      "source_text_hash": "29f368a854f87293d031d97de3b6fe0037493f10b191b85a6adfb5bff3202e96",
+      "translation_text_hash": "8cc9752a7695de75834c4cd697e29179dbc541f921753e7d3974aa4b28a93421",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 네 마음에 좋아하는 것을 그 돈으로 사되 우양이나 포도주나 독주등 무릇 네 마음에 원하는 것을 구하고 거기 네 하나님 여호와의 앞에서 너와 네 권속이 함께 먹고 즐거워할 것이며"
+      ],
+      "raw_text_hashes": [
+        "8cc9752a7695de75834c4cd697e29179dbc541f921753e7d3974aa4b28a93421"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:27",
+      "sequence": 5318,
+      "chapter_label": "DEU 14",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 27
+        }
+      ],
+      "en": "You shall not forsake the Levite who is within your gates, for he has no portion nor inheritance with you.",
+      "ko": "네 성읍에 거하는 레위인은 너의 중에 분깃이나 기업이 없는 자니 또한 저버리지 말찌니라",
+      "source_text_hash": "074b62dbc9433676fba95975922449c9146ec3beaa8abf86870ba649d9203ec1",
+      "translation_text_hash": "59d00afc604a6f59901f7ea236f20b945b395966b59f958a54dadea14b7cbdd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 성읍에 거하는 레위인은 너의 중에 분깃이나 기업이 없는 자니 또한 저버리지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "59d00afc604a6f59901f7ea236f20b945b395966b59f958a54dadea14b7cbdd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:28",
+      "sequence": 5319,
+      "chapter_label": "DEU 14",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 28
+        }
+      ],
+      "en": "At the end of every three years you shall bring all the tithe of your increase in the same year, and shall store it within your gates.",
+      "ko": "매 삼년 끝에 그 해 소산의 십분 일을 다 내어 네 성읍에 저축하여",
+      "source_text_hash": "5947c23abe1c7d83583f1f53ca5f69087ad94876339d0ee56444ae1043472360",
+      "translation_text_hash": "606b491847537ff1812f40b21a54b7e0fe5e53ced9d71e7c377e3e31dd085436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 삼년 끝에 그 해 소산의 십분 일을 다 내어 네 성읍에 저축하여"
+      ],
+      "raw_text_hashes": [
+        "606b491847537ff1812f40b21a54b7e0fe5e53ced9d71e7c377e3e31dd085436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:14:29",
+      "sequence": 5320,
+      "chapter_label": "DEU 14",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 14,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 14,
+          "verse": 29
+        }
+      ],
+      "en": "The Levite, because he has no portion nor inheritance with you, as well as the foreigner living among you, the fatherless, and the widow who are within your gates shall come, and shall eat and be satisfied; that the LORD your God may bless you in all the work of your hand which you do.",
+      "ko": "너의 중에 분깃이나 기업이 없는 레위인과 네 성중에 우거하는 객과 및 고아와 과부들로 와서 먹어 배부르게 하라 그리하면 네 하나님 여호와께서 너의 손으로 하는 범사에 네게 복을 주시리라",
+      "source_text_hash": "f93efda8959ec319814ab0c9417062f6331c3f3a8ee1380d8db4830182b7879c",
+      "translation_text_hash": "30d3cfd27c68565d2e232502f6ab17699d4939f8d53111b7890d5aa3605c3694",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 중에 분깃이나 기업이 없는 레위인과 네 성중에 우거하는 객과 및 고아와 과부들로 와서 먹어 배부르게 하라 그리하면 네 하나님 여호와께서 너의 손으로 하는 범사에 네게 복을 주시리라"
+      ],
+      "raw_text_hashes": [
+        "30d3cfd27c68565d2e232502f6ab17699d4939f8d53111b7890d5aa3605c3694"
+      ]
+    }
+  ]
+}
