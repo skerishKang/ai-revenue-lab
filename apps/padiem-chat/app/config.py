@@ -388,7 +388,12 @@ class Settings:
             google_client_id=client_id,
             google_client_secret=client_secret,
             session_secret=secret,
-            byok_via_b14=_strict_bool(byok_via_b14, name="BYOK_VIA_B14"),
+            byok_via_b14=_strict_bool(
+                {"on": "true", "off": "false"}.get(
+                    str(byok_via_b14).strip().lower(), byok_via_b14
+                ),
+                name="BYOK_VIA_B14",
+            ),
             custom_key_secret=custom_key,
             custom_key_previous_secrets=previous_custom_keys,
             custom_key_legacy_session_secrets=legacy_custom_keys,

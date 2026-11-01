@@ -298,3 +298,8 @@ def test_byok_via_b14_switch_defaults_off_and_reads_trusted_environment(monkeypa
     assert Settings.from_env().byok_via_b14 is True
     with pytest.raises(ConfigError):
         settings_from_worker_bindings({"BYOK_VIA_B14":"invalid"})
+
+
+def test_byok_via_b14_accepts_on_and_off_spellings():
+    assert settings_from_worker_bindings({"BYOK_VIA_B14": "on"}).byok_via_b14 is True
+    assert settings_from_worker_bindings({"BYOK_VIA_B14": "off"}).byok_via_b14 is False
