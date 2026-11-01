@@ -583,6 +583,9 @@ function spawnSession(windowState = {}) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const text = (value) => String((value && value.textContent) || "");
+// A button built from <span> children has no own text in this stub.
+const deepText = (node) => String((node && node.textContent) || "")
+  + (((node && node.children) || []).map(deepText).join(""));
 
 function find(session, id) {
   const found = session.root._descendants().find((n) => n.id === id);
@@ -902,7 +905,7 @@ const SCENARIOS = {
       const arc = find(s, "councilMeetingArchive");
       return arc ? arc.querySelectorAll(".council-archive-item").map((li) => {
         const button = li.querySelector("button");
-        return button ? String(button.textContent).trim().replace(/ \(.*/, "") : "";
+        return button ? deepText(button).trim().replace(/ \(.*/, "") : "";
       }) : [];
     };
     const saveSpeech = async (eventName) => {
@@ -1072,7 +1075,7 @@ const SCENARIOS = {
     await find(A, "councilMeetingSave").dispatch("click");
     await sleep(60);
     const labelsA = find(A, "councilMeetingArchive").querySelectorAll("li button")
-      .map(text).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
     // Re-entry: a fresh session of the same account, the stored list rebuilt.
     const B = spawnSession();
     await B.ctx.window.PadiemCouncilApps.init();
@@ -1080,9 +1083,9 @@ const SCENARIOS = {
     await openMeeting(B);
     const archiveB = find(B, "councilMeetingArchive");
     const labelsB = archiveB.querySelectorAll("li button")
-      .map(text).filter((label) => label.indexOf("자)") >= 0);
+      .map(deepText).filter((label) => label.indexOf("자)") >= 0);
     const row = archiveB.querySelectorAll("li button")
-      .find((b) => text(b).indexOf("11월 민원 회의") === 0);
+      .find((b) => deepText(b).indexOf("11월 민원 회의") === 0);
     if (!row) throw new Error("saved meeting row missing: " + JSON.stringify(labelsB));
     await row.dispatch("click");
     await sleep(40);
@@ -1294,7 +1297,7 @@ const SCENARIOS = {
     // the archive lists the stored record; reopen it into the editor
     const archiveButton = find(session, "councilMeetingArchive")
       .querySelectorAll("li button")
-      .find((b) => b.textContent.includes("10월 주민 민원 회의"));
+      .find((b) => deepText(b).includes("10월 주민 민원 회의"));
     if (!archiveButton) throw new Error("archive record button missing");
     find(session, "councilMeetingOutput").value = "";
     await archiveButton.dispatch("click");
@@ -1959,7 +1962,7 @@ const SCENARIOS = {
     const rows = () => archive.querySelectorAll(".council-archive-item");
     const names = () => rows().map((li) => {
       const buttons = li.querySelectorAll("button");
-      return buttons.length ? text(buttons[0]) : "";
+      return buttons.length ? deepText(buttons[0]) : "";
     });
     const before = names();
     const secondUp = rows()[1].querySelectorAll(".council-record-move")[0];

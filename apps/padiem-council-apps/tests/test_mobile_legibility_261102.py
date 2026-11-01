@@ -111,13 +111,68 @@ DESKTOP_PROBE = """() => {
 
 THEMES = ROOT.parent / "padiem-chat" / "static" / "padiem-themes.css"
 
+PROJECT = {"id": "proj_council_qa", "name": "의원3종", "instructions": "",
+           "created_at": "2026-10-01T00:00:00Z", "updated_at": "2026-10-01T00:00:00Z"}
+# A long Korean name, a short one and a mixed Korean/English one: the archive
+# row must clip them the same way at 390 and 360.
+ARCHIVE_FILES = (
+    {"id": "file_qa_long", "name": "E2E 회의록 작성 및 일정 정리 최종본.txt",
+     "doc_kind": "meeting", "content_chars": 71, "country": "kr"},
+    {"id": "file_qa_short", "name": "회의.txt",
+     "doc_kind": "meeting", "content_chars": 12, "country": "kr"},
+    {"id": "file_qa_mixed", "name": "Budget Review with Ministry of Finance Q4.txt",
+     "doc_kind": "meeting", "content_chars": 240, "country": "kr"},
+)
+
+
+ARCHIVE_ROW = """() => {
+  const round = (n) => Math.round(n * 10) / 10;
+  const rows = [...document.querySelectorAll('.council-archive-item')];
+  const archive = document.querySelector('.council-archive');
+  const limit = archive ? archive.getBoundingClientRect().right : 0;
+  return rows.map((row) => {
+    const button = row.querySelector('button:not(.council-record-move)');
+    const name = button && button.querySelector('.council-archive-name');
+    const count = button && button.querySelector('.council-archive-count');
+    const moves = [...row.querySelectorAll('.council-record-move')];
+    const buttonBox = button.getBoundingClientRect();
+    const nameBox = name.getBoundingClientRect();
+    const countBox = count.getBoundingClientRect();
+    const room = {
+      rowRight: round(row.getBoundingClientRect().right),
+      limit: round(limit),
+      buttonH: round(buttonBox.height),
+      whiteSpace: getComputedStyle(name).whiteSpace,
+      nameH: round(nameBox.height),
+      lineH: round(parseFloat(getComputedStyle(name).lineHeight)),
+      clipped: name.scrollWidth > name.clientWidth + 1,
+      countAfterName: countBox.left >= nameBox.right - 1,
+      countBeforeMoves: !moves.length || countBox.right <= moves[0].getBoundingClientRect().left + 1,
+      text: button.textContent.trim().slice(0, 60),
+    };
+    return room;
+  });
+}"""
+
 
 class StaticHandler(http.server.SimpleHTTPRequestHandler):
+    # The archive only exists for a signed-in owner; the home/theme screens are
+    # measured signed out, so each test states which session it wants.
+    authenticated = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
     def log_message(self, *args):  # silence the request line
         pass
+
+    def _json(self, payload, status=200):
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
 
     def translate_path(self, path):
         # Cache-busted asset names carry ?v=; the file on disk does not. The
@@ -131,12 +186,20 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):  # noqa: N802 - the page asks who is signed in first
         path = self.path.split("?")[0]
         if path == "/api/auth/status":
-            body = json.dumps({"ready": True, "authenticated": False, "user": None}).encode("utf-8")
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Content-Length", str(len(body)))
-            self.end_headers()
-            self.wfile.write(body)
+            if self.authenticated:
+                self._json({"ready": True, "authenticated": True,
+                            "user": {"id": "usr_qa", "name": "의원"}})
+            else:
+                self._json({"ready": True, "authenticated": False, "user": None})
+            return
+        if path == "/api/projects":
+            self._json({"projects": [PROJECT]})
+            return
+        if path == "/api/projects/%s/files" % PROJECT["id"]:
+            self._json({"files": list(ARCHIVE_FILES)})
+            return
+        if path.startswith("/api/projects/"):
+            self._json({"files": list(ARCHIVE_FILES)})
             return
         if path == "/padiem-themes.css":
             # The host sheet the deployed origin serves at the site root.
@@ -148,6 +211,13 @@ class StaticHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(body)
             return
         super().do_GET()
+
+    def do_POST(self):  # noqa: N802 - the app pins or creates its one project
+        path = self.path.split("?")[0]
+        if path == "/api/projects":
+            self._json({"project": PROJECT}, status=201)
+            return
+        self._json({"ok": True})
 
 
 @pytest.fixture(scope="module")
@@ -222,3 +292,39 @@ def test_the_desktop_keeps_its_measured_values(static_url):
     assert value["body"] == 16
     assert value["scrollWidth"] <= DESKTOP_WIDTH
     assert value["skip"] == [87, 26]
+
+
+def _archive_rows(url, width, height):
+    with sync_playwright() as pw:
+        browser = pw.chromium.launch()
+        page = browser.new_page(viewport={"width": width, "height": height})
+        try:
+            page.goto(url, wait_until="domcontentloaded")
+            page.wait_for_selector("#councilHeroTitle")
+            page.evaluate(
+                "() => document.querySelector('#council-meeting .council-card-select').click()")
+            page.wait_for_selector(".council-archive-item", timeout=15000)
+            page.wait_for_timeout(400)
+            return page.evaluate(ARCHIVE_ROW)
+        finally:
+            browser.close()
+
+
+@pytest.mark.parametrize("width,height", PHONE_WIDTHS)
+def test_the_archive_row_keeps_its_name_on_one_line(static_url, width, height):
+    previous = StaticHandler.authenticated
+    StaticHandler.authenticated = True
+    try:
+        rows = _archive_rows(static_url, width, height)
+    finally:
+        StaticHandler.authenticated = previous
+    assert len(rows) == 3, rows
+    for row in rows:
+        assert row["whiteSpace"] == "nowrap", row
+        assert row["nameH"] <= row["lineH"] + 1, "the name wrapped to a second line: %s" % row
+        assert row["buttonH"] == 44, "the row is not one 44px line: %s" % row
+        assert row["countAfterName"], "the count overlaps the name: %s" % row
+        assert row["countBeforeMoves"], "the count overlaps the move buttons: %s" % row
+        assert row["rowRight"] <= row["limit"] + 1, "the row spills past the archive: %s" % row
+    clipped = [row["clipped"] for row in rows]
+    assert clipped == [True, False, True], "long names clip, the short one does not: %s" % rows

@@ -2277,7 +2277,15 @@
             li.appendChild(check);
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.textContent = f.name + " (" + (f.content_chars || 0) + "자)";
+            // 좁은 화면에서 이름이 글자 중간에서 끊기지 않도록 이름과 글자 수를 나눈다.
+            // 이름은 한 줄 말줄임, 글자 수는 오른쪽 고정 — 전체 이름은 버튼의
+            // 텍스트와 aria-label 에 그대로 남아 화면 낭독기와 조사관이 읽는다.
+            const nameSpan = el("span", "council-archive-name", f.name + " ");
+            const countSpan = el("span", "council-archive-count",
+                                 "(" + (f.content_chars || 0) + "자)");
+            btn.append(nameSpan, countSpan);
+            btn.setAttribute("aria-label",
+                             f.name + " (" + (f.content_chars || 0) + "자)");
             btn.addEventListener("click", async () => {
               const content = await fetchProjectFile(pid, f.id);
               if (typeof content === "string") {
