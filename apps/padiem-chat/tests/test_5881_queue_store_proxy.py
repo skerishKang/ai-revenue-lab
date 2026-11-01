@@ -386,3 +386,48 @@ def test_unexpected_attribute_error_is_safe_and_classified(caplog):
     assert "reason=unexpected_AttributeError" in caplog.text
     assert MARKER not in caplog.text and SECRET not in caplog.text
     assert MARKER not in str(caught.value) and SECRET not in str(caught.value)
+
+
+@pytest.mark.parametrize("exception_name,phase", [
+    ("ConnectTimeout", "connect"),
+    ("ConnectError", "connect"),
+    ("ReadTimeout", "read"),
+    ("ReadError", "read"),
+    ("WriteTimeout", "write"),
+    ("WriteError", "write"),
+    ("PoolTimeout", "pool"),
+    ("RemoteProtocolError", "unknown"),
+])
+def test_transport_exception_reports_class_and_phase_without_values(caplog, exception_name, phase):
+    import logging
+    import httpx
+    exc_type = getattr(httpx, exception_name)
+    def handler(sent):
+        raise exc_type(MARKER + SECRET)
+    client, _ = _client(handler)
+    with caplog.at_level(logging.WARNING, logger=proxy.__name__), pytest.raises(proxy.QueueUnavailable) as caught:
+        asyncio.run(client.call("list_links", user_id=MARKER))
+    lines = [entry.getMessage() for entry in caplog.records if entry.name == proxy.__name__]
+    assert len(lines) == 1
+    assert f"exception={exception_name} transport_phase={phase}" in lines[0]
+    assert "elapsed_ms=" in lines[0]
+    for forbidden in (MARKER, SECRET, ORIGIN, proxy.QUEUE_SERVICE_SECRET_HEADER):
+        assert forbidden not in lines[0]
+        assert forbidden not in str(caught.value)
+
+
+def test_body_read_error_phase_and_untrusted_exception_name_are_bounded(caplog):
+    import logging
+    class BadName(Exception):
+        pass
+    BadName.__name__ = "secret\\nforged"
+    class Response(_Response):
+        async def aiter_bytes(self):
+            raise BadName(MARKER + SECRET)
+            yield b""
+    client, _ = _client(lambda sent: Response(200, {}))
+    with caplog.at_level(logging.WARNING, logger=proxy.__name__), pytest.raises(proxy.QueueUnavailable):
+        asyncio.run(client.call("list_links"))
+    line = caplog.records[-1].getMessage()
+    assert "exception=InvalidExceptionName transport_phase=read" in line
+    assert "forged" not in line and MARKER not in line and SECRET not in line
