@@ -5,7 +5,7 @@ var KEY='storymemory.annotations.v1';
 var KINDS={highlight:1,underline:1,memo:1,bookmark:1};
 var COLORS={yellow:1,mint:1,pink:1,blue:1};
 var LOC_RE=/^[a-z0-9][a-z0-9-]*(:[A-Za-z0-9][A-Za-z0-9.\-]*)+$/;
-var MAX_ITEMS=500,MAX_NOTE=2000,MAX_TEXT=600;
+var MAX_ITEMS=Infinity,MAX_NOTE=Infinity,MAX_TEXT=Infinity;
 function unitOf(loc){var p=String(loc).split(':');return p[0]==='bible'?p.slice(0,4).join(':'):p.slice(0,3).join(':');}
 function sanitizeItem(raw){
   if(!raw||typeof raw!=='object'||Array.isArray(raw))return null;
@@ -25,16 +25,16 @@ function sanitizeItem(raw){
   }
   return it;
 }
-function save(list){try{localStorage.setItem(KEY,JSON.stringify({version:1,items:list}));}catch(_){}}
+function save(list){try{BookAIStorage.setItem(KEY,JSON.stringify({version:1,items:list}));}catch(_){}}
 function load(){
   var current=[];
-  var raw=null;try{raw=localStorage.getItem(KEY);}catch(_){return current;}
+  var raw=null;try{raw=BookAIStorage.getItem(KEY);}catch(_){return current;}
   if(raw===null)return current;
   var parsed=null;try{parsed=JSON.parse(raw);}catch(_){parsed=null;}
   var ok=parsed&&typeof parsed==='object'&&!Array.isArray(parsed)&&parsed.version===1&&Array.isArray(parsed.items);
-  if(!ok){try{localStorage.removeItem(KEY);}catch(_){}return current;}
+  if(!ok){try{BookAIStorage.removeItem(KEY);}catch(_){}return current;}
   var clean=parsed.items.map(sanitizeItem).filter(Boolean);
-  current=clean.slice(-MAX_ITEMS);
+  current=clean;
   if(clean.length!==parsed.items.length||parsed.items.length>MAX_ITEMS)save(current);
   return current;
 }

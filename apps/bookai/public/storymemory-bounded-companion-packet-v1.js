@@ -94,7 +94,7 @@ function buildBoundedCompanionPacketV1(opts){
     if(window.__smAnnotationLayerV1 && typeof window.__smAnnotationLayerV1.list==='function'){
       rawAnnotations=window.__smAnnotationLayerV1.list()||[];
     }else{
-      var v=localStorage.getItem('storymemory.annotations.v1');
+      var v=BookAIStorage.getItem('storymemory.annotations.v1');
       if(v){var p=JSON.parse(v); if(p&&p.version===1&&Array.isArray(p.items)) rawAnnotations=p.items;}
     }
   }catch(_){rawAnnotations=[];}

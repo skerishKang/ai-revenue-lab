@@ -186,6 +186,7 @@
     <div class="auth-gate-backup" aria-label="기기 기록 백업">
       <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
       <button type="button" id="smBackupImport" class="auth-gate-secondary">백업에서 복원</button>
+      <small>기존 스토리메모리 기록은 백업 파일을 내보낸 뒤 여기에서 불러오세요.</small>
       <input type="file" id="smBackupFile" accept=".json,application/json" hidden>
       <small>백업 파일에는 읽기 기록과 메모가 담깁니다. 안전한 곳에 보관해 주세요.</small>
     </div>
@@ -460,10 +461,10 @@
   <button class="seltool" data-act="ai">AI 질문</button>
 </div>
 
-<script src="storymemory-reader-view-runtime-v1.js"></script>
-<script src="./storymemory-library-ui-v1.js"></script>
-<script src="./storymemory-memory-ui-v1.js"></script>
-<script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-reader-view-runtime-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="./storymemory-library-ui-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="./storymemory-memory-ui-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script>
 const BOOKS=[
  {title:'일리아드',note:'인물과 진영을 기억하며 읽기',cloth:'#594031',foil:'#dfbd82',w:140,h:330,d:44,motif:'iliad',sub:'HOMER · EPIC'},
  {title:'오디세이',note:'장소와 귀환 경로를 따라 읽기',cloth:'#2f5964',foil:'#d7dfcc',w:132,h:348,d:40,motif:'odyssey',sub:'HOMER · JOURNEY'},
@@ -482,7 +483,7 @@ let selected=3;
 /* v2.8.2 user-facing motion tuning */
 let __smMotionFactor=1;
 try{
-  __smMotionFactor=Number(localStorage.getItem('storymemory.motionFactor')||'1');
+  __smMotionFactor=Number(BookAIStorage.getItem('storymemory.motionFactor')||'1');
 }catch(_){}
 if(!Number.isFinite(__smMotionFactor))__smMotionFactor=1;
 __smMotionFactor=Math.max(.65,Math.min(1.35,__smMotionFactor));
@@ -942,14 +943,14 @@ function todayLocalDay(ts=Date.now()){
 function allReaderProgressEntries(){
   const out=[];
   try{
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i)||'';
+    for(let i=0;i<BookAIStorage.length;i++){
+      const key=BookAIStorage.key(i)||'';
       if(!key.startsWith('storymemory.readerProgress.'))continue;
       const raw=key.slice('storymemory.readerProgress.'.length);
       let context=raw;
       try{context=decodeURIComponent(raw)}catch(_){}
       try{
-        const p=JSON.parse(localStorage.getItem(key)||'null');
+        const p=JSON.parse(BookAIStorage.getItem(key)||'null');
         if(p)out.push({context,...p});
       }catch(_){}
     }
@@ -1799,8 +1800,8 @@ function allMemoryContexts(){
   __smAnnotations.forEach(a=>a.context&&set.add(a.context));
 
   try{
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i)||'';
+    for(let i=0;i<BookAIStorage.length;i++){
+      const key=BookAIStorage.key(i)||'';
       if(key.startsWith('storymemory.readerProgress.')){
         const raw=key.slice('storymemory.readerProgress.'.length);
         try{set.add(decodeURIComponent(raw))}catch(_){set.add(raw)}
@@ -1815,7 +1816,7 @@ function memoryContextSnapshot(context){
   const annotations=__smAnnotations.filter(a=>a.context===context);
   let progress=null;
   try{
-    progress=JSON.parse(localStorage.getItem('storymemory.readerProgress.'+encodeURIComponent(context))||'null');
+    progress=JSON.parse(BookAIStorage.getItem('storymemory.readerProgress.'+encodeURIComponent(context))||'null');
   }catch(_){}
   return {
     context,
@@ -1859,12 +1860,12 @@ function contextPreviewEntries(context){
 function contextEntityLedgerStorageKey(){return 'storymemory.contextEntityLedger.v1'}
 function loadContextEntityLedger(){
   try{
-    const parsed=JSON.parse(localStorage.getItem(contextEntityLedgerStorageKey())||'{}');
+    const parsed=JSON.parse(BookAIStorage.getItem(contextEntityLedgerStorageKey())||'{}');
     if(parsed&&typeof parsed==='object')__smContextEntityLedger=parsed;
   }catch(_){__smContextEntityLedger={}}
 }
 function saveContextEntityLedger(){
-  try{localStorage.setItem(contextEntityLedgerStorageKey(),JSON.stringify(__smContextEntityLedger))}catch(_){}
+  try{BookAIStorage.setItem(contextEntityLedgerStorageKey(),JSON.stringify(__smContextEntityLedger))}catch(_){}
   if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist();
 }
 loadContextEntityLedger();
@@ -2001,12 +2002,12 @@ function globalRelationNodePos(i,total){
 function recallStateStorageKey(){return 'storymemory.recallState.v1'}
 function loadRecallState(){
   try{
-    const parsed=JSON.parse(localStorage.getItem(recallStateStorageKey())||'{}');
+    const parsed=JSON.parse(BookAIStorage.getItem(recallStateStorageKey())||'{}');
     if(parsed&&typeof parsed==='object')__smRecallState=parsed;
   }catch(_){__smRecallState={}}
 }
 function saveRecallState(){
-  try{localStorage.setItem(recallStateStorageKey(),JSON.stringify(__smRecallState))}catch(_){}
+  try{BookAIStorage.setItem(recallStateStorageKey(),JSON.stringify(__smRecallState))}catch(_){}
   if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist();
 }
 loadRecallState();
@@ -2914,7 +2915,7 @@ let __smAuthBridge={
 
 function saveAuthBridgeUIState(){
   try{
-    localStorage.setItem(STORYMEMORY_AUTH_STATE_KEY,JSON.stringify({
+    BookAIStorage.setItem(STORYMEMORY_AUTH_STATE_KEY,JSON.stringify({
       authenticated:!!__smAuthBridge.authenticated,
       user:__smAuthBridge.user?{
         id:__smAuthBridge.user.id||null,
@@ -3070,17 +3071,17 @@ let __smSyncRunning=false;
 let __smSyncLastResult=null;
 
 function storyMemoryInstallationId(){
-  let id=null;try{id=localStorage.getItem(STORYMEMORY_INSTALLATION_KEY)}catch(_){}
+  let id=null;try{id=BookAIStorage.getItem(STORYMEMORY_INSTALLATION_KEY)}catch(_){}
   if(id)return id;
   id=(crypto?.randomUUID?.()||('inst-'+Date.now()+'-'+Math.random().toString(36).slice(2)));
-  try{localStorage.setItem(STORYMEMORY_INSTALLATION_KEY,id)}catch(_){}
+  try{BookAIStorage.setItem(STORYMEMORY_INSTALLATION_KEY,id)}catch(_){}
   return id;
 }
 function clientRecordId(kind,localId){return `${storyMemoryInstallationId()}:${kind}:${String(localId)}`}
-function loadSyncState(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_SYNC_STATE_KEY)||'{}');return x&&typeof x==='object'?x:{}}catch(_){return {}}}
-function saveSyncState(state){try{localStorage.setItem(STORYMEMORY_SYNC_STATE_KEY,JSON.stringify(state))}catch(_){}}
-function loadSyncTombstones(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_TOMBSTONE_KEY)||'[]');return Array.isArray(x)?x:[]}catch(_){return []}}
-function saveSyncTombstones(items){try{localStorage.setItem(STORYMEMORY_TOMBSTONE_KEY,JSON.stringify(items.slice(-300)))}catch(_){}}
+function loadSyncState(){try{const x=JSON.parse(BookAIStorage.getItem(STORYMEMORY_SYNC_STATE_KEY)||'{}');return x&&typeof x==='object'?x:{}}catch(_){return {}}}
+function saveSyncState(state){try{BookAIStorage.setItem(STORYMEMORY_SYNC_STATE_KEY,JSON.stringify(state))}catch(_){}}
+function loadSyncTombstones(){try{const x=JSON.parse(BookAIStorage.getItem(STORYMEMORY_TOMBSTONE_KEY)||'[]');return Array.isArray(x)?x:[]}catch(_){return []}}
+function saveSyncTombstones(items){try{BookAIStorage.setItem(STORYMEMORY_TOMBSTONE_KEY,JSON.stringify(items.slice(-300)))}catch(_){}}
 function addSyncTombstone(kind,clientRecordIdValue){
   if(!clientRecordIdValue)return;
   const rows=loadSyncTombstones().filter(x=>!(x.kind===kind&&x.clientRecordId===clientRecordIdValue));
@@ -3379,14 +3380,14 @@ function updateReaderSourceBadge(){
 function unifiedProgressEntries(){
   const out={};
   try{
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i)||'';
+    for(let i=0;i<BookAIStorage.length;i++){
+      const key=BookAIStorage.key(i)||'';
       if(!key.startsWith('storymemory.readerProgress.'))continue;
       const encoded=key.slice('storymemory.readerProgress.'.length);
       let context=encoded;
       try{context=decodeURIComponent(encoded)}catch(_){}
       try{
-        const value=JSON.parse(localStorage.getItem(key)||'null');
+        const value=JSON.parse(BookAIStorage.getItem(key)||'null');
         if(value)out[context]=value;
       }catch(_){}
     }
@@ -3441,9 +3442,9 @@ function setDataStatus(state='saved'){
 }
 function persistUnifiedStore(){
   try{
-    localStorage.setItem(STORYMEMORY_STORE_KEY,JSON.stringify(buildUnifiedStore()));
+    BookAIStorage.setItem(STORYMEMORY_STORE_KEY,JSON.stringify(buildUnifiedStore()));
     __smLastPersistAt=Date.now();
-    setDataStatus('saved');
+    BookAILocalDB.flush().then(()=>setDataStatus('saved'),()=>setDataStatus('error'));
     return true;
   }catch(_){
     setDataStatus('error');
@@ -3458,7 +3459,7 @@ function scheduleUnifiedPersist(delay=80){
 }
 function readUnifiedStore(){
   try{
-    const parsed=JSON.parse(localStorage.getItem(STORYMEMORY_STORE_KEY)||'null');
+    const parsed=JSON.parse(BookAIStorage.getItem(STORYMEMORY_STORE_KEY)||'null');
     if(parsed&&parsed.schemaVersion===STORYMEMORY_SCHEMA_VERSION)return parsed;
   }catch(_){}
   return null;
@@ -3466,11 +3467,11 @@ function readUnifiedStore(){
 function restoreLegacyFromUnifiedStore(store){
   if(!store)return false;
   try{
-    if(Array.isArray(store.memories)){
+    if(Array.isArray(store.memories)&&BookAIStorage.getItem(userMemoryStorageKey())===null){
       __smUserMemories=[...store.memories];
       saveUserMemories();
     }
-    if(Array.isArray(store.annotations)){
+    if(Array.isArray(store.annotations)&&BookAIStorage.getItem(annotationStorageKey())===null){
       __smAnnotations=[...store.annotations];
       saveAnnotations();
     }
@@ -3483,7 +3484,7 @@ function restoreLegacyFromUnifiedStore(store){
       saveContextEntityLedger();
     }
     Object.entries(store.progress||{}).forEach(([context,value])=>{
-      localStorage.setItem('storymemory.readerProgress.'+encodeURIComponent(context),JSON.stringify(value));
+      if(BookAIStorage.getItem('storymemory.readerProgress.'+encodeURIComponent(context))===null)BookAIStorage.setItem('storymemory.readerProgress.'+encodeURIComponent(context),JSON.stringify(value));
     });
     return true;
   }catch(_){return false}
@@ -3540,13 +3541,13 @@ let __smNoteDraft=null;
 function userMemoryStorageKey(){return 'storymemory.userMemories.v1'}
 function loadUserMemories(){
   try{
-    const parsed=JSON.parse(localStorage.getItem(userMemoryStorageKey())||'[]');
+    const parsed=JSON.parse(BookAIStorage.getItem(userMemoryStorageKey())||'[]');
     if(Array.isArray(parsed))__smUserMemories=parsed;
   }catch(_){__smUserMemories=[]}
   __smUserMemorySeq=__smUserMemories.reduce((m,x)=>Math.max(m,Number(x.seq||0)),0);
 }
 function saveUserMemories(){
-  try{localStorage.setItem(userMemoryStorageKey(),JSON.stringify(__smUserMemories.slice(-120)))}catch(_){}
+  try{BookAIStorage.setItem(userMemoryStorageKey(),JSON.stringify(__smUserMemories))}catch(_){}
   if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist();
 }
 loadUserMemories();
@@ -3810,13 +3811,13 @@ const selectionChipMeta=document.getElementById('selectionChipMeta');
 function annotationStorageKey(){return 'storymemory.annotations.v2'}
 function loadAnnotations(){
   try{
-    const parsed=JSON.parse(localStorage.getItem(annotationStorageKey())||'[]');
+    const parsed=JSON.parse(BookAIStorage.getItem(annotationStorageKey())||'[]');
     if(Array.isArray(parsed))__smAnnotations=parsed;
   }catch(_){__smAnnotations=[]}
   __smAnnotationSeq=__smAnnotations.reduce((m,a)=>Math.max(m,Number(a.seq||0)),0);
 }
 function saveAnnotations(){
-  try{localStorage.setItem(annotationStorageKey(),JSON.stringify(__smAnnotations.slice(-80)))}catch(_){}
+  try{BookAIStorage.setItem(annotationStorageKey(),JSON.stringify(__smAnnotations))}catch(_){}
   if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist();
 }
 loadAnnotations();
@@ -4963,7 +4964,7 @@ document.addEventListener('click',()=>{
 });
 motionRange.addEventListener('input',()=>{
   __smMotionFactor=Number(motionRange.value);
-  try{localStorage.setItem('storymemory.motionFactor',String(__smMotionFactor))}catch(_){}
+  try{BookAIStorage.setItem('storymemory.motionFactor',String(__smMotionFactor))}catch(_){}
   __smRenderMotionControl();
 });
 
@@ -5065,7 +5066,7 @@ document.documentElement.dataset.storymemoryBuild='v3.1.5-p0-ui-complete';
 
 /* ===== v3.1.6 · deterministic Reader voice/highlight completion ===== */
 let __smLastHighlightClass='hl-yellow';
-try{__smLastHighlightClass=localStorage.getItem('storymemory.lastHighlightClass')||'hl-yellow'}catch(_){}
+try{__smLastHighlightClass=BookAIStorage.getItem('storymemory.lastHighlightClass')||'hl-yellow'}catch(_){}
 if(!['hl-yellow','hl-mint','hl-pink','hl-blue'].includes(__smLastHighlightClass))__smLastHighlightClass='hl-yellow';
 function __smSyncLastHighlightUI(){
   document.querySelectorAll('[data-hl]').forEach(b=>{
@@ -5077,7 +5078,7 @@ function __smSyncLastHighlightUI(){
 document.querySelectorAll('[data-hl]').forEach(b=>{
   b.onclick=()=>{
     __smLastHighlightClass=b.dataset.hl;
-    try{localStorage.setItem('storymemory.lastHighlightClass',__smLastHighlightClass)}catch(_){}
+    try{BookAIStorage.setItem('storymemory.lastHighlightClass',__smLastHighlightClass)}catch(_){}
     __smSyncLastHighlightUI();
     wrap(__smLastHighlightClass);
   };
@@ -5220,7 +5221,7 @@ MEMORY_TYPE_LABELS.event='사건';
 
 function __smV319ReadPins(){
   try{
-    const raw=JSON.parse(localStorage.getItem(__SM_V319_PIN_STORAGE)||'[]');
+    const raw=JSON.parse(BookAIStorage.getItem(__SM_V319_PIN_STORAGE)||'[]');
     return new Set(Array.isArray(raw)?raw.filter(x=>typeof x==='string'):[]);
   }catch(_){return new Set()}
 }
@@ -5231,7 +5232,7 @@ function __smIsNativeCanonicalWork(){
   return String(__smCurrentReaderLabel||'').indexOf('고린도전서')===0;
 }
 function __smV319WritePins(set){
-  try{localStorage.setItem(__SM_V319_PIN_STORAGE,JSON.stringify([...set]))}catch(_){}
+  try{BookAIStorage.setItem(__SM_V319_PIN_STORAGE,JSON.stringify([...set]))}catch(_){}
 }
 function __smV319IsPinned(key){return __smV319ReadPins().has(key)}
 function __smV319TogglePin(key){
@@ -6609,7 +6610,7 @@ function storyMemoryResumeStorageKey(content,volume=null){
   return 'storymemory.readerResume.'+encodeURIComponent(storyMemoryResumeKeyToken(content,volume));
 }
 function storyMemoryReadJson(key){
-  try{const v=JSON.parse(localStorage.getItem(key)||'null');return v&&typeof v==='object'?v:null}catch(_){return null}
+  try{const v=JSON.parse(BookAIStorage.getItem(key)||'null');return v&&typeof v==='object'?v:null}catch(_){return null}
 }
 function storyMemoryResumeContent(ctx=null){
   return __smDynamicReaderState?.content||storyMemoryReaderContentForContext(ctx||{kind:__smCurrentReaderKind,book:__smCurrentReaderLabel})||null;
@@ -6666,8 +6667,8 @@ function storyMemoryInferResumeRecord(content,volume=null){
   if(volume&&directUsable)return direct;
   let best=volume?null:(directUsable?direct:null);
   try{
-    for(let i=0;i<localStorage.length;i++){
-      const key=localStorage.key(i)||'';
+    for(let i=0;i<BookAIStorage.length;i++){
+      const key=BookAIStorage.key(i)||'';
       if(key.startsWith('storymemory.readerResume.')){
         if(key===directKey)continue;
         const row=storyMemoryReadJson(key);if(!row)continue;
@@ -6692,7 +6693,7 @@ function storyMemoryInferResumeRecord(content,volume=null){
 }
 function storyMemoryWriteResumeRecord(content,record,volume=null){
   if(!content||!record)return false;
-  try{localStorage.setItem(storyMemoryResumeStorageKey(content,volume),JSON.stringify(record));return true}catch(_){return false}
+  try{BookAIStorage.setItem(storyMemoryResumeStorageKey(content,volume),JSON.stringify(record));return true}catch(_){return false}
 }
 function storyMemoryResolveResumePage(record){
   const groups=__smDynamicReaderState?.pagePassages||[];
@@ -6809,7 +6810,7 @@ const initialView=new URLSearchParams(location.search).get('view');
 if(initialView&&['library','today','index','reader'].includes(initialView))showScreen(initialView);
 </script>
 
-<script>
+<script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.2.8 — Library / Today Exact Continue Reading =====
    One canonical resume source powers the selected Library card and Today continue action.
    Resume display keeps human-readable unit/page/location while exact restore remains
@@ -7077,7 +7078,7 @@ window.storyMemoryContinueReadingStatus=storyMemoryContinueReadingStatus;
 </script>
 
 <link id="sm-v329-library-state-style" rel="stylesheet" href="./styles/storymemory-v329-library-state.css">
-<script>
+<script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.2.9 — Library Reading State / Recent Order =====
    All shelf progress is derived from the same exact-resume master used by v3.2.8.
    Canonical curated order remains default. RECENT view is an opt-in projection only.
@@ -7085,7 +7086,7 @@ window.storyMemoryContinueReadingStatus=storyMemoryContinueReadingStatus;
 const STORYMEMORY_LIBRARY_STATE_SCHEMA='1.0.0';
 const __smV329CanonicalBookOrder=Object.freeze(BOOKS.map(book=>book.title));
 let __smLibraryOrderMode='shelf';
-try{__smLibraryOrderMode=localStorage.getItem('storymemory.libraryOrder.v1')==='recent'?'recent':'shelf'}catch(_){ }
+try{__smLibraryOrderMode=BookAIStorage.getItem('storymemory.libraryOrder.v1')==='recent'?'recent':'shelf'}catch(_){ }
 
 function storyMemoryRecordTimestamp(record={}){
   for(const key of ['updatedAt','clientUpdatedAt','updated_at','client_updated_at','savedAt','createdAt']){
@@ -7134,7 +7135,7 @@ function storyMemoryApplyLibraryOrder(mode,{persist=true,render=true}={}){
   selected=Math.max(0,BOOKS.findIndex(b=>b.title===selectedTitle));
   __smLibraryOrderMode=mode;
   window.__smLastSelected=selected;
-  if(persist){try{localStorage.setItem('storymemory.libraryOrder.v1',mode)}catch(_){ }}
+  if(persist){try{BookAIStorage.setItem('storymemory.libraryOrder.v1',mode)}catch(_){ }}
   storyMemorySyncLibraryOrderControl();
   if(render)renderLibrary();
   return {mode,selectedTitle,order:BOOKS.map(b=>b.title)};
@@ -7203,7 +7204,7 @@ renderLibrary();
 
 
 <link id="sm-v330-today-timeline-style" rel="stylesheet" href="./styles/storymemory-v330-today-timeline.css">
-<script>
+<script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.3.0 — Today Exact Reading Timeline ===== */
 const STORYMEMORY_TODAY_TIMELINE_SCHEMA='1.0.0';
 function storyMemoryMemoryCountForPresentation(presentation){
@@ -7257,7 +7258,7 @@ window.storyMemoryTodayTimelineStatus=storyMemoryTodayTimelineStatus;
 
 
 <link id="sm-v331-activity-timeline-style" rel="stylesheet" href="./styles/storymemory-v331-activity-timeline.css">
-<script>
+<script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.3.1 — Reading Activity Timeline =====
    Reading, Memory, Annotation and selection-to-AI handoff share one chronological projection.
    New activity records carry canonical passage identity when authoritative content is active.
@@ -7265,8 +7266,8 @@ window.storyMemoryTodayTimelineStatus=storyMemoryTodayTimelineStatus;
 const STORYMEMORY_ACTIVITY_TIMELINE_SCHEMA='1.0.0';
 const STORYMEMORY_ACTIVITY_EVENT_KEY='storymemory.activityEvents.v1';
 let __smActivityEvents=[];
-function storyMemoryLoadActivityEvents(){try{const x=JSON.parse(localStorage.getItem(STORYMEMORY_ACTIVITY_EVENT_KEY)||'[]');__smActivityEvents=Array.isArray(x)?x:[]}catch(_){__smActivityEvents=[]}return __smActivityEvents}
-function storyMemorySaveActivityEvents(){try{localStorage.setItem(STORYMEMORY_ACTIVITY_EVENT_KEY,JSON.stringify(__smActivityEvents.slice(-160)))}catch(_){}if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist()}
+function storyMemoryLoadActivityEvents(){try{const x=JSON.parse(BookAIStorage.getItem(STORYMEMORY_ACTIVITY_EVENT_KEY)||'[]');__smActivityEvents=Array.isArray(x)?x:[]}catch(_){__smActivityEvents=[]}return __smActivityEvents}
+function storyMemorySaveActivityEvents(){try{BookAIStorage.setItem(STORYMEMORY_ACTIVITY_EVENT_KEY,JSON.stringify(__smActivityEvents.slice(-160)))}catch(_){}if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist()}
 storyMemoryLoadActivityEvents();
 
 function storyMemoryActivityExactFields(meta={}){
@@ -7387,7 +7388,7 @@ window.storyMemoryActivityTimelineStatus=storyMemoryActivityTimelineStatus;
 
 
 <link id="sm-v332-reading-journal-style" rel="stylesheet" href="./styles/storymemory-v332-reading-journal.css">
-<script>
+<script type="application/x-bookai" data-bookai-script>
 /* ===== StoryMemory v3.3.2 — Reading Journal =====
    Filters and search are projections only. Canonical activity records remain unchanged.
 */
@@ -7397,7 +7398,7 @@ let __smJournalState={book:'all',kind:'all',query:'',memoryFocus:false};
 
 function storyMemoryLoadJournalState(){
   try{
-    const saved=JSON.parse(localStorage.getItem(STORYMEMORY_JOURNAL_FILTER_KEY)||'{}');
+    const saved=JSON.parse(BookAIStorage.getItem(STORYMEMORY_JOURNAL_FILTER_KEY)||'{}');
     if(saved&&typeof saved==='object'){
       __smJournalState={
         book:typeof saved.book==='string'?saved.book:'all',
@@ -7410,7 +7411,7 @@ function storyMemoryLoadJournalState(){
   return {...__smJournalState};
 }
 function storyMemorySaveJournalState(){
-  try{localStorage.setItem(STORYMEMORY_JOURNAL_FILTER_KEY,JSON.stringify(__smJournalState))}catch(_){}
+  try{BookAIStorage.setItem(STORYMEMORY_JOURNAL_FILTER_KEY,JSON.stringify(__smJournalState))}catch(_){}
 }
 storyMemoryLoadJournalState();
 
@@ -7599,23 +7600,23 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 
 /* R6: legacy Hybrid AI router extracted to storymemory-legacy-hybrid-ai-v1.js */
 </script>
-<script src="storymemory-legacy-hybrid-ai-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-legacy-hybrid-ai-v1.js"></script>
 
-  <script src="storymemory-universal-source-runtime.js"></script>
-  <script src="storymemory-pack-marketplace-runtime.js"></script>
-  <script src="storymemory-source-ui.js"></script>
-  <script src="storymemory-pack-marketplace-ui.js"></script>
-  <script src="storymemory-auto-pack-runtime.js"></script>
-  <script src="storymemory-auto-pack-ui.js"></script>
-<script src="storymemory-pack-lifecycle-runtime.js"></script>
-<script src="storymemory-pack-lifecycle-ui.js"></script>
-<script src="storymemory-pack-entitlement-runtime.js"></script>
-<script src="storymemory-pack-entitlement-ui.js"></script>
-<script src="storymemory-pack-verification-runtime.js"></script>
-<script src="storymemory-pack-verification-ui.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-universal-source-runtime.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-pack-marketplace-runtime.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-source-ui.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-pack-marketplace-ui.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-auto-pack-runtime.js"></script>
+  <script type="application/x-bookai" data-bookai-script src="storymemory-auto-pack-ui.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-lifecycle-runtime.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-lifecycle-ui.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-entitlement-runtime.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-entitlement-ui.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-verification-runtime.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-pack-verification-ui.js"></script>
 <link id="sm-reader-simplification-v2" rel="stylesheet" href="./styles/storymemory-reader-simplification-v2.css">
 <link id="sm-b61-1613-reachability" rel="stylesheet" href="./styles/storymemory-b61-1613-reachability-v1.css">
-<script id="sm-reader-simplification-v2">
+<script type="application/x-bookai" data-bookai-script id="sm-reader-simplification-v2">
 (function(){
   'use strict';
   var needsFit=true;
@@ -7784,7 +7785,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 </script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">
 <link id="sm-bible-shelf-typography-rebase" rel="stylesheet" href="./styles/storymemory-bible-shelf-typography-rebase.css">
-<script id="sm-bible-shelf-typography-rebase-js">
+<script type="application/x-bookai" data-bookai-script id="sm-bible-shelf-typography-rebase-js">
 (function(){
   var D=document;
   function labels(){
@@ -7824,25 +7825,25 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
 }
 </style>
 <link id="sm-reader-settings-v1" rel="stylesheet" href="./styles/storymemory-reader-settings-v1.css">
-<script id="sm-reader-settings-v1" src="storymemory-reader-settings-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-reader-settings-v1" src="storymemory-reader-settings-v1.js"></script>
 <link id="smal-css" rel="stylesheet" href="./styles/storymemory-annotation-v1.css">
 <link id="sm-b61-typography-authority-v1" rel="stylesheet" href="./styles/storymemory-b61-typography-authority-v1.css">
 <link id="sm-b61-floating-glass-v1" rel="stylesheet" href="./styles/storymemory-b61-floating-glass-v1.css">
-<script src="storymemory-annotation-store-v1.js"></script>
-<script id="smal-js" src="storymemory-annotation-ui-v1.js"></script>
-<script id="sm-context-harness-v1" src="storymemory-context-harness-v1.js"></script>
-<script src="storymemory-locator-progress-v1.js"></script>
-<script id="sm-knowledge-ceiling-v1" src="storymemory-knowledge-ceiling-policy-v1.js"></script>
-<script id="sm-bounded-companion-packet-v1" src="storymemory-bounded-companion-packet-v1.js"></script>
-<script id="sm-companion-adapter-v1" src="storymemory-companion-adapter-v1.js"></script>
-<script id="sm-b61-ui-polish-v1" src="storymemory-b61-ui-polish-v1.js"></script>
-<script src="storymemory-locator-resolver-v1.js"></script>
-<script src="storymemory-keyword-search-v1.js"></script>
-<script src="storymemory-annotation-search-v1.js"></script>
-<script src="storymemory-retrieval-ceiling-projection-v1.js"></script>
-<script src="storymemory-retrieval-adapter-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-annotation-store-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="smal-js" src="storymemory-annotation-ui-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-context-harness-v1" src="storymemory-context-harness-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-locator-progress-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-knowledge-ceiling-v1" src="storymemory-knowledge-ceiling-policy-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-bounded-companion-packet-v1" src="storymemory-bounded-companion-packet-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-companion-adapter-v1" src="storymemory-companion-adapter-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-b61-ui-polish-v1" src="storymemory-b61-ui-polish-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-locator-resolver-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-keyword-search-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-annotation-search-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-retrieval-ceiling-projection-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script src="storymemory-retrieval-adapter-v1.js"></script>
 <link id="sm-b61-library-firstscreen-v1" rel="stylesheet" href="./styles/storymemory-b61-library-firstscreen-v1.css">
-<script id="sm-b61-library-firstscreen-v1" src="storymemory-b61-library-firstscreen-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script id="sm-b61-library-firstscreen-v1" src="storymemory-b61-library-firstscreen-v1.js"></script>
 <style id="sm-companion-evidence-ux-v1-style">
 /* B61 #1823 Companion evidence strip / state badges */
 .sm-ev-strip{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 6px}
@@ -7945,7 +7946,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
   .ai-panel #sendBtn{min-width:44px!important;min-height:44px!important}
 }
 </style>
-<script id="sm-mobile-ai-sheet-v1">
+<script type="application/x-bookai" data-bookai-script id="sm-mobile-ai-sheet-v1">
 /* B61 #1846: overflow (⋯) toggle for the mobile AI sheet secondary chrome.
    Default expanded (current behavior preserved); collapsing hides only the
    ENTITY FOCUS runtime card. No capability removed; desktop unaffected. */
@@ -8018,7 +8019,7 @@ body.smr-theme-dark .memory-rail .rail-nav .pill{background:rgba(255,255,255,.08
 body.smr-theme-dark .memory-rail .memory-scope-toggle button{color:#a99e8d!important}
 body.smr-theme-dark .memory-rail .memory-scope-toggle button.on{background:rgba(255,255,255,.1)!important;color:#e9e1d2!important}
 </style>
-<script id="sm-companion-evidence-ux-v1">
+<script type="application/x-bookai" data-bookai-script id="sm-companion-evidence-ux-v1">
 /* ===== B61 #1823 Companion source evidence presentation + insufficient-context UX v1 =====
    Presentation-only Product Adapter lane (#1745 split: Engine/Core owns evidence
    truth; B61 owns labels/grouping/navigation/copy). Wraps the accepted bounded
@@ -8378,16 +8379,16 @@ window.__smV1823EvidenceUXV1={
 })();
 </script>
 
-<script src="./mobile-source-settings.js"></script>
+<script type="application/x-bookai" data-bookai-script src="./mobile-source-settings.js"></script>
 <link rel="stylesheet" href="./styles/storymemory-review-261031.css">
-<script src="./storymemory-backup-v1.js"></script>
-<script>
+<script type="application/x-bookai" data-bookai-script src="./storymemory-backup-v1.js"></script>
+<script type="application/x-bookai" data-bookai-script>
 (function(){
   const file = document.getElementById('smBackupFile');
   document.getElementById('smBackupExport').addEventListener('click', function(){
     try {
       if (typeof persistUnifiedStore === 'function') persistUnifiedStore();
-      const data = JSON.stringify(window.StoryMemoryBackup.snapshot(localStorage), null, 2);
+      const data = JSON.stringify(window.StoryMemoryBackup.snapshot(BookAIStorage), null, 2);
       const blob = new Blob([data], {type:'application/json'});
       if (blob.size > 5 * 1024 * 1024) { alert('\uBC31\uC5C5 \uD30C\uC77C\uC774 \uBCF5\uC6D0 \uAC00\uB2A5\uD55C \uD06C\uAE30\uBCF4\uB2E4 \uD07D\uB2C8\uB2E4.'); return; }
       const url = URL.createObjectURL(blob);
@@ -8405,7 +8406,8 @@ window.__smV1823EvidenceUXV1={
     if (!confirm('백업에 있는 항목으로 이 기기의 같은 항목을 덮어씁니다. 계속하시겠어요?')) return;
     try {
       const text = await selected.text();
-      window.StoryMemoryBackup.restore(localStorage, text);
+      window.StoryMemoryBackup.restore(BookAIStorage, text);
+      await BookAILocalDB.flush();
       location.reload();
     } catch (error) {
       if (error && error.message === 'backup_rollback_failed') {
@@ -8417,5 +8419,27 @@ window.__smV1823EvidenceUXV1={
   });
 })();
 </script>
+<script type="application/x-bookai" data-bookai-script src="./bookai-login-ui.js"></script>
+
+<script type="application/x-bookai" data-bookai-script>
+window.addEventListener('bookai-storage-remote',event=>{
+  const keys=event.detail.keys;
+  if(keys.includes(userMemoryStorageKey())){loadUserMemories();renderUserMemoryList();}
+  if(keys.includes(annotationStorageKey())){
+    loadAnnotations();syncAnnotationStats();renderAnnotationMemoryList();
+    if(document.getElementById('reader')?.classList.contains('active')){
+      if(readerViewMode==='flow')renderFlowReader({restoreRatio:readStoredReaderProgress().scrollRatio||0});
+      else renderReaderPage(0);
+    }
+  }
+  if(keys.includes('storymemory.annotations.v1'))window.__smAnnotationLayerV1?.reload();
+  if(typeof refreshTodayDashboard==='function')refreshTodayDashboard();
+});
+</script>
+<script type="application/x-bookai" data-bookai-script src="./bookai-sync.js"></script>
+<script src="./bookai-records.js"></script>
+<script src="./bookai-local-db.js"></script>
+<script src="./bookai-bootstrap.js"></script>
+
 </body>
 </html>

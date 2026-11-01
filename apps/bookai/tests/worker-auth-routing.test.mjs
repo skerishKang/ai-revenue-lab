@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import worker from '../public/_worker.js';
+const env={ASSETS:{fetch:async()=>new Response('assets')}};
+const base='https://bookai.padiem.net';
+const session=await worker.fetch(new Request(base+'/auth/session'),env);
+assert.equal(session.status,200);assert.equal((await session.json()).authenticated,false);
+const records=await worker.fetch(new Request(base+'/api/bookai/records'),env);
+assert.equal(records.status,401);
+const page=await worker.fetch(new Request(base+'/'),env);assert.equal(await page.text(),'assets');
+const health=await worker.fetch(new Request(base+'/api/storymemory-ai/health'),env);assert.equal(health.status,200);
+console.log('PASS: worker routes auth and records while preserving assets and AI health');

@@ -1,7 +1,6 @@
 const fs=require('fs'), path=require('path'), assert=require('node:assert/strict');
 (async()=>{
-  const src=fs.readFileSync(path.join(__dirname,'public/_worker.js'),'utf8');
-  const worker=(await import('data:text/javascript;base64,'+Buffer.from(src).toString('base64'))).default;
+  const worker=(await import(require('node:url').pathToFileURL(path.join(__dirname,'public/_worker.js')).href)).default;
   const packet={version:'1',mode:'storymemory_bounded_companion',source_scope:'ceiling_filtered',
     diagnostics:{boundary_available:true,spoiler_policy:'hard_no_future'},
     co_reader_decision:{decision:'ALLOW',reason:'WITHIN_CEILING'},

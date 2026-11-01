@@ -47,7 +47,7 @@ function deriveWorkUnit(locator){
 
 function safeReadJson(key, storage){
   try{
-    var s = storage ? storage.getItem(key) : (typeof localStorage!=='undefined'? localStorage.getItem(key):null);
+    var s = storage ? storage.getItem(key) : (typeof BookAIStorage!=='undefined'? BookAIStorage.getItem(key):null);
     if(s===null) return null;
     return JSON.parse(s);
   }catch(_){ return null; }

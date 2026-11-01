@@ -3,7 +3,7 @@
   if(!root.document||!root.storyMemoryPackVerification)return;
   const d=root.document,verify=root.storyMemoryPackVerification,market=root.storyMemoryPackMarketplace,rt=root.storyMemoryUniversalSource;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  function storedUserId(){try{return JSON.parse(root.localStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
+  function storedUserId(){try{return JSON.parse(root.BookAIStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
   root.storyMemoryEnableNeonPackVerification=async function(){
     if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackVerificationProvider)return false;
     const provider=root.createStoryMemoryNeonPackVerificationProvider({remoteAdapter:root.storyMemoryRemote});verify.setRegistryProvider(provider);

@@ -66,7 +66,7 @@ function compareLocators(a,b){
 }
 function loadStore(){
   try{
-    var raw=localStorage.getItem(STORAGE_KEY);
+    var raw=BookAIStorage.getItem(STORAGE_KEY);
     if(raw===null) return {version:VERSION, works:{}};
     var p=JSON.parse(raw);
     if(!p || typeof p!=='object' || p.version!==VERSION || typeof p.works!=='object' || Array.isArray(p.works)) return {version:VERSION, works:{}};
@@ -76,7 +76,7 @@ function loadStore(){
   }catch(_){ return {version:VERSION, works:{}}; }
 }
 function saveStore(store){
-  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }catch(_){}
+  try{ BookAIStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }catch(_){}
 }
 function getProgress(workKey){
   if(!workKey) return null;
@@ -104,7 +104,7 @@ function resetProgress(workKey){
   if(!workKey) return;
   var s=loadStore(); if(s.works[workKey]){ delete s.works[workKey]; saveStore(s); }
 }
-function clearAllProgress(){ try{ localStorage.removeItem(STORAGE_KEY); }catch(_){} }
+function clearAllProgress(){ try{ BookAIStorage.removeItem(STORAGE_KEY); }catch(_){} }
 function getCeiling(workKey){
   var p=getProgress(workKey); return p ? p.knowledge_ceiling_locator : null;
 }

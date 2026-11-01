@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {mergeRecords} from '../public/bookai-record-merge.mjs';
+const row=(record_id,updated_at,deleted=false)=>({record_id,book_id:'bible-web',locator:'JHN.3.16',kind:'note',payload:{text:'test'},updated_at,deleted});
+const a=[row('a',10),row('deleted',2)];
+const b=[row('a',8),row('b',12),row('deleted',20,true)];
+const first=mergeRecords(a,b), map=new Map(first.map(x=>[x.record_id,x]));
+assert.equal(map.get('a').updated_at,10); assert.equal(map.get('b').updated_at,12); assert.equal(map.get('deleted').deleted,true);
+const second=mergeRecords(b,first), byId=new Map(second.map(x=>[x.record_id,x]));
+assert.equal(byId.get('a').updated_at,10); assert.equal(byId.get('deleted').deleted,true);
+assert.equal(mergeRecords([row('a',10)],[{...row('a',10),deleted:true}])[0].deleted,false);
+assert.throws(()=>mergeRecords([],[{...row('x',1),kind:'invalid'}]));
+assert.equal(a[1].deleted,false);
+console.log('PASS: newest record wins, deletes persist, repeat merge and source immutability');

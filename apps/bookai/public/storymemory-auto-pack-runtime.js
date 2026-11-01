@@ -8,7 +8,7 @@
     root.storyMemoryAutoPack=root.storyMemoryAutoPack||api.createStoryMemoryAutoPackRuntime({
       universalRuntime:root.storyMemoryUniversalSource||null,
       marketplaceRuntime:root.storyMemoryPackMarketplace||null,
-      storage:root.localStorage||null
+      storage:root.BookAIStorage||null
     });
     root.installStoryMemoryAutoPackGeneratorProvider=fn=>root.storyMemoryAutoPack?.setGeneratorProvider(fn);
     if(root.document?.documentElement)root.document.documentElement.dataset.storymemoryAutoPack='v1.0.0';

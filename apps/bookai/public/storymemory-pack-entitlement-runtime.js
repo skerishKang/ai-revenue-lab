@@ -7,7 +7,7 @@
     root.createStoryMemoryNeonPackEntitlementProvider=api.createStoryMemoryNeonPackEntitlementProvider;
     root.storyMemoryPackEntitlements=root.storyMemoryPackEntitlements||api.createStoryMemoryPackEntitlementRuntime({
       marketplaceRuntime:root.storyMemoryPackMarketplace||null,
-      storage:root.localStorage||null
+      storage:root.BookAIStorage||null
     });
     if(root.document?.documentElement)root.document.documentElement.dataset.storymemoryEntitlement='v1.0.0';
   }

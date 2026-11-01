@@ -7,11 +7,13 @@
 },
     readStoredReaderProgress: function(){
  try{
-   const p=JSON.parse(localStorage.getItem(readerProgressStorageKey())||'{}');
+   const p=JSON.parse(BookAIStorage.getItem(readerProgressStorageKey())||'{}');
    return p&&typeof p==='object'?p:{};
  }catch(_){return {}}
 },
     saveReaderProgress: function(extra={}){
+ if(typeof __smHydratingSession!=='undefined'&&__smHydratingSession)return;
+ if(!document.getElementById('reader')?.classList.contains('active'))return;
  const inner=document.querySelector('.paper-inner');
  const max=Math.max(1,inner.scrollHeight-inner.clientHeight);
  const payload={
@@ -22,7 +24,7 @@
    updatedAt:Date.now(),
    ...extra
  };
- try{localStorage.setItem(readerProgressStorageKey(),JSON.stringify(payload))}catch(_){}
+ try{BookAIStorage.setItem(readerProgressStorageKey(),JSON.stringify(payload))}catch(_){}
  if(typeof scheduleUnifiedPersist==='function')scheduleUnifiedPersist();
 },
     syncReaderViewButtons: function(){

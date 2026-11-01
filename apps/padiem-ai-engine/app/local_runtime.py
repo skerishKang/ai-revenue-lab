@@ -28,6 +28,8 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import hmac
+import json
+from contextvars import ContextVar
 import logging
 import os
 import stat
@@ -66,6 +68,25 @@ LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 # The Worker lets the platform bound a model request. A host has to name one.
 MAX_ASGI_REQUEST_BYTES = 24 * 1024 * 1024
 ASGI_RESPONSE_MAX_BYTES = 64 * 1024 * 1024
+
+# Correlation only: service identity and app authorization still run in the
+# unchanged Engine dispatch before any B14 call. Never persist per-request
+# attribution on the shared binding; simultaneous apps must stay independent.
+_APPS_AI_CLIENT_APP: ContextVar[str | None] = ContextVar("apps_ai_client_app", default=None)
+_APPS_AI_NAMES = frozenset({"storymemory", "bookai"})
+
+
+def _apps_ai_origin(request: "LocalRequest") -> str | None:
+    if request.method != "POST" or urlsplit(request.url).path != "/internal/v1/execute":
+        return None
+    client_app = request.headers.get("x-padiem-client-app")
+    if client_app not in _APPS_AI_NAMES:
+        return None
+    try:
+        payload = json.loads(request.body)
+    except (UnicodeError, ValueError):
+        return None
+    return client_app if isinstance(payload, dict) and payload.get("app_id") == "b61" else None
 
 
 class LocalRuntimeError(RuntimeError):
@@ -382,6 +403,14 @@ class LocalB14Binding:
         raw_headers = getattr(request, "headers", None)
         items = getattr(raw_headers, "items", None)
         headers = dict(items()) if callable(items) else dict(raw_headers or {})
+        client_app = _APPS_AI_CLIENT_APP.get()
+        if client_app is not None:
+            # Existing B14 ledger reads these allowlisted correlation headers
+            # alongside its already-measured model, status and attempt outcome.
+            headers = {k: v for k, v in headers.items()
+                       if str(k).lower() not in {"x-padiem-product", "x-padiem-client-app"}}
+            headers["x-padiem-product"] = "engine"
+            headers["x-padiem-client-app"] = client_app
         body = getattr(request, "body", b"")
         if not isinstance(body, (bytes, bytearray)):
             body = bytes(body)
@@ -527,7 +556,11 @@ class LocalEngineApp:
         server_host, server_port = (scope.get("server") or (DEFAULT_HOST, DEFAULT_PORT))[:2]
         url = f"http://{server_host}:{server_port}{target}"
         request = LocalRequest(url, method=method, headers=headers, body=body)
-        response = await self.entry.fetch(request)
+        origin_token = _APPS_AI_CLIENT_APP.set(_apps_ai_origin(request))
+        try:
+            response = await self.entry.fetch(request)
+        finally:
+            _APPS_AI_CLIENT_APP.reset(origin_token)
         raw = getattr(response, "body", None)
         status = int(getattr(response, "status", 200))
         headers = {

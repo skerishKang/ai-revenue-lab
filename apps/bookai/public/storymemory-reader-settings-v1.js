@@ -24,10 +24,10 @@
     s.version=1;return s;
   }
   function load(){
-    try{var raw=localStorage.getItem(KEY);if(!raw)return null;return sanitize(JSON.parse(raw));}
-    catch(e){try{localStorage.removeItem(KEY);}catch(e2){}return null;}
+    try{var raw=BookAIStorage.getItem(KEY);if(!raw)return null;return sanitize(JSON.parse(raw));}
+    catch(e){try{BookAIStorage.removeItem(KEY);}catch(e2){}return null;}
   }
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+  function save(){try{BookAIStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
   var state=load()||JSON.parse(JSON.stringify(DEFAULTS));
   function apply(){
     var root=document.documentElement,body=document.body;
@@ -114,7 +114,7 @@
     panel.appendChild(segRow('본문 언어','englishMode'));
     panel.appendChild(segRow('절 번호','verseNumbers'));
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
-    reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{localStorage.removeItem(KEY);}catch(e){}apply();};
+    reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{BookAIStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
     gear.onclick=function(e){
       e.stopPropagation();

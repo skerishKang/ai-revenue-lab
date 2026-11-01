@@ -4,7 +4,7 @@
   const d=root.document,market=root.storyMemoryPackMarketplace,rt=root.storyMemoryUniversalSource;
   const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   let catalogReady=false;
-  function storedUserId(){try{return JSON.parse(root.localStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
+  function storedUserId(){try{return JSON.parse(root.BookAIStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
   root.storyMemoryEnableNeonPackRegistry=async function(options={}){
     if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackRegistryProvider)return false;
     const bridge=root.createStoryMemoryNeonPackRegistryProvider({remoteAdapter:root.storyMemoryRemote,getUserId:()=>options.userId||storedUserId()});

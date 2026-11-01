@@ -5,7 +5,7 @@
     root.STORYMEMORY_PACK_LIFECYCLE_CONTRACT=api.STORYMEMORY_PACK_LIFECYCLE_CONTRACT;
     root.createStoryMemoryPackLifecycleRuntime=api.createStoryMemoryPackLifecycleRuntime;
     root.createStoryMemoryNeonPackLifecycleProvider=api.createStoryMemoryNeonPackLifecycleProvider;
-    root.storyMemoryPackLifecycle=root.storyMemoryPackLifecycle||api.createStoryMemoryPackLifecycleRuntime({marketplace:root.storyMemoryPackMarketplace||null,storage:root.localStorage||null});
+    root.storyMemoryPackLifecycle=root.storyMemoryPackLifecycle||api.createStoryMemoryPackLifecycleRuntime({marketplace:root.storyMemoryPackMarketplace||null,storage:root.BookAIStorage||null});
     if(root.document?.documentElement)root.document.documentElement.dataset.storymemoryPackLifecycle='v1.0.0';
   }
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
@@ -43,10 +43,10 @@
   }
   function createStoryMemoryPackLifecycleRuntime({marketplace=null,storage=null,provider=null,artifactLoader=null,artifactWriter=null,clock=nowIso}={}){
     let market=marketplace||root.storyMemoryPackMarketplace||null;let remote=provider||null;let loader=artifactLoader||null;let writer=typeof artifactWriter==='function'?artifactWriter:null;
-    const ratings=memoryStore(storage||root.localStorage||null,'storymemory.packRatings.v1');
-    const feedback=memoryStore(storage||root.localStorage||null,'storymemory.packFeedback.v1');
-    const proposals=memoryStore(storage||root.localStorage||null,'storymemory.packVersionProposals.v1');
-    const forks=memoryStore(storage||root.localStorage||null,'storymemory.packForkDrafts.v1');
+    const ratings=memoryStore(storage||root.BookAIStorage||null,'storymemory.packRatings.v1');
+    const feedback=memoryStore(storage||root.BookAIStorage||null,'storymemory.packFeedback.v1');
+    const proposals=memoryStore(storage||root.BookAIStorage||null,'storymemory.packVersionProposals.v1');
+    const forks=memoryStore(storage||root.BookAIStorage||null,'storymemory.packForkDrafts.v1');
     const listeners=new Set();
     function emit(type,data={}){const e={type,at:clock(),...clone(data)};for(const fn of listeners){try{fn(e)}catch(_){}}return e}
     function onChange(fn){if(typeof fn!=='function')return()=>{};listeners.add(fn);return()=>listeners.delete(fn)}

@@ -88,6 +88,8 @@ _EXECUTION_ALLOWED = frozenset(
         "execution_context",
     }
 )
+# Execute-only parity with the JavaScript client; Engine owns permission validation.
+_EXECUTION_CONTEXT_PERMISSION = frozenset({"context_permission", "context_permission_required"})
 _ORCHESTRATION_ALLOWED = _EXECUTION_ALLOWED | frozenset(
     {
         "subject_id",
@@ -454,6 +456,10 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         raise PadiemAiEngineClientError(
             "invalid_engine_request", "Engine request contains unsupported fields"
         )
+    if "context_permission" in data and not isinstance(data["context_permission"], Mapping):
+        raise PadiemAiEngineClientError("invalid_engine_request", "Context permission must be an object")
+    if "context_permission_required" in data and not isinstance(data["context_permission_required"], bool):
+        raise PadiemAiEngineClientError("invalid_engine_request", "Context permission required flag must be boolean")
     if "declared_plan" in data:
         declared = data["declared_plan"]
         if not isinstance(declared, str) or declared not in _PC_PLAN_STEPS:
@@ -478,6 +484,8 @@ def _run_payload(app_id: str, request: Any, *, allowed: frozenset[str]) -> dict[
         "require_evidence",
         "require_verification",
         "continuation_ref",
+        "context_permission",
+        "context_permission_required",
     ):
         if name in data:
             payload[name] = data[name]
@@ -780,7 +788,7 @@ class PadiemAiEngineClient:
     async def execute(self, request: Mapping[str, Any]) -> dict[str, Any]:
         body = await self._post(
             ENGINE_EXECUTE_PATH,
-            _run_payload(self.app_id, request, allowed=_EXECUTION_ALLOWED),
+            _run_payload(self.app_id, request, allowed=_EXECUTION_ALLOWED | _EXECUTION_CONTEXT_PERMISSION),
         )
         if body.get("ok") is not True or not isinstance(body.get("answer"), str):
             raise PadiemAiEngineClientError(

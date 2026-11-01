@@ -151,14 +151,17 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
     const target = new URL(url.pathname + url.search, origin);
     const isWrite = !READ_METHODS.has(request.method);
     const canonicalWrites = String(env.COM2_CANONICAL || "off").trim().toLowerCase() === "writes";
+    // App AI needs time for a completed model response; records stay on COM2.
+    const appsAI = request.method === "POST" && url.pathname === "/api/apps/ai";
+    const bookAIRecords = url.pathname === "/api/bookai/records";
     const upstreamTimeout = numeric(env.UPSTREAM_TIMEOUT_MS, DEFAULT_TIMEOUT_MS);
     const healthProbe = url.pathname === "/health" && (request.method === "GET" || request.method === "HEAD");
     const streaming = /text\/event-stream/i.test(request.headers.get("accept") || "") ||
       (request.headers.get("upgrade") || "").toLowerCase() === "websocket";
     const apiRead = !isWrite && url.pathname.startsWith("/api/") && !streaming;
-    const timeoutMs = apiRead
-      ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS)
-      : upstreamTimeout;
+    const timeoutMs = appsAI
+      ? numeric(env.APPS_AI_TIMEOUT_MS, 65000)
+      : apiRead ? numeric(env.API_READ_TIMEOUT_MS, DEFAULT_API_READ_TIMEOUT_MS) : upstreamTimeout;
 
     if (isWrite) {
       const response = await forward(request, target, env, timeoutMs);
@@ -167,7 +170,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
       if (response === TRANSPORT_FAILED) return requestFailure(502, "upstream_transport_failed");
       if (response !== CONNECTION_REFUSED) return response;
       markFailure(origin.toString());
-      if (canonicalWrites) return maintenanceResponse("write_com2_canonical_refused");
+      if (canonicalWrites || appsAI || bookAIRecords) return maintenanceResponse("write_com2_canonical_refused");
       return fallback(request, env, true);
     }
 
@@ -186,6 +189,7 @@ export function createFront({ fetchImpl = (...args) => fetch(...args), now = () 
         markFailure(origin.toString());
       }
     }
+    if (bookAIRecords) return maintenanceResponse("bookai_records_com2_unavailable");
     return fallback(request, env, false);
   };
 }

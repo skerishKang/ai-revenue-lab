@@ -14,7 +14,7 @@
       const runtime=root.storyMemoryUniversalSource;
       runtime.setMemoryProvider(({source})=>{
         try{
-          const store=JSON.parse(root.localStorage?.getItem('storymemory.store.v1')||'null');
+          const store=JSON.parse(root.BookAIStorage?.getItem('storymemory.store.v1')||'null');
           const rows=Array.isArray(store?.memories)?store.memories:[];
           const contentId=source?.metadata?.contentId||null;
           const contentTitle=source?.metadata?.contentTitle||source?.title||null;
