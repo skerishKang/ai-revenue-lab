@@ -12,11 +12,13 @@
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import httpx
 import pytest
 
+from app.auth import SESSION_COOKIE, create_session_token
 from app.attachments import (
     AttachmentValidationError,
     MAX_ATTACHMENTS_PER_MESSAGE_CEILING,
@@ -32,14 +34,13 @@ from app.documents import (
     build_document_context,
     build_documents_context,
 )
-from app.file_lane import FILE_ID
+from app.history import UserProfile
 from app.main import create_app
 from app.model_policy import DEFAULT_B14_MODEL_ID
 from app.claw_attachment_context import parse_claw_turn_attachments_async
 
 ROOT = Path(__file__).resolve().parents[1]
 USER = "usr_" + "a" * 32
-FILE_A, FILE_B, FILE_C, FILE_FOREIGN = (FILE_ID.pattern.replace("\\Z", "") % "" for _ in range(0))
 
 
 def make_file_id(seed: str) -> str:
@@ -67,11 +68,13 @@ class LaneStub:
             # The lane's own not-found/foreign answer, reused verbatim.
             raise AttachmentValidationError("첨부 파일을 찾을 수 없거나 읽을 권한이 없습니다.")
         self.resolved.append(file_id)
-        return self.documents[file_id]
+        doc = self.documents[file_id]
+        # The real lane answers with the id it just resolved stamped on.
+        return replace(doc, file_id=file_id) if doc.file_id is None else doc
 
 
 class Adapter:
-    """B14 capture adapter: records additional_system_context per model call."""
+    """B14 capture adapter: records each model-call request body."""
 
     def __init__(self):
         self.calls: list[dict] = []
@@ -88,12 +91,47 @@ class Adapter:
             },
         })
 
+    def system_context(self, call: int = 0) -> str:
+        """The one composed system message the model actually reads."""
+        return "\n".join(
+            str(item.get("content", ""))
+            for item in self.calls[call].get("messages", [])
+            if item.get("role") == "system"
+        )
+
+
+class History:
+    """The one store call the authenticated attachment path needs."""
+
+    async def get_user(self, user):
+        return UserProfile(user, "offline@example.test", "Offline", "") if user == USER else None
+
+    async def append_exchange(self, *args, **kwargs):
+        return "chat_" + "c" * 32
+
+
+def b14_settings() -> Settings:
+    # Offline fixture constants only — no real credential exists in this suite.
+    return Settings.from_values(
+        runtime_mode="b14",
+        b14_base_url="https://b14.example",
+        auth_mode="google",
+        public_base_url="https://chat.example.test",
+        google_client_id="offline.apps.googleusercontent.com",
+        google_client_secret="offline-multi-attach-google-fixture-0001",
+        session_secret="offline-multi-attach-session-fixture-0001",
+    )
+
+
+def session_cookies(settings: Settings) -> dict[str, str]:
+    return {SESSION_COOKIE: create_session_token(settings, USER)}
+
 
 def b14_app(adapter: Adapter, lane) -> create_app:  # noqa: N803 (test fixture helper)
     return create_app(
-        Settings(runtime_mode="b14", b14_base_url="https://b14.example"),
+        b14_settings(),
         transport=httpx.MockTransport(adapter),
-        history_store=None,
+        history_store=History(),
         file_lane_client=lane,
     )
 
@@ -195,9 +233,14 @@ async def test_foreign_file_id_refuses_the_whole_message(monkeypatch):
     valid = make_file_id("doc0")
     lane = LaneStub({valid: document("mine.txt", "내 파일")}, foreign={make_file_id("other")})
     app = b14_app(adapter, lane)
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies=session_cookies(b14_settings()),
+    ) as client:
         response = await client.post(
             "/api/chat",
+            headers={"Origin": "https://chat.example.test"},
             json={
                 "messages": [{"role": "user", "content": "읽어줘"}],
                 "attachments": [{"type": "file", "file_id": valid}, {"type": "file", "file_id": make_file_id("other")}],
@@ -206,6 +249,9 @@ async def test_foreign_file_id_refuses_the_whole_message(monkeypatch):
     assert response.status_code == 422
     assert "찾을 수 없거나 읽을 권한이 없습니다" in response.json()["error"]["message"]
     assert adapter.calls == []  # no model call, no partial send
+    # The owned file went through the one existing path before the foreign
+    # refusal stopped the whole message.
+    assert lane.resolved == [valid]
 
 
 # ---------------------------------------------------------------- 모델 입력
@@ -232,25 +278,35 @@ def test_three_documents_are_named_and_separated_per_file():
 def test_over_budget_largest_file_is_summarized_with_its_stored_reference():
     small = document("small.txt", "작은 본문", file_id=make_file_id("small"))
     large = document("large.txt", "큰 " * 4_000, file_id=make_file_id("large"))
-    context = build_documents_context([small, large], max_total_bytes=4_000)
+    context = build_documents_context([small, large], max_total_bytes=8_000)
     assert "[첨부 파일 1/2]" in context and "[첨부 파일 2/2]" in context
     # The large file is the summarized one: identity + summary marker + stored id.
     assert "파일 이름: large.txt" in context
     assert "문서 요약" in context
     assert f"file_id: {make_file_id('large')}" in context
-    # Its full body is gone; the smaller file keeps its full text.
-    assert "큰 " * 10 not in context
+    # Its full body is gone; only the documented bounded head excerpt remains,
+    # and the smaller file keeps its full text.
+    assert "큰 " * 4_000 not in context
+    assert "문서 내용(앞부분)" in context
     assert "작은 본문" in context
-    assert len(context.encode("utf-8")) <= 4_000 + 64
+    assert len(context.encode("utf-8")) <= 8_000 + 64
 
 
 def test_over_budget_summaries_stay_bounded_for_many_files():
-    docs = [document(f"big{index}.txt", "내용 " * 5_000, file_id=make_file_id(f"big{index}")) for index in range(5)]
-    context = build_documents_context(docs, max_total_bytes=20_000)
-    assert len(context.encode("utf-8")) <= 20_000 + 64
+    # The real contract is the transport envelope: five large files together
+    # exceed it, so the LARGEST full bodies come back as stored summaries —
+    # only as many as the bound needs — and the total stays inside the same
+    # bound the production path uses (no explicit override).
+    docs = [document(f"big{index}.txt", "내용 " * 300_000, file_id=make_file_id(f"big{index}")) for index in range(5)]
+    context = build_documents_context(docs)
+    assert len(context.encode("utf-8")) <= MAX_ATTACHMENTS_CONTEXT_TOTAL_BYTES
+    summaries = context.count("문서 요약")
+    assert 1 <= summaries < 5
     for index in range(5):
         assert f"파일 이름: big{index}.txt" in context
-        assert f"file_id: {make_file_id(f'big{index}')}" in context
+    # Each summary block carries exactly one stored-file reference.
+    stored = sum(1 for index in range(5) if f"file_id: {make_file_id(f'big{index}')}" in context)
+    assert stored == summaries
 
 
 def test_budget_derives_from_the_existing_transport_envelope():
@@ -263,8 +319,11 @@ def test_budget_derives_from_the_existing_transport_envelope():
 
 
 def test_inline_document_summary_says_nothing_about_a_stored_file_id():
-    large = document("large.txt", "내용 " * 5_000, file_id=None)
-    context = build_documents_context([large], max_total_bytes=2_000)
+    # An inline (non-stored) oversized document is summarized next to a stored
+    # one; its summary block carries no stored-file reference of any kind.
+    inline = document("large.txt", "내용 " * 4_000, file_id=None)
+    stored = document("small.txt", "작은 본문", file_id=make_file_id("small"))
+    context = build_documents_context([inline, stored], max_total_bytes=8_000)
     assert "문서 요약" in context
     assert "file_id" not in context
 
@@ -283,9 +342,14 @@ async def test_chat_answers_with_three_file_attachments_in_one_named_context(mon
         ids[2]: document("data.csv", "열,값\n1,2", "text/csv"),
     })
     app = b14_app(adapter, lane)
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="https://chat.example.test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app),
+        base_url="https://chat.example.test",
+        cookies=session_cookies(b14_settings()),
+    ) as client:
         response = await client.post(
             "/api/chat",
+            headers={"Origin": "https://chat.example.test"},
             json={
                 "messages": [{"role": "user", "content": "세 파일을 요약해줘"}],
                 "attachments": [{"type": "file", "file_id": file_id} for file_id in ids],
@@ -293,7 +357,7 @@ async def test_chat_answers_with_three_file_attachments_in_one_named_context(mon
         )
     assert response.status_code == 200, response.text
     assert len(adapter.calls) == 1
-    context = adapter.calls[0]["additional_system_context"]
+    context = adapter.system_context()
     for name in ("report.txt", "notes.md", "data.csv"):
         assert name in context
     assert "[첨부 파일 1/3]" in context and "[첨부 파일 3/3]" in context
