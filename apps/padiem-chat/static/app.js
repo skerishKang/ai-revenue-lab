@@ -42,11 +42,7 @@
   const attachmentFileInput = document.getElementById("attachmentFileInput");
   const attachmentButton = document.getElementById("attachmentButton");
   const attachmentTray = document.getElementById("attachmentTray");
-  const attachmentThumb = document.getElementById("attachmentThumb");
-  const attachmentKind = document.getElementById("attachmentKind");
-  const attachmentName = document.getElementById("attachmentName");
-  const attachmentSize = document.getElementById("attachmentSize");
-  const removeAttachment = document.getElementById("removeAttachment");
+  const attachmentChipList = document.getElementById("attachmentChipList");
   const documentStarterButton = document.getElementById("documentStarterButton");
   const runtimeNote = document.getElementById("runtimeNote");
   const loginButton = document.getElementById("loginButton");
@@ -212,7 +208,10 @@
   // identical to the original send. Cleared on conversation reset.
   let lastCompletedAnswerRequest = null;
   let conversationEpoch = 0;
-  let selectedAttachment = null;
+  // #261102 다중 첨부: 한 메시지가 운반할 첨부 칩 목록. 파일별 거부 상태는
+  // 그 칩이 직접 들고, 유효한 칩만 전송 페이로드에 실린다.
+  let selectedAttachments = [];
+  let attachmentKeyCounter = 0;
   let authState = { ready: false, authenticated: false, user: null, history_ready: false, project_files_ready: false };
   // UI read generations contain no account identifier. Every verified auth
   // refresh invalidates late sidebar responses from the previous session.
@@ -290,7 +289,9 @@
     sendButton.disabled = false;
     input.disabled = inFlight;
     attachmentButton.disabled = inFlight;
-    removeAttachment.disabled = inFlight;
+    attachmentChipList?.querySelectorAll(".attachment-remove").forEach((button) => {
+      button.disabled = inFlight;
+    });
     editProjectButton.disabled = inFlight;
     exitProjectButton.disabled = inFlight;
     cancelStreamButton.hidden = !inFlight;
@@ -501,11 +502,12 @@
     const fragment = document.getElementById("userMessageTemplate").content.cloneNode(true);
     const bubble = fragment.querySelector(".message-bubble");
     bubble.textContent = text;
-    if (attachment) {
+    const attachmentItems = Array.isArray(attachment) ? attachment : (attachment ? [attachment] : []);
+    for (const item of attachmentItems) {
       const meta = document.createElement("span");
       meta.className = "message-attachment-meta";
-      const label = attachment.type === "image" ? uiT("attachment-photo") : uiT("attachment-document");
-      meta.textContent = `${label} · ${attachment.name} · ${formatBytes(attachment.byteSize)}`;
+      const label = item.type === "image" ? uiT("attachment-photo") : uiT("attachment-document");
+      meta.textContent = `${label} · ${item.name} · ${formatBytes(item.byteSize)}`;
       bubble.appendChild(meta);
     }
     // Plan 4 (Glass only, shown via CSS): profile chip mirrors the signed-in
@@ -747,7 +749,7 @@
       activeProject = retryContext.project;
       renderProjectState();
       const success = await requestAnswer(retryMessages, retrySkill, retryAttachment, retryContext, clawGeneralRequest);
-      if (success && selectedAttachment === retryAttachment) clearAttachment();
+      if (success && selectedAttachments === retryAttachment) clearAttachment();
     }, { once: true });
     box.append(strong, p, retry);
     return box;
@@ -825,39 +827,74 @@
     return DOCUMENT_EXTENSION_TYPES.get(extensionOf(file.name)) || null;
   }
   function clearAttachment() {
-    if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
-    selectedAttachment = null;
+    for (const item of selectedAttachments) {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    }
+    selectedAttachments = [];
     attachmentFileInput.value = "";
-    attachmentThumb.removeAttribute("src");
-    attachmentThumb.hidden = true;
-    attachmentKind.hidden = true;
-    attachmentName.textContent = "";
-    attachmentSize.textContent = "";
-    attachmentTray.hidden = true;
+    renderAttachmentChips();
     setNote(idleNote());
     updateComposer();
   }
-  function renderSelectedAttachment() {
-    if (!selectedAttachment) {
+  function attachmentCountLimit() {
+    const configured = Number(window.PadiemAttachmentCapabilities?.maxPerMessage);
+    return Number.isSafeInteger(configured) && configured >= 1
+      ? Math.min(configured, 10) : 5;
+  }
+  function attachmentTrayNote() {
+    const valid = selectedAttachments.filter((item) => !item.invalid);
+    if (!valid.length) return idleNote();
+    if (valid.some((item) => String(item.name || "").toLowerCase().endsWith(".hwpx"))) {
+      return uiT("attachment-hwpx-note");
+    }
+    return valid.length === 1 && valid[0].type === "image"
+      ? uiT("attachment-image-note")
+      : uiT("attachment-document-note");
+  }
+  function removeAttachmentItem(item) {
+    if (inFlight) return;
+    const index = selectedAttachments.indexOf(item);
+    if (index < 0) return;
+    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    selectedAttachments.splice(index, 1);
+    renderAttachmentChips();
+    setNote(attachmentTrayNote());
+    updateComposer();
+  }
+  function renderAttachmentChips() {
+    if (!attachmentChipList) return;
+    attachmentChipList.replaceChildren();
+    if (!selectedAttachments.length) {
       attachmentTray.hidden = true;
       return;
     }
-    if (selectedAttachment.type === "image") {
-      attachmentThumb.src = selectedAttachment.previewUrl;
-      attachmentThumb.hidden = false;
-      attachmentKind.hidden = true;
-      setNote(uiT("attachment-image-note"));
-    } else {
-      attachmentThumb.removeAttribute("src");
-      attachmentThumb.hidden = true;
-      attachmentKind.hidden = false;
-      attachmentKind.textContent = extensionOf(selectedAttachment.name).replace(".", "").toUpperCase() || "DOC";
-      setNote(extensionOf(selectedAttachment.name) === ".hwpx"
-        ? uiT("attachment-hwpx-note")
-        : uiT("attachment-document-note"));
+    for (const item of selectedAttachments) {
+      const chip = document.createElement("li");
+      chip.className = "attachment-chip" + (item.invalid ? " attachment-chip-invalid" : "");
+      const icon = document.createElement("span");
+      icon.className = "attachment-chip-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = item.type === "image"
+        ? "IMG"
+        : (extensionOf(item.name).replace(".", "").toUpperCase() || "DOC");
+      const copy = document.createElement("div");
+      copy.className = "attachment-chip-copy";
+      const name = document.createElement("strong");
+      name.textContent = item.name;
+      const detail = document.createElement("small");
+      detail.textContent = item.invalid ? (item.error || uiT("file-read-failed")) : formatBytes(item.byteSize);
+      copy.append(name, detail);
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "attachment-remove";
+      remove.textContent = "×";
+      remove.setAttribute("data-locale-aria-label", "attachment-remove");
+      remove.setAttribute("aria-label", uiT("attachment-remove"));
+      remove.disabled = inFlight;
+      remove.addEventListener("click", () => removeAttachmentItem(item));
+      chip.append(icon, copy, remove);
+      attachmentChipList.appendChild(chip);
     }
-    attachmentName.textContent = selectedAttachment.name;
-    attachmentSize.textContent = formatBytes(selectedAttachment.byteSize);
     attachmentTray.hidden = false;
   }
   function readAsText(file) {
@@ -889,41 +926,74 @@
     if (file.size < 1) throw new Error(uiT("image-data-empty"));
     return { type: "image", name: file.name || "image", mediaType: file.type, file, byteSize: file.size, previewUrl: URL.createObjectURL(file) };
   }
-  async function selectAttachment(file) {
-    if (!file) return;
-    try {
-      let next;
-      // #2505: the Claw turn reads attached documents through the same path as
-      // Chat, but the P01 Engine execution request has no image input yet. The
-      // image is refused here, before any upload, instead of being sent and
-      // answered as if nothing had been read. Chat keeps images unchanged.
-      if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
-        throw new Error(uiT("claw-image-attachment-unsupported"));
+  async function addAttachmentFiles(files) {
+    // #261102 다중 첨부: 여러 파일을 한 번에 고르거나 끌어다 놓아도 각 파일은
+    // 독립한 칩이 된다. 파일별 거부(구형 hwp 안내 등)는 그 칩에만 표시되고,
+    // 유효한 칩들만 전송 페이로드에 실린다.
+    const list = Array.from(files || []);
+    if (!list.length) return;
+    const limit = attachmentCountLimit();
+    for (const file of list) {
+      const validCount = selectedAttachments.filter((item) => !item.invalid).length;
+      try {
+        if (validCount >= limit) {
+          throw new Error(uiT("attachment-count-limit", { count: limit }));
+        }
+        let next;
+        // #2505: the Claw turn reads attached documents through the same path as
+        // Chat, but the P01 Engine execution request has no image input yet. The
+        // image is refused here, before any upload, instead of being sent and
+        // answered as if nothing had been read. Chat keeps images unchanged.
+        if (ALLOWED_IMAGE_TYPES.has(file.type) && conversationProduct === PRODUCT_CLAW) {
+          throw new Error(uiT("claw-image-attachment-unsupported"));
+        }
+        const useFileLane = window.PadiemFileLane?.shouldUse(file);
+        const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
+        if (useFileLane && fileLaneAvailable) {
+          next = window.PadiemFileLane.pending(file);
+        } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
+          throw new Error(uiT("file-lane-unavailable"));
+        } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
+        else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
+        else next = await readDocumentFile(file);
+        // 사진·브라우저에서 읽은 원본 문서는 하나의 요청 프레임에만 실을 수 있으므로
+        // 단독 첨부만 허용한다. 문서(tus/텍스트) 여러 개는 자유롭게 조합된다.
+        const rawByteAttachment = Boolean(next.file);
+        const mixedWithExisting = validCount > 0;
+        if (mixedWithExisting && (rawByteAttachment
+            || selectedAttachments.some((item) => !item.invalid && item.file))) {
+          throw new Error(uiT("attachment-raw-single"));
+        }
+        attachmentKeyCounter += 1;
+        selectedAttachments.push({ ...next, key: `att-${attachmentKeyCounter}` });
+      } catch (error) {
+        attachmentKeyCounter += 1;
+        selectedAttachments.push({
+          key: `att-${attachmentKeyCounter}`,
+          invalid: true,
+          type: "document",
+          name: file && file.name ? file.name : "파일",
+          byteSize: file && typeof file.size === "number" ? file.size : 0,
+          error: error instanceof Error ? error.message : uiT("file-read-failed"),
+        });
       }
-      const useFileLane = window.PadiemFileLane?.shouldUse(file);
-      const fileLaneAvailable = useFileLane && await window.PadiemFileLane.available();
-      if (useFileLane && fileLaneAvailable) {
-        next = window.PadiemFileLane.pending(file);
-      } else if (useFileLane && window.PadiemFileLane.isBinary(file)) {
-        throw new Error(uiT("file-lane-unavailable"));
-      } else if (ALLOWED_IMAGE_TYPES.has(file.type)) next = await selectImage(file);
-      else if (binaryDocuments && typeof binaryDocuments.canRead === "function" && binaryDocuments.canRead(file)) next = await binaryDocuments.read(file);
-      else next = await readDocumentFile(file);
-      if (selectedAttachment && selectedAttachment.previewUrl) URL.revokeObjectURL(selectedAttachment.previewUrl);
-      selectedAttachment = next;
-      renderSelectedAttachment();
-    } catch (error) {
-      attachmentFileInput.value = "";
-      setNote(error instanceof Error ? error.message : uiT("file-read-failed"), "error");
     }
+    attachmentFileInput.value = "";
+    renderAttachmentChips();
+    setNote(attachmentTrayNote());
+    updateComposer();
   }
-  function attachmentPayload(attachment) {
-    if (!attachment) return undefined;
-    if (attachment.fileId) return [{ type: "file", file_id: attachment.fileId }];
-    if (attachment.file) {
-      return [{ type: attachment.type, name: attachment.name, media_type: attachment.mediaType, file: attachment.file }];
-    }
-    return [{ type: "document", name: attachment.name, media_type: attachment.mediaType, text: attachment.text }];
+  function attachmentPayload(list) {
+    const items = (Array.isArray(list) ? list : list ? [list] : [])
+      .filter((item) => item && !item.invalid);
+    if (!items.length) return undefined;
+    return items.map((item) => {
+      if (item.fileId) return { type: "file", file_id: item.fileId };
+      if (item.file) {
+        return { type: item.type, name: item.name, media_type: item.mediaType, file: item.file };
+      }
+      return { type: item.type, name: item.name, media_type: item.mediaType, text: item.text };
+    });
   }
 
   function clearHistoryUI() {
@@ -960,7 +1030,7 @@
     projectsList.querySelectorAll(".project-item").forEach((button) => {
       button.setAttribute("aria-current", activeProject && button.dataset.projectId === activeProject.id ? "true" : "false");
     });
-    if (!selectedAttachment) setNote(idleNote());
+    if (!selectedAttachments.length) setNote(idleNote());
   }
   // Static, accessible sidebar actions: keep the translated button text
   // and ARIA labels; only replace the low-contrast visual affordance.
@@ -3472,17 +3542,24 @@
       // direct-B14 /api/chat/stream fallback; the standalone Padiem Chat composer
       // keeps /api/chat/stream unchanged, and the explicit manual form submits
       // through clawManualForm below, never here.
-      if (attachment?.fileLane && !attachment.fileId) {
-        // #6579 step 3: chunk progress rides the same status line; the shared
-        // module resumes a drop and owns the guidance shown on failure.
-        const reference = await window.PadiemFileLane.upload(attachment.file, controller.signal, (state) => {
-          if (!projectFileStatus) return;
-          setNote(state.phase === "finalizing"
-            ? uiT("document-saving")
-            : `${uiT("document-saving")} ${state.percent}%`, "normal");
-        });
-        attachment = { ...attachment, ...reference };
+      const attachmentItems = Array.isArray(attachment) ? attachment : (attachment ? [attachment] : []);
+      const uploadedItems = [];
+      for (const item of attachmentItems) {
+        let current = item;
+        if (current.fileLane && !current.fileId) {
+          // #6579 step 3: chunk progress rides the same status line; the shared
+          // module resumes a drop and owns the guidance shown on failure.
+          const reference = await window.PadiemFileLane.upload(current.file, controller.signal, (state) => {
+            if (!projectFileStatus) return;
+            setNote(state.phase === "finalizing"
+              ? uiT("document-saving")
+              : `${uiT("document-saving")} ${state.percent}%`, "normal");
+          });
+          current = { ...current, ...reference };
+        }
+        uploadedItems.push(current);
       }
+      attachment = uploadedItems;
       const attachments = attachmentPayload(attachment);
       if (attachments) payload.attachments = attachments;
       if (contextSnapshot.conversationId) payload.conversation_id = contextSnapshot.conversationId;
@@ -3630,7 +3707,7 @@
     const product = clawGeneralRequest ? PRODUCT_CLAW : PRODUCT_CHAT;
     conversationState.setProduct?.(product);
     if (selectedSkill) conversationState.setSkill(selectedSkill);
-    const attachmentSnapshot = selectedAttachment;
+    const attachmentSnapshot = selectedAttachments;
     const contextSnapshot = { product, conversationId: conversationState.getConversationId(product), project: activeProject };
     // PADIEM Custom is Chat-only and text-only. Refuse here, with the typed
     // prompt preserved, instead of letting the server reject a mixed request.
@@ -3639,7 +3716,7 @@
       setNote(uiT("custom-chat-only"), "error");
       return;
     }
-    if (customSelected && attachmentSnapshot) {
+    if (customSelected && attachmentSnapshot.length) {
       setNote(uiT("custom-text-only"), "error");
       return;
     }
@@ -3655,7 +3732,7 @@
     updateComposer();
     const outbound = conversationState.outboundWithUser(prompt);
     const success = await requestAnswer(outbound, conversationState.getSkill(), attachmentSnapshot, contextSnapshot, clawGeneralRequest);
-    if (success && selectedAttachment === attachmentSnapshot) clearAttachment();
+    if (success && selectedAttachments === attachmentSnapshot) clearAttachment();
   }
 
   // Desktop layout preference is ephemeral: never change mobile overlay behavior,
@@ -3749,10 +3826,24 @@
     });
   }
   attachmentFileInput.addEventListener("change", () => {
-    const [file] = attachmentFileInput.files || [];
-    selectAttachment(file);
+    const files = Array.from(attachmentFileInput.files || []);
+    if (files.length) void addAttachmentFiles(files);
   });
-  removeAttachment.addEventListener("click", clearAttachment);
+  // #261102: 끌어다 놓기로도 여러 파일을 한 번에 첨부한다.
+  const composerForm = document.getElementById("composerForm");
+  if (composerForm) {
+    composerForm.addEventListener("dragover", (event) => {
+      if (inFlight) return;
+      event.preventDefault();
+      if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+    });
+    composerForm.addEventListener("drop", (event) => {
+      if (inFlight) return;
+      event.preventDefault();
+      const files = event.dataTransfer ? Array.from(event.dataTransfer.files || []) : [];
+      if (files.length) void addAttachmentFiles(files);
+    });
+  }
   if (projectsNavButton) projectsNavButton.addEventListener("click", () => {
     if (!projectsReady) return;
     if (projects.length === 0) openProjectDialog();
@@ -3969,13 +4060,13 @@
     setNavActive();
     if (projectsReady) renderProjects();
     renderProjectState();
-    if (!selectedAttachment) setNote(idleNote());
+    if (!selectedAttachments.length) setNote(idleNote());
     syncComposerForClaw(shell.dataset.state === "claw");
     const activeInboxKind = document.getElementById("clawWorkspace")?.dataset.inboxKind;
     if (activeInboxKind === "tasks" || activeInboxKind === "alerts") loadClawInbox(activeInboxKind);
   });
   window.addEventListener("padiem:attachmentcapabilitychange", () => {
-    if (!selectedAttachment) setNote(idleNote());
+    if (!selectedAttachments.length) setNote(idleNote());
   });
 
   // Claw first-class workspace & MVP usability wiring (#2299)
