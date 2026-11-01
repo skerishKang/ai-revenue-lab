@@ -736,3 +736,32 @@ def test_operator_summary_exposes_effective_completed_memory_guard():
     assert "max_response_bytes_effect=no" in summary
     assert f"completed_json_memory_budget_bytes={COMPLETED_CAP}" in summary
     assert f"sse_frame_and_error_resource_bytes={CAP}" in summary
+
+
+@pytest.mark.asyncio
+async def test_com2_completed_response_above_worker_cap_and_config(monkeypatch):
+    monkeypatch.setenv("B14_HOST", "127.0.0.1")
+    monkeypatch.delenv("B14_COMPLETED_RESPONSE_MAX_BYTES", raising=False)
+    assert plat._completed_response_cap() is None
+    body = b"x" * (COMPLETED_CAP + 1)
+    response = _StubResponse([body], headers={"content-length": str(len(body))})
+    assert await plat._read_bounded_body(response, cap=plat._completed_response_cap()) == body
+    monkeypatch.setenv("B14_COMPLETED_RESPONSE_MAX_BYTES", str(COMPLETED_CAP))
+    with pytest.raises(UpstreamResponseTooLarge):
+        await plat._read_bounded_body(_StubResponse([body]), cap=plat._completed_response_cap())
+    monkeypatch.delenv("B14_HOST")
+    assert plat._completed_response_cap() == COMPLETED_CAP
+
+
+@pytest.mark.asyncio
+async def test_com2_generic_completed_above_worker_cap(monkeypatch, live_keyless_route):
+    monkeypatch.setenv("B14_HOST", "127.0.0.1")
+    monkeypatch.delenv("B14_COMPLETED_RESPONSE_MAX_BYTES", raising=False)
+    answer = "Z" * (COMPLETED_CAP + 1)
+    transport = ChunkCountingTransport(json.dumps(_completed_doc(answer)).encode())
+    result = await plat.call_platform_chat_completions(
+        model_id=MOCK_ID, upstream_model=MOCK_UPSTREAM,
+        provider="Synthetic test-only gateway", platform_provider_id=MOCK_PROVIDER,
+        messages=[{"role": "user", "content": "long"}], transport=transport,
+    )
+    assert result["choices"][0]["message"]["content"] == answer
