@@ -9,15 +9,12 @@
 - 뚫림(결함) → 수정하지 않고 xfail로 관측한다(수정은 CTO가 다른 레인에 배정).
 - PC 쪽 책임(서버가 판단할 수 없는 것) → 판단 불가로 기록한다(보고 표에만).
 
-관측된 결함(2026-11-02 컴1 실측):
-- D1(중간) — 16진수 IP 리터럴이 공용 URL 권위를 통과한다. http://0x7f000001/ ·
-  http://0X7F000001/ · http://0x7f.0.0.1/ · http://0x7f000001./ 이 browser_open에
-  그대로 받아들여져 dispatch 큐까지 간다. Chromium은 이 형태를 127.0.0.1로
-  해석하므로 "공개 주소만" 계약이 깨진다 — 소유자 PC의 루프백 서비스가 모형 주도
-  브라우저로 열린다. 위치: packages/padiem-ai-core/padiem_ai_core/web_runtime.py
-  normalize_public_url — 숫자 호스트 차단 정규식이 [0-9.]+라서 x 표기를 호스트
-  이름으로 통과시킨다. 레인은 이 권위를 재구현하지 않고 위임하는 것이 계약이므로
-  apps/padiem-chat/app/claw_pc_browser_command.py:79 가 관측 지점이다.
+결함 대장(2026-11-02 컴1 실측):
+- D1(중간) — 16진수 IP 리터럴 통과: 수정 완료. packages/padiem-ai-core/
+  padiem_ai_core/web_runtime.py normalize_public_url에 inet_aton 판정
+  (_inet_aton_address)을 더해 16진·8진·혼합 표기도 같은 전역 주소 규칙으로
+  판정한다. 공개 주소(0x08080808=8.8.8.8)는 기존 공개 IP와 동일하게 통과.
+  아래 hex 시험은 xfail에서 정상 단언으로 전환됐다(이 브랜치 위 수정 커밋).
 
 판단 불가(PC 쪽 책임 — 보고만, 시험 없음):
 - 리다이렉트로 내부 주소 도달: 서버는 리터럴 URL만 판단한다(web_runtime 문서 명시).
@@ -80,17 +77,22 @@ def test_hostile_urls_never_reach_a_command(value):
     "http://0x7f000001/", "http://0X7F000001/", "http://0x7f.0.0.1/",
     "http://0x7f000001./", "http://0x7f.1/",
 ])
-@pytest.mark.xfail(reason=(
-    "결함 D1(중간): 16진수 IP 리터럴이 normalize_public_url을 통과한다 — 숫자 호스트"
-    " 차단 정규식이 [0-9.]+라서 x 표기를 호스트 이름으로 다룬다. Chromium은 이 형태를"
-    " 127.0.0.1로 해석하므로 루프백이 모형 주도 브라우저로 열린다. 위치: "
-    " packages/padiem-ai-core/padiem_ai_core/web_runtime.py normalize_public_url"
-    " (레인 관측 지점 app/claw_pc_browser_command.py:79 — 위임 계약). 수정은 CTO 배정."
-), strict=False)
 def test_hex_ip_literals_are_refused_as_internal(value):
+    """D1 수정(2026-11-02): inet_aton 표기도 주소로 판정해 같은 전역 주소 규칙을
+    적용한다 — 이전 xfail 관측(16진수 리터럴이 127.0.0.1로 열림)이 닫혔다."""
     with pytest.raises(PcBrowserCommandError) as open_error:
         browser_arguments("browser_open", {"url": value})
     assert open_error.value.code == "browser_url_invalid"
+
+
+def test_public_hex_ip_keeps_the_existing_public_ip_rules():
+    """공개 16진수 IP(0x08080808 = 8.8.8.8)는 기존 공개 IP와 같게 통과하며,
+    호스트 표기는 그대로 남는다(다른 공개 IP 리터럴과 동일 처리)."""
+    arguments = browser_arguments("browser_open", {"url": "http://0x08080808/"})
+    assert arguments["url"] == "http://0x08080808/"
+    envelope = browser_envelope("browser_open", page_url=None,
+                                arguments={"url": "http://0x08080808/"})
+    assert envelope["arguments"] == {"url": "http://0x08080808/"}
 
 
 def test_redirect_judgment_is_literal_only_by_design():
