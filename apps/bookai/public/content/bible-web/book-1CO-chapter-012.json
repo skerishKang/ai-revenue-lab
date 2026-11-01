@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:012",
+  "unit_ordinal": 1074,
+  "unit_label": "1CO 12",
+  "book_code": "1CO",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:12:1",
+      "sequence": 28632,
+      "chapter_label": "1CO 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Now concerning spiritual things, brothers, I don’t want you to be ignorant.",
+      "ko": "형제들아 신령한 것에 대하여는 내가 너희의 알지 못하기를 원치 아니하노니",
+      "source_text_hash": "5476816ef7e0cafc077b0a4f43979fa083e7a625c5c90928891f7ddfa04fa083",
+      "translation_text_hash": "8639d3cff72087e24aef5c6189cb917f2cad75be8d162308dbbe1f5ab70e0c99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 신령한 것에 대하여는 내가 너희의 알지 못하기를 원치 아니하노니"
+      ],
+      "raw_text_hashes": [
+        "8639d3cff72087e24aef5c6189cb917f2cad75be8d162308dbbe1f5ab70e0c99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:2",
+      "sequence": 28633,
+      "chapter_label": "1CO 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "You know that when you were heathen, you were led away to those mute idols, however you might be led.",
+      "ko": "너희도 알거니와 너희가 이방인으로 있을 때에 말 못하는 우상에게로 끄는 그대로 끌려 갔느니라",
+      "source_text_hash": "6519016f2edcb1d911dc4b4fcce431211d2df2078796ae18e84a129be94637b2",
+      "translation_text_hash": "464dc66146d4baf245bc84dfffb511017eda7f2aece18a20a1fc5c1b6363c5fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희도 알거니와 너희가 이방인으로 있을 때에 말 못하는 우상에게로 끄는 그대로 끌려 갔느니라"
+      ],
+      "raw_text_hashes": [
+        "464dc66146d4baf245bc84dfffb511017eda7f2aece18a20a1fc5c1b6363c5fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:3",
+      "sequence": 28634,
+      "chapter_label": "1CO 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore I make known to you that no man speaking by God’s Spirit says, “Jesus is accursed.” No one can say, “Jesus is Lord,” but by the Holy Spirit.",
+      "ko": "그러므로 내가 너희에게 알게 하노니 하나님의 영으로 말하는 자는 누구든지 예수를 저주할 자라 하지 않고 또 성령으로 아니하고는 누구든지 예수를 주시라 할 수 없느니라",
+      "source_text_hash": "99946f342940dc5497db893b69e6773ee138ca776495136484042144fe426799",
+      "translation_text_hash": "38bf9f3c5bfe2094d526605e43e03b560c49027d79be83f09407733bf11e403b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 알게 하노니 하나님의 영으로 말하는 자는 누구든지 예수를 저주할 자라 하지 않고 또 성령으로 아니하고는 누구든지 예수를 주시라 할 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "38bf9f3c5bfe2094d526605e43e03b560c49027d79be83f09407733bf11e403b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:4",
+      "sequence": 28635,
+      "chapter_label": "1CO 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Now there are various kinds of gifts, but the same Spirit.",
+      "ko": "은사는 여러 가지나 성령은 같고",
+      "source_text_hash": "b7cc0cab1199033ae251d9442117f2ae2852ef1f621433357856c923364146c0",
+      "translation_text_hash": "5db2ad18b74138c398d30032422d57ddc50b29f7142cb4324ff1867f86e9f5a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은사는 여러 가지나 성령은 같고"
+      ],
+      "raw_text_hashes": [
+        "5db2ad18b74138c398d30032422d57ddc50b29f7142cb4324ff1867f86e9f5a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:5",
+      "sequence": 28636,
+      "chapter_label": "1CO 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "There are various kinds of service, and the same Lord.",
+      "ko": "직임은 여러 가지나 주는 같으며",
+      "source_text_hash": "07e653638a7526800c2ed04075b1ad60801814fdb53c017fffa7d61fd4dce3c7",
+      "translation_text_hash": "8992e6d8a555669a444a4eb64e914359423cf23dede7c397483c6daf649fd0fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "직임은 여러 가지나 주는 같으며"
+      ],
+      "raw_text_hashes": [
+        "8992e6d8a555669a444a4eb64e914359423cf23dede7c397483c6daf649fd0fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:6",
+      "sequence": 28637,
+      "chapter_label": "1CO 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "There are various kinds of workings, but the same God who works all things in all.",
+      "ko": "또 역사는 여러 가지나 모든 것을 모든 사람 가운데서 역사하시는 하나님은 같으니",
+      "source_text_hash": "613e9cc16e23c57f98222d5770daf5aceb5542438e0e3084dbc7cc62dee38cb5",
+      "translation_text_hash": "9b2b9390baf66a728dfc79d7b0ce74be1776321b7dacabc27025286942c1f19d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 역사는 여러 가지나 모든 것을 모든 사람 가운데서 역사하시는 하나님은 같으니"
+      ],
+      "raw_text_hashes": [
+        "9b2b9390baf66a728dfc79d7b0ce74be1776321b7dacabc27025286942c1f19d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:7",
+      "sequence": 28638,
+      "chapter_label": "1CO 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "But to each one is given the manifestation of the Spirit for the profit of all.",
+      "ko": "각 사람에게 성령의 나타남을 주심은 유익하게 하려 하심이라",
+      "source_text_hash": "40d7f1fdbc2ef4e5ba432230ef109e2eb9e369ddbcf367fccb9a5ee577a7a6e3",
+      "translation_text_hash": "de5675b5def83e060cbdc1487b0d119111c71cdb791adaef5bb9639ba61a3c52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 사람에게 성령의 나타남을 주심은 유익하게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "de5675b5def83e060cbdc1487b0d119111c71cdb791adaef5bb9639ba61a3c52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:8",
+      "sequence": 28639,
+      "chapter_label": "1CO 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "For to one is given through the Spirit the word of wisdom, and to another the word of knowledge according to the same Spirit,",
+      "ko": "어떤이에게는 성령으로 말미암아 지혜의 말씀을, 어떤이에게는 같은 성령을 따라 지식의 말씀을,",
+      "source_text_hash": "198046cdf243afc265c5868f8334f0f6ee78ced0f0fd8bd485cdc9fda4fe8240",
+      "translation_text_hash": "9d98ee2db9dccc723ed4499e6065c3c347a0f9f52ff9ca9861d8251c3347ce9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이에게는 성령으로 말미암아 지혜의 말씀을, 어떤이에게는 같은 성령을 따라 지식의 말씀을,"
+      ],
+      "raw_text_hashes": [
+        "9d98ee2db9dccc723ed4499e6065c3c347a0f9f52ff9ca9861d8251c3347ce9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:9",
+      "sequence": 28640,
+      "chapter_label": "1CO 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "to another faith by the same Spirit, and to another gifts of healings by the same Spirit,",
+      "ko": "다른이에게는 같은 성령으로 믿음을, 어떤이에게는 한 성령으로 병 고치는 은사를,",
+      "source_text_hash": "25e472914bf95ca9e3d32149037cdb5ceda692f06edc6b363f9de456f8038f8e",
+      "translation_text_hash": "74467e046840cf784157bdfbb46b689eb195e18603a3be3b0ab31d55fd78a187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른이에게는 같은 성령으로 믿음을, 어떤이에게는 한 성령으로 병 고치는 은사를,"
+      ],
+      "raw_text_hashes": [
+        "74467e046840cf784157bdfbb46b689eb195e18603a3be3b0ab31d55fd78a187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:10",
+      "sequence": 28641,
+      "chapter_label": "1CO 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "and to another workings of miracles, and to another prophecy, and to another discerning of spirits, to another different kinds of languages, and to another the interpretation of languages.",
+      "ko": "어떤이에게는 능력 행함을, 어떤이에게는 예언함을, 어떤이에게는 영들 분별함을, 다른이에게는 각종 방언 말함을, 어떤이에게는 방언들 통역함을 주시나니",
+      "source_text_hash": "3c0316cc08aa950732d9a52012247a0e7df5e4e2e3b62a24f4a6c4beab81255d",
+      "translation_text_hash": "7b83e3c082cbd10b5fd9792ac0982e5d37c075c3f319cb73a4fd11cfac363c72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이에게는 능력 행함을, 어떤이에게는 예언함을, 어떤이에게는 영들 분별함을, 다른이에게는 각종 방언 말함을, 어떤이에게는 방언들 통역함을 주시나니"
+      ],
+      "raw_text_hashes": [
+        "7b83e3c082cbd10b5fd9792ac0982e5d37c075c3f319cb73a4fd11cfac363c72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:11",
+      "sequence": 28642,
+      "chapter_label": "1CO 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "But the one and the same Spirit produces all of these, distributing to each one separately as he desires.",
+      "ko": "이 모든 일은 같은 한 성령이 행하사 그 뜻대로 각 사람에게 나눠 주시느니라",
+      "source_text_hash": "68a5b790d80c63901c50ba9bad2175bd3f8fd99522954bbbe2eb7a0b91db251b",
+      "translation_text_hash": "faeb94f7f8ee1d2df3f81ab64927338a2188bb30d9fe0cc5abfeb838896bd93f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일은 같은 한 성령이 행하사 그 뜻대로 각 사람에게 나눠 주시느니라"
+      ],
+      "raw_text_hashes": [
+        "faeb94f7f8ee1d2df3f81ab64927338a2188bb30d9fe0cc5abfeb838896bd93f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:12",
+      "sequence": 28643,
+      "chapter_label": "1CO 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "For as the body is one and has many members, and all the members of the body, being many, are one body; so also is Christ.",
+      "ko": "몸은 하나인데 많은 지체가 있고 몸의 지체가 많으나 한 몸임과 같이 그리스도도 그러하니라",
+      "source_text_hash": "3a6c34a1d5c9a3680c28fd2a0cd37c0ea664c20e13a493a369843812546459d1",
+      "translation_text_hash": "3940c179131337ef8472702fdca8f35ee2d426fbb3c00c18cd71e9f6f0b48100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸은 하나인데 많은 지체가 있고 몸의 지체가 많으나 한 몸임과 같이 그리스도도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "3940c179131337ef8472702fdca8f35ee2d426fbb3c00c18cd71e9f6f0b48100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:13",
+      "sequence": 28644,
+      "chapter_label": "1CO 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "For in one Spirit we were all baptized into one body, whether Jews or Greeks, whether bond or free; and were all given to drink into one Spirit.",
+      "ko": "우리가 유대인이나 헬라인이나 종이나 자유자나 다 한 성령으로 세례를 받아 한 몸이 되었고 또 다 한 성령을 마시게 하셨느니라",
+      "source_text_hash": "5f718463c3cca810e6dc36dc4026c2268291bfc1fd832272b58a8e16cfcd6621",
+      "translation_text_hash": "f9521c8916b8d7097327a769e4d1d9ff8708ccbe1612e1707f6fe4e3c858bc3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 유대인이나 헬라인이나 종이나 자유자나 다 한 성령으로 세례를 받아 한 몸이 되었고 또 다 한 성령을 마시게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f9521c8916b8d7097327a769e4d1d9ff8708ccbe1612e1707f6fe4e3c858bc3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:14",
+      "sequence": 28645,
+      "chapter_label": "1CO 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "For the body is not one member, but many.",
+      "ko": "몸은 한 지체뿐 아니요 여럿이니",
+      "source_text_hash": "1afdeab574ccdce047419148be9dc37c2c093598b15ca62e4f43aa3a2d074310",
+      "translation_text_hash": "d3eb4d70348a64eee6b760e293ad18f5834c38ca3afdfe96478711a162d501cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸은 한 지체뿐 아니요 여럿이니"
+      ],
+      "raw_text_hashes": [
+        "d3eb4d70348a64eee6b760e293ad18f5834c38ca3afdfe96478711a162d501cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:15",
+      "sequence": 28646,
+      "chapter_label": "1CO 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "If the foot would say, “Because I’m not the hand, I’m not part of the body,” it is not therefore not part of the body.",
+      "ko": "만일 발이 이르되 나는 손이 아니니 몸에 붙지 아니하였다 할찌라도 이로 인하여 몸에 붙지 아니한 것이 아니요",
+      "source_text_hash": "6d9d0155b8b979f9267d732d7674acfd0988fba8efaa38abd7bf044d89953463",
+      "translation_text_hash": "63ee7c4ea2b2167b35547372fb95429ac01fe54e2795c73db323228a91baafd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 발이 이르되 나는 손이 아니니 몸에 붙지 아니하였다 할찌라도 이로 인하여 몸에 붙지 아니한 것이 아니요"
+      ],
+      "raw_text_hashes": [
+        "63ee7c4ea2b2167b35547372fb95429ac01fe54e2795c73db323228a91baafd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:16",
+      "sequence": 28647,
+      "chapter_label": "1CO 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "If the ear would say, “Because I’m not the eye, I’m not part of the body,” it’s not therefore not part of the body.",
+      "ko": "또 귀가 이르되 나는 눈이 아니니 몸에 붙지 아니하였다 할찌라도 이로 인하여 몸에 붙지 아니한 것이 아니니",
+      "source_text_hash": "aa4baa76b97c657d8830b78dad275395d392c0b790180a7401a04e663fc385ff",
+      "translation_text_hash": "662fe59458bdf6af9978cf689a4eb8089ada94031fe39790b1f0aebe7f97b2d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 귀가 이르되 나는 눈이 아니니 몸에 붙지 아니하였다 할찌라도 이로 인하여 몸에 붙지 아니한 것이 아니니"
+      ],
+      "raw_text_hashes": [
+        "662fe59458bdf6af9978cf689a4eb8089ada94031fe39790b1f0aebe7f97b2d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:17",
+      "sequence": 28648,
+      "chapter_label": "1CO 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "If the whole body were an eye, where would the hearing be? If the whole were hearing, where would the smelling be?",
+      "ko": "만일 온 몸이 눈이면 듣는 곳은 어디며 온 몸이 듣는 곳이면 냄새 맡는 곳은 어디뇨",
+      "source_text_hash": "8362146ecd264931ade04b2da8a89cdd290f160524967c8e3c2f99710677fb73",
+      "translation_text_hash": "ba978ef8719cec0315c49f4a6dba820b60a6b0da1ca537f1cb18ce85fc96808b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 온 몸이 눈이면 듣는 곳은 어디며 온 몸이 듣는 곳이면 냄새 맡는 곳은 어디뇨"
+      ],
+      "raw_text_hashes": [
+        "ba978ef8719cec0315c49f4a6dba820b60a6b0da1ca537f1cb18ce85fc96808b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:18",
+      "sequence": 28649,
+      "chapter_label": "1CO 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "But now God has set the members, each one of them, in the body, just as he desired.",
+      "ko": "그러나 이제 하나님이 그 원하시는대로 지체를 각각 몸에 두셨으니",
+      "source_text_hash": "04fe367c82f41900c2dc92eda2493135d340fe85de5caf5df64139b691a8d844",
+      "translation_text_hash": "644a3fb3fc96f84f1708dac5e77c86de8d59b9570cbf95bff99036e1376040c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이제 하나님이 그 원하시는대로 지체를 각각 몸에 두셨으니"
+      ],
+      "raw_text_hashes": [
+        "644a3fb3fc96f84f1708dac5e77c86de8d59b9570cbf95bff99036e1376040c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:19",
+      "sequence": 28650,
+      "chapter_label": "1CO 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "If they were all one member, where would the body be?",
+      "ko": "만일 다 한 지체 뿐이면 몸은 어디뇨",
+      "source_text_hash": "48c0fd7a0147f278a9a1d3b08ad885bb2269a3667bcb88f3d013ce8d47348a11",
+      "translation_text_hash": "9662ca400d373ed80b28249852740f7fb8332d16723d9bd80cc877ca8dbb5ea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 다 한 지체 뿐이면 몸은 어디뇨"
+      ],
+      "raw_text_hashes": [
+        "9662ca400d373ed80b28249852740f7fb8332d16723d9bd80cc877ca8dbb5ea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:20",
+      "sequence": 28651,
+      "chapter_label": "1CO 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "But now they are many members, but one body.",
+      "ko": "이제 지체는 많으나 몸은 하나라",
+      "source_text_hash": "88cab85b105f11427a70ee533222eabc6cc378481afa4005aff2f349a7ba742e",
+      "translation_text_hash": "b9145be88812ced31c3ee43c73257f2d8fbde5a6147b22bb1ea63bcc0da2a1af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 지체는 많으나 몸은 하나라"
+      ],
+      "raw_text_hashes": [
+        "b9145be88812ced31c3ee43c73257f2d8fbde5a6147b22bb1ea63bcc0da2a1af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:21",
+      "sequence": 28652,
+      "chapter_label": "1CO 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "The eye can’t tell the hand, “I have no need for you,” or again the head to the feet, “I have no need for you.”",
+      "ko": "눈이 손더러 내가 너를 쓸데 없다 하거나 또한 머리가 발더러 내가 너를 쓸데 없다 하거나 하지 못하리라",
+      "source_text_hash": "f57e24934a3a82f1e26aca0a1f9ae28eb0b4c3fc4c18decc6896d3a3cc77f9f0",
+      "translation_text_hash": "a8b90c43a8fd93e80d0b4f9342e8440b0fd0c67b8bca2008a3549a59b4c38462",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈이 손더러 내가 너를 쓸데 없다 하거나 또한 머리가 발더러 내가 너를 쓸데 없다 하거나 하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "a8b90c43a8fd93e80d0b4f9342e8440b0fd0c67b8bca2008a3549a59b4c38462"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:22",
+      "sequence": 28653,
+      "chapter_label": "1CO 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "No, much rather, those members of the body which seem to be weaker are necessary.",
+      "ko": "이뿐 아니라 몸의 더 약하게 보이는 지체가 도리어 요긴하고",
+      "source_text_hash": "7029760c2fdb22e409d170b1c665f0d74d6ae6c5cee5fc8f492c42ec14388b21",
+      "translation_text_hash": "c26fc2849dee45c9099cc078cbaf2cd8285f9e2f46eb433043fb6f386c5ce0b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 몸의 더 약하게 보이는 지체가 도리어 요긴하고"
+      ],
+      "raw_text_hashes": [
+        "c26fc2849dee45c9099cc078cbaf2cd8285f9e2f46eb433043fb6f386c5ce0b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:23",
+      "sequence": 28654,
+      "chapter_label": "1CO 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Those parts of the body which we think to be less honorable, on those we bestow more abundant honor; and our unpresentable parts have more abundant modesty,",
+      "ko": "우리가 몸의 덜 귀히 여기는 그것들을 더욱 귀한 것들로 입혀 주며 우리의 아름답지 못한 지체는 더욱 아름다운 것을 얻고",
+      "source_text_hash": "f90c9da7edc72fd0dc0c6099d99f76f3760b81e9787c3a17cf265d1844482920",
+      "translation_text_hash": "cd536b035b7eafe0de3fedd1d0901cb76b97660cf387fffbf30d267b3eec150b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 몸의 덜 귀히 여기는 그것들을 더욱 귀한 것들로 입혀 주며 우리의 아름답지 못한 지체는 더욱 아름다운 것을 얻고"
+      ],
+      "raw_text_hashes": [
+        "cd536b035b7eafe0de3fedd1d0901cb76b97660cf387fffbf30d267b3eec150b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:24",
+      "sequence": 28655,
+      "chapter_label": "1CO 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "while our presentable parts have no such need. But God composed the body together, giving more abundant honor to the inferior part,",
+      "ko": "우리의 아름다운 지체는 요구할 것이 없으니 오직 하나님이 몸을 고르게 하여 부족한 지체에게 존귀를 더하사",
+      "source_text_hash": "d3c5896c329a44aed3902ed144a8a9e68325a50aec13ae4e37fb965460d40f4f",
+      "translation_text_hash": "9519b03d358d3dc9c9d57e15614e424f8c3ce7d14e0e6214299e66f28e87b638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 아름다운 지체는 요구할 것이 없으니 오직 하나님이 몸을 고르게 하여 부족한 지체에게 존귀를 더하사"
+      ],
+      "raw_text_hashes": [
+        "9519b03d358d3dc9c9d57e15614e424f8c3ce7d14e0e6214299e66f28e87b638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:25",
+      "sequence": 28656,
+      "chapter_label": "1CO 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "that there should be no division in the body, but that the members should have the same care for one another.",
+      "ko": "몸 가운데서 분쟁이 없고 오직 여러 지체가 서로 같이하여 돌아보게 하셨으니",
+      "source_text_hash": "344ae4b5dc175c6da2e72b86c653d10f757224556fe41f6421ad60ee6e44c77b",
+      "translation_text_hash": "80edb03f3a8a813794f0d23190863040b724e2d9c9de1d91c445ac4f1063c127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸 가운데서 분쟁이 없고 오직 여러 지체가 서로 같이하여 돌아보게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "80edb03f3a8a813794f0d23190863040b724e2d9c9de1d91c445ac4f1063c127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:26",
+      "sequence": 28657,
+      "chapter_label": "1CO 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "When one member suffers, all the members suffer with it. When one member is honored, all the members rejoice with it.",
+      "ko": "만일 한 지체가 고통을 받으면 모든 지체도 함께 고통을 받고 한 지체가 영광을 얻으면 모든 지체도 함께 즐거워하나니",
+      "source_text_hash": "b18c7dfbc54b027dc8885ad0043cfe3a7c86327f8cdc1ae967a60a6569f7aed9",
+      "translation_text_hash": "be39f3e18ba57225d8c14f463eb18f47fcc06afff0d5d6715b8a430f29d97f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 한 지체가 고통을 받으면 모든 지체도 함께 고통을 받고 한 지체가 영광을 얻으면 모든 지체도 함께 즐거워하나니"
+      ],
+      "raw_text_hashes": [
+        "be39f3e18ba57225d8c14f463eb18f47fcc06afff0d5d6715b8a430f29d97f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:27",
+      "sequence": 28658,
+      "chapter_label": "1CO 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "Now you are the body of Christ, and members individually.",
+      "ko": "너희는 그리스도의 몸이요 지체의 각 부분이라",
+      "source_text_hash": "17fc3b98e18d7f0e30123290423511ef3e9f61eeaf5060f200b90e2253b5f307",
+      "translation_text_hash": "710e96da8e98897dc0ddf2a3f38e8f99dff1190b511ffcd9b4ef23d3bc740707",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그리스도의 몸이요 지체의 각 부분이라"
+      ],
+      "raw_text_hashes": [
+        "710e96da8e98897dc0ddf2a3f38e8f99dff1190b511ffcd9b4ef23d3bc740707"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:28",
+      "sequence": 28659,
+      "chapter_label": "1CO 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "God has set some in the assembly: first apostles, second prophets, third teachers, then miracle workers, then gifts of healings, helps, governments, and various kinds of languages.",
+      "ko": "하나님이 교회 중에 몇을 세우셨으니 첫째는 사도요 둘째는 선지자요 세째는 교사요 그 다음은 능력이요 그 다음은 병 고치는 은사와 서로 돕는 것과 다스리는 것과 각종 방언을 하는 것이라",
+      "source_text_hash": "84b7b9c450e0b99cd0d12b05fbc0820b3de6839f35fdc242352c693befb04851",
+      "translation_text_hash": "77d2606b5ae73759265acfd04828f154ab48c93b36031e0742b6f752897e2f38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 교회 중에 몇을 세우셨으니 첫째는 사도요 둘째는 선지자요 세째는 교사요 그 다음은 능력이요 그 다음은 병 고치는 은사와 서로 돕는 것과 다스리는 것과 각종 방언을 하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "77d2606b5ae73759265acfd04828f154ab48c93b36031e0742b6f752897e2f38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:29",
+      "sequence": 28660,
+      "chapter_label": "1CO 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "Are all apostles? Are all prophets? Are all teachers? Are all miracle workers?",
+      "ko": "다 사도겠느냐 다 선지자겠느냐 다 교사겠느냐 다 능력을 행하는 자겠느냐",
+      "source_text_hash": "dd30592bad04868fd366b7d81728659cb39055f7b248cd17e9408ce9cda115cf",
+      "translation_text_hash": "545930ea47430cf3c7b56c41352b6e0015a58ea6677c4ab52c1cdb3907bb2bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 사도겠느냐 다 선지자겠느냐 다 교사겠느냐 다 능력을 행하는 자겠느냐"
+      ],
+      "raw_text_hashes": [
+        "545930ea47430cf3c7b56c41352b6e0015a58ea6677c4ab52c1cdb3907bb2bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:30",
+      "sequence": 28661,
+      "chapter_label": "1CO 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "Do all have gifts of healings? Do all speak with various languages? Do all interpret?",
+      "ko": "다 병 고치는 은사를 가진 자겠느냐 다 방언을 말하는 자겠느냐 다 통역하는 자겠느냐",
+      "source_text_hash": "1185ac96fd8a2e586f43897b92ba03856eab4c0f2e54d5684438fa8e1cfb79c9",
+      "translation_text_hash": "31c97c14abaa5daa938a4846d970ba73efa0342f318b8037737457e073f4826f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 병 고치는 은사를 가진 자겠느냐 다 방언을 말하는 자겠느냐 다 통역하는 자겠느냐"
+      ],
+      "raw_text_hashes": [
+        "31c97c14abaa5daa938a4846d970ba73efa0342f318b8037737457e073f4826f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:12:31",
+      "sequence": 28662,
+      "chapter_label": "1CO 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CO",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "But earnestly desire the best gifts. Moreover, I show a most excellent way to you.",
+      "ko": "너희는 더욱 큰 은사를 사모하라 내가 또한 제일 좋은 길을 너희에게 보이리라",
+      "source_text_hash": "2f5bfe3496f589672ef1ba614c58d7cd91092f841a2440c8492db5224c229bef",
+      "translation_text_hash": "d70c24f9c0a31dd5f84ef70f38b6c6726b6153d01f699645630c5616c51b9850",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 더욱 큰 은사를 사모하라 내가 또한 제일 좋은 길을 너희에게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "d70c24f9c0a31dd5f84ef70f38b6c6726b6153d01f699645630c5616c51b9850"
+      ]
+    }
+  ]
+}

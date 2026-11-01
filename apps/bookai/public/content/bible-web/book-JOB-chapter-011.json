@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:011",
+  "unit_ordinal": 447,
+  "unit_label": "JOB 11",
+  "book_code": "JOB",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:11:1",
+      "sequence": 13110,
+      "chapter_label": "JOB 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "Then Zophar, the Naamathite, answered,",
+      "ko": "나아마 사람 소발이 대답하여 가로되",
+      "source_text_hash": "4fd89d17255f01829498d3a1da61ac356952f06674884dcb8505062d3d0ec0a1",
+      "translation_text_hash": "fb60f0eedbb523cbdd16da921342cbdbd7d2d21b973aed3cb54b6a44d8a535dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나아마 사람 소발이 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "fb60f0eedbb523cbdd16da921342cbdbd7d2d21b973aed3cb54b6a44d8a535dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:2",
+      "sequence": 13111,
+      "chapter_label": "JOB 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "“Shouldn’t the multitude of words be answered? Should a man full of talk be justified?",
+      "ko": "말이 많으니 어찌 대답이 없으랴 입이 부푼 사람이 어찌 의롭다 함을 얻겠느냐",
+      "source_text_hash": "f8bdd51047b4024bfa30cdbf873792130d61a890bdb9cdabee72a515e5327fbb",
+      "translation_text_hash": "b8602054526f2f08e14fdda22189d360d3c7f035a80f8c16401724053daf494c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말이 많으니 어찌 대답이 없으랴 입이 부푼 사람이 어찌 의롭다 함을 얻겠느냐"
+      ],
+      "raw_text_hashes": [
+        "b8602054526f2f08e14fdda22189d360d3c7f035a80f8c16401724053daf494c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:3",
+      "sequence": 13112,
+      "chapter_label": "JOB 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "Should your boastings make men hold their peace? When you mock, will no man make you ashamed?",
+      "ko": "네 자랑하는 말이 어떻게 사람으로 잠잠하게 하겠으며 네가 비웃으면 어찌 너를 부끄럽게 할 사람이 없겠느냐",
+      "source_text_hash": "363563caff258ed7b9c18556e805faf4f6e47a4072c56f558f64fd40057c3682",
+      "translation_text_hash": "3b0f28b436cba50ee6a8571577acfe0d0d4531763d7493ecee2ee319191d03d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자랑하는 말이 어떻게 사람으로 잠잠하게 하겠으며 네가 비웃으면 어찌 너를 부끄럽게 할 사람이 없겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3b0f28b436cba50ee6a8571577acfe0d0d4531763d7493ecee2ee319191d03d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:4",
+      "sequence": 13113,
+      "chapter_label": "JOB 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "For you say, ‘My doctrine is pure. I am clean in your eyes.’",
+      "ko": "네 말이 내 도는 정결하고 나는 주의 목전에 깨끗하다 하는구나",
+      "source_text_hash": "4b595e07a8b7befff30b0e0bc682bd1bd5e258a2f3ff515fc037b241b23e6cac",
+      "translation_text_hash": "b0f76e0a21cbcdf9d69a6e32623b1c84892f538e4acf4ca3b0ff9b152793cef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 말이 내 도는 정결하고 나는 주의 목전에 깨끗하다 하는구나"
+      ],
+      "raw_text_hashes": [
+        "b0f76e0a21cbcdf9d69a6e32623b1c84892f538e4acf4ca3b0ff9b152793cef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:5",
+      "sequence": 13114,
+      "chapter_label": "JOB 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "But oh that God would speak, and open his lips against you,",
+      "ko": "하나님은 말씀을 내시며 너를 향하여 입을 여시고",
+      "source_text_hash": "6cd0e180c9cb0c86579c2af6b262ac8e7b89c0447e0c32d34a1df1bb3d2e48df",
+      "translation_text_hash": "9a057241d80051bb083cb1045d3e2be6d099e561199ef1442fc02ef51d14091a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 말씀을 내시며 너를 향하여 입을 여시고"
+      ],
+      "raw_text_hashes": [
+        "9a057241d80051bb083cb1045d3e2be6d099e561199ef1442fc02ef51d14091a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:6",
+      "sequence": 13115,
+      "chapter_label": "JOB 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "that he would show you the secrets of wisdom! For true wisdom has two sides. Know therefore that God exacts of you less than your iniquity deserves.",
+      "ko": "지혜의 오묘로 네게 보이시기를 원하노니 이는 그의 지식이 광대하심이라 너는 알라 하나님의 벌하심이 네 죄보다 경하니라",
+      "source_text_hash": "6ca24bc25698e8a853406566dc1707e1e727c968e76206f60e41f74d9d202cf4",
+      "translation_text_hash": "2397a54fb6c08f7455c20ab8e8fd4f5cc5261b8b1706cc0f7af33d82abebda1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지혜의 오묘로 네게 보이시기를 원하노니 이는 그의 지식이 광대하심이라 너는 알라 하나님의 벌하심이 네 죄보다 경하니라"
+      ],
+      "raw_text_hashes": [
+        "2397a54fb6c08f7455c20ab8e8fd4f5cc5261b8b1706cc0f7af33d82abebda1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:7",
+      "sequence": 13116,
+      "chapter_label": "JOB 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "“Can you fathom the mystery of God? Or can you probe the limits of the Almighty?",
+      "ko": "네가 하나님의 오묘를 어찌 능히 측량하며 전능자를 어찌 능히 온전히 알겠느냐",
+      "source_text_hash": "7ab8fcbd6e8ec683a273038862555c1ab4f390418890de49335d789fcbb12ce0",
+      "translation_text_hash": "816a9b2f3e4ca6a930b093eeb36b93e5b922f0c9f3743560713561ec50cbc31b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 하나님의 오묘를 어찌 능히 측량하며 전능자를 어찌 능히 온전히 알겠느냐"
+      ],
+      "raw_text_hashes": [
+        "816a9b2f3e4ca6a930b093eeb36b93e5b922f0c9f3743560713561ec50cbc31b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:8",
+      "sequence": 13117,
+      "chapter_label": "JOB 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "They are high as heaven. What can you do? They are deeper than Sheol. What can you know?",
+      "ko": "하늘보다 높으시니 네가 어찌 하겠으며 음부보다 깊으시니 네가 어찌 알겠느냐",
+      "source_text_hash": "bda6e72bd8e6ff0d8c59905ea60c0183438d02af41714f89dde612dbbfc94230",
+      "translation_text_hash": "7507915bc6b26e0272f9581c1b62d0b90643981a57522bb991562038e3d161d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘보다 높으시니 네가 어찌 하겠으며 음부보다 깊으시니 네가 어찌 알겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7507915bc6b26e0272f9581c1b62d0b90643981a57522bb991562038e3d161d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:9",
+      "sequence": 13118,
+      "chapter_label": "JOB 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Its measure is longer than the earth, and broader than the sea.",
+      "ko": "그 도량은 땅보다 크고 바다보다 넓으니라",
+      "source_text_hash": "fc748cb0a405303344f16a6fdbb636bd7e84d3515838c31e6e46e83723322abe",
+      "translation_text_hash": "4ab92fa6993cabb1fc74cbe1ea92665e3d70b756d971a55cc37101a9355d1275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 도량은 땅보다 크고 바다보다 넓으니라"
+      ],
+      "raw_text_hashes": [
+        "4ab92fa6993cabb1fc74cbe1ea92665e3d70b756d971a55cc37101a9355d1275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:10",
+      "sequence": 13119,
+      "chapter_label": "JOB 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "If he passes by, or confines, or convenes a court, then who can oppose him?",
+      "ko": "하나님이 두루 다니시며 사람을 잡아 가두시고 개정하시면 누가 능히 막을소냐",
+      "source_text_hash": "7b58c8f6f5cc829357e5f1ae7fbb73eac074f700f3165e531ac27a0e2ed05ca7",
+      "translation_text_hash": "a434053c4286d71ab091bc282d156f86d3a3c2f315cbae3ccb5a3a9615be2d77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 두루 다니시며 사람을 잡아 가두시고 개정하시면 누가 능히 막을소냐"
+      ],
+      "raw_text_hashes": [
+        "a434053c4286d71ab091bc282d156f86d3a3c2f315cbae3ccb5a3a9615be2d77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:11",
+      "sequence": 13120,
+      "chapter_label": "JOB 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "For he knows false men. He sees iniquity also, even though he doesn’t consider it.",
+      "ko": "하나님은 허망한 사람을 아시나니 악한 일은 상관치 않으시는듯하나 다 보시느니라",
+      "source_text_hash": "e6366b33411d4642aa06895d033d9a6f36bbfb0d66f854e4bf79578b5b296da0",
+      "translation_text_hash": "a7169b85641457a50fbfa4c550f801439b80095dec6f9b6a11872e469d566528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 허망한 사람을 아시나니 악한 일은 상관치 않으시는듯하나 다 보시느니라"
+      ],
+      "raw_text_hashes": [
+        "a7169b85641457a50fbfa4c550f801439b80095dec6f9b6a11872e469d566528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:12",
+      "sequence": 13121,
+      "chapter_label": "JOB 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "An empty-headed man becomes wise when a man is born as a wild donkey’s colt.",
+      "ko": "허망한 사람은 지각이 없나니 그 출생함이 들나귀 새끼 같으니라",
+      "source_text_hash": "a88e057dcbd741a43d5edf19e18467863e2261f0f1af8fcc7808019608744920",
+      "translation_text_hash": "18a5d5d186d02e13ab76b245d6a6895927e4e6124c9cfe84ff0a681a07e4c5cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허망한 사람은 지각이 없나니 그 출생함이 들나귀 새끼 같으니라"
+      ],
+      "raw_text_hashes": [
+        "18a5d5d186d02e13ab76b245d6a6895927e4e6124c9cfe84ff0a681a07e4c5cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:13",
+      "sequence": 13122,
+      "chapter_label": "JOB 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "“If you set your heart aright, stretch out your hands toward him.",
+      "ko": "만일 네가 마음을 바로 정하고 주를 향하여 손을 들 때에",
+      "source_text_hash": "d918f3819c2cf4812cbb570487cda4d67ea934adff4da40ba3dfec497fa933ae",
+      "translation_text_hash": "00dcf6a98aebfb976ead1c00278d4316b030e77ab7025d710f92de946ea96b4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네가 마음을 바로 정하고 주를 향하여 손을 들 때에"
+      ],
+      "raw_text_hashes": [
+        "00dcf6a98aebfb976ead1c00278d4316b030e77ab7025d710f92de946ea96b4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:14",
+      "sequence": 13123,
+      "chapter_label": "JOB 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "If iniquity is in your hand, put it far away. Don’t let unrighteousness dwell in your tents.",
+      "ko": "네 손에 죄악이 있거든 멀리 버리라 불의로 네 장막에 거하지 못하게 하라",
+      "source_text_hash": "f658f404d431bc1a0fb25a2f8a31da2b7bf568da0eddf01e67bea0f4b636d357",
+      "translation_text_hash": "4720a119f1c6f80f230b42df254f58b1e40a7ebdb28298af6ae1c59574dd5dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 손에 죄악이 있거든 멀리 버리라 불의로 네 장막에 거하지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "4720a119f1c6f80f230b42df254f58b1e40a7ebdb28298af6ae1c59574dd5dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:15",
+      "sequence": 13124,
+      "chapter_label": "JOB 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "Surely then you will lift up your face without spot. Yes, you will be steadfast, and will not fear,",
+      "ko": "그리하면 네가 정녕 흠 없는 얼굴을 들게 되고 굳게 서서 두려움이 없으리니",
+      "source_text_hash": "b069cbf124984a37521010b2478099c3f3c07d4b844bf4cd6fdd295884cefdf3",
+      "translation_text_hash": "12f13b757f72fff8573811f96cd946c6a1985cd4c9b180c3862708b716810556",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 네가 정녕 흠 없는 얼굴을 들게 되고 굳게 서서 두려움이 없으리니"
+      ],
+      "raw_text_hashes": [
+        "12f13b757f72fff8573811f96cd946c6a1985cd4c9b180c3862708b716810556"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:16",
+      "sequence": 13125,
+      "chapter_label": "JOB 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "for you will forget your misery. You will remember it like waters that have passed away.",
+      "ko": "곧 네 환난을 잊을 것이라 네가 추억할찌라도 물이 흘러감 같을 것이며",
+      "source_text_hash": "902bf1388cfaf71f012a13e3ac3471f60a3ae373eb66757550f73948e64294f5",
+      "translation_text_hash": "1671a804e8ddb68b66e201321f391633f70ad14591f1a9e6db93d0662dc2d390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 네 환난을 잊을 것이라 네가 추억할찌라도 물이 흘러감 같을 것이며"
+      ],
+      "raw_text_hashes": [
+        "1671a804e8ddb68b66e201321f391633f70ad14591f1a9e6db93d0662dc2d390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:17",
+      "sequence": 13126,
+      "chapter_label": "JOB 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "Life will be clearer than the noonday. Though there is darkness, it will be as the morning.",
+      "ko": "네 생명의 날이 대낮보다 밝으리니 어두움이 있다 할찌라도 아침과 같이 될 것이요",
+      "source_text_hash": "f4217331ccd55a8ac2788668961929e5a8bfbf95012095972ff8887be04194bb",
+      "translation_text_hash": "7836a9dac8016c91f7981745acf8ed5461fd6eb8351a094df1813ae25c1a6341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 생명의 날이 대낮보다 밝으리니 어두움이 있다 할찌라도 아침과 같이 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "7836a9dac8016c91f7981745acf8ed5461fd6eb8351a094df1813ae25c1a6341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:18",
+      "sequence": 13127,
+      "chapter_label": "JOB 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "You will be secure, because there is hope. Yes, you will search, and will take your rest in safety.",
+      "ko": "네가 소망이 있으므로 든든할찌며 두루 살펴보고 안전히 쉬리니",
+      "source_text_hash": "f746955572c5cac1a5a97b4fb48f4c51137301001f273cc69bc2892b11396131",
+      "translation_text_hash": "7e51243e9e19e64466e93d4e54dcbef8b7eb540d7c0155082c197dc728ddef9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 소망이 있으므로 든든할찌며 두루 살펴보고 안전히 쉬리니"
+      ],
+      "raw_text_hashes": [
+        "7e51243e9e19e64466e93d4e54dcbef8b7eb540d7c0155082c197dc728ddef9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:19",
+      "sequence": 13128,
+      "chapter_label": "JOB 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "Also you will lie down, and no one will make you afraid. Yes, many will court your favor.",
+      "ko": "네가 누워도 두렵게 할 자가 없겠고 많은 사람이 네게 첨을 드리리라",
+      "source_text_hash": "3329175b48daee37d0265131dae21dbae53b5aabd1173f4b9d7e803d54b93493",
+      "translation_text_hash": "cf7b7f17529a8d14ce4916523f0ba4d47de028f0650fbe2cd4b9c124dd5d4bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 누워도 두렵게 할 자가 없겠고 많은 사람이 네게 첨을 드리리라"
+      ],
+      "raw_text_hashes": [
+        "cf7b7f17529a8d14ce4916523f0ba4d47de028f0650fbe2cd4b9c124dd5d4bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:11:20",
+      "sequence": 13129,
+      "chapter_label": "JOB 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "But the eyes of the wicked will fail. They will have no way to flee. Their hope will be the giving up of the spirit.”",
+      "ko": "그러나 악한 자는 눈이 어두워서 도망할 곳을 찾지 못하리니 그의 소망은 기운이 끊침이리라",
+      "source_text_hash": "339d4193e6045ec624d75ed512633681ecb92592cbbac25977262f9b6a46333d",
+      "translation_text_hash": "fcdea6f93def6b070484f8d72a85a4d4e4e58357e2524f10c8bb2daadc4a81b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 악한 자는 눈이 어두워서 도망할 곳을 찾지 못하리니 그의 소망은 기운이 끊침이리라"
+      ],
+      "raw_text_hashes": [
+        "fcdea6f93def6b070484f8d72a85a4d4e4e58357e2524f10c8bb2daadc4a81b7"
+      ]
+    }
+  ]
+}

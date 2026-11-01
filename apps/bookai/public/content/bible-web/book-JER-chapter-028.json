@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:028",
+  "unit_ordinal": 773,
+  "unit_label": "JER 28",
+  "book_code": "JER",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:28:1",
+      "sequence": 19620,
+      "chapter_label": "JER 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "That same year, in the beginning of the reign of Zedekiah king of Judah, in the fourth year, in the fifth month, Hananiah the son of Azzur, the prophet, who was of Gibeon, spoke to me in the LORD’s house, in the presence of the priests and of all the people, saying,",
+      "ko": "이 해, 유다 왕 시드기야의 즉위한지 오래지 않은 해 곧 사년 오월에 기브온 앗술의 아들 선지자 하나냐가 여호와의 집에서 제사장들과 모든 백성 앞에서 내게 말하여 가로되",
+      "source_text_hash": "a5ec89080d0bbb8d5bbdd4a9a121d8ff22e296533a2dfd0fc16524f5fc6241d6",
+      "translation_text_hash": "fb2820e34a34164a95f88406507315e43068659790b01603145fdeca6a9c1dfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 해, 유다 왕 시드기야의 즉위한지 오래지 않은 해 곧 사년 오월에 기브온 앗술의 아들 선지자 하나냐가 여호와의 집에서 제사장들과 모든 백성 앞에서 내게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "fb2820e34a34164a95f88406507315e43068659790b01603145fdeca6a9c1dfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:2",
+      "sequence": 19621,
+      "chapter_label": "JER 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "“The LORD of Armies, the God of Israel, says, ‘I have broken the yoke of the king of Babylon.",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하여 가라사대 내가 바벨론 왕의 멍에를 꺾었느니라",
+      "source_text_hash": "be5cd6be20732bd233d2cc65c22e1c83e155f54ad9f3f0ffb7a36ea6f2bb2044",
+      "translation_text_hash": "afe3d85c388cc0ac0b296d165f308fa683d6fdc501a2d1a6a3dc51c77137dd34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하여 가라사대 내가 바벨론 왕의 멍에를 꺾었느니라"
+      ],
+      "raw_text_hashes": [
+        "afe3d85c388cc0ac0b296d165f308fa683d6fdc501a2d1a6a3dc51c77137dd34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:3",
+      "sequence": 19622,
+      "chapter_label": "JER 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "Within two full years I will bring again into this place all the vessels of the LORD’s house that Nebuchadnezzar king of Babylon took away from this place and carried to Babylon.",
+      "ko": "내가 바벨론 왕 느부갓네살의 이곳에서 바벨론으로 옮겨간 여호와의 집 모든 기구를 두 해가 차기 전에 다시 이곳으로 가져 오게 하겠고",
+      "source_text_hash": "ba4e096124ba2b2c3aef9294f36ad700bd060881ce3383ea5a5d5fdc562427bb",
+      "translation_text_hash": "0475fb621d34cd23c5e417346943f5b26900afdcd4e2d3b1652af54271582c53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바벨론 왕 느부갓네살의 이곳에서 바벨론으로 옮겨간 여호와의 집 모든 기구를 두 해가 차기 전에 다시 이곳으로 가져 오게 하겠고"
+      ],
+      "raw_text_hashes": [
+        "0475fb621d34cd23c5e417346943f5b26900afdcd4e2d3b1652af54271582c53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:4",
+      "sequence": 19623,
+      "chapter_label": "JER 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "I will bring again to this place Jeconiah the son of Jehoiakim, king of Judah, with all the captives of Judah, who went to Babylon,’ says the LORD; ‘for I will break the yoke of the king of Babylon.’”",
+      "ko": "내가 또 유다 왕 여호야김의 아들 여고니야와 바벨론으로 간 유다 모든 포로를 다시 이곳으로 돌아오게 하리니 이는 내가 바벨론 왕의 멍에를 꺾을 것임이니라 여호와의 말이니라 하셨다 하는지라",
+      "source_text_hash": "aede3d5c7ec53bb1a5f8d720a8c545b5e582ad423b0431bd187523c6e0d4d357",
+      "translation_text_hash": "10790d24b585566e559a66f97fbde4d25c7b2ceaced8b68c371daaa63611f5cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 유다 왕 여호야김의 아들 여고니야와 바벨론으로 간 유다 모든 포로를 다시 이곳으로 돌아오게 하리니 이는 내가 바벨론 왕의 멍에를 꺾을 것임이니라 여호와의 말이니라 하셨다 하는지라"
+      ],
+      "raw_text_hashes": [
+        "10790d24b585566e559a66f97fbde4d25c7b2ceaced8b68c371daaa63611f5cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:5",
+      "sequence": 19624,
+      "chapter_label": "JER 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Then the prophet Jeremiah said to the prophet Hananiah in the presence of the priests, and in the presence of all the people who stood in the LORD’s house,",
+      "ko": "선지자 예레미야가 여호와의 집에 선 제사장들의 앞과 모든 백성 앞에서 선지자 하나냐에게 말할쌔",
+      "source_text_hash": "9af2c4f2a24ff7e7058daf5e2b28c6988c31fe34d38b8e95d638c2a23c3340fa",
+      "translation_text_hash": "eca49d8c4b190e86767e81ee2df891170ec9e68add4505084e36c74b1103b39d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 여호와의 집에 선 제사장들의 앞과 모든 백성 앞에서 선지자 하나냐에게 말할쌔"
+      ],
+      "raw_text_hashes": [
+        "eca49d8c4b190e86767e81ee2df891170ec9e68add4505084e36c74b1103b39d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:6",
+      "sequence": 19625,
+      "chapter_label": "JER 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "even the prophet Jeremiah said, “Amen! May the LORD do so. May the LORD perform your words which you have prophesied, to bring again the vessels of the LORD’s house, and all those who are captives, from Babylon to this place.",
+      "ko": "선지자 예레미야가 말하되 아멘, 여호와는 이 같이 하옵소서 여호와께서 네 예언대로 이루사 여호와의 집 기구와 모든 포로를 바벨론에서 이곳으로 다시 옮겨오시기를 원하노라",
+      "source_text_hash": "4b0f2b2ec6f6a22393e7e83257661670bbfc84a28b5ad0470ff27ff2e5b90db6",
+      "translation_text_hash": "d6e3a77a76555bc10a01f8e55f6be51fa744b5af1ee2ae744c44d2aa2498eb76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 말하되 아멘, 여호와는 이 같이 하옵소서 여호와께서 네 예언대로 이루사 여호와의 집 기구와 모든 포로를 바벨론에서 이곳으로 다시 옮겨오시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "d6e3a77a76555bc10a01f8e55f6be51fa744b5af1ee2ae744c44d2aa2498eb76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:7",
+      "sequence": 19626,
+      "chapter_label": "JER 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "Nevertheless listen now to this word that I speak in your ears, and in the ears of all the people:",
+      "ko": "그러나 너는 이제 내가 네 귀와 모든 백성의 귀에 이르는 이 말을 들으라",
+      "source_text_hash": "c8020511988a787d94558fcfadb6a3b2b765ca72b3232155674355b520dd20d0",
+      "translation_text_hash": "d73770156e567184166df86d667733e66dd2bbc97dd8ff04e3570c39d1cf21e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 이제 내가 네 귀와 모든 백성의 귀에 이르는 이 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "d73770156e567184166df86d667733e66dd2bbc97dd8ff04e3570c39d1cf21e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:8",
+      "sequence": 19627,
+      "chapter_label": "JER 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The prophets who have been before me and before you of old prophesied against many countries, and against great kingdoms, of war, of evil, and of pestilence.",
+      "ko": "나와 너 이전 선지자들이 자고로 여러 나라와 큰 국가들에 대하여 전쟁과 재앙과 염병을 예언하였느니라",
+      "source_text_hash": "461e3169721488b79461618ff2567337da9f656ded62698f28bb6fe5230fee2f",
+      "translation_text_hash": "4d214183a09c4d127ff8e6406dbb0ae9241893589e4fd783ce064a50f72831ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 너 이전 선지자들이 자고로 여러 나라와 큰 국가들에 대하여 전쟁과 재앙과 염병을 예언하였느니라"
+      ],
+      "raw_text_hashes": [
+        "4d214183a09c4d127ff8e6406dbb0ae9241893589e4fd783ce064a50f72831ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:9",
+      "sequence": 19628,
+      "chapter_label": "JER 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "As for the prophet who prophesies of peace, when the word of the prophet happens, then the prophet will be known, that the LORD has truly sent him.”",
+      "ko": "평화를 예언하는 선지자는 그 예언자의 말이 응한 후에야 그는 진실로 여호와의 보내신 선지자로 알게 되리라",
+      "source_text_hash": "c21d45e80fd8bc260e0042320eb31a45bf132f420662974831b6ad39b13c267f",
+      "translation_text_hash": "40ffd9c224b9cbc9bb1ff9ae516aa45ec3322116a9e9cef81c1dc880a30c5be8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평화를 예언하는 선지자는 그 예언자의 말이 응한 후에야 그는 진실로 여호와의 보내신 선지자로 알게 되리라"
+      ],
+      "raw_text_hashes": [
+        "40ffd9c224b9cbc9bb1ff9ae516aa45ec3322116a9e9cef81c1dc880a30c5be8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:10",
+      "sequence": 19629,
+      "chapter_label": "JER 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "Then Hananiah the prophet took the bar from off the prophet Jeremiah’s neck, and broke it.",
+      "ko": "선지자 하나냐가 선지자 예레미야의 목에서 멍에를 취하여 꺾고",
+      "source_text_hash": "013b7c58ea261beafb7297fdcbecd47a9fb4ec374da999dfeef4dd0c06c1c167",
+      "translation_text_hash": "bb2a87648e444e55ae817524d3bf75b6dc84018670738b782528c253aa8d7949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 하나냐가 선지자 예레미야의 목에서 멍에를 취하여 꺾고"
+      ],
+      "raw_text_hashes": [
+        "bb2a87648e444e55ae817524d3bf75b6dc84018670738b782528c253aa8d7949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:11",
+      "sequence": 19630,
+      "chapter_label": "JER 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Hananiah spoke in the presence of all the people, saying, “The LORD says: ‘Even so I will break the yoke of Nebuchadnezzar king of Babylon from off the neck of all the nations within two full years.’” Then the prophet Jeremiah went his way.",
+      "ko": "모든 백성 앞에서 말하여 가로되 여호와께서 이같이 말씀하시되 내가 두 해가 차기 전에 열방의 목에서 바벨론 왕 느부갓네살의 멍에를 이 같이 꺾어버리리라 하셨느니라 하매 선지자 예레미야가 자기 길을 가니라",
+      "source_text_hash": "41b5132185d668ac512691f46a6f228c7c5d1f0d9617bb1ffa159b273ed92a99",
+      "translation_text_hash": "c61ac9335277db739358d1bd0bba688f05525e65caccf8da1a35c586bc902d61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성 앞에서 말하여 가로되 여호와께서 이같이 말씀하시되 내가 두 해가 차기 전에 열방의 목에서 바벨론 왕 느부갓네살의 멍에를 이 같이 꺾어버리리라 하셨느니라 하매 선지자 예레미야가 자기 길을 가니라"
+      ],
+      "raw_text_hashes": [
+        "c61ac9335277db739358d1bd0bba688f05525e65caccf8da1a35c586bc902d61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:12",
+      "sequence": 19631,
+      "chapter_label": "JER 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "Then the LORD’s word came to Jeremiah, after Hananiah the prophet had broken the bar from off the neck of the prophet Jeremiah, saying,",
+      "ko": "선지자 하나냐가 선지자 예레미야의 목에서 멍에를 꺾어버린 후에 여호와의 말씀이 예레미야에게 임하니라 가라사대",
+      "source_text_hash": "2dfd1d6ba0c3404679786ccf0cdc562cad76fd486c601d90fa0e29d4e4cf0894",
+      "translation_text_hash": "5fe8c3e73a9477924c3d49feee6504a925a4a576d88447b4a56e1a1d22fc0422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 하나냐가 선지자 예레미야의 목에서 멍에를 꺾어버린 후에 여호와의 말씀이 예레미야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "5fe8c3e73a9477924c3d49feee6504a925a4a576d88447b4a56e1a1d22fc0422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:13",
+      "sequence": 19632,
+      "chapter_label": "JER 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "“Go, and tell Hananiah, saying, ‘The LORD says, “You have broken the bars of wood, but you have made in their place bars of iron.”",
+      "ko": "너는 가서 하나냐에게 말하여 이르기를 여호와의 말씀에 네가 나무 멍에를 꺾었으나 그 대신 쇠 멍에를 만들었느니라",
+      "source_text_hash": "3580f36f77fc49628281ce5967b923f39fff3bc6d0de69b76c44c217b6024f04",
+      "translation_text_hash": "6f4445ed2d97808b6b2b3a6ccd6f2a2013be9a4a0037d4f13200525a6b1634c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 하나냐에게 말하여 이르기를 여호와의 말씀에 네가 나무 멍에를 꺾었으나 그 대신 쇠 멍에를 만들었느니라"
+      ],
+      "raw_text_hashes": [
+        "6f4445ed2d97808b6b2b3a6ccd6f2a2013be9a4a0037d4f13200525a6b1634c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:14",
+      "sequence": 19633,
+      "chapter_label": "JER 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "For the LORD of Armies, the God of Israel says, “I have put a yoke of iron on the neck of all these nations, that they may serve Nebuchadnezzar king of Babylon; and they will serve him. I have also given him the animals of the field.”’”",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 내가 쇠 멍에로 이 모든 나라의 목에 메워 바벨론 왕 느부갓네살을 섬기게 하였으니 그들이 그를 섬기리라 내가 들짐승도 그에게 주었느니라 하신다 하라",
+      "source_text_hash": "d8e2b3781b9e31b1eae0c6c9fba61d7bfb1b62d08ef81ee620b940fd0b29025f",
+      "translation_text_hash": "58f19ba48ce58459abfa5b45c2c6d3feb165bf191bdfd6426e56a61a9cddcba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말하노라 내가 쇠 멍에로 이 모든 나라의 목에 메워 바벨론 왕 느부갓네살을 섬기게 하였으니 그들이 그를 섬기리라 내가 들짐승도 그에게 주었느니라 하신다 하라"
+      ],
+      "raw_text_hashes": [
+        "58f19ba48ce58459abfa5b45c2c6d3feb165bf191bdfd6426e56a61a9cddcba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:15",
+      "sequence": 19634,
+      "chapter_label": "JER 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "Then the prophet Jeremiah said to Hananiah the prophet, “Listen, Hananiah! The LORD has not sent you, but you make this people trust in a lie.",
+      "ko": "선지자 예레미야가 선지자 하나냐에게 이르되 하나냐여 들으라 여호와께서 너를 보내지 아니하셨거늘 네가 이 백성으로 거짓을 믿게 하는도다",
+      "source_text_hash": "e8aed032c51cc1de0595b5bd603c0a0b5948da03d3edff125d2ae87f1b59e6ee",
+      "translation_text_hash": "36188c0d13b57228bdc692c4202ccfbcd3c8ef628338b49c805f0a1a547515d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 예레미야가 선지자 하나냐에게 이르되 하나냐여 들으라 여호와께서 너를 보내지 아니하셨거늘 네가 이 백성으로 거짓을 믿게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "36188c0d13b57228bdc692c4202ccfbcd3c8ef628338b49c805f0a1a547515d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:16",
+      "sequence": 19635,
+      "chapter_label": "JER 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "Therefore the LORD says, ‘Behold, I will send you away from off the surface of the earth. This year you will die, because you have spoken rebellion against the LORD.’”",
+      "ko": "그러므로 여호와께서 말씀하시되 내가 너를 지면에서 제하리니 네가 여호와께 패역하는 말을 하였음이라 금년에 죽으리라 하셨느니라 하더니",
+      "source_text_hash": "57c025a3473ce6c69ac120a6e621f2c4af72822642f80d31132cb48877d0fd11",
+      "translation_text_hash": "f7f496f4a9b6bbb9f4e91d5325031e1ba2cceb6b1fa7fbae30be43bbd9a6ce8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 말씀하시되 내가 너를 지면에서 제하리니 네가 여호와께 패역하는 말을 하였음이라 금년에 죽으리라 하셨느니라 하더니"
+      ],
+      "raw_text_hashes": [
+        "f7f496f4a9b6bbb9f4e91d5325031e1ba2cceb6b1fa7fbae30be43bbd9a6ce8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:28:17",
+      "sequence": 19636,
+      "chapter_label": "JER 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "So Hananiah the prophet died the same year in the seventh month.",
+      "ko": "선지자 하나냐가 그 해 칠월에 죽었더라",
+      "source_text_hash": "1479f4409c2f93b2761c627e0323abb6119345d4ef418865770152ab5e633a1b",
+      "translation_text_hash": "3b03731134d249de037ed1595455e16eb1d7ab47d87bae677a4e5780a45f9a26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 하나냐가 그 해 칠월에 죽었더라"
+      ],
+      "raw_text_hashes": [
+        "3b03731134d249de037ed1595455e16eb1d7ab47d87bae677a4e5780a45f9a26"
+      ]
+    }
+  ]
+}

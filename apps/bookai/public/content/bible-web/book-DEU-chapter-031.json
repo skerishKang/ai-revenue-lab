@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:031",
+  "unit_ordinal": 184,
+  "unit_label": "DEU 31",
+  "book_code": "DEU",
+  "chapter_number": 31,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:31:1",
+      "sequence": 5730,
+      "chapter_label": "DEU 31",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 1
+        }
+      ],
+      "en": "Moses went and spoke these words to all Israel.",
+      "ko": "모세가 가서 온 이스라엘에게 이 말씀을 베푸니라",
+      "source_text_hash": "5a1cb25ca90dd86a923a9fe2d8f537f723f71b32fb0307857ccd2ed1a616828b",
+      "translation_text_hash": "e8cfe37a24789b7fd70dfa3f608486d1e37f6448cf6fc5efa207d36bff77abda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가서 온 이스라엘에게 이 말씀을 베푸니라"
+      ],
+      "raw_text_hashes": [
+        "e8cfe37a24789b7fd70dfa3f608486d1e37f6448cf6fc5efa207d36bff77abda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:2",
+      "sequence": 5731,
+      "chapter_label": "DEU 31",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 2
+        }
+      ],
+      "en": "He said to them, “I am one hundred twenty years old today. I can no more go out and come in. The LORD has said to me, ‘You shall not go over this Jordan.’",
+      "ko": "곧 그들에게 이르되 내가 오늘날 일백 이십세라 내가 더는 출입하기 능치 못하고 여호와께서도 내게 이르시기를 너는 이 요단을 건너지 못하리라 하셨느니라",
+      "source_text_hash": "4f3d0891186e1752163fed7dfad1b6385ec69bf4d546ad8fea23ddbaae66d261",
+      "translation_text_hash": "9f3b2f35be616f1bef5aa096dcbf89a4ad36ae0390ab78df125850cc00ce97f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들에게 이르되 내가 오늘날 일백 이십세라 내가 더는 출입하기 능치 못하고 여호와께서도 내게 이르시기를 너는 이 요단을 건너지 못하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9f3b2f35be616f1bef5aa096dcbf89a4ad36ae0390ab78df125850cc00ce97f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:3",
+      "sequence": 5732,
+      "chapter_label": "DEU 31",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD your God himself will go over before you. He will destroy these nations from before you, and you shall dispossess them. Joshua will go over before you, as the LORD has spoken.",
+      "ko": "여호와께서 이미 말씀하신 것과 같이 여호수아가 너를 거느리고 건널 것이요 네 하나님 여호와 그가 네 앞서 건너가사 이 민족들을 네 앞에서 멸하시고 너로 그 땅을 얻게 하실 것이며",
+      "source_text_hash": "4562c2ec4ebefeac44564f043664ac7469b9c16bc64f899d760e2d810b19d4dd",
+      "translation_text_hash": "c0416bb266ab6f8a44a0774f95866ce148d45630867b25516758345ed7ce814f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이미 말씀하신 것과 같이 여호수아가 너를 거느리고 건널 것이요 네 하나님 여호와 그가 네 앞서 건너가사 이 민족들을 네 앞에서 멸하시고 너로 그 땅을 얻게 하실 것이며"
+      ],
+      "raw_text_hashes": [
+        "c0416bb266ab6f8a44a0774f95866ce148d45630867b25516758345ed7ce814f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:4",
+      "sequence": 5733,
+      "chapter_label": "DEU 31",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD will do to them as he did to Sihon and to Og, the kings of the Amorites, and to their land, when he destroyed them.",
+      "ko": "여호와께서 이미 멸하신 아모리 왕 시혼과 옥과 및 그 땅에 행하신 것과 같이 그들에게도 행하실 것이라",
+      "source_text_hash": "c6c9d63ecc914d6b4f7d3c1dfea4eda6eca3e0198715d796c06decac6f796a3e",
+      "translation_text_hash": "2a9f8f418fd992ff6da0ea2fe6951f581ed6424a612217376f34e7b20d40d58e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이미 멸하신 아모리 왕 시혼과 옥과 및 그 땅에 행하신 것과 같이 그들에게도 행하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "2a9f8f418fd992ff6da0ea2fe6951f581ed6424a612217376f34e7b20d40d58e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:5",
+      "sequence": 5734,
+      "chapter_label": "DEU 31",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD will deliver them up before you, and you shall do to them according to all the commandment which I have commanded you.",
+      "ko": "여호와께서 그들을 너희 앞에 붙이시리니 너희는 내가 너희에게 명한 모든 명령대로 그들에게 행할 것이라",
+      "source_text_hash": "41945a59a2fc7dd616d2a01683f513aa74871fb80cf2cef6ad58655b44bc597f",
+      "translation_text_hash": "5beee1773da54cf393affcc61212b153619c0c71f68ec37644d3af6c25fa4375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 너희 앞에 붙이시리니 너희는 내가 너희에게 명한 모든 명령대로 그들에게 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "5beee1773da54cf393affcc61212b153619c0c71f68ec37644d3af6c25fa4375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:6",
+      "sequence": 5735,
+      "chapter_label": "DEU 31",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 6
+        }
+      ],
+      "en": "Be strong and courageous. Don’t be afraid or scared of them, for the LORD your God himself is who goes with you. He will not fail you nor forsake you.”",
+      "ko": "너는 마음을 강하게 하고 담대히 하라 그들을 두려워 말라 그들 앞에서 떨지 말라 이는 네 하나님 여호와 그가 너와 함께 행하실 것임이라 반드시 너를 떠나지 아니하시며 버리지 아니하시리라 하고",
+      "source_text_hash": "30a8c4ffdd349225f86c19d025c7e27dd7b3d9e0d326c37be971d9b83218571e",
+      "translation_text_hash": "b7a30bc383f389afecf89e7b3bbc72ccf2fec87180c873c9857085d6a0d722be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 마음을 강하게 하고 담대히 하라 그들을 두려워 말라 그들 앞에서 떨지 말라 이는 네 하나님 여호와 그가 너와 함께 행하실 것임이라 반드시 너를 떠나지 아니하시며 버리지 아니하시리라 하고"
+      ],
+      "raw_text_hashes": [
+        "b7a30bc383f389afecf89e7b3bbc72ccf2fec87180c873c9857085d6a0d722be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:7",
+      "sequence": 5736,
+      "chapter_label": "DEU 31",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 7
+        }
+      ],
+      "en": "Moses called to Joshua, and said to him in the sight of all Israel, “Be strong and courageous, for you shall go with this people into the land which the LORD has sworn to their fathers to give them; and you shall cause them to inherit it.",
+      "ko": "모세가 여호수아를 불러 온 이스라엘 목전에서 그에게 이르되 너는 마음을 강하게 하고 담대히 하라 너는 이 백성을 거느리고 여호와께서 그들의 열조에게 주리라고 맹세하신 땅에 들어가서 그들로 그 땅을 얻게 하라",
+      "source_text_hash": "061bb77cb99d14eb1ad1ffc68c370fb774039e4423dc9cf86f3280d8a5c95e2c",
+      "translation_text_hash": "57eb63228ac050b20937bc8f4b019137dbe4554a91f7932abbacf009e1e1a387",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호수아를 불러 온 이스라엘 목전에서 그에게 이르되 너는 마음을 강하게 하고 담대히 하라 너는 이 백성을 거느리고 여호와께서 그들의 열조에게 주리라고 맹세하신 땅에 들어가서 그들로 그 땅을 얻게 하라"
+      ],
+      "raw_text_hashes": [
+        "57eb63228ac050b20937bc8f4b019137dbe4554a91f7932abbacf009e1e1a387"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:8",
+      "sequence": 5737,
+      "chapter_label": "DEU 31",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD himself is who goes before you. He will be with you. He will not fail you nor forsake you. Don’t be afraid. Don’t be discouraged.”",
+      "ko": "여호와 그가 네 앞서 행하시며 너와 함께하사 너를 떠나지 아니하시며 버리지 아니하시리니 너는 두려워 말라 놀라지 말라",
+      "source_text_hash": "2574a4199ef160c980a35a9105a25962089c3932e5e63338f8c6e7c2ed8e1f3e",
+      "translation_text_hash": "835c2cd6e783fb26f45555fa7908b05be8b202d35968b3efa8e224cdfc6dd3ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 그가 네 앞서 행하시며 너와 함께하사 너를 떠나지 아니하시며 버리지 아니하시리니 너는 두려워 말라 놀라지 말라"
+      ],
+      "raw_text_hashes": [
+        "835c2cd6e783fb26f45555fa7908b05be8b202d35968b3efa8e224cdfc6dd3ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:9",
+      "sequence": 5738,
+      "chapter_label": "DEU 31",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 9
+        }
+      ],
+      "en": "Moses wrote this law and delivered it to the priests the sons of Levi, who bore the ark of the LORD’s covenant, and to all the elders of Israel.",
+      "ko": "모세가 이 율법을 써서 여호와의 언약궤를 메는 레위 자손 제사장들과 이스라엘 모든 장로에게 주고",
+      "source_text_hash": "8996b151b861198863c02259e50fe2d999dc069172aef7bc49e314e5c616c086",
+      "translation_text_hash": "400c5161071f85045038e6d986c88c477187cac00fa63a92ad2b1845604eefe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이 율법을 써서 여호와의 언약궤를 메는 레위 자손 제사장들과 이스라엘 모든 장로에게 주고"
+      ],
+      "raw_text_hashes": [
+        "400c5161071f85045038e6d986c88c477187cac00fa63a92ad2b1845604eefe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:10",
+      "sequence": 5739,
+      "chapter_label": "DEU 31",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 10
+        }
+      ],
+      "en": "Moses commanded them, saying, “At the end of every seven years, in the set time of the year of release, in the feast of booths,",
+      "ko": "그들에게 명하여 이르기를 매 칠년 끝 해 곧 정기 면제년의 초막절에",
+      "source_text_hash": "5f7f3fc925331666754bebab6d4903f451ed7b87ffe2af329586cb9c5f8a3abb",
+      "translation_text_hash": "5773757e20ed54920667edf0fc0b0dd6f838e20d54c297c0ab90919f91e5cc5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 명하여 이르기를 매 칠년 끝 해 곧 정기 면제년의 초막절에"
+      ],
+      "raw_text_hashes": [
+        "5773757e20ed54920667edf0fc0b0dd6f838e20d54c297c0ab90919f91e5cc5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:11",
+      "sequence": 5740,
+      "chapter_label": "DEU 31",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 11
+        }
+      ],
+      "en": "when all Israel has come to appear before the LORD your God in the place which he will choose, you shall read this law before all Israel in their hearing.",
+      "ko": "온 이스라엘이 네 하나님 여호와 앞 그 택하신 곳에 모일 때에 이 율법을 낭독하여 온 이스라엘로 듣게 할찌니",
+      "source_text_hash": "fbd0c2b63f62c244aa2226e50ed6122eedbc754fd52e4f71717be8d48783cc38",
+      "translation_text_hash": "5786c0aef9b496989fbc00b8374e55089d170f621aedd0d7f2e083f44466e05a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 네 하나님 여호와 앞 그 택하신 곳에 모일 때에 이 율법을 낭독하여 온 이스라엘로 듣게 할찌니"
+      ],
+      "raw_text_hashes": [
+        "5786c0aef9b496989fbc00b8374e55089d170f621aedd0d7f2e083f44466e05a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:12",
+      "sequence": 5741,
+      "chapter_label": "DEU 31",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 12
+        }
+      ],
+      "en": "Assemble the people, the men and the women and the little ones, and the foreigners who are within your gates, that they may hear, learn, fear the LORD your God, and observe to do all the words of this law,",
+      "ko": "곧 백성의 남녀와 유치와 네 성안에 우거하는 타국인을 모으고 그들로 듣고 배우고 네 하나님 여호와를 경외하며 이 율법의 모든 말씀을 지켜 행하게 하고",
+      "source_text_hash": "ab11d88751af2b990d0d8a49b4d6b023e260aced8605442b198fd5fe25c8534b",
+      "translation_text_hash": "8005beada36edf38c3f69c2518329f112ae82aecc408923d9dfaf7b60e31a5e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 백성의 남녀와 유치와 네 성안에 우거하는 타국인을 모으고 그들로 듣고 배우고 네 하나님 여호와를 경외하며 이 율법의 모든 말씀을 지켜 행하게 하고"
+      ],
+      "raw_text_hashes": [
+        "8005beada36edf38c3f69c2518329f112ae82aecc408923d9dfaf7b60e31a5e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:13",
+      "sequence": 5742,
+      "chapter_label": "DEU 31",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 13
+        }
+      ],
+      "en": "and that their children, who have not known, may hear and learn to fear the LORD your God, as long as you live in the land where you go over the Jordan to possess it.”",
+      "ko": "또 너희가 요단을 건너가서 얻을 땅에 거할 동안에 이 말씀을 알지 못하는 그들의 자녀로 듣고 네 하나님 여호와 경외하기를 배우게 할찌니라",
+      "source_text_hash": "34e7fe93b8cd6f25b652f4f6911d79fb5cc634c3349e1221f2f6fb8bb4758d96",
+      "translation_text_hash": "0059f709c2bba7f9ef41ea38b7b3d78d86b5f61f3b3695e6ddd33cf29684c33d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 요단을 건너가서 얻을 땅에 거할 동안에 이 말씀을 알지 못하는 그들의 자녀로 듣고 네 하나님 여호와 경외하기를 배우게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0059f709c2bba7f9ef41ea38b7b3d78d86b5f61f3b3695e6ddd33cf29684c33d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:14",
+      "sequence": 5743,
+      "chapter_label": "DEU 31",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD said to Moses, “Behold, your days approach that you must die. Call Joshua, and present yourselves in the Tent of Meeting, that I may commission him.” Moses and Joshua went, and presented themselves in the Tent of Meeting.",
+      "ko": "여호와께서 모세에게 이르시되 너의 죽을 기한이 가까왔으니 여호수아를 불러서 함께 회막으로 나아오라 내가 그에게 명을 내리리라 모세와 여호수아가 나아가서 회막에 서니",
+      "source_text_hash": "bfb5af7fd54dc23126f7707b7f3ffadbeb66352de6a8676d4a6d34f3024cb6c5",
+      "translation_text_hash": "93e516d366bb92371695c886afa2eeaf98087f5327af98f332961f0ab73d72b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너의 죽을 기한이 가까왔으니 여호수아를 불러서 함께 회막으로 나아오라 내가 그에게 명을 내리리라 모세와 여호수아가 나아가서 회막에 서니"
+      ],
+      "raw_text_hashes": [
+        "93e516d366bb92371695c886afa2eeaf98087f5327af98f332961f0ab73d72b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:15",
+      "sequence": 5744,
+      "chapter_label": "DEU 31",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD appeared in the Tent in a pillar of cloud, and the pillar of cloud stood over the Tent’s door.",
+      "ko": "여호와께서 구름 기둥 가운데서 장막에 나타나시고 구름 기둥은 장막문 위에 머물렀더라",
+      "source_text_hash": "9b875c277c13599f29a6211197fc2824f6a02612af90fa0cfef8af06d5d6d81f",
+      "translation_text_hash": "dc1ceed39511d5d44ab11faea1f14ca60345560e191578340cdd51995cd0c30a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 구름 기둥 가운데서 장막에 나타나시고 구름 기둥은 장막문 위에 머물렀더라"
+      ],
+      "raw_text_hashes": [
+        "dc1ceed39511d5d44ab11faea1f14ca60345560e191578340cdd51995cd0c30a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:16",
+      "sequence": 5745,
+      "chapter_label": "DEU 31",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD said to Moses, “Behold, you shall sleep with your fathers. This people will rise up and play the prostitute after the strange gods of the land where they go to be among them, and will forsake me and break my covenant which I have made with them.",
+      "ko": "여호와께서 모세에게 이르시되 너는 너의 열조와 함께 자려니와 이 백성은 들어가 거할 그 땅에서 일어나서 이방 신들을 음란히 좇아 나를 버리며 내가 그들과 세운 언약을 어길 것이라",
+      "source_text_hash": "9108633a594837d21e055ba33fb6f69a49102f1f0becec28c9ecb42ffce2d3dd",
+      "translation_text_hash": "22e8b1a6f3e38731b46becc9191e96dd2710b84cc0605bf26baa716abe4c9e29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 너의 열조와 함께 자려니와 이 백성은 들어가 거할 그 땅에서 일어나서 이방 신들을 음란히 좇아 나를 버리며 내가 그들과 세운 언약을 어길 것이라"
+      ],
+      "raw_text_hashes": [
+        "22e8b1a6f3e38731b46becc9191e96dd2710b84cc0605bf26baa716abe4c9e29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:17",
+      "sequence": 5746,
+      "chapter_label": "DEU 31",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 17
+        }
+      ],
+      "en": "Then my anger shall be kindled against them in that day, and I will forsake them, and I will hide my face from them, and they shall be devoured, and many evils and troubles shall come on them; so that they will say in that day, ‘Haven’t these evils come on us because our God is not among us?’",
+      "ko": "그 때에 내가 그들에게 진노하여 그들을 버리며 내 얼굴을 숨겨 그들에게 보이지 않게 할것인즉 그들이 삼킴을 당하여 허다한 재앙과 환난이 그들에게 임할 그 때에 그들이 말하기를 이 재앙이 우리에게 임함은 우리 하나님이 우리 중에 계시지 않은 까닭이 아니뇨 할 것이라",
+      "source_text_hash": "34306aaa5e4dbe60f1b90d44f26d02cc9fc0bace0938c98d522ecc5352dd1ebd",
+      "translation_text_hash": "25ec781c1818ca9b6080854bb2885abac3466b739ee7d01c1227da4b8ae52750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 그들에게 진노하여 그들을 버리며 내 얼굴을 숨겨 그들에게 보이지 않게 할것인즉 그들이 삼킴을 당하여 허다한 재앙과 환난이 그들에게 임할 그 때에 그들이 말하기를 이 재앙이 우리에게 임함은 우리 하나님이 우리 중에 계시지 않은 까닭이 아니뇨 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "25ec781c1818ca9b6080854bb2885abac3466b739ee7d01c1227da4b8ae52750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:18",
+      "sequence": 5747,
+      "chapter_label": "DEU 31",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 18
+        }
+      ],
+      "en": "I will surely hide my face in that day for all the evil which they have done, in that they have turned to other gods.",
+      "ko": "그들이 돌이켜 다른 신을 좇는 모든 악행을 인하여 내가 그 때에 반드시 내 얼굴을 숨기리라",
+      "source_text_hash": "bc528516e44a0350f762849c3939da45cd7c83d8d845ae4dd99bd00accbae649",
+      "translation_text_hash": "b9fcb5bc119405f3e167e825dcf2a802753d18238d1694414c2f117a19114002",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 돌이켜 다른 신을 좇는 모든 악행을 인하여 내가 그 때에 반드시 내 얼굴을 숨기리라"
+      ],
+      "raw_text_hashes": [
+        "b9fcb5bc119405f3e167e825dcf2a802753d18238d1694414c2f117a19114002"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:19",
+      "sequence": 5748,
+      "chapter_label": "DEU 31",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 19
+        }
+      ],
+      "en": "“Now therefore write this song for yourselves, and teach it to the children of Israel. Put it in their mouths, that this song may be a witness for me against the children of Israel.",
+      "ko": "그러므로 이제 너희는 이 노래를 써서 이스라엘 자손에게 가르쳐서 그 입으로 부르게 하여 이 노래로 나를 위하여 이스라엘 자손에게 증거가 되게 하라",
+      "source_text_hash": "46d0f9c5b8b3e022db87afbbd747ac914f5dcf15e84e5fb114ac47c7c6f6658c",
+      "translation_text_hash": "6037a1d1bda7f3520967e55a6799d0f3881567847beffd5a626b1f135040e970",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 너희는 이 노래를 써서 이스라엘 자손에게 가르쳐서 그 입으로 부르게 하여 이 노래로 나를 위하여 이스라엘 자손에게 증거가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "6037a1d1bda7f3520967e55a6799d0f3881567847beffd5a626b1f135040e970"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:20",
+      "sequence": 5749,
+      "chapter_label": "DEU 31",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 20
+        }
+      ],
+      "en": "For when I have brought them into the land which I swore to their fathers, flowing with milk and honey, and they have eaten and filled themselves, and grown fat, then they will turn to other gods, and serve them, and despise me, and break my covenant.",
+      "ko": "내가 그들의 열조에게 맹세한바 젖과 꿀이 흐르는 땅으로 그들을 인도하여 들인 후에 그들이 먹어 배부르고 살찌면 돌이켜 다른 신들을 섬기며 나를 멸시하여 내 언약을 어기리니",
+      "source_text_hash": "196b619bf7fad117d6103162db661c8e05b8f2d8f8c3693bbe12291dbc7c1e9e",
+      "translation_text_hash": "e643f7be69ed02663bbec9f76d73ad5367fa9facb6e9b33ae050ea91f79de995",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 열조에게 맹세한바 젖과 꿀이 흐르는 땅으로 그들을 인도하여 들인 후에 그들이 먹어 배부르고 살찌면 돌이켜 다른 신들을 섬기며 나를 멸시하여 내 언약을 어기리니"
+      ],
+      "raw_text_hashes": [
+        "e643f7be69ed02663bbec9f76d73ad5367fa9facb6e9b33ae050ea91f79de995"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:21",
+      "sequence": 5750,
+      "chapter_label": "DEU 31",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 21
+        }
+      ],
+      "en": "It will happen, when many evils and troubles have come on them, that this song will testify before them as a witness; for it will not be forgotten out of the mouths of their descendants; for I know their ways and what they are doing today, before I have brought them into the land which I promised them.”",
+      "ko": "그들이 재앙과 환난을 당할 때에 그들의 자손이 부르기를 잊지 아니한 이 노래가 그들 앞에 증인처럼 되리라 나는 내가 맹세한 땅으로 그들을 인도하여 들이기 전 오늘날에 나는 그들의 상상하는 바를 아노라",
+      "source_text_hash": "90ee3c82f86df82b69b50f8c2e1fcdb79a942dc1beb6fa7c940203b8683757c9",
+      "translation_text_hash": "4e029ccf58d096e210327c0d319dc0b96cca3e6eb2cc42a884d9f08ca1698b05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 재앙과 환난을 당할 때에 그들의 자손이 부르기를 잊지 아니한 이 노래가 그들 앞에 증인처럼 되리라 나는 내가 맹세한 땅으로 그들을 인도하여 들이기 전 오늘날에 나는 그들의 상상하는 바를 아노라"
+      ],
+      "raw_text_hashes": [
+        "4e029ccf58d096e210327c0d319dc0b96cca3e6eb2cc42a884d9f08ca1698b05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:22",
+      "sequence": 5751,
+      "chapter_label": "DEU 31",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 22
+        }
+      ],
+      "en": "So Moses wrote this song the same day, and taught it to the children of Israel.",
+      "ko": "모세가 당일에 이 노래를 써서 이스라엘 자손에게 가르쳤더라",
+      "source_text_hash": "85a8c75b4b4743a0ee64caabedbf0f5a2bda08078f20a1480d7055f6a32031dd",
+      "translation_text_hash": "af04965217a83155a730429d8f5753b412acad5681d44f01b6cdc45eab0ed8c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 당일에 이 노래를 써서 이스라엘 자손에게 가르쳤더라"
+      ],
+      "raw_text_hashes": [
+        "af04965217a83155a730429d8f5753b412acad5681d44f01b6cdc45eab0ed8c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:23",
+      "sequence": 5752,
+      "chapter_label": "DEU 31",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 23
+        }
+      ],
+      "en": "He commissioned Joshua the son of Nun, and said, “Be strong and courageous; for you shall bring the children of Israel into the land which I swore to them. I will be with you.”",
+      "ko": "여호와께서 또 눈의 아들 여호수아에게 명하여 가라사대 너는 이스라엘 자손을 인도하여 내가 그들에게 맹세한 땅으로 들어가게 하리니 마음을 강하게 하고 담대히 하라 내가 너와 함께 하리라",
+      "source_text_hash": "29017933c9cb2c19f177cccd6406f4bcde0fb5f917adc5593555e6b0944772f2",
+      "translation_text_hash": "6ebc49f9f642111cf71ee2d3bea3f64743beec5ac73708cefe18da4a9b3229f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 눈의 아들 여호수아에게 명하여 가라사대 너는 이스라엘 자손을 인도하여 내가 그들에게 맹세한 땅으로 들어가게 하리니 마음을 강하게 하고 담대히 하라 내가 너와 함께 하리라"
+      ],
+      "raw_text_hashes": [
+        "6ebc49f9f642111cf71ee2d3bea3f64743beec5ac73708cefe18da4a9b3229f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:24",
+      "sequence": 5753,
+      "chapter_label": "DEU 31",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 24
+        }
+      ],
+      "en": "When Moses had finished writing the words of this law in a book, until they were finished,",
+      "ko": "모세가 이 율법의 말씀을 다 책에 써서 마친 후에",
+      "source_text_hash": "face2d3a7baa2c0c536abb814345f5b1cc8029aebd5ac76cae8e251436e85dad",
+      "translation_text_hash": "184dab659057f6a8168687630aabbe3e2f01548848a47b9a3caf21b7c66fc50b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이 율법의 말씀을 다 책에 써서 마친 후에"
+      ],
+      "raw_text_hashes": [
+        "184dab659057f6a8168687630aabbe3e2f01548848a47b9a3caf21b7c66fc50b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:25",
+      "sequence": 5754,
+      "chapter_label": "DEU 31",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 25
+        }
+      ],
+      "en": "Moses commanded the Levites, who bore the ark of the LORD’s covenant, saying,",
+      "ko": "여호와의 언약궤를 메는 레위 사람에게 명하여 가로되",
+      "source_text_hash": "388d33e61280e57256d16c16fa7e640fd874d695c3efe911f019151621773849",
+      "translation_text_hash": "8221e947f74ff541b0e13ab533b3c4484df78ee2de2dfd91e54e1653f9bf370b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤를 메는 레위 사람에게 명하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "8221e947f74ff541b0e13ab533b3c4484df78ee2de2dfd91e54e1653f9bf370b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:26",
+      "sequence": 5755,
+      "chapter_label": "DEU 31",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 26
+        }
+      ],
+      "en": "“Take this book of the law, and put it by the side of the ark of the LORD your God’s covenant, that it may be there for a witness against you.",
+      "ko": "이 율법책을 가져다가 너희 하나님 여호와의 언약궤 곁에 두어 너희에게 증거가 되게 하라",
+      "source_text_hash": "912697329082f5328b7ade180900295693a6be9de89a8fb7797ca1ec7df700e6",
+      "translation_text_hash": "f1886b496b5822480e74860429012e0dff20d47cddf87f2d18431358cbfc7b9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 율법책을 가져다가 너희 하나님 여호와의 언약궤 곁에 두어 너희에게 증거가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "f1886b496b5822480e74860429012e0dff20d47cddf87f2d18431358cbfc7b9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:27",
+      "sequence": 5756,
+      "chapter_label": "DEU 31",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 27
+        }
+      ],
+      "en": "For I know your rebellion and your stiff neck. Behold, while I am yet alive with you today, you have been rebellious against the LORD. How much more after my death?",
+      "ko": "내가 너희의 패역함과 목이 곧은 것을 아나니 오늘날 내가 생존하여 너희와 함께 하여도 너희가 여호와를 거역하였거든 하물며 내가 죽은 후의 일이랴",
+      "source_text_hash": "2274a3dd8bb06cf6ca674935ff85d88d0ff2365a697ec195b4809ad288d79e72",
+      "translation_text_hash": "c94ef60677e63852aabdbc47eb55bd1cc88e3f879b91ee5f81d7c157a02c7f36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 패역함과 목이 곧은 것을 아나니 오늘날 내가 생존하여 너희와 함께 하여도 너희가 여호와를 거역하였거든 하물며 내가 죽은 후의 일이랴"
+      ],
+      "raw_text_hashes": [
+        "c94ef60677e63852aabdbc47eb55bd1cc88e3f879b91ee5f81d7c157a02c7f36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:28",
+      "sequence": 5757,
+      "chapter_label": "DEU 31",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 28
+        }
+      ],
+      "en": "Assemble to me all the elders of your tribes and your officers, that I may speak these words in their ears, and call heaven and earth to witness against them.",
+      "ko": "너희 지파 모든 장로와 유사들을 내 앞에 모으라 내가 이 말씀을 그들의 귀에 들리고 그들에게 천지로 증거를 삼으리라",
+      "source_text_hash": "87e2fb9bbded847184eae43d116028db04605a93919e4abf1e11be7da593d849",
+      "translation_text_hash": "d513cd637ec0a55189fbefe6c5d52ac5838580cf064a1b647864230cf1b3ce64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 지파 모든 장로와 유사들을 내 앞에 모으라 내가 이 말씀을 그들의 귀에 들리고 그들에게 천지로 증거를 삼으리라"
+      ],
+      "raw_text_hashes": [
+        "d513cd637ec0a55189fbefe6c5d52ac5838580cf064a1b647864230cf1b3ce64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:29",
+      "sequence": 5758,
+      "chapter_label": "DEU 31",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 29
+        }
+      ],
+      "en": "For I know that after my death you will utterly corrupt yourselves, and turn away from the way which I have commanded you; and evil will happen to you in the latter days, because you will do that which is evil in the LORD’s sight, to provoke him to anger through the work of your hands.”",
+      "ko": "내가 알거니와 내가 죽은 후에 너희가 스스로 부패하여 내가 너희에게 명한 길을 떠나서 여호와의 목전에 악을 행하여 너희의 손으로 하는 일로 그를 격노케 하므로 너희가 말세에 재앙을 당하리라 하니라",
+      "source_text_hash": "77bdd21b29d2b9dde23ab9109711c081bcb90de726639e66b33b134aa1d4f523",
+      "translation_text_hash": "12d5d78c2565140332b8aef253f3c9a150cf01f3f6a4fd8fbf4b76227f140227",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 알거니와 내가 죽은 후에 너희가 스스로 부패하여 내가 너희에게 명한 길을 떠나서 여호와의 목전에 악을 행하여 너희의 손으로 하는 일로 그를 격노케 하므로 너희가 말세에 재앙을 당하리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "12d5d78c2565140332b8aef253f3c9a150cf01f3f6a4fd8fbf4b76227f140227"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:31:30",
+      "sequence": 5759,
+      "chapter_label": "DEU 31",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 31,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 31,
+          "verse": 30
+        }
+      ],
+      "en": "Moses spoke in the ears of all the assembly of Israel the words of this song, until they were finished.",
+      "ko": "모세가 이스라엘 총회에게 이 노래의 말씀을 끝까지 읽어 들리니라",
+      "source_text_hash": "dee5b627ee8a6f32d547de2833d8b79f97258a783646709e1ab6066a7e25a488",
+      "translation_text_hash": "d88da7c9c3e0a68c8dfffdd2e367d38a6c538974ccf85213d0427b58329bd506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 총회에게 이 노래의 말씀을 끝까지 읽어 들리니라"
+      ],
+      "raw_text_hashes": [
+        "d88da7c9c3e0a68c8dfffdd2e367d38a6c538974ccf85213d0427b58329bd506"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:007",
+  "unit_ordinal": 194,
+  "unit_label": "JOS 7",
+  "book_code": "JOS",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:7:1",
+      "sequence": 5978,
+      "chapter_label": "JOS 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "But the children of Israel committed a trespass in the devoted things; for Achan, the son of Carmi, the son of Zabdi, the son of Zerah, of the tribe of Judah, took some of the devoted things. Therefore the LORD’s anger burned against the children of Israel.",
+      "ko": "이스라엘 자손들이 바친 물건을 인하여 범죄하였으니 이는 유다 지파 세라의 증손 삽디의 손자 갈미의 아들 아간이 바친 물건을 취하였음이라 여호와께서 이스라엘 자손들에게 진노하시니라",
+      "source_text_hash": "a7edf8ac1c19a6e57311bd3e8f2629bfa459f76262a6f918e022c5eaffdf83bd",
+      "translation_text_hash": "bce61f0d4fdb4616d27d06dcbad153dbb43ea7522bf14fb87714c3e4c34f6ccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손들이 바친 물건을 인하여 범죄하였으니 이는 유다 지파 세라의 증손 삽디의 손자 갈미의 아들 아간이 바친 물건을 취하였음이라 여호와께서 이스라엘 자손들에게 진노하시니라"
+      ],
+      "raw_text_hashes": [
+        "bce61f0d4fdb4616d27d06dcbad153dbb43ea7522bf14fb87714c3e4c34f6ccb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:2",
+      "sequence": 5979,
+      "chapter_label": "JOS 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Joshua sent men from Jericho to Ai, which is beside Beth Aven, on the east side of Bethel, and spoke to them, saying, “Go up and spy out the land.” The men went up and spied out Ai.",
+      "ko": "여호수아가 여리고에서 사람을 벧엘 동편 벧아웬 곁에 있는 아이로 보내며 그들에게 일러 가로되 올라가서 그 땅을 정탐하라 하매 그 사람들이 올라가서 아이를 정탐하고",
+      "source_text_hash": "092ce062a3416c2b7ae3d16687c1ba7053f43c7da1921b5bec6031ca4c4c3ec1",
+      "translation_text_hash": "d8e5f73569c4754061ab28103bba991e695b50a02ba47029016c57e970893b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 여리고에서 사람을 벧엘 동편 벧아웬 곁에 있는 아이로 보내며 그들에게 일러 가로되 올라가서 그 땅을 정탐하라 하매 그 사람들이 올라가서 아이를 정탐하고"
+      ],
+      "raw_text_hashes": [
+        "d8e5f73569c4754061ab28103bba991e695b50a02ba47029016c57e970893b36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:3",
+      "sequence": 5980,
+      "chapter_label": "JOS 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "They returned to Joshua, and said to him, “Don’t let all the people go up, but let about two or three thousand men go up and strike Ai. Don’t make all the people to toil there, for there are only a few of them.”",
+      "ko": "여호수아에게로 돌아와서 그에게 이르되 백성을 다 올라가게 말고 이삼천명만 올라가서 아이를 치게 하소서 그들은 소수니 모든 백성을 그리로 보내어 수고롭게 마소서 하므로",
+      "source_text_hash": "48d3b01f97644bcbc8cedc558b85f4b5b679dd8dcc2cdb8866a9420e0af4f708",
+      "translation_text_hash": "5037d172d49e4b26eaebeb1ac251a990fbff640fdbc7dc83dce3e324328c75ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아에게로 돌아와서 그에게 이르되 백성을 다 올라가게 말고 이삼천명만 올라가서 아이를 치게 하소서 그들은 소수니 모든 백성을 그리로 보내어 수고롭게 마소서 하므로"
+      ],
+      "raw_text_hashes": [
+        "5037d172d49e4b26eaebeb1ac251a990fbff640fdbc7dc83dce3e324328c75ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:4",
+      "sequence": 5981,
+      "chapter_label": "JOS 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "So about three thousand men of the people went up there, and they fled before the men of Ai.",
+      "ko": "백성중 삼천명쯤 그리로 올라갔다가 아이 사람 앞에서 도망하니",
+      "source_text_hash": "a75d8f3880a66d8331d81686d6dd8d6e7a0b85dc13841f9eee341eb941f7ea1c",
+      "translation_text_hash": "0a84d36686e350417c432835e6bd6ea7e9442ac45a2872933b29a372c021cce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성중 삼천명쯤 그리로 올라갔다가 아이 사람 앞에서 도망하니"
+      ],
+      "raw_text_hashes": [
+        "0a84d36686e350417c432835e6bd6ea7e9442ac45a2872933b29a372c021cce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:5",
+      "sequence": 5982,
+      "chapter_label": "JOS 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "The men of Ai struck about thirty-six men of them. They chased them from before the gate even to Shebarim, and struck them at the descent. The hearts of the people melted, and became like water.",
+      "ko": "아이 사람이 그들의 삼십 륙인쯤 죽이고 성문 앞에서부터 스바림까지 쫓아와서 내려가는 비탈에서 쳤으므로 백성의 마음이 녹아 물 같이 된지라",
+      "source_text_hash": "1d1b5cd2efd364237cb5b9c3398525bf4652f680370804d052b4a867337faeb1",
+      "translation_text_hash": "1c5697d0f4c4345e3b4e1e683af82993e857fce7e7aeea3fa26bba6ef07316c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 사람이 그들의 삼십 륙인쯤 죽이고 성문 앞에서부터 스바림까지 쫓아와서 내려가는 비탈에서 쳤으므로 백성의 마음이 녹아 물 같이 된지라"
+      ],
+      "raw_text_hashes": [
+        "1c5697d0f4c4345e3b4e1e683af82993e857fce7e7aeea3fa26bba6ef07316c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:6",
+      "sequence": 5983,
+      "chapter_label": "JOS 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "Joshua tore his clothes, and fell to the earth on his face before the LORD’s ark until the evening, he and the elders of Israel; and they put dust on their heads.",
+      "ko": "여호수아가 옷을 찢고 이스라엘 장로들과 함께 여호와의 궤 앞에서 땅에 엎드려 머리에 티끌을 무릅쓰고 저물도록 있다가",
+      "source_text_hash": "406403f555373897406c485e4655e5bea61744b2589ed1afbbaf61c900cbadeb",
+      "translation_text_hash": "6fdc991751a7d50d78154a8cef8822de5c5915079d7d90361cbc38a167ece2c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 옷을 찢고 이스라엘 장로들과 함께 여호와의 궤 앞에서 땅에 엎드려 머리에 티끌을 무릅쓰고 저물도록 있다가"
+      ],
+      "raw_text_hashes": [
+        "6fdc991751a7d50d78154a8cef8822de5c5915079d7d90361cbc38a167ece2c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:7",
+      "sequence": 5984,
+      "chapter_label": "JOS 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Joshua said, “Alas, Lord GOD, why have you brought this people over the Jordan at all, to deliver us into the hand of the Amorites, to cause us to perish? I wish that we had been content and lived beyond the Jordan!",
+      "ko": "여호수아가 가로되 슬프도소이다 주 여호와여 어찌하여 이 백성을 인도하여 요단을 건너게 하시고 우리를 아모리 사람의 손에 붙여 멸망시키려 하셨나이까 우리가 요단 저편을 족하게 여겨 거하였더면 좋을뻔 하였나이다",
+      "source_text_hash": "3dc4c539ae095aaecb9e9c1ab2b3ca6219646a5c141351d753ec238cf3745d87",
+      "translation_text_hash": "9b371b394d8ce9946e729b4a7bf653887060953bedc155f7dec041493c6fc900",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 가로되 슬프도소이다 주 여호와여 어찌하여 이 백성을 인도하여 요단을 건너게 하시고 우리를 아모리 사람의 손에 붙여 멸망시키려 하셨나이까 우리가 요단 저편을 족하게 여겨 거하였더면 좋을뻔 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "9b371b394d8ce9946e729b4a7bf653887060953bedc155f7dec041493c6fc900"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:8",
+      "sequence": 5985,
+      "chapter_label": "JOS 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Oh, Lord, what shall I say, after Israel has turned their backs before their enemies?",
+      "ko": "주여 이스라엘이 그 대적 앞에서 돌아섰으니 내가 무슨 말을 하오리이까",
+      "source_text_hash": "fb969bcfbd223c401650ec2a86dd0a292366c2768358e812b70ae07a22bef9e2",
+      "translation_text_hash": "3967e83c4bc3e8ef8339e3cd1b9f32935ce3e24000edba2f202cd5be99b24509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 이스라엘이 그 대적 앞에서 돌아섰으니 내가 무슨 말을 하오리이까"
+      ],
+      "raw_text_hashes": [
+        "3967e83c4bc3e8ef8339e3cd1b9f32935ce3e24000edba2f202cd5be99b24509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:9",
+      "sequence": 5986,
+      "chapter_label": "JOS 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "For the Canaanites and all the inhabitants of the land will hear of it, and will surround us, and cut off our name from the earth. What will you do for your great name?”",
+      "ko": "가나안 사람과 이 땅 모든 거민이 이를 듣고 우리를 둘러싸고 우리 이름을 세상에서 끊으리니 주의 크신 이름을 위하여 어떻게 하시려나이까",
+      "source_text_hash": "03f798438dd4eeb9b5fa732ad643a4cb0fac2f7b7a75fd714ca937e314c8c155",
+      "translation_text_hash": "06a770d99316866e686627d7166abb9eff34f8282c03a6f472191dc19618249e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 사람과 이 땅 모든 거민이 이를 듣고 우리를 둘러싸고 우리 이름을 세상에서 끊으리니 주의 크신 이름을 위하여 어떻게 하시려나이까"
+      ],
+      "raw_text_hashes": [
+        "06a770d99316866e686627d7166abb9eff34f8282c03a6f472191dc19618249e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:10",
+      "sequence": 5987,
+      "chapter_label": "JOS 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD said to Joshua, “Get up! Why have you fallen on your face like that?",
+      "ko": "여호와께서 여호수아에게 이르시되 일어나라 어찌하여 이렇게 엎드렸느냐",
+      "source_text_hash": "5eb58d9c5960d1f35e85851123f42c3e4f0d0b7400317eb1fe9cfeee4fbeef86",
+      "translation_text_hash": "ac8312d7d59502792ccd2a0db456770a11613e3b09ec5fa80c5f6d5d0ea1d527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 여호수아에게 이르시되 일어나라 어찌하여 이렇게 엎드렸느냐"
+      ],
+      "raw_text_hashes": [
+        "ac8312d7d59502792ccd2a0db456770a11613e3b09ec5fa80c5f6d5d0ea1d527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:11",
+      "sequence": 5988,
+      "chapter_label": "JOS 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Israel has sinned. Yes, they have even transgressed my covenant which I commanded them. Yes, they have even taken some of the devoted things, and have also stolen, and also deceived. They have even put it among their own stuff.",
+      "ko": "이스라엘이 범죄하여 내가 그들에게 명한 나의 언약을 어기었나니 곧 그들이 바친 물건을 취하고 도적하고 사기하여 자기 기구 가운데 두었느니라",
+      "source_text_hash": "10eceed0b7ff6c8c29616a507542ab547ca44457cad6ac28193e62ccbdc53f50",
+      "translation_text_hash": "00043f70d970a26d937f1be8bdbd6016400a2fc362fed31e3027de5258510c08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 범죄하여 내가 그들에게 명한 나의 언약을 어기었나니 곧 그들이 바친 물건을 취하고 도적하고 사기하여 자기 기구 가운데 두었느니라"
+      ],
+      "raw_text_hashes": [
+        "00043f70d970a26d937f1be8bdbd6016400a2fc362fed31e3027de5258510c08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:12",
+      "sequence": 5989,
+      "chapter_label": "JOS 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore the children of Israel can’t stand before their enemies. They turn their backs before their enemies, because they have become devoted for destruction. I will not be with you any more, unless you destroy the devoted things from among you.",
+      "ko": "그러므로 이스라엘 자손들이 자기 대적을 능히 당치 못하고 그 앞에서 돌아섰나니 이는 자기도 바친 것이 됨이라 그 바친 것을 너희 중에서 멸하지 아니하면 내가 다시는 너희와 함께 있지 아니하리라",
+      "source_text_hash": "283288829728021c3d7a4be1138fe0e2bb7fb2937c70f46558ba1426a44e8340",
+      "translation_text_hash": "9035521569848dfae0e377a419abc94da79143561d03a1035c53d5eb001a1009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘 자손들이 자기 대적을 능히 당치 못하고 그 앞에서 돌아섰나니 이는 자기도 바친 것이 됨이라 그 바친 것을 너희 중에서 멸하지 아니하면 내가 다시는 너희와 함께 있지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "9035521569848dfae0e377a419abc94da79143561d03a1035c53d5eb001a1009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:13",
+      "sequence": 5990,
+      "chapter_label": "JOS 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Get up! Sanctify the people, and say, ‘Sanctify yourselves for tomorrow, for the LORD, the God of Israel, says, “There is a devoted thing among you, Israel. You cannot stand before your enemies until you take away the devoted thing from among you.”",
+      "ko": "너는 일어나서 백성을 성결케 하여 이르기를 너희는 스스로 성결케 하여 내일을 기다리라 이스라엘의 하나님 여호와의 말씀에 이스라엘아 너의 중에 바친 물건이 있나니 네가 그 바친 물건을 너의 중에서 제하기 전에는 너의 대적을 당치 못하리라",
+      "source_text_hash": "0cde115b72578d19ca88e5b9ac0645251c366ed87d039228ec8ebc6a2833299a",
+      "translation_text_hash": "e25612404013a1c1862cd601509cb9428babcd519338c0bc7b818ecd0c3d4c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 일어나서 백성을 성결케 하여 이르기를 너희는 스스로 성결케 하여 내일을 기다리라 이스라엘의 하나님 여호와의 말씀에 이스라엘아 너의 중에 바친 물건이 있나니 네가 그 바친 물건을 너의 중에서 제하기 전에는 너의 대적을 당치 못하리라"
+      ],
+      "raw_text_hashes": [
+        "e25612404013a1c1862cd601509cb9428babcd519338c0bc7b818ecd0c3d4c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:14",
+      "sequence": 5991,
+      "chapter_label": "JOS 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "In the morning therefore you shall be brought near by your tribes. It shall be that the tribe which the LORD selects shall come near by families. The family which the LORD selects shall come near by households. The household which the LORD selects shall come near man by man.",
+      "ko": "아침에 너희는 너희 지파대로 가까이 나아오라 여호와께 뽑히는 지파는 그 족속대로 가까이 나아올 것이요 여호와께 뽑히는 족속은 그 가족대로 가까이 나아올 것이요 여호와께 뽑히는 가족은 각 남자대로 가까이 나아올 것이며",
+      "source_text_hash": "4957080913473641317e7942cc19df5e482b6746e828060b38d632e865f62668",
+      "translation_text_hash": "b1db904b9d862b1b925ab107f75fc766c97afaf26bdaa16073e4443aaa293a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 너희는 너희 지파대로 가까이 나아오라 여호와께 뽑히는 지파는 그 족속대로 가까이 나아올 것이요 여호와께 뽑히는 족속은 그 가족대로 가까이 나아올 것이요 여호와께 뽑히는 가족은 각 남자대로 가까이 나아올 것이며"
+      ],
+      "raw_text_hashes": [
+        "b1db904b9d862b1b925ab107f75fc766c97afaf26bdaa16073e4443aaa293a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:15",
+      "sequence": 5992,
+      "chapter_label": "JOS 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "It shall be, that he who is taken with the devoted thing shall be burned with fire, he and all that he has, because he has transgressed the LORD’s covenant, and because he has done a disgraceful thing in Israel.’”",
+      "ko": "바친 물건을 가진 자로 뽑힌 자를 불사르되 그와 그 모든 소유를 그리하라 이는 여호와의 언약을 어기고 이스라엘 가운데서 망령된 일을 행하였음이라 하셨다 하라",
+      "source_text_hash": "28f0e0e108802b81ecce195b5dd6b8ea8ac6eec0a0dbf1e23ed774e060546e81",
+      "translation_text_hash": "08d4e8e7e0a12aabd29a8b195abb0330dd73239d88f6d4b573f75370e50595f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바친 물건을 가진 자로 뽑힌 자를 불사르되 그와 그 모든 소유를 그리하라 이는 여호와의 언약을 어기고 이스라엘 가운데서 망령된 일을 행하였음이라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "08d4e8e7e0a12aabd29a8b195abb0330dd73239d88f6d4b573f75370e50595f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:16",
+      "sequence": 5993,
+      "chapter_label": "JOS 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "So Joshua rose up early in the morning and brought Israel near by their tribes. The tribe of Judah was selected.",
+      "ko": "이에 여호수아가 아침 일찌기 일어나서 이스라엘을 그 지파대로 가까이 나아오게 하였더니 유다 지파가 뽑혔고",
+      "source_text_hash": "abb4df73d13dbd6631dab74c0c401c15429c5a2f6ed48a9f3ad354b37254cce3",
+      "translation_text_hash": "0d9f39a71872ea0c7326e3954b74bbff5c8d59ae1bf85dc01751005897dc8316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호수아가 아침 일찌기 일어나서 이스라엘을 그 지파대로 가까이 나아오게 하였더니 유다 지파가 뽑혔고"
+      ],
+      "raw_text_hashes": [
+        "0d9f39a71872ea0c7326e3954b74bbff5c8d59ae1bf85dc01751005897dc8316"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:17",
+      "sequence": 5994,
+      "chapter_label": "JOS 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "He brought near the family of Judah, and he selected the family of the Zerahites. He brought near the family of the Zerahites man by man, and Zabdi was selected.",
+      "ko": "유다 족속을 가까이 나아오게 하였더니 세라 족속이 뽑혔고 세라 족속의 각 남자를 가까이 나아오게 하였더니 삽디가 뽑혔고",
+      "source_text_hash": "135c35786b1af621b367b04b263da092b6443ccec852efba6d5c838eac6c8dd1",
+      "translation_text_hash": "816a0828cef651e3c4e4f861fa67c65ab342383a97c4018ab9f5fcd5b110d47f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 족속을 가까이 나아오게 하였더니 세라 족속이 뽑혔고 세라 족속의 각 남자를 가까이 나아오게 하였더니 삽디가 뽑혔고"
+      ],
+      "raw_text_hashes": [
+        "816a0828cef651e3c4e4f861fa67c65ab342383a97c4018ab9f5fcd5b110d47f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:18",
+      "sequence": 5995,
+      "chapter_label": "JOS 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "He brought near his household man by man, and Achan, the son of Carmi, the son of Zabdi, the son of Zerah, of the tribe of Judah, was selected.",
+      "ko": "삽디의 가족 각 남자를 가까이 나아오게 하였더니 유다 지파 세라의 증손이요 삽디의 손자요 갈미의 아들인 아간이 뽑혔더라",
+      "source_text_hash": "d9c6bf1ceed96a6b1bae7259a85d51b63d45e7c55fd425684582b1adce42cbee",
+      "translation_text_hash": "67ba88ac356ed857ac1b9636d13a38cb5df5c5c1c68f63ae0d286bd60149ed20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삽디의 가족 각 남자를 가까이 나아오게 하였더니 유다 지파 세라의 증손이요 삽디의 손자요 갈미의 아들인 아간이 뽑혔더라"
+      ],
+      "raw_text_hashes": [
+        "67ba88ac356ed857ac1b9636d13a38cb5df5c5c1c68f63ae0d286bd60149ed20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:19",
+      "sequence": 5996,
+      "chapter_label": "JOS 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Joshua said to Achan, “My son, please give glory to the LORD, the God of Israel, and make confession to him. Tell me now what you have done! Don’t hide it from me!”",
+      "ko": "여호수아가 아간에게 이르되 내 아들아 청하노라 이스라엘의 하나님 여호와께 영광을 돌려 그 앞에 자복하고 네 행한 일을 내게 고하라 그 일을 내게 숨기지 말라",
+      "source_text_hash": "7f903501ec8ee9417d4982492cf5487920c3ef8c94a514fed396f7b502da140b",
+      "translation_text_hash": "72dbd2edd52246c1863ff3c53c03fd21aaf5bc5755f19fb3b40092eaf52e6e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 아간에게 이르되 내 아들아 청하노라 이스라엘의 하나님 여호와께 영광을 돌려 그 앞에 자복하고 네 행한 일을 내게 고하라 그 일을 내게 숨기지 말라"
+      ],
+      "raw_text_hashes": [
+        "72dbd2edd52246c1863ff3c53c03fd21aaf5bc5755f19fb3b40092eaf52e6e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:20",
+      "sequence": 5997,
+      "chapter_label": "JOS 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Achan answered Joshua, and said, “I have truly sinned against the LORD, the God of Israel, and this is what I have done.",
+      "ko": "아간이 여호수아에게 대답하여 가로되 참으로 나는 이스라엘 하나님 여호와께 범죄하여 여차 여차히 행하였나이다",
+      "source_text_hash": "5b35a30a2278aab5a588b7c4c5c3dac3e64c7dee255eb7418aded94df02c32a4",
+      "translation_text_hash": "11a00eb42cf2eb816cd22a5048a72ba834db71365bff834f077f5330d55620cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아간이 여호수아에게 대답하여 가로되 참으로 나는 이스라엘 하나님 여호와께 범죄하여 여차 여차히 행하였나이다"
+      ],
+      "raw_text_hashes": [
+        "11a00eb42cf2eb816cd22a5048a72ba834db71365bff834f077f5330d55620cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:21",
+      "sequence": 5998,
+      "chapter_label": "JOS 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "When I saw among the plunder a beautiful Babylonian robe, two hundred shekels of silver, and a wedge of gold weighing fifty shekels, then I coveted them and took them. Behold, they are hidden in the ground in the middle of my tent, with the silver under it.”",
+      "ko": "내가 노략한 물건 중에 시날산의 아름다운 외투 한벌과 은 이백 세겔과 오십 세겔중의 금덩이 하나를 보고 탐내어 취하였나이다 보소서 이제 그 물건들을 내 장막 가운데 땅속에 감추었는데 은은 그 밑에 있나이다",
+      "source_text_hash": "ab20c6a3b9342bb6df8d625d14aa836f066a2a477a891041dd529d9254c75e1a",
+      "translation_text_hash": "86f817be977a39056adce8b6174412e4b3a7fc11b1f261f0478b1b3f24cf66f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 노략한 물건 중에 시날산의 아름다운 외투 한벌과 은 이백 세겔과 오십 세겔중의 금덩이 하나를 보고 탐내어 취하였나이다 보소서 이제 그 물건들을 내 장막 가운데 땅속에 감추었는데 은은 그 밑에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "86f817be977a39056adce8b6174412e4b3a7fc11b1f261f0478b1b3f24cf66f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:22",
+      "sequence": 5999,
+      "chapter_label": "JOS 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "So Joshua sent messengers, and they ran to the tent. Behold, it was hidden in his tent, with the silver under it.",
+      "ko": "이에 여호수아가 사자를 보내매 그의 장막에 달려가 본즉 물건이 그의 장막 안에 감취었는데 은은 그 밑에 있는지라",
+      "source_text_hash": "72fc2e55dadbe54894961dfbbb8e1df408887cf72080c02705381a042a797b63",
+      "translation_text_hash": "55f4c87a6de0f851604c9386eec03d72d5b92f682d5f8b1acf4479f669e34bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호수아가 사자를 보내매 그의 장막에 달려가 본즉 물건이 그의 장막 안에 감취었는데 은은 그 밑에 있는지라"
+      ],
+      "raw_text_hashes": [
+        "55f4c87a6de0f851604c9386eec03d72d5b92f682d5f8b1acf4479f669e34bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:23",
+      "sequence": 6000,
+      "chapter_label": "JOS 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "They took them from the middle of the tent, and brought them to Joshua and to all the children of Israel. They laid them down before the LORD.",
+      "ko": "그들이 그것을 장막 가운데서 취하여 여호수아와 이스라엘 모든 자손에게로 가져오매 그들이 그것을 여호와 앞에 놓으니라",
+      "source_text_hash": "c62ed87cce3fb6488242f69c0cc4e828b4599c5df66a89659cb4ca9d5601a374",
+      "translation_text_hash": "3d49655759296a5674b35873bbe307fe908b2338f0e74f7baf4d37eb6887b5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그것을 장막 가운데서 취하여 여호수아와 이스라엘 모든 자손에게로 가져오매 그들이 그것을 여호와 앞에 놓으니라"
+      ],
+      "raw_text_hashes": [
+        "3d49655759296a5674b35873bbe307fe908b2338f0e74f7baf4d37eb6887b5b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:24",
+      "sequence": 6001,
+      "chapter_label": "JOS 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Joshua, and all Israel with him, took Achan the son of Zerah, the silver, the robe, the wedge of gold, his sons, his daughters, his cattle, his donkeys, his sheep, his tent, and all that he had; and they brought them up to the valley of Achor.",
+      "ko": "여호수아가 이스라엘 모든 사람으로 더불어 세라의 아들 아간을 잡고 그 은과 외투와 금덩이와 그 아들들과 딸들과 소들과 나귀들과 양들과 장막과 무릇 그에게 속한 모든 것을 이끌고 아골 골짜기로 가서",
+      "source_text_hash": "c6e091363006efe1021b31bd937e4db19c35e99125720fcf6d2014215e981e06",
+      "translation_text_hash": "75deb105353245628064c37d439b0da4db41331c5e9c75bac7432d864641dd86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 이스라엘 모든 사람으로 더불어 세라의 아들 아간을 잡고 그 은과 외투와 금덩이와 그 아들들과 딸들과 소들과 나귀들과 양들과 장막과 무릇 그에게 속한 모든 것을 이끌고 아골 골짜기로 가서"
+      ],
+      "raw_text_hashes": [
+        "75deb105353245628064c37d439b0da4db41331c5e9c75bac7432d864641dd86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:25",
+      "sequence": 6002,
+      "chapter_label": "JOS 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Joshua said, “Why have you troubled us? The LORD will trouble you today.” All Israel stoned him with stones, and they burned them with fire and stoned them with stones.",
+      "ko": "여호수아가 가로되 네가 어찌하여 우리를 괴롭게 하였느뇨 여호와께서 오늘날 너를 괴롭게 하시리라 하니 온 이스라엘이 그를 돌로 치고 그것들도 돌로 치고 불사르고",
+      "source_text_hash": "d6da8b681668a63443198baefe3ec11b9be28929b3aa5351533e1b2a6238ebfa",
+      "translation_text_hash": "7a82e3a87ab2516151682fdc3f65ca8f64a5e482c32316d52b4fa2adb9e42a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 가로되 네가 어찌하여 우리를 괴롭게 하였느뇨 여호와께서 오늘날 너를 괴롭게 하시리라 하니 온 이스라엘이 그를 돌로 치고 그것들도 돌로 치고 불사르고"
+      ],
+      "raw_text_hashes": [
+        "7a82e3a87ab2516151682fdc3f65ca8f64a5e482c32316d52b4fa2adb9e42a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:7:26",
+      "sequence": 6003,
+      "chapter_label": "JOS 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "They raised over him a great heap of stones that remains to this day. The LORD turned from the fierceness of his anger. Therefore the name of that place was called “The valley of Achor” to this day.",
+      "ko": "그 위에 돌 무더기를 크게 쌓았더니 오늘날까지 있더라 여호와께서 그 극렬한 분노를 그치시니 그러므로 그곳 이름을 오늘날까지 아골 골짜기라 부르더라",
+      "source_text_hash": "99771600a30f14110eb3e8af9a4fbef6274bad503642c0ad235bc9bc78d130b1",
+      "translation_text_hash": "5a7d4b14ad8ea2fe24b1c92ff796cbc01d890ea37a8bca3878a8a43e4bf4541a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 위에 돌 무더기를 크게 쌓았더니 오늘날까지 있더라 여호와께서 그 극렬한 분노를 그치시니 그러므로 그곳 이름을 오늘날까지 아골 골짜기라 부르더라"
+      ],
+      "raw_text_hashes": [
+        "5a7d4b14ad8ea2fe24b1c92ff796cbc01d890ea37a8bca3878a8a43e4bf4541a"
+      ]
+    }
+  ]
+}

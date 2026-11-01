@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:026",
+  "unit_ordinal": 262,
+  "unit_label": "1SA 26",
+  "book_code": "1SA",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:26:1",
+      "sequence": 7907,
+      "chapter_label": "1SA 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "The Ziphites came to Saul to Gibeah, saying, “Doesn’t David hide himself in the hill of Hachilah, which is before the desert?”",
+      "ko": "십 사람이 기브아에 와서 사울에게 이르러 가로되 다윗이 광야 앞 하길라산에 숨지 아니하였나이까",
+      "source_text_hash": "7f69b35896e15b2844136cb6f598c4c15daa5f41ca53f406f369feb6672c3a54",
+      "translation_text_hash": "795613677f046635cdbd07fcf072ce4189201cf7f14a0f6e19310ebdc506ef28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "십 사람이 기브아에 와서 사울에게 이르러 가로되 다윗이 광야 앞 하길라산에 숨지 아니하였나이까"
+      ],
+      "raw_text_hashes": [
+        "795613677f046635cdbd07fcf072ce4189201cf7f14a0f6e19310ebdc506ef28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:2",
+      "sequence": 7908,
+      "chapter_label": "1SA 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "Then Saul arose and went down to the wilderness of Ziph, having three thousand chosen men of Israel with him, to seek David in the wilderness of Ziph.",
+      "ko": "사울이 일어나 십 황무지에서 다윗을 찾으려고 이스라엘에서 택한 사람 삼천과 함께 십 황무지로 내려가서",
+      "source_text_hash": "0e2bec3bed543076de68c24f24e8b93b853fe2a6441113628d26ad8025279213",
+      "translation_text_hash": "26d07ad230da65447df4c7b5b1f339fb5e743c71f01d5315039ef98d5bcfca5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 일어나 십 황무지에서 다윗을 찾으려고 이스라엘에서 택한 사람 삼천과 함께 십 황무지로 내려가서"
+      ],
+      "raw_text_hashes": [
+        "26d07ad230da65447df4c7b5b1f339fb5e743c71f01d5315039ef98d5bcfca5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:3",
+      "sequence": 7909,
+      "chapter_label": "1SA 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Saul encamped in the hill of Hachilah, which is before the desert, by the way. But David stayed in the wilderness, and he saw that Saul came after him into the wilderness.",
+      "ko": "광야 앞 하길라산 길 가에 진 치니라 다윗이 황무지에 있더니 사울이 자기를 따라 황무지로 들어옴을 깨닫고",
+      "source_text_hash": "abfdd6c8a218fbd78ac55098fb2c595fb7b372526158a7aad8e03995e3f7ead8",
+      "translation_text_hash": "c0175d76b14c75e2a5352d49ffd0aba8409fed3c488d6c6031d27e3ee4e25896",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야 앞 하길라산 길 가에 진 치니라 다윗이 황무지에 있더니 사울이 자기를 따라 황무지로 들어옴을 깨닫고"
+      ],
+      "raw_text_hashes": [
+        "c0175d76b14c75e2a5352d49ffd0aba8409fed3c488d6c6031d27e3ee4e25896"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:4",
+      "sequence": 7910,
+      "chapter_label": "1SA 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "David therefore sent out spies, and understood that Saul had certainly come.",
+      "ko": "이에 탐정을 보내어 사울이 과연 이른줄 알고",
+      "source_text_hash": "5033618358629b001e3224ef7eeaf05fd501b5c73e477c43bacb76d7f22efc6f",
+      "translation_text_hash": "2cb287ca499d75ca321b2c67b4db52de7e3e290305aa1452fcdef37bc4658fa9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 탐정을 보내어 사울이 과연 이른줄 알고"
+      ],
+      "raw_text_hashes": [
+        "2cb287ca499d75ca321b2c67b4db52de7e3e290305aa1452fcdef37bc4658fa9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:5",
+      "sequence": 7911,
+      "chapter_label": "1SA 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "Then David arose and came to the place where Saul had encamped; and David saw the place where Saul lay, with Abner the son of Ner, the captain of his army. Saul lay within the place of the wagons, and the people were encamped around him.",
+      "ko": "일어나 사울의 진 친 곳에 이르러 사울과 넬의 아들 군대장관 아브넬의 유하는 곳을 본즉 사울이 진 가운데 누웠고 백성은 그를 둘러 진 쳤더라",
+      "source_text_hash": "1cd774c8643ae706d1f7826c7988ab09af346b8ea8c0199aba8454170c23d86f",
+      "translation_text_hash": "420b85ff1145e3fa1421827481164846fbe4469daf5cc99e316132b1ceab8f9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 사울의 진 친 곳에 이르러 사울과 넬의 아들 군대장관 아브넬의 유하는 곳을 본즉 사울이 진 가운데 누웠고 백성은 그를 둘러 진 쳤더라"
+      ],
+      "raw_text_hashes": [
+        "420b85ff1145e3fa1421827481164846fbe4469daf5cc99e316132b1ceab8f9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:6",
+      "sequence": 7912,
+      "chapter_label": "1SA 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Then David answered and said to Ahimelech the Hittite, and to Abishai the son of Zeruiah, brother of Joab, saying, “Who will go down with me to Saul to the camp?” Abishai said, “I will go down with you.”",
+      "ko": "이에 다윗이 헷 사람 아히멜렉과 스루야의 아들 요압의 아우 아비새에게 물어 가로되 누가 나로 더불어 진에 내려 가서 사울에게 이르겠느냐 아비새가 가로되 내가 함께 가겠나이다",
+      "source_text_hash": "80fc5392548c8318ff0a5270c9cf3d720b4842d3022271905fb2e4d83eaafc01",
+      "translation_text_hash": "e6e160bb8f86c167ef94f428aba6c0172cff1ff308cf1b44abefec1ccd086884",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 헷 사람 아히멜렉과 스루야의 아들 요압의 아우 아비새에게 물어 가로되 누가 나로 더불어 진에 내려 가서 사울에게 이르겠느냐 아비새가 가로되 내가 함께 가겠나이다"
+      ],
+      "raw_text_hashes": [
+        "e6e160bb8f86c167ef94f428aba6c0172cff1ff308cf1b44abefec1ccd086884"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:7",
+      "sequence": 7913,
+      "chapter_label": "1SA 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "So David and Abishai came to the people by night; and, behold, Saul lay sleeping within the place of the wagons, with his spear stuck in the ground at his head; and Abner and the people lay around him.",
+      "ko": "다윗과 아비새가 밤에 그 백성에게 나아가 본즉 사울이 진 가운데 누워 자고 창은 머리 곁 땅에 꽂혔고 아브넬과 백성들은 그를 둘러 누웠는지라",
+      "source_text_hash": "9415a5db96ddf2ff511d9912ceb71fa3cb7ee1848cd205047e91004a58c6a268",
+      "translation_text_hash": "d2fe0c2953fef54e940ebd60dec72277e1a1ff7b77785300c9ad197ec97df1bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗과 아비새가 밤에 그 백성에게 나아가 본즉 사울이 진 가운데 누워 자고 창은 머리 곁 땅에 꽂혔고 아브넬과 백성들은 그를 둘러 누웠는지라"
+      ],
+      "raw_text_hashes": [
+        "d2fe0c2953fef54e940ebd60dec72277e1a1ff7b77785300c9ad197ec97df1bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:8",
+      "sequence": 7914,
+      "chapter_label": "1SA 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "Then Abishai said to David, “God has delivered up your enemy into your hand today. Now therefore please let me strike him with the spear to the earth at one stroke, and I will not strike him the second time.”",
+      "ko": "아비새가 다윗에게 이르되 하나님이 오늘날 당신의 원수를 당신의 손에 붙이셨나이다 그러므로 청하오니 나로 창으로 그를 찔러서 단번에 땅에 꽂게 하소서 내가 그를 두번 찌를 것이 없으리이다",
+      "source_text_hash": "9619a5dc01f14ac1612a5ed335bcbd7ff8381dee8c8f86ae480bc8e91290221b",
+      "translation_text_hash": "a672295b15be9eeeb7ae76badfa243c0fc3f3cba150f712fa4eaa6b2e621a82d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비새가 다윗에게 이르되 하나님이 오늘날 당신의 원수를 당신의 손에 붙이셨나이다 그러므로 청하오니 나로 창으로 그를 찔러서 단번에 땅에 꽂게 하소서 내가 그를 두번 찌를 것이 없으리이다"
+      ],
+      "raw_text_hashes": [
+        "a672295b15be9eeeb7ae76badfa243c0fc3f3cba150f712fa4eaa6b2e621a82d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:9",
+      "sequence": 7915,
+      "chapter_label": "1SA 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "David said to Abishai, “Don’t destroy him, for who can stretch out his hand against the LORD’s anointed, and be guiltless?”",
+      "ko": "다윗이 아비새에게 이르되 죽이지 말라 누구든지 손을 들어 여호와의 기름 부음을 받은 자를 치면 죄가 없겠느냐",
+      "source_text_hash": "0b0e402767fae73c2fed5ad2e9b8ac0cd72a598c82c0bc9a968df49a46ae4a73",
+      "translation_text_hash": "dbb1288a3a518d0945c3ab744de965e937798e1f81dbba86f292a36236554de0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아비새에게 이르되 죽이지 말라 누구든지 손을 들어 여호와의 기름 부음을 받은 자를 치면 죄가 없겠느냐"
+      ],
+      "raw_text_hashes": [
+        "dbb1288a3a518d0945c3ab744de965e937798e1f81dbba86f292a36236554de0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:10",
+      "sequence": 7916,
+      "chapter_label": "1SA 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "David said, “As the LORD lives, the LORD will strike him; or his day shall come to die, or he shall go down into battle and perish.",
+      "ko": "또 가로되 여호와께서 사시거니와 여호와께서 그를 치시리니 혹 죽을 날이 이르거나 혹 전장에 들어 가서 망하리라",
+      "source_text_hash": "b42edde7a454c9c07c5288718f3a44a03e05d7a71d41bd859250c700dec4b6be",
+      "translation_text_hash": "786dc4283b25144cbda1bead91c6b4a08faa7d5c2ef54e8152dbe45cfe5d3aad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 여호와께서 사시거니와 여호와께서 그를 치시리니 혹 죽을 날이 이르거나 혹 전장에 들어 가서 망하리라"
+      ],
+      "raw_text_hashes": [
+        "786dc4283b25144cbda1bead91c6b4a08faa7d5c2ef54e8152dbe45cfe5d3aad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:11",
+      "sequence": 7917,
+      "chapter_label": "1SA 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD forbid that I should stretch out my hand against the LORD’s anointed; but now please take the spear that is at his head and the jar of water, and let’s go.”",
+      "ko": "내가 손을 들어 여호와의 기름 부음을 받은 자를 치는 것을 여호와께서 금하시나니 너는 그의 머리 곁에 있는 창과 물병만 가지고 가자 하고",
+      "source_text_hash": "0dd53e50209d09464b9eb846144071f3458e672200c4241579c3e866eec6dfad",
+      "translation_text_hash": "22711657b0b478456f8c241e437aec429ecc01759319e7657628dac7aaab2f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 손을 들어 여호와의 기름 부음을 받은 자를 치는 것을 여호와께서 금하시나니 너는 그의 머리 곁에 있는 창과 물병만 가지고 가자 하고"
+      ],
+      "raw_text_hashes": [
+        "22711657b0b478456f8c241e437aec429ecc01759319e7657628dac7aaab2f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:12",
+      "sequence": 7918,
+      "chapter_label": "1SA 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "So David took the spear and the jar of water from Saul’s head, and they went away. No man saw it, or knew it, nor did any awake; for they were all asleep, because a deep sleep from the LORD had fallen on them.",
+      "ko": "다윗이 사울의 머리 곁에서 창과 물병을 가지고 떠나가되 깨든지 이를 보든지 알든지 하는 사람이 없었으니 이는 여호와께서 그들로 깊이 잠들게 하셨으므로 그들이 다 잠이었더라",
+      "source_text_hash": "376225e1d49efe7e49e160f60eb613b799374147c1cd54a879739499aeb59ec2",
+      "translation_text_hash": "a7a28353ea577e646c13291fd73c4e40d4804992445ce952a364599d8ce65fdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울의 머리 곁에서 창과 물병을 가지고 떠나가되 깨든지 이를 보든지 알든지 하는 사람이 없었으니 이는 여호와께서 그들로 깊이 잠들게 하셨으므로 그들이 다 잠이었더라"
+      ],
+      "raw_text_hashes": [
+        "a7a28353ea577e646c13291fd73c4e40d4804992445ce952a364599d8ce65fdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:13",
+      "sequence": 7919,
+      "chapter_label": "1SA 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "Then David went over to the other side, and stood on the top of the mountain far away, a great space being between them;",
+      "ko": "이에 다윗이 건너편으로 가서 멀리 산꼭대기에 서니 상거가 멀더라",
+      "source_text_hash": "8c2ece613c094e22aff3afa8d749393fa900fff6dd2acf2d9f6c3e7fc73b8930",
+      "translation_text_hash": "3a738b9a875c332d5849d09606aea674611a2135c75701072c70b41aa08f5a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다윗이 건너편으로 가서 멀리 산꼭대기에 서니 상거가 멀더라"
+      ],
+      "raw_text_hashes": [
+        "3a738b9a875c332d5849d09606aea674611a2135c75701072c70b41aa08f5a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:14",
+      "sequence": 7920,
+      "chapter_label": "1SA 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "and David cried to the people, and to Abner the son of Ner, saying, “Don’t you answer, Abner?” Then Abner answered, “Who are you who calls to the king?”",
+      "ko": "다윗이 백성과 넬의 아들 아브넬을 대하여 외쳐 가로되 아브넬아 너는 대답지 아니하느냐 아브넬이 대답하여 가로되 왕을 부르는 너는 누구냐",
+      "source_text_hash": "d5b2bfb9e4618b0b91957d5b74fbeb1a9719af5ff7b04c7b16d8148a49897fe3",
+      "translation_text_hash": "5094d5194e62b1d33b2a33aef8cc9f755331564cc94cae2b1903e48c788d02f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 백성과 넬의 아들 아브넬을 대하여 외쳐 가로되 아브넬아 너는 대답지 아니하느냐 아브넬이 대답하여 가로되 왕을 부르는 너는 누구냐"
+      ],
+      "raw_text_hashes": [
+        "5094d5194e62b1d33b2a33aef8cc9f755331564cc94cae2b1903e48c788d02f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:15",
+      "sequence": 7921,
+      "chapter_label": "1SA 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "David said to Abner, “Aren’t you a man? Who is like you in Israel? Why then have you not kept watch over your lord the king? For one of the people came in to destroy your lord the king.",
+      "ko": "다윗이 아브넬에게 이르되 네가 용사가 아니냐 이스라엘 중에 너 같은 자가 누구냐 그러한데 네가 어찌하여 네 주 왕을 보호하지 아니하느냐 백성 중 한 사람이 네 주 왕을 죽이려고 들어갔었느니라",
+      "source_text_hash": "1f2caf4e0104f9a710aa462879af99eac08590790499703faab041151ed81475",
+      "translation_text_hash": "30124d4bb5fe77479ccfea77d9523c9e8e1dc48c021a1a48ce69f7f2ff53988b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 아브넬에게 이르되 네가 용사가 아니냐 이스라엘 중에 너 같은 자가 누구냐 그러한데 네가 어찌하여 네 주 왕을 보호하지 아니하느냐 백성 중 한 사람이 네 주 왕을 죽이려고 들어갔었느니라"
+      ],
+      "raw_text_hashes": [
+        "30124d4bb5fe77479ccfea77d9523c9e8e1dc48c021a1a48ce69f7f2ff53988b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:16",
+      "sequence": 7922,
+      "chapter_label": "1SA 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "This thing isn’t good that you have done. As the LORD lives, you are worthy to die, because you have not kept watch over your lord, the LORD’s anointed. Now see where the king’s spear is, and the jar of water that was at his head.”",
+      "ko": "네 행한 이 일이 선치 못하도다 여호와께서 사시거니와 여호와의 기름 부음 받은 너희 주를 보호하지 아니하였으니 너희는 마땅히 죽을 자니라 이제 왕의 창과 왕의 머리 곁에 있던 물병이 어디 있나 보라",
+      "source_text_hash": "aabd15cfa1e1676424ac8c226e02a7f4d4b3234e7979808fc61d1c14abd911a5",
+      "translation_text_hash": "1b9a3df4cb8150b360427e5f756c7bc87027f3b3a830db0697e7ad0eadf9e9db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 행한 이 일이 선치 못하도다 여호와께서 사시거니와 여호와의 기름 부음 받은 너희 주를 보호하지 아니하였으니 너희는 마땅히 죽을 자니라 이제 왕의 창과 왕의 머리 곁에 있던 물병이 어디 있나 보라"
+      ],
+      "raw_text_hashes": [
+        "1b9a3df4cb8150b360427e5f756c7bc87027f3b3a830db0697e7ad0eadf9e9db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:17",
+      "sequence": 7923,
+      "chapter_label": "1SA 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Saul recognized David’s voice, and said, “Is this your voice, my son David?” David said, “It is my voice, my lord, O king.”",
+      "ko": "사울이 다윗의 음성을 알아 듣고 가로되 내 아들 다윗아 이것이 네 음성이냐 다윗이 가로되 내 주 왕이여 내 음성이니이다",
+      "source_text_hash": "0ff941e3be2b29d73f3fa3afc7e05293f16b4aac436d3a8267ddef6f50554dfe",
+      "translation_text_hash": "2a654da49368d02aeb49af2a31ee67eeeb2a1793874249a622753140454aab7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다윗의 음성을 알아 듣고 가로되 내 아들 다윗아 이것이 네 음성이냐 다윗이 가로되 내 주 왕이여 내 음성이니이다"
+      ],
+      "raw_text_hashes": [
+        "2a654da49368d02aeb49af2a31ee67eeeb2a1793874249a622753140454aab7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:18",
+      "sequence": 7924,
+      "chapter_label": "1SA 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "He said, “Why does my lord pursue his servant? For what have I done? What evil is in my hand?",
+      "ko": "또 가로되 내 주는 어찌하여 주의 종을 쫓으시나이까 내가 무엇을 하였으며 내 손에 무슨 악이 있나이까",
+      "source_text_hash": "26cb372e76e6bf2087cb78e774453f3819f861fd34319808d79232a066ae8584",
+      "translation_text_hash": "f571af1ef4f87cc1cacce3634e675b152bb30a9f8f4fb1b4f17ed5506193770c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 내 주는 어찌하여 주의 종을 쫓으시나이까 내가 무엇을 하였으며 내 손에 무슨 악이 있나이까"
+      ],
+      "raw_text_hashes": [
+        "f571af1ef4f87cc1cacce3634e675b152bb30a9f8f4fb1b4f17ed5506193770c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:19",
+      "sequence": 7925,
+      "chapter_label": "1SA 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "Now therefore, please let my lord the king hear the words of his servant. If it is so that the LORD has stirred you up against me, let him accept an offering. But if it is the children of men, they are cursed before the LORD; for they have driven me out today that I shouldn’t cling to the LORD’s inheritance, saying, ‘Go, serve other gods!’",
+      "ko": "청컨대 내 주 왕은 이제 종의 말을 들으소서 만일 왕을 격동시켜 나를 해하려 하는 이가 여호와시면 여호와께서는 제물을 받으시기를 원하나이다마는 만일 인자들이면 그들이 여호와 앞에 저주를 받으리니 이는 그들이 이르기를 너는 가서 다른 신들을 섬기라 하고 오늘날 나를 쫓아내어 여호와의 기업에 붙지 못하게 함이니이다",
+      "source_text_hash": "b70816995c4477eee590b308d2b958f2bb766778c79e050e97ee72c0594e8a67",
+      "translation_text_hash": "fe94f0a94a340efef2c9f90467a461c6111de8992fc9834c88e7b64fe0113fe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청컨대 내 주 왕은 이제 종의 말을 들으소서 만일 왕을 격동시켜 나를 해하려 하는 이가 여호와시면 여호와께서는 제물을 받으시기를 원하나이다마는 만일 인자들이면 그들이 여호와 앞에 저주를 받으리니 이는 그들이 이르기를 너는 가서 다른 신들을 섬기라 하고 오늘날 나를 쫓아내어 여호와의 기업에 붙지 못하게 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "fe94f0a94a340efef2c9f90467a461c6111de8992fc9834c88e7b64fe0113fe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:20",
+      "sequence": 7926,
+      "chapter_label": "1SA 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Now therefore, don’t let my blood fall to the earth away from the presence of the LORD; for the king of Israel has come out to seek a flea, as when one hunts a partridge in the mountains.”",
+      "ko": "그런즉 청컨대 여호와 앞에서 먼 이곳에서 이제 나의 피로 땅에 흐르지 말게 하옵소서 이는 산에서 메추라기를 사냥하는 자와 같이 이스라엘 왕이 한 벼룩을 수색하러 나오셨음이니이다",
+      "source_text_hash": "cb3992ceba53abe4d61adc5f33c48b9bef5ee8b7900c5757c436a78072f8d24c",
+      "translation_text_hash": "7cf0498be8b4c54b12df1374d453466fe1295680d893d2c382cb6db6a687b214",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 청컨대 여호와 앞에서 먼 이곳에서 이제 나의 피로 땅에 흐르지 말게 하옵소서 이는 산에서 메추라기를 사냥하는 자와 같이 이스라엘 왕이 한 벼룩을 수색하러 나오셨음이니이다"
+      ],
+      "raw_text_hashes": [
+        "7cf0498be8b4c54b12df1374d453466fe1295680d893d2c382cb6db6a687b214"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:21",
+      "sequence": 7927,
+      "chapter_label": "1SA 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "Then Saul said, “I have sinned. Return, my son David; for I will no more do you harm, because my life was precious in your eyes today. Behold, I have played the fool, and have erred exceedingly.”",
+      "ko": "사울이 가로되 내가 범죄하였도다 내 아들 다윗아 돌아오라 네가 오늘 내 생명을 귀중히 여겼은즉 내가 다시는 너를 해하려 하지 아니하리라 내가 어리석은 일을 하였으니 대단히 잘못 되었도다",
+      "source_text_hash": "23ec2d57bc51b9c5978a05b9a031c733236e18c580689d5dd8516cf2eaac95f5",
+      "translation_text_hash": "66a8d3b9c6b1596dcbea6597d01c587fc81a05f97b7a887ccdbcb45683b767d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 내가 범죄하였도다 내 아들 다윗아 돌아오라 네가 오늘 내 생명을 귀중히 여겼은즉 내가 다시는 너를 해하려 하지 아니하리라 내가 어리석은 일을 하였으니 대단히 잘못 되었도다"
+      ],
+      "raw_text_hashes": [
+        "66a8d3b9c6b1596dcbea6597d01c587fc81a05f97b7a887ccdbcb45683b767d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:22",
+      "sequence": 7928,
+      "chapter_label": "1SA 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "David answered, “Behold the spear, O king! Let one of the young men come over and get it.",
+      "ko": "다윗이 대답하여 가로되 왕은 창을 보소서 한 소년을 보내어 가져가게 하소서",
+      "source_text_hash": "057c3aeabf9aff9f76fe8a3fe012372211816e436a192f09e158502125316234",
+      "translation_text_hash": "1a85a510ef3ca051d1e199375b8a7b52a13f5b8fc31317d9d500e5f4a0716e58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 대답하여 가로되 왕은 창을 보소서 한 소년을 보내어 가져가게 하소서"
+      ],
+      "raw_text_hashes": [
+        "1a85a510ef3ca051d1e199375b8a7b52a13f5b8fc31317d9d500e5f4a0716e58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:23",
+      "sequence": 7929,
+      "chapter_label": "1SA 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD will give to every man his righteousness and his faithfulness; because the LORD delivered you into my hand today, and I wouldn’t stretch out my hand against the LORD’s anointed.",
+      "ko": "여호와께서 각 사람에게 그 의와 신실을 갚으시리니 이는 여호와께서 오늘날 왕을 내 손에 붙이셨으되 나는 손을 들어 여호와의 기름 부음을 받은 자 치기를 원치 아니하였음이니이다",
+      "source_text_hash": "02de04bbcbf5715b292ee88cb53a4e22a9aa0125a433e4778ff91ecadcd64bc7",
+      "translation_text_hash": "d1d74792e79a4d1931bfed5478f383a58d075499a3b3162ce6b02c46badfab1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 각 사람에게 그 의와 신실을 갚으시리니 이는 여호와께서 오늘날 왕을 내 손에 붙이셨으되 나는 손을 들어 여호와의 기름 부음을 받은 자 치기를 원치 아니하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "d1d74792e79a4d1931bfed5478f383a58d075499a3b3162ce6b02c46badfab1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:24",
+      "sequence": 7930,
+      "chapter_label": "1SA 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, as your life was respected today in my eyes, so let my life be respected in the LORD’s eyes, and let him deliver me out of all oppression.”",
+      "ko": "오늘날 왕의 생명을 내가 중히 여긴것 같이 내 생명을 여호와께서 중히 여기셔서 모든 환난에서 나를 구하여 내시기를 바라나이다",
+      "source_text_hash": "2f6ccf746039325b93b5da748b61a82046764b4dfe3478d753d1430e74b3ed0b",
+      "translation_text_hash": "e2322deadb60fe586121fb108e6d196ca980309e1f3a7f85ddcecb960bd0c21f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 왕의 생명을 내가 중히 여긴것 같이 내 생명을 여호와께서 중히 여기셔서 모든 환난에서 나를 구하여 내시기를 바라나이다"
+      ],
+      "raw_text_hashes": [
+        "e2322deadb60fe586121fb108e6d196ca980309e1f3a7f85ddcecb960bd0c21f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:26:25",
+      "sequence": 7931,
+      "chapter_label": "1SA 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "Then Saul said to David, “You are blessed, my son David. You will both do mightily, and will surely prevail.” So David went his way, and Saul returned to his place.",
+      "ko": "사울이 다윗에게 이르되 내 아들 다윗아 네게 복이 있을찌로다 네가 큰 일을 행하겠고 반드시 승리를 얻으리라 하니라 다윗은 자기 길로 가고 사울은 자기 곳으로 돌아가니라",
+      "source_text_hash": "f62f871cfc077494577da428f469c681b3ea7912492969b0507ccaec03a1832c",
+      "translation_text_hash": "21fc22a456519d211742914c905e159018bb0182e9a9551badd91e93ca8aafbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다윗에게 이르되 내 아들 다윗아 네게 복이 있을찌로다 네가 큰 일을 행하겠고 반드시 승리를 얻으리라 하니라 다윗은 자기 길로 가고 사울은 자기 곳으로 돌아가니라"
+      ],
+      "raw_text_hashes": [
+        "21fc22a456519d211742914c905e159018bb0182e9a9551badd91e93ca8aafbb"
+      ]
+    }
+  ]
+}

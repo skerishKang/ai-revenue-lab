@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:039",
+  "unit_ordinal": 39,
+  "unit_label": "GEN 39",
+  "book_code": "GEN",
+  "chapter_number": 39,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:39:1",
+      "sequence": 1151,
+      "chapter_label": "GEN 39",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 1
+        }
+      ],
+      "en": "Joseph was brought down to Egypt. Potiphar, an officer of Pharaoh’s, the captain of the guard, an Egyptian, bought him from the hand of the Ishmaelites that had brought him down there.",
+      "ko": "요셉이 이끌려 애굽에 내려가매 바로의 신하 시위대장 애굽 사람 보디발이 그를 그리로 데려간 이스마엘 사람의 손에서 그를 사니라",
+      "source_text_hash": "99a4787a06108c8a55b61e56abe08f6939487a866da2039c9c6caf8cb9238d77",
+      "translation_text_hash": "11bb4c02f18e975cba2011d1527f9133e28350d06e6ca96d5779412dd3d259d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 이끌려 애굽에 내려가매 바로의 신하 시위대장 애굽 사람 보디발이 그를 그리로 데려간 이스마엘 사람의 손에서 그를 사니라"
+      ],
+      "raw_text_hashes": [
+        "11bb4c02f18e975cba2011d1527f9133e28350d06e6ca96d5779412dd3d259d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:2",
+      "sequence": 1152,
+      "chapter_label": "GEN 39",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD was with Joseph, and he was a prosperous man. He was in the house of his master the Egyptian.",
+      "ko": "여호와께서 요셉과 함께하시므로 그가 형통한 자가 되어 그 주인 애굽 사람의 집에 있으니",
+      "source_text_hash": "e7aeb07a761360a85587a2a95e8151bb5b4e1491ccac260c0a57f1c409ca18a5",
+      "translation_text_hash": "c5f14062cb18a44b6272c9a6d685cff4ec14d3a88a82ea0a75993a8ad4ab0e82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 요셉과 함께하시므로 그가 형통한 자가 되어 그 주인 애굽 사람의 집에 있으니"
+      ],
+      "raw_text_hashes": [
+        "c5f14062cb18a44b6272c9a6d685cff4ec14d3a88a82ea0a75993a8ad4ab0e82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:3",
+      "sequence": 1153,
+      "chapter_label": "GEN 39",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 3
+        }
+      ],
+      "en": "His master saw that the LORD was with him, and that the LORD made all that he did prosper in his hand.",
+      "ko": "그 주인이 여호와께서 그와 함께하심을 보며 또 여호와께서 그의 범사에 형통케 하심을 보았더라",
+      "source_text_hash": "2c7923e8abeea43c20967aec7b8ff7e2eea15c52074a9406e9cf1b2b25e7e49a",
+      "translation_text_hash": "3e44352434bd44586efbcdcea779e097148e3d4d57374f8e90a267234b88f5cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 주인이 여호와께서 그와 함께하심을 보며 또 여호와께서 그의 범사에 형통케 하심을 보았더라"
+      ],
+      "raw_text_hashes": [
+        "3e44352434bd44586efbcdcea779e097148e3d4d57374f8e90a267234b88f5cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:4",
+      "sequence": 1154,
+      "chapter_label": "GEN 39",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 4
+        }
+      ],
+      "en": "Joseph found favor in his sight. He ministered to him, and Potiphar made him overseer over his house, and all that he had he put into his hand.",
+      "ko": "요셉이 그 주인에게 은혜를 입어 섬기매 그가 요셉으로 가정 총무를 삼고 자기 소유를 다 그 손에 위임하니",
+      "source_text_hash": "f80888e5dd12a139642ff0b77621b334ea275e58983b8f91f32441842c80d063",
+      "translation_text_hash": "4ee6c108b2f7424531fc5f1f67a8b77473b027b9385d9255f9dcf124e3979a57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 주인에게 은혜를 입어 섬기매 그가 요셉으로 가정 총무를 삼고 자기 소유를 다 그 손에 위임하니"
+      ],
+      "raw_text_hashes": [
+        "4ee6c108b2f7424531fc5f1f67a8b77473b027b9385d9255f9dcf124e3979a57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:5",
+      "sequence": 1155,
+      "chapter_label": "GEN 39",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 5
+        }
+      ],
+      "en": "From the time that he made him overseer in his house, and over all that he had, the LORD blessed the Egyptian’s house for Joseph’s sake. The LORD’s blessing was on all that he had, in the house and in the field.",
+      "ko": "그가 요셉에게 자기 집과 그 모든 소유물을 주관하게 한 때부터 여호와께서 요셉을 위하여 그 애굽 사람의 집에 복을 내리시므로 여호와의 복이 그의 집과 밭에 있는 모든 소유에 미친지라",
+      "source_text_hash": "2398fe9e903047e29aaeaeef7a00911b64036e70dc3eb6d1c50fe9e6957affe9",
+      "translation_text_hash": "c0c342d460d65da697b24ec402ac344e479db21f4ad78ceb1b757398285f1f23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 요셉에게 자기 집과 그 모든 소유물을 주관하게 한 때부터 여호와께서 요셉을 위하여 그 애굽 사람의 집에 복을 내리시므로 여호와의 복이 그의 집과 밭에 있는 모든 소유에 미친지라"
+      ],
+      "raw_text_hashes": [
+        "c0c342d460d65da697b24ec402ac344e479db21f4ad78ceb1b757398285f1f23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:6",
+      "sequence": 1156,
+      "chapter_label": "GEN 39",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 6
+        }
+      ],
+      "en": "He left all that he had in Joseph’s hand. He didn’t concern himself with anything, except for the food which he ate. Joseph was well-built and handsome.",
+      "ko": "주인이 그 소유를 다 요셉의 손에 위임하고 자기 식료 외에는 간섭하지 아니하였더라 요셉은 용모가 준수하고 아담하였더라",
+      "source_text_hash": "831eaa77c1c8d6d28a1b4149a36223b44fdd56c72a38b7b1c85de904d891ae05",
+      "translation_text_hash": "82437c0b7c2fcf47e2c12d337b596c3b506341f0828ea88f253478644072b796",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 그 소유를 다 요셉의 손에 위임하고 자기 식료 외에는 간섭하지 아니하였더라 요셉은 용모가 준수하고 아담하였더라"
+      ],
+      "raw_text_hashes": [
+        "82437c0b7c2fcf47e2c12d337b596c3b506341f0828ea88f253478644072b796"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:7",
+      "sequence": 1157,
+      "chapter_label": "GEN 39",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 7
+        }
+      ],
+      "en": "After these things, his master’s wife set her eyes on Joseph; and she said, “Lie with me.”",
+      "ko": "그 후에 그 주인의 처가 요셉에게 눈짓하다가 동침하기를 청하니",
+      "source_text_hash": "88ad63a05a6d372701a9959b496831834f311354efd729a32f36cbb9ac34e06d",
+      "translation_text_hash": "d5037feb1826f3049302c8de553cd2045c029539569f875b77f13cc51424bff7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 그 주인의 처가 요셉에게 눈짓하다가 동침하기를 청하니"
+      ],
+      "raw_text_hashes": [
+        "d5037feb1826f3049302c8de553cd2045c029539569f875b77f13cc51424bff7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:8",
+      "sequence": 1158,
+      "chapter_label": "GEN 39",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 8
+        }
+      ],
+      "en": "But he refused, and said to his master’s wife, “Behold, my master doesn’t know what is with me in the house, and he has put all that he has into my hand.",
+      "ko": "요셉이 거절하며 자기 주인의 처에게 이르되 나의 주인이 가중 제반 소유를 간섭지 아니하고 다 내 손에 위임하였으니",
+      "source_text_hash": "3a01ee25d28d550cc31c869d404735fa8315e7d7924af254891d004057764780",
+      "translation_text_hash": "542fe327bc8985af58f27a88bc8fc5f97ff847890a8c4d3946b3f9487508544f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 거절하며 자기 주인의 처에게 이르되 나의 주인이 가중 제반 소유를 간섭지 아니하고 다 내 손에 위임하였으니"
+      ],
+      "raw_text_hashes": [
+        "542fe327bc8985af58f27a88bc8fc5f97ff847890a8c4d3946b3f9487508544f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:9",
+      "sequence": 1159,
+      "chapter_label": "GEN 39",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 9
+        }
+      ],
+      "en": "No one is greater in this house than I am, and he has not kept back anything from me but you, because you are his wife. How then can I do this great wickedness, and sin against God?”",
+      "ko": "이 집에는 나보다 큰이가 없으며 주인이 아무 것도 내게 금하지 아니하였어도 금한 것은 당신 뿐이니 당신은 자기 아내임이라 그런즉 내가 어찌 이 큰 악을 행하여 하나님께 득죄하리이까",
+      "source_text_hash": "5b338d67413c0f300f754101f21d117d81ec9313adbe3590c4b78937dc7acc97",
+      "translation_text_hash": "cfaddeea436037639cc7f39751ec782026d2bb685c47ac4b6b2a86c231d0d3de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 집에는 나보다 큰이가 없으며 주인이 아무 것도 내게 금하지 아니하였어도 금한 것은 당신 뿐이니 당신은 자기 아내임이라 그런즉 내가 어찌 이 큰 악을 행하여 하나님께 득죄하리이까"
+      ],
+      "raw_text_hashes": [
+        "cfaddeea436037639cc7f39751ec782026d2bb685c47ac4b6b2a86c231d0d3de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:10",
+      "sequence": 1160,
+      "chapter_label": "GEN 39",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 10
+        }
+      ],
+      "en": "As she spoke to Joseph day by day, he didn’t listen to her, to lie by her, or to be with her.",
+      "ko": "여인이 날마다 요셉에게 청하였으나 요셉이 듣지 아니하여 동침하지 아니할 뿐더러 함께 있지도 아니하니라",
+      "source_text_hash": "4d41279bd087a8320ed4d9f27948fb053d530c30baa9d2e2a4c258b25b3dc39a",
+      "translation_text_hash": "172c7449004bcc84b4cf680f02b241a54b86af992c6008978892b66a3586eb80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 날마다 요셉에게 청하였으나 요셉이 듣지 아니하여 동침하지 아니할 뿐더러 함께 있지도 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "172c7449004bcc84b4cf680f02b241a54b86af992c6008978892b66a3586eb80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:11",
+      "sequence": 1161,
+      "chapter_label": "GEN 39",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 11
+        }
+      ],
+      "en": "About this time, he went into the house to do his work, and there were none of the men of the house inside.",
+      "ko": "그러할 때에 요셉이 시무하러 그 집에 들어갔더니 그 집 사람은 하나도 거기 없었더라",
+      "source_text_hash": "b4e81b63ed77af6ceb9010427125ea6b5b9ad15f283dc3ab843a1be941274cc8",
+      "translation_text_hash": "ee31d9795cacb3fe590d58ba63105852b3c47862c402b86a0e712d7404b121a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러할 때에 요셉이 시무하러 그 집에 들어갔더니 그 집 사람은 하나도 거기 없었더라"
+      ],
+      "raw_text_hashes": [
+        "ee31d9795cacb3fe590d58ba63105852b3c47862c402b86a0e712d7404b121a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:12",
+      "sequence": 1162,
+      "chapter_label": "GEN 39",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 12
+        }
+      ],
+      "en": "She caught him by his garment, saying, “Lie with me!” He left his garment in her hand, and ran outside.",
+      "ko": "그 여인이 그 옷을 잡고 가로되 나와 동침하자 요셉이 자기 옷을 그 손에 버리고 도망하여 나가매",
+      "source_text_hash": "0b6fcb8c35aeac411baa671ffe79db84665d02a6d3727057eb8486ffbcc6deac",
+      "translation_text_hash": "3eecc42a7911654449147f7643eadb365e4f63947412fd14e0dc6ac43bb183f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인이 그 옷을 잡고 가로되 나와 동침하자 요셉이 자기 옷을 그 손에 버리고 도망하여 나가매"
+      ],
+      "raw_text_hashes": [
+        "3eecc42a7911654449147f7643eadb365e4f63947412fd14e0dc6ac43bb183f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:13",
+      "sequence": 1163,
+      "chapter_label": "GEN 39",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 13
+        }
+      ],
+      "en": "When she saw that he had left his garment in her hand, and had run outside,",
+      "ko": "그가 요셉이 그 옷을 자기 손에 버려두고 도망하여 나감을 보고",
+      "source_text_hash": "bdda46c6f89acdc620891c6a8edfee6fca129dd64a3d3264dada39b4bc62ea9b",
+      "translation_text_hash": "46dc7b805c7fef3bc708a04970705a2558bf6352b0682b826c5d71d048e46c26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 요셉이 그 옷을 자기 손에 버려두고 도망하여 나감을 보고"
+      ],
+      "raw_text_hashes": [
+        "46dc7b805c7fef3bc708a04970705a2558bf6352b0682b826c5d71d048e46c26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:14",
+      "sequence": 1164,
+      "chapter_label": "GEN 39",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 14
+        }
+      ],
+      "en": "she called to the men of her house, and spoke to them, saying, “Behold, he has brought a Hebrew in to us to mock us. He came in to me to lie with me, and I cried with a loud voice.",
+      "ko": "집 사람들을 불러서 그들에게 이르되 보라 주인이 히브리 사람을 우리에게 데려다가 우리를 희롱하게 하도다 그가 나를 겁간코자 내게로 들어오기로 내가 크게 소리질렀더니",
+      "source_text_hash": "e405c48764ca333498a2bef663cc8fc41474adcd61783ccbe3a36fead6ac639c",
+      "translation_text_hash": "a514cae27c398527821d225f9e655721c6b1108ff8eecc8b08842357362abff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집 사람들을 불러서 그들에게 이르되 보라 주인이 히브리 사람을 우리에게 데려다가 우리를 희롱하게 하도다 그가 나를 겁간코자 내게로 들어오기로 내가 크게 소리질렀더니"
+      ],
+      "raw_text_hashes": [
+        "a514cae27c398527821d225f9e655721c6b1108ff8eecc8b08842357362abff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:15",
+      "sequence": 1165,
+      "chapter_label": "GEN 39",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 15
+        }
+      ],
+      "en": "When he heard that I lifted up my voice and cried, he left his garment by me, and ran outside.”",
+      "ko": "그가 나의 소리질러 부름을 듣고 그 옷을 내게 버려두고 도망하여 나갔느니라 하고",
+      "source_text_hash": "2ed2775256c266aa31023094666af832bcf32a3ecca0ce6c44b0f07e249a576a",
+      "translation_text_hash": "ff3fda012e06d06cf1adfec794bd56367062b313adc62087ab4eba54dfd15c70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나의 소리질러 부름을 듣고 그 옷을 내게 버려두고 도망하여 나갔느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "ff3fda012e06d06cf1adfec794bd56367062b313adc62087ab4eba54dfd15c70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:16",
+      "sequence": 1166,
+      "chapter_label": "GEN 39",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 16
+        }
+      ],
+      "en": "She laid up his garment by her, until his master came home.",
+      "ko": "그 옷을 곁에 두고 자기 주인이 집으로 돌아 오기를 기다려",
+      "source_text_hash": "8048768fe344b8fddffd446c558d31354d8a3e0968115e803a10de5777c34db7",
+      "translation_text_hash": "6bd1d58b28fb20200228327d733d5322ec2a456fff2b8a5d45bb0f59d12fe663",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 옷을 곁에 두고 자기 주인이 집으로 돌아 오기를 기다려"
+      ],
+      "raw_text_hashes": [
+        "6bd1d58b28fb20200228327d733d5322ec2a456fff2b8a5d45bb0f59d12fe663"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:17",
+      "sequence": 1167,
+      "chapter_label": "GEN 39",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 17
+        }
+      ],
+      "en": "She spoke to him according to these words, saying, “The Hebrew servant, whom you have brought to us, came in to me to mock me,",
+      "ko": "이 말로 그에게 고하여 가로되 당신이 우리에게 데려온 히브리 종이 나를 희롱코자 내게로 들어 왔기로",
+      "source_text_hash": "5dde9fb5fcaf297236e24427facc32d175c113381d6fc99a5ddf868775d0f8af",
+      "translation_text_hash": "5c6c98a6c0b24935187acb1678fa43df815cad50617678b0a7713e73f5dc3c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말로 그에게 고하여 가로되 당신이 우리에게 데려온 히브리 종이 나를 희롱코자 내게로 들어 왔기로"
+      ],
+      "raw_text_hashes": [
+        "5c6c98a6c0b24935187acb1678fa43df815cad50617678b0a7713e73f5dc3c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:18",
+      "sequence": 1168,
+      "chapter_label": "GEN 39",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 18
+        }
+      ],
+      "en": "and as I lifted up my voice and cried, he left his garment by me, and ran outside.”",
+      "ko": "내가 소리질러 불렀더니 그가 그 옷을 내게 버려두고 도망하여 나갔나이다",
+      "source_text_hash": "7e1e2124f71a4284a48f856556b13e6e96e167d04ee840366249fe2fff2e5e74",
+      "translation_text_hash": "e6197d00934ee0e588266ef2a39044b158b3c8c873c3eeeb35222527d3525c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 소리질러 불렀더니 그가 그 옷을 내게 버려두고 도망하여 나갔나이다"
+      ],
+      "raw_text_hashes": [
+        "e6197d00934ee0e588266ef2a39044b158b3c8c873c3eeeb35222527d3525c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:19",
+      "sequence": 1169,
+      "chapter_label": "GEN 39",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 19
+        }
+      ],
+      "en": "When his master heard the words of his wife, which she spoke to him, saying, “This is what your servant did to me,” his wrath was kindled.",
+      "ko": "주인이 그 아내가 자기에게 고하기를 당신의 종이 내게 이같이 행하였다 하는 말을 듣고 심히 노한지라",
+      "source_text_hash": "e866af3b598f88c394689420abc372c525c9d0421a0c1357958eeff512babf55",
+      "translation_text_hash": "46bd2bc70f1fa364417d1ddf29ab1034e1f4b9c8110b279c25e404aa1c217986",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 그 아내가 자기에게 고하기를 당신의 종이 내게 이같이 행하였다 하는 말을 듣고 심히 노한지라"
+      ],
+      "raw_text_hashes": [
+        "46bd2bc70f1fa364417d1ddf29ab1034e1f4b9c8110b279c25e404aa1c217986"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:20",
+      "sequence": 1170,
+      "chapter_label": "GEN 39",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 20
+        }
+      ],
+      "en": "Joseph’s master took him, and put him into the prison, the place where the king’s prisoners were bound, and he was there in custody.",
+      "ko": "이에 요셉의 주인이 그를 잡아 옥에 넣으니 그 옥은 왕의 죄수를 가두는 곳이었더라 요셉이 옥에 갇혔으나",
+      "source_text_hash": "4394edd08133eea41cd041a53c32a4256057570d654689bbda9e0ed4b92dea10",
+      "translation_text_hash": "d54bf752c766ef9ee63500b80d0cc9f0510a231459cb4db553066f62a575bd2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 요셉의 주인이 그를 잡아 옥에 넣으니 그 옥은 왕의 죄수를 가두는 곳이었더라 요셉이 옥에 갇혔으나"
+      ],
+      "raw_text_hashes": [
+        "d54bf752c766ef9ee63500b80d0cc9f0510a231459cb4db553066f62a575bd2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:21",
+      "sequence": 1171,
+      "chapter_label": "GEN 39",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 21
+        }
+      ],
+      "en": "But the LORD was with Joseph, and showed kindness to him, and gave him favor in the sight of the keeper of the prison.",
+      "ko": "여호와께서 요셉과 함께하시고 그에게 인자를 더하사 전옥에게 은혜를 받게 하시매",
+      "source_text_hash": "53c3820f12f0cda81ecf2a4dfb3f290c4f747b97fde9d83bebbefb96e334cfaf",
+      "translation_text_hash": "c74fe2515a96b2f8e0e403a5076678aed9646d11ef0b49b475989b250e0aa14e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 요셉과 함께하시고 그에게 인자를 더하사 전옥에게 은혜를 받게 하시매"
+      ],
+      "raw_text_hashes": [
+        "c74fe2515a96b2f8e0e403a5076678aed9646d11ef0b49b475989b250e0aa14e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:22",
+      "sequence": 1172,
+      "chapter_label": "GEN 39",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 22
+        }
+      ],
+      "en": "The keeper of the prison committed to Joseph’s hand all the prisoners who were in the prison. Whatever they did there, he was responsible for it.",
+      "ko": "전옥이 옥중 죄수를 다 요셉의 손에 맡기므로 그 제반 사무를 요셉이 처리하고",
+      "source_text_hash": "85c369b95ba3d28e9148b68344f3fcbbed913e1150e51ee9be18c2ff9f868043",
+      "translation_text_hash": "503892ad6ef3ba1011f74df39ffacb130334b32782b481d802be0dd54f954b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전옥이 옥중 죄수를 다 요셉의 손에 맡기므로 그 제반 사무를 요셉이 처리하고"
+      ],
+      "raw_text_hashes": [
+        "503892ad6ef3ba1011f74df39ffacb130334b32782b481d802be0dd54f954b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:39:23",
+      "sequence": 1173,
+      "chapter_label": "GEN 39",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 39,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 39,
+          "verse": 23
+        }
+      ],
+      "en": "The keeper of the prison didn’t look after anything that was under his hand, because the LORD was with him; and that which he did, the LORD made it prosper.",
+      "ko": "전옥은 그의 손에 맡긴 것을 무엇이든지 돌아보지 아니하였으니 이는 여호와께서 요셉과 함께하심이라 여호와께서 그의 범사에 형통케 하셨더라",
+      "source_text_hash": "ad157d37ccafa99b213a3f8ca88420032b82b248c1fe6d1a19f977d41b9802e7",
+      "translation_text_hash": "4aadf6390c583646608648efe5a67604cb251a0b75bd4bb8331955673a69a6e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전옥은 그의 손에 맡긴 것을 무엇이든지 돌아보지 아니하였으니 이는 여호와께서 요셉과 함께하심이라 여호와께서 그의 범사에 형통케 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "4aadf6390c583646608648efe5a67604cb251a0b75bd4bb8331955673a69a6e6"
+      ]
+    }
+  ]
+}

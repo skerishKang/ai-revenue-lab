@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>북AI · 읽고, 묻고, 기억하는 책</title>
+<title>StoryMemory Visual Prototype v3.4.10-rc2 · Six-Work Direct UI Exposure Fix</title>
 <link rel="stylesheet" href="./styles/storymemory-shell-foundation-v1.css">
 <link rel="stylesheet" href="./styles/storymemory-interaction-v28-v282.css">
 <link rel="stylesheet" href="./styles/storymemory-memory-v29-v298.css">
@@ -15,10 +15,6 @@
 <link rel="stylesheet" href="storymemory-pack-lifecycle-ui.css">
 <link rel="stylesheet" href="storymemory-pack-entitlement-ui.css">
   <link rel="stylesheet" href="storymemory-pack-verification-ui.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="./styles/storymemory-b61-typography-authority-v1.css">
 </head>
 <body><a class="skip-reader-link" href="#paper">본문으로 바로가기</a>
 <div class="transition-curtain" id="curtain"></div>
@@ -35,7 +31,7 @@
       <div class="cinematic-page cinematic-page-left"><span class="cinematic-folio">SM</span></div>
       <div class="cinematic-spine"></div>
       <div class="cinematic-page cinematic-page-right">
-        <span class="cinematic-kicker">북AI</span>
+        <span class="cinematic-kicker">STORYMEMORY</span>
         <strong id="cinematicTitle">성경</strong>
         <small id="cinematicSub">66 BOOKS · MEMORY EDITION</small>
       </div>
@@ -52,7 +48,7 @@
   <div class="scene-meta scene-meta-right"><span>LIGHT / OBJECT / MEMORY</span><b>SM</b></div>
   <div class="lib-head">
     <div>
-      <div class="kicker">북AI · 읽고, 묻고, 기억하는 책</div>
+      <div class="kicker">StoryMemory · Read · Remember · Ask · Continue</div>
       <h1 class="hero-title">읽은 것은 기억으로,<br><em>기억은 대화로.</em></h1>
     </div>
     <div class="lib-copy"><strong>읽기의 흔적이 다음 질문의 맥락이 됩니다.</strong>밑줄·인물·장소·메모는 Memory에 남고, AI는 그 기억과 지금 읽는 문장을 함께 보며 대화를 이어갑니다.</div>
@@ -82,7 +78,7 @@
     <div class="sel-meta">
       <div class="counter" id="libCounter">04 / 07</div>
       <div>
-        <div class="selected-edition"><span>BOOK AI EDITION</span><i></i><b id="selectedEditionNo">04</b></div>
+        <div class="selected-edition"><span>STORYMEMORY EDITION</span><i></i><b id="selectedEditionNo">04</b></div>
         <div class="material-note" id="materialNote">CLOTH · FOIL · HAND-BOUND</div>
         <div class="object-plate"><span>OBJECT</span><i></i><b id="objectWeight">HEAVY</b></div>
         <div class="finish-note"><span>FINISH</span><i></i><b id="finishNote">GOLD FOIL / MATTE CLOTH</b></div>
@@ -107,7 +103,7 @@
   <div class="today-bg-orbit today-orbit-b"></div>
   <header class="today-top">
     <button type="button" class="today-back" id="todayBack">← Library</button>
-    <div class="today-wordmark">북AI</div>
+    <div class="today-wordmark">StoryMemory</div>
     <div class="today-top-actions">
       <button type="button" class="today-cloud-button" id="todayCloudButton"><span>●</span><b id="todayCloudLabel">클라우드</b></button>
       <span class="today-data-status" id="todayDataStatus" role="status" aria-live="polite" title="Local-first · NeonJS production adapter ready">LOCAL · SAVED</span>
@@ -176,20 +172,14 @@
     <button type="button" class="auth-gate-close" id="authGateClose" aria-label="클라우드 설정 닫기">×</button>
     <span class="auth-gate-kicker">CLOUD MEMORY</span>
     <h2 id="authGateTitle">기억을 기기 밖에도<br>이어두시겠어요?</h2>
-    <p id="authGateCopy">읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.</p>
+    <p id="authGateCopy">로그인 전에도 모든 읽기와 Memory는 이 기기에 저장됩니다. 로그인하면 Neon의 사용자 전용 공간과 안전하게 동기화할 수 있습니다.</p>
     <div class="auth-gate-state" id="authGateState">
       <i></i>
       <div><b>LOCAL FIRST</b><span>지금은 이 기기에만 저장 중</span></div>
     </div>
-    <button type="button" class="auth-gate-primary" id="authGatePrimary">로그인 안내</button>
+    <button type="button" class="auth-gate-primary" id="authGatePrimary">로그인하고 동기화</button>
     <button type="button" class="auth-gate-secondary" id="authGateSecondary">지금은 로컬로 계속</button>
-    <div class="auth-gate-backup" aria-label="기기 기록 백업">
-      <button type="button" id="smBackupExport" class="auth-gate-secondary">기록 백업하기</button>
-      <button type="button" id="smBackupImport" class="auth-gate-secondary">백업에서 복원</button>
-      <input type="file" id="smBackupFile" accept=".json,application/json" hidden>
-      <small>백업 파일에는 읽기 기록과 메모가 담깁니다. 안전한 곳에 보관해 주세요.</small>
-    </div>
-    <small class="auth-gate-foot">읽기 기록과 Memory는 현재 기기에 저장됩니다.</small>
+    <small class="auth-gate-foot">DB 비밀번호는 브라우저에 저장하지 않습니다. 로그인 세션의 JWT와 RLS로 내 데이터만 접근합니다.</small>
   </aside>
 </section>
 
@@ -206,19 +196,19 @@
         <small>NEW TESTAMENT</small>
         <strong id="volumeMorphTitle">고린도전서</strong>
         <i></i>
-        <span>북AI</span>
+        <span>STORYMEMORY</span>
       </div>
       <div class="volume-morph-spine"></div>
     </div>
     <div class="volume-morph-shadow"></div>
   </div>
-  <header class="index-top"><div class="wordmark">북AI</div><div class="crumb">LIBRARY / 성경 / BOOK INDEX</div><button class="back-btn" data-back="library" type="button">← 서가</button></header>
+  <header class="index-top"><div class="wordmark">StoryMemory</div><div class="crumb">LIBRARY / 성경 / BOOK INDEX</div><button class="back-btn" data-back="library" type="button">← 서가</button></header>
   <div class="index-entry-line" aria-hidden="true"><span></span><i></i><span></span></div>
   <main class="index-shell">
-    <div class="index-folio">BOOK AI / LIBRARY ARCHIVE / 01</div>
+    <div class="index-folio">STORYMEMORY / LIBRARY ARCHIVE / 01</div>
     <div class="index-hero">
       <div><div class="kicker" style="color:#8d857c">BIBLE MEMORY READER</div><h1>성경</h1><p>성경 전체를 하나의 긴 문서가 아니라 66권의 책으로 탐색합니다. 마지막 읽던 권과 장, 기억한 인물과 장소를 그대로 이어갑니다.</p></div>
-      <div class="resume-card"><div class="resume-seal">03</div><small id="resumeCardTag">추천 본문</small><strong id="resumeReadingLabel">고린도전서 3장</strong><div id="resumeCardMeta" style="font-size:10px;color:#817b72;margin-top:5px">처음 읽는 분을 위한 추천 본문입니다.</div><button id="resume">추천 본문 읽기</button></div>
+      <div class="resume-card"><div class="resume-seal">03</div><small id="resumeCardTag">DEMO PREVIEW</small><strong id="resumeReadingLabel">고린도전서 3장</strong><div id="resumeCardMeta" style="font-size:10px;color:#817b72;margin-top:5px">데모 미리보기 · 실제 읽기 기록 아님</div><button id="resume">데모 본문 시작</button></div>
     </div>
     <div class="index-body">
       <div class="testament-tabs"><button class="testament-tab on" data-testament="new">신약</button><button class="testament-tab" data-testament="old">구약</button></div>
@@ -319,7 +309,7 @@
     </aside>
 
     <main class="reader-stage">
-      <div class="reader-stage-brand"><span>북AI</span><span>READING DESK</span></div>
+      <div class="reader-stage-brand"><span>STORYMEMORY</span><span>READING DESK</span></div>
       <div class="world-key-light world-key-light-reader" aria-hidden="true"></div><div class="reader-ambient-number">03</div>
       <button class="reader-nav" id="backToChapters">← 장 선택</button>
       <div class="reader-unit-nav" id="readerUnitNav" hidden aria-label="책 단위 이동">
@@ -368,12 +358,12 @@
           <span class="crop-mark crop-tl"></span><span class="crop-mark crop-tr"></span>
           <span class="crop-mark crop-bl"></span><span class="crop-mark crop-br"></span>
           <div class="paper-inner">
-            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">예시 본문</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
+            <div class="paper-eyebrow"><span id="readerEyebrowLeft">THE FIRST LETTER TO THE CORINTHIANS</span><span class="reader-source-badge" id="readerSourceBadge">SOURCE · DEMO</span><span id="readerEyebrowRight">CHAPTER 03</span></div>
             <div class="paper-running-head"><span>MEMORY EDITION</span><i></i><span>READING COPY</span></div>
             <div class="paper-rule-ornament"><i></i><b>✦</b><i></i></div>
             <div class="paper-head"><h1><span id="readerVolumeTitle">고린도전서</span> <em id="readerChapterTitle">3장</em></h1><small id="readerPageCount">PAGE 1 / 3</small></div>
             <div id="readerPageBody"></div>
-          <div class="paper-footer"><span>BOOK AI · PERSONAL READING EDITION</span><span id="readerFooterFolio">03 — 16</span></div>
+          <div class="paper-footer"><span>STORYMEMORY · PERSONAL READING EDITION</span><span id="readerFooterFolio">03 — 16</span></div>
           </div>
         </article>
         <div class="curl-page" id="curlPage"></div>
@@ -422,8 +412,8 @@
 
 <div class="scrim" id="scrim"></div>
 <div class="mobile-dock" id="mobileDock">
-  <button data-mobile="memory">기억</button>
-  <button class="read-tab" data-mobile="read">읽기</button>
+  <button data-mobile="memory">Memory</button>
+  <button class="read-tab" data-mobile="read">Read</button>
   <button data-mobile="ai">AI</button>
 </div>
 <div class="voice-toast" id="voiceToast"></div>
@@ -433,7 +423,7 @@
   <span class="morph-under morph-under-b"></span>
   <span class="morph-under morph-under-c"></span>
   <div class="paper-morph-inner">
-    <div class="morph-running"><span>북AI</span><i></i><span id="paperMorphVolume">고린도전서</span></div>
+    <div class="morph-running"><span>STORYMEMORY</span><i></i><span id="paperMorphVolume">고린도전서</span></div>
     <div class="morph-center">
       <small>SELECTED SHEET</small>
       <strong id="paperMorphNo">3</strong>
@@ -932,7 +922,6 @@ smLibraryScene.addEventListener('click',e=>{
 
 window.addEventListener('keydown',e=>{if(document.getElementById('library').classList.contains('active')){if(e.key==='ArrowLeft')document.getElementById('prevBook').click();if(e.key==='ArrowRight')document.getElementById('nextBook').click();if(e.key==='Enter')document.getElementById('openBook').click()}});
 /* ===== v2.9.8 Personal Reading Home / Today ===== */
-let __smInitialReaderSetup=false;
 let __smTodayContinueContext='고린도전서 3장';
 
 function todayLocalDay(ts=Date.now()){
@@ -959,7 +948,7 @@ function allReaderProgressEntries(){
 function bestContinueReading(){
   const entries=allReaderProgressEntries();
   if(entries.length)return entries[0];
-  return {context:__smCurrentReaderLabel||'고린도전서 3장',mode:'page',page:0,scrollRatio:0,updatedAt:0,recommendation:true};
+  return {context:__smCurrentReaderLabel||'고린도전서 3장',mode:'page',page:Number(readerPageIndex||0),scrollRatio:0,updatedAt:Date.now()};
 }
 function progressVisual(p){
   if(p?.mode==='flow'){
@@ -1010,6 +999,7 @@ function recentReadingThread(){
   return [...contexts.values()].sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,3);
 }
 function todayRecallItems(){
+  recordCurrentContextEntityLedger();
   const queue=buildRecallQueue();
   return queue.filter(item=>Number(recallItemState(item.id).nextDue||0)<=Date.now());
 }
@@ -1273,7 +1263,6 @@ function applyVolumeSelection(v,b,arriving=false){
  document.getElementById('volumeFocusTitle').textContent=v;
  const count=VOLUME_CHAPTERS[v]||16;
  document.getElementById('volumeFocusCopy').textContent=volumeFocusText(v);
- renderVolumeFocusFacts(v);
  selectedChapter=v==='고린도전서'?3:1;
  renderChapters(count);
  if(arriving){
@@ -1870,7 +1859,6 @@ function saveContextEntityLedger(){
 loadContextEntityLedger();
 
 function recordCurrentContextEntityLedger(){
-  if(__smInitialReaderSetup)return;
   if(!__smCurrentReaderLabel||!Array.isArray(READER_PAGES))return;
   const names=['바울','아볼로','고린도','하나님의 밭'];
   const pages=[];
@@ -3014,9 +3002,9 @@ function updateAuthGateUI({syncing=false,error=false}={}){
     label.textContent='클라우드';
     state.querySelector('b').textContent='LOCAL FIRST';
     state.querySelector('span').textContent='지금은 이 기기에만 저장 중';
-    title.innerHTML=__smAuthBridge.installed?'기억을 기기 밖에도<br>이어두시겠어요?':'기억은 지금<br>이 기기에 저장됩니다.';
-    copy.textContent=__smAuthBridge.installed?'로그인 전에도 읽기 기록과 Memory는 이 기기에 저장됩니다. 로그인하면 다른 기기에서도 이어갈 수 있습니다.':'읽기 기록과 Memory는 현재 기기에 저장됩니다. 로그인과 기기 간 동기화는 준비 중입니다.';
-    primary.textContent=__smAuthBridge.installed?'로그인하고 동기화':'로그인 안내';
+    title.innerHTML='기억을 기기 밖에도<br>이어두시겠어요?';
+    copy.textContent='로그인 전에도 모든 읽기와 Memory는 이 기기에 저장됩니다. 로그인하면 사용자 전용 공간과 안전하게 동기화할 수 있습니다.';
+    primary.textContent='로그인하고 동기화';
     secondary.textContent='지금은 로컬로 계속';
   }
 }
@@ -3024,7 +3012,7 @@ async function authGatePrimaryAction(){
   if(!__smAuthBridge.authenticated){
     if(!__smAuthBridge.installed){
       const copy=document.getElementById('authGateCopy');
-      if(copy)copy.textContent='로그인과 기기 간 동기화는 아직 준비 중입니다. 읽기 기록과 Memory는 현재 기기에 저장됩니다.';
+      if(copy)copy.textContent='현재 프로토타입에는 실제 로그인 UI가 아직 주입되지 않았습니다. Production shell에서 Neon Auth UI를 연결하면 이 버튼이 로그인 화면을 엽니다.';
       return;
     }
     try{
@@ -3373,8 +3361,8 @@ function updateReaderSourceBadge(){
   const badge=document.getElementById('readerSourceBadge');
   if(!badge)return;
   const source=sourceForReaderContext();
-  badge.textContent=source.status==='demo'?'예시 본문':'본문 안내';
-  badge.title=source.status==='demo'?'예시로 제공되는 본문입니다.':'본문 정보가 준비되지 않았습니다.';
+  badge.textContent=source.status==='demo'?'SOURCE · DEMO':'SOURCE · READING COPY';
+  badge.title=`${source.title} · ${source.rights}`;
 }
 function unifiedProgressEntries(){
   const out={};
@@ -4478,7 +4466,7 @@ let READER_PAGES=[
   `,
   `
   <p class="verse verse-emphasis"><span class="margin-anchor anchor-right">MEMORY 04</span><span class="vn">9</span>우리는 하나님의 동역자들이요 너희는 하나님의 밭이요 하나님의 집이니라.</p>
-  <div class="reader-page-note"><b>READING MEMORY</b>이어서 읽으며 본문에 표시하고 생각을 남길 수 있습니다.</div>
+  <div class="reader-page-note"><b>READING MEMORY</b>이 프로토타입의 다음 페이지 전환은 이제 실제 콘텐츠 상태와 연결됩니다. 정식 본문 데이터 연결 시 현재 장의 전체 절을 페이지/스크롤 정책에 맞춰 공급합니다.</div>
   `
 ];
 let readerPageIndex=0;
@@ -4538,11 +4526,11 @@ function setReaderContext(ctx={}){
       quick.forEach((b,i)=>{if(presets[i]){b.dataset.q=presets[i][0];b.textContent=presets[i][1]}});
     }else{
       READER_PAGES=[
-        `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(volume.slice(0,1))}</span>${escapeHtml(volume)} ${chapter}장의 본문을 불러오는 중이거나 현재 이용할 수 없습니다.</p>
-         <div class="reader-page-note"><b>FLOW CONTINUITY</b>연결 상태를 확인하고 다시 열어 주세요.</div>`,
-        `<p class="verse">이 장의 본문을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
+        `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(volume.slice(0,1))}</span>${escapeHtml(volume)} ${chapter}장의 Reader 레이아웃입니다. 이 프로토타입에는 해당 장의 실제 본문 데이터를 포함하지 않았습니다.</p>
+         <div class="reader-page-note"><b>FLOW CONTINUITY</b>서가에서 고른 권과 장 정보가 Reader, Memory, AI Companion까지 그대로 전달됩니다.</div>`,
+        `<p class="verse">정식 구현에서는 현재 장의 source span과 reader progress를 먼저 불러오고, 사용자의 밑줄·형광펜·메모를 같은 위치에 복원합니다.</p>
          <div class="reader-page-note"><b>MEMORY FIRST</b>AI는 아직 읽지 않은 다음 장을 참조하지 않고 현재 읽은 범위 안의 기억만 사용합니다.</div>`,
-        `<p class="verse">본문을 불러온 뒤 읽기와 메모를 이어갈 수 있습니다.</p>`
+        `<p class="verse">이 페이지는 화면 흐름 검증용 Reading Copy입니다. 실제 성경 본문 연결 시 동일한 페이지 전환·Memory·AI 구조를 유지합니다.</p>`
       ];
       const generic=[['현재 권',`${volume} · 선택한 성경 권`],['현재 장',`${chapter}장 · 읽기 위치`],['내 표시','밑줄·형광펜·메모'],['질문 기록','현재 범위의 AI 대화']];
       memoryItems.forEach((el,i)=>{if(generic[i])el.innerHTML=`<b>${escapeHtml(generic[i][0])}</b><small>${escapeHtml(generic[i][1])}</small>`});
@@ -4565,11 +4553,11 @@ function setReaderContext(ctx={}){
     contextRule.textContent='현재 책의 표시와 Memory만 AI에 전달';
 
     READER_PAGES=[
-      `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(book.slice(0,1))}</span>${escapeHtml(book)}의 본문을 불러오는 중이거나 현재 이용할 수 없습니다.</p>
+      `<p class="verse opening-verse"><span class="dropcap">${escapeHtml(book.slice(0,1))}</span>${escapeHtml(book)}의 개인 Reading Copy입니다. 실제 저작권 본문 대신 StoryMemory의 독서 인터랙션을 검증하기 위한 화면을 표시합니다.</p>
        <div class="reader-page-note"><b>CURRENT READING</b>${escapeHtml(note)}</div>`,
       `<p class="verse">읽다가 남긴 밑줄·메모·인물·장소 정보는 왼쪽 Memory에 누적되고, 오른쪽 AI Companion은 현재까지 읽은 범위와 그 기록을 함께 사용합니다.</p>`,
-      `<p class="verse">본문을 이용할 수 있게 되면 이곳에서 읽을 수 있습니다.</p>
-       <div class="reader-page-note"><b>NO FALSE TEXT</b>본문을 확인할 수 없는 경우 내용을 임의로 표시하지 않습니다.</div>`
+      `<p class="verse">정식 데이터 연결 후에는 이 자리에 사용자가 보유하거나 접근 권한이 있는 실제 Reading Source가 들어옵니다.</p>
+       <div class="reader-page-note"><b>NO FALSE TEXT</b>이 프로토타입은 선택한 작품의 실제 문장을 임의로 만들어 표시하지 않습니다.</div>`
     ];
 
     const generic=[['현재 책',book],['마지막 표시','최근 밑줄과 메모'],['읽기 맥락',note],['질문 기록','현재 책의 AI 대화']];
@@ -4613,7 +4601,7 @@ let readerViewMode='page';
 
 function readerProgressStorageKey(){return window.StoryMemoryReaderViewRuntimeV1.readerProgressStorageKey.apply(this,arguments);}
 function readStoredReaderProgress(){return window.StoryMemoryReaderViewRuntimeV1.readStoredReaderProgress.apply(this,arguments);}
-function saveReaderProgress(extra={}){if(__smInitialReaderSetup)return;return window.StoryMemoryReaderViewRuntimeV1.saveReaderProgress.apply(this,arguments);}
+function saveReaderProgress(extra={}){return window.StoryMemoryReaderViewRuntimeV1.saveReaderProgress.apply(this,arguments);}
 function syncReaderViewButtons(){return window.StoryMemoryReaderViewRuntimeV1.syncReaderViewButtons.apply(this,arguments);}
 function flowSectionMarkup(html,index){return window.StoryMemoryReaderViewRuntimeV1.flowSectionMarkup.apply(this,arguments);}
 function renderFlowReader({restoreRatio=null,focusPage=null}={}){return window.StoryMemoryReaderViewRuntimeV1.renderFlowReader.apply(this,arguments);}
@@ -4730,8 +4718,7 @@ document.getElementById('pageTurnPrev').onclick=()=>animateReaderPageTurn(-1);
 document.getElementById('pageTurnNext').onclick=()=>animateReaderPageTurn(1);
 
 function animateReaderPageTurn(step){return window.StoryMemoryReaderViewRuntimeV1.animateReaderPageTurn.apply(this,arguments);}
-__smInitialReaderSetup=true;
-try{setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});}finally{__smInitialReaderSetup=false;}
+setReaderContext({kind:'bible',book:'성경',volume:'고린도전서',chapter:3,chapterCount:16});
 requestAnimationFrame(()=>{try{renderTodayHome()}catch(_){}});
 
 requestAnimationFrame(()=>{
@@ -5289,9 +5276,6 @@ function __smV319RefreshMemoryRail(){
     item.classList.toggle('memory-future',distance.state==='future');
     item.dataset.memoryVisibility=distance.state;
     item.dataset.memoryPinned=pinned?'true':'false';
-    // Hide unpinned examples that have no evidence in the current reading. Pins remain available.
-    if((distance.state==='unknown'||distance.state==='future') && !pinned)item.style.setProperty('display','none','important');
-    else item.style.removeProperty('display');
     let small=item.querySelector(':scope > small');
     if(!small){small=document.createElement('small');item.append(small)}
     small.textContent=`${meta.label} · ${distance.label}`;
@@ -6032,7 +6016,7 @@ function storyMemoryBuildDynamicReaderPages(bundle,{targetChars,pageMaxPassages}
     const first=items[0]?.sourceRef,last=items[items.length-1]?.sourceRef;
     const firstLabel=first?storyMemoryFormatSourceRef(first):'';const lastLabel=last?storyMemoryFormatSourceRef(last):'';
     const rangeLabel=firstLabel&&lastLabel&&firstLabel!==lastLabel?`${firstLabel} → ${lastLabel}`:(firstLabel||lastLabel||'VERIFIED SOURCE');
-    const lang=bundle?.mode==='static' && bundle?.work?.work_key==='bible-web' ? '한국어: KRV-1961 · 영어: World English Bible' : (items.some(x=>x.language==='ko')?'한국어 본문 · 원문 연결':'영어 원문');
+    const lang=items.some(x=>x.language==='ko')?'StoryMemory 한국어 번역 · 원문 연결':'영어 원문';
     return `${body}<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>${escapeHtml(rangeLabel)} · ${escapeHtml(lang)}</div>`;
   });
   return {pages,groups,pageSourceRefs:groups.map(g=>g.map(x=>x.sourceRef).filter(Boolean)),passages};
@@ -6050,9 +6034,10 @@ const __smV322UpdateReaderSourceBadge=updateReaderSourceBadge;
 updateReaderSourceBadge=function(){
   const badge=document.getElementById('readerSourceBadge');
   if(storyMemoryIsAuthoritativeReaderMode()&&badge){
-    const langs=new Set(__smDynamicReaderState.passages.map(x=>x.language));
-    badge.textContent=langs.has('ko')?(langs.has('en')?'한글 · 영어':'한글'):(langs.has('en')?'영어':'본문');
-    const c=__smDynamicReaderState.content;badge.title=c?.sourceEdition||c?.title||'본문';
+    const translated=__smDynamicReaderState.passages.some(x=>x.language==='ko');
+    const channel=__smDynamicReaderState.mode==='static'?'STATIC':'DB';
+    badge.textContent=translated?`SOURCE · ${channel} + KO`:`SOURCE · ${channel} · EN`;
+    const c=__smDynamicReaderState.content;badge.title=`${c?.sourceEdition||c?.title||'Canonical source'} · ${c?.rightsMode||'source'} · verified locator/hash`;
     return;
   }
   __smV322UpdateReaderSourceBadge();
@@ -6468,8 +6453,8 @@ function storyMemoryPrefetchedPaperMarkup(entry,step){
   const count=clone.querySelector('#readerPageCount');if(count)count.textContent=`PAGE ${pageIndex+1} / ${entry.pages.length}`;
   const chapter=clone.querySelector('#readerChapterTitle');if(chapter)chapter.textContent=storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content));
   const eyeRight=clone.querySelector('#readerEyebrowRight');if(eyeRight)eyeRight.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))} / ${String(storyMemoryReaderUnitSpec(entry.content)?.count||1).padStart(storyMemoryReaderUnitSpec(entry.content)?.pad||2,'0')}`;
-  const footer=clone.querySelector('#readerFooterFolio');if(footer)footer.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))}`;
-  const badge=clone.querySelector('#readerSourceBadge');if(badge){const langs=new Set(entry.passages.map(x=>x.language));badge.textContent=langs.has('ko')?(langs.has('en')?'한글 · 영어':'한글'):(langs.has('en')?'영어':'본문');}
+  const footer=clone.querySelector('#readerFooterFolio');if(footer)footer.textContent=`${storyMemoryReaderUnitLabel(entry.unitOrdinal,storyMemoryReaderUnitSpec(entry.content))} · PREFETCHED VERIFIED SOURCE`;
+  const badge=clone.querySelector('#readerSourceBadge');if(badge){const channel=entry.mode==='static'?'STATIC':'DB';badge.textContent=entry.passages.some(x=>x.language==='ko')?`SOURCE · ${channel} + KO`:`SOURCE · ${channel} · EN`;}
   return __smSanitizeCurlClone(clone).outerHTML;
 }
 function storyMemoryApplyPrefetchedUnit(entry,{step=1}={}){
@@ -7035,8 +7020,8 @@ function storyMemorySyncBibleIndexResume(){
   const tag=document.getElementById('resumeCardTag');
   const meta=document.getElementById('resumeCardMeta');
   if(!record){
-    if(tag)tag.textContent='추천 본문';
-    if(meta)meta.textContent='처음 읽는 분을 위한 추천 본문입니다.';
+    if(tag)tag.textContent='DEMO PREVIEW';
+    if(meta)meta.textContent='데모 미리보기 · 실제 읽기 기록 아님';
     return null;
   }
   if(tag)tag.textContent='CONTINUE READING';
@@ -7631,8 +7616,7 @@ window.storyMemoryStaticWorkKeys=STORYMEMORY_STATIC_WORK_KEYS;
     var fl=first?storyMemoryFormatSourceRef(first):'';
     var ll=last?storyMemoryFormatSourceRef(last):'';
     var range=(fl&&ll&&fl!==ll)?(fl+' → '+ll):(fl||ll||'VERIFIED SOURCE');
-    var isStaticBible=__smDynamicReaderState.mode==='static' && __smDynamicReaderState.work && __smDynamicReaderState.work.work_key==='bible-web';
-    var lang=isStaticBible?'한국어: KRV-1961 · 영어: World English Bible':(items.some(function(x){return x.language==='ko';})?'한국어 본문 · 원문 연결':'영어 원문');
+    var lang=items.some(function(x){return x.language==='ko';})?'StoryMemory 한국어 번역 · 원문 연결':'영어 원문';
     return '<div class="reader-page-note sm-verified-source-note"><b>VERIFIED SOURCE</b>'+escapeHtml(range)+' · '+escapeHtml(lang)+'</div>';
   }
   function splitUnit(p){
@@ -8378,44 +8362,5 @@ window.__smV1823EvidenceUXV1={
 })();
 </script>
 
-<script src="./mobile-source-settings.js"></script>
-<link rel="stylesheet" href="./styles/storymemory-review-261031.css">
-<script src="./storymemory-backup-v1.js"></script>
-<script>
-(function(){
-  const file = document.getElementById('smBackupFile');
-  document.getElementById('smBackupExport').addEventListener('click', function(){
-    try {
-      if (typeof persistUnifiedStore === 'function') persistUnifiedStore();
-      const data = JSON.stringify(window.StoryMemoryBackup.snapshot(localStorage), null, 2);
-      const blob = new Blob([data], {type:'application/json'});
-      if (blob.size > 5 * 1024 * 1024) { alert('\uBC31\uC5C5 \uD30C\uC77C\uC774 \uBCF5\uC6D0 \uAC00\uB2A5\uD55C \uD06C\uAE30\uBCF4\uB2E4 \uD07D\uB2C8\uB2E4.'); return; }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'storymemory-backup-' + new Date().toISOString().slice(0,10) + '.json';
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-    } catch (_) { alert('백업 파일을 만들지 못했습니다. 다시 시도해 주세요.'); }
-  });
-  document.getElementById('smBackupImport').addEventListener('click', function(){ file.value=''; file.click(); });
-  file.addEventListener('change', async function(){
-    const selected = file.files && file.files[0];
-    if (!selected) return;
-    if (selected.size > 5 * 1024 * 1024) { alert('백업 파일이 너무 큽니다.'); return; }
-    if (!confirm('백업에 있는 항목으로 이 기기의 같은 항목을 덮어씁니다. 계속하시겠어요?')) return;
-    try {
-      const text = await selected.text();
-      window.StoryMemoryBackup.restore(localStorage, text);
-      location.reload();
-    } catch (error) {
-      if (error && error.message === 'backup_rollback_failed') {
-        alert('복원과 기존 기록 되돌리기에 실패했습니다. 이 기기의 저장 공간을 확인하고 백업 파일을 보관해 주세요.');
-      } else {
-        alert('백업을 복원하지 못했습니다. 올바른 StoryMemory 백업 파일인지 확인해 주세요.');
-      }
-    }
-  });
-})();
-</script>
 </body>
 </html>

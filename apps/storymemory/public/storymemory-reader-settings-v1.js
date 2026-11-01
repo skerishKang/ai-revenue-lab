@@ -11,7 +11,7 @@
     font:[['noto-sans-kr','산세리프'],['pretendard-system','시스템'],['serif','세리프']],
     fontSize:[['sm','작게'],['base','기본'],['lg','크게'],['xl','매우 크게']],
     lineHeight:[['tight','좁게'],['relaxed','기본'],['loose','넓게']],
-    englishMode:[['show','한영 함께'],['compact','영어 작게'],['hide','한글만']],
+    englishMode:[['show','표시'],['compact','작게'],['hide','숨김']],
     verseNumbers:[[true,'표시'],[false,'숨김']]};
   function sanitize(raw){
     var s={};
@@ -55,7 +55,7 @@
   function segRow(label,field){
     var row=document.createElement('div');row.className='srsg-row';
     var lb=document.createElement('div');lb.className='srsg-label';lb.textContent=label;row.appendChild(lb);
-    var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field=field;seg.setAttribute('role','group');seg.setAttribute('aria-label',label);
+    var seg=document.createElement('div');seg.className='srsg-seg';seg.dataset.field=field;
     LABELS[field].forEach(function(opt){
       var b=document.createElement('button');b.type='button';b.dataset.value=String(opt[0]);b.textContent=opt[1];
       b.setAttribute('aria-pressed',String(state[field]===opt[0]));
@@ -101,30 +101,18 @@
     var head=document.createElement('div');head.className='srsg-head';
     var hb=document.createElement('b');hb.textContent='읽기 설정';
     var hx=document.createElement('button');hx.type='button';hx.className='srsg-x';hx.setAttribute('aria-label','설정 닫기');hx.textContent='×';
-    function closeSettings(restoreFocus){
-      document.body.classList.remove('smr-open');
-      if(restoreFocus){var trigger=document.getElementById('smalOverflowBtn');if(trigger)trigger.focus();}
-    }
-    hx.onclick=function(){closeSettings(true);};
+    hx.onclick=function(){document.body.classList.remove('smr-open');};
     head.appendChild(hb);head.appendChild(hx);panel.appendChild(head);
     panel.appendChild(segRow('글꼴','font'));
     panel.appendChild(segRow('글자 크기','fontSize'));
     panel.appendChild(segRow('줄 간격','lineHeight'));
     panel.appendChild(themeRow());
-    panel.appendChild(segRow('본문 언어','englishMode'));
+    panel.appendChild(segRow('영어 WEB','englishMode'));
     panel.appendChild(segRow('절 번호','verseNumbers'));
     var reset=document.createElement('button');reset.type='button';reset.className='srsg-reset';reset.textContent='기본값으로 초기화';
     reset.onclick=function(){state=JSON.parse(JSON.stringify(DEFAULTS));try{localStorage.removeItem(KEY);}catch(e){}apply();};
     panel.appendChild(reset);
-    gear.onclick=function(e){
-      e.stopPropagation();
-      var opening=!document.body.classList.contains('smr-open');
-      document.body.classList.toggle('smr-open',opening);
-      if(opening)hx.focus();
-    };
-    panel.addEventListener('keydown',function(e){
-      if(e.key==='Escape'){e.preventDefault();e.stopPropagation();closeSettings(true);}
-    });
+    gear.onclick=function(e){e.stopPropagation();document.body.classList.toggle('smr-open');};
     panel.addEventListener('click',function(e){e.stopPropagation();});
     document.addEventListener('click',function(){document.body.classList.remove('smr-open');});
     /* B61 #1936 D: bottom-right consolidation — single overflow toggle replaces the

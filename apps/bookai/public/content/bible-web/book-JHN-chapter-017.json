@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:017",
+  "unit_ordinal": 1014,
+  "unit_label": "JHN 17",
+  "book_code": "JHN",
+  "chapter_number": 17,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:17:1",
+      "sequence": 26760,
+      "chapter_label": "JHN 17",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 1
+        }
+      ],
+      "en": "Jesus said these things, then lifting up his eyes to heaven, he said, “Father, the time has come. Glorify your Son, that your Son may also glorify you;",
+      "ko": "예수께서 이 말씀을 하시고 눈을 들어 하늘을 우러러 가라사대 아버지여 때가 이르렀사오니 아들을 영화롭게 하사 아들로 아버지를 영화롭게 하게 하옵소서",
+      "source_text_hash": "9ae5e634a051bd8d91b855667673523ee6d25d031b615950444736543b210531",
+      "translation_text_hash": "79923ea2799c8e9d693b5a91e0f1c93d5b1fce9b73ba4c8014bd2b1d153891f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 말씀을 하시고 눈을 들어 하늘을 우러러 가라사대 아버지여 때가 이르렀사오니 아들을 영화롭게 하사 아들로 아버지를 영화롭게 하게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "79923ea2799c8e9d693b5a91e0f1c93d5b1fce9b73ba4c8014bd2b1d153891f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:2",
+      "sequence": 26761,
+      "chapter_label": "JHN 17",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 2
+        }
+      ],
+      "en": "even as you gave him authority over all flesh, so he will give eternal life to all whom you have given him.",
+      "ko": "아버지께서 아들에게 주신 모든 자에게 영생을 주게 하시려고 만민을 다스리는 권세를 아들에게 주셨음이로소이다",
+      "source_text_hash": "3d53254706e4c826cca489c451ad805e6366c8709efcc8b0ae3687c47b87b462",
+      "translation_text_hash": "96d3e5740a57c41c564190ee96d53cdc0fe40b428cf45a42bb8bf0ad5ee04f74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 아들에게 주신 모든 자에게 영생을 주게 하시려고 만민을 다스리는 권세를 아들에게 주셨음이로소이다"
+      ],
+      "raw_text_hashes": [
+        "96d3e5740a57c41c564190ee96d53cdc0fe40b428cf45a42bb8bf0ad5ee04f74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:3",
+      "sequence": 26762,
+      "chapter_label": "JHN 17",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 3
+        }
+      ],
+      "en": "This is eternal life, that they should know you, the only true God, and him whom you sent, Jesus Christ.",
+      "ko": "영생은 곧 유일하신 참 하나님과 그의 보내신 자 예수 그리스도를 아는 것이니이다",
+      "source_text_hash": "3c7d6acc6ffcbde680d89d6c1a08b7e7f41f75fc38643046c5e9b2499b4cb160",
+      "translation_text_hash": "307479d29092e51ffc95c9968f40785bb33875cfa306dcc18d867ef1c69c974c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영생은 곧 유일하신 참 하나님과 그의 보내신 자 예수 그리스도를 아는 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "307479d29092e51ffc95c9968f40785bb33875cfa306dcc18d867ef1c69c974c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:4",
+      "sequence": 26763,
+      "chapter_label": "JHN 17",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 4
+        }
+      ],
+      "en": "I glorified you on the earth. I have accomplished the work which you have given me to do.",
+      "ko": "아버지께서 내게 하라고 주신 일을 내가 이루어 아버지를 이 세상에서 영화롭게 하였사오니",
+      "source_text_hash": "8fd5a2226e612cecdf738a47b5baa71c275a9bef96905c0d41e7812db59c5db7",
+      "translation_text_hash": "80b19733faa16800f626800d4e7a1abf37e690c693eaee7a0a320b8caf851ee6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 내게 하라고 주신 일을 내가 이루어 아버지를 이 세상에서 영화롭게 하였사오니"
+      ],
+      "raw_text_hashes": [
+        "80b19733faa16800f626800d4e7a1abf37e690c693eaee7a0a320b8caf851ee6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:5",
+      "sequence": 26764,
+      "chapter_label": "JHN 17",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 5
+        }
+      ],
+      "en": "Now, Father, glorify me with your own self with the glory which I had with you before the world existed.",
+      "ko": "아버지여 창세 전에 내가 아버지와 함께 가졌던 영화로써 지금도 아버지와 함께 나를 영화롭게 하옵소서",
+      "source_text_hash": "f68e066e3999bd3376b681c2c84b50c5ba21deb51591622b315e63d72abb4765",
+      "translation_text_hash": "d8bf2532736f52f1a47f4d3ff62f02d59f966deec7add9dd7c7ac108019286eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지여 창세 전에 내가 아버지와 함께 가졌던 영화로써 지금도 아버지와 함께 나를 영화롭게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "d8bf2532736f52f1a47f4d3ff62f02d59f966deec7add9dd7c7ac108019286eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:6",
+      "sequence": 26765,
+      "chapter_label": "JHN 17",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 6
+        }
+      ],
+      "en": "“I revealed your name to the people whom you have given me out of the world. They were yours, and you have given them to me. They have kept your word.",
+      "ko": "세상 중에서 내게 주신 사람들에게 내가 아버지의 이름을 나타내었나이다 저희는 아버지의 것이었는데 내게 주셨으며 저희는 아버지의 말씀을 지키었나이다",
+      "source_text_hash": "25be47224fcd90e683c4fb9988b8d5ab912f6e41dccab410e391522ec6d91806",
+      "translation_text_hash": "195d6e51a0b6c589ebc22da1300463535bd6b7f8c7c1b7ab88cf33e027938b78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상 중에서 내게 주신 사람들에게 내가 아버지의 이름을 나타내었나이다 저희는 아버지의 것이었는데 내게 주셨으며 저희는 아버지의 말씀을 지키었나이다"
+      ],
+      "raw_text_hashes": [
+        "195d6e51a0b6c589ebc22da1300463535bd6b7f8c7c1b7ab88cf33e027938b78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:7",
+      "sequence": 26766,
+      "chapter_label": "JHN 17",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 7
+        }
+      ],
+      "en": "Now they have known that all things whatever you have given me are from you,",
+      "ko": "지금 저희는 아버지께서 내게 주신 것이 다 아버지께로서 온 것인줄 알았나이다",
+      "source_text_hash": "9d1f177b3234ff926ad9d39a7d288b56c6fdfc9c754f50a8e6dd65ab45133f88",
+      "translation_text_hash": "030f3b7ee6168eb7de905242077ee3dc4ccd5c8437fcf5a31dd6a683dcf1c05d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 저희는 아버지께서 내게 주신 것이 다 아버지께로서 온 것인줄 알았나이다"
+      ],
+      "raw_text_hashes": [
+        "030f3b7ee6168eb7de905242077ee3dc4ccd5c8437fcf5a31dd6a683dcf1c05d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:8",
+      "sequence": 26767,
+      "chapter_label": "JHN 17",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 8
+        }
+      ],
+      "en": "for the words which you have given me I have given to them; and they received them, and knew for sure that I came from you. They have believed that you sent me.",
+      "ko": "나는 아버지께서 내게 주신 말씀들을 저희에게 주었사오며 저희는 이것을 받고 내가 아버지께로부터 나온 줄을 참으로 아오며 아버지께서 나를 보내신 줄도 믿었사옵나이다",
+      "source_text_hash": "48aca42384b04549b8d72e1504c71e42007f6d21ede543cb89be93f817646e32",
+      "translation_text_hash": "adcb46bb161e6bd22fddd2f11728f25b9a0d4d4fa79be41f6c9df1e1cb89bd81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 아버지께서 내게 주신 말씀들을 저희에게 주었사오며 저희는 이것을 받고 내가 아버지께로부터 나온 줄을 참으로 아오며 아버지께서 나를 보내신 줄도 믿었사옵나이다"
+      ],
+      "raw_text_hashes": [
+        "adcb46bb161e6bd22fddd2f11728f25b9a0d4d4fa79be41f6c9df1e1cb89bd81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:9",
+      "sequence": 26768,
+      "chapter_label": "JHN 17",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 9
+        }
+      ],
+      "en": "I pray for them. I don’t pray for the world, but for those whom you have given me, for they are yours.",
+      "ko": "내가 저희를 위하여 비옵나니 내가 비옵는 것은 세상을 위함이 아니요 내게 주신 자들을 위함이니이다 저희는 아버지의 것이로소이다",
+      "source_text_hash": "62b3cf92566188a627918cecf2e8db3905d8843b4f7843f6b83183ab60a58cca",
+      "translation_text_hash": "673eb36c15087a84f4786e24a75a202c5b538a501bb81cdf7f2bf0dccd2474c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희를 위하여 비옵나니 내가 비옵는 것은 세상을 위함이 아니요 내게 주신 자들을 위함이니이다 저희는 아버지의 것이로소이다"
+      ],
+      "raw_text_hashes": [
+        "673eb36c15087a84f4786e24a75a202c5b538a501bb81cdf7f2bf0dccd2474c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:10",
+      "sequence": 26769,
+      "chapter_label": "JHN 17",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 10
+        }
+      ],
+      "en": "All things that are mine are yours, and yours are mine, and I am glorified in them.",
+      "ko": "내 것은 다 아버지의 것이요 아버지의 것은 내 것이온데 내가 저희로 말미암아 영광을 받았나이다",
+      "source_text_hash": "a7877ca7d6df1f49ed0e3311dceeffb0c7491ad5248a6042e540c8d62b0d4e65",
+      "translation_text_hash": "4f6303a8d4bd0df4a777ffef1b437f9794b7d73eba4023baabe4946f7ed910b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 것은 다 아버지의 것이요 아버지의 것은 내 것이온데 내가 저희로 말미암아 영광을 받았나이다"
+      ],
+      "raw_text_hashes": [
+        "4f6303a8d4bd0df4a777ffef1b437f9794b7d73eba4023baabe4946f7ed910b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:11",
+      "sequence": 26770,
+      "chapter_label": "JHN 17",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 11
+        }
+      ],
+      "en": "I am no more in the world, but these are in the world, and I am coming to you. Holy Father, keep them through your name which you have given me, that they may be one, even as we are.",
+      "ko": "나는 세상에 더 있지 아니하오나 저희는 세상에 있사옵고 나는 아버지께로 가옵나니 거룩하신 아버지여 내게 주신 아버지의 이름으로 저희를 보전하사 우리와 같이 저희도 하나가 되게 하옵소서",
+      "source_text_hash": "da957d43e59c9a97477ee11b31dae90c2a1f23cd67633dd12709eed0f486cae9",
+      "translation_text_hash": "80c2f40fd607b8b036d3c9ecb9345d9ebcfe6a63e8e6e1444aae5b9aac89bcf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 세상에 더 있지 아니하오나 저희는 세상에 있사옵고 나는 아버지께로 가옵나니 거룩하신 아버지여 내게 주신 아버지의 이름으로 저희를 보전하사 우리와 같이 저희도 하나가 되게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "80c2f40fd607b8b036d3c9ecb9345d9ebcfe6a63e8e6e1444aae5b9aac89bcf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:12",
+      "sequence": 26771,
+      "chapter_label": "JHN 17",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 12
+        }
+      ],
+      "en": "While I was with them in the world, I kept them in your name. I have kept those whom you have given me. None of them is lost except the son of destruction, that the Scripture might be fulfilled.",
+      "ko": "내가 저희와 함께 있을 때에 내게 주신 아버지의 이름으로 저희를 보전하와 지키었나이다 그 중에 하나도 멸망치 않고 오직 멸망의 자식 뿐이오니 이는 성경을 응하게 함이니이다",
+      "source_text_hash": "7388eea1b8cdec6ae0877c19dca669e4a53b2c5cdd509d812fe05a536ba1f8a3",
+      "translation_text_hash": "1ef7e58058c01ae188d6983a1e896432bbf2b75766b8441d38500e4dc13351aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저희와 함께 있을 때에 내게 주신 아버지의 이름으로 저희를 보전하와 지키었나이다 그 중에 하나도 멸망치 않고 오직 멸망의 자식 뿐이오니 이는 성경을 응하게 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "1ef7e58058c01ae188d6983a1e896432bbf2b75766b8441d38500e4dc13351aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:13",
+      "sequence": 26772,
+      "chapter_label": "JHN 17",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 13
+        }
+      ],
+      "en": "But now I come to you, and I say these things in the world, that they may have my joy made full in themselves.",
+      "ko": "지금 내가 아버지께로 가오니 내가 세상에서 이 말을 하옵는 것은 저희로 내 기쁨을 저희 안에 충만히 가지게하려 함이니이다",
+      "source_text_hash": "df8dc2ec4019723d3a724bf969c11f9aab86c5f3c818e4e01ee6718b10c27a3a",
+      "translation_text_hash": "a7d4d8dfc8e8d8d75f5c131e819fc9bf538b109aae61bbc4a55333b123e4e8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 내가 아버지께로 가오니 내가 세상에서 이 말을 하옵는 것은 저희로 내 기쁨을 저희 안에 충만히 가지게하려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "a7d4d8dfc8e8d8d75f5c131e819fc9bf538b109aae61bbc4a55333b123e4e8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:14",
+      "sequence": 26773,
+      "chapter_label": "JHN 17",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 14
+        }
+      ],
+      "en": "I have given them your word. The world hated them because they are not of the world, even as I am not of the world.",
+      "ko": "내가 아버지의 말씀을 저희에게 주었사오매 세상이 저희를 미워하였사오니 이는 내가 세상에 속하지 아니함 같이 저희도 세상에 속하지 아니함을 인함이니이다",
+      "source_text_hash": "5c97ff55cd76a2aae02e73551473cd4081dbef4b7124a9c0ea04bdf1c2515cb2",
+      "translation_text_hash": "276d96bcaa0f4181b1e5858200bd06367b4a2ee8d5b29c53623567d23492c854",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아버지의 말씀을 저희에게 주었사오매 세상이 저희를 미워하였사오니 이는 내가 세상에 속하지 아니함 같이 저희도 세상에 속하지 아니함을 인함이니이다"
+      ],
+      "raw_text_hashes": [
+        "276d96bcaa0f4181b1e5858200bd06367b4a2ee8d5b29c53623567d23492c854"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:15",
+      "sequence": 26774,
+      "chapter_label": "JHN 17",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 15
+        }
+      ],
+      "en": "I pray not that you would take them from the world, but that you would keep them from the evil one.",
+      "ko": "내가 비옵는 것은 저희를 세상에서 데려가시기를 위함이 아니요 오직 악에 빠지지 않게 보전하시기를 위함이니이다",
+      "source_text_hash": "2970cdf8b03a21fd8599cdeb49def6c7cc63e8378870d081e85f4eaa9947e5f7",
+      "translation_text_hash": "dcedd70c78b7889a8fc4d46dcafc3e42994d1768da088bfba12f2aa0fde8b8d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 비옵는 것은 저희를 세상에서 데려가시기를 위함이 아니요 오직 악에 빠지지 않게 보전하시기를 위함이니이다"
+      ],
+      "raw_text_hashes": [
+        "dcedd70c78b7889a8fc4d46dcafc3e42994d1768da088bfba12f2aa0fde8b8d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:16",
+      "sequence": 26775,
+      "chapter_label": "JHN 17",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 16
+        }
+      ],
+      "en": "They are not of the world, even as I am not of the world.",
+      "ko": "내가 세상에 속하지 아니함 같이 저희도 세상에 속하지 아니하였삽나이다",
+      "source_text_hash": "410b210f7cbe2bc5c9bdab82d29e32835259e960082273ea8f47ccd6ccd05e39",
+      "translation_text_hash": "843b3965ea36455ff8977d852389b0b6f79615bcc764737b8fafb2d02a8f177e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세상에 속하지 아니함 같이 저희도 세상에 속하지 아니하였삽나이다"
+      ],
+      "raw_text_hashes": [
+        "843b3965ea36455ff8977d852389b0b6f79615bcc764737b8fafb2d02a8f177e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:17",
+      "sequence": 26776,
+      "chapter_label": "JHN 17",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 17
+        }
+      ],
+      "en": "Sanctify them in your truth. Your word is truth.",
+      "ko": "저희를 진리로 거룩하게 하옵소서 아버지의 말씀은 진리니이다",
+      "source_text_hash": "dc6f90ef15fa78fe4606db56f8b968d15de5571f9501ced7bd369d0e7d77432a",
+      "translation_text_hash": "2d65d15875fe9c7dced4018a8bc88f1f256f623fe7e922fe08172e408b9c2921",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 진리로 거룩하게 하옵소서 아버지의 말씀은 진리니이다"
+      ],
+      "raw_text_hashes": [
+        "2d65d15875fe9c7dced4018a8bc88f1f256f623fe7e922fe08172e408b9c2921"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:18",
+      "sequence": 26777,
+      "chapter_label": "JHN 17",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 18
+        }
+      ],
+      "en": "As you sent me into the world, even so I have sent them into the world.",
+      "ko": "아버지께서 나를 세상에 보내신 것 같이 나도 저희를 세상에 보내었고",
+      "source_text_hash": "3c645b68f7cf5447d751039a9d500587ec4827d70d09b236c8733d6900d5a994",
+      "translation_text_hash": "1b174170d6eb545bae7084ebabf7812478cdbb60131e600812e1bf5e3a335f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 나를 세상에 보내신 것 같이 나도 저희를 세상에 보내었고"
+      ],
+      "raw_text_hashes": [
+        "1b174170d6eb545bae7084ebabf7812478cdbb60131e600812e1bf5e3a335f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:19",
+      "sequence": 26778,
+      "chapter_label": "JHN 17",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 19
+        }
+      ],
+      "en": "For their sakes I sanctify myself, that they themselves also may be sanctified in truth.",
+      "ko": "또 저희를 위하여 내가 나를 거룩하게 하오니 이는 저희도 진리로 거룩함을 얻게 하려 함이니이다",
+      "source_text_hash": "bd485ad7b8744fbf8b76a3aa5ef9e96f1bf4248ee97847c9789c71092d679c78",
+      "translation_text_hash": "7a9642051a20bac097dd8908f0c14d3a7d16298a8dca5ac1029c72662c4e601c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 저희를 위하여 내가 나를 거룩하게 하오니 이는 저희도 진리로 거룩함을 얻게 하려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "7a9642051a20bac097dd8908f0c14d3a7d16298a8dca5ac1029c72662c4e601c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:20",
+      "sequence": 26779,
+      "chapter_label": "JHN 17",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 20
+        }
+      ],
+      "en": "“Not for these only do I pray, but for those also who will believe in me through their word,",
+      "ko": "내가 비옵는 것은 이 사람들만 위함이 아니요 또 저희 말을 인하여 나를 믿는 사람들도 위함이니",
+      "source_text_hash": "596e79ba5a8b57b05a79f0d2af2ee560c06c35c9ac6aecb803741e45c16e02f4",
+      "translation_text_hash": "f3955e12effe250dae3255e0558955e498db289c0f51fd2c8f635cc3b577d678",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 비옵는 것은 이 사람들만 위함이 아니요 또 저희 말을 인하여 나를 믿는 사람들도 위함이니"
+      ],
+      "raw_text_hashes": [
+        "f3955e12effe250dae3255e0558955e498db289c0f51fd2c8f635cc3b577d678"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:21",
+      "sequence": 26780,
+      "chapter_label": "JHN 17",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 21
+        }
+      ],
+      "en": "that they may all be one; even as you, Father, are in me, and I in you, that they also may be one in us; that the world may believe that you sent me.",
+      "ko": "아버지께서 내 안에, 내가 아버지 안에 있는것 같이 저희도 다 하나가 되어 우리 안에 있게 하사 세상으로 아버지께서 나를 보내신 것을 믿게 하옵소서",
+      "source_text_hash": "f95958c178f0b98e97ac66d3a1e9bc8d2b491f523a8f37d72997043e87cde727",
+      "translation_text_hash": "40ccb040b38f97183d86b7b4794df8a3b431822543658fe64170af655a553869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 내 안에, 내가 아버지 안에 있는것 같이 저희도 다 하나가 되어 우리 안에 있게 하사 세상으로 아버지께서 나를 보내신 것을 믿게 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "40ccb040b38f97183d86b7b4794df8a3b431822543658fe64170af655a553869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:22",
+      "sequence": 26781,
+      "chapter_label": "JHN 17",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 22
+        }
+      ],
+      "en": "The glory which you have given me, I have given to them, that they may be one, even as we are one,",
+      "ko": "내게 주신 영광을 내가 저희에게 주었사오니 이는 우리가 하나가 된것 같이 저희도 하나가 되게 하려 함이니이다",
+      "source_text_hash": "2b56cebbc39f5f4660de56972a6a7a3b3b95ebae82c29bc2035ed1fbd58be57a",
+      "translation_text_hash": "ed5a888ff670eb78eec5bd3b4c21dbc8ebbb310c59e8682e5f363c43e25c42ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 주신 영광을 내가 저희에게 주었사오니 이는 우리가 하나가 된것 같이 저희도 하나가 되게 하려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "ed5a888ff670eb78eec5bd3b4c21dbc8ebbb310c59e8682e5f363c43e25c42ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:23",
+      "sequence": 26782,
+      "chapter_label": "JHN 17",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 23
+        }
+      ],
+      "en": "I in them, and you in me, that they may be perfected into one, that the world may know that you sent me and loved them, even as you loved me.",
+      "ko": "곧 내가 저희 안에, 아버지께서 내 안에 계셔 저희로 온전함을 이루어 하나가 되게 하려 함은 아버지께서 나를 보내신 것과 또 나를 사랑하심 같이 저희도 사랑하신 것을 세상으로 알게 하려 함이로소이다",
+      "source_text_hash": "2d2d30fce7a37058f4402037a1949699c615f54e6e0c9385cae6703ea2e5b21e",
+      "translation_text_hash": "f315e631e3b51a1f4cb1b9d16863cac3f40a61ddc6dd307e3865051e3185f3bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내가 저희 안에, 아버지께서 내 안에 계셔 저희로 온전함을 이루어 하나가 되게 하려 함은 아버지께서 나를 보내신 것과 또 나를 사랑하심 같이 저희도 사랑하신 것을 세상으로 알게 하려 함이로소이다"
+      ],
+      "raw_text_hashes": [
+        "f315e631e3b51a1f4cb1b9d16863cac3f40a61ddc6dd307e3865051e3185f3bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:24",
+      "sequence": 26783,
+      "chapter_label": "JHN 17",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 24
+        }
+      ],
+      "en": "Father, I desire that they also whom you have given me be with me where I am, that they may see my glory which you have given me, for you loved me before the foundation of the world.",
+      "ko": "아버지여 내게 주신 자도 나 있는 곳에 나와 함께 있어 아버지께서 창세 전부터 나를 사랑하시므로 내게 주신 나의 영광을 저희로 보게 하시기를 원하옵나이다",
+      "source_text_hash": "108cc2926fa1860b8e17dbc38e880c57460196e80304e1639f2d60602ecf91c7",
+      "translation_text_hash": "d71f7e1cbc12ad2709d035aca4152711c10ba33a38f34cc034768b6abeafb67f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지여 내게 주신 자도 나 있는 곳에 나와 함께 있어 아버지께서 창세 전부터 나를 사랑하시므로 내게 주신 나의 영광을 저희로 보게 하시기를 원하옵나이다"
+      ],
+      "raw_text_hashes": [
+        "d71f7e1cbc12ad2709d035aca4152711c10ba33a38f34cc034768b6abeafb67f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:25",
+      "sequence": 26784,
+      "chapter_label": "JHN 17",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 25
+        }
+      ],
+      "en": "Righteous Father, the world hasn’t known you, but I knew you; and these knew that you sent me.",
+      "ko": "의로우신 아버지여 세상이 아버지를 알지 못하여도 나는 아버지를 알았삽고 저희도 아버지께서 나를 보내신줄 알았삽나이다",
+      "source_text_hash": "fd0365632079d5ac42428836f744138c86d67b4cf6cf59d9cd2e8d2f58e63194",
+      "translation_text_hash": "b159f6e6a4194637a71ec7fd909bdc67a31abd1b16113d16cd141788545d0a28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의로우신 아버지여 세상이 아버지를 알지 못하여도 나는 아버지를 알았삽고 저희도 아버지께서 나를 보내신줄 알았삽나이다"
+      ],
+      "raw_text_hashes": [
+        "b159f6e6a4194637a71ec7fd909bdc67a31abd1b16113d16cd141788545d0a28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:17:26",
+      "sequence": 26785,
+      "chapter_label": "JHN 17",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 17,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 17,
+          "verse": 26
+        }
+      ],
+      "en": "I made known to them your name, and will make it known; that the love with which you loved me may be in them, and I in them.”",
+      "ko": "내가 아버지의 이름을 저희에게 알게 하였고 또 알게 하리니 이는 나를 사랑하신 사랑이 저희 안에 있고 나도 저희 안에 있게 하려 함이니이다",
+      "source_text_hash": "a63d61310cfe277a8ded17b4f01ad9210444c711882e6c3fd650bc2c43a5c76f",
+      "translation_text_hash": "a0350af484944dacf66a26e47a856a82c4570089ca2456c43c5a64398a4a336c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아버지의 이름을 저희에게 알게 하였고 또 알게 하리니 이는 나를 사랑하신 사랑이 저희 안에 있고 나도 저희 안에 있게 하려 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "a0350af484944dacf66a26e47a856a82c4570089ca2456c43c5a64398a4a336c"
+      ]
+    }
+  ]
+}

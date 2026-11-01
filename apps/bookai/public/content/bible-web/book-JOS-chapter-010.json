@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:010",
+  "unit_ordinal": 197,
+  "unit_label": "JOS 10",
+  "book_code": "JOS",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:10:1",
+      "sequence": 6066,
+      "chapter_label": "JOS 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now when Adoni-Zedek king of Jerusalem heard how Joshua had taken Ai, and had utterly destroyed it; as he had done to Jericho and her king, so he had done to Ai and her king; and how the inhabitants of Gibeon had made peace with Israel, and were among them,",
+      "ko": "여호수아가 아이를 취하여 진멸하되 여리고와 그 왕에게 행한 것 같이 아이와 그 왕에게 행한 것과 또 기브온 거민이 이스라엘과 화친하여 그 중에 있다함을 예루살렘 왕 아도니세덱이 듣고",
+      "source_text_hash": "57217689c1031739c4beacd4cb7fe1da515560fc3204354e44de3d540d3fc230",
+      "translation_text_hash": "04f34f072f17087c76f6a0ac89c57616ae827dc288ce685b766148426ecec7c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 아이를 취하여 진멸하되 여리고와 그 왕에게 행한 것 같이 아이와 그 왕에게 행한 것과 또 기브온 거민이 이스라엘과 화친하여 그 중에 있다함을 예루살렘 왕 아도니세덱이 듣고"
+      ],
+      "raw_text_hashes": [
+        "04f34f072f17087c76f6a0ac89c57616ae827dc288ce685b766148426ecec7c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:2",
+      "sequence": 6067,
+      "chapter_label": "JOS 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "they were very afraid, because Gibeon was a great city, as one of the royal cities, and because it was greater than Ai, and all its men were mighty.",
+      "ko": "크게 두려워하였으니 이는 기브온은 왕도와 같은 큰 성임이요 아이보다 크고 그 사람들은 다 강함이라",
+      "source_text_hash": "a619a0797a3a3f99f57dde78ed666828b0268f2bf24c044447534fef69e8d53f",
+      "translation_text_hash": "c02fa9e8c9b2f34de9b97a14dae310c50da3fb357e036bd216cb619b8d50dbb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "크게 두려워하였으니 이는 기브온은 왕도와 같은 큰 성임이요 아이보다 크고 그 사람들은 다 강함이라"
+      ],
+      "raw_text_hashes": [
+        "c02fa9e8c9b2f34de9b97a14dae310c50da3fb357e036bd216cb619b8d50dbb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:3",
+      "sequence": 6068,
+      "chapter_label": "JOS 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore Adoni-Zedek king of Jerusalem sent to Hoham king of Hebron, Piram king of Jarmuth, Japhia king of Lachish, and Debir king of Eglon, saying,",
+      "ko": "예루살렘 왕 아도니세덱이 헤브론 왕 호함과 야르뭇 왕 비람과 라기스 왕 야비아와 에글론 왕 드빌에게 보내어 가로되",
+      "source_text_hash": "ac96512a5331348e9d19c8a508990fb455c79ecbe0dae10436cfbfb064280f37",
+      "translation_text_hash": "1a0da829c07fb021f7db1255fb8082d96cf355f77c1707cdc6a74c9cb53ec390",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 왕 아도니세덱이 헤브론 왕 호함과 야르뭇 왕 비람과 라기스 왕 야비아와 에글론 왕 드빌에게 보내어 가로되"
+      ],
+      "raw_text_hashes": [
+        "1a0da829c07fb021f7db1255fb8082d96cf355f77c1707cdc6a74c9cb53ec390"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:4",
+      "sequence": 6069,
+      "chapter_label": "JOS 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "“Come up to me and help me. Let’s strike Gibeon; for they have made peace with Joshua and with the children of Israel.”",
+      "ko": "내게로 올라와 나를 도우라 우리가 기브온을 치자 이는 기브온이 여호수아와 이스라엘 자손으로 더불어 화친하였음이니라 하매",
+      "source_text_hash": "5fc90b44d5ba9418e6900e78e2bea037fb4dc7e7fcb21d20e8cc67286c84fe52",
+      "translation_text_hash": "a226d8f8aba9086f0ebe4374759b38023b721bcfbf390fb01f61f400db8279a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게로 올라와 나를 도우라 우리가 기브온을 치자 이는 기브온이 여호수아와 이스라엘 자손으로 더불어 화친하였음이니라 하매"
+      ],
+      "raw_text_hashes": [
+        "a226d8f8aba9086f0ebe4374759b38023b721bcfbf390fb01f61f400db8279a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:5",
+      "sequence": 6070,
+      "chapter_label": "JOS 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore the five kings of the Amorites, the king of Jerusalem, the king of Hebron, the king of Jarmuth, the king of Lachish, and the king of Eglon, gathered themselves together and went up, they and all their armies, and encamped against Gibeon, and made war against it.",
+      "ko": "이러므로 아모리 다섯 왕 곧 예루살렘 왕과 헤브론 왕과 야르뭇 왕과 라기스 왕과 에글론 왕이 함께 모여 자기들의 모든 군대를 거느리고 올라와서 기브온에 대진하고 싸우니라",
+      "source_text_hash": "d1c0a5aaf76b7c5c4ff8d7b2cb6bca13249289f7780f25a8d304343b28931dbc",
+      "translation_text_hash": "b1863241c5f809af447835add28a7923545cf6404b6d104215bcb229f9f4bf4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 아모리 다섯 왕 곧 예루살렘 왕과 헤브론 왕과 야르뭇 왕과 라기스 왕과 에글론 왕이 함께 모여 자기들의 모든 군대를 거느리고 올라와서 기브온에 대진하고 싸우니라"
+      ],
+      "raw_text_hashes": [
+        "b1863241c5f809af447835add28a7923545cf6404b6d104215bcb229f9f4bf4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:6",
+      "sequence": 6071,
+      "chapter_label": "JOS 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "The men of Gibeon sent to Joshua at the camp at Gilgal, saying, “Don’t abandon your servants! Come up to us quickly and save us! Help us; for all the kings of the Amorites that dwell in the hill country have gathered together against us.”",
+      "ko": "기브온 사람들이 길갈 진에 보내어 여호수아에게 전언하되 당신의 종들 돕기를 더디게 마시고 속히 우리에게 올라와서 우리를 구조하소서 산지에 거하는 아모리 사람의 왕들이 다 모여 우리를 치나이다 하매",
+      "source_text_hash": "78c3a56e4f9ef275c80da85ef39b9f9b107fcb81266b8829d7f1c25bf1181975",
+      "translation_text_hash": "8229ea0ed8298e47b973c9418328ec5db9b3d54682cad20e2db807dd84e0adf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기브온 사람들이 길갈 진에 보내어 여호수아에게 전언하되 당신의 종들 돕기를 더디게 마시고 속히 우리에게 올라와서 우리를 구조하소서 산지에 거하는 아모리 사람의 왕들이 다 모여 우리를 치나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "8229ea0ed8298e47b973c9418328ec5db9b3d54682cad20e2db807dd84e0adf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:7",
+      "sequence": 6072,
+      "chapter_label": "JOS 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "So Joshua went up from Gilgal, he and the whole army with him, including all the mighty men of valor.",
+      "ko": "여호수아가 모든 군사와 용사로 더불어 길갈에서 올라가니라",
+      "source_text_hash": "f52c3e5fff7dcadb74346f2834a6e8b27ec42f9259cfe74df7ba146e36385408",
+      "translation_text_hash": "7025e4a63b66d26317ce8189f4ba1e9657a06c8f797a56456d1c16d715906cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 모든 군사와 용사로 더불어 길갈에서 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "7025e4a63b66d26317ce8189f4ba1e9657a06c8f797a56456d1c16d715906cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:8",
+      "sequence": 6073,
+      "chapter_label": "JOS 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD said to Joshua, “Don’t fear them, for I have delivered them into your hands. Not a man of them will stand before you.”",
+      "ko": "때에 여호와께서 여호수아에게 이르시되 그들을 두려워 말라 내가 그들을 네 손에 붙였으니 그들의 한 사람도 너를 당할 자 없으리라 하신지라",
+      "source_text_hash": "7952342e952af77ccef5470917b7707f055ca0b0cb2f2d0fed2dc52120c95a7d",
+      "translation_text_hash": "ec36372183c2e8d4a3c77d73214ade1dc9a14802ac582df35f7560b650c97b68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 여호수아에게 이르시되 그들을 두려워 말라 내가 그들을 네 손에 붙였으니 그들의 한 사람도 너를 당할 자 없으리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "ec36372183c2e8d4a3c77d73214ade1dc9a14802ac582df35f7560b650c97b68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:9",
+      "sequence": 6074,
+      "chapter_label": "JOS 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Joshua therefore came to them suddenly. He marched from Gilgal all night.",
+      "ko": "여호수아가 길갈에서 밤새도록 올라가서 그들에게 갑자기 이르니",
+      "source_text_hash": "5eb6ac88e6897a2e619464ff4efd0614dc028484ff2abe7ea06c9d007ad129b7",
+      "translation_text_hash": "8de98dfdd040c72329ed0610b31d53723d1b2660c73d59885b0d11a4d7167aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 길갈에서 밤새도록 올라가서 그들에게 갑자기 이르니"
+      ],
+      "raw_text_hashes": [
+        "8de98dfdd040c72329ed0610b31d53723d1b2660c73d59885b0d11a4d7167aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:10",
+      "sequence": 6075,
+      "chapter_label": "JOS 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD confused them before Israel. He killed them with a great slaughter at Gibeon, and chased them by the way of the ascent of Beth Horon, and struck them to Azekah and to Makkedah.",
+      "ko": "여호와께서 그들을 이스라엘 앞에서 패하게 하시므로 여호수아가 그들을 기브온에서 크게 도륙하고 벧호론에 올라가는 비탈에서 추격하여 아세가와 막게다까지 이르니라",
+      "source_text_hash": "b2a85f9bd181a5a10fb5a767ff35067f01e511e71c9e3a6404ea7e70ed14d70c",
+      "translation_text_hash": "66dcdc4847475cbc3bc01666d2541ebc71040ce78bccb5ea34d783238b77d1ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들을 이스라엘 앞에서 패하게 하시므로 여호수아가 그들을 기브온에서 크게 도륙하고 벧호론에 올라가는 비탈에서 추격하여 아세가와 막게다까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "66dcdc4847475cbc3bc01666d2541ebc71040ce78bccb5ea34d783238b77d1ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:11",
+      "sequence": 6076,
+      "chapter_label": "JOS 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "As they fled from before Israel, while they were at the descent of Beth Horon, the LORD hurled down great stones from the sky on them to Azekah, and they died. There were more who died from the hailstones than those whom the children of Israel killed with the sword.",
+      "ko": "그들이 이스라엘 앞에서 도망하여 벧호론의 비탈에서 내려갈 때에 여호와께서 하늘에서 큰 덩이 우박을 아세가에 이르기까지 내리우시매 그들이 죽었으니 이스라엘 자손의 칼에 죽은 자보다 우박에 죽은 자가 더욱 많았더라",
+      "source_text_hash": "c97ce3c9bfdf372afee3a94271fa9b88dc359a07784a390c2b8f6d88487bbe15",
+      "translation_text_hash": "218672ae2104a856a001b8c88d8929d5b08f1b688c44417590c5687ceeaa3963",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이스라엘 앞에서 도망하여 벧호론의 비탈에서 내려갈 때에 여호와께서 하늘에서 큰 덩이 우박을 아세가에 이르기까지 내리우시매 그들이 죽었으니 이스라엘 자손의 칼에 죽은 자보다 우박에 죽은 자가 더욱 많았더라"
+      ],
+      "raw_text_hashes": [
+        "218672ae2104a856a001b8c88d8929d5b08f1b688c44417590c5687ceeaa3963"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:12",
+      "sequence": 6077,
+      "chapter_label": "JOS 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "Then Joshua spoke to the LORD in the day when the LORD delivered up the Amorites before the children of Israel. He said in the sight of Israel, “Sun, stand still on Gibeon! You, moon, stop in the valley of Aijalon!”",
+      "ko": "여호와께서 아모리 사람을 이스라엘 자손에게 붙이시던 날에 여호수아가 여호와께 고하되 이스라엘 목전에서 가로되 태양아 너는 기브온 위에 머무르라 달아 너도 아얄론 골짜기에 그리할찌어다 하매",
+      "source_text_hash": "a77222117f0235547e88d1291bd27e1005ff5f66c11638511f5bdac56b639d74",
+      "translation_text_hash": "a1bd0f608025f7e99ac1f4536ccaf8fa93d2b3d2c105ce49f69fca6239176d3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아모리 사람을 이스라엘 자손에게 붙이시던 날에 여호수아가 여호와께 고하되 이스라엘 목전에서 가로되 태양아 너는 기브온 위에 머무르라 달아 너도 아얄론 골짜기에 그리할찌어다 하매"
+      ],
+      "raw_text_hashes": [
+        "a1bd0f608025f7e99ac1f4536ccaf8fa93d2b3d2c105ce49f69fca6239176d3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:13",
+      "sequence": 6078,
+      "chapter_label": "JOS 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "The sun stood still, and the moon stayed, until the nation had avenged themselves of their enemies. Isn’t this written in the book of Jashar? The sun stayed in the middle of the sky, and didn’t hurry to go down about a whole day.",
+      "ko": "태양이 머물고 달이 그치기를 백성이 그 대적에게 원수를 갚도록 하였느니라 야살의 책에 기록되기를 태양이 중천에 머물러서 거의 종일토록 속히 내려가지 아니하였다 하지 아니하였느냐",
+      "source_text_hash": "a73b34f157f4e7b782f392f048a1977806c5a50b3c0e7f47dbb8fdc108d01fd3",
+      "translation_text_hash": "cb111d5b4a1b9fc890f4195584e376baca634a43eef8443217df731bc9ec7027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태양이 머물고 달이 그치기를 백성이 그 대적에게 원수를 갚도록 하였느니라 야살의 책에 기록되기를 태양이 중천에 머물러서 거의 종일토록 속히 내려가지 아니하였다 하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "cb111d5b4a1b9fc890f4195584e376baca634a43eef8443217df731bc9ec7027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:14",
+      "sequence": 6079,
+      "chapter_label": "JOS 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "There was no day like that before it or after it, that the LORD listened to the voice of a man; for the LORD fought for Israel.",
+      "ko": "여호와께서 사람의 목소리를 들으신 이 같은 날은 전에도 없었고 후에도 없었나니 이는 여호와께서 이스라엘을 위하여 싸우셨음이니라",
+      "source_text_hash": "892afd58ddc42f03b1d30e494f625178e3d45bef156fa98b60f9700c340b1e38",
+      "translation_text_hash": "cab8fad8ad69007ee313a34447558438a198c263fc232813634060a00bf61ca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사람의 목소리를 들으신 이 같은 날은 전에도 없었고 후에도 없었나니 이는 여호와께서 이스라엘을 위하여 싸우셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "cab8fad8ad69007ee313a34447558438a198c263fc232813634060a00bf61ca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:15",
+      "sequence": 6080,
+      "chapter_label": "JOS 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Joshua returned, and all Israel with him, to the camp to Gilgal.",
+      "ko": "여호수아가 온 이스라엘로 더불어 길갈 진으로 돌아왔더라",
+      "source_text_hash": "1ab350e33e5f2c5346211bc5697fcd88bca867b791f01cd52f915b11857bff17",
+      "translation_text_hash": "6845f6c7df89b8ce727dc91ef8638fa954c6d8450a02bd221a92796982326a4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘로 더불어 길갈 진으로 돌아왔더라"
+      ],
+      "raw_text_hashes": [
+        "6845f6c7df89b8ce727dc91ef8638fa954c6d8450a02bd221a92796982326a4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:16",
+      "sequence": 6081,
+      "chapter_label": "JOS 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "These five kings fled, and hid themselves in the cave at Makkedah.",
+      "ko": "그 다섯 왕이 도망하여 막게다의 굴에 숨었더니",
+      "source_text_hash": "bb615e290649286cf449ac5a291b65317c805726efb5433b7aa101dd21d3d8c8",
+      "translation_text_hash": "e23d280eb2caafb27e8cca17f571a806d6e1512f6057ae9c7d66654276127483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 다섯 왕이 도망하여 막게다의 굴에 숨었더니"
+      ],
+      "raw_text_hashes": [
+        "e23d280eb2caafb27e8cca17f571a806d6e1512f6057ae9c7d66654276127483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:17",
+      "sequence": 6082,
+      "chapter_label": "JOS 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Joshua was told, saying, “The five kings have been found, hidden in the cave at Makkedah.”",
+      "ko": "혹이 여호수아에게 고하여 가로되 막게다의 굴에 그 다섯 왕의 숨은 것을 발견하였나이다",
+      "source_text_hash": "1bf25d642a7ff3c528b63a40a2ae252e62c07a4f195828fe8eb19eef09557f40",
+      "translation_text_hash": "7544aed13e8a67c7ea6040c5d113f3bd8c31dbf2e36e5a5dde6fb87bf566a70b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 여호수아에게 고하여 가로되 막게다의 굴에 그 다섯 왕의 숨은 것을 발견하였나이다"
+      ],
+      "raw_text_hashes": [
+        "7544aed13e8a67c7ea6040c5d113f3bd8c31dbf2e36e5a5dde6fb87bf566a70b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:18",
+      "sequence": 6083,
+      "chapter_label": "JOS 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Joshua said, “Roll large stones to cover the cave’s entrance, and set men by it to guard them;",
+      "ko": "여호수아가 가로되 굴 어귀에 큰 돌을 굴려 막고 사람을 그 곁에 두어 그들을 지키게 하고",
+      "source_text_hash": "d432f9a120fb4e37103f4e4ab8fe50834ca4cdcabe1b2d14279d958bd62e057c",
+      "translation_text_hash": "057c94542f7ca588781421861cff431a7665ff17f08f546a13211343d74eafd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 가로되 굴 어귀에 큰 돌을 굴려 막고 사람을 그 곁에 두어 그들을 지키게 하고"
+      ],
+      "raw_text_hashes": [
+        "057c94542f7ca588781421861cff431a7665ff17f08f546a13211343d74eafd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:19",
+      "sequence": 6084,
+      "chapter_label": "JOS 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "but don’t stay there. Pursue your enemies, and attack them from the rear. Don’t allow them to enter into their cities; for the LORD your God has delivered them into your hand.”",
+      "ko": "너희는 지체 말고 너희 대적의 뒤를 따라가 그 후군을 쳐서 그들로 자기들의 성읍에 들어 가지 못하게 하라 너희 하나님 여호와께서 그들을 너희 손에 붙이셨느니라 하고",
+      "source_text_hash": "f96917bed321ca4905d3109ad579eb5d94a259c9089a764045ca68bcb6d2da63",
+      "translation_text_hash": "796e0c11d74a6bef3e9297606603669a9a554a85e08299da0f1101140342a573",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 지체 말고 너희 대적의 뒤를 따라가 그 후군을 쳐서 그들로 자기들의 성읍에 들어 가지 못하게 하라 너희 하나님 여호와께서 그들을 너희 손에 붙이셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "796e0c11d74a6bef3e9297606603669a9a554a85e08299da0f1101140342a573"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:20",
+      "sequence": 6085,
+      "chapter_label": "JOS 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "When Joshua and the children of Israel had finished killing them with a very great slaughter until they were consumed, and the remnant which remained of them had entered into the fortified cities,",
+      "ko": "여호수아와 이스라엘 자손이 그들을 크게 도륙하여 거의 진멸시켰고 그 남은 몇 사람은 견고한 성으로 들어간고로",
+      "source_text_hash": "d1d493965ce4cca19c00870dc418ec5b958eb665a6630cec98a205fa008fee5f",
+      "translation_text_hash": "5811cdcd5249b5fdd46d769aa0927c007422702b35f0fec18573a04669abfcf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아와 이스라엘 자손이 그들을 크게 도륙하여 거의 진멸시켰고 그 남은 몇 사람은 견고한 성으로 들어간고로"
+      ],
+      "raw_text_hashes": [
+        "5811cdcd5249b5fdd46d769aa0927c007422702b35f0fec18573a04669abfcf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:21",
+      "sequence": 6086,
+      "chapter_label": "JOS 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "all the people returned to the camp to Joshua at Makkedah in peace. None moved his tongue against any of the children of Israel.",
+      "ko": "모든 백성이 평안히 막게다 진으로 돌아와 여호수아에게 이르렀으나 혀를 놀려 이스라엘 자손을 대적하는 자가 없었더라",
+      "source_text_hash": "b797de5ec8aa8b3bb2545f69b059aa5ada2f175c7b968157aa53f90235f0d2f8",
+      "translation_text_hash": "c0ab423081903216a15a8cd584e985aaa74783eb30c35fb8a0d319e1adfc4b2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 평안히 막게다 진으로 돌아와 여호수아에게 이르렀으나 혀를 놀려 이스라엘 자손을 대적하는 자가 없었더라"
+      ],
+      "raw_text_hashes": [
+        "c0ab423081903216a15a8cd584e985aaa74783eb30c35fb8a0d319e1adfc4b2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:22",
+      "sequence": 6087,
+      "chapter_label": "JOS 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "Then Joshua said, “Open the cave entrance, and bring those five kings out of the cave to me.”",
+      "ko": "때에 여호수아가 가로되 굴 어귀를 열고 그 굴에서 그 다섯 왕을 내게로 끌어내라 하매",
+      "source_text_hash": "dbc75367258babde3e8b5cd212140435f58673878284c202b22ef6eaff3ab8d1",
+      "translation_text_hash": "a0d2aa6d1fdc65f39cb3c3410e2e7bdf77aebef69e91e86c5168a38ea9dc7632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호수아가 가로되 굴 어귀를 열고 그 굴에서 그 다섯 왕을 내게로 끌어내라 하매"
+      ],
+      "raw_text_hashes": [
+        "a0d2aa6d1fdc65f39cb3c3410e2e7bdf77aebef69e91e86c5168a38ea9dc7632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:23",
+      "sequence": 6088,
+      "chapter_label": "JOS 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "They did so, and brought those five kings out of the cave to him: the king of Jerusalem, the king of Hebron, the king of Jarmuth, the king of Lachish, and the king of Eglon.",
+      "ko": "그들이 그대로 하여 그 다섯 왕 곧 예루살렘 왕과 헤브론 왕과 야르뭇 왕과 라기스 왕과 에글론 왕을 굴에서 그에게로 끌어내니라",
+      "source_text_hash": "1542ebdc0cab6d994a2dd43ff5a15ff8a87715a4dab5127134f52f34a84bc111",
+      "translation_text_hash": "a65d302b816adf43ead66fc98b173d902073332e2ff8362b5a09d2e66d4b2009",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그대로 하여 그 다섯 왕 곧 예루살렘 왕과 헤브론 왕과 야르뭇 왕과 라기스 왕과 에글론 왕을 굴에서 그에게로 끌어내니라"
+      ],
+      "raw_text_hashes": [
+        "a65d302b816adf43ead66fc98b173d902073332e2ff8362b5a09d2e66d4b2009"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:24",
+      "sequence": 6089,
+      "chapter_label": "JOS 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "When they brought those kings out to Joshua, Joshua called for all the men of Israel, and said to the chiefs of the men of war who went with him, “Come near. Put your feet on the necks of these kings.” They came near, and put their feet on their necks.",
+      "ko": "그 왕들을 여호수아에게로 끌어내매 여호수아가 이스라엘 모든 사람을 부르고 자기와 함께 갔던 군장들에게 이르되 가까이 와서 이 왕들의 목을 발로 밟으라 가까이 와서 그들의 목을 밟으매",
+      "source_text_hash": "266f294268e360d2405eff50679f03b9deccbdc353bf557c577ce5e53e22527b",
+      "translation_text_hash": "448b0702024b8d6e1ab7593d72ac2d9e5141d9123f9abf96be9b65991ba8d2d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 왕들을 여호수아에게로 끌어내매 여호수아가 이스라엘 모든 사람을 부르고 자기와 함께 갔던 군장들에게 이르되 가까이 와서 이 왕들의 목을 발로 밟으라 가까이 와서 그들의 목을 밟으매"
+      ],
+      "raw_text_hashes": [
+        "448b0702024b8d6e1ab7593d72ac2d9e5141d9123f9abf96be9b65991ba8d2d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:25",
+      "sequence": 6090,
+      "chapter_label": "JOS 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "Joshua said to them, “Don’t be afraid, nor be dismayed. Be strong and courageous, for the LORD will do this to all your enemies against whom you fight.”",
+      "ko": "여호수아가 군장들에게 이르되 두려워말며 놀라지 말고 마음을 강하게 하고 담대히 하라 너희가 더불어 싸우는 모든 대적에게 여호와께서 다 이와 같이 하시리라 하고",
+      "source_text_hash": "72ce0746b77f38c05d5b6973556cf62f7224f3cec84cd59b48cb74c098e80dfb",
+      "translation_text_hash": "1e7b51dd92ca7ff1863274dd9ccd2201802c6647845ffabfd814b0f3ad782e03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 군장들에게 이르되 두려워말며 놀라지 말고 마음을 강하게 하고 담대히 하라 너희가 더불어 싸우는 모든 대적에게 여호와께서 다 이와 같이 하시리라 하고"
+      ],
+      "raw_text_hashes": [
+        "1e7b51dd92ca7ff1863274dd9ccd2201802c6647845ffabfd814b0f3ad782e03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:26",
+      "sequence": 6091,
+      "chapter_label": "JOS 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Afterward Joshua struck them, put them to death, and hanged them on five trees. They were hanging on the trees until the evening.",
+      "ko": "그 후에 여호수아가 그 왕들을 쳐 죽여 다섯 나무에 매어 달고 석양까지 나무에 달린대로 두었다가",
+      "source_text_hash": "7374421fe78d53c3d2bb824e5c01bfe8bd8b8fd5593fa6decc83526e31cdbbb2",
+      "translation_text_hash": "57eab1e25f91c8985c5191c52f345b8f72771409673bbe412e3b0eebb4a9a632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 여호수아가 그 왕들을 쳐 죽여 다섯 나무에 매어 달고 석양까지 나무에 달린대로 두었다가"
+      ],
+      "raw_text_hashes": [
+        "57eab1e25f91c8985c5191c52f345b8f72771409673bbe412e3b0eebb4a9a632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:27",
+      "sequence": 6092,
+      "chapter_label": "JOS 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "At the time of the going down of the sun, Joshua commanded, and they took them down off the trees, and threw them into the cave in which they had hidden themselves, and laid great stones on the mouth of the cave, which remain to this very day.",
+      "ko": "해 질 때에 여호수아가 명하매 그 시체를 나무에서 내리어 그들의 숨었던 굴에 들여던지고 굴 어귀를 큰 돌로 막았더니 오늘날까지 있더라",
+      "source_text_hash": "3232e4676affca552dafe34731715585cb6105742e2d620ec95c56d43ae4f93e",
+      "translation_text_hash": "25021cca5b4332e04e2b25b7d527c1d4822d6a22f5f1ed8715b11cf3840d9e2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 질 때에 여호수아가 명하매 그 시체를 나무에서 내리어 그들의 숨었던 굴에 들여던지고 굴 어귀를 큰 돌로 막았더니 오늘날까지 있더라"
+      ],
+      "raw_text_hashes": [
+        "25021cca5b4332e04e2b25b7d527c1d4822d6a22f5f1ed8715b11cf3840d9e2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:28",
+      "sequence": 6093,
+      "chapter_label": "JOS 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Joshua took Makkedah on that day, and struck it with the edge of the sword, with its king. He utterly destroyed it and all the souls who were in it. He left no one remaining. He did to the king of Makkedah as he had done to the king of Jericho.",
+      "ko": "그날에 여호수아가 막게다를 취하고 칼날로 그 성읍과 왕을 쳐서 그 성읍과 그 중에 있는 모든 사람을 진멸하여 한 사람도 남기지 아니하였으니 막게다 왕에게 행한 것이 여리고 왕에게 행한 것과 일반이었더라",
+      "source_text_hash": "add327213f7e22451da9ebe0b19a60af48e13deda88300f2013df779b875beda",
+      "translation_text_hash": "7e3f41ffbdf69badc4fa08289a2368b1241971a352b4b23aa7ce0f685df421d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날에 여호수아가 막게다를 취하고 칼날로 그 성읍과 왕을 쳐서 그 성읍과 그 중에 있는 모든 사람을 진멸하여 한 사람도 남기지 아니하였으니 막게다 왕에게 행한 것이 여리고 왕에게 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "7e3f41ffbdf69badc4fa08289a2368b1241971a352b4b23aa7ce0f685df421d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:29",
+      "sequence": 6094,
+      "chapter_label": "JOS 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Joshua passed from Makkedah, and all Israel with him, to Libnah, and fought against Libnah.",
+      "ko": "여호수아가 온 이스라엘로 더불어 막게다에서 립나로 나아가서 립나와 싸우매",
+      "source_text_hash": "68a9dc0b9867b67a29d9972a7024da98fde486f37b371a57543dc014ee9c4ebe",
+      "translation_text_hash": "d900547d31931fab66db33ba9b29aefe6e46522a328152f294c775cc6a1d90b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘로 더불어 막게다에서 립나로 나아가서 립나와 싸우매"
+      ],
+      "raw_text_hashes": [
+        "d900547d31931fab66db33ba9b29aefe6e46522a328152f294c775cc6a1d90b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:30",
+      "sequence": 6095,
+      "chapter_label": "JOS 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "The LORD delivered it also, with its king, into the hand of Israel. He struck it with the edge of the sword, and all the souls who were in it. He left no one remaining in it. He did to its king as he had done to the king of Jericho.",
+      "ko": "여호와께서 또 그 성읍과 그 왕을 이스라엘의 손에 붙이신지라 칼날로 그 성읍과 그 중의 모든 사람을 쳐서 멸하여 한 사람도 남기지 아니하였으니 그 왕에게 행한 것이 여리고 왕에게 행한 것과 일반이었더라",
+      "source_text_hash": "f31bfdc4cdd460df84a79bed1ad1b11636aaac82eda7eac6e23356389d9b5028",
+      "translation_text_hash": "dca2c5be10343185725fe00dcf46aec5d2903b8fabbc103c0279ecac54977239",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 그 성읍과 그 왕을 이스라엘의 손에 붙이신지라 칼날로 그 성읍과 그 중의 모든 사람을 쳐서 멸하여 한 사람도 남기지 아니하였으니 그 왕에게 행한 것이 여리고 왕에게 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "dca2c5be10343185725fe00dcf46aec5d2903b8fabbc103c0279ecac54977239"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:31",
+      "sequence": 6096,
+      "chapter_label": "JOS 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Joshua passed from Libnah, and all Israel with him, to Lachish, and encamped against it, and fought against it.",
+      "ko": "여호수아가 또 온 이스라엘로 더불어 립나에서 라기스로 나아가서 대진하고 싸우더니",
+      "source_text_hash": "b680704f808345d425409b9ad629ac0b686e62a14b31e99066c6f04acebb4f00",
+      "translation_text_hash": "c286707cd2a8f56f263d57a797020af308e97961488498faba95979c81499ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 온 이스라엘로 더불어 립나에서 라기스로 나아가서 대진하고 싸우더니"
+      ],
+      "raw_text_hashes": [
+        "c286707cd2a8f56f263d57a797020af308e97961488498faba95979c81499ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:32",
+      "sequence": 6097,
+      "chapter_label": "JOS 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "The LORD delivered Lachish into the hand of Israel. He took it on the second day, and struck it with the edge of the sword, with all the souls who were in it, according to all that he had done to Libnah.",
+      "ko": "여호와께서 라기스를 이스라엘의 손에 붙이신지라 이튿날에 그 성읍을 취하고 칼날로 그것과 그 중의 모든 사람을 쳐서 멸하였으니 립나에 행한 것과 일반이었더라",
+      "source_text_hash": "bf2741dc83de49c54e50daccaa2b0551941351158a59e49460bf27e75bf65486",
+      "translation_text_hash": "eae518fa717d0ed9d335649312b58435acd68dade048fc7e7782d7dfc7708368",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 라기스를 이스라엘의 손에 붙이신지라 이튿날에 그 성읍을 취하고 칼날로 그것과 그 중의 모든 사람을 쳐서 멸하였으니 립나에 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "eae518fa717d0ed9d335649312b58435acd68dade048fc7e7782d7dfc7708368"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:33",
+      "sequence": 6098,
+      "chapter_label": "JOS 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "Then Horam king of Gezer came up to help Lachish; and Joshua struck him and his people, until he had left him no one remaining.",
+      "ko": "때에 게셀 왕 호람이 라기스를 도우려고 올라오므로 여호수아가 그와 그 백성을 쳐서 한 사람도 남기지 아니하였더라",
+      "source_text_hash": "0d8bd053dcab063a0849e9e0802fee523c3f44f6503a01433e5bd8ffd06b8e6c",
+      "translation_text_hash": "c87430322baecf2f52d1bb61ab6a42ed54e7328260eee1ea73816b2ccc7381ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 게셀 왕 호람이 라기스를 도우려고 올라오므로 여호수아가 그와 그 백성을 쳐서 한 사람도 남기지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "c87430322baecf2f52d1bb61ab6a42ed54e7328260eee1ea73816b2ccc7381ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:34",
+      "sequence": 6099,
+      "chapter_label": "JOS 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "Joshua passed from Lachish, and all Israel with him, to Eglon; and they encamped against it and fought against it.",
+      "ko": "여호수아가 온 이스라엘로 더불어 라기스에서 에글론으로 나아가서 대진하고 싸워",
+      "source_text_hash": "e0c344a126e7635727105e8817bbe996a4e68a7a25b2f4f4fe9ed73ffebbe8f6",
+      "translation_text_hash": "b77fb520898fe3d7d06b7a832da86b5596f27a3904a4e98e84dd28e8ac2ef7c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘로 더불어 라기스에서 에글론으로 나아가서 대진하고 싸워"
+      ],
+      "raw_text_hashes": [
+        "b77fb520898fe3d7d06b7a832da86b5596f27a3904a4e98e84dd28e8ac2ef7c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:35",
+      "sequence": 6100,
+      "chapter_label": "JOS 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "They took it on that day, and struck it with the edge of the sword. He utterly destroyed all the souls who were in it that day, according to all that he had done to Lachish.",
+      "ko": "그 날에 그 성읍을 취하고 칼날로 그것을 쳐서 그 중에 있는 모든 사람을 당일에 진멸하였으니 라기스에 행한 것과 일반이었더라",
+      "source_text_hash": "3af6ec3a4b879da1425367b58ad47eb72570d9f2be680ea9b95475d4e6741e2c",
+      "translation_text_hash": "ab7979c5bb8828674f763426c9b1c0b51ba8834c5297bf71f4e47ce82961974f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그 성읍을 취하고 칼날로 그것을 쳐서 그 중에 있는 모든 사람을 당일에 진멸하였으니 라기스에 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "ab7979c5bb8828674f763426c9b1c0b51ba8834c5297bf71f4e47ce82961974f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:36",
+      "sequence": 6101,
+      "chapter_label": "JOS 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "Joshua went up from Eglon, and all Israel with him, to Hebron; and they fought against it.",
+      "ko": "여호수아가 또 온 이스라엘로 더불어 에글론에서 헤브론으로 올라가서 싸워",
+      "source_text_hash": "527124ea239dbf7415646154980b9b12e6809845e1a7ffaede385d2c9633ef74",
+      "translation_text_hash": "503b1118e80041a7b716557b31fc797e34da1cd0b83b1b07a514aede6500e058",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 온 이스라엘로 더불어 에글론에서 헤브론으로 올라가서 싸워"
+      ],
+      "raw_text_hashes": [
+        "503b1118e80041a7b716557b31fc797e34da1cd0b83b1b07a514aede6500e058"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:37",
+      "sequence": 6102,
+      "chapter_label": "JOS 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "They took it, and struck it with the edge of the sword, with its king and all its cities, and all the souls who were in it. He left no one remaining, according to all that he had done to Eglon; but he utterly destroyed it, and all the souls who were in it.",
+      "ko": "그 성읍을 취하고 그것과 그 왕과 그 속한 성읍들과 그 중의 모든 사람을 칼날로 쳐서 하나도 남기지 아니하였으니 그 성읍과 그 중의 모든 사람을 진멸한 것이 에글론에 행한 것과 일반이었더라",
+      "source_text_hash": "d9e3b39fbb5d19a53c9c534bf0d8a7701f9cf4c42a4794f963b46c8e0500f84f",
+      "translation_text_hash": "92647aae357fb3af74e9d5b798d2c684c57ae54a57f453f44c3a287199e0241a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍을 취하고 그것과 그 왕과 그 속한 성읍들과 그 중의 모든 사람을 칼날로 쳐서 하나도 남기지 아니하였으니 그 성읍과 그 중의 모든 사람을 진멸한 것이 에글론에 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "92647aae357fb3af74e9d5b798d2c684c57ae54a57f453f44c3a287199e0241a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:38",
+      "sequence": 6103,
+      "chapter_label": "JOS 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "Joshua returned, and all Israel with him, to Debir, and fought against it.",
+      "ko": "여호수아가 온 이스라엘로 더불어 돌아와서 드빌에 이르러 싸워",
+      "source_text_hash": "bef5749f8a70144be9dfea4921adaff93a33f697e51c978393fce0ff2c73f42f",
+      "translation_text_hash": "9c6ba36a4c4f7db3c7663139217697e78dfce23e936f5c067583432f19b74262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘로 더불어 돌아와서 드빌에 이르러 싸워"
+      ],
+      "raw_text_hashes": [
+        "9c6ba36a4c4f7db3c7663139217697e78dfce23e936f5c067583432f19b74262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:39",
+      "sequence": 6104,
+      "chapter_label": "JOS 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "He took it, with its king and all its cities. They struck them with the edge of the sword, and utterly destroyed all the souls who were in it. He left no one remaining. As he had done to Hebron, so he did to Debir, and to its king; as he had done also to Libnah, and to its king.",
+      "ko": "그 성읍과 그 왕과 그 속한 성읍들을 취하고 칼날로 그 성읍을 쳐서 그 중의 모든 사람을 진멸하고 하나도 남기지 아니하였으니 드빌과 그 왕에게 행한 것이 헤브론에 행한 것과 일반이요 립나와 그 왕에게 행한 것과 일반이었더라",
+      "source_text_hash": "91c955c53180dece19212c9340883341c94f8aa7a42ecdda9db71e17ef26b64e",
+      "translation_text_hash": "f32ca2fc384a8e5f8b0dd5a17cec0215df07f5dea3134aaee20274c2b3b94ed1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍과 그 왕과 그 속한 성읍들을 취하고 칼날로 그 성읍을 쳐서 그 중의 모든 사람을 진멸하고 하나도 남기지 아니하였으니 드빌과 그 왕에게 행한 것이 헤브론에 행한 것과 일반이요 립나와 그 왕에게 행한 것과 일반이었더라"
+      ],
+      "raw_text_hashes": [
+        "f32ca2fc384a8e5f8b0dd5a17cec0215df07f5dea3134aaee20274c2b3b94ed1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:40",
+      "sequence": 6105,
+      "chapter_label": "JOS 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "So Joshua struck all the land, the hill country, the South, the lowland, the slopes, and all their kings. He left no one remaining, but he utterly destroyed all that breathed, as the LORD, the God of Israel, commanded.",
+      "ko": "이와 같이 여호수아가 온 땅 곧 산지와 남방과 평지와 경사지와 그 모든 왕을 쳐서 하나도 남기지 아니하고 무릇 호흡이 있는 자는 진멸하였으니 이스라엘의 하나님 여호와의 명하신 것과 같았더라",
+      "source_text_hash": "dda0b808fb224e7ac4bf94e5ed8649b94aa7999dda3d1d9e7ae9a0b8e19ca642",
+      "translation_text_hash": "c482e17bd1a1d80a4512b0ab7f1ce959f6d61d7fa7f83e0d6adf73e63919fdee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 여호수아가 온 땅 곧 산지와 남방과 평지와 경사지와 그 모든 왕을 쳐서 하나도 남기지 아니하고 무릇 호흡이 있는 자는 진멸하였으니 이스라엘의 하나님 여호와의 명하신 것과 같았더라"
+      ],
+      "raw_text_hashes": [
+        "c482e17bd1a1d80a4512b0ab7f1ce959f6d61d7fa7f83e0d6adf73e63919fdee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:41",
+      "sequence": 6106,
+      "chapter_label": "JOS 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "Joshua struck them from Kadesh Barnea even to Gaza, and all the country of Goshen, even to Gibeon.",
+      "ko": "여호수아가 또 가데스 바네아에서 가사까지와 온 고센 땅을 기브온에 이르기까지 치매",
+      "source_text_hash": "fe1ad9ae4f1f5a5099de115b63e09059f849be38114c75f016cf865c1c9fd6c7",
+      "translation_text_hash": "dbc501948e4728607896b4d8a77a3e09e18cecebd796ca59067a9cadd9a70af9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 또 가데스 바네아에서 가사까지와 온 고센 땅을 기브온에 이르기까지 치매"
+      ],
+      "raw_text_hashes": [
+        "dbc501948e4728607896b4d8a77a3e09e18cecebd796ca59067a9cadd9a70af9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:42",
+      "sequence": 6107,
+      "chapter_label": "JOS 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "Joshua took all these kings and their land at one time because the LORD, the God of Israel, fought for Israel.",
+      "ko": "이스라엘의 하나님 여호와께서 이스라엘을 위하여 싸우신고로 여호수아가 이 모든 왕과 그 땅을 단번에 취하니라",
+      "source_text_hash": "a4dd801fe7835a93b37f1bb4ce7deb51ae18dde9cccfa5b6eb751ca173247d3d",
+      "translation_text_hash": "9605f3956e8008ef60ea034e2456e4a0c522c4a66c39e7ecf1dfb96e2d053000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 여호와께서 이스라엘을 위하여 싸우신고로 여호수아가 이 모든 왕과 그 땅을 단번에 취하니라"
+      ],
+      "raw_text_hashes": [
+        "9605f3956e8008ef60ea034e2456e4a0c522c4a66c39e7ecf1dfb96e2d053000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:10:43",
+      "sequence": 6108,
+      "chapter_label": "JOS 10",
+      "verse_label": "43",
+      "locator": {
+        "book": "JOS",
+        "chapter": 10,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 10,
+          "verse": 43
+        }
+      ],
+      "en": "Joshua returned, and all Israel with him, to the camp to Gilgal.",
+      "ko": "여호수아가 온 이스라엘로 더불어 길갈 진으로 돌아왔더라",
+      "source_text_hash": "1ab350e33e5f2c5346211bc5697fcd88bca867b791f01cd52f915b11857bff17",
+      "translation_text_hash": "6845f6c7df89b8ce727dc91ef8638fa954c6d8450a02bd221a92796982326a4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 온 이스라엘로 더불어 길갈 진으로 돌아왔더라"
+      ],
+      "raw_text_hashes": [
+        "6845f6c7df89b8ce727dc91ef8638fa954c6d8450a02bd221a92796982326a4d"
+      ]
+    }
+  ]
+}

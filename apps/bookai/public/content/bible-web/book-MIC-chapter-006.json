@@ -1,0 +1,525 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MIC:chapter:006",
+  "unit_ordinal": 899,
+  "unit_label": "MIC 6",
+  "book_code": "MIC",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MIC:6:1",
+      "sequence": 22650,
+      "chapter_label": "MIC 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Listen now to what the LORD says: “Arise, plead your case before the mountains, and let the hills hear what you have to say.",
+      "ko": "너희는 여호와의 말씀을 들을찌어다 내게 이르시기를 너는 일어나서 산 앞에서 쟁변하여 작은 산으로 네 목소리를 듣게 하라 하셨나니",
+      "source_text_hash": "d8b045834854cda3a598a2469e5d7591dbe8bb10c6296a261c38574b9ecc746d",
+      "translation_text_hash": "ee481bcaefe0ebf3a7f9c75665a091db3d0d330d03571c5c1f48313ffaa4d262",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 여호와의 말씀을 들을찌어다 내게 이르시기를 너는 일어나서 산 앞에서 쟁변하여 작은 산으로 네 목소리를 듣게 하라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "ee481bcaefe0ebf3a7f9c75665a091db3d0d330d03571c5c1f48313ffaa4d262"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:2",
+      "sequence": 22651,
+      "chapter_label": "MIC 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Hear, you mountains, the LORD’s indictment, and you enduring foundations of the earth; for the LORD has a case against his people, and he will contend with Israel.",
+      "ko": "너희 산들과 땅의 견고한 지대들아 너희는 여호와의 쟁변을 들으라 여호와께서 자기 백성과 쟁변하시며 이스라엘과 변론하실 것이라",
+      "source_text_hash": "782dac880bb8c69f7f40633d483f1e9da606ac1e6e8d9a4bbc8875f75fffad4d",
+      "translation_text_hash": "b3277c916e3cc833b22a364b1f6b196f4a6bfabb65192a1966ee17d40359e4e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 산들과 땅의 견고한 지대들아 너희는 여호와의 쟁변을 들으라 여호와께서 자기 백성과 쟁변하시며 이스라엘과 변론하실 것이라"
+      ],
+      "raw_text_hashes": [
+        "b3277c916e3cc833b22a364b1f6b196f4a6bfabb65192a1966ee17d40359e4e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:3",
+      "sequence": 22652,
+      "chapter_label": "MIC 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "My people, what have I done to you? How have I burdened you? Answer me!",
+      "ko": "이르시기를 내 백성아 내가 무엇을 네게 행하였으며 무엇에 너를 괴롭게 하였느냐 너는 내게 증거하라",
+      "source_text_hash": "7b46459e7262af3f9fc0cf24f0565dd1596e08b59dd0a7e2a3793a62b09e115e",
+      "translation_text_hash": "eb88562224197c34c9ea1b587c8d9ce923e3b6e015ba1aa5801876de72f7ca9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시기를 내 백성아 내가 무엇을 네게 행하였으며 무엇에 너를 괴롭게 하였느냐 너는 내게 증거하라"
+      ],
+      "raw_text_hashes": [
+        "eb88562224197c34c9ea1b587c8d9ce923e3b6e015ba1aa5801876de72f7ca9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:4",
+      "sequence": 22653,
+      "chapter_label": "MIC 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "For I brought you up out of the land of Egypt, and redeemed you out of the house of bondage. I sent before you Moses, Aaron, and Miriam.",
+      "ko": "내가 너를 애굽 땅에서 인도하여 내어 종노릇 하는 집에서 속량하였고 모세와 아론과 미리암을 보내어 네 앞에 행하게 하였었느니라",
+      "source_text_hash": "786d0a4540fef26384c0c6e7b08891c47ab8b3e0d0a546f50fb92e46e822e410",
+      "translation_text_hash": "86c481a6696ab79ad48e7a2d2cdee22ca8e1017c7b77318e1396d9221b544b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 애굽 땅에서 인도하여 내어 종노릇 하는 집에서 속량하였고 모세와 아론과 미리암을 보내어 네 앞에 행하게 하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "86c481a6696ab79ad48e7a2d2cdee22ca8e1017c7b77318e1396d9221b544b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:5",
+      "sequence": 22654,
+      "chapter_label": "MIC 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "My people, remember now what Balak king of Moab devised, and what Balaam the son of Beor answered him from Shittim to Gilgal, that you may know the righteous acts of the LORD.”",
+      "ko": "내 백성아 너는 모압 왕 발락의 꾀한 것과 브올의 아들 발람이 그에게 대답한 것을 추억하며 싯딤에서부터 길갈까지의 일을 추억하라 그리하면 나 여호와의 의롭게 행한 것을 알리라 하실 것이니라",
+      "source_text_hash": "6a0c0de85db3892c4661c2badc6839649680663e8d31ad799c75a21313ad2004",
+      "translation_text_hash": "9311ea72f801bb662d7cf82ce32c2881eb047abf13d8e8e31e3554fac3cc40d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성아 너는 모압 왕 발락의 꾀한 것과 브올의 아들 발람이 그에게 대답한 것을 추억하며 싯딤에서부터 길갈까지의 일을 추억하라 그리하면 나 여호와의 의롭게 행한 것을 알리라 하실 것이니라"
+      ],
+      "raw_text_hashes": [
+        "9311ea72f801bb662d7cf82ce32c2881eb047abf13d8e8e31e3554fac3cc40d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:6",
+      "sequence": 22655,
+      "chapter_label": "MIC 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "How shall I come before the LORD, and bow myself before the exalted God? Shall I come before him with burnt offerings, with calves a year old?",
+      "ko": "내가 무엇을 가지고 여호와 앞에 나아가며 높으신 하나님께 경배할까 내가 번제물 일년 된 송아지를 가지고 그 앞에 나아갈까",
+      "source_text_hash": "e62c0bc9e1cb4c14448757a1a05d20df79f91a4920a52b390ad150ca3a8bdc0e",
+      "translation_text_hash": "9aa245f28b36a1805558f5e140d67582177855dc33c51dfe24e118128d65ab4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 무엇을 가지고 여호와 앞에 나아가며 높으신 하나님께 경배할까 내가 번제물 일년 된 송아지를 가지고 그 앞에 나아갈까"
+      ],
+      "raw_text_hashes": [
+        "9aa245f28b36a1805558f5e140d67582177855dc33c51dfe24e118128d65ab4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:7",
+      "sequence": 22656,
+      "chapter_label": "MIC 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Will the LORD be pleased with thousands of rams? With tens of thousands of rivers of oil? Shall I give my firstborn for my disobedience? The fruit of my body for the sin of my soul?",
+      "ko": "여호와께서 천천의 수양이나 만만의 강수 같은 기름을 기뻐하실까 내 허물을 위하여 내 맏아들을, 내 영혼의 죄를 인하여 내 몸의 열매를 드릴까",
+      "source_text_hash": "bcb76850341ca65b936887a3a9f41feebed21968e1e25405c8469c72f60e23f2",
+      "translation_text_hash": "a6907c693e5a599d5c21efb28a576f5049fd4815b5fcdc929ad5af1cd71efcac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 천천의 수양이나 만만의 강수 같은 기름을 기뻐하실까 내 허물을 위하여 내 맏아들을, 내 영혼의 죄를 인하여 내 몸의 열매를 드릴까"
+      ],
+      "raw_text_hashes": [
+        "a6907c693e5a599d5c21efb28a576f5049fd4815b5fcdc929ad5af1cd71efcac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:8",
+      "sequence": 22657,
+      "chapter_label": "MIC 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "He has shown you, O man, what is good. What does the LORD require of you, but to act justly, to love mercy, and to walk humbly with your God?",
+      "ko": "사람아 주께서 선한 것이 무엇임을 네게 보이셨나니 여호와께서 네게 구하시는 것이 오직 공의를 행하며 인자를 사랑하며 겸손히 네 하나님과 함께 행하는 것이 아니냐",
+      "source_text_hash": "cb25ff83f39f19fe0762e46f19223b930171add3a6b3600013d61a3ecfa0957c",
+      "translation_text_hash": "89a510cdb385dd67a7779663c29a2a39fa915d7120bb39a1b8e222d9ec597e73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람아 주께서 선한 것이 무엇임을 네게 보이셨나니 여호와께서 네게 구하시는 것이 오직 공의를 행하며 인자를 사랑하며 겸손히 네 하나님과 함께 행하는 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "89a510cdb385dd67a7779663c29a2a39fa915d7120bb39a1b8e222d9ec597e73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:9",
+      "sequence": 22658,
+      "chapter_label": "MIC 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD’s voice calls to the city— and wisdom fears your name— “Listen to the rod, and he who appointed it.",
+      "ko": "여호와께서 성읍을 향하여 외쳐 부르시나니 완전한 지혜는 주의 이름을 경외함이니라 너희는 매를 순히 받고 그것을 정하신 자를 순종할찌니라",
+      "source_text_hash": "c2903c901a925332b586dc5c4fc0cbb47091360027913bb331551322867652a1",
+      "translation_text_hash": "27d77cafaa68aa765c75cbcff3582bff9116fa64af3c22993f59fb394e57ace7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 성읍을 향하여 외쳐 부르시나니 완전한 지혜는 주의 이름을 경외함이니라 너희는 매를 순히 받고 그것을 정하신 자를 순종할찌니라"
+      ],
+      "raw_text_hashes": [
+        "27d77cafaa68aa765c75cbcff3582bff9116fa64af3c22993f59fb394e57ace7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:10",
+      "sequence": 22659,
+      "chapter_label": "MIC 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Are there yet treasures of wickedness in the house of the wicked, and a short ephah that is accursed?",
+      "ko": "악인의 집에 오히려 불의한 재물이 있느냐 축소시킨 가증한 에바가 있느냐",
+      "source_text_hash": "3ac33bc838b087e6f43b976cb419188c589ef331173fd9eed64a57c186f7ab98",
+      "translation_text_hash": "3525399a752f4f8e5359b8d42784129901ed3f3fe2072f59f5c13565ff4b509a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인의 집에 오히려 불의한 재물이 있느냐 축소시킨 가증한 에바가 있느냐"
+      ],
+      "raw_text_hashes": [
+        "3525399a752f4f8e5359b8d42784129901ed3f3fe2072f59f5c13565ff4b509a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:11",
+      "sequence": 22660,
+      "chapter_label": "MIC 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Shall I tolerate dishonest scales, and a bag of deceitful weights?",
+      "ko": "내가 만일 부정한 저울을 썼거나 주머니에 거짓 저울추를 두었으면 깨끗하겠느냐",
+      "source_text_hash": "9ca00432eeb3827a9625eeff52c6b52846a62f9779fc990c35e745fce8a45408",
+      "translation_text_hash": "d6d55b50c5924ecb2a7a0e6c5731d7cf3da07e02d8c2d201e3eebae60b91615f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 부정한 저울을 썼거나 주머니에 거짓 저울추를 두었으면 깨끗하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "d6d55b50c5924ecb2a7a0e6c5731d7cf3da07e02d8c2d201e3eebae60b91615f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:12",
+      "sequence": 22661,
+      "chapter_label": "MIC 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Her rich men are full of violence, her inhabitants speak lies, and their tongue is deceitful in their speech.",
+      "ko": "그 부자들은 강포가 가득하였고 그 거민들은 거짓을 말하니 그 혀가 입에서 궤사하도다",
+      "source_text_hash": "796fbd318faed228e42856622c4c5def71ec312ccf4788c63e499f24838b8d45",
+      "translation_text_hash": "7a077d0a0af56ebed5f7a7c3095ffc614530f9e53383ee331fccb0ae86bd2e72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부자들은 강포가 가득하였고 그 거민들은 거짓을 말하니 그 혀가 입에서 궤사하도다"
+      ],
+      "raw_text_hashes": [
+        "7a077d0a0af56ebed5f7a7c3095ffc614530f9e53383ee331fccb0ae86bd2e72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:13",
+      "sequence": 22662,
+      "chapter_label": "MIC 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore I also have struck you with a grievous wound. I have made you desolate because of your sins.",
+      "ko": "그러므로 나도 너를 쳐서 중히 상하게 하였으며 네 죄를 인하여 너를 적막하게 하였나니",
+      "source_text_hash": "f919bfb7c9949d94f577809f811ce5b27960f808bde0e9c4b21de76c0242617b",
+      "translation_text_hash": "375af78262a9410c04738f71097e06e18804d1c44922394d484695a0f3363229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나도 너를 쳐서 중히 상하게 하였으며 네 죄를 인하여 너를 적막하게 하였나니"
+      ],
+      "raw_text_hashes": [
+        "375af78262a9410c04738f71097e06e18804d1c44922394d484695a0f3363229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:14",
+      "sequence": 22663,
+      "chapter_label": "MIC 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "You shall eat, but not be satisfied. Your hunger will be within you. You will store up, but not save, and that which you save I will give up to the sword.",
+      "ko": "네가 먹으나 배부르지 못하고 속이 항상 빌 것이며 네가 감추나 보존되지 못하겠고 보존된 것은 내가 칼에 붙일 것이며",
+      "source_text_hash": "3b2c77067fce298a80c8ead0181d1528114a62f4e17a0e1702990178e6b661e7",
+      "translation_text_hash": "1c218b146b145e1badb9b4017d58c01f43178c855f0cdd8fee780029db8ea0fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 먹으나 배부르지 못하고 속이 항상 빌 것이며 네가 감추나 보존되지 못하겠고 보존된 것은 내가 칼에 붙일 것이며"
+      ],
+      "raw_text_hashes": [
+        "1c218b146b145e1badb9b4017d58c01f43178c855f0cdd8fee780029db8ea0fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:15",
+      "sequence": 22664,
+      "chapter_label": "MIC 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "You will sow, but won’t reap. You will tread the olives, but won’t anoint yourself with oil; and crush grapes, but won’t drink the wine.",
+      "ko": "네가 씨를 뿌리나 추수하지 못할 것이며 감람을 밟으나 기름을 네 몸에 바르지 못할 것이며 포도를 밟으나 술을 마시지 못하리라",
+      "source_text_hash": "ee89a44cd6e6933b533f09db898a7dc1c429cc0f4f559886a301e6029c9d7599",
+      "translation_text_hash": "2680ce0dc69b2bd2d854a65b57f9403efa34debce370551725e68125a4162487",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 씨를 뿌리나 추수하지 못할 것이며 감람을 밟으나 기름을 네 몸에 바르지 못할 것이며 포도를 밟으나 술을 마시지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "2680ce0dc69b2bd2d854a65b57f9403efa34debce370551725e68125a4162487"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MIC:6:16",
+      "sequence": 22665,
+      "chapter_label": "MIC 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "MIC",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MIC",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "For the statutes of Omri are kept, and all the works of Ahab’s house. You walk in their counsels, that I may make you a ruin, and your inhabitants a hissing. You will bear the reproach of my people.”",
+      "ko": "너희가 오므리의 율례와 아합 집의 모든 행위를 지키고 그들의 꾀를 좇으니 이는 나로 너희를 황무케 하며 그 거민으로 사람의 치솟거리를 만들게 하려 함이라 너희가 내 백성의 수욕을 담당하리라",
+      "source_text_hash": "26bd3f259a5be29d72f5bad2ded4bf918fd1efb31ae08e6abba5e7c00664c7b8",
+      "translation_text_hash": "eca32d9b1caff200981352784213cacf5cbe0f616304328c66a046751b153b2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 오므리의 율례와 아합 집의 모든 행위를 지키고 그들의 꾀를 좇으니 이는 나로 너희를 황무케 하며 그 거민으로 사람의 치솟거리를 만들게 하려 함이라 너희가 내 백성의 수욕을 담당하리라"
+      ],
+      "raw_text_hashes": [
+        "eca32d9b1caff200981352784213cacf5cbe0f616304328c66a046751b153b2b"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:015",
+  "unit_ordinal": 105,
+  "unit_label": "LEV 15",
+  "book_code": "LEV",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:15:1",
+      "sequence": 3170,
+      "chapter_label": "LEV 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses and to Aaron, saying,",
+      "ko": "여호와께서 모세와 아론에게 일러 가라사대",
+      "source_text_hash": "e6c7cd4c60d1b58d8caa7e02e4352f1d925cf188a6f005f934b711230470272a",
+      "translation_text_hash": "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세와 아론에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "07f1b732cd444edc8e86264b81332a2c28d29d9cfd1390eddcbf51baf33b3e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:2",
+      "sequence": 3171,
+      "chapter_label": "LEV 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When any man has a discharge from his body, because of his discharge he is unclean.",
+      "ko": "이스라엘 자손에게 고하여 이르라 누구든지 몸에 유출병이 있으면 그 유출병을 인하여 부정한 자라",
+      "source_text_hash": "5bfb13515db2c2bff00b68d94f8aeaf8d5c599101bc7bca45e408cc5d83ae494",
+      "translation_text_hash": "54fb7c73bfdabb0d9a6ee949e77ec5964895653ee331b912af6193936da91595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 누구든지 몸에 유출병이 있으면 그 유출병을 인하여 부정한 자라"
+      ],
+      "raw_text_hashes": [
+        "54fb7c73bfdabb0d9a6ee949e77ec5964895653ee331b912af6193936da91595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:3",
+      "sequence": 3172,
+      "chapter_label": "LEV 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "This shall be his uncleanness in his discharge: whether his body runs with his discharge, or his body has stopped from his discharge, it is his uncleanness.",
+      "ko": "그 유출병으로 말미암아 부정함이 이러하니 곧 몸에서 흘러 나오든지 그것이 엉겼든지 부정한즉",
+      "source_text_hash": "d6cbbfb06773280996edc6f869a7e0768f04ee36906eefcd648ed5827103c2b4",
+      "translation_text_hash": "14863e68bbc1d37ec213133256309d14ab0936aac4e7048eda302e59ea58cb5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 유출병으로 말미암아 부정함이 이러하니 곧 몸에서 흘러 나오든지 그것이 엉겼든지 부정한즉"
+      ],
+      "raw_text_hashes": [
+        "14863e68bbc1d37ec213133256309d14ab0936aac4e7048eda302e59ea58cb5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:4",
+      "sequence": 3173,
+      "chapter_label": "LEV 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "“‘Every bed on which he who has the discharge lies shall be unclean; and everything he sits on shall be unclean.",
+      "ko": "유출병 있는 자의 눕는 상은 다 부정하고 그의 앉았던 자리도 다 부정하니",
+      "source_text_hash": "91c52babcc988efc7354fa1628564f389b5183ceb5d2d89a8b77693008233710",
+      "translation_text_hash": "85f20b94598e067383f6b5575db2af3e718d034fbdc5bebd2e21d143029ee559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자의 눕는 상은 다 부정하고 그의 앉았던 자리도 다 부정하니"
+      ],
+      "raw_text_hashes": [
+        "85f20b94598e067383f6b5575db2af3e718d034fbdc5bebd2e21d143029ee559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:5",
+      "sequence": 3174,
+      "chapter_label": "LEV 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "Whoever touches his bed shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "그 침상에 접촉하는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "f79a8bd77d057a94aa55ae84a7cc2d59bd7248129989195bfe2ab9db100f4c7a",
+      "translation_text_hash": "238a6f846218e246c03bf28928474d5ed9c354ba709a0ef05734204240e67422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 침상에 접촉하는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "238a6f846218e246c03bf28928474d5ed9c354ba709a0ef05734204240e67422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:6",
+      "sequence": 3175,
+      "chapter_label": "LEV 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "He who sits on anything on which the man who has the discharge sat shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "유출병 있는 자의 앉았던 자리에 앉는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "81b82a6bcb8b7cebf13d3138e400aed7139304ba97571af7ee39301e2a77d6d7",
+      "translation_text_hash": "477579935c64503f293e44358dbeca514b3e3ea01b5df441c4624fcba00bdd42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자의 앉았던 자리에 앉는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "477579935c64503f293e44358dbeca514b3e3ea01b5df441c4624fcba00bdd42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:7",
+      "sequence": 3176,
+      "chapter_label": "LEV 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "“‘He who touches the body of him who has the discharge shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "유출병 있는 자의 몸에 접촉하는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "3935ade316c823f20707d681a6c43fb1f087d08fc4a6ffe0d7d8f21c0c0d1408",
+      "translation_text_hash": "c605e8a732568440293147564fd40830618f820e0e00490ce488a59237c19cf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자의 몸에 접촉하는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "c605e8a732568440293147564fd40830618f820e0e00490ce488a59237c19cf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:8",
+      "sequence": 3177,
+      "chapter_label": "LEV 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "“‘If he who has the discharge spits on him who is clean, then he shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "유출병 있는 자가 정한 자에게 침을 뱉으면 정한 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "d5df9ba146bdc05129ede5b9f565667f4faa061289ee02500576703cd420b2fb",
+      "translation_text_hash": "54a612b1aa9e3a75b92e44b0b1b2e585411d5227ba754bb2c3fc317b36fa4d50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자가 정한 자에게 침을 뱉으면 정한 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "54a612b1aa9e3a75b92e44b0b1b2e585411d5227ba754bb2c3fc317b36fa4d50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:9",
+      "sequence": 3178,
+      "chapter_label": "LEV 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "“‘Whatever saddle he who has the discharge rides on shall be unclean.",
+      "ko": "유출병 있는 자의 탔던 안장은 다 부정하며",
+      "source_text_hash": "15a48885f243f2768bd6a17bf89afc0fa36ce7dc4018e23b512f57b261dc3c10",
+      "translation_text_hash": "4989e19e6b83b2c8cb40d6c5da7f3193d37b1d1962890cf968c8081c295988fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자의 탔던 안장은 다 부정하며"
+      ],
+      "raw_text_hashes": [
+        "4989e19e6b83b2c8cb40d6c5da7f3193d37b1d1962890cf968c8081c295988fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:10",
+      "sequence": 3179,
+      "chapter_label": "LEV 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "Whoever touches anything that was under him shall be unclean until the evening. He who carries those things shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "그 몸 아래 닿았던 것에 접촉한 자는 다 저녁까지 부정하며 그런 것을 옮기는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "5a99586d27a360fcc6cd2962b8146e119c6157fb8af4922628a576d3fedc10ee",
+      "translation_text_hash": "401da98869cc59c6d385b08060ae628112feae2326e610b25e5daf0d17d4153e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 몸 아래 닿았던 것에 접촉한 자는 다 저녁까지 부정하며 그런 것을 옮기는 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "401da98869cc59c6d385b08060ae628112feae2326e610b25e5daf0d17d4153e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:11",
+      "sequence": 3180,
+      "chapter_label": "LEV 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "“‘Whomever he who has the discharge touches, without having rinsed his hands in water, he shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "유출병 있는 자가 물로 손을 씻지 아니하고 아무든지 만지면 그 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "3ae2f08c7381b141af53496b42b69c5010a8573216ff9cc05ea084c8ade2009d",
+      "translation_text_hash": "dd3ae2515b42f8bc7d51b250770de570ae8dad0153352e3922736e50ad270bbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자가 물로 손을 씻지 아니하고 아무든지 만지면 그 자는 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "dd3ae2515b42f8bc7d51b250770de570ae8dad0153352e3922736e50ad270bbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:12",
+      "sequence": 3181,
+      "chapter_label": "LEV 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "“‘The earthen vessel, which he who has the discharge touches, shall be broken; and every vessel of wood shall be rinsed in water.",
+      "ko": "유출병 있는 자의 만진 질그릇은 깨뜨리고 목기는 다 물로 씻을찌니라",
+      "source_text_hash": "1c67fce32781d37f1052990d53184e0b3657e8a8f5dfcd42967c6316da1bc40d",
+      "translation_text_hash": "50e1297f25bca13abd849adadcca78aa54b9e6149729348980409c537baa39a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자의 만진 질그릇은 깨뜨리고 목기는 다 물로 씻을찌니라"
+      ],
+      "raw_text_hashes": [
+        "50e1297f25bca13abd849adadcca78aa54b9e6149729348980409c537baa39a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:13",
+      "sequence": 3182,
+      "chapter_label": "LEV 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "“‘When he who has a discharge is cleansed of his discharge, then he shall count to himself seven days for his cleansing, and wash his clothes; and he shall bathe his flesh in running water, and shall be clean.",
+      "ko": "유출병 있는 자는 그 유출이 깨끗하여지거든 그 몸이 정결하기 위하여 칠일을 계산하여 옷을 빨고 흐르는 물에 몸을 씻을 것이요 그리하면 정하리니",
+      "source_text_hash": "9c187c6223ad0f354a22242f6b0e72c449b84fdd9c9ae4b8fe0ca7a6c03ead73",
+      "translation_text_hash": "eae97b7278900381ed38f8b2aa871a770aea2bd595f119136598a4763e396f4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유출병 있는 자는 그 유출이 깨끗하여지거든 그 몸이 정결하기 위하여 칠일을 계산하여 옷을 빨고 흐르는 물에 몸을 씻을 것이요 그리하면 정하리니"
+      ],
+      "raw_text_hashes": [
+        "eae97b7278900381ed38f8b2aa871a770aea2bd595f119136598a4763e396f4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:14",
+      "sequence": 3183,
+      "chapter_label": "LEV 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "“‘On the eighth day he shall take two turtledoves, or two young pigeons, and come before the LORD to the door of the Tent of Meeting, and give them to the priest.",
+      "ko": "제 팔일에 산비둘기 둘이나 집비둘기 새끼 둘을 자기를 위하여 취하고 회막문 여호와 앞으로 가서 제사장에게 줄 것이요",
+      "source_text_hash": "e6a69aecd27a452204226f0e40c4d0d1e7f0dfa5bf6bbe077b1121c1226450de",
+      "translation_text_hash": "81351876c2a2c440d9c1315a87709607d7d6b1ead752e5f0faba9a4c36785af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 팔일에 산비둘기 둘이나 집비둘기 새끼 둘을 자기를 위하여 취하고 회막문 여호와 앞으로 가서 제사장에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "81351876c2a2c440d9c1315a87709607d7d6b1ead752e5f0faba9a4c36785af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:15",
+      "sequence": 3184,
+      "chapter_label": "LEV 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "The priest shall offer them, the one for a sin offering, and the other for a burnt offering. The priest shall make atonement for him before the LORD for his discharge.",
+      "ko": "제사장은 그 하나는 속죄제로, 하나는 번제로 드려 그의 유출병을 인하여 여호와 앞에 속죄할찌니라",
+      "source_text_hash": "dde7ff263d6fa7a526bf448436fe7f4edf06c41a2a0c82ca0cef0e6a75b4be1e",
+      "translation_text_hash": "c979c5333f19acfc2b3a4c5b00b2876ac06ab0414bce0e2ef25ade4c46db225e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 하나는 속죄제로, 하나는 번제로 드려 그의 유출병을 인하여 여호와 앞에 속죄할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c979c5333f19acfc2b3a4c5b00b2876ac06ab0414bce0e2ef25ade4c46db225e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:16",
+      "sequence": 3185,
+      "chapter_label": "LEV 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "“‘If any man has an emission of semen, then he shall bathe all his flesh in water, and be unclean until the evening.",
+      "ko": "설정한 자는 전신을 물로 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "33a9c0c933999d5aa116f8422cc23e78b4c8e1096803038cee89d253cd1f5913",
+      "translation_text_hash": "7269094e5026e67acc5fa88debe8e22bd42cc77167d6fa70662beb6a89f6c156",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "설정한 자는 전신을 물로 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "7269094e5026e67acc5fa88debe8e22bd42cc77167d6fa70662beb6a89f6c156"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:17",
+      "sequence": 3186,
+      "chapter_label": "LEV 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "Every garment and every skin which the semen is on shall be washed with water, and be unclean until the evening.",
+      "ko": "무릇 정수가 묻은 옷이나 가죽은 물에 빨 것이며 저녁까지 부정하리라",
+      "source_text_hash": "e7efde298caf667f8e046398b19b478fa88609dfd64305accab4332f27833b28",
+      "translation_text_hash": "d1b10bfac6646c1b081f3d74b5d81755154ad813ace85bfacf1f1e93d585b80e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 정수가 묻은 옷이나 가죽은 물에 빨 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "d1b10bfac6646c1b081f3d74b5d81755154ad813ace85bfacf1f1e93d585b80e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:18",
+      "sequence": 3187,
+      "chapter_label": "LEV 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "If a man lies with a woman and there is an emission of semen, they shall both bathe themselves in water, and be unclean until the evening.",
+      "ko": "남녀가 동침하여 설정하였거든 둘다 물로 몸을 씻을 것이며 저녁까지 부정하리라",
+      "source_text_hash": "625eb5ecba8e41c5582bee82968ebc1d4b7d7ab3f1dbc67842a34b7730e65d41",
+      "translation_text_hash": "749234c8dec942b36ea24715911317ce6aee3a4a260555c0faa015b7e1c47e94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남녀가 동침하여 설정하였거든 둘다 물로 몸을 씻을 것이며 저녁까지 부정하리라"
+      ],
+      "raw_text_hashes": [
+        "749234c8dec942b36ea24715911317ce6aee3a4a260555c0faa015b7e1c47e94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:19",
+      "sequence": 3188,
+      "chapter_label": "LEV 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "“‘If a woman has a discharge, and her discharge in her flesh is blood, she shall be in her impurity seven days. Whoever touches her shall be unclean until the evening.",
+      "ko": "어떤 여인이 유출을 하되 그 유출이 피면 칠일 동안 불결하니 무릇 그를 만지는 자는 저녁까지 부정할 것이요",
+      "source_text_hash": "84e25d084cc6c3aa5e2d79d1271d99850fb120f23dcf4141fc0810bdeaf8576d",
+      "translation_text_hash": "8b397e38f3409cedf0d646c56f5e09694900d9e397fd54204d608398495c9197",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 여인이 유출을 하되 그 유출이 피면 칠일 동안 불결하니 무릇 그를 만지는 자는 저녁까지 부정할 것이요"
+      ],
+      "raw_text_hashes": [
+        "8b397e38f3409cedf0d646c56f5e09694900d9e397fd54204d608398495c9197"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:20",
+      "sequence": 3189,
+      "chapter_label": "LEV 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "“‘Everything that she lies on in her impurity shall be unclean. Everything also that she sits on shall be unclean.",
+      "ko": "그 불결할 동안에 그의 누웠던 자리는 다 부정하며 그의 앉았던 자리도 다 부정한즉",
+      "source_text_hash": "69f7e60418ddec3de9a5959bb378db8cd01c7a2417f5776bf576d7fca4f87d96",
+      "translation_text_hash": "d1109b9fe9532ab99379eb5c82fdf9d10d448d82c03bcac4e25a65de27e0f213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 불결할 동안에 그의 누웠던 자리는 다 부정하며 그의 앉았던 자리도 다 부정한즉"
+      ],
+      "raw_text_hashes": [
+        "d1109b9fe9532ab99379eb5c82fdf9d10d448d82c03bcac4e25a65de27e0f213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:21",
+      "sequence": 3190,
+      "chapter_label": "LEV 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Whoever touches her bed shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "그 침상을 만지는 자는 다 옷을 빨고 물로 몸을 씻을 것이요 저녁까지 부정할 것이며",
+      "source_text_hash": "2e5d282dbb06646423c020a3cfc43861b79df10a154bc73922a372fa1d381980",
+      "translation_text_hash": "53f19d23a2738a9ec37d7d7c6c4732d1a2dde8f5e946e3b32dca34c670aba88f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 침상을 만지는 자는 다 옷을 빨고 물로 몸을 씻을 것이요 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "53f19d23a2738a9ec37d7d7c6c4732d1a2dde8f5e946e3b32dca34c670aba88f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:22",
+      "sequence": 3191,
+      "chapter_label": "LEV 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "Whoever touches anything that she sits on shall wash his clothes, and bathe himself in water, and be unclean until the evening.",
+      "ko": "그 좌석을 만지는 자도 다 옷을 빨고 물로 몸을 씻을 것이요 저녁까지 부정할 것이며",
+      "source_text_hash": "3de2af0e5610df9bdd46a60743ce5e9ff7e441e49295178cce53c1fa4f002f99",
+      "translation_text_hash": "4b761f31bbd8d410f6554d173f253123fc9b5630fccc1998cf78cdf57d66c631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 좌석을 만지는 자도 다 옷을 빨고 물로 몸을 씻을 것이요 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "4b761f31bbd8d410f6554d173f253123fc9b5630fccc1998cf78cdf57d66c631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:23",
+      "sequence": 3192,
+      "chapter_label": "LEV 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "If it is on the bed, or on anything she sits on, when he touches it, he shall be unclean until the evening.",
+      "ko": "그의 침상과 무릇 그 좌석에 있는 것을 만지는 자도 저녁까지 부정할 것이며",
+      "source_text_hash": "a3e16af33155f516f02ee449d832464f7e0c8bbe33fac8ead9e453a529da044d",
+      "translation_text_hash": "f70e1e7e621b2cf7b310402387a2175b95b5c3770ee5cc859c6ceff173badbd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 침상과 무릇 그 좌석에 있는 것을 만지는 자도 저녁까지 부정할 것이며"
+      ],
+      "raw_text_hashes": [
+        "f70e1e7e621b2cf7b310402387a2175b95b5c3770ee5cc859c6ceff173badbd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:24",
+      "sequence": 3193,
+      "chapter_label": "LEV 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "“‘If any man lies with her, and her monthly flow is on him, he shall be unclean seven days; and every bed he lies on shall be unclean.",
+      "ko": "누구든지 이 여인과 동침하여 그 불결에 전염되면 칠일 동안 부정할 것이라 그의 눕는 상은 무릇 부정하니라",
+      "source_text_hash": "9dd7330c8da127921ab87ada4eff726a934f94fa511cbaf1be5cc5f59e15e996",
+      "translation_text_hash": "b8ae511bd31f9d9a6759c75189068da86551bd15d39dc053410ff41f8319bc3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 이 여인과 동침하여 그 불결에 전염되면 칠일 동안 부정할 것이라 그의 눕는 상은 무릇 부정하니라"
+      ],
+      "raw_text_hashes": [
+        "b8ae511bd31f9d9a6759c75189068da86551bd15d39dc053410ff41f8319bc3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:25",
+      "sequence": 3194,
+      "chapter_label": "LEV 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "“‘If a woman has a discharge of her blood many days not in the time of her period, or if she has a discharge beyond the time of her period, all the days of the discharge of her uncleanness shall be as in the days of her period. She is unclean.",
+      "ko": "여인의 피의 유출이 그 불결기 외에 있어서 여러 날이 간다든지 그 유출이 불결기를 지나든지 하면 그 부정을 유출하는 날 동안은 무릇 그 불결한 때와 같이 부정한즉",
+      "source_text_hash": "b1826b3e0916797306fd6ab577e2ad53d5573722dcc7736636da9a19487905fd",
+      "translation_text_hash": "9d1862e7983a253fdb2c4c26035981f6e5d155c3b6a51f295f4d0dd352032e10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인의 피의 유출이 그 불결기 외에 있어서 여러 날이 간다든지 그 유출이 불결기를 지나든지 하면 그 부정을 유출하는 날 동안은 무릇 그 불결한 때와 같이 부정한즉"
+      ],
+      "raw_text_hashes": [
+        "9d1862e7983a253fdb2c4c26035981f6e5d155c3b6a51f295f4d0dd352032e10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:26",
+      "sequence": 3195,
+      "chapter_label": "LEV 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "Every bed she lies on all the days of her discharge shall be to her as the bed of her period. Everything she sits on shall be unclean, as the uncleanness of her period.",
+      "ko": "무릇 그 유출이 있는 날 동안에 그의 눕는 침상은 그에게 불결한 때의 침상과 같고 무릇 그의 앉는 자리도 부정함이 불결의 부정과 같으니",
+      "source_text_hash": "ce81c1ed808347b4e9da290801399b81a6ea15f0128766bea74ad8c4888592d6",
+      "translation_text_hash": "76fb720db7f44b5a3ec8910fc78ddca9b20d0fccd8eb92965ccc13498ff2ef9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 유출이 있는 날 동안에 그의 눕는 침상은 그에게 불결한 때의 침상과 같고 무릇 그의 앉는 자리도 부정함이 불결의 부정과 같으니"
+      ],
+      "raw_text_hashes": [
+        "76fb720db7f44b5a3ec8910fc78ddca9b20d0fccd8eb92965ccc13498ff2ef9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:27",
+      "sequence": 3196,
+      "chapter_label": "LEV 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "Whoever touches these things shall be unclean, and shall wash his clothes and bathe himself in water, and be unclean until the evening.",
+      "ko": "이런 것을 만지는 자는 무릇 부정한즉 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정할 것이요",
+      "source_text_hash": "f1bfa9cc6f8059cb5f657a074e6f2abd410144361c16b29c2926c897f57f6988",
+      "translation_text_hash": "8fd9c7665441e122fb7abdb41e77c6427cfe47765cd33fa075ee31c842d63278",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것을 만지는 자는 무릇 부정한즉 옷을 빨고 물로 몸을 씻을 것이며 저녁까지 부정할 것이요"
+      ],
+      "raw_text_hashes": [
+        "8fd9c7665441e122fb7abdb41e77c6427cfe47765cd33fa075ee31c842d63278"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:28",
+      "sequence": 3197,
+      "chapter_label": "LEV 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "“‘But if she is cleansed of her discharge, then she shall count to herself seven days, and after that she shall be clean.",
+      "ko": "그의 유출이 그치면 칠일을 센 후에야 정하리니",
+      "source_text_hash": "7ddf2548fcdc68cf9e1461f951ab911c4a799ff49add9fca9c3ca4a25c1f537a",
+      "translation_text_hash": "d8d3b78f3f0b5dcfc16bcdcb775ee4a53ac5b756800096f61a937ff4d4467de2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 유출이 그치면 칠일을 센 후에야 정하리니"
+      ],
+      "raw_text_hashes": [
+        "d8d3b78f3f0b5dcfc16bcdcb775ee4a53ac5b756800096f61a937ff4d4467de2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:29",
+      "sequence": 3198,
+      "chapter_label": "LEV 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "On the eighth day she shall take two turtledoves, or two young pigeons, and bring them to the priest, to the door of the Tent of Meeting.",
+      "ko": "그는 제 팔일에 산비둘기 둘이나 집비둘기 새끼 둘을 자기를 위하여 취하여 회막문 앞 제사장에게로 가져올 것이요",
+      "source_text_hash": "01ca52fbf40b46bc500102a86d9ea5a9d6534d493f30b4915bed749e6869a408",
+      "translation_text_hash": "3ef0d4182aed6cecac35939f7eb07b8fcd19eaea439d63b85431e1e35afd2ab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 제 팔일에 산비둘기 둘이나 집비둘기 새끼 둘을 자기를 위하여 취하여 회막문 앞 제사장에게로 가져올 것이요"
+      ],
+      "raw_text_hashes": [
+        "3ef0d4182aed6cecac35939f7eb07b8fcd19eaea439d63b85431e1e35afd2ab2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:30",
+      "sequence": 3199,
+      "chapter_label": "LEV 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "The priest shall offer the one for a sin offering, and the other for a burnt offering; and the priest shall make atonement for her before the LORD for the uncleanness of her discharge.",
+      "ko": "제사장은 그 하나는 속죄제로, 하나는 번제로 드려 유출로 부정한 여인을 위하여 여호와 앞에 속할찌니라",
+      "source_text_hash": "cb9ccd83ecd95ff5816d62de9a4e5feb2e6c7ac82c9aae0e18575fde0e07d628",
+      "translation_text_hash": "aee83651308d2253cd48a78bebe18142ee31469c1137765bdcefa4a7e0c6022f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 하나는 속죄제로, 하나는 번제로 드려 유출로 부정한 여인을 위하여 여호와 앞에 속할찌니라"
+      ],
+      "raw_text_hashes": [
+        "aee83651308d2253cd48a78bebe18142ee31469c1137765bdcefa4a7e0c6022f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:31",
+      "sequence": 3200,
+      "chapter_label": "LEV 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "“‘Thus you shall separate the children of Israel from their uncleanness, so they will not die in their uncleanness when they defile my tabernacle that is among them.’”",
+      "ko": "너희는 이와 같이 이스라엘 자손으로 그 부정에서 떠나게하여 그들로 그 가운데 있는 내 장막을 더럽히고 그 부정한 중에서 죽음을 면케 할찌니라",
+      "source_text_hash": "2e60cf6867f772934195434c7f31a04b0b4978a3efb1c3b7f868d4ca58307740",
+      "translation_text_hash": "5e6cc8af6907a7834618ee060e349c2c63224d67468b8bb9e878790d22cfc4a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이와 같이 이스라엘 자손으로 그 부정에서 떠나게하여 그들로 그 가운데 있는 내 장막을 더럽히고 그 부정한 중에서 죽음을 면케 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "5e6cc8af6907a7834618ee060e349c2c63224d67468b8bb9e878790d22cfc4a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:32",
+      "sequence": 3201,
+      "chapter_label": "LEV 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "This is the law of him who has a discharge, and of him who has an emission of semen, so that he is unclean by it;",
+      "ko": "이 규례는 유출병이 있는 자와 설정함으로 부정을 입은 자와",
+      "source_text_hash": "47bb2fffab188f283febf9087bda0a0dcd6d99fa334f72ffbffc9b9822fba756",
+      "translation_text_hash": "ddb318ca64499b4615e965f934b146bc05f4094f7fb149aaa43a51b07c39e873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 규례는 유출병이 있는 자와 설정함으로 부정을 입은 자와"
+      ],
+      "raw_text_hashes": [
+        "ddb318ca64499b4615e965f934b146bc05f4094f7fb149aaa43a51b07c39e873"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:15:33",
+      "sequence": 3202,
+      "chapter_label": "LEV 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "and of her who has her period, and of a man or woman who has a discharge, and of him who lies with her who is unclean.",
+      "ko": "불결을 앓는 여인과 유출병이 있는 남녀와 불결한 여인과 동침한 자에게 관한 것이니라",
+      "source_text_hash": "6061ca353801baa5563cfbc9269d74dfa7f406b7545ca87760f2f7039f35b0b0",
+      "translation_text_hash": "605f37c1e5e4700db870b56a3a2fcc94f71373a35a1431f0d9b3f5792945e83e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불결을 앓는 여인과 유출병이 있는 남녀와 불결한 여인과 동침한 자에게 관한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "605f37c1e5e4700db870b56a3a2fcc94f71373a35a1431f0d9b3f5792945e83e"
+      ]
+    }
+  ]
+}

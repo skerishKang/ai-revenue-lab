@@ -1,0 +1,1261 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:008",
+  "unit_ordinal": 1054,
+  "unit_label": "ROM 8",
+  "book_code": "ROM",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:8:1",
+      "sequence": 28114,
+      "chapter_label": "ROM 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "There is therefore now no condemnation to those who are in Christ Jesus, who don’t walk according to the flesh, but according to the Spirit.",
+      "ko": "그러므로 이제 그리스도 예수 안에 있는 자에게는 결코 정죄함이 없나니",
+      "source_text_hash": "0bae4b13a57d0a0a9188c6e4bf8da8552198e3b9fb639b908398ff813be327c7",
+      "translation_text_hash": "a267cdc47d2e7afd1584da2eb1ec355f18250f87ea83c190ef1a48aadc21eb17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이제 그리스도 예수 안에 있는 자에게는 결코 정죄함이 없나니"
+      ],
+      "raw_text_hashes": [
+        "a267cdc47d2e7afd1584da2eb1ec355f18250f87ea83c190ef1a48aadc21eb17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:2",
+      "sequence": 28115,
+      "chapter_label": "ROM 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "For the law of the Spirit of life in Christ Jesus made me free from the law of sin and of death.",
+      "ko": "이는 그리스도 예수 안에 있는 생명의 성령의 법이 죄와 사망의 법에서 너를 해방하였음이라",
+      "source_text_hash": "d73641c319da3d1cc8e970f3204b16fdc362fa83fc9aa3bab9bc4dcc4c75dc48",
+      "translation_text_hash": "94ca3475d18ef5032008d1678e620b8c1e56cf5a11607267c53bcd77aafb4cdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그리스도 예수 안에 있는 생명의 성령의 법이 죄와 사망의 법에서 너를 해방하였음이라"
+      ],
+      "raw_text_hashes": [
+        "94ca3475d18ef5032008d1678e620b8c1e56cf5a11607267c53bcd77aafb4cdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:3",
+      "sequence": 28116,
+      "chapter_label": "ROM 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "For what the law couldn’t do, in that it was weak through the flesh, God did, sending his own Son in the likeness of sinful flesh and for sin, he condemned sin in the flesh,",
+      "ko": "율법이 육신으로 말미암아 연약하여 할 수 없는 그것을 하나님은 하시나니 곧 죄를 인하여 자기 아들을 죄 있는 육신의 모양으로 보내어 육신에 죄를 정하사",
+      "source_text_hash": "0b71ad188135e9cc85b996ea08262bc51631406210c34e6cfbc3133061d56ead",
+      "translation_text_hash": "86211480a3097ab03777f8facb3ba86c5540329b6922b743fa283df8667fb705",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법이 육신으로 말미암아 연약하여 할 수 없는 그것을 하나님은 하시나니 곧 죄를 인하여 자기 아들을 죄 있는 육신의 모양으로 보내어 육신에 죄를 정하사"
+      ],
+      "raw_text_hashes": [
+        "86211480a3097ab03777f8facb3ba86c5540329b6922b743fa283df8667fb705"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:4",
+      "sequence": 28117,
+      "chapter_label": "ROM 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "that the ordinance of the law might be fulfilled in us who don’t walk according to the flesh, but according to the Spirit.",
+      "ko": "육신을 좇지 않고 그 영을 좇아 행하는 우리에게 율법의 요구를 이루어지게 하려 하심이니라",
+      "source_text_hash": "0b196c9c7f88a94a5bac4f6639ea6ae466f63ce79e818d8dae150a652a6e48b3",
+      "translation_text_hash": "b3e68ba4200c15c7801bccd172a76e436749e1e06c2cf15a2734c76fb8bbae27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신을 좇지 않고 그 영을 좇아 행하는 우리에게 율법의 요구를 이루어지게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "b3e68ba4200c15c7801bccd172a76e436749e1e06c2cf15a2734c76fb8bbae27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:5",
+      "sequence": 28118,
+      "chapter_label": "ROM 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "For those who live according to the flesh set their minds on the things of the flesh, but those who live according to the Spirit, the things of the Spirit.",
+      "ko": "육신을 좇는 자는 육신의 일을, 영을 좇는 자는 영의 일을 생각하나니",
+      "source_text_hash": "420072054d39ff043edd83a0b291d348a84b3579326a7b262f1f69e5e11762ca",
+      "translation_text_hash": "89f1c837f7057f8a2d4f1a02d0347db4cb247a32e97e2a4c7ec9174891b82d13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신을 좇는 자는 육신의 일을, 영을 좇는 자는 영의 일을 생각하나니"
+      ],
+      "raw_text_hashes": [
+        "89f1c837f7057f8a2d4f1a02d0347db4cb247a32e97e2a4c7ec9174891b82d13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:6",
+      "sequence": 28119,
+      "chapter_label": "ROM 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "For the mind of the flesh is death, but the mind of the Spirit is life and peace;",
+      "ko": "육신의 생각은 사망이요 영의 생각은 생명과 평안이니라",
+      "source_text_hash": "d50ba79600f90345c88d14cb3a024cbcc3d8841e4fe0cbd3622d8e49b72954fd",
+      "translation_text_hash": "b9dde68effe6e558231534bdb94236c514fb2a003e8daab53be1ab9f0f63360f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신의 생각은 사망이요 영의 생각은 생명과 평안이니라"
+      ],
+      "raw_text_hashes": [
+        "b9dde68effe6e558231534bdb94236c514fb2a003e8daab53be1ab9f0f63360f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:7",
+      "sequence": 28120,
+      "chapter_label": "ROM 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "because the mind of the flesh is hostile toward God, for it is not subject to God’s law, neither indeed can it be.",
+      "ko": "육신의 생각은 하나님과 원수가 되나니 이는 하나님의 법에 굴복치 아니할뿐 아니라 할 수도 없음이라",
+      "source_text_hash": "4fc51ec69fd3f26368adedcb9efe950ef671ce6eb17b74e67a1f113c70d1b906",
+      "translation_text_hash": "3ebe46b7c3959ea527bcf22aab20cbcf1a7f2e2ffd55fb7714cac5782fb727a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신의 생각은 하나님과 원수가 되나니 이는 하나님의 법에 굴복치 아니할뿐 아니라 할 수도 없음이라"
+      ],
+      "raw_text_hashes": [
+        "3ebe46b7c3959ea527bcf22aab20cbcf1a7f2e2ffd55fb7714cac5782fb727a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:8",
+      "sequence": 28121,
+      "chapter_label": "ROM 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Those who are in the flesh can’t please God.",
+      "ko": "육신에 있는 자들은 하나님을 기쁘시게 할 수 없느니라",
+      "source_text_hash": "802392e240911acb301846ee24c2105aef39c22e3c9dab27c94502010e53bf2b",
+      "translation_text_hash": "54fbb0e20a7a74edb22b62348535bd2468ad3f598adda2a8623bc87422b91370",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "육신에 있는 자들은 하나님을 기쁘시게 할 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "54fbb0e20a7a74edb22b62348535bd2468ad3f598adda2a8623bc87422b91370"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:9",
+      "sequence": 28122,
+      "chapter_label": "ROM 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "But you are not in the flesh but in the Spirit, if it is so that the Spirit of God dwells in you. But if any man doesn’t have the Spirit of Christ, he is not his.",
+      "ko": "만일 너희 속에 하나님의 영이 거하시면 너희가 육신에 있지 아니하고 영에 있나니 누구든지 그리스도의 영이 없으면 그리스도의 사람이 아니라",
+      "source_text_hash": "a13b96bbccb733d511a65f305ae2e2c2d25015afba4661726bc2836f1ebab56c",
+      "translation_text_hash": "1b3ed4b6aaa52ebadeceb34ff19644e3931f8e2352791dbc8d24c1c949fe02e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 너희 속에 하나님의 영이 거하시면 너희가 육신에 있지 아니하고 영에 있나니 누구든지 그리스도의 영이 없으면 그리스도의 사람이 아니라"
+      ],
+      "raw_text_hashes": [
+        "1b3ed4b6aaa52ebadeceb34ff19644e3931f8e2352791dbc8d24c1c949fe02e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:10",
+      "sequence": 28123,
+      "chapter_label": "ROM 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "If Christ is in you, the body is dead because of sin, but the spirit is alive because of righteousness.",
+      "ko": "또 그리스도께서 너희 안에 계시면 몸은 죄로 인하여 죽은 것이나 영은 의를 인하여 산 것이니라",
+      "source_text_hash": "e12a3ff9e116b2937fb4b61cb36c8281d4d70cb76b211000d91514a93a2770ae",
+      "translation_text_hash": "4e03bdbb847c11608e095ddf9d5cd6a7f84325f73ec1fd90b7aae48d081565ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그리스도께서 너희 안에 계시면 몸은 죄로 인하여 죽은 것이나 영은 의를 인하여 산 것이니라"
+      ],
+      "raw_text_hashes": [
+        "4e03bdbb847c11608e095ddf9d5cd6a7f84325f73ec1fd90b7aae48d081565ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:11",
+      "sequence": 28124,
+      "chapter_label": "ROM 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "But if the Spirit of him who raised up Jesus from the dead dwells in you, he who raised up Christ Jesus from the dead will also give life to your mortal bodies through his Spirit who dwells in you.",
+      "ko": "예수를 죽은 자 가운데서 살리신 이의 영이 너희 안에 거하시면 그리스도 예수를 죽은 자 가운데서 살리신 이가 너희 안에 거하시는 그의 영으로 말미암아 너희 죽을 몸도 살리시리라",
+      "source_text_hash": "f66e8f1bfff6740431b0e68a08efa3352f8c2538294c4cab73041c1ac5cc0c7b",
+      "translation_text_hash": "c78f708a4501147040334b9cd02cae367e88e9b8f8fb8324fd595b38c56ee418",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수를 죽은 자 가운데서 살리신 이의 영이 너희 안에 거하시면 그리스도 예수를 죽은 자 가운데서 살리신 이가 너희 안에 거하시는 그의 영으로 말미암아 너희 죽을 몸도 살리시리라"
+      ],
+      "raw_text_hashes": [
+        "c78f708a4501147040334b9cd02cae367e88e9b8f8fb8324fd595b38c56ee418"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:12",
+      "sequence": 28125,
+      "chapter_label": "ROM 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "So then, brothers, we are debtors, not to the flesh, to live after the flesh.",
+      "ko": "그러므로 형제들아 우리가 빚진 자로되 육신에게 져서 육신대로 살 것이 아니니라",
+      "source_text_hash": "57ebee4c8ced32efd432663bac67edecd8b625d9be49c7cd794c903ceeff602d",
+      "translation_text_hash": "0b76c2afb7a08015333a55764e4186bbaf7cd2dabcd7e82e73b223097b7a0ede",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 형제들아 우리가 빚진 자로되 육신에게 져서 육신대로 살 것이 아니니라"
+      ],
+      "raw_text_hashes": [
+        "0b76c2afb7a08015333a55764e4186bbaf7cd2dabcd7e82e73b223097b7a0ede"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:13",
+      "sequence": 28126,
+      "chapter_label": "ROM 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "For if you live after the flesh, you must die; but if by the Spirit you put to death the deeds of the body, you will live.",
+      "ko": "너희가 육신대로 살면 반드시 죽을 것이로되 영으로써 몸의 행실을 죽이면 살리니",
+      "source_text_hash": "cae055e4dec974e22e917f744ee2590e0708f2b64ca38543501a086f684684c5",
+      "translation_text_hash": "f6f9c97e26819c1a38ee7c009dfd095835124fa69b6cc5fa9b81ac3713685e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 육신대로 살면 반드시 죽을 것이로되 영으로써 몸의 행실을 죽이면 살리니"
+      ],
+      "raw_text_hashes": [
+        "f6f9c97e26819c1a38ee7c009dfd095835124fa69b6cc5fa9b81ac3713685e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:14",
+      "sequence": 28127,
+      "chapter_label": "ROM 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "For as many as are led by the Spirit of God, these are children of God.",
+      "ko": "무릇 하나님의 영으로 인도함을 받는 그들은 곧 하나님의 아들이라",
+      "source_text_hash": "c7647b9084746d07b75b5ea2fe40f6a9a0dde58a0ef8242837b1e729af2b1162",
+      "translation_text_hash": "c5cf196b781b8b0d6edc6a4573091da0dc51944465b9513bdf737d870a9098de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 하나님의 영으로 인도함을 받는 그들은 곧 하나님의 아들이라"
+      ],
+      "raw_text_hashes": [
+        "c5cf196b781b8b0d6edc6a4573091da0dc51944465b9513bdf737d870a9098de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:15",
+      "sequence": 28128,
+      "chapter_label": "ROM 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "For you didn’t receive the spirit of bondage again to fear, but you received the Spirit of adoption, by whom we cry, “Abba! Father!”",
+      "ko": "너희는 다시 무서워하는 종의 영을 받지 아니하였고 양자의 영을 받았으므로 아바 아버지라 부르짖느니라",
+      "source_text_hash": "a0dfc0887e2d69492978b3060c8b73108079a38f60458c71104b0c7d717d92a8",
+      "translation_text_hash": "bb1a6d52ddbff80d2c09241fa3ddb32f9590ebabd378318dc5906de3d82eb872",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 다시 무서워하는 종의 영을 받지 아니하였고 양자의 영을 받았으므로 아바 아버지라 부르짖느니라"
+      ],
+      "raw_text_hashes": [
+        "bb1a6d52ddbff80d2c09241fa3ddb32f9590ebabd378318dc5906de3d82eb872"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:16",
+      "sequence": 28129,
+      "chapter_label": "ROM 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "The Spirit himself testifies with our spirit that we are children of God;",
+      "ko": "성령이 친히 우리 영으로 더불어 우리가 하나님의 자녀인 것을 증거하시나니",
+      "source_text_hash": "4956a078d99c2b5b95f38738767cbc8b1fd8cd509759517953f5c8714b16ebe2",
+      "translation_text_hash": "807558f2b9a26b957474cf9a038b7e64d69638098a1e78c029b8793698accd8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성령이 친히 우리 영으로 더불어 우리가 하나님의 자녀인 것을 증거하시나니"
+      ],
+      "raw_text_hashes": [
+        "807558f2b9a26b957474cf9a038b7e64d69638098a1e78c029b8793698accd8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:17",
+      "sequence": 28130,
+      "chapter_label": "ROM 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "and if children, then heirs—heirs of God and joint heirs with Christ, if indeed we suffer with him, that we may also be glorified with him.",
+      "ko": "자녀이면 또한 후사 곧 하나님의 후사요 그리스도와 함께한 후사니 우리가 그와 함께 영광을 받기 위하여 고난도 함께 받아야 될 것이니라",
+      "source_text_hash": "cdc269281657f142727c6417d2393d03f89a501e870b105e4e73dc80ea6b878e",
+      "translation_text_hash": "b67c7666f4543795f8bd3edc6797bc0c74d3b0cda2c6e29646dca0afdfad53b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자녀이면 또한 후사 곧 하나님의 후사요 그리스도와 함께한 후사니 우리가 그와 함께 영광을 받기 위하여 고난도 함께 받아야 될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b67c7666f4543795f8bd3edc6797bc0c74d3b0cda2c6e29646dca0afdfad53b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:18",
+      "sequence": 28131,
+      "chapter_label": "ROM 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "For I consider that the sufferings of this present time are not worthy to be compared with the glory which will be revealed toward us.",
+      "ko": "생각건대 현재의 고난은 장차 우리에게 나타날 영광과 족히 비교할 수 없도다",
+      "source_text_hash": "8dea536634d81a2057a1d668e858802efa8ebfe176ade1b78b66a249c9a5a0a2",
+      "translation_text_hash": "3cbbfa16ae973f02700e6665659b56ee1ac4feaaa25ccc5cab947dacecd6d5e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생각건대 현재의 고난은 장차 우리에게 나타날 영광과 족히 비교할 수 없도다"
+      ],
+      "raw_text_hashes": [
+        "3cbbfa16ae973f02700e6665659b56ee1ac4feaaa25ccc5cab947dacecd6d5e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:19",
+      "sequence": 28132,
+      "chapter_label": "ROM 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "For the creation waits with eager expectation for the children of God to be revealed.",
+      "ko": "피조물의 고대하는 바는 하나님의 아들들의 나타나는 것이니",
+      "source_text_hash": "56cb0ad5e7d520b24f064e5abe9ae15194b96b56ef8631b6b21d291d40469a17",
+      "translation_text_hash": "377f877d5f2ba0517bf1cbef0e5e6faae9be65f6356ddb5faa020e5c5955b66f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피조물의 고대하는 바는 하나님의 아들들의 나타나는 것이니"
+      ],
+      "raw_text_hashes": [
+        "377f877d5f2ba0517bf1cbef0e5e6faae9be65f6356ddb5faa020e5c5955b66f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:20",
+      "sequence": 28133,
+      "chapter_label": "ROM 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "For the creation was subjected to vanity, not of its own will, but because of him who subjected it, in hope",
+      "ko": "피조물이 허무한데 굴복하는 것은 자기 뜻이 아니요 오직 굴복케 하시는 이로 말미암음이라",
+      "source_text_hash": "718a973b15f942c99bab61831ff536f11a60de02e5e0d80e9e74b8cede28617c",
+      "translation_text_hash": "ed349ea159fe11577e4122d3a73f96d757e8cad682e1b1f4258f9295d4a2921b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피조물이 허무한데 굴복하는 것은 자기 뜻이 아니요 오직 굴복케 하시는 이로 말미암음이라"
+      ],
+      "raw_text_hashes": [
+        "ed349ea159fe11577e4122d3a73f96d757e8cad682e1b1f4258f9295d4a2921b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:21",
+      "sequence": 28134,
+      "chapter_label": "ROM 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "that the creation itself also will be delivered from the bondage of decay into the liberty of the glory of the children of God.",
+      "ko": "그 바라는 것은 피조물도 썩어짐의 종노릇 한데서 해방되어 하나님의 자녀들의 영광의 자유에 이르는 것이니라",
+      "source_text_hash": "7d39f6a73689a8c8944ad74f92e047538638061654e9a97a7fa69652b7c93f39",
+      "translation_text_hash": "73c167e36ebb7cdeae78297885d3e533fcc3f613932020e3cf0af34fbc68281f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 바라는 것은 피조물도 썩어짐의 종노릇 한데서 해방되어 하나님의 자녀들의 영광의 자유에 이르는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "73c167e36ebb7cdeae78297885d3e533fcc3f613932020e3cf0af34fbc68281f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:22",
+      "sequence": 28135,
+      "chapter_label": "ROM 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "For we know that the whole creation groans and travails in pain together until now.",
+      "ko": "피조물이 다 이제까지 함께 탄식하며 함께 고통하는 것을 우리가 아나니",
+      "source_text_hash": "f4d183c3e515e5b8c6329d3fab05e043bc76d99a6d7ba88bf5da7a38efe14994",
+      "translation_text_hash": "77acd82b9a9b93f3143858b5cdb3cf163f98de5c9c001de07a4a89a060e7326b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피조물이 다 이제까지 함께 탄식하며 함께 고통하는 것을 우리가 아나니"
+      ],
+      "raw_text_hashes": [
+        "77acd82b9a9b93f3143858b5cdb3cf163f98de5c9c001de07a4a89a060e7326b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:23",
+      "sequence": 28136,
+      "chapter_label": "ROM 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "Not only so, but ourselves also, who have the first fruits of the Spirit, even we ourselves groan within ourselves, waiting for adoption, the redemption of our body.",
+      "ko": "이뿐 아니라 또한 우리 곧 성령의 처음 익은 열매를 받은 우리까지도 속으로 탄식하여 양자 될것 곧 우리 몸의 구속을 기다리느니라",
+      "source_text_hash": "5fb6c0f1b29e9a12081aa2cbf9fc2ab9bd2172334f3dc1b6915289e5ed008219",
+      "translation_text_hash": "a330fdef50dbf713b9e49de37c94c4b3f43ccf3db4e82d720ecae9ae651f92df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 또한 우리 곧 성령의 처음 익은 열매를 받은 우리까지도 속으로 탄식하여 양자 될것 곧 우리 몸의 구속을 기다리느니라"
+      ],
+      "raw_text_hashes": [
+        "a330fdef50dbf713b9e49de37c94c4b3f43ccf3db4e82d720ecae9ae651f92df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:24",
+      "sequence": 28137,
+      "chapter_label": "ROM 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "For we were saved in hope, but hope that is seen is not hope. For who hopes for that which he sees?",
+      "ko": "우리가 소망으로 구원을 얻었으매 보이는 소망이 소망이 아니니 보는 것을 누가 바라리요",
+      "source_text_hash": "d8008369339105b18d29bb567740bc854e9884ca8ad02e3e42ec3eeabcc044c3",
+      "translation_text_hash": "66dd1d34f289e593a2cd5c88235985034641279238518e58df8332ce61e5cb0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 소망으로 구원을 얻었으매 보이는 소망이 소망이 아니니 보는 것을 누가 바라리요"
+      ],
+      "raw_text_hashes": [
+        "66dd1d34f289e593a2cd5c88235985034641279238518e58df8332ce61e5cb0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:25",
+      "sequence": 28138,
+      "chapter_label": "ROM 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "But if we hope for that which we don’t see, we wait for it with patience.",
+      "ko": "만일 우리가 보지 못하는 것을 바라면 참음으로 기다릴찌니라",
+      "source_text_hash": "fcce5119faab01cf9a005f73b53a1467d3546509ea88ee3e5f44d3bc526f6988",
+      "translation_text_hash": "84282f15655048cd40ae7af1c439e5fa99609aa26e9e1a23ea87218e1b948632",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 우리가 보지 못하는 것을 바라면 참음으로 기다릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "84282f15655048cd40ae7af1c439e5fa99609aa26e9e1a23ea87218e1b948632"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:26",
+      "sequence": 28139,
+      "chapter_label": "ROM 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "In the same way, the Spirit also helps our weaknesses, for we don’t know how to pray as we ought. But the Spirit himself makes intercession for us with groanings which can’t be uttered.",
+      "ko": "이와 같이 성령도 우리 연약함을 도우시나니 우리가 마땅히 빌바를 알지 못하나 오직 성령이 말할 수 없는 탄식으로 우리를 위하여 친히 간구하시느니라",
+      "source_text_hash": "906d4f60abe55d0e973b48fb6d42744c19a32758015b48aab4b82f0a13d2664e",
+      "translation_text_hash": "c5e4f6e1a211331a43f2fcf1473b5c52326269e844b423e591f768849591264a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 성령도 우리 연약함을 도우시나니 우리가 마땅히 빌바를 알지 못하나 오직 성령이 말할 수 없는 탄식으로 우리를 위하여 친히 간구하시느니라"
+      ],
+      "raw_text_hashes": [
+        "c5e4f6e1a211331a43f2fcf1473b5c52326269e844b423e591f768849591264a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:27",
+      "sequence": 28140,
+      "chapter_label": "ROM 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "He who searches the hearts knows what is on the Spirit’s mind, because he makes intercession for the saints according to God.",
+      "ko": "마음을 감찰하시는 이가 성령의 생각을 아시나니 이는 성령이 하나님의 뜻대로 성도를 위하여 간구하심이니라",
+      "source_text_hash": "9c07e82bce72213c4985642032a27ac06f07b6f08025188f546337774d9e6529",
+      "translation_text_hash": "1b331aa2610e6ac7b6192200e6ec1430ebae0a5d2f1548c79ae0f3fae213092b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음을 감찰하시는 이가 성령의 생각을 아시나니 이는 성령이 하나님의 뜻대로 성도를 위하여 간구하심이니라"
+      ],
+      "raw_text_hashes": [
+        "1b331aa2610e6ac7b6192200e6ec1430ebae0a5d2f1548c79ae0f3fae213092b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:28",
+      "sequence": 28141,
+      "chapter_label": "ROM 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "We know that all things work together for good for those who love God, for those who are called according to his purpose.",
+      "ko": "우리가 알거니와 하나님을 사랑하는 자 곧 그 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라",
+      "source_text_hash": "a888b0970cca3b084691a863a5e42eeeeed600c932f9fb3e18d6dd43173d89d6",
+      "translation_text_hash": "1580de7d4fe7d8e763a9a7b795341f8bb10640aaffe66cc9716680f640e2e187",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 알거니와 하나님을 사랑하는 자 곧 그 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라"
+      ],
+      "raw_text_hashes": [
+        "1580de7d4fe7d8e763a9a7b795341f8bb10640aaffe66cc9716680f640e2e187"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:29",
+      "sequence": 28142,
+      "chapter_label": "ROM 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "For whom he foreknew, he also predestined to be conformed to the image of his Son, that he might be the firstborn among many brothers.",
+      "ko": "하나님이 미리 아신 자들로 또한 그 아들의 형상을 본받게 하기 위하여 미리 정하셨으니 이는 그로 많은 형제 중에서 맏아들이 되게 하려 하심이니라",
+      "source_text_hash": "5a00d7f140b3651143992d46264af04fa0e62c211153e41f501ba4135f373609",
+      "translation_text_hash": "924fabba2e8d6967c350e760494b25962f7c78952f8947cbcf1250c8e6c816df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 미리 아신 자들로 또한 그 아들의 형상을 본받게 하기 위하여 미리 정하셨으니 이는 그로 많은 형제 중에서 맏아들이 되게 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "924fabba2e8d6967c350e760494b25962f7c78952f8947cbcf1250c8e6c816df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:30",
+      "sequence": 28143,
+      "chapter_label": "ROM 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Whom he predestined, those he also called. Whom he called, those he also justified. Whom he justified, those he also glorified.",
+      "ko": "또 미리 정하신 그들을 또한 부르시고 부르신 그들을 또한 의롭다 하시고 의롭다 하신 그들을 또한 영화롭게 하셨느니라",
+      "source_text_hash": "594d70e94dc16b6854609ffc048633f33a96e2102caf2f8c9ec8c35c818a5a8a",
+      "translation_text_hash": "79ba6c38b870925dd1ddea0eaffd25b89ecae438d897b80a4d047e17a9e10bff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 미리 정하신 그들을 또한 부르시고 부르신 그들을 또한 의롭다 하시고 의롭다 하신 그들을 또한 영화롭게 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "79ba6c38b870925dd1ddea0eaffd25b89ecae438d897b80a4d047e17a9e10bff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:31",
+      "sequence": 28144,
+      "chapter_label": "ROM 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "What then shall we say about these things? If God is for us, who can be against us?",
+      "ko": "그런즉 이 일에 대하여 우리가 무슨 말 하리요 만일 하나님이 우리를 위하시면 누가 우리를 대적하리요",
+      "source_text_hash": "f4e9fd4d54c2d1faa0de517378b28b6cce335bd9a145a55f5a7caecbe290cda7",
+      "translation_text_hash": "31f74ccc588bfb7e082ca39cee9ec763af944c45936fbf8b016120b6e1be5f1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 이 일에 대하여 우리가 무슨 말 하리요 만일 하나님이 우리를 위하시면 누가 우리를 대적하리요"
+      ],
+      "raw_text_hashes": [
+        "31f74ccc588bfb7e082ca39cee9ec763af944c45936fbf8b016120b6e1be5f1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:32",
+      "sequence": 28145,
+      "chapter_label": "ROM 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "He who didn’t spare his own Son, but delivered him up for us all, how would he not also with him freely give us all things?",
+      "ko": "자기 아들을 아끼지 아니하시고 우리 모든 사람을 위하여 내어주신 이가 어찌 그 아들과 함께 모든 것을 우리에게 은사로 주지 아니하시겠느뇨",
+      "source_text_hash": "5a1546212c39d74635766ebec229126042461ce122a07ac75a04b14295775939",
+      "translation_text_hash": "d3528645d6bab3b1dd09e4fb4b192e894cff4b516746dab15cfdab21bd0f3ccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 아들을 아끼지 아니하시고 우리 모든 사람을 위하여 내어주신 이가 어찌 그 아들과 함께 모든 것을 우리에게 은사로 주지 아니하시겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "d3528645d6bab3b1dd09e4fb4b192e894cff4b516746dab15cfdab21bd0f3ccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:33",
+      "sequence": 28146,
+      "chapter_label": "ROM 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "Who could bring a charge against God’s chosen ones? It is God who justifies.",
+      "ko": "누가 능히 하나님의 택하신 자들을 송사하리요 의롭다 하신 이는 하나님이시니",
+      "source_text_hash": "ce719adb26b2be22ecd238d9bd98b9ce5af900abd2e5265ca311e16eaf52c93a",
+      "translation_text_hash": "b84b34bbc01b2575487c884809113d9a1f792772e3c7a7cf13da6cedbec17dee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 능히 하나님의 택하신 자들을 송사하리요 의롭다 하신 이는 하나님이시니"
+      ],
+      "raw_text_hashes": [
+        "b84b34bbc01b2575487c884809113d9a1f792772e3c7a7cf13da6cedbec17dee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:34",
+      "sequence": 28147,
+      "chapter_label": "ROM 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Who is he who condemns? It is Christ who died, yes rather, who was raised from the dead, who is at the right hand of God, who also makes intercession for us.",
+      "ko": "누가 정죄하리요 죽으실 뿐아니라 다시 살아나신 이는 그리스도 예수시니 그는 하나님 우편에 계신 자요 우리를 위하여 간구하시는 자시니라",
+      "source_text_hash": "4b42bacbacd49325d90190b4d8409ffdb7704b04a07e773aa83b804456377b89",
+      "translation_text_hash": "0dea2b16c880587d9f511e150cdcd94562eaefca947fa6fa1295a94d22645b47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 정죄하리요 죽으실 뿐아니라 다시 살아나신 이는 그리스도 예수시니 그는 하나님 우편에 계신 자요 우리를 위하여 간구하시는 자시니라"
+      ],
+      "raw_text_hashes": [
+        "0dea2b16c880587d9f511e150cdcd94562eaefca947fa6fa1295a94d22645b47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:35",
+      "sequence": 28148,
+      "chapter_label": "ROM 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "Who shall separate us from the love of Christ? Could oppression, or anguish, or persecution, or famine, or nakedness, or peril, or sword?",
+      "ko": "누가 우리를 그리스도의 사랑에서 끊으리요 환난이나 곤고나 핍박이나 기근이나 적신이나 위험이나 칼이랴",
+      "source_text_hash": "8bfcab91e6f07f05be77be8b0473bac02fba6564525d72175deec61e9b9a693a",
+      "translation_text_hash": "2375aff9746443895593b5da9772d975928c26c2ce690a51094009f92935d22a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 우리를 그리스도의 사랑에서 끊으리요 환난이나 곤고나 핍박이나 기근이나 적신이나 위험이나 칼이랴"
+      ],
+      "raw_text_hashes": [
+        "2375aff9746443895593b5da9772d975928c26c2ce690a51094009f92935d22a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:36",
+      "sequence": 28149,
+      "chapter_label": "ROM 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "Even as it is written, “For your sake we are killed all day long. We were accounted as sheep for the slaughter.”",
+      "ko": "기록된바 우리가 종일 주를 위하여 죽임을 당케 되며 도살할 양 같이 여김을 받았나이다 함과 같으니라",
+      "source_text_hash": "ecfa64caad6d160e2d01e674abb2fccdf4750fe84acd270c1ebe1c6772ba7b1f",
+      "translation_text_hash": "3d0364824c425987da401a28b543bdc98339a92382ad660a9a55cf2682bf3e3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록된바 우리가 종일 주를 위하여 죽임을 당케 되며 도살할 양 같이 여김을 받았나이다 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "3d0364824c425987da401a28b543bdc98339a92382ad660a9a55cf2682bf3e3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:37",
+      "sequence": 28150,
+      "chapter_label": "ROM 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "No, in all these things we are more than conquerors through him who loved us.",
+      "ko": "그러나 이 모든 일에 우리를 사랑하시는 이로 말미암아 우리가 넉넉히 이기느니라",
+      "source_text_hash": "a007dd48700339b4bf580fb5eef22fe51e55f92ea458b4fffa385404d2eeb368",
+      "translation_text_hash": "988098a491ce3fc5b2c4dc8df9a3927ff360ea8b8be3a980603a1e2d43ea3048",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 이 모든 일에 우리를 사랑하시는 이로 말미암아 우리가 넉넉히 이기느니라"
+      ],
+      "raw_text_hashes": [
+        "988098a491ce3fc5b2c4dc8df9a3927ff360ea8b8be3a980603a1e2d43ea3048"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:38",
+      "sequence": 28151,
+      "chapter_label": "ROM 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "For I am persuaded that neither death, nor life, nor angels, nor principalities, nor things present, nor things to come, nor powers,",
+      "ko": "내가 확신하노니 사망이나 생명이나 천사들이나 권세자들이나 현재 일이나 장래 일이나 능력이나",
+      "source_text_hash": "7c066007a804425e2eae52af0f35da44ae8ffb0d2d9bbec682f75d1f33bbf4bb",
+      "translation_text_hash": "c63eea34976e5de7269e41eb5104786a078b4fc63ec19a7adf56718a3fe1884c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 확신하노니 사망이나 생명이나 천사들이나 권세자들이나 현재 일이나 장래 일이나 능력이나"
+      ],
+      "raw_text_hashes": [
+        "c63eea34976e5de7269e41eb5104786a078b4fc63ec19a7adf56718a3fe1884c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:8:39",
+      "sequence": 28152,
+      "chapter_label": "ROM 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "ROM",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "nor height, nor depth, nor any other created thing will be able to separate us from God’s love which is in Christ Jesus our Lord.",
+      "ko": "높음이나 깊음이나 다른 아무 피조물이라도 우리를 우리 주 그리스도 예수 안에 있는 하나님의 사랑에서 끊을 수 없으리라",
+      "source_text_hash": "948e213b0c4184e041b65baf5f96a854217dddb853bc08f870a0173810475935",
+      "translation_text_hash": "41b6a0507b2bf794b4878cea7038dcd10bef5725938520048fbbb2f59fd2f27f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "높음이나 깊음이나 다른 아무 피조물이라도 우리를 우리 주 그리스도 예수 안에 있는 하나님의 사랑에서 끊을 수 없으리라"
+      ],
+      "raw_text_hashes": [
+        "41b6a0507b2bf794b4878cea7038dcd10bef5725938520048fbbb2f59fd2f27f"
+      ]
+    }
+  ]
+}

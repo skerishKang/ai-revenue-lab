@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:007",
+  "unit_ordinal": 410,
+  "unit_label": "EZR 7",
+  "book_code": "EZR",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:7:1",
+      "sequence": 12175,
+      "chapter_label": "EZR 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Now after these things, in the reign of Artaxerxes king of Persia, Ezra the son of Seraiah, the son of Azariah, the son of Hilkiah,",
+      "ko": "이 일 후 바사 왕 아닥사스다가 위에 있을 때에 에스라라 하는 자가 있으니라 저는 스라야의 아들이요 아사랴의 손자요 힐기야의 증손이요",
+      "source_text_hash": "ddd908ed0a21ae5e4a9de48ad504b63144ff400f49285c6911db1d3264460cce",
+      "translation_text_hash": "38305ba9c1bda7145a41118868d6c94e6fc7a523d6d001d5c3645e589a5ff372",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후 바사 왕 아닥사스다가 위에 있을 때에 에스라라 하는 자가 있으니라 저는 스라야의 아들이요 아사랴의 손자요 힐기야의 증손이요"
+      ],
+      "raw_text_hashes": [
+        "38305ba9c1bda7145a41118868d6c94e6fc7a523d6d001d5c3645e589a5ff372"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:2",
+      "sequence": 12176,
+      "chapter_label": "EZR 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "the son of Shallum, the son of Zadok, the son of Ahitub,",
+      "ko": "살룸의 현손이요 사독의 오대손이요 아히둡의 육대손이요",
+      "source_text_hash": "cc8e220fa2e46830b763ae7b3f947c1174f86e4cf2f3c56de0448e85331f66a2",
+      "translation_text_hash": "377cbbf3ce3776ef67d17ed71f289783a4b6a7e3eab6327849393361e6007e74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살룸의 현손이요 사독의 오대손이요 아히둡의 육대손이요"
+      ],
+      "raw_text_hashes": [
+        "377cbbf3ce3776ef67d17ed71f289783a4b6a7e3eab6327849393361e6007e74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:3",
+      "sequence": 12177,
+      "chapter_label": "EZR 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "the son of Amariah, the son of Azariah, the son of Meraioth,",
+      "ko": "아마랴의 칠대손이요 아사랴의 팔대손이요 므라욧의 구대손이요",
+      "source_text_hash": "f43970c368933d87d4035f1b338ffeb7391ed1ae419115248c10793e43e3ac36",
+      "translation_text_hash": "030381164ad6b6937ef7f05447d77ee9d685ca85f7be70fff8c4d416c905b21d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마랴의 칠대손이요 아사랴의 팔대손이요 므라욧의 구대손이요"
+      ],
+      "raw_text_hashes": [
+        "030381164ad6b6937ef7f05447d77ee9d685ca85f7be70fff8c4d416c905b21d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:4",
+      "sequence": 12178,
+      "chapter_label": "EZR 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "the son of Zerahiah, the son of Uzzi, the son of Bukki,",
+      "ko": "스라히야의 십대손이요 웃시엘의 십 일대손이요 북기의 십 이대손이요",
+      "source_text_hash": "41595de2dde933b092c42ed174b37d42d38b30d5da51f426b32082fd0a767c28",
+      "translation_text_hash": "a8018d78a17d7c16ee58dcf57e4321f227d1363ec4a1e554862d1b52071856c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스라히야의 십대손이요 웃시엘의 십 일대손이요 북기의 십 이대손이요"
+      ],
+      "raw_text_hashes": [
+        "a8018d78a17d7c16ee58dcf57e4321f227d1363ec4a1e554862d1b52071856c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:5",
+      "sequence": 12179,
+      "chapter_label": "EZR 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "the son of Abishua, the son of Phinehas, the son of Eleazar, the son of Aaron the chief priest—",
+      "ko": "아비수아의 십 삼대손이요 비느하스의 십 사대손이요 엘르아살의 십 오대손이요 대제사장 아론의 십 륙대손이라",
+      "source_text_hash": "3c2acd55d990c0ef07c6941ba3e0d19eef68d508d4155951e223ee15b8e40bf2",
+      "translation_text_hash": "18e445af3514909e9411e2d7dac847cb5ab873778fe55646d864ef338ae88b46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비수아의 십 삼대손이요 비느하스의 십 사대손이요 엘르아살의 십 오대손이요 대제사장 아론의 십 륙대손이라"
+      ],
+      "raw_text_hashes": [
+        "18e445af3514909e9411e2d7dac847cb5ab873778fe55646d864ef338ae88b46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:6",
+      "sequence": 12180,
+      "chapter_label": "EZR 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "this Ezra went up from Babylon. He was a skilled scribe in the law of Moses, which the LORD, the God of Israel, had given; and the king granted him all his request, according to the LORD his God’s hand on him.",
+      "ko": "이 에스라가 바벨론에서 올라왔으니 저는 이스라엘 하나님 여호와께서 주신바 모세의 율법에 익숙한 학사로서 그 하나님 여호와의 도우심을 입으므로 왕에게 구하는 것은 다 받는 자더니",
+      "source_text_hash": "0ee3af41476f30a791dcc7d37a9de788700bf4d2308f3c01c3aa17b114520234",
+      "translation_text_hash": "537c8258e6490d305c98a9911babab3eeb76939c49b90e9a40ce8e97d70eb6ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 에스라가 바벨론에서 올라왔으니 저는 이스라엘 하나님 여호와께서 주신바 모세의 율법에 익숙한 학사로서 그 하나님 여호와의 도우심을 입으므로 왕에게 구하는 것은 다 받는 자더니"
+      ],
+      "raw_text_hashes": [
+        "537c8258e6490d305c98a9911babab3eeb76939c49b90e9a40ce8e97d70eb6ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:7",
+      "sequence": 12181,
+      "chapter_label": "EZR 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Some of the children of Israel, including some of the priests, the Levites, the singers, the gatekeepers, and the temple servants went up to Jerusalem in the seventh year of Artaxerxes the king.",
+      "ko": "아닥사스다왕 칠년에 이스라엘 자손과 제사장들과 레위 사람들과 노래하는 자들과 문지기들과 느디님 사람들 중에 몇 사람이 예루살렘으로 올라올 때에",
+      "source_text_hash": "169260dab493b70512b965fe78da4c50c11098167d2c87f5a2f1e38b66e9f01f",
+      "translation_text_hash": "b98bbe6927577b2dbc857384ba3fcfc8e6c6b91a0c5d434205533f946f3e84d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다왕 칠년에 이스라엘 자손과 제사장들과 레위 사람들과 노래하는 자들과 문지기들과 느디님 사람들 중에 몇 사람이 예루살렘으로 올라올 때에"
+      ],
+      "raw_text_hashes": [
+        "b98bbe6927577b2dbc857384ba3fcfc8e6c6b91a0c5d434205533f946f3e84d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:8",
+      "sequence": 12182,
+      "chapter_label": "EZR 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "He came to Jerusalem in the fifth month, which was in the seventh year of the king.",
+      "ko": "이 에스라가 올라왔으니 왕의 칠년 오월이라",
+      "source_text_hash": "1e05acdeaa0f7d688148714dddeedc9d4048b66b1a0550f4a083af9c6db92a8c",
+      "translation_text_hash": "63deabcc205a7d3111bd7fab9f3320af14a326fe9c311d48e8bb339ad374a5b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 에스라가 올라왔으니 왕의 칠년 오월이라"
+      ],
+      "raw_text_hashes": [
+        "63deabcc205a7d3111bd7fab9f3320af14a326fe9c311d48e8bb339ad374a5b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:9",
+      "sequence": 12183,
+      "chapter_label": "EZR 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "For on the first day of the first month he began to go up from Babylon; and on the first day of the fifth month he came to Jerusalem, according to the good hand of his God on him.",
+      "ko": "정월 초하루에 바벨론에서 길을 떠났고 하나님의 선한 손의 도우심을 입어 오월 초하루에 예루살렘에 이르니라",
+      "source_text_hash": "e09d8af1c8124f459196e3529b03578a24b6e56876ba85384a4577bbcaa877c4",
+      "translation_text_hash": "1868ef977d308609ce5cf594a77bbef9f179ef2536e83ead35fd6e0a95f4cd15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 초하루에 바벨론에서 길을 떠났고 하나님의 선한 손의 도우심을 입어 오월 초하루에 예루살렘에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "1868ef977d308609ce5cf594a77bbef9f179ef2536e83ead35fd6e0a95f4cd15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:10",
+      "sequence": 12184,
+      "chapter_label": "EZR 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "For Ezra had set his heart to seek the LORD’s law, and to do it, and to teach statutes and ordinances in Israel.",
+      "ko": "에스라가 여호와의 율법을 연구하여 준행하며 율례와 규례를 이스라엘에게 가르치기로 결심하였었더라",
+      "source_text_hash": "0fdb1eb0c6fd25fa182c1b592f8e58c459b07a4a82bc0bbd57ef367ece392929",
+      "translation_text_hash": "d53c24021b3c20c1e5a40cb52da6800007cc6818caf1b0e748b1665a08c88537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스라가 여호와의 율법을 연구하여 준행하며 율례와 규례를 이스라엘에게 가르치기로 결심하였었더라"
+      ],
+      "raw_text_hashes": [
+        "d53c24021b3c20c1e5a40cb52da6800007cc6818caf1b0e748b1665a08c88537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:11",
+      "sequence": 12185,
+      "chapter_label": "EZR 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Now this is the copy of the letter that King Artaxerxes gave to Ezra the priest, the scribe, even the scribe of the words of the LORD’s commandments, and of his statutes to Israel: i",
+      "ko": "여호와의 계명의 말씀과 이스라엘에게 주신 율례의 학사인 학사겸 제사장 에스라에게 아닥사스다왕이 내린 조서 초본은 아래와 같으니라",
+      "source_text_hash": "968906ddc679dcc6bc2432274d3289d0c22695d4368a6b117520917db983192d",
+      "translation_text_hash": "b555e6e0502c58a2462a487a4aa95d853854be964031c3d2958127c5e1afad0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 계명의 말씀과 이스라엘에게 주신 율례의 학사인 학사겸 제사장 에스라에게 아닥사스다왕이 내린 조서 초본은 아래와 같으니라"
+      ],
+      "raw_text_hashes": [
+        "b555e6e0502c58a2462a487a4aa95d853854be964031c3d2958127c5e1afad0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:12",
+      "sequence": 12186,
+      "chapter_label": "EZR 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Artaxerxes, king of kings, i To Ezra the priest, the scribe of the law of the perfect God of heaven. i1 Now",
+      "ko": "모든 왕의 왕 아닥사스다는 하늘의 하나님의 율법에 완전한 학사겸 제사장 에스라에게",
+      "source_text_hash": "34ef0e29970cfd123070eafb63305b11eeebc45e44cb4e43d446c5503ca8a24f",
+      "translation_text_hash": "f95a30545e69160144d1069d4076732b3ea68dce322f59aeb0a1f5bdeae99b70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 왕의 왕 아닥사스다는 하늘의 하나님의 율법에 완전한 학사겸 제사장 에스라에게"
+      ],
+      "raw_text_hashes": [
+        "f95a30545e69160144d1069d4076732b3ea68dce322f59aeb0a1f5bdeae99b70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:13",
+      "sequence": 12187,
+      "chapter_label": "EZR 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "I make a decree that all those of the people of Israel and their priests and the Levites in my realm, who intend of their own free will to go to Jerusalem, go with you.",
+      "ko": "조서하노니 우리 나라에 있는 이스라엘 백성과 저희 제사장들과 레위 사람들 중에 예루살렘으로 올라갈 뜻이 있는 자는 누구든지 너와 함께 갈찌어다",
+      "source_text_hash": "063875240e15bbbe17eaf010d7b9039f44d94d91ed45067e1526321939b8108c",
+      "translation_text_hash": "f3518b6c811532cee68263aad51afb779f8b801f0fcc7db741bc29038cef70b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조서하노니 우리 나라에 있는 이스라엘 백성과 저희 제사장들과 레위 사람들 중에 예루살렘으로 올라갈 뜻이 있는 자는 누구든지 너와 함께 갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "f3518b6c811532cee68263aad51afb779f8b801f0fcc7db741bc29038cef70b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:14",
+      "sequence": 12188,
+      "chapter_label": "EZR 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Because you are sent by the king and his seven counselors to inquire concerning Judah and Jerusalem, according to the law of your God which is in your hand,",
+      "ko": "너는 네 손에 있는 네 하나님의 율법을 좇아 유다와 예루살렘의 정형을 살피기 위하여 왕과 일곱 모사의 보냄을 받았으니",
+      "source_text_hash": "8b48db00ab056744375d6de6801498443b2cd2abe12ee88eb665ff67df5cb908",
+      "translation_text_hash": "f73c7db5c889ecd324fa691a4b3da7a7a5ca876017da65cc9d11f1a929329e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 손에 있는 네 하나님의 율법을 좇아 유다와 예루살렘의 정형을 살피기 위하여 왕과 일곱 모사의 보냄을 받았으니"
+      ],
+      "raw_text_hashes": [
+        "f73c7db5c889ecd324fa691a4b3da7a7a5ca876017da65cc9d11f1a929329e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:15",
+      "sequence": 12189,
+      "chapter_label": "EZR 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "and to carry the silver and gold, which the king and his counselors have freely offered to the God of Israel, whose habitation is in Jerusalem,",
+      "ko": "왕과 모사들이 예루살렘에 거하신 이스라엘 하나님께 성심으로 드리는 은금을 가져가고",
+      "source_text_hash": "6ab123fc13c94174190a146ab72eac1a772d6696a723cafd0466e34aa7a0ddee",
+      "translation_text_hash": "c209778ac6ea202234e04a079fb850c299b2b07257012da4cd97e41cbacf1f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕과 모사들이 예루살렘에 거하신 이스라엘 하나님께 성심으로 드리는 은금을 가져가고"
+      ],
+      "raw_text_hashes": [
+        "c209778ac6ea202234e04a079fb850c299b2b07257012da4cd97e41cbacf1f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:16",
+      "sequence": 12190,
+      "chapter_label": "EZR 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "and all the silver and gold that you will find in all the province of Babylon, with the free will offering of the people and of the priests, offering willingly for the house of their God which is in Jerusalem.",
+      "ko": "또 네가 바벨론 온 도에서 얻을 모든 은금과 및 백성과 제사장들이 예루살렘 그 하나님의 전을 위하여 즐거이 드릴 예물을 가져다가",
+      "source_text_hash": "61b976b436b66da9b568877d8e030b015ee65768f3628feb6cd72f351e35bfb9",
+      "translation_text_hash": "0f4d5275d3bf557afba08f3e54fa1ff2ceab797b824b12d0f08279bd9e94c934",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네가 바벨론 온 도에서 얻을 모든 은금과 및 백성과 제사장들이 예루살렘 그 하나님의 전을 위하여 즐거이 드릴 예물을 가져다가"
+      ],
+      "raw_text_hashes": [
+        "0f4d5275d3bf557afba08f3e54fa1ff2ceab797b824b12d0f08279bd9e94c934"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:17",
+      "sequence": 12191,
+      "chapter_label": "EZR 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore you shall with all diligence buy with this money bulls, rams, and lambs with their meal offerings and their drink offerings, and shall offer them on the altar of the house of your God which is in Jerusalem.",
+      "ko": "그 돈으로 수송아지와 수양과 어린 양과 그 소제와 그 전제의 물품을 신속히 사서 예루살렘 네 하나님의 전 단 위에 드리고",
+      "source_text_hash": "48c8c79087891c3e94f4168cd824a0542ba66f5ea7aeff748a5a954fe1d100ed",
+      "translation_text_hash": "f5b0290f52003155c57a90d2ac939d6b4361a426407ebae7a9727739bdd81d46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 돈으로 수송아지와 수양과 어린 양과 그 소제와 그 전제의 물품을 신속히 사서 예루살렘 네 하나님의 전 단 위에 드리고"
+      ],
+      "raw_text_hashes": [
+        "f5b0290f52003155c57a90d2ac939d6b4361a426407ebae7a9727739bdd81d46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:18",
+      "sequence": 12192,
+      "chapter_label": "EZR 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "Whatever seems good to you and to your brothers to do with the rest of the silver and the gold, do that according to the will of your God.",
+      "ko": "그 나머지 은금은 너와 너의 형제가 선히 여기는 일에 너희 하나님의 뜻을 좇아 쓸찌며",
+      "source_text_hash": "5985aa3a0dc74c82088610a4b77d0fd2ab27228b3a71f4d9e28448b55df968ba",
+      "translation_text_hash": "b8973e87449939712a5b48d244e8d4c07dd571c7e8b826b9d1b56a2944533910",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지 은금은 너와 너의 형제가 선히 여기는 일에 너희 하나님의 뜻을 좇아 쓸찌며"
+      ],
+      "raw_text_hashes": [
+        "b8973e87449939712a5b48d244e8d4c07dd571c7e8b826b9d1b56a2944533910"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:19",
+      "sequence": 12193,
+      "chapter_label": "EZR 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "The vessels that are given to you for the service of the house of your God, deliver before the God of Jerusalem.",
+      "ko": "네 하나님의 전에서 섬기는 일을 위하여 네게 준 기명은 예루살렘 하나님 앞에 드리고",
+      "source_text_hash": "ce15d95c793e5e3812257c8da76ee49bad7d5ae79b84c7ee5f32aee125cf1b51",
+      "translation_text_hash": "4a9a5e7abc4ae987e3c33c6677437a2b36a7e941f712caf589e62265f004bd7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님의 전에서 섬기는 일을 위하여 네게 준 기명은 예루살렘 하나님 앞에 드리고"
+      ],
+      "raw_text_hashes": [
+        "4a9a5e7abc4ae987e3c33c6677437a2b36a7e941f712caf589e62265f004bd7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:20",
+      "sequence": 12194,
+      "chapter_label": "EZR 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Whatever more will be needed for the house of your God, which you may have occasion to give, give it out of the king’s treasure house. i1",
+      "ko": "그 외에도 네 하나님의 전에 쓰일 것이 있어서 네가 드리고자 하거든 무엇이든지 왕의 내탕고에서 취하여 드릴찌니라",
+      "source_text_hash": "c9682a92cd1087cbe08c035b260cfa9ddafc6610d542f3f81a6ad786a35b3d63",
+      "translation_text_hash": "464b9ed3139a1b367fd03822174a90e674249e826295494c97450f11786d730f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 외에도 네 하나님의 전에 쓰일 것이 있어서 네가 드리고자 하거든 무엇이든지 왕의 내탕고에서 취하여 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "464b9ed3139a1b367fd03822174a90e674249e826295494c97450f11786d730f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:21",
+      "sequence": 12195,
+      "chapter_label": "EZR 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "I, even I, Artaxerxes the king, make a decree to all the treasurers who are beyond the River, that whatever Ezra the priest, the scribe of the law of the God of heaven, requires of you, it shall be done with all diligence,",
+      "ko": "나 곧 나 아닥사스다왕이 강 서편 모든 고지기에게 조서를 내려 이르기를 하늘의 하나님의 율법의 학사겸 제사장 에스라가 무릇 너희에게 구하는 것은 신속히 시행하되",
+      "source_text_hash": "969d78a8cd7ea68ddeb92214f7eafa00a6a264d54cb6460158ad36693a51ee61",
+      "translation_text_hash": "eff3adc908bbe871a119481ec63ae7dcc1a9af34522c2fa396458a40f9e15ac3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 나 아닥사스다왕이 강 서편 모든 고지기에게 조서를 내려 이르기를 하늘의 하나님의 율법의 학사겸 제사장 에스라가 무릇 너희에게 구하는 것은 신속히 시행하되"
+      ],
+      "raw_text_hashes": [
+        "eff3adc908bbe871a119481ec63ae7dcc1a9af34522c2fa396458a40f9e15ac3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:22",
+      "sequence": 12196,
+      "chapter_label": "EZR 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "up to one hundred talents of silver, and to one hundred cors of wheat, and to one hundred baths of wine, and to one hundred baths of oil, and salt without prescribing how much.",
+      "ko": "은은 일백 달란트까지, 밀은 일백 고르까지, 포도주는 일백 밧까지, 기름도 일백 밧까지 하고 소금은 정수 없이 하라",
+      "source_text_hash": "2f873f530e6f1548c719a09212e75634063c494421e7b285022927b49985d299",
+      "translation_text_hash": "a972593c896f3542d01651f86628cb44459c55c58f3d20152d460393c16844f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은은 일백 달란트까지, 밀은 일백 고르까지, 포도주는 일백 밧까지, 기름도 일백 밧까지 하고 소금은 정수 없이 하라"
+      ],
+      "raw_text_hashes": [
+        "a972593c896f3542d01651f86628cb44459c55c58f3d20152d460393c16844f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:23",
+      "sequence": 12197,
+      "chapter_label": "EZR 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "Whatever is commanded by the God of heaven, let it be done exactly for the house of the God of heaven; for why should there be wrath against the realm of the king and his sons? i1",
+      "ko": "무릇 하늘의 하나님의 전을 위하여 하늘의 하나님의 명하신 것은 삼가 행하라 어찌하여 진노가 왕과 왕자의 나라에 임하게 하랴",
+      "source_text_hash": "3e3f7be9bc19ec2f713abb1c000aabbeef6ca4d4f4f60c47fab0663e167d237e",
+      "translation_text_hash": "3a21528dbf0dacd212a12a743c2bdca7ec2da72794f6f5fa8eed5bd72cf294cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 하늘의 하나님의 전을 위하여 하늘의 하나님의 명하신 것은 삼가 행하라 어찌하여 진노가 왕과 왕자의 나라에 임하게 하랴"
+      ],
+      "raw_text_hashes": [
+        "3a21528dbf0dacd212a12a743c2bdca7ec2da72794f6f5fa8eed5bd72cf294cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:24",
+      "sequence": 12198,
+      "chapter_label": "EZR 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "Also we inform you that it shall not be lawful to impose tribute, custom, or toll on any of the priests, Levites, singers, gatekeepers, temple servants, or laborers of this house of God. i1",
+      "ko": "내가 너희에게 이르노니 제사장들이나 레위 사람들이나 노래하는 자들이나 문지기들이나 느디님 사람들이나 혹 하나님의 전에서 일하는 자들에게 조공과 잡세와 부세를 받는 것이 불가하니라 하였노라",
+      "source_text_hash": "aa81f03ef132dbac03c2c93ebe7d37eb10ef6186996931a0afc35ff1d70c6e3f",
+      "translation_text_hash": "d1a074104ea3ed1a164e27ea4bd2dc3421ab5eafcfd52692f5d4020574c8714d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 이르노니 제사장들이나 레위 사람들이나 노래하는 자들이나 문지기들이나 느디님 사람들이나 혹 하나님의 전에서 일하는 자들에게 조공과 잡세와 부세를 받는 것이 불가하니라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "d1a074104ea3ed1a164e27ea4bd2dc3421ab5eafcfd52692f5d4020574c8714d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:25",
+      "sequence": 12199,
+      "chapter_label": "EZR 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "You, Ezra, according to the wisdom of your God that is in your hand, appoint magistrates and judges who may judge all the people who are beyond the River, who all know the laws of your God; and teach him who doesn’t know them.",
+      "ko": "에스라여 너는 네 손에 있는 네 하나님의 지혜를 따라 네 하나님의 율법을 아는 자로 유사와 재판관을 삼아 강 서편 모든 백성을 재판하게 하고 그 알지 못하는 자는 너희가 가르치라",
+      "source_text_hash": "e4fbcb83fbeaab7370a26f3f24aa7b44b83cb643dc09505774acf699014d98aa",
+      "translation_text_hash": "2854776ee47caa9abdb8bc80a86deb8e1e1dc3c3d5aec950de644282edfc838d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에스라여 너는 네 손에 있는 네 하나님의 지혜를 따라 네 하나님의 율법을 아는 자로 유사와 재판관을 삼아 강 서편 모든 백성을 재판하게 하고 그 알지 못하는 자는 너희가 가르치라"
+      ],
+      "raw_text_hashes": [
+        "2854776ee47caa9abdb8bc80a86deb8e1e1dc3c3d5aec950de644282edfc838d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:26",
+      "sequence": 12200,
+      "chapter_label": "EZR 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Whoever will not do the law of your God and the law of the king, let judgment be executed on him with all diligence, whether it is to death, or to banishment, or to confiscation of goods, or to imprisonment.",
+      "ko": "무릇 네 하나님의 명령과 왕의 명령을 준행치 아니하는 자는 속히 그 죄를 정하여 혹 죽이거나 정배하거나 가산을 적몰하거나 옥에 가둘찌니라 하였더라",
+      "source_text_hash": "d389591d7514dcb107232fc617150501d4dcbef82ad2c278820dd47cba8eba89",
+      "translation_text_hash": "58adb0ec9223d0441ab0074c8ad873bf7cda35f59caca1bbe23c2b7dc04ca1a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 네 하나님의 명령과 왕의 명령을 준행치 아니하는 자는 속히 그 죄를 정하여 혹 죽이거나 정배하거나 가산을 적몰하거나 옥에 가둘찌니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "58adb0ec9223d0441ab0074c8ad873bf7cda35f59caca1bbe23c2b7dc04ca1a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:27",
+      "sequence": 12201,
+      "chapter_label": "EZR 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "Blessed be the LORD, the God of our fathers, who has put such a thing as this in the king’s heart, to beautify the LORD’s house which is in Jerusalem;",
+      "ko": "우리 열조의 하나님 여호와를 송축할찌로다 그가 왕의 마음에 예루살렘 여호와의 전을 아름답게 할 뜻을 두시고",
+      "source_text_hash": "6b3a08aa698cedb1d30cca762e621dff131659dbb7cca4283e8196fbbcb76d38",
+      "translation_text_hash": "73723061bd977a27b7010081574de451e6dac4153aeea5d66597c4b721f78ffb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 열조의 하나님 여호와를 송축할찌로다 그가 왕의 마음에 예루살렘 여호와의 전을 아름답게 할 뜻을 두시고"
+      ],
+      "raw_text_hashes": [
+        "73723061bd977a27b7010081574de451e6dac4153aeea5d66597c4b721f78ffb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:7:28",
+      "sequence": 12202,
+      "chapter_label": "EZR 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZR",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "and has extended loving kindness to me before the king and his counselors, and before all the king’s mighty princes. I was strengthened according to the LORD my God’s hand on me, and I gathered together chief men out of Israel to go up with me.",
+      "ko": "또 나로 왕과 그 모사들의 앞과 왕의 권세 있는 모든 방백의 앞에서 은혜를 얻게 하셨도다 나의 하나님 여호와의 손이 나의 위에 있으므로 내가 힘을 얻어 이스라엘 중에 두목을 모아 나와 함께 올라오게 하였노라",
+      "source_text_hash": "8239845129a1e1a560e8fe59f77fe25491aae3efbda4350a25cd60d0b1e4b5cd",
+      "translation_text_hash": "bf648aff6494af2fea3ad5d8e0ab28078f662ee14586d91112d3a962b916dc24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 나로 왕과 그 모사들의 앞과 왕의 권세 있는 모든 방백의 앞에서 은혜를 얻게 하셨도다 나의 하나님 여호와의 손이 나의 위에 있으므로 내가 힘을 얻어 이스라엘 중에 두목을 모아 나와 함께 올라오게 하였노라"
+      ],
+      "raw_text_hashes": [
+        "bf648aff6494af2fea3ad5d8e0ab28078f662ee14586d91112d3a962b916dc24"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:026",
+  "unit_ordinal": 828,
+  "unit_label": "EZK 26",
+  "book_code": "EZK",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:26:1",
+      "sequence": 21102,
+      "chapter_label": "EZK 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "In the eleventh year, in the first of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십 일년 어느 달 초 일일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9784c1cf78aebd2759ca7205cc83ec09e97dee404e2da5ea426d9e08e15e5294",
+      "translation_text_hash": "eedadb7d58f767c4b5bdcc8fb6d7d2a61a1e7e066a3a16ce14f06ed5b21c3877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 일년 어느 달 초 일일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "eedadb7d58f767c4b5bdcc8fb6d7d2a61a1e7e066a3a16ce14f06ed5b21c3877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:2",
+      "sequence": 21103,
+      "chapter_label": "EZK 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, because Tyre has said against Jerusalem, ‘Aha! She is broken! She who was the gateway of the peoples has been returned to me. I will be replenished, now that she is laid waste;’",
+      "ko": "인자야 두로가 예루살렘을 쳐서 이르기를 아하 좋다 만민의 문이 깨어져서 내게로 돌아왔도다 그가 황무하였으니 내가 충만함을 얻으리라 하였도다",
+      "source_text_hash": "e672bfedcca4608d866c03583097b2d96d1699d6ad068720fbf5e53c9ac92eae",
+      "translation_text_hash": "faa1279595ecd68fd71e9bf5c40eabaf41023a1beebbe283a53d01d94632179a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 두로가 예루살렘을 쳐서 이르기를 아하 좋다 만민의 문이 깨어져서 내게로 돌아왔도다 그가 황무하였으니 내가 충만함을 얻으리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "faa1279595ecd68fd71e9bf5c40eabaf41023a1beebbe283a53d01d94632179a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:3",
+      "sequence": 21104,
+      "chapter_label": "EZK 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "therefore the Lord GOD says, ‘Behold, I am against you, Tyre, and will cause many nations to come up against you, as the sea causes its waves to come up.",
+      "ko": "그러므로 나 주 여호와가 말하노라 두로야 내가 너를 대적하여 바다가 그 파도로 흉용케 함 같이 열국으로 와서 너를 치게 하리니",
+      "source_text_hash": "bbeb0bcc018668842a3680c3e8fe67d4f93076912b1c198164508111ed0df0e7",
+      "translation_text_hash": "19552e5b1a1d124a9a6920067304644ea251b9cd4a399347e3aaf816e7a937ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 두로야 내가 너를 대적하여 바다가 그 파도로 흉용케 함 같이 열국으로 와서 너를 치게 하리니"
+      ],
+      "raw_text_hashes": [
+        "19552e5b1a1d124a9a6920067304644ea251b9cd4a399347e3aaf816e7a937ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:4",
+      "sequence": 21105,
+      "chapter_label": "EZK 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "They will destroy the walls of Tyre, and break down her towers. I will also scrape her dust from her, and make her a bare rock.",
+      "ko": "그들이 두로의 성벽을 훼파하며 그 망대를 헐 것이요 나도 티끌을 그 위에서 쓸어 버려서 말간 반석이 되게 하며",
+      "source_text_hash": "bf7bb17a061393e7f9513460dca4a0da521be00955ff9463c402bdc26c5cdc29",
+      "translation_text_hash": "0e3eb9d78a4bbf127eccec96467bf083ba65a9bb56c61bb55c27360816e114f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 두로의 성벽을 훼파하며 그 망대를 헐 것이요 나도 티끌을 그 위에서 쓸어 버려서 말간 반석이 되게 하며"
+      ],
+      "raw_text_hashes": [
+        "0e3eb9d78a4bbf127eccec96467bf083ba65a9bb56c61bb55c27360816e114f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:5",
+      "sequence": 21106,
+      "chapter_label": "EZK 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "She will be a place for the spreading of nets in the middle of the sea; for I have spoken it,’ says the Lord GOD. ‘She will become plunder for the nations.",
+      "ko": "바다 가운데 그물 치는 곳이 되게 하리니 내가 말하였음이니라 나 주 여호와의 말이니라 그가 이방의 노략거리가 될 것이요",
+      "source_text_hash": "df8e4e5f6902602b0a830dd97d47882dea68c22f025f9ddd6a92ae84a594f42b",
+      "translation_text_hash": "4d62ef395d397487332ed32af4708e23e425dc6faf9a2a7894eb79be0e12c816",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다 가운데 그물 치는 곳이 되게 하리니 내가 말하였음이니라 나 주 여호와의 말이니라 그가 이방의 노략거리가 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "4d62ef395d397487332ed32af4708e23e425dc6faf9a2a7894eb79be0e12c816"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:6",
+      "sequence": 21107,
+      "chapter_label": "EZK 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Her daughters who are in the field will be slain with the sword. Then they will know that I am the LORD.’",
+      "ko": "들에 있는 그의 딸들은 칼에 죽으리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "7e3790ba35f515037ab9050d2ec4635160b3297cf4b112f0864abdc0bae83eeb",
+      "translation_text_hash": "c1510e6634b58e40d0fc0f7f9b05f4f748323403439dbfbd50b63f19bf147cd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들에 있는 그의 딸들은 칼에 죽으리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "c1510e6634b58e40d0fc0f7f9b05f4f748323403439dbfbd50b63f19bf147cd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:7",
+      "sequence": 21108,
+      "chapter_label": "EZK 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "“For the Lord GOD says: ‘Behold, I will bring on Tyre Nebuchadnezzar king of Babylon, king of kings, from the north, with horses, with chariots, with horsemen, and an army with many people.",
+      "ko": "나 주 여호와가 말하노라 내가 열왕의 왕 곧 바벨론 왕 느부갓네살로 북방에서 말과 병거와 기병과 군대와 백성의 큰 무리를 거느리고 와서 두로를 치게 할 때에",
+      "source_text_hash": "12488c92719a68e8cc93f14e5224dce885f21d50edaae0c1370d96f6af6148f8",
+      "translation_text_hash": "df1ec9b1b6ba6329469125d21b02b0abb08f9c77080e845be977c0fcd38f2c38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 열왕의 왕 곧 바벨론 왕 느부갓네살로 북방에서 말과 병거와 기병과 군대와 백성의 큰 무리를 거느리고 와서 두로를 치게 할 때에"
+      ],
+      "raw_text_hashes": [
+        "df1ec9b1b6ba6329469125d21b02b0abb08f9c77080e845be977c0fcd38f2c38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:8",
+      "sequence": 21109,
+      "chapter_label": "EZK 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "He will kill your daughters in the field with the sword. He will make forts against you, cast up a mound against you, and raise up the buckler against you.",
+      "ko": "그가 들에 있는 너의 딸들을 칼로 죽이고 너를 치려고 운제를 세우며 토성을 쌓으며 방패를 갖출 것이며",
+      "source_text_hash": "eea9302d5c65a3bc6e3b11cfd4deda481076ed9bea21ba15478389d06d1ba383",
+      "translation_text_hash": "df03bc9fbc3b337a70695f964f8e7d96f8ccfe4a44f6285769f17b6025e5db1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 들에 있는 너의 딸들을 칼로 죽이고 너를 치려고 운제를 세우며 토성을 쌓으며 방패를 갖출 것이며"
+      ],
+      "raw_text_hashes": [
+        "df03bc9fbc3b337a70695f964f8e7d96f8ccfe4a44f6285769f17b6025e5db1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:9",
+      "sequence": 21110,
+      "chapter_label": "EZK 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "He will set his battering engines against your walls, and with his axes he will break down your towers.",
+      "ko": "공성퇴를 베풀어 네 성을 치며 도끼로 망대를 찍을 것이며",
+      "source_text_hash": "3d99223ebfe876dff9c0d8e602c17d0e2d10c70fe692273a0eca0b6c44ee0ab4",
+      "translation_text_hash": "354ac11f1e14add6595f812587daf45cb3e6bc0e0040e59655452dc899648904",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공성퇴를 베풀어 네 성을 치며 도끼로 망대를 찍을 것이며"
+      ],
+      "raw_text_hashes": [
+        "354ac11f1e14add6595f812587daf45cb3e6bc0e0040e59655452dc899648904"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:10",
+      "sequence": 21111,
+      "chapter_label": "EZK 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "By reason of the abundance of his horses, their dust will cover you. Your walls will shake at the noise of the horsemen, of the wagons, and of the chariots, when he enters into your gates, as men enter into a city which is broken open.",
+      "ko": "말이 많으므로 그 티끌이 너를 가리울 것이며 사람이 훼파된 성 구멍으로 들어가는 것 같이 그가 네 성문으로 들어갈 때에 그 기병과 수레와 병거의 소리로 인하여 네 성곽이 진동할 것이며",
+      "source_text_hash": "28ae547750d96c5526e77af447dadfa9fe103f01e9592b602a55e6203cf35203",
+      "translation_text_hash": "fdcd6cdd98b71c31a2ff96fb4346f51c6da71b1b1be688e461ff4e1ee3c508ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말이 많으므로 그 티끌이 너를 가리울 것이며 사람이 훼파된 성 구멍으로 들어가는 것 같이 그가 네 성문으로 들어갈 때에 그 기병과 수레와 병거의 소리로 인하여 네 성곽이 진동할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fdcd6cdd98b71c31a2ff96fb4346f51c6da71b1b1be688e461ff4e1ee3c508ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:11",
+      "sequence": 21112,
+      "chapter_label": "EZK 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "He will tread down all your streets with the hoofs of his horses. He will kill your people with the sword. The pillars of your strength will go down to the ground.",
+      "ko": "그가 그 말굽으로 네 모든 거리를 밟을 것이며 칼로 네 백성을 죽일 것이며 네 견고한 석상을 땅에 엎드러뜨릴 것이며",
+      "source_text_hash": "88a4202d4ee1a1a99583087611bab31a035fd2669897be2253e04ce9af1e28d9",
+      "translation_text_hash": "a0b521028a09aea8e22b3e8353be67578e398a91f478ef931946afdcc01ca3d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 말굽으로 네 모든 거리를 밟을 것이며 칼로 네 백성을 죽일 것이며 네 견고한 석상을 땅에 엎드러뜨릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "a0b521028a09aea8e22b3e8353be67578e398a91f478ef931946afdcc01ca3d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:12",
+      "sequence": 21113,
+      "chapter_label": "EZK 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "They will make a plunder of your riches and make a prey of your merchandise. They will break down your walls and destroy your pleasant houses. They will lay your stones, your timber, and your dust in the middle of the waters.",
+      "ko": "네 재물을 빼앗을 것이며 네 무역한 것을 노략할 것이며 네 성을 헐 것이며 네 기뻐하는 집을 무너뜨릴 것이며 또 네 돌들과 네 재목과 네 흙을 다 물 가운데 던질 것이라",
+      "source_text_hash": "a1196d5d063a20cb33bcf48a0837582c620ee83da3c26d0602eb89d83947894f",
+      "translation_text_hash": "14946e8c8a4dfd06ff7373fdb0f197be5a8da29786cdd38714f785873b6c6633",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 재물을 빼앗을 것이며 네 무역한 것을 노략할 것이며 네 성을 헐 것이며 네 기뻐하는 집을 무너뜨릴 것이며 또 네 돌들과 네 재목과 네 흙을 다 물 가운데 던질 것이라"
+      ],
+      "raw_text_hashes": [
+        "14946e8c8a4dfd06ff7373fdb0f197be5a8da29786cdd38714f785873b6c6633"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:13",
+      "sequence": 21114,
+      "chapter_label": "EZK 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "I will cause the noise of your songs to cease. The sound of your harps won’t be heard any more.",
+      "ko": "내가 네 노래 소리로 그치게 하며 네 수금 소리로 다시 들리지 않게 하고",
+      "source_text_hash": "afda6769269982ba81392d90701205577ded0d883664c9f82c5140e04b5ce5d9",
+      "translation_text_hash": "8ad2c1933858dbd2779945dd5305918640add950777838c638440f32a9527df7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 노래 소리로 그치게 하며 네 수금 소리로 다시 들리지 않게 하고"
+      ],
+      "raw_text_hashes": [
+        "8ad2c1933858dbd2779945dd5305918640add950777838c638440f32a9527df7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:14",
+      "sequence": 21115,
+      "chapter_label": "EZK 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "I will make you a bare rock. You will be a place for the spreading of nets. You will be built no more; for I the LORD have spoken it,’ says the Lord GOD.",
+      "ko": "너로 말간 반석이 되게 한즉 네가 그물 말리는 곳이 되고 다시는 건축되지 못하리니 나 여호와가 말하였음이니라 나 주 여호와의 말이니라",
+      "source_text_hash": "28bd5e3e2930048b422cbc886b833af180433c3dfa8e8ebef34edb0cc580c84a",
+      "translation_text_hash": "329431e993af844b38c4a8a4c1ca93893595664dfb688d267b5dba89830ff030",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너로 말간 반석이 되게 한즉 네가 그물 말리는 곳이 되고 다시는 건축되지 못하리니 나 여호와가 말하였음이니라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "329431e993af844b38c4a8a4c1ca93893595664dfb688d267b5dba89830ff030"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:15",
+      "sequence": 21116,
+      "chapter_label": "EZK 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "“The Lord GOD says to Tyre: ‘Won’t the islands shake at the sound of your fall, when the wounded groan, when the slaughter is made within you?",
+      "ko": "주 여호와께서 두로를 대하여 말씀하시되 너의 엎드러지는 소리에 모든 섬이 진동하지 아니하겠느냐 곧 너희 중에 상한 자가 부르짖으며 살륙을 당할 때에라",
+      "source_text_hash": "5c3d4a33a752f67e212e2095df654d4d0960601de2e4a2f228fda1cde3c1342a",
+      "translation_text_hash": "f072d5921ef19d4c0e0a9b615418eb9355cdff1721d467755056056a938785c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 두로를 대하여 말씀하시되 너의 엎드러지는 소리에 모든 섬이 진동하지 아니하겠느냐 곧 너희 중에 상한 자가 부르짖으며 살륙을 당할 때에라"
+      ],
+      "raw_text_hashes": [
+        "f072d5921ef19d4c0e0a9b615418eb9355cdff1721d467755056056a938785c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:16",
+      "sequence": 21117,
+      "chapter_label": "EZK 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "Then all the princes of the sea will come down from their thrones, and lay aside their robes, and strip off their embroidered garments. They will clothe themselves with trembling. They will sit on the ground, and will tremble every moment, and be astonished at you.",
+      "ko": "그 때에 바다의 모든 왕이 그 보좌에서 내려 조복을 벗으며 수 놓은 옷을 버리고 떨림을 입듯하고 땅에 앉아서 너로 인하여 무시로 떨며 놀랄 것이며",
+      "source_text_hash": "cec284887ff501163393ffbe3ca7ac4f304fd9bb2ace567bd74d4b47409a97fe",
+      "translation_text_hash": "4d97f53e29c9a18b49ce0fb893d0befe27e8fa0e2d9886e83f723e47e4e0c33a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 바다의 모든 왕이 그 보좌에서 내려 조복을 벗으며 수 놓은 옷을 버리고 떨림을 입듯하고 땅에 앉아서 너로 인하여 무시로 떨며 놀랄 것이며"
+      ],
+      "raw_text_hashes": [
+        "4d97f53e29c9a18b49ce0fb893d0befe27e8fa0e2d9886e83f723e47e4e0c33a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:17",
+      "sequence": 21118,
+      "chapter_label": "EZK 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "They will take up a lamentation over you, and tell you, “How you are destroyed, who were inhabited by seafaring men, the renowned city, who was strong in the sea, she and her inhabitants, who caused their terror to be on all who lived there!”",
+      "ko": "그들이 너를 위하여 애가를 불러 이르기를 항해자의 거한 유명한 성이여 너와 너의 거민이 바다 가운데 있어 견고하였었도다 해변의 모든 거민을 두렵게 하였더니 어찌 그리 멸망하였는고",
+      "source_text_hash": "6f2ed9bb7c330ecde329180149d03b0d27b3fe559c60b49ec0b98375b13ecc09",
+      "translation_text_hash": "8d7d33ff2a5c4766b65625edd2abbf38b7a6240e35e7773b9d7a20e9d769d413",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 너를 위하여 애가를 불러 이르기를 항해자의 거한 유명한 성이여 너와 너의 거민이 바다 가운데 있어 견고하였었도다 해변의 모든 거민을 두렵게 하였더니 어찌 그리 멸망하였는고"
+      ],
+      "raw_text_hashes": [
+        "8d7d33ff2a5c4766b65625edd2abbf38b7a6240e35e7773b9d7a20e9d769d413"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:18",
+      "sequence": 21119,
+      "chapter_label": "EZK 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "Now the islands will tremble in the day of your fall. Yes, the islands that are in the sea will be dismayed at your departure.’",
+      "ko": "너의 무너지는 그 날에 섬들이 진동할 것임이여 바다 가운데 섬들이 네 결국을 보고 놀라리로다 하리라",
+      "source_text_hash": "4aa774629c3cf17778714982fef377e336a79ed00b78472badbb40b28dfca348",
+      "translation_text_hash": "bea21baf4b2924c0f5a95a50bc8914eaee151cd979e988e0bb600947fba0920c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 무너지는 그 날에 섬들이 진동할 것임이여 바다 가운데 섬들이 네 결국을 보고 놀라리로다 하리라"
+      ],
+      "raw_text_hashes": [
+        "bea21baf4b2924c0f5a95a50bc8914eaee151cd979e988e0bb600947fba0920c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:19",
+      "sequence": 21120,
+      "chapter_label": "EZK 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "“For the Lord GOD says: ‘When I make you a desolate city, like the cities that are not inhabited, when I bring up the deep on you, and the great waters cover you,",
+      "ko": "나 주 여호와가 말하노라 내가 너로 거민이 없는 성과 같이 황무한 성이 되게 하고 깊은 바다로 네 위에 오르게 하며 큰 물로 너를 덮게 할 때에",
+      "source_text_hash": "afabe82cfdbe2ba08556e6a3b7f52f4a3fc135e527009a6294b57435b31c91f8",
+      "translation_text_hash": "3550b9ff5d44655db4bd111040ec1d597cab8284c07382eff9371a201a0feef1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 너로 거민이 없는 성과 같이 황무한 성이 되게 하고 깊은 바다로 네 위에 오르게 하며 큰 물로 너를 덮게 할 때에"
+      ],
+      "raw_text_hashes": [
+        "3550b9ff5d44655db4bd111040ec1d597cab8284c07382eff9371a201a0feef1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:20",
+      "sequence": 21121,
+      "chapter_label": "EZK 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "then I will bring you down with those who descend into the pit, to the people of old time, and will make you dwell in the lower parts of the earth, in the places that are desolate of old, with those who go down to the pit, that you be not inhabited; and I will set glory in the land of the living.",
+      "ko": "내가 너로 구덩이에 내려가는 자와 함께 내려가서 옛적 사람에게로 나아가게 하고 너로 그 구덩이에 내려간 자와 함께 땅 깊은 곳 예로부터 황적한 곳에 거하게 할찌라 네가 다시는 사람이 거하는 곳이 되지 못하리니 산 자의 땅에서 영광을 얻지 못하리라",
+      "source_text_hash": "1f18660f6acc5922a21177811a4629d362c8599cf6fa0c2d1258814a19a95396",
+      "translation_text_hash": "8e38872ef1a3a89164cf99105047b99f5c8a4b4136b12000bf03f21884ebe8db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 구덩이에 내려가는 자와 함께 내려가서 옛적 사람에게로 나아가게 하고 너로 그 구덩이에 내려간 자와 함께 땅 깊은 곳 예로부터 황적한 곳에 거하게 할찌라 네가 다시는 사람이 거하는 곳이 되지 못하리니 산 자의 땅에서 영광을 얻지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "8e38872ef1a3a89164cf99105047b99f5c8a4b4136b12000bf03f21884ebe8db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:26:21",
+      "sequence": 21122,
+      "chapter_label": "EZK 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "I will make you a terror, and you will no more have any being. Though you are sought for, yet you will never be found again,’ says the Lord GOD.”",
+      "ko": "내가 너를 패망케 하여 다시 있지 못하게 하리니 사람이 비록 너를 찾으나 다시는 영원히 만나지 못하리라 나 주 여호와의 말이니라",
+      "source_text_hash": "064ec5e4e48c8f873d122b72e10f681a27db3d699c76d81a99ab2f3d33c0d48e",
+      "translation_text_hash": "264d58dd5c467aadcf816f1c175093b1a743786c6dffe58a72b10ef6a43aa0b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 패망케 하여 다시 있지 못하게 하리니 사람이 비록 너를 찾으나 다시는 영원히 만나지 못하리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "264d58dd5c467aadcf816f1c175093b1a743786c6dffe58a72b10ef6a43aa0b7"
+      ]
+    }
+  ]
+}

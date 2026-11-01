@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:003",
+  "unit_ordinal": 748,
+  "unit_label": "JER 3",
+  "book_code": "JER",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:3:1",
+      "sequence": 19004,
+      "chapter_label": "JER 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "“They say, ‘If a man puts away his wife, and she goes from him, and becomes another man’s, should he return to her again?’ Wouldn’t that land be greatly polluted? But you have played the prostitute with many lovers; yet return again to me,” says the LORD.",
+      "ko": "세상에서 말하기를 가령 사람이 그 아내를 버리므로 그가 떠나 타인의 아내가 된다 하자 본부가 그를 다시 받겠느냐 그리하면 그 땅이 크게 더러워지지 않겠느냐 하느니라 나 여호와가 말하노라 네가 많은 무리와 행음하고도 내게로 돌아오려느냐",
+      "source_text_hash": "a4ee0cfc15b9b08ce604e2942d63a60d5a2fd6bd77ca9a446cd155f5575ff325",
+      "translation_text_hash": "9906583433003567497c5550bac05fec06faa39b3b42ef7a7cc891aa31be78d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상에서 말하기를 가령 사람이 그 아내를 버리므로 그가 떠나 타인의 아내가 된다 하자 본부가 그를 다시 받겠느냐 그리하면 그 땅이 크게 더러워지지 않겠느냐 하느니라 나 여호와가 말하노라 네가 많은 무리와 행음하고도 내게로 돌아오려느냐"
+      ],
+      "raw_text_hashes": [
+        "9906583433003567497c5550bac05fec06faa39b3b42ef7a7cc891aa31be78d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:2",
+      "sequence": 19005,
+      "chapter_label": "JER 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "“Lift up your eyes to the bare heights, and see! Where have you not been lain with? You have sat waiting for them by the road, as an Arabian in the wilderness. You have polluted the land with your prostitution and with your wickedness.",
+      "ko": "네 눈을 들어 자산을 보라 너의 행음치 아니한 곳이 어디 있느냐 네가 길 가에 앉아 사람을 기다린 것이 광야에 있는 아라바 사람 같아서 음란과 행악으로 이 땅을 더럽혔도다",
+      "source_text_hash": "ff2b482be892262d83cea361b252a57bb23c6509c96b3a79d14848d341b76cf6",
+      "translation_text_hash": "59bce4815a97e340da89bde160c3dbc6977f4ea5c429bb74fe646efb6f4efb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈을 들어 자산을 보라 너의 행음치 아니한 곳이 어디 있느냐 네가 길 가에 앉아 사람을 기다린 것이 광야에 있는 아라바 사람 같아서 음란과 행악으로 이 땅을 더럽혔도다"
+      ],
+      "raw_text_hashes": [
+        "59bce4815a97e340da89bde160c3dbc6977f4ea5c429bb74fe646efb6f4efb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:3",
+      "sequence": 19006,
+      "chapter_label": "JER 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore the showers have been withheld and there has been no latter rain; yet you have had a prostitute’s forehead and you refused to be ashamed.",
+      "ko": "그러므로 단 비가 그쳐졌고 늦은 비가 없어졌느니라 그럴지라도 네가 창녀의 낯을 가졌으므로 수치를 알지 못하느니라",
+      "source_text_hash": "13b903c52b8132a3edb29aaf22ad77600f9bb46aa6f35c9eb48f796d86b8554c",
+      "translation_text_hash": "7bf38ca2935c0b366572229e73c1528db2223afb955f20b92ff94ff9c3d0deca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 단 비가 그쳐졌고 늦은 비가 없어졌느니라 그럴지라도 네가 창녀의 낯을 가졌으므로 수치를 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "7bf38ca2935c0b366572229e73c1528db2223afb955f20b92ff94ff9c3d0deca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:4",
+      "sequence": 19007,
+      "chapter_label": "JER 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Will you not from this time cry to me, ‘My Father, you are the guide of my youth!’?",
+      "ko": "네가 이제부터는 내게 부르짖기를 나의 아버지여 아버지는 나의 소시의 애호자시오니",
+      "source_text_hash": "4b89b538d59e694521a7076e75b1bb4f44da6caf5139164fb72f1829feb1731c",
+      "translation_text_hash": "ab3543ec95129faa3d54cff9bb822519f2f9ca99867699ed5866bbe5c82fd8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이제부터는 내게 부르짖기를 나의 아버지여 아버지는 나의 소시의 애호자시오니"
+      ],
+      "raw_text_hashes": [
+        "ab3543ec95129faa3d54cff9bb822519f2f9ca99867699ed5866bbe5c82fd8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:5",
+      "sequence": 19008,
+      "chapter_label": "JER 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "“‘Will he retain his anger forever? Will he keep it to the end?’ Behold, you have spoken and have done evil things, and have had your way.”",
+      "ko": "노를 한 없이 계속하시겠으며 끝까지 두시겠나이까 하지 않겠느냐 보라 네가 이같이 말하여도 악을 행하여 네 욕심을 이루었느니라 하시니라",
+      "source_text_hash": "071637c58f7263d48089bdbcb308a0a793c8af4b3a3c32d6b9980586bec000e5",
+      "translation_text_hash": "21a3c855f2776a5d302e985499425bba7d898ad743707aea603671b643c40188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노를 한 없이 계속하시겠으며 끝까지 두시겠나이까 하지 않겠느냐 보라 네가 이같이 말하여도 악을 행하여 네 욕심을 이루었느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "21a3c855f2776a5d302e985499425bba7d898ad743707aea603671b643c40188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:6",
+      "sequence": 19009,
+      "chapter_label": "JER 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Moreover, the LORD said to me in the days of Josiah the king, “Have you seen that which backsliding Israel has done? She has gone up on every high mountain and under every green tree, and has played the prostitute there.",
+      "ko": "요시야왕 때에 여호와께서 또 내게 이르시되 네가 배역한 이스라엘의 행한 바를 보았느냐 그가 모든 높은 산에 오르며 모든 푸른 나무 아래로 가서 거기서 행음하였도다",
+      "source_text_hash": "d0b15c7d125eceeecb0738a0f1a3dbf038dde7e823ee63afcfd2bbb8e0ebf2c2",
+      "translation_text_hash": "e7224be4fbbfbe8c43ede7bc91587fae74efe56e9e7016ff0741b4fea896bf08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야왕 때에 여호와께서 또 내게 이르시되 네가 배역한 이스라엘의 행한 바를 보았느냐 그가 모든 높은 산에 오르며 모든 푸른 나무 아래로 가서 거기서 행음하였도다"
+      ],
+      "raw_text_hashes": [
+        "e7224be4fbbfbe8c43ede7bc91587fae74efe56e9e7016ff0741b4fea896bf08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:7",
+      "sequence": 19010,
+      "chapter_label": "JER 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "I said after she had done all these things, ‘She will return to me;’ but she didn’t return, and her treacherous sister Judah saw it.",
+      "ko": "그가 이 모든 일을 행한 후에 내가 말하기를 그가 내게로 돌아오리라 하였으나 오히려 내게로 돌아오지 아니하였고 그 패역한 자매 유다는 그것을 보았느니라",
+      "source_text_hash": "bca94e1971d7df85b9c3930a0cc64d457ae7e9343733bac4208907b04296a1ce",
+      "translation_text_hash": "2e6ddadb4bba771aa4cb8b612b7c670515ce92caae5d066fc2738ce257580939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이 모든 일을 행한 후에 내가 말하기를 그가 내게로 돌아오리라 하였으나 오히려 내게로 돌아오지 아니하였고 그 패역한 자매 유다는 그것을 보았느니라"
+      ],
+      "raw_text_hashes": [
+        "2e6ddadb4bba771aa4cb8b612b7c670515ce92caae5d066fc2738ce257580939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:8",
+      "sequence": 19011,
+      "chapter_label": "JER 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "I saw when, for this very cause, that backsliding Israel had committed adultery, I had put her away and given her a certificate of divorce, yet treacherous Judah, her sister, had no fear, but she also went and played the prostitute.",
+      "ko": "내게 배역한 이스라엘이 간음을 행하였으므로 내가 그를 내어 쫓고 이혼서까지 주었으되 그 패역한 자매 유다가 두려워 아니하고 자기도 가서 행음함을 내가 보았노라",
+      "source_text_hash": "c3205ca4fe2e00fb80adef71c14c4d852258ca91979940c12e53dcb6332c9dc2",
+      "translation_text_hash": "d44cc071feb73a1b341a3b5aaa2010c8d8d41e145d4752220893489a4baf8054",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 배역한 이스라엘이 간음을 행하였으므로 내가 그를 내어 쫓고 이혼서까지 주었으되 그 패역한 자매 유다가 두려워 아니하고 자기도 가서 행음함을 내가 보았노라"
+      ],
+      "raw_text_hashes": [
+        "d44cc071feb73a1b341a3b5aaa2010c8d8d41e145d4752220893489a4baf8054"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:9",
+      "sequence": 19012,
+      "chapter_label": "JER 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Because she took her prostitution lightly, the land was polluted, and she committed adultery with stones and with wood.",
+      "ko": "그가 돌과 나무로 더불어 행음함을 가볍게 여기고 행음하여 이 땅을 더럽혔거늘",
+      "source_text_hash": "cd903b13842bf00da3144875b18a9b4d6380831302daaf135a30cb78d13a8c82",
+      "translation_text_hash": "9eb49852d5c6c6502083f4c9f9c5c5593eae7aab8a89bb1a1701a7a811ffb457",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 돌과 나무로 더불어 행음함을 가볍게 여기고 행음하여 이 땅을 더럽혔거늘"
+      ],
+      "raw_text_hashes": [
+        "9eb49852d5c6c6502083f4c9f9c5c5593eae7aab8a89bb1a1701a7a811ffb457"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:10",
+      "sequence": 19013,
+      "chapter_label": "JER 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Yet for all this her treacherous sister, Judah, has not returned to me with her whole heart, but only in pretense,” says the LORD.",
+      "ko": "이 모든 일이 있어도 그 패역한 자매 유다가 진심으로 내게 돌아오지 아니하고 거짓으로 할뿐이니라 여호와의 말이니라",
+      "source_text_hash": "400baeaf460c23531b081b3366bd7fc699305988df7a4db5d936d2921d72f5d9",
+      "translation_text_hash": "247eaa8ad6c75cfcdc129caf696728c8980c75b3a4b6ad4694f11208a6770066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일이 있어도 그 패역한 자매 유다가 진심으로 내게 돌아오지 아니하고 거짓으로 할뿐이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "247eaa8ad6c75cfcdc129caf696728c8980c75b3a4b6ad4694f11208a6770066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:11",
+      "sequence": 19014,
+      "chapter_label": "JER 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to me, “Backsliding Israel has shown herself more righteous than treacherous Judah.",
+      "ko": "여호와께서 내게 이르시되 배역한 이스라엘은 패역한 유다보다 오히려 의로움이 나타났나니",
+      "source_text_hash": "071982c707618dd5b05888482336518d9e6b26aff322ba6187415fc2af38373a",
+      "translation_text_hash": "f7f09b3c2cebbfee4dd0dce0843bb7fbf49c1174f23a051f2a86a3a406b5d403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 배역한 이스라엘은 패역한 유다보다 오히려 의로움이 나타났나니"
+      ],
+      "raw_text_hashes": [
+        "f7f09b3c2cebbfee4dd0dce0843bb7fbf49c1174f23a051f2a86a3a406b5d403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:12",
+      "sequence": 19015,
+      "chapter_label": "JER 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "Go, and proclaim these words toward the north, and say, ‘Return, you backsliding Israel,’ says the LORD; ‘I will not look in anger on you, for I am merciful,’ says the LORD. ‘I will not keep anger forever.",
+      "ko": "너는 가서 북을 향하여 이 말을 선포하여 이르라 여호와께서 가라사대 배역한 이스라엘아 돌아 오라 나의 노한 얼굴을 너희에게로 향하지 아니하리라 나는 긍휼이 있는 자라 노를 한 없이 품지 아니하느니라 여호와의 말이니라",
+      "source_text_hash": "6ea25743ecea7fc3a96b8775a36d02606d5e5be5028843547c838086b81f00bc",
+      "translation_text_hash": "e8158c1132d2be7a7ec0c806abd98c814dc8e6e54de6d0fd70d76932817f10a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 북을 향하여 이 말을 선포하여 이르라 여호와께서 가라사대 배역한 이스라엘아 돌아 오라 나의 노한 얼굴을 너희에게로 향하지 아니하리라 나는 긍휼이 있는 자라 노를 한 없이 품지 아니하느니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "e8158c1132d2be7a7ec0c806abd98c814dc8e6e54de6d0fd70d76932817f10a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:13",
+      "sequence": 19016,
+      "chapter_label": "JER 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Only acknowledge your iniquity, that you have transgressed against the LORD your God, and have scattered your ways to the strangers under every green tree, and you have not obeyed my voice,’” says the LORD.",
+      "ko": "너는 오직 네 죄를 자복하라 이는 네 하나님 여호와를 배반하고 네 길로 달려 모든 푸른 나무 아래서 이방 신에게 절하고 내 목소리를 듣지 아니하였음이니라 여호와의 말이니라",
+      "source_text_hash": "afc24c5d45bf1ac06b4e8207bf2b1a5ae88f7b307df254b2ce81d27f0eafb4f2",
+      "translation_text_hash": "40796a0dfe59bf3fa899296bb2646b275b950a8d08dbbebc013d15e47dc9f697",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 오직 네 죄를 자복하라 이는 네 하나님 여호와를 배반하고 네 길로 달려 모든 푸른 나무 아래서 이방 신에게 절하고 내 목소리를 듣지 아니하였음이니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "40796a0dfe59bf3fa899296bb2646b275b950a8d08dbbebc013d15e47dc9f697"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:14",
+      "sequence": 19017,
+      "chapter_label": "JER 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "“Return, backsliding children,” says the LORD, “for I am a husband to you. I will take one of you from a city, and two from a family, and I will bring you to Zion.",
+      "ko": "나 여호와가 말하노라 배역한 자식들아 돌아오라 나는 너희 남편임이니라 내가 너희를 성읍에서 하나와 족속 중에서 둘을 택하여 시온으로 데려오겠고",
+      "source_text_hash": "cf92d4a7795e66419ebe271430cc6c2ef877f0a4f123efcf135d94152c385ebc",
+      "translation_text_hash": "bb8b43b2f39a31e9b3ac0a627b8e02176b6741e107b4b45f35309d881a286efa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 배역한 자식들아 돌아오라 나는 너희 남편임이니라 내가 너희를 성읍에서 하나와 족속 중에서 둘을 택하여 시온으로 데려오겠고"
+      ],
+      "raw_text_hashes": [
+        "bb8b43b2f39a31e9b3ac0a627b8e02176b6741e107b4b45f35309d881a286efa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:15",
+      "sequence": 19018,
+      "chapter_label": "JER 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "I will give you shepherds according to my heart, who will feed you with knowledge and understanding.",
+      "ko": "내가 또 내 마음에 합하는 목자를 너희에게 주리니 그들이 지식과 명철로 너희를 양육하리라",
+      "source_text_hash": "f9eccff702d60c1d6fe95d51b54ae0a0f4ffeaaa2b7e6a2c282979aaa3d3da67",
+      "translation_text_hash": "6461cfbb9cdaad88d33d5d6106932a3888d71b2b3277a9b8f3331eec78c937b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 내 마음에 합하는 목자를 너희에게 주리니 그들이 지식과 명철로 너희를 양육하리라"
+      ],
+      "raw_text_hashes": [
+        "6461cfbb9cdaad88d33d5d6106932a3888d71b2b3277a9b8f3331eec78c937b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:16",
+      "sequence": 19019,
+      "chapter_label": "JER 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "It will come to pass, when you are multiplied and increased in the land in those days,” says the LORD, “they will no longer say, ‘the ark of the LORD’s covenant!’ It will not come to mind. They won’t remember it. They won’t miss it, nor will another be made.",
+      "ko": "나 여호와가 말하노라 너희가 이 땅에서 번성하여 많아질 때에는 사람 사람이 여호와의 언약궤를 다시는 말하지 아니할 것이요 생각지 아니할 것이요 기억지 아니할 것이요 찾지 아니할 것이요 만들지 아니할 것이며",
+      "source_text_hash": "1ba80a152beaaf01d727cde01c515363e947f3ede399382bc3e4c0bf5215053f",
+      "translation_text_hash": "fddd78666603f4321caf6eeb4d8aaf76569e583967a4835dcc9700ee82a461e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희가 이 땅에서 번성하여 많아질 때에는 사람 사람이 여호와의 언약궤를 다시는 말하지 아니할 것이요 생각지 아니할 것이요 기억지 아니할 것이요 찾지 아니할 것이요 만들지 아니할 것이며"
+      ],
+      "raw_text_hashes": [
+        "fddd78666603f4321caf6eeb4d8aaf76569e583967a4835dcc9700ee82a461e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:17",
+      "sequence": 19020,
+      "chapter_label": "JER 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "At that time they will call Jerusalem ‘The LORD’s Throne;’ and all the nations will be gathered to it, to the LORD’s name, to Jerusalem. They will no longer walk after the stubbornness of their evil heart.",
+      "ko": "그 때에 예루살렘이 여호와의 보좌라 일컬음이 되며 열방이 그리로 모이리니 곧 여호와의 이름으로 인하여 예루살렘에 모이고 다시는 그들의 악한 마음의 강퍅한 대로 행치 아니 할것이며",
+      "source_text_hash": "826a6e59029f02df13f33d663f505d5d64fd842887580d27cc633fd0bfd9b852",
+      "translation_text_hash": "d057c1a484a2b9983014effc10284740da5b631b80e7b4553ec600a03f0b5c0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 예루살렘이 여호와의 보좌라 일컬음이 되며 열방이 그리로 모이리니 곧 여호와의 이름으로 인하여 예루살렘에 모이고 다시는 그들의 악한 마음의 강퍅한 대로 행치 아니 할것이며"
+      ],
+      "raw_text_hashes": [
+        "d057c1a484a2b9983014effc10284740da5b631b80e7b4553ec600a03f0b5c0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:18",
+      "sequence": 19021,
+      "chapter_label": "JER 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "In those days the house of Judah will walk with the house of Israel, and they will come together out of the land of the north to the land that I gave for an inheritance to your fathers.",
+      "ko": "그 때에 유다 족속이 이스라엘 족속과 동행하여 북에서부터 나와서 내가 너희 열조에게 기업으로 준 땅에 함께 이르리라",
+      "source_text_hash": "d421712a12d710c3ea1cbfa1c83a6ff8b2b389280ad460ed917830a1ea21aaf9",
+      "translation_text_hash": "a65cc1ce08521edb57e025ccd69f260020bf913f525f0b4766a24c5c21498805",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 유다 족속이 이스라엘 족속과 동행하여 북에서부터 나와서 내가 너희 열조에게 기업으로 준 땅에 함께 이르리라"
+      ],
+      "raw_text_hashes": [
+        "a65cc1ce08521edb57e025ccd69f260020bf913f525f0b4766a24c5c21498805"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:19",
+      "sequence": 19022,
+      "chapter_label": "JER 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "“But I said, ‘How I desire to put you among the children, and give you a pleasant land, a goodly heritage of the armies of the nations!’ and I said, ‘You shall call me “My Father”, and shall not turn away from following me.’",
+      "ko": "내가 스스로 말하기를 내가 어떻게 하든지 너를 자녀 중에 두며 허다한 나라 중에 아름다운 산업인 이 낙토를 네게 주리라 하였고 내가 다시 말하기를 너희가 나를 나의 아버지라 하고 나를 떠나지 말것이니라 하였노라",
+      "source_text_hash": "33657c3fb34ae56704dc8f2143add41a504da114ba6ba39787d7610dca14ec6a",
+      "translation_text_hash": "6ed83b728ac035c46061bb2ad893d95b7354c49822c78239e788b89974f0a472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 스스로 말하기를 내가 어떻게 하든지 너를 자녀 중에 두며 허다한 나라 중에 아름다운 산업인 이 낙토를 네게 주리라 하였고 내가 다시 말하기를 너희가 나를 나의 아버지라 하고 나를 떠나지 말것이니라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "6ed83b728ac035c46061bb2ad893d95b7354c49822c78239e788b89974f0a472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:20",
+      "sequence": 19023,
+      "chapter_label": "JER 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "“Surely as a wife treacherously departs from her husband, so you have dealt treacherously with me, house of Israel,” says the LORD.",
+      "ko": "그런데 이스라엘 족속아 마치 아내가 그 남편을 속이고 떠남 같이 너희가 정녕히 나를 속였느니라 여호와의 말이니라",
+      "source_text_hash": "3597f506796d14583cebe7b9172c6b020eeae99df778d4df11385ce195a0bfcc",
+      "translation_text_hash": "bc3219d28f6bba60fb9a6ea7c6f68d51f1e32e73a4b8406c2c36d14ced03584a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런데 이스라엘 족속아 마치 아내가 그 남편을 속이고 떠남 같이 너희가 정녕히 나를 속였느니라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "bc3219d28f6bba60fb9a6ea7c6f68d51f1e32e73a4b8406c2c36d14ced03584a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:21",
+      "sequence": 19024,
+      "chapter_label": "JER 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "A voice is heard on the bare heights, the weeping and the petitions of the children of Israel; because they have perverted their way, they have forgotten the LORD their God.",
+      "ko": "소리가 자산 위에서 들리니 곧 이스라엘 자손의 애곡하며 간구하는 것이라 그들이 그 길을 굽게 하며 자기 하나님 여호와를 잊어버렸음이로다",
+      "source_text_hash": "cb2333dbbda1ae1be77007417f2cea956d1104872289cbdc991aba8bbeaac228",
+      "translation_text_hash": "2df71c8fb5e53042b5a5989bb606b6aeced4e42e3dee421c8a9cac2e63208ba3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소리가 자산 위에서 들리니 곧 이스라엘 자손의 애곡하며 간구하는 것이라 그들이 그 길을 굽게 하며 자기 하나님 여호와를 잊어버렸음이로다"
+      ],
+      "raw_text_hashes": [
+        "2df71c8fb5e53042b5a5989bb606b6aeced4e42e3dee421c8a9cac2e63208ba3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:22",
+      "sequence": 19025,
+      "chapter_label": "JER 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Return, you backsliding children, and I will heal your backsliding. “Behold, we have come to you; for you are the LORD our God.",
+      "ko": "배역한 자식들아 돌아 오라 내가 너희의 배역함을 고치리라 보소서 우리가 주께 왔사오니 주는 우리 하나님 여호와이심이니이다",
+      "source_text_hash": "7645cca6619737d000caa8da9a2a6794675d5c8e14cd189cd103cd6fd6b8b647",
+      "translation_text_hash": "f44563486db37f64a175334afbe80b70eb0c9279de765edac91cf65f0af45220",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배역한 자식들아 돌아 오라 내가 너희의 배역함을 고치리라 보소서 우리가 주께 왔사오니 주는 우리 하나님 여호와이심이니이다"
+      ],
+      "raw_text_hashes": [
+        "f44563486db37f64a175334afbe80b70eb0c9279de765edac91cf65f0af45220"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:23",
+      "sequence": 19026,
+      "chapter_label": "JER 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "Truly help from the hills, the tumult on the mountains, is in vain. Truly the salvation of Israel is in the LORD our God.",
+      "ko": "작은 산들과 큰 산 위의 떠드는 무리에게 바라는 것은 참으로 허사라 이스라엘의 구원은 진실로 우리 하나님 여호와께 있나이다",
+      "source_text_hash": "075ba602a34f5e8e27ccd2e3072a808ecfc2e413397f97d0cea743358c64d5f8",
+      "translation_text_hash": "3255bb2f638389170659b1eb341e57abe4a38f833438eede8b9530abccde4765",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "작은 산들과 큰 산 위의 떠드는 무리에게 바라는 것은 참으로 허사라 이스라엘의 구원은 진실로 우리 하나님 여호와께 있나이다"
+      ],
+      "raw_text_hashes": [
+        "3255bb2f638389170659b1eb341e57abe4a38f833438eede8b9530abccde4765"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:24",
+      "sequence": 19027,
+      "chapter_label": "JER 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "But the shameful thing has devoured the labor of our fathers from our youth, their flocks and their herds, their sons and their daughters.",
+      "ko": "부끄러운 그것이 우리의 어렸을 때로부터 우리 열조의 산업인 양떼와 소떼와 아들들과 딸들을 삼켰사온즉",
+      "source_text_hash": "2c6b693bb9571fa47db98a6a04636ad71a4a4cea3d238ba58aea749ea1de7bde",
+      "translation_text_hash": "73b25d81c82aad95998a88d4e686918380c8cd9e8f1f604e318b8d064d818ba1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부끄러운 그것이 우리의 어렸을 때로부터 우리 열조의 산업인 양떼와 소떼와 아들들과 딸들을 삼켰사온즉"
+      ],
+      "raw_text_hashes": [
+        "73b25d81c82aad95998a88d4e686918380c8cd9e8f1f604e318b8d064d818ba1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:3:25",
+      "sequence": 19028,
+      "chapter_label": "JER 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "Let us lie down in our shame, and let our confusion cover us; for we have sinned against the LORD our God, we and our fathers, from our youth even to this day. We have not obeyed the LORD our God’s voice.”",
+      "ko": "우리는 수치 중에 눕겠고 우리는 수욕에 덮이울 것이니 이는 우리와 우리 열조가 어렸을 때로부터 오늘까지 우리 하나님 여호와께 범죄하여 우리 하나님 여호와의 목소리를 청종치 아니하였음이니이다",
+      "source_text_hash": "65666ba383a233abf3ab6db089f37fb3909ea96944d62def132436f384a2d668",
+      "translation_text_hash": "f3a81176f6834a17148c634cb7360d1cc62db71a571e852cf1daa8f559f24d63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 수치 중에 눕겠고 우리는 수욕에 덮이울 것이니 이는 우리와 우리 열조가 어렸을 때로부터 오늘까지 우리 하나님 여호와께 범죄하여 우리 하나님 여호와의 목소리를 청종치 아니하였음이니이다"
+      ],
+      "raw_text_hashes": [
+        "f3a81176f6834a17148c634cb7360d1cc62db71a571e852cf1daa8f559f24d63"
+      ]
+    }
+  ]
+}

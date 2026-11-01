@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:033",
+  "unit_ordinal": 83,
+  "unit_label": "EXO 33",
+  "book_code": "EXO",
+  "chapter_number": 33,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:33:1",
+      "sequence": 2475,
+      "chapter_label": "EXO 33",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, “Depart, go up from here, you and the people that you have brought up out of the land of Egypt, to the land of which I swore to Abraham, to Isaac, and to Jacob, saying, ‘I will give it to your offspring.’",
+      "ko": "여호와께서 모세에게 이르시되 너는 네가 애굽 땅에서 인도하여 낸 백성과 함께 여기서 떠나서 내가 아브라함과 이삭과 야곱에게 맹세하기를 네 자손에게 주마 한 그 땅으로 올라가라",
+      "source_text_hash": "e3a41dd772f6ea6a516e18c64c5b86698265eac6863e25f7fcf536d008403312",
+      "translation_text_hash": "e63e6ab02d87a768e1234585f531b9992e0feb466315d58a56c44e7700a643ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너는 네가 애굽 땅에서 인도하여 낸 백성과 함께 여기서 떠나서 내가 아브라함과 이삭과 야곱에게 맹세하기를 네 자손에게 주마 한 그 땅으로 올라가라"
+      ],
+      "raw_text_hashes": [
+        "e63e6ab02d87a768e1234585f531b9992e0feb466315d58a56c44e7700a643ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:2",
+      "sequence": 2476,
+      "chapter_label": "EXO 33",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 2
+        }
+      ],
+      "en": "I will send an angel before you; and I will drive out the Canaanite, the Amorite, and the Hittite, and the Perizzite, the Hivite, and the Jebusite.",
+      "ko": "내가 사자를 네 앞서 보내어 가나안 사람과 아모리 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람을 쫓아내고",
+      "source_text_hash": "1831dbf69c6a48834093575239512662354dfb1555eb4dac249f15767d0a1d62",
+      "translation_text_hash": "1181e6cc6e5774b5c5baaa7005eee096d169e3e23bc308d00ad6d82ebd8a1b5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 사자를 네 앞서 보내어 가나안 사람과 아모리 사람과 헷 사람과 브리스 사람과 히위 사람과 여부스 사람을 쫓아내고"
+      ],
+      "raw_text_hashes": [
+        "1181e6cc6e5774b5c5baaa7005eee096d169e3e23bc308d00ad6d82ebd8a1b5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:3",
+      "sequence": 2477,
+      "chapter_label": "EXO 33",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 3
+        }
+      ],
+      "en": "Go to a land flowing with milk and honey; but I will not go up among you, for you are a stiff-necked people, lest I consume you on the way.”",
+      "ko": "너희로 젖과 꿀이 흐르는 땅에 이르게 하려니와 나는 너희와 함께 올라가지 아니하리니 너희는 목이 곧은 백성인즉 내가 중로에서 너희를 진멸할까 염려함이니라 하시니",
+      "source_text_hash": "99f8b7692f73cb06382f247819e45c6e9c665890b973353165777e0aca170167",
+      "translation_text_hash": "d040de7278eee120c261fd96a42ed1db18951d608298ab024406677ee05321a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희로 젖과 꿀이 흐르는 땅에 이르게 하려니와 나는 너희와 함께 올라가지 아니하리니 너희는 목이 곧은 백성인즉 내가 중로에서 너희를 진멸할까 염려함이니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d040de7278eee120c261fd96a42ed1db18951d608298ab024406677ee05321a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:4",
+      "sequence": 2478,
+      "chapter_label": "EXO 33",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 4
+        }
+      ],
+      "en": "When the people heard this evil news, they mourned; and no one put on his jewelry.",
+      "ko": "백성이 이 황송한 말씀을 듣고 슬퍼하여 한 사람도 그 몸을 단장하지 아니하니",
+      "source_text_hash": "e98830b597eb9a274d41d5b6678b1b2863f4f6bcc579e1fa48be8ba836e956d2",
+      "translation_text_hash": "b927a0f0dc52190379c5efe3075527553e5e1e6088fcb8d2d7275fceefe0df31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 이 황송한 말씀을 듣고 슬퍼하여 한 사람도 그 몸을 단장하지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "b927a0f0dc52190379c5efe3075527553e5e1e6088fcb8d2d7275fceefe0df31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:5",
+      "sequence": 2479,
+      "chapter_label": "EXO 33",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD had said to Moses, “Tell the children of Israel, ‘You are a stiff-necked people. If I were to go up among you for one moment, I would consume you. Therefore now take off your jewelry from you, that I may know what to do to you.’”",
+      "ko": "여호와께서 모세에게 이르시기를 이스라엘 자손에게 이르라 너희는 목이 곧은 백성인즉 내가 순식간이라도 너희 중에 행하면 너희를 진멸하리니 너희는 단장품을 제하라 그리하면 내가 너희에게 어떻게 할 일을 알겠노라 하셨음이라",
+      "source_text_hash": "b052e303334af432ada25f91168826c15a4601c3bce8bcf69048589fc0c49f06",
+      "translation_text_hash": "003f383441f7b72053532717d0aa0719768d603dbcb784a03e298cc1fcfb022a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시기를 이스라엘 자손에게 이르라 너희는 목이 곧은 백성인즉 내가 순식간이라도 너희 중에 행하면 너희를 진멸하리니 너희는 단장품을 제하라 그리하면 내가 너희에게 어떻게 할 일을 알겠노라 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "003f383441f7b72053532717d0aa0719768d603dbcb784a03e298cc1fcfb022a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:6",
+      "sequence": 2480,
+      "chapter_label": "EXO 33",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Israel stripped themselves of their jewelry from Mount Horeb onward.",
+      "ko": "이스라엘 자손이 호렙산에서부터 그 단장품을 제하니라",
+      "source_text_hash": "80d0f1d8af4a5300ebc71b4f3cfc9ef64cc783730eb642b1bc0134b91f28477a",
+      "translation_text_hash": "7f1f978b99585e98d0944d2509024ce663eb9dae2f06fe8c9d846c3677769f88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 호렙산에서부터 그 단장품을 제하니라"
+      ],
+      "raw_text_hashes": [
+        "7f1f978b99585e98d0944d2509024ce663eb9dae2f06fe8c9d846c3677769f88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:7",
+      "sequence": 2481,
+      "chapter_label": "EXO 33",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 7
+        }
+      ],
+      "en": "Now Moses used to take the tent and pitch it outside the camp, far away from the camp, and he called it “The Tent of Meeting.” Everyone who sought the LORD went out to the Tent of Meeting, which was outside the camp.",
+      "ko": "모세가 항상 장막을 취하여 진 밖에 쳐서 진과 멀리 떠나게 하고 회막이라 이름하니 여호와를 앙모하는 자는 다 진 바깥 회막으로 나아가며",
+      "source_text_hash": "70fb182a8fd049845c8baccf5e736c3e850f3daf6f282742d3a6255055ff6f0b",
+      "translation_text_hash": "0d632ad62a4d7751a0140efe99616a186cdbde189da3fcac0fe08994a940d71e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 항상 장막을 취하여 진 밖에 쳐서 진과 멀리 떠나게 하고 회막이라 이름하니 여호와를 앙모하는 자는 다 진 바깥 회막으로 나아가며"
+      ],
+      "raw_text_hashes": [
+        "0d632ad62a4d7751a0140efe99616a186cdbde189da3fcac0fe08994a940d71e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:8",
+      "sequence": 2482,
+      "chapter_label": "EXO 33",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 8
+        }
+      ],
+      "en": "When Moses went out to the Tent, all the people rose up, and stood, everyone at their tent door, and watched Moses, until he had gone into the Tent.",
+      "ko": "모세가 회막으로 나아갈 때에는 백성이 다 일어나 자기 장막문에 서서 모세가 회막에 들어가기까지 바라보며",
+      "source_text_hash": "70de83c1933fccebbf75f77fb6dc3296c39a69a82363a23ab612b1f86f1c426a",
+      "translation_text_hash": "12472f2966fe7f7fcd9298e78880e2d360cd8da810cd973b5113fecc7ee706bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회막으로 나아갈 때에는 백성이 다 일어나 자기 장막문에 서서 모세가 회막에 들어가기까지 바라보며"
+      ],
+      "raw_text_hashes": [
+        "12472f2966fe7f7fcd9298e78880e2d360cd8da810cd973b5113fecc7ee706bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:9",
+      "sequence": 2483,
+      "chapter_label": "EXO 33",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 9
+        }
+      ],
+      "en": "When Moses entered into the Tent, the pillar of cloud descended, stood at the door of the Tent, and the LORD spoke with Moses.",
+      "ko": "모세가 회막에 들어갈 때에 구름 기둥이 내려 회막 문에 서며 여호와께서 모세와 말씀하시니",
+      "source_text_hash": "6e88cbb5130ea72c4d01180e198ef8d7d402f0e210f2ef40589087136a716cb9",
+      "translation_text_hash": "04962e38a07899ecb9861f3b90f6375a395af4d94c48eea406453b1365c5bac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 회막에 들어갈 때에 구름 기둥이 내려 회막 문에 서며 여호와께서 모세와 말씀하시니"
+      ],
+      "raw_text_hashes": [
+        "04962e38a07899ecb9861f3b90f6375a395af4d94c48eea406453b1365c5bac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:10",
+      "sequence": 2484,
+      "chapter_label": "EXO 33",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 10
+        }
+      ],
+      "en": "All the people saw the pillar of cloud stand at the door of the Tent, and all the people rose up and worshiped, everyone at their tent door.",
+      "ko": "모든 백성이 회막문에 구름 기둥이 섰음을 보고 다 일어나 각기 장막문에 서서 경배하며",
+      "source_text_hash": "22432cb2440bceb100c6c1f83f8d6ec23933dfa209a67475be630ba2ba3dcd53",
+      "translation_text_hash": "3d4adcdddb64d512b617aaa3a37a2c6b3221edeb86ec2214e2d61ab134f9faf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 회막문에 구름 기둥이 섰음을 보고 다 일어나 각기 장막문에 서서 경배하며"
+      ],
+      "raw_text_hashes": [
+        "3d4adcdddb64d512b617aaa3a37a2c6b3221edeb86ec2214e2d61ab134f9faf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:11",
+      "sequence": 2485,
+      "chapter_label": "EXO 33",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD spoke to Moses face to face, as a man speaks to his friend. He turned again into the camp, but his servant Joshua, the son of Nun, a young man, didn’t depart from the Tent.",
+      "ko": "사람이 그 친구와 이야기함 같이 여호와께서는 모세와 대면하여 말씀하시며 모세는 진으로 돌아오나 그 수종자 눈의 아들 청년 여호수아는 회막을 떠나지 아니하니라",
+      "source_text_hash": "24ff66f3da647d5a91e057f979f526b54c2ec1006088416bf7b2b5d536539056",
+      "translation_text_hash": "d9ef5b4ce796b1159dfdb95bebb8cce6fd783ee8fd7292127e2748b12fa2b1a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 친구와 이야기함 같이 여호와께서는 모세와 대면하여 말씀하시며 모세는 진으로 돌아오나 그 수종자 눈의 아들 청년 여호수아는 회막을 떠나지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "d9ef5b4ce796b1159dfdb95bebb8cce6fd783ee8fd7292127e2748b12fa2b1a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:12",
+      "sequence": 2486,
+      "chapter_label": "EXO 33",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 12
+        }
+      ],
+      "en": "Moses said to the LORD, “Behold, you tell me, ‘Bring up this people;’ and you haven’t let me know whom you will send with me. Yet you have said, ‘I know you by name, and you have also found favor in my sight.’",
+      "ko": "모세가 여호와께 고하되 보시옵소서 주께서 나더러 이 백성을 인도하여 올라가라 하시면서 나와 함께 보낼 자를 내게 지시하지 아니하시나이다 주께서 전에 말씀하시기를 나는 이름으로도 너를 알고 너도 내 앞에 은총을 입었다 하셨사온즉",
+      "source_text_hash": "cc3247182a611ab787644f5685b55a063fe0098acbd4c246d34f2dabf4d6a99a",
+      "translation_text_hash": "cbd6f46c48a545b83f2e800161ecaa243495b9f8a825529caae5a1725aaa16fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 고하되 보시옵소서 주께서 나더러 이 백성을 인도하여 올라가라 하시면서 나와 함께 보낼 자를 내게 지시하지 아니하시나이다 주께서 전에 말씀하시기를 나는 이름으로도 너를 알고 너도 내 앞에 은총을 입었다 하셨사온즉"
+      ],
+      "raw_text_hashes": [
+        "cbd6f46c48a545b83f2e800161ecaa243495b9f8a825529caae5a1725aaa16fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:13",
+      "sequence": 2487,
+      "chapter_label": "EXO 33",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 13
+        }
+      ],
+      "en": "Now therefore, if I have found favor in your sight, please show me your way, now, that I may know you, so that I may find favor in your sight; and consider that this nation is your people.”",
+      "ko": "내가 참으로 주의 목전에 은총을 입었사오면 원컨대 주의 길을 내게 보이사 내게 주를 알리시고 나로 주의 목전에 은총을 입게 하시며 이 족속을 주의 백성으로 여기소서",
+      "source_text_hash": "0ab8c724a72be27960c210ac9a8d6c98321a9957e25e64ab14b695e620ed0dc2",
+      "translation_text_hash": "83406f72c1b6a2277da16d54fd1c81584cf13379ccee0513f5a63353ba7029c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 참으로 주의 목전에 은총을 입었사오면 원컨대 주의 길을 내게 보이사 내게 주를 알리시고 나로 주의 목전에 은총을 입게 하시며 이 족속을 주의 백성으로 여기소서"
+      ],
+      "raw_text_hashes": [
+        "83406f72c1b6a2277da16d54fd1c81584cf13379ccee0513f5a63353ba7029c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:14",
+      "sequence": 2488,
+      "chapter_label": "EXO 33",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “My presence will go with you, and I will give you rest.”",
+      "ko": "여호와께서 가라사대 내가 친히 가리라 내가 너로 편케 하리라",
+      "source_text_hash": "448fad6e827d0782b93697c89da9e55cb32ca9a4d94589c014ff15434043df6a",
+      "translation_text_hash": "f71df114f6e63d535efb6b2f5a88c209718151abd4a38a348cf4dc62d1f5c5bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 친히 가리라 내가 너로 편케 하리라"
+      ],
+      "raw_text_hashes": [
+        "f71df114f6e63d535efb6b2f5a88c209718151abd4a38a348cf4dc62d1f5c5bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:15",
+      "sequence": 2489,
+      "chapter_label": "EXO 33",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 15
+        }
+      ],
+      "en": "Moses said to him, “If your presence doesn’t go with me, don’t carry us up from here.",
+      "ko": "모세가 여호와께 고하되 주께서 친히 가지 아니하시려거든 우리를 이곳에서 올려 보내지 마옵소서",
+      "source_text_hash": "a301f140efb0aa69cc8c1e947228678899274e32797313f5d84bf32430ecdd21",
+      "translation_text_hash": "29654e050286b5ffee21b9c2b780888075856f798c95fa3ae66640050706574b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께 고하되 주께서 친히 가지 아니하시려거든 우리를 이곳에서 올려 보내지 마옵소서"
+      ],
+      "raw_text_hashes": [
+        "29654e050286b5ffee21b9c2b780888075856f798c95fa3ae66640050706574b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:16",
+      "sequence": 2490,
+      "chapter_label": "EXO 33",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 16
+        }
+      ],
+      "en": "For how would people know that I have found favor in your sight, I and your people? Isn’t it that you go with us, so that we are separated, I and your people, from all the people who are on the surface of the earth?”",
+      "ko": "나와 주의 백성이 주의 목전에 은총 입은 줄을 무엇으로 알리이까 주께서 우리와 함께 행하심으로 나와 주의 백성을 천하 만민 중에 구별하심이 아니니이까",
+      "source_text_hash": "3b5123229337b08439dffa44760b042be72f480757bb48880e847892357a2b50",
+      "translation_text_hash": "1f2791df3aa99b1d195311e58c0677a19cfca78afaa98ef58bb1e548eb37f24b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 주의 백성이 주의 목전에 은총 입은 줄을 무엇으로 알리이까 주께서 우리와 함께 행하심으로 나와 주의 백성을 천하 만민 중에 구별하심이 아니니이까"
+      ],
+      "raw_text_hashes": [
+        "1f2791df3aa99b1d195311e58c0677a19cfca78afaa98ef58bb1e548eb37f24b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:17",
+      "sequence": 2491,
+      "chapter_label": "EXO 33",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD said to Moses, “I will do this thing also that you have spoken; for you have found favor in my sight, and I know you by name.”",
+      "ko": "여호와께서 모세에게 이르시되 너의 말하는 이 일도 내가 하리니 너는 내 목전에 은총을 입었고 내가 이름으로도 너를 앎이니라",
+      "source_text_hash": "2f97da7878c98e53979f728cc50cc548f6966449d1fa7b65cceda4823a6a4fbb",
+      "translation_text_hash": "9461b589186a895dcc3b98cd4ea996ada0f4dde87b7a051eec148f3f179cf03d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 너의 말하는 이 일도 내가 하리니 너는 내 목전에 은총을 입었고 내가 이름으로도 너를 앎이니라"
+      ],
+      "raw_text_hashes": [
+        "9461b589186a895dcc3b98cd4ea996ada0f4dde87b7a051eec148f3f179cf03d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:18",
+      "sequence": 2492,
+      "chapter_label": "EXO 33",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 18
+        }
+      ],
+      "en": "Moses said, “Please show me your glory.”",
+      "ko": "모세가 가로되 원컨대 주의 영광을 내게 보이소서",
+      "source_text_hash": "4ed068ca426252adb2c4b3a664219168d7e64c1f4e51edf5fda907440eb0afa1",
+      "translation_text_hash": "9596d21eca3c3e022a2d8599a1074ebf18efa4fe3883cea6158dc83402e3b029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 가로되 원컨대 주의 영광을 내게 보이소서"
+      ],
+      "raw_text_hashes": [
+        "9596d21eca3c3e022a2d8599a1074ebf18efa4fe3883cea6158dc83402e3b029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:19",
+      "sequence": 2493,
+      "chapter_label": "EXO 33",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 19
+        }
+      ],
+      "en": "He said, “I will make all my goodness pass before you, and will proclaim the LORD’s name before you. I will be gracious to whom I will be gracious, and will show mercy on whom I will show mercy.”",
+      "ko": "여호와께서 가라사대 내가 나의 모든 선한 형상을 네 앞으로 지나게 하고 여호와의 이름을 네 앞에 반포하리라 나는 은혜 줄 자에게 은혜를 주고 긍휼히 여길 자에게 긍휼을 베푸느니라",
+      "source_text_hash": "8546b99424ae450dcaf52e70c602ec2add7d0244901f07867e92f7ee6ce3ae19",
+      "translation_text_hash": "8cbd282404d617a1aa73f7746c7558c6b9815ac589cccc37ea77f0ac6c2f6c9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 나의 모든 선한 형상을 네 앞으로 지나게 하고 여호와의 이름을 네 앞에 반포하리라 나는 은혜 줄 자에게 은혜를 주고 긍휼히 여길 자에게 긍휼을 베푸느니라"
+      ],
+      "raw_text_hashes": [
+        "8cbd282404d617a1aa73f7746c7558c6b9815ac589cccc37ea77f0ac6c2f6c9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:20",
+      "sequence": 2494,
+      "chapter_label": "EXO 33",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 20
+        }
+      ],
+      "en": "He said, “You cannot see my face, for man may not see me and live.”",
+      "ko": "또 가라사대 네가 내 얼굴을 보지 못하리니 나를 보고 살 자가 없음이니라",
+      "source_text_hash": "31be98c9ce8888b2920d1fd740ab8b0357bbb2faad0c11d90276888a97873a2e",
+      "translation_text_hash": "54e6242219c9cdc8c08218534010ff5295b9d066d4bcfe41a5f34195aae5dfec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 네가 내 얼굴을 보지 못하리니 나를 보고 살 자가 없음이니라"
+      ],
+      "raw_text_hashes": [
+        "54e6242219c9cdc8c08218534010ff5295b9d066d4bcfe41a5f34195aae5dfec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:21",
+      "sequence": 2495,
+      "chapter_label": "EXO 33",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD also said, “Behold, there is a place by me, and you shall stand on the rock.",
+      "ko": "여호와께서 가라사대 보라 내 곁에 한 곳이 있으니 너는 그 반석 위에 섰으라",
+      "source_text_hash": "a15f4d623b6bf6b28b179e02e7206ee856f9537e6e221a25ec612e77861fc2af",
+      "translation_text_hash": "042f3a15e534bb218b1e4153d5986dfbbfd257899680aa48170d50520fa5738f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 보라 내 곁에 한 곳이 있으니 너는 그 반석 위에 섰으라"
+      ],
+      "raw_text_hashes": [
+        "042f3a15e534bb218b1e4153d5986dfbbfd257899680aa48170d50520fa5738f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:22",
+      "sequence": 2496,
+      "chapter_label": "EXO 33",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 22
+        }
+      ],
+      "en": "It will happen, while my glory passes by, that I will put you in a cleft of the rock, and will cover you with my hand until I have passed by;",
+      "ko": "내 영광이 지날 때에 내가 너를 반석 틈에 두고 내가 지나도록 내 손으로 너를 덮었다가",
+      "source_text_hash": "73d2888c58d565472d9e381e95d3e0c14aeac7522e652e20af64ad2a1b14b085",
+      "translation_text_hash": "83975c80763b00e4eb0db5a155d7592546caa73d3de2568920143d34506e6430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 영광이 지날 때에 내가 너를 반석 틈에 두고 내가 지나도록 내 손으로 너를 덮었다가"
+      ],
+      "raw_text_hashes": [
+        "83975c80763b00e4eb0db5a155d7592546caa73d3de2568920143d34506e6430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:33:23",
+      "sequence": 2497,
+      "chapter_label": "EXO 33",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 33,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 33,
+          "verse": 23
+        }
+      ],
+      "en": "then I will take away my hand, and you will see my back; but my face shall not be seen.”",
+      "ko": "손을 거두리니 네가 내 등을 볼 것이요 얼굴은 보지 못하리라",
+      "source_text_hash": "6834efb1ca5206a356651e4fd23d6a433b68f1783db23747746af084440a70ac",
+      "translation_text_hash": "1fd02d762ef5306c5e82a03181ca4aa34fd5e3c1138019a1f5cba4d761f20524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손을 거두리니 네가 내 등을 볼 것이요 얼굴은 보지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "1fd02d762ef5306c5e82a03181ca4aa34fd5e3c1138019a1f5cba4d761f20524"
+      ]
+    }
+  ]
+}

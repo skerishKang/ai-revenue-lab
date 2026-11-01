@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:003",
+  "unit_ordinal": 53,
+  "unit_label": "EXO 3",
+  "book_code": "EXO",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:3:1",
+      "sequence": 1581,
+      "chapter_label": "EXO 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now Moses was keeping the flock of Jethro, his father-in-law, the priest of Midian, and he led the flock to the back of the wilderness, and came to God’s mountain, to Horeb.",
+      "ko": "모세가 그 장인 미디안 제사장 이드로의 양무리를 치더니 그 무리를 광야 서편으로 인도하여 하나님의 산 호렙에 이르매",
+      "source_text_hash": "21062623149031965a2ec00c2b5b92d8f3abe0d5c177d4b12621abf4339b63a2",
+      "translation_text_hash": "df74828e559e96c7705846103aab1699835b05b2655bd34995b6a0f2c90394b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그 장인 미디안 제사장 이드로의 양무리를 치더니 그 무리를 광야 서편으로 인도하여 하나님의 산 호렙에 이르매"
+      ],
+      "raw_text_hashes": [
+        "df74828e559e96c7705846103aab1699835b05b2655bd34995b6a0f2c90394b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:2",
+      "sequence": 1582,
+      "chapter_label": "EXO 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD’s angel appeared to him in a flame of fire out of the middle of a bush. He looked, and behold, the bush burned with fire, and the bush was not consumed.",
+      "ko": "여호와의 사자가 떨기나무 불꽃 가운데서 그에게 나타나시니라 그가 보니 떨기나무에 불이 붙었으나 사라지지 아니하는지라",
+      "source_text_hash": "191fd6921ab77cdb2aec107506eb311cc0401a03969d1ec9ea24d5d0a51a6876",
+      "translation_text_hash": "c71e715a6cb5dc44eb99d74252fd82fed591bb42ee3115879b347c9b38f894f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 떨기나무 불꽃 가운데서 그에게 나타나시니라 그가 보니 떨기나무에 불이 붙었으나 사라지지 아니하는지라"
+      ],
+      "raw_text_hashes": [
+        "c71e715a6cb5dc44eb99d74252fd82fed591bb42ee3115879b347c9b38f894f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:3",
+      "sequence": 1583,
+      "chapter_label": "EXO 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Moses said, “I will go now, and see this great sight, why the bush is not burned.”",
+      "ko": "이에 가로되 내가 돌이켜 가서 이 큰 광경을 보리라 떨기나무가 어찌하여 타지 아니하는고 하는 동시에",
+      "source_text_hash": "469dc1a148e0ba9324045f913c60384a34b56bc55db0e6f5af695fe8dcbc69b4",
+      "translation_text_hash": "ebdd5bef2065954a60a1c7b2f5ac9ff8d1ab828c5f42c37b4dee5bb94f84366b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가로되 내가 돌이켜 가서 이 큰 광경을 보리라 떨기나무가 어찌하여 타지 아니하는고 하는 동시에"
+      ],
+      "raw_text_hashes": [
+        "ebdd5bef2065954a60a1c7b2f5ac9ff8d1ab828c5f42c37b4dee5bb94f84366b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:4",
+      "sequence": 1584,
+      "chapter_label": "EXO 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "When the LORD saw that he came over to see, God called to him out of the middle of the bush, and said, “Moses! Moses!” He said, “Here I am.”",
+      "ko": "여호와께서 그가 보려고 돌이켜 오는 것을 보신지라 하나님이 떨기나무 가운데서 그를 불러 가라사대 모세야 모세야 하시매 그가 가로되 내가 여기 있나이다",
+      "source_text_hash": "eafd5b7af5dbcac505c92e4be4ff76443725d574ab834b54dc32511d10d5a109",
+      "translation_text_hash": "33fb4e7924d7861e895c3beb29becd1c0c2ffb006680c2fed42831dd07b3f5a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그가 보려고 돌이켜 오는 것을 보신지라 하나님이 떨기나무 가운데서 그를 불러 가라사대 모세야 모세야 하시매 그가 가로되 내가 여기 있나이다"
+      ],
+      "raw_text_hashes": [
+        "33fb4e7924d7861e895c3beb29becd1c0c2ffb006680c2fed42831dd07b3f5a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:5",
+      "sequence": 1585,
+      "chapter_label": "EXO 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He said, “Don’t come close. Take off your sandals, for the place you are standing on is holy ground.”",
+      "ko": "하나님이 가라사대 이리로 가까이 하지 말라 너의 선 곳은 거룩한 땅이니 네 발에서 신을 벗으라",
+      "source_text_hash": "85927777fd8983966f7104afbf66addbd00e16b6b023bdaef470a7e8c52525cb",
+      "translation_text_hash": "e5800426c355164edaafb667b231e310988c931be33598dd98392beffaa56e26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 이리로 가까이 하지 말라 너의 선 곳은 거룩한 땅이니 네 발에서 신을 벗으라"
+      ],
+      "raw_text_hashes": [
+        "e5800426c355164edaafb667b231e310988c931be33598dd98392beffaa56e26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:6",
+      "sequence": 1586,
+      "chapter_label": "EXO 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "Moreover he said, “I am the God of your father, the God of Abraham, the God of Isaac, and the God of Jacob.” Moses hid his face because he was afraid to look at God.",
+      "ko": "또 이르시되 나는 네 조상의 하나님이니 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님이니라 모세가 하나님 뵈옵기를 두려워하여 얼굴을 가리우매",
+      "source_text_hash": "c01c2a221a7e6a8cffc407d7a368038c6970fcf733ff6badb3600e0b9ea9a0a9",
+      "translation_text_hash": "52617c9b99bcbefb755a1a1334449e4b63da466af126786797677340c7a1feea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 나는 네 조상의 하나님이니 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님이니라 모세가 하나님 뵈옵기를 두려워하여 얼굴을 가리우매"
+      ],
+      "raw_text_hashes": [
+        "52617c9b99bcbefb755a1a1334449e4b63da466af126786797677340c7a1feea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:7",
+      "sequence": 1587,
+      "chapter_label": "EXO 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD said, “I have surely seen the affliction of my people who are in Egypt, and have heard their cry because of their taskmasters, for I know their sorrows.",
+      "ko": "여호와께서 가라사대 내가 애굽에 있는 내 백성의 고통을 정녕히 보고 그들이 그 간역자로 인하여 부르짖음을 듣고 그 우고를 알고",
+      "source_text_hash": "5521ef7e4fee3844d20cdf43aefac9f2a195647103fd6736103b4eaf935cfcb9",
+      "translation_text_hash": "1d76a29f525970d3bea061add07d48a48adad8b6bb5a1dba566285968c6542a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 가라사대 내가 애굽에 있는 내 백성의 고통을 정녕히 보고 그들이 그 간역자로 인하여 부르짖음을 듣고 그 우고를 알고"
+      ],
+      "raw_text_hashes": [
+        "1d76a29f525970d3bea061add07d48a48adad8b6bb5a1dba566285968c6542a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:8",
+      "sequence": 1588,
+      "chapter_label": "EXO 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "I have come down to deliver them out of the hand of the Egyptians, and to bring them up out of that land to a good and large land, to a land flowing with milk and honey; to the place of the Canaanite, the Hittite, the Amorite, the Perizzite, the Hivite, and the Jebusite.",
+      "ko": "내가 내려와서 그들을 애굽인의 손에서 건져내고 그들을 그 땅에서 인도하여 아름답고 광대한 땅, 젖과 꿀이 흐르는 땅 곧 가나안 족속, 헷 족속, 아모리 족속, 브리스 족속, 히위 족속, 여부스 족속의 지방에 이르려 하노라",
+      "source_text_hash": "1a41a18588da9bf2bfd5d03271052b08219962e9e3f2a7488688f2f4d397ce9a",
+      "translation_text_hash": "b2b9b13fa603efa37587592bb713ace44482582c769d438ed050906ea37434d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내려와서 그들을 애굽인의 손에서 건져내고 그들을 그 땅에서 인도하여 아름답고 광대한 땅, 젖과 꿀이 흐르는 땅 곧 가나안 족속, 헷 족속, 아모리 족속, 브리스 족속, 히위 족속, 여부스 족속의 지방에 이르려 하노라"
+      ],
+      "raw_text_hashes": [
+        "b2b9b13fa603efa37587592bb713ace44482582c769d438ed050906ea37434d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:9",
+      "sequence": 1589,
+      "chapter_label": "EXO 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Now, behold, the cry of the children of Israel has come to me. Moreover I have seen the oppression with which the Egyptians oppress them.",
+      "ko": "이제 이스라엘 자손의 부르짖음이 내게 달하고 애굽 사람이 그들을 괴롭게 하는 학대도 내가 보았으니",
+      "source_text_hash": "0a71c513aabc3a9c10b455369c7d3d90d93667ab1c01674f1119be1186dfbcf6",
+      "translation_text_hash": "01407750329e113fe6e30021d4e77c2401830d81f7cfc504e90be45c9e62367d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이스라엘 자손의 부르짖음이 내게 달하고 애굽 사람이 그들을 괴롭게 하는 학대도 내가 보았으니"
+      ],
+      "raw_text_hashes": [
+        "01407750329e113fe6e30021d4e77c2401830d81f7cfc504e90be45c9e62367d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:10",
+      "sequence": 1590,
+      "chapter_label": "EXO 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Come now therefore, and I will send you to Pharaoh, that you may bring my people, the children of Israel, out of Egypt.”",
+      "ko": "이제 내가 너를 바로에게 보내어 너로 내 백성 이스라엘 자손을 애굽에서 인도하여 내게 하리라",
+      "source_text_hash": "8659713e6b76845c171189f6d9fb092087c17459c3f9cb2e2bd6489c59b3b734",
+      "translation_text_hash": "ee4803c4c0d376768c203ecb6a18dc81d376bc0a6fcd34484bb2056ed23b1ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 너를 바로에게 보내어 너로 내 백성 이스라엘 자손을 애굽에서 인도하여 내게 하리라"
+      ],
+      "raw_text_hashes": [
+        "ee4803c4c0d376768c203ecb6a18dc81d376bc0a6fcd34484bb2056ed23b1ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:11",
+      "sequence": 1591,
+      "chapter_label": "EXO 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "Moses said to God, “Who am I, that I should go to Pharaoh, and that I should bring the children of Israel out of Egypt?”",
+      "ko": "모세가 하나님께 고하되 내가 누구관대 바로에게 가며 이스라엘 자손을 애굽에서 인도하여 내리이까",
+      "source_text_hash": "c75047f3777380d518d710dff8976bebd104f8aa246b82357c607c8ac49c752f",
+      "translation_text_hash": "e9f34c5e52a0a0b0f898699aa824e892f70950be4d4c57bd5d39a31a97d2bc8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하나님께 고하되 내가 누구관대 바로에게 가며 이스라엘 자손을 애굽에서 인도하여 내리이까"
+      ],
+      "raw_text_hashes": [
+        "e9f34c5e52a0a0b0f898699aa824e892f70950be4d4c57bd5d39a31a97d2bc8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:12",
+      "sequence": 1592,
+      "chapter_label": "EXO 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "He said, “Certainly I will be with you. This will be the token to you, that I have sent you: when you have brought the people out of Egypt, you shall serve God on this mountain.”",
+      "ko": "하나님이 가라사대 내가 정녕 너와 함께 있으리라 네가 백성을 애굽에서 인도하여 낸 후에 너희가 이 산에서 하나님을 섬기리니 이것이 내가 너를 보낸 증거니라",
+      "source_text_hash": "0ddcdb89aab30600bae6950b7ae91e8dd0635a62496cc883a29f9fc4f8b2e20e",
+      "translation_text_hash": "c3ca904c7b2cfdd1ed390300d4b6dcb125595ec8dae83d397969e1bb7312dea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 가라사대 내가 정녕 너와 함께 있으리라 네가 백성을 애굽에서 인도하여 낸 후에 너희가 이 산에서 하나님을 섬기리니 이것이 내가 너를 보낸 증거니라"
+      ],
+      "raw_text_hashes": [
+        "c3ca904c7b2cfdd1ed390300d4b6dcb125595ec8dae83d397969e1bb7312dea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:13",
+      "sequence": 1593,
+      "chapter_label": "EXO 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "Moses said to God, “Behold, when I come to the children of Israel, and tell them, ‘The God of your fathers has sent me to you,’ and they ask me, ‘What is his name?’ what should I tell them?”",
+      "ko": "모세가 하나님께 고하되 내가 이스라엘 자손에게 가서 이르기를 너희 조상의 하나님이 나를 너희에게 보내셨다 하면 그들이 내게 묻기를 그의 이름이 무엇이냐 하리니 내가 무엇이라고 그들에게 말하리이까",
+      "source_text_hash": "13ee4dda754537a34866e635a6cb5ebce28022d13433892cc060359b1e5ddcd8",
+      "translation_text_hash": "c7dcdd3e6d5c1f6ae28306f7e51f534e500c4deb77053045fddb2a5a9c3898d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 하나님께 고하되 내가 이스라엘 자손에게 가서 이르기를 너희 조상의 하나님이 나를 너희에게 보내셨다 하면 그들이 내게 묻기를 그의 이름이 무엇이냐 하리니 내가 무엇이라고 그들에게 말하리이까"
+      ],
+      "raw_text_hashes": [
+        "c7dcdd3e6d5c1f6ae28306f7e51f534e500c4deb77053045fddb2a5a9c3898d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:14",
+      "sequence": 1594,
+      "chapter_label": "EXO 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "God said to Moses, “I AM WHO I AM,” and he said, “You shall tell the children of Israel this: ‘I AM has sent me to you.’”",
+      "ko": "하나님이 모세에게 이르시되 나는 스스로 있는 자니라 또 이르시되 너는 이스라엘 자손에게 이같이 이르기를 스스로 있는 자가 나를 너희에게 보내셨다 하라",
+      "source_text_hash": "afb148f7873b81e8d9d4ed15d699ef8971b841436f1425bc27baab32bec31234",
+      "translation_text_hash": "a56b1a826df371ef5e897a0950181a5a7fd914374d19b850d0a140d55d539f62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 모세에게 이르시되 나는 스스로 있는 자니라 또 이르시되 너는 이스라엘 자손에게 이같이 이르기를 스스로 있는 자가 나를 너희에게 보내셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "a56b1a826df371ef5e897a0950181a5a7fd914374d19b850d0a140d55d539f62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:15",
+      "sequence": 1595,
+      "chapter_label": "EXO 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "God said moreover to Moses, “You shall tell the children of Israel this, ‘The LORD, the God of your fathers, the God of Abraham, the God of Isaac, and the God of Jacob, has sent me to you.’ This is my name forever, and this is my memorial to all generations.",
+      "ko": "하나님이 또 모세에게 이르시되 너는 이스라엘 자손에게 이같이 이르기를 나를 너희에게 보내신 이는 너희 조상의 하나님 곧 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님 여호와라 하라 이는 나의 영원한 이름이요 대대로 기억할 나의 표호니라",
+      "source_text_hash": "98531a33100d424493ff328be2271c1e9dc2eede277a3b0c5cd59acc730aedcd",
+      "translation_text_hash": "e20c236ead657aa0f3f08d0c2de818f36621957d11b11234a9bba9bcc198219b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 또 모세에게 이르시되 너는 이스라엘 자손에게 이같이 이르기를 나를 너희에게 보내신 이는 너희 조상의 하나님 곧 아브라함의 하나님, 이삭의 하나님, 야곱의 하나님 여호와라 하라 이는 나의 영원한 이름이요 대대로 기억할 나의 표호니라"
+      ],
+      "raw_text_hashes": [
+        "e20c236ead657aa0f3f08d0c2de818f36621957d11b11234a9bba9bcc198219b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:16",
+      "sequence": 1596,
+      "chapter_label": "EXO 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Go and gather the elders of Israel together, and tell them, ‘The LORD, the God of your fathers, the God of Abraham, of Isaac, and of Jacob, has appeared to me, saying, “I have surely visited you, and seen that which is done to you in Egypt.",
+      "ko": "너는 가서 이스라엘 장로들을 모으고 그들에게 이르기를 여호와 너희 조상의 하나님 곧 아브라함과 이삭과 야곱의 하나님이 내게 나타나 이르시되 내가 실로 너희를 권고하여 너희가 애굽에서 당한 일을 보았노라",
+      "source_text_hash": "66fda028fbf6cf5a27c468a3203519735fc2f196209e632b21467812ddd9159a",
+      "translation_text_hash": "b92e4bc2fbff935fbec8eee819846218663eb845a1b2609d791519a02b4825b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 이스라엘 장로들을 모으고 그들에게 이르기를 여호와 너희 조상의 하나님 곧 아브라함과 이삭과 야곱의 하나님이 내게 나타나 이르시되 내가 실로 너희를 권고하여 너희가 애굽에서 당한 일을 보았노라"
+      ],
+      "raw_text_hashes": [
+        "b92e4bc2fbff935fbec8eee819846218663eb845a1b2609d791519a02b4825b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:17",
+      "sequence": 1597,
+      "chapter_label": "EXO 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "I have said, I will bring you up out of the affliction of Egypt to the land of the Canaanite, the Hittite, the Amorite, the Perizzite, the Hivite, and the Jebusite, to a land flowing with milk and honey.”’",
+      "ko": "내가 말하였거니와 내가 너희를 애굽의 고난 중에서 인도하여 내어 젖과 꿀이 흐르는 땅 곧 가나안 족속, 헷 족속, 아모리 족속, 브리스 족속, 히위 족속, 여부스 족속의 땅으로 올라가게 하리라 하셨다 하면",
+      "source_text_hash": "4c633832cf1df4d380d21bb9950246bbd00f50bce82d0201c9e86d1c8bc7dbcf",
+      "translation_text_hash": "ece0ac2b55560510b783f449ef283a7afa7f1306137b234f3cd6d73b98e70f0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하였거니와 내가 너희를 애굽의 고난 중에서 인도하여 내어 젖과 꿀이 흐르는 땅 곧 가나안 족속, 헷 족속, 아모리 족속, 브리스 족속, 히위 족속, 여부스 족속의 땅으로 올라가게 하리라 하셨다 하면"
+      ],
+      "raw_text_hashes": [
+        "ece0ac2b55560510b783f449ef283a7afa7f1306137b234f3cd6d73b98e70f0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:18",
+      "sequence": 1598,
+      "chapter_label": "EXO 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "They will listen to your voice. You shall come, you and the elders of Israel, to the king of Egypt, and you shall tell him, ‘The LORD, the God of the Hebrews, has met with us. Now please let us go three days’ journey into the wilderness, that we may sacrifice to the LORD, our God.’",
+      "ko": "그들이 네 말을 들으리니 너는 그들의 장로들과 함께 애굽 왕에게 이르기를 히브리 사람의 하나님 여호와께서 우리에게 임하셨은즉 우리가 우리 하나님 여호와께 희생을 드리려 하오니 사흘길쯤 광야로 가기를 허락하소서 하라",
+      "source_text_hash": "e8070baae66a6ea09e813ff0f20197d82ef0ebbae32b05f9680c90fda89eb390",
+      "translation_text_hash": "c15fc368339af98fbc41e5ae3e4a1627c4f9e4185c957c87c59d1afbc0c2d58f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 네 말을 들으리니 너는 그들의 장로들과 함께 애굽 왕에게 이르기를 히브리 사람의 하나님 여호와께서 우리에게 임하셨은즉 우리가 우리 하나님 여호와께 희생을 드리려 하오니 사흘길쯤 광야로 가기를 허락하소서 하라"
+      ],
+      "raw_text_hashes": [
+        "c15fc368339af98fbc41e5ae3e4a1627c4f9e4185c957c87c59d1afbc0c2d58f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:19",
+      "sequence": 1599,
+      "chapter_label": "EXO 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "I know that the king of Egypt won’t give you permission to go, no, not by a mighty hand.",
+      "ko": "내가 아노니 강한 손으로 치기 전에는 애굽 왕이 너희의 가기를 허락지 아니하다가",
+      "source_text_hash": "a7b85c86d3b1919c6160a5269a33abe11e4a06493acf4d162e62eff9921e753c",
+      "translation_text_hash": "a37a6587790866ad702f603a3e1e8466918f5b4601d995370714b0e90f8f7dce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아노니 강한 손으로 치기 전에는 애굽 왕이 너희의 가기를 허락지 아니하다가"
+      ],
+      "raw_text_hashes": [
+        "a37a6587790866ad702f603a3e1e8466918f5b4601d995370714b0e90f8f7dce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:20",
+      "sequence": 1600,
+      "chapter_label": "EXO 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "I will reach out my hand and strike Egypt with all my wonders which I will do among them, and after that he will let you go.",
+      "ko": "내가 내 손을 들어 애굽 중에 여러가지 이적으로 그 나라를 친 후에야 그가 너희를 보내리라",
+      "source_text_hash": "dc6eb5077611806647d54dfe8519daf2895f305e62055fbfefde35eae3c24b06",
+      "translation_text_hash": "0a502d268c648d6ec3ed8ae3bdd173f51f7b685e39a1f418e8d870a08a21af87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 손을 들어 애굽 중에 여러가지 이적으로 그 나라를 친 후에야 그가 너희를 보내리라"
+      ],
+      "raw_text_hashes": [
+        "0a502d268c648d6ec3ed8ae3bdd173f51f7b685e39a1f418e8d870a08a21af87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:21",
+      "sequence": 1601,
+      "chapter_label": "EXO 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "I will give this people favor in the sight of the Egyptians, and it will happen that when you go, you shall not go empty-handed.",
+      "ko": "내가 애굽 사람으로 이 백성에게 은혜를 입히게 할찌라 너희가 갈 때에 빈손으로 가지 아니하리니",
+      "source_text_hash": "a1bd02b605caab43eca93242c9853875832f5dd38e54ac64fb26f8d1a552a671",
+      "translation_text_hash": "584bbe9bafdc3e4670e28a84a40e296b7ce3ba3cc71992045aa3bcc94faff64b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 사람으로 이 백성에게 은혜를 입히게 할찌라 너희가 갈 때에 빈손으로 가지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "584bbe9bafdc3e4670e28a84a40e296b7ce3ba3cc71992045aa3bcc94faff64b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:3:22",
+      "sequence": 1602,
+      "chapter_label": "EXO 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "But every woman shall ask of her neighbor, and of her who visits her house, jewels of silver, jewels of gold, and clothing. You shall put them on your sons, and on your daughters. You shall plunder the Egyptians.”",
+      "ko": "여인마다 그 이웃 사람과 및 자기 집에 우거하는 자에게 은 패물과 금 패물과 의복을 구하여 너희 자녀를 꾸미라 너희가 애굽 사람의 물품을 취하리라",
+      "source_text_hash": "a6c3e690946f3b4c922eab21ef01913e445e42a10fb17486f9dd2a843ff7e3ec",
+      "translation_text_hash": "f0becda03f2fcaeda26b94350881396ea53ac87e8483981ed2f26202f7e14e0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인마다 그 이웃 사람과 및 자기 집에 우거하는 자에게 은 패물과 금 패물과 의복을 구하여 너희 자녀를 꾸미라 너희가 애굽 사람의 물품을 취하리라"
+      ],
+      "raw_text_hashes": [
+        "f0becda03f2fcaeda26b94350881396ea53ac87e8483981ed2f26202f7e14e0b"
+      ]
+    }
+  ]
+}

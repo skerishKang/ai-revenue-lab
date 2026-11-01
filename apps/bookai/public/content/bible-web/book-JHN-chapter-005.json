@@ -1,0 +1,1517 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:005",
+  "unit_ordinal": 1002,
+  "unit_label": "JHN 5",
+  "book_code": "JHN",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:5:1",
+      "sequence": 26211,
+      "chapter_label": "JHN 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, there was a feast of the Jews, and Jesus went up to Jerusalem.",
+      "ko": "그 후에 유대인의 명절이 있어 예수께서 예루살렘에 올라가시니라",
+      "source_text_hash": "c8e728c53531b4a7a726707ec10029eb62e903794947f68b4d5be40fd555533f",
+      "translation_text_hash": "38b1f8be375cbe322fb97b6084ec7b24f01763e6c48d6dfd99dac9b907f81fc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 유대인의 명절이 있어 예수께서 예루살렘에 올라가시니라"
+      ],
+      "raw_text_hashes": [
+        "38b1f8be375cbe322fb97b6084ec7b24f01763e6c48d6dfd99dac9b907f81fc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:2",
+      "sequence": 26212,
+      "chapter_label": "JHN 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Now in Jerusalem by the sheep gate, there is a pool, which is called in Hebrew, “Bethesda”, having five porches.",
+      "ko": "예루살렘에 있는 양문 곁에 히브리 말로 베데스다라 하는 못이 있는데 거기 행각 다섯이 있고",
+      "source_text_hash": "0806637a6d1c6cddbda7cd1515c68eaaac27be79f111c05ee10401d76c54b1ce",
+      "translation_text_hash": "ca1233d2705079e4b66d9b354e698d867d8d4acb8b5103f40f5c1105ecc7b892",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘에 있는 양문 곁에 히브리 말로 베데스다라 하는 못이 있는데 거기 행각 다섯이 있고"
+      ],
+      "raw_text_hashes": [
+        "ca1233d2705079e4b66d9b354e698d867d8d4acb8b5103f40f5c1105ecc7b892"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:3",
+      "sequence": 26213,
+      "chapter_label": "JHN 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "In these lay a great multitude of those who were sick, blind, lame, or paralyzed, waiting for the moving of the water;",
+      "ko": "그 안에 많은 병자, 소경, 절뚝발이, 혈기 마른 자들이 누워 [물의 동함을 기다리니",
+      "source_text_hash": "f4b71311eca7fa9540289a0f44922801dcd58a85c590556237e9d0d67cabc259",
+      "translation_text_hash": "299592db574d9d8372d3ccb7dc5b395e3eb47b694659a193fb843d72ef53d992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에 많은 병자, 소경, 절뚝발이, 혈기 마른 자들이 누워 [물의 동함을 기다리니"
+      ],
+      "raw_text_hashes": [
+        "299592db574d9d8372d3ccb7dc5b395e3eb47b694659a193fb843d72ef53d992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:4",
+      "sequence": 26214,
+      "chapter_label": "JHN 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "for an angel went down at certain times into the pool and stirred up the water. Whoever stepped in first after the stirring of the water was healed of whatever disease he had.",
+      "ko": "이는 천사가 가끔 못에 내려와 물을 동하게 하는데 동한 후에 먼저 들어가는 자는 어떤 병에 걸렸든지 낫게 됨이러라]",
+      "source_text_hash": "835ccc11a07b486f6bad3ea70396dc68ba33a477d473c1e76f73244cad9af5a0",
+      "translation_text_hash": "11a759ef630cda29566ec19a31ac38463f14df4f419c5d170f9b2d9fd9b367ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 천사가 가끔 못에 내려와 물을 동하게 하는데 동한 후에 먼저 들어가는 자는 어떤 병에 걸렸든지 낫게 됨이러라]"
+      ],
+      "raw_text_hashes": [
+        "11a759ef630cda29566ec19a31ac38463f14df4f419c5d170f9b2d9fd9b367ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:5",
+      "sequence": 26215,
+      "chapter_label": "JHN 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "A certain man was there who had been sick for thirty-eight years.",
+      "ko": "거기 삼십 팔년 된 병자가 있더라",
+      "source_text_hash": "0c6f6e3ef302dc081b2a7adb52a983b47abbfb35b5cd7725ce91cd109f0348eb",
+      "translation_text_hash": "ff370d2210a6a1a9fdb76328eeacc7bf2afd9f8a02afcb1b3381d0c9d7ac3537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 삼십 팔년 된 병자가 있더라"
+      ],
+      "raw_text_hashes": [
+        "ff370d2210a6a1a9fdb76328eeacc7bf2afd9f8a02afcb1b3381d0c9d7ac3537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:6",
+      "sequence": 26216,
+      "chapter_label": "JHN 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "When Jesus saw him lying there, and knew that he had been sick for a long time, he asked him, “Do you want to be made well?”",
+      "ko": "예수께서 그 누운 것을 보시고 병이 벌써 오랜줄 아시고 이르시되 네가 낫고자 하느냐",
+      "source_text_hash": "c90cb68d86e96e9f8aaf828897f551d32bfa2fb80f63e6bb2c1c062328ec6c11",
+      "translation_text_hash": "071eabbeefc3e5a0b94a79751898c5fdc5a1b1cbbc816039472f5e82e794f01d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 누운 것을 보시고 병이 벌써 오랜줄 아시고 이르시되 네가 낫고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "071eabbeefc3e5a0b94a79751898c5fdc5a1b1cbbc816039472f5e82e794f01d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:7",
+      "sequence": 26217,
+      "chapter_label": "JHN 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "The sick man answered him, “Sir, I have no one to put me into the pool when the water is stirred up, but while I’m coming, another steps down before me.”",
+      "ko": "병자가 대답하되 주여 물이 동할 때에 나를 못에 넣어 줄 사람이 없어 내가 가는 동안에 다른 사람이 먼저 내려가나이다",
+      "source_text_hash": "cf518ab37499c4f7efb610f1f30a8726ccfd6ee2767bad958ce3c2062fbc3548",
+      "translation_text_hash": "e9ab9eef39fd3bbf10228a4dfe78cf13b0d5f7a7ac0c2e90ef0e83010d7cbd78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병자가 대답하되 주여 물이 동할 때에 나를 못에 넣어 줄 사람이 없어 내가 가는 동안에 다른 사람이 먼저 내려가나이다"
+      ],
+      "raw_text_hashes": [
+        "e9ab9eef39fd3bbf10228a4dfe78cf13b0d5f7a7ac0c2e90ef0e83010d7cbd78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:8",
+      "sequence": 26218,
+      "chapter_label": "JHN 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus said to him, “Arise, take up your mat, and walk.”",
+      "ko": "예수께서 가라사대 일어나 네 자리를 들고 걸어가라 하시니",
+      "source_text_hash": "3c03f66d6ba6cdc74880b9f08dcee37516c7c50e754dbcfb0a4a9c21abe1d1d8",
+      "translation_text_hash": "5e22de0dd608288b5e1b12c368cc9279a11c32686869ffa7cd9261e7580e0d63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 일어나 네 자리를 들고 걸어가라 하시니"
+      ],
+      "raw_text_hashes": [
+        "5e22de0dd608288b5e1b12c368cc9279a11c32686869ffa7cd9261e7580e0d63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:9",
+      "sequence": 26219,
+      "chapter_label": "JHN 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Immediately, the man was made well, and took up his mat and walked. Now that day was a Sabbath.",
+      "ko": "그 사람이 곧 나아서 자리를 들고 걸어 가니라 이 날은 안식일이니",
+      "source_text_hash": "cab0f7cd944ba7c6209716963ed0320ec15cd5adeb6bf5a72be99bd0dae693d9",
+      "translation_text_hash": "1074c306e194d0c30063fc459f1590ed871819045ddf43dc7c69f25a8ea25e2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 곧 나아서 자리를 들고 걸어 가니라 이 날은 안식일이니"
+      ],
+      "raw_text_hashes": [
+        "1074c306e194d0c30063fc459f1590ed871819045ddf43dc7c69f25a8ea25e2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:10",
+      "sequence": 26220,
+      "chapter_label": "JHN 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "So the Jews said to him who was cured, “It is the Sabbath. It is not lawful for you to carry the mat.”",
+      "ko": "유대인들이 병 나은 사람에게 이르되 안식일인데 네가 자리를 들고 가는 것이 옳지 아니하니라",
+      "source_text_hash": "d37641ec5410f0e409ae957f4a91a2a867ff33e3774350e780490d1700d4cd8a",
+      "translation_text_hash": "944a399270ff7ec87eec694f996255074ebfbacbf40aa81d7185bc96a779a525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 병 나은 사람에게 이르되 안식일인데 네가 자리를 들고 가는 것이 옳지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "944a399270ff7ec87eec694f996255074ebfbacbf40aa81d7185bc96a779a525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:11",
+      "sequence": 26221,
+      "chapter_label": "JHN 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "He answered them, “He who made me well said to me, ‘Take up your mat and walk.’”",
+      "ko": "대답하되 나를 낫게 한 그가 자리를 들고 걸어가라 하더라 한대",
+      "source_text_hash": "6038ad18ecf5d1ffff1ce8cc181345defaad5f7badc112110ff59db99824a402",
+      "translation_text_hash": "10d37d2b455b0b7165dc509bfbcd783c394a502d2af45fcedeb3b98a595f0a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 나를 낫게 한 그가 자리를 들고 걸어가라 하더라 한대"
+      ],
+      "raw_text_hashes": [
+        "10d37d2b455b0b7165dc509bfbcd783c394a502d2af45fcedeb3b98a595f0a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:12",
+      "sequence": 26222,
+      "chapter_label": "JHN 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Then they asked him, “Who is the man who said to you, ‘Take up your mat and walk’?”",
+      "ko": "저희가 묻되 너더러 자리를 들고 걸어가라 한 사람이 누구냐 하되",
+      "source_text_hash": "e74776bee22ae43cbd062ea38b81da7f7046f13f2a4b694000b7719ea75a20da",
+      "translation_text_hash": "13491de1c90dad7a2f66609d0799d9d39519d1c2aa29ca325dce314e7534a148",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 묻되 너더러 자리를 들고 걸어가라 한 사람이 누구냐 하되"
+      ],
+      "raw_text_hashes": [
+        "13491de1c90dad7a2f66609d0799d9d39519d1c2aa29ca325dce314e7534a148"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:13",
+      "sequence": 26223,
+      "chapter_label": "JHN 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "But he who was healed didn’t know who it was, for Jesus had withdrawn, a crowd being in the place.",
+      "ko": "고침을 받은 사람이 그가 누구신지 알지 못하니 이는 거기 사람이 많으므로 예수께서 이미 피하셨음이라",
+      "source_text_hash": "0ea89032834e512e5c628fcab0117d843904b975847b6c726f052c5edfcf2c61",
+      "translation_text_hash": "c838d80d7146cdd0b75a273d2222a7c66086ee8b51614f1252a235166703e938",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고침을 받은 사람이 그가 누구신지 알지 못하니 이는 거기 사람이 많으므로 예수께서 이미 피하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "c838d80d7146cdd0b75a273d2222a7c66086ee8b51614f1252a235166703e938"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:14",
+      "sequence": 26224,
+      "chapter_label": "JHN 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Afterward Jesus found him in the temple and said to him, “Behold, you are made well. Sin no more, so that nothing worse happens to you.”",
+      "ko": "그 후에 예수께서 성전에서 그 사람을 만나 이르시되 보라 네가 나았으니 더 심한 것이 생기지 않게 다시는 죄를 범치 말라 하시니",
+      "source_text_hash": "39f33de958a961735a17f92a845d2ec8a7104adeed6923a6511d84167819d93b",
+      "translation_text_hash": "fe4931aa6f727ed5fee85d7c629e38f6263212d81d0ff74abcdbcb228ce0b1a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 예수께서 성전에서 그 사람을 만나 이르시되 보라 네가 나았으니 더 심한 것이 생기지 않게 다시는 죄를 범치 말라 하시니"
+      ],
+      "raw_text_hashes": [
+        "fe4931aa6f727ed5fee85d7c629e38f6263212d81d0ff74abcdbcb228ce0b1a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:15",
+      "sequence": 26225,
+      "chapter_label": "JHN 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "The man went away, and told the Jews that it was Jesus who had made him well.",
+      "ko": "그 사람이 유대인들에게 가서 자기를 고친 이는 예수라 하니라",
+      "source_text_hash": "01af3de572cae5bca2964758b8ef851457fcf4bcd1bf36e3c4724a3e5a74f9bf",
+      "translation_text_hash": "4f5ea91b3d7381bfe741730a5cc7f6a1e91798710b3d8d124c9547726f2e7b24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 유대인들에게 가서 자기를 고친 이는 예수라 하니라"
+      ],
+      "raw_text_hashes": [
+        "4f5ea91b3d7381bfe741730a5cc7f6a1e91798710b3d8d124c9547726f2e7b24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:16",
+      "sequence": 26226,
+      "chapter_label": "JHN 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "For this cause the Jews persecuted Jesus and sought to kill him, because he did these things on the Sabbath.",
+      "ko": "그러므로 안식일에 이러한 일을 행하신다 하여 유대인들이 예수를 핍박하게 된지라",
+      "source_text_hash": "098c57485d1dbae8e341adbb8bcb627243a34464c29e32e0617715217cbfb9ac",
+      "translation_text_hash": "ad7b187645aea51518898637e6dbe9b8a5a478067bf5fd341a9b5765ddd26403",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 안식일에 이러한 일을 행하신다 하여 유대인들이 예수를 핍박하게 된지라"
+      ],
+      "raw_text_hashes": [
+        "ad7b187645aea51518898637e6dbe9b8a5a478067bf5fd341a9b5765ddd26403"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:17",
+      "sequence": 26227,
+      "chapter_label": "JHN 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "But Jesus answered them, “My Father is still working, so I am working, too.”",
+      "ko": "예수께서 저희에게 이르시되 내 아버지께서 이제까지 일하시니 나도 일한다 하시매",
+      "source_text_hash": "bf4972198dc27d6761a9250abd01003fb4da06236668bdf83c4119d9e96f9a78",
+      "translation_text_hash": "07c9197ba46f79a1237c5eeb8715840f580c33c8b3d10510450b1a9a5a6b707b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 내 아버지께서 이제까지 일하시니 나도 일한다 하시매"
+      ],
+      "raw_text_hashes": [
+        "07c9197ba46f79a1237c5eeb8715840f580c33c8b3d10510450b1a9a5a6b707b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:18",
+      "sequence": 26228,
+      "chapter_label": "JHN 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "For this cause therefore the Jews sought all the more to kill him, because he not only broke the Sabbath, but also called God his own Father, making himself equal with God.",
+      "ko": "유대인들이 이를 인하여 더욱 예수를 죽이고자 하니 이는 안식일만 범할뿐 아니라 하나님을 자기의 친 아버지라 하여 자기를 하나님과 동등으로 삼으심이러라",
+      "source_text_hash": "b27e54b3578aa1fdbf624f77b25437abc5efd3a1344f4113707dad375302fe9a",
+      "translation_text_hash": "9892c70d7f81d0a1803430a90afb8b57019d962bae8fc230c200966598ee915a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 이를 인하여 더욱 예수를 죽이고자 하니 이는 안식일만 범할뿐 아니라 하나님을 자기의 친 아버지라 하여 자기를 하나님과 동등으로 삼으심이러라"
+      ],
+      "raw_text_hashes": [
+        "9892c70d7f81d0a1803430a90afb8b57019d962bae8fc230c200966598ee915a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:19",
+      "sequence": 26229,
+      "chapter_label": "JHN 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Jesus therefore answered them, “Most certainly, I tell you, the Son can do nothing of himself, but what he sees the Father doing. For whatever things he does, these the Son also does likewise.",
+      "ko": "그러므로 예수께서 저희에게 이르시되 내가 진실로 진실로 너희에게 이르노니 아들이 아버지의 하시는 일을 보지 않고는 아무 것도 스스로 할 수 없나니 아버지께서 행하시는 그것을 아들도 그와 같이 행하느니라",
+      "source_text_hash": "21749e68201195a54a2d87e1d3328b231898d9a6173a905173e8885f092b539c",
+      "translation_text_hash": "9225cb396bbb5f6122d9f3a03919bd640d29c845b25feec3e25e47a76f0d74bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수께서 저희에게 이르시되 내가 진실로 진실로 너희에게 이르노니 아들이 아버지의 하시는 일을 보지 않고는 아무 것도 스스로 할 수 없나니 아버지께서 행하시는 그것을 아들도 그와 같이 행하느니라"
+      ],
+      "raw_text_hashes": [
+        "9225cb396bbb5f6122d9f3a03919bd640d29c845b25feec3e25e47a76f0d74bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:20",
+      "sequence": 26230,
+      "chapter_label": "JHN 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "For the Father has affection for the Son, and shows him all things that he himself does. He will show him greater works than these, that you may marvel.",
+      "ko": "아버지께서 아들을 사랑하사 자기의 행하시는 것을 다 아들에게 보이시고 또 그보다 더 큰 일을 보이사 너희로 기이히 여기게 하시리라",
+      "source_text_hash": "585d2d5c24d18a0b9ebe38a87af226d992c5d7a087a076357514a51165faf29e",
+      "translation_text_hash": "3c81f6746ea1bcae259eb3be155c511007f59d326a5e6694d17ab75d2b512140",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 아들을 사랑하사 자기의 행하시는 것을 다 아들에게 보이시고 또 그보다 더 큰 일을 보이사 너희로 기이히 여기게 하시리라"
+      ],
+      "raw_text_hashes": [
+        "3c81f6746ea1bcae259eb3be155c511007f59d326a5e6694d17ab75d2b512140"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:21",
+      "sequence": 26231,
+      "chapter_label": "JHN 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "For as the Father raises the dead and gives them life, even so the Son also gives life to whom he desires.",
+      "ko": "아버지께서 죽은 자들을 일으켜 살리심 같이 아들도 자기의 원하는 자들을 살리느니라",
+      "source_text_hash": "fd7477fb9a680e9ced7b5097e3f6e4464bdbac104066de13a7f42ed1c629774a",
+      "translation_text_hash": "052cd56895c631eda39092be45a64426638384ed941e1ccf8a21854a07176d98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 죽은 자들을 일으켜 살리심 같이 아들도 자기의 원하는 자들을 살리느니라"
+      ],
+      "raw_text_hashes": [
+        "052cd56895c631eda39092be45a64426638384ed941e1ccf8a21854a07176d98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:22",
+      "sequence": 26232,
+      "chapter_label": "JHN 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "For the Father judges no one, but he has given all judgment to the Son,",
+      "ko": "아버지께서 아무도 심판하지 아니하시고 심판을 다 아들에게 맡기셨으니",
+      "source_text_hash": "e85aaa0b93daa1a51da5fab18ba77bab476d20a98d7b718ba61d66e1fb1ade27",
+      "translation_text_hash": "a412d6681b5579dc6fd018a382b2f8ceae4105c19bdc90cad8aa2646255df994",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 아무도 심판하지 아니하시고 심판을 다 아들에게 맡기셨으니"
+      ],
+      "raw_text_hashes": [
+        "a412d6681b5579dc6fd018a382b2f8ceae4105c19bdc90cad8aa2646255df994"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:23",
+      "sequence": 26233,
+      "chapter_label": "JHN 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "that all may honor the Son, even as they honor the Father. He who doesn’t honor the Son doesn’t honor the Father who sent him.",
+      "ko": "이는 모든 사람으로 아버지를 공경하는 것 같이 아들을 공경하게 하려 하심이라 아들을 공경치 아니하는 자는 그를 보내신 아버지를 공경치 아니하느니라",
+      "source_text_hash": "2be83432f6bb2c566a712bcb545c0cb3632d9a5f58bbad687bdc413ff8d2a27d",
+      "translation_text_hash": "6ef06e14fb4eeb7168299b8753091fe194514ef6f63bd432afdd9781b76a74f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 모든 사람으로 아버지를 공경하는 것 같이 아들을 공경하게 하려 하심이라 아들을 공경치 아니하는 자는 그를 보내신 아버지를 공경치 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "6ef06e14fb4eeb7168299b8753091fe194514ef6f63bd432afdd9781b76a74f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:24",
+      "sequence": 26234,
+      "chapter_label": "JHN 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "“Most certainly I tell you, he who hears my word and believes him who sent me has eternal life, and doesn’t come into judgment, but has passed out of death into life.",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 내 말을 듣고 또 나 보내신 이를 믿는 자는 영생을 얻었고 심판에 이르지 아니하나니 사망에서 생명으로 옮겼느니라",
+      "source_text_hash": "488aac1fa4068efeeeed4ae60a3dccf6d390624d2ec6e8a879672fa863be3cb8",
+      "translation_text_hash": "80a01847bdc5d8abf6e95aa54382f6c3f4cd665b86fc4cf1f14b50d2ca2bdf0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 내 말을 듣고 또 나 보내신 이를 믿는 자는 영생을 얻었고 심판에 이르지 아니하나니 사망에서 생명으로 옮겼느니라"
+      ],
+      "raw_text_hashes": [
+        "80a01847bdc5d8abf6e95aa54382f6c3f4cd665b86fc4cf1f14b50d2ca2bdf0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:25",
+      "sequence": 26235,
+      "chapter_label": "JHN 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Most certainly I tell you, the hour comes, and now is, when the dead will hear the Son of God’s voice; and those who hear will live.",
+      "ko": "진실로 진실로 너희에게 이르노니 죽은 자들이 하나님의 아들의 음성을 들을 때가 오나니 곧 이 때라 듣는 자는 살아나리라",
+      "source_text_hash": "8f269fc14ed375c5696df5b0117a71239d4ecd3c1921f2e8a9e1ab88850f147d",
+      "translation_text_hash": "03b487ec9cae9140ec69759f9122e069bc480a9c1211f338c6d2972ec5e80e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 진실로 너희에게 이르노니 죽은 자들이 하나님의 아들의 음성을 들을 때가 오나니 곧 이 때라 듣는 자는 살아나리라"
+      ],
+      "raw_text_hashes": [
+        "03b487ec9cae9140ec69759f9122e069bc480a9c1211f338c6d2972ec5e80e8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:26",
+      "sequence": 26236,
+      "chapter_label": "JHN 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "For as the Father has life in himself, even so he gave to the Son also to have life in himself.",
+      "ko": "아버지께서 자기 속에 생명이 있음 같이 아들에게도 생명을 주어 그 속에 있게 하셨고",
+      "source_text_hash": "348422bc7ba7c050377328bdc742b28995070209aec86e523f22dc8b3cc5327f",
+      "translation_text_hash": "f165b0b526b88b5e4057cc4581db89be490c4c268dbcc2d0b0334cfb7c029001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지께서 자기 속에 생명이 있음 같이 아들에게도 생명을 주어 그 속에 있게 하셨고"
+      ],
+      "raw_text_hashes": [
+        "f165b0b526b88b5e4057cc4581db89be490c4c268dbcc2d0b0334cfb7c029001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:27",
+      "sequence": 26237,
+      "chapter_label": "JHN 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "He also gave him authority to execute judgment, because he is a son of man.",
+      "ko": "또 인자됨을 인하여 심판하는 권세를 주셨느니라",
+      "source_text_hash": "d0d8224cd6f6a8fe0fcc9b55ddda7dc3e831cb41e9a98fee61e0676c126e837a",
+      "translation_text_hash": "c83694fb7374cf612e4e5c6bd0f2ef66523ef747778968b0bcdc273f56674b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 인자됨을 인하여 심판하는 권세를 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "c83694fb7374cf612e4e5c6bd0f2ef66523ef747778968b0bcdc273f56674b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:28",
+      "sequence": 26238,
+      "chapter_label": "JHN 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "Don’t marvel at this, for the hour comes in which all who are in the tombs will hear his voice",
+      "ko": "이를 기이히 여기지 말라 무덤 속에 있는 자가 다 그의 음성을 들을 때가 오나니",
+      "source_text_hash": "855603617ddd05a7ebaca94a7cc0c9b3f96d6e7b45f6826b6b0874e32efd6be6",
+      "translation_text_hash": "efcf4031de1bd6c993d76d36b2fa6beb913bdf245dc6493ae2aab5310e8666e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 기이히 여기지 말라 무덤 속에 있는 자가 다 그의 음성을 들을 때가 오나니"
+      ],
+      "raw_text_hashes": [
+        "efcf4031de1bd6c993d76d36b2fa6beb913bdf245dc6493ae2aab5310e8666e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:29",
+      "sequence": 26239,
+      "chapter_label": "JHN 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "and will come out; those who have done good, to the resurrection of life; and those who have done evil, to the resurrection of judgment.",
+      "ko": "선한 일을 행한 자는 생명의 부활로, 악한 일을 행한 자는 심판의 부활로 나오리라",
+      "source_text_hash": "e129a59da3258373c381c11485fc23b57421e78dd992b805447138a6f9bd59e8",
+      "translation_text_hash": "f003cedcadd985f8dfc025800b768c6d89bc05019c95f0013b883f94d2e861f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 일을 행한 자는 생명의 부활로, 악한 일을 행한 자는 심판의 부활로 나오리라"
+      ],
+      "raw_text_hashes": [
+        "f003cedcadd985f8dfc025800b768c6d89bc05019c95f0013b883f94d2e861f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:30",
+      "sequence": 26240,
+      "chapter_label": "JHN 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "I can of myself do nothing. As I hear, I judge; and my judgment is righteous, because I don’t seek my own will, but the will of my Father who sent me.",
+      "ko": "내가 아무 것도 스스로 할 수 없노라 듣는대로 심판하노니 나는 나의 원대로 하려하지 않고 나를 보내신 이의 원대로 하려는고로 내 심판은 의로우니라",
+      "source_text_hash": "c9e3a4422a72d131c87ee37416c45abbad656c5d0fe055bbcb0557fe1982da94",
+      "translation_text_hash": "f38fd84dac3b80da898bcbe3fcf7b63674858940cd4eeb65828579ca1ff11ae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아무 것도 스스로 할 수 없노라 듣는대로 심판하노니 나는 나의 원대로 하려하지 않고 나를 보내신 이의 원대로 하려는고로 내 심판은 의로우니라"
+      ],
+      "raw_text_hashes": [
+        "f38fd84dac3b80da898bcbe3fcf7b63674858940cd4eeb65828579ca1ff11ae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:31",
+      "sequence": 26241,
+      "chapter_label": "JHN 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "“If I testify about myself, my witness is not valid.",
+      "ko": "내가 만일 나를 위하여 증거하면 내 증거는 참되지 아니하되",
+      "source_text_hash": "ebf00fc276d08da428d3cef52d54bc2c4a8cec87d67768c4ba424441b6417646",
+      "translation_text_hash": "edc046e9f417c47511c5dae456b1555487491ebeb8cdbb034ef291baf55e59ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 만일 나를 위하여 증거하면 내 증거는 참되지 아니하되"
+      ],
+      "raw_text_hashes": [
+        "edc046e9f417c47511c5dae456b1555487491ebeb8cdbb034ef291baf55e59ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:32",
+      "sequence": 26242,
+      "chapter_label": "JHN 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "It is another who testifies about me. I know that the testimony which he testifies about me is true.",
+      "ko": "나를 위하여 증거하시는 이가 따로 있으니 나를 위하여 증거하시는 그 증거가 참인줄 아노라",
+      "source_text_hash": "c0bb5ca09a4ac789a8bf371b3024e71d82166cd962103eea17166f080179a281",
+      "translation_text_hash": "d2db0dd1f2a2c3f349c58107addff1e6272c4adc550fb321f8dc2f54eb5802b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 위하여 증거하시는 이가 따로 있으니 나를 위하여 증거하시는 그 증거가 참인줄 아노라"
+      ],
+      "raw_text_hashes": [
+        "d2db0dd1f2a2c3f349c58107addff1e6272c4adc550fb321f8dc2f54eb5802b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:33",
+      "sequence": 26243,
+      "chapter_label": "JHN 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "You have sent to John, and he has testified to the truth.",
+      "ko": "너희가 요한에게 사람을 보내매 요한이 진리에 대하여 증거하였느니라",
+      "source_text_hash": "eb64ed2fdfa3689eeb3c3af7d2fb7aed708f73b30bd516977d3065dc8cebd861",
+      "translation_text_hash": "3854c10f5c324211e3b3dbaf03ffd49aa8f2338e78f58c1bbd40a4b02bc99d73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 요한에게 사람을 보내매 요한이 진리에 대하여 증거하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3854c10f5c324211e3b3dbaf03ffd49aa8f2338e78f58c1bbd40a4b02bc99d73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:34",
+      "sequence": 26244,
+      "chapter_label": "JHN 5",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 34
+        }
+      ],
+      "en": "But the testimony which I receive is not from man. However, I say these things that you may be saved.",
+      "ko": "그러나 나는 사람에게서 증거를 취하지 아니하노라 다만 이 말을 하는 것은 너희로 구원을 얻게 하려 함이니라",
+      "source_text_hash": "daf39ede3a0bc8adfd3bbb4c90a527a95a89169875ca9e7b09f7a9d393109b86",
+      "translation_text_hash": "bfd900426a21beaaeccedaf805df9b2ec4ecba17eace6764b63ea70901f41a42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나는 사람에게서 증거를 취하지 아니하노라 다만 이 말을 하는 것은 너희로 구원을 얻게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "bfd900426a21beaaeccedaf805df9b2ec4ecba17eace6764b63ea70901f41a42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:35",
+      "sequence": 26245,
+      "chapter_label": "JHN 5",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 35
+        }
+      ],
+      "en": "He was the burning and shining lamp, and you were willing to rejoice for a while in his light.",
+      "ko": "요한은 켜서 비취는 등불이라 너희가 일시 그 빛에 즐거이 있기를 원하였거니와",
+      "source_text_hash": "319029923013162a69d959b28b4ba089298fb28593283e6f2acfc3a2b627fbc3",
+      "translation_text_hash": "8d9bc8e4accea9d7eb82c3d3e330ee4e156efe78a76822ce8eb2b564524eac77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한은 켜서 비취는 등불이라 너희가 일시 그 빛에 즐거이 있기를 원하였거니와"
+      ],
+      "raw_text_hashes": [
+        "8d9bc8e4accea9d7eb82c3d3e330ee4e156efe78a76822ce8eb2b564524eac77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:36",
+      "sequence": 26246,
+      "chapter_label": "JHN 5",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 36
+        }
+      ],
+      "en": "But the testimony which I have is greater than that of John; for the works which the Father gave me to accomplish, the very works that I do, testify about me, that the Father has sent me.",
+      "ko": "내게는 요한의 증거보다 더 큰 증거가 있으니 아버지께서 내게 주사 이루게 하시는 역사 곧 나의 하는 그 역사가 아버지께서 나를 보내신 것을 나를 위하여 증거하는 것이요",
+      "source_text_hash": "4e09893beae9eba266ea94ff75f14f3f4fe18258978eae4507dabbacb19c339a",
+      "translation_text_hash": "09b6d75f9ea5d7d6cab4f1499573570505a5903611d78c67ad5d47ec1b21817b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게는 요한의 증거보다 더 큰 증거가 있으니 아버지께서 내게 주사 이루게 하시는 역사 곧 나의 하는 그 역사가 아버지께서 나를 보내신 것을 나를 위하여 증거하는 것이요"
+      ],
+      "raw_text_hashes": [
+        "09b6d75f9ea5d7d6cab4f1499573570505a5903611d78c67ad5d47ec1b21817b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:37",
+      "sequence": 26247,
+      "chapter_label": "JHN 5",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 37
+        }
+      ],
+      "en": "The Father himself, who sent me, has testified about me. You have neither heard his voice at any time, nor seen his form.",
+      "ko": "또한 나를 보내신 아버지께서 친히 나를 위하여 증거하셨느니라 너희는 아무 때에도 그 음성을 듣지 못하였고 그 형용을 보지 못하였으며",
+      "source_text_hash": "2bbd6053a2b3814c256fdeccab07175c8dabe35adfd83e1929b9d141db6f77bc",
+      "translation_text_hash": "c08c79981aca73ce07f91918a63c8acdc25cd060c9af1a39f914a615d42d7158",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 나를 보내신 아버지께서 친히 나를 위하여 증거하셨느니라 너희는 아무 때에도 그 음성을 듣지 못하였고 그 형용을 보지 못하였으며"
+      ],
+      "raw_text_hashes": [
+        "c08c79981aca73ce07f91918a63c8acdc25cd060c9af1a39f914a615d42d7158"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:38",
+      "sequence": 26248,
+      "chapter_label": "JHN 5",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 38
+        }
+      ],
+      "en": "You don’t have his word living in you, because you don’t believe him whom he sent.",
+      "ko": "그 말씀이 너희 속에 거하지 아니하니 이는 그의 보내신 자를 믿지 아니함이니라",
+      "source_text_hash": "77230fb30aa50f45d8964a83cfba6f74620447f364e96d8c5c081c3b48c4dc65",
+      "translation_text_hash": "fae8000d0ebbd1c6ed39af0ea2fd1487edaa2162d1f49260cba7a441f1d66039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말씀이 너희 속에 거하지 아니하니 이는 그의 보내신 자를 믿지 아니함이니라"
+      ],
+      "raw_text_hashes": [
+        "fae8000d0ebbd1c6ed39af0ea2fd1487edaa2162d1f49260cba7a441f1d66039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:39",
+      "sequence": 26249,
+      "chapter_label": "JHN 5",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 39
+        }
+      ],
+      "en": "“You search the Scriptures, because you think that in them you have eternal life; and these are they which testify about me.",
+      "ko": "너희가 성경에서 영생을 얻는줄 생각하고 성경을 상고하거니와 이 성경이 곧 내게 대하여 증거하는 것이로다",
+      "source_text_hash": "255251d97dbdcbcb1ac782f7e2b3ca65b36960ac2c669bb12dae5cc55199317f",
+      "translation_text_hash": "0ea9fe8ff21b90c69899c28477a320c5887099c18e9cde222aaed16f68d31de1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 성경에서 영생을 얻는줄 생각하고 성경을 상고하거니와 이 성경이 곧 내게 대하여 증거하는 것이로다"
+      ],
+      "raw_text_hashes": [
+        "0ea9fe8ff21b90c69899c28477a320c5887099c18e9cde222aaed16f68d31de1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:40",
+      "sequence": 26250,
+      "chapter_label": "JHN 5",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 40
+        }
+      ],
+      "en": "Yet you will not come to me, that you may have life.",
+      "ko": "그러나 너희가 영생을 얻기 위하여 내게 오기를 원하지 아니하는도다",
+      "source_text_hash": "f93b69c08d85a02045bc563640f7b1a47691fa27db81b905648fb8321654d2c7",
+      "translation_text_hash": "906e9f8d8d620de38192d0d6d065a57e8b7c75b6eb87daaf0ab1911b7dc0a3a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희가 영생을 얻기 위하여 내게 오기를 원하지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "906e9f8d8d620de38192d0d6d065a57e8b7c75b6eb87daaf0ab1911b7dc0a3a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:41",
+      "sequence": 26251,
+      "chapter_label": "JHN 5",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 41
+        }
+      ],
+      "en": "I don’t receive glory from men.",
+      "ko": "나는 사람에게 영광을 취하지 아니하노라",
+      "source_text_hash": "ced4a94ce892dfa6a673dfe0774a35a89ace6f2cd371d9b7e35b6720dc5e7aea",
+      "translation_text_hash": "e4f4c71ad386e7ac183239feab8cd820fac92dfaa93089845592b839e9a9acae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 사람에게 영광을 취하지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "e4f4c71ad386e7ac183239feab8cd820fac92dfaa93089845592b839e9a9acae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:42",
+      "sequence": 26252,
+      "chapter_label": "JHN 5",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 42
+        }
+      ],
+      "en": "But I know you, that you don’t have God’s love in yourselves.",
+      "ko": "다만 하나님을 사랑하는 것이 너희 속에 없음을 알았노라",
+      "source_text_hash": "b50fb8beb04d4802d0c38dc57fb9abd0e5521058b6dd31d59a0db4ba680c8913",
+      "translation_text_hash": "1b4e8c06eee98181567270644be4e222bc6a915ededf04e31002206353a2ccb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 하나님을 사랑하는 것이 너희 속에 없음을 알았노라"
+      ],
+      "raw_text_hashes": [
+        "1b4e8c06eee98181567270644be4e222bc6a915ededf04e31002206353a2ccb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:43",
+      "sequence": 26253,
+      "chapter_label": "JHN 5",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 43
+        }
+      ],
+      "en": "I have come in my Father’s name, and you don’t receive me. If another comes in his own name, you will receive him.",
+      "ko": "나는 내 아버지의 이름으로 왔으매 너희가 영접지 아니하나 만일 다른 사람이 자기 이름으로 오면 영접하리라",
+      "source_text_hash": "79cd623da152012de2d748f11eff3ce29ad1f3256a855297ff48dc2478041984",
+      "translation_text_hash": "9402b9f6c21fe85a422ff7c630d70f7c8cea1eb0bc47ac31bbe66c793267a20d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 아버지의 이름으로 왔으매 너희가 영접지 아니하나 만일 다른 사람이 자기 이름으로 오면 영접하리라"
+      ],
+      "raw_text_hashes": [
+        "9402b9f6c21fe85a422ff7c630d70f7c8cea1eb0bc47ac31bbe66c793267a20d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:44",
+      "sequence": 26254,
+      "chapter_label": "JHN 5",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 44
+        }
+      ],
+      "en": "How can you believe, who receive glory from one another, and you don’t seek the glory that comes from the only God?",
+      "ko": "너희가 서로 영광을 취하고 유일하신 하나님께로부터 오는 영광은 구하지 아니하니 어찌 나를 믿을 수 있느냐",
+      "source_text_hash": "c5efbe1f5b1fe5f29f36461987992abe9befd7c234e4d8a66310de046f3499d9",
+      "translation_text_hash": "706f3dc939401863b276d35af01d6a2a0348ecd374209895196e04a332280fce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 서로 영광을 취하고 유일하신 하나님께로부터 오는 영광은 구하지 아니하니 어찌 나를 믿을 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "706f3dc939401863b276d35af01d6a2a0348ecd374209895196e04a332280fce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:45",
+      "sequence": 26255,
+      "chapter_label": "JHN 5",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 45
+        }
+      ],
+      "en": "“Don’t think that I will accuse you to the Father. There is one who accuses you, even Moses, on whom you have set your hope.",
+      "ko": "내가 너희를 아버지께 고소할까 생각지 말라 너희를 고소하는 이가 있으니 곧 너희의 바라는 자 모세니라",
+      "source_text_hash": "bfca081625445e3382ab593119fd59a1a32566b4cd7d31db3c89f227b2ef5931",
+      "translation_text_hash": "9e9f5ffb0db16195fe73fc04b1881a0aa1b962493473cd16cbd9d735022da3e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 아버지께 고소할까 생각지 말라 너희를 고소하는 이가 있으니 곧 너희의 바라는 자 모세니라"
+      ],
+      "raw_text_hashes": [
+        "9e9f5ffb0db16195fe73fc04b1881a0aa1b962493473cd16cbd9d735022da3e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:46",
+      "sequence": 26256,
+      "chapter_label": "JHN 5",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 46
+        }
+      ],
+      "en": "For if you believed Moses, you would believe me; for he wrote about me.",
+      "ko": "모세를 믿었더면 또 나를 믿었으리니 이는 그가 내게 대하여 기록하였음이라",
+      "source_text_hash": "0e14d325666daa6b39d12b97f8826b0e1ce512993cb76d404c8704f155366e9f",
+      "translation_text_hash": "eb2f8f55b6316849dfe8a73290230d9a0a484868b56db7c0e2d11ef3a1bf0598",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세를 믿었더면 또 나를 믿었으리니 이는 그가 내게 대하여 기록하였음이라"
+      ],
+      "raw_text_hashes": [
+        "eb2f8f55b6316849dfe8a73290230d9a0a484868b56db7c0e2d11ef3a1bf0598"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:5:47",
+      "sequence": 26257,
+      "chapter_label": "JHN 5",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 5,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 5,
+          "verse": 47
+        }
+      ],
+      "en": "But if you don’t believe his writings, how will you believe my words?”",
+      "ko": "그러나 그의 글도 믿지 아니하거든 어찌 내 말을 믿겠느냐 하시니라",
+      "source_text_hash": "1e582008a59c525b7c23b1038e663b9d66c1ff0d14a2a3c485dd79672fa7ab1f",
+      "translation_text_hash": "a58927e63a5187b48c0e8d4d2ad9872839d72fbfac896519ecd6d074fead51ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그의 글도 믿지 아니하거든 어찌 내 말을 믿겠느냐 하시니라"
+      ],
+      "raw_text_hashes": [
+        "a58927e63a5187b48c0e8d4d2ad9872839d72fbfac896519ecd6d074fead51ab"
+      ]
+    }
+  ]
+}

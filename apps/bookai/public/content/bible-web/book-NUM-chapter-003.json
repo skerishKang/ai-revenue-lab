@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:003",
+  "unit_ordinal": 120,
+  "unit_label": "NUM 3",
+  "book_code": "NUM",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:3:1",
+      "sequence": 3694,
+      "chapter_label": "NUM 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Now this is the history of the generations of Aaron and Moses in the day that the LORD spoke with Moses in Mount Sinai.",
+      "ko": "여호와께서 시내산에서 모세와 말씀하실 때에 아론과 모세의 낳은 자가 이러하니라",
+      "source_text_hash": "3e0c8f6cf9b92d3f3bbc468e7f0c8b04cb748c794f62b9c19e8b771026fd9d71",
+      "translation_text_hash": "e5d3f47637eb39cc2008c3bd0c753a187bb8cde87966a6ef2139f695908820f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내산에서 모세와 말씀하실 때에 아론과 모세의 낳은 자가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "e5d3f47637eb39cc2008c3bd0c753a187bb8cde87966a6ef2139f695908820f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:2",
+      "sequence": 3695,
+      "chapter_label": "NUM 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "These are the names of the sons of Aaron: Nadab the firstborn, and Abihu, Eleazar, and Ithamar.",
+      "ko": "아론의 아들들의 이름은 장자는 나답이요 다음은 아비후와 엘르아살과 이다말이니",
+      "source_text_hash": "bd9852b2328b18ad1ebfda9f2aa36f83badb4365f7e68bdb2b5459b89f5fd5be",
+      "translation_text_hash": "d15a49ab079bad2be7d2eef8cb2cf5ab9ccc471f81841629ebc935cb39ca2b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 아들들의 이름은 장자는 나답이요 다음은 아비후와 엘르아살과 이다말이니"
+      ],
+      "raw_text_hashes": [
+        "d15a49ab079bad2be7d2eef8cb2cf5ab9ccc471f81841629ebc935cb39ca2b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:3",
+      "sequence": 3696,
+      "chapter_label": "NUM 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "These are the names of the sons of Aaron, the priests who were anointed, whom he consecrated to minister in the priest’s office.",
+      "ko": "이는 아론의 아들들의 이름이며 그들은 기름을 발리우고 거룩히 구별되어 제사장 직분을 위임받은 제사장들이라",
+      "source_text_hash": "3870b6f32543913529dc4fe830ed4eafbc997362c538881414d6db7c20404cc4",
+      "translation_text_hash": "b6b60b2392560ecfb2e429c7ddb7968aa7556729082e41ffc4eed45e83803bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아론의 아들들의 이름이며 그들은 기름을 발리우고 거룩히 구별되어 제사장 직분을 위임받은 제사장들이라"
+      ],
+      "raw_text_hashes": [
+        "b6b60b2392560ecfb2e429c7ddb7968aa7556729082e41ffc4eed45e83803bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:4",
+      "sequence": 3697,
+      "chapter_label": "NUM 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Nadab and Abihu died before the LORD when they offered strange fire before the LORD in the wilderness of Sinai, and they had no children. Eleazar and Ithamar ministered in the priest’s office in the presence of Aaron their father.",
+      "ko": "나답과 아비후는 시내 광야에서 다른 불을 여호와 앞에 드리다가 여호와 앞에서 죽었고 무자하였고 엘르아살과 이다말이 그 아비 아론 앞에서 제사장의 직분을 행하였더라",
+      "source_text_hash": "29a8c7660a7cecb298b9fd1abd25a9e43521843afb923b1557d493c4f6cbe5c3",
+      "translation_text_hash": "1392d6e38d32db2d871bae56be9171805e286abed616f26ff5c121a8c30c10c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나답과 아비후는 시내 광야에서 다른 불을 여호와 앞에 드리다가 여호와 앞에서 죽었고 무자하였고 엘르아살과 이다말이 그 아비 아론 앞에서 제사장의 직분을 행하였더라"
+      ],
+      "raw_text_hashes": [
+        "1392d6e38d32db2d871bae56be9171805e286abed616f26ff5c121a8c30c10c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:5",
+      "sequence": 3698,
+      "chapter_label": "NUM 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 또 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "6fce10c5891051be4b55b9e2e719c4053fd55e8a3bff58acabc65699508c88a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:6",
+      "sequence": 3699,
+      "chapter_label": "NUM 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "“Bring the tribe of Levi near, and set them before Aaron the priest, that they may minister to him.",
+      "ko": "레위 지파로 나아와 제사장 아론 앞에 서서 그에게 시종하게 하라",
+      "source_text_hash": "c624079c84143ecf727171ea894253a3783a8b3ce2a08d62b78467c060372283",
+      "translation_text_hash": "5601353a0e28271dd68bdf4f55a900a5e4eebcdd31d28400df32dc57eee70f11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 지파로 나아와 제사장 아론 앞에 서서 그에게 시종하게 하라"
+      ],
+      "raw_text_hashes": [
+        "5601353a0e28271dd68bdf4f55a900a5e4eebcdd31d28400df32dc57eee70f11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:7",
+      "sequence": 3700,
+      "chapter_label": "NUM 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "They shall keep his requirements, and the requirements of the whole congregation before the Tent of Meeting, to do the service of the tabernacle.",
+      "ko": "그들이 회막 앞에서 아론의 직무와 온 회중의 직무를 위하여 회막에서 시무하되",
+      "source_text_hash": "3d0c1b3f498e56bddefc7af4a9073e38ae38a083254a3bf5f30b0375a6565c55",
+      "translation_text_hash": "a6b7fe7ce78861f6995377d7d5fe526667f86efec7cb5ce481f6175629b12075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 회막 앞에서 아론의 직무와 온 회중의 직무를 위하여 회막에서 시무하되"
+      ],
+      "raw_text_hashes": [
+        "a6b7fe7ce78861f6995377d7d5fe526667f86efec7cb5ce481f6175629b12075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:8",
+      "sequence": 3701,
+      "chapter_label": "NUM 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "They shall keep all the furnishings of the Tent of Meeting, and the obligations of the children of Israel, to do the service of the tabernacle.",
+      "ko": "곧 회막의 모든 기구를 수직하며 이스라엘 자손의 직무를 위하여 장막에서 시무할찌니",
+      "source_text_hash": "5c2f13c1cc3083b93063287e44130c6cc1a1f4f39d0cc8b7e629b0d1aea22b96",
+      "translation_text_hash": "df0be5c1a243a88ccaf05d7a4d6ed4f8abc8b067fa9fc98b45d47866678b5cd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 회막의 모든 기구를 수직하며 이스라엘 자손의 직무를 위하여 장막에서 시무할찌니"
+      ],
+      "raw_text_hashes": [
+        "df0be5c1a243a88ccaf05d7a4d6ed4f8abc8b067fa9fc98b45d47866678b5cd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:9",
+      "sequence": 3702,
+      "chapter_label": "NUM 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "You shall give the Levites to Aaron and to his sons. They are wholly given to him on the behalf of the children of Israel.",
+      "ko": "너는 레위인을 아론과 그 아들들에게 주라 그들은 이스라엘 자손 중에서 아론에게 온전히 돌리운 자니라",
+      "source_text_hash": "2ab46bb22fec38055850d1d9d9090e086962104de325f229ca4d0cdef535b1f3",
+      "translation_text_hash": "484d48d4ab89b546f55dd53f07ddafb41e807714b19f7e3d74120febdb90b968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 레위인을 아론과 그 아들들에게 주라 그들은 이스라엘 자손 중에서 아론에게 온전히 돌리운 자니라"
+      ],
+      "raw_text_hashes": [
+        "484d48d4ab89b546f55dd53f07ddafb41e807714b19f7e3d74120febdb90b968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:10",
+      "sequence": 3703,
+      "chapter_label": "NUM 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "You shall appoint Aaron and his sons, and they shall keep their priesthood, but the stranger who comes near shall be put to death.”",
+      "ko": "너는 아론과 그 아들들을 세워 제사장 직분을 행하게 하라 외인이 가까이 하면 죽임을 당할 것이니라",
+      "source_text_hash": "dc7dfc1fa07f5d759193adbd572757e1a03c7dc2868ad795dde6870e632a3e35",
+      "translation_text_hash": "704928ca01836b145dc1e6d8ee0374706977fba5b6770b650d2895aacc60e5de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 아론과 그 아들들을 세워 제사장 직분을 행하게 하라 외인이 가까이 하면 죽임을 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "704928ca01836b145dc1e6d8ee0374706977fba5b6770b650d2895aacc60e5de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:11",
+      "sequence": 3704,
+      "chapter_label": "NUM 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:12",
+      "sequence": 3705,
+      "chapter_label": "NUM 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "“Behold, I have taken the Levites from among the children of Israel instead of all the firstborn who open the womb among the children of Israel; and the Levites shall be mine,",
+      "ko": "보라 내가 이스라엘 자손 중에서 레위인을 택하여 이스라엘 자손 중 모든 첫 태에 처음 난 자를 대신케 하였은즉 레위인은 내 것이라",
+      "source_text_hash": "a0259197ac0fc1bfc3e2443e1a6c7f2c931a0eeec5386d0fecd0cd50f8a1fcfe",
+      "translation_text_hash": "69c0b318f6755f7b75020fcc4d57d8d8e098ff7522faf660a5ca5939c29a235d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 이스라엘 자손 중에서 레위인을 택하여 이스라엘 자손 중 모든 첫 태에 처음 난 자를 대신케 하였은즉 레위인은 내 것이라"
+      ],
+      "raw_text_hashes": [
+        "69c0b318f6755f7b75020fcc4d57d8d8e098ff7522faf660a5ca5939c29a235d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:13",
+      "sequence": 3706,
+      "chapter_label": "NUM 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "for all the firstborn are mine. On the day that I struck down all the firstborn in the land of Egypt I made holy to me all the firstborn in Israel, both man and animal. They shall be mine. I am the LORD.”",
+      "ko": "처음 난 자는 다 내 것임은 내가 애굽 땅에서 그 처음 난 자를 다 죽이던 날에 이스라엘의 처음 난 자는 사람이나 짐승을 다 거룩히 구별하였음이니 그들은 내 것이 될 것임이니라 나는 여호와니라",
+      "source_text_hash": "6c20d7a80795a6831a429d79f85c0b8178f707f5d4faed537c71b203a29f9a6f",
+      "translation_text_hash": "6308b6a5e4f87dff296d9a5dbeb831e9acab7bf69a1af96d805c6e327fcb214a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처음 난 자는 다 내 것임은 내가 애굽 땅에서 그 처음 난 자를 다 죽이던 날에 이스라엘의 처음 난 자는 사람이나 짐승을 다 거룩히 구별하였음이니 그들은 내 것이 될 것임이니라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "6308b6a5e4f87dff296d9a5dbeb831e9acab7bf69a1af96d805c6e327fcb214a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:14",
+      "sequence": 3707,
+      "chapter_label": "NUM 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "The LORD spoke to Moses in the wilderness of Sinai, saying,",
+      "ko": "여호와께서 시내 광야에서 모세에게 일러 가라사대",
+      "source_text_hash": "828b49e737a42f96d656f351de4dc8285c03e2d92ebf899c692120e4dc34309e",
+      "translation_text_hash": "de6f54ba78be04e0ee7398cd6e3cefa764e8a3af81645e3ee2fbe1221dd2af8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 시내 광야에서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "de6f54ba78be04e0ee7398cd6e3cefa764e8a3af81645e3ee2fbe1221dd2af8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:15",
+      "sequence": 3708,
+      "chapter_label": "NUM 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "“Count the children of Levi by their fathers’ houses, by their families. You shall count every male from a month old and upward.”",
+      "ko": "레위 자손을 그들의 종족과 가족을 따라 계수하되 일개월 이상의 남자를 다 계수하라",
+      "source_text_hash": "f0c49c92010c881ff19a9858723c0aafaf141c66b0ba65a21aae5ceda02a4eff",
+      "translation_text_hash": "d39d75d1b47d41f27c95e79b36034139c79bea8b4eed236de3811228b5e4e9bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손을 그들의 종족과 가족을 따라 계수하되 일개월 이상의 남자를 다 계수하라"
+      ],
+      "raw_text_hashes": [
+        "d39d75d1b47d41f27c95e79b36034139c79bea8b4eed236de3811228b5e4e9bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:16",
+      "sequence": 3709,
+      "chapter_label": "NUM 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Moses counted them according to the LORD’s word, as he was commanded.",
+      "ko": "모세가 여호와의 말씀을 좇아 그 명하신대로 계수하니라",
+      "source_text_hash": "8f56710a8fb6e2991e17f69a869dc11451afad4ce3d866c51a439cc5529210f0",
+      "translation_text_hash": "5899ea43479c3b8cee5f91e64af509c9c2d82418753aec71bfffc028079f7271",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 말씀을 좇아 그 명하신대로 계수하니라"
+      ],
+      "raw_text_hashes": [
+        "5899ea43479c3b8cee5f91e64af509c9c2d82418753aec71bfffc028079f7271"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:17",
+      "sequence": 3710,
+      "chapter_label": "NUM 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "These were the sons of Levi by their names: Gershon, Kohath, and Merari.",
+      "ko": "레위의 아들들의 이름은 이러하니 게르손과 고핫과 므라리요",
+      "source_text_hash": "0c83b1e478b4740a327b2096dffd25801c1f65f2d81e853f7dc4b1e64413fd82",
+      "translation_text_hash": "80b74f3c7c8ccf848fffd4c9b55afd26bcaa7df99671821acf57b2106ecde46a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위의 아들들의 이름은 이러하니 게르손과 고핫과 므라리요"
+      ],
+      "raw_text_hashes": [
+        "80b74f3c7c8ccf848fffd4c9b55afd26bcaa7df99671821acf57b2106ecde46a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:18",
+      "sequence": 3711,
+      "chapter_label": "NUM 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "These are the names of the sons of Gershon by their families: Libni and Shimei.",
+      "ko": "게르손의 아들들의 이름은 그 가족대로 이러하니 립니와 시므이요",
+      "source_text_hash": "767ff65b7f9bbe09ff8018f6438c1114f9b72dfdf9649aa591ddb5f546567008",
+      "translation_text_hash": "b268093e741268c3138d3799f2f5f2f5190d5d1b313de40b40c1891f30893e50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손의 아들들의 이름은 그 가족대로 이러하니 립니와 시므이요"
+      ],
+      "raw_text_hashes": [
+        "b268093e741268c3138d3799f2f5f2f5190d5d1b313de40b40c1891f30893e50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:19",
+      "sequence": 3712,
+      "chapter_label": "NUM 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "The sons of Kohath by their families: Amram, Izhar, Hebron, and Uzziel.",
+      "ko": "고핫의 아들들은 그 가족대로 이러하니 아므람과 이스할과 헤브론과 웃시엘이요",
+      "source_text_hash": "30177e92b8eefd59323aae565e7ebce7b5a2118574a6fa722eee5787416f273b",
+      "translation_text_hash": "eef648fc9d6c2837106d31bd34d31ed2192aa514c4e6ae4b79a78c7355b2b3df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫의 아들들은 그 가족대로 이러하니 아므람과 이스할과 헤브론과 웃시엘이요"
+      ],
+      "raw_text_hashes": [
+        "eef648fc9d6c2837106d31bd34d31ed2192aa514c4e6ae4b79a78c7355b2b3df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:20",
+      "sequence": 3713,
+      "chapter_label": "NUM 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "The sons of Merari by their families: Mahli and Mushi. These are the families of the Levites according to their fathers’ houses.",
+      "ko": "므라리의 아들들은 그 가족대로 말리와 무시니 이는 그 종족대로 된 레위인의 가족들이니라",
+      "source_text_hash": "75617c635a1f6e9beb66326fc26589cb32bdafdef79f84deef9627d347f7886c",
+      "translation_text_hash": "8b609678321542fba2f6c6b26fab47ec4f45023fc9ba26343f25429757116c7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리의 아들들은 그 가족대로 말리와 무시니 이는 그 종족대로 된 레위인의 가족들이니라"
+      ],
+      "raw_text_hashes": [
+        "8b609678321542fba2f6c6b26fab47ec4f45023fc9ba26343f25429757116c7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:21",
+      "sequence": 3714,
+      "chapter_label": "NUM 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Of Gershon was the family of the Libnites, and the family of the Shimeites. These are the families of the Gershonites.",
+      "ko": "게르손에게서는 립니 가족과 시므이 가족이 났으니 이들이 곧 게르손의 가족들이라",
+      "source_text_hash": "4fbe8fab1f62d6402a5cc0a844158b3d672367d7f43ede9e19d90952e6a61d2c",
+      "translation_text_hash": "3cee6ad67cae5465a071fb0c02d2b5721b1b1ea0d3a257d1859c7dfa8a911bd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손에게서는 립니 가족과 시므이 가족이 났으니 이들이 곧 게르손의 가족들이라"
+      ],
+      "raw_text_hashes": [
+        "3cee6ad67cae5465a071fb0c02d2b5721b1b1ea0d3a257d1859c7dfa8a911bd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:22",
+      "sequence": 3715,
+      "chapter_label": "NUM 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "Those who were counted of them, according to the number of all the males from a month old and upward, even those who were counted of them were seven thousand five hundred.",
+      "ko": "계수함을 입은 자의 수효 곧 일개월 이상 남자의 수효 합계가 칠천 오백명이며",
+      "source_text_hash": "95162ac3bbb3412878bc23708ccad73e5981c6e2c30a379c76bba7ba48a8cadd",
+      "translation_text_hash": "7b103ad88fda226802e34a927dffaf63a567f98a58bdcf8bc0ea33de44193856",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계수함을 입은 자의 수효 곧 일개월 이상 남자의 수효 합계가 칠천 오백명이며"
+      ],
+      "raw_text_hashes": [
+        "7b103ad88fda226802e34a927dffaf63a567f98a58bdcf8bc0ea33de44193856"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:23",
+      "sequence": 3716,
+      "chapter_label": "NUM 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "The families of the Gershonites shall encamp behind the tabernacle westward.",
+      "ko": "게르손 가족들은 장막 뒤 곧 서편에 진을 칠 것이요",
+      "source_text_hash": "3bc84ecddcca434fb0b3ebaa3149e9c07c99bc650c1a155dde20fc08f43370a5",
+      "translation_text_hash": "cc39b4209d4d1fe8de2da61f70121b37b892035843953ca6fae49699396d0f87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 가족들은 장막 뒤 곧 서편에 진을 칠 것이요"
+      ],
+      "raw_text_hashes": [
+        "cc39b4209d4d1fe8de2da61f70121b37b892035843953ca6fae49699396d0f87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:24",
+      "sequence": 3717,
+      "chapter_label": "NUM 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "Eliasaph the son of Lael shall be the prince of the fathers’ house of the Gershonites.",
+      "ko": "라엘의 아들 엘리아삽은 게르손 사람의 종족의 족장이 될 것이며",
+      "source_text_hash": "c9f379b5431de587bc1511134dca6ee54af3222f6f251b0fdf11a2a17dae928e",
+      "translation_text_hash": "82880bf23be0cd48c5dc7516518c932fe04ecacd64defb9a5dce2af88563e248",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라엘의 아들 엘리아삽은 게르손 사람의 종족의 족장이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "82880bf23be0cd48c5dc7516518c932fe04ecacd64defb9a5dce2af88563e248"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:25",
+      "sequence": 3718,
+      "chapter_label": "NUM 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "The duty of the sons of Gershon in the Tent of Meeting shall be the tabernacle, the tent, its covering, the screen for the door of the Tent of Meeting,",
+      "ko": "게르손 자손의 회막에 대하여 맡을 것은 성막과 장막과 그 덮개와 회막 문장과",
+      "source_text_hash": "0094238ac1b7eff326124de4baedb539565354b1c1d654dd5d9bd21a7b02b0f0",
+      "translation_text_hash": "37e70cc17d8036db51a4f19b187bc818bf1dd64eb97d5c481e79ee71197d0e1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손의 회막에 대하여 맡을 것은 성막과 장막과 그 덮개와 회막 문장과"
+      ],
+      "raw_text_hashes": [
+        "37e70cc17d8036db51a4f19b187bc818bf1dd64eb97d5c481e79ee71197d0e1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:26",
+      "sequence": 3719,
+      "chapter_label": "NUM 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "the hangings of the court, the screen for the door of the court which is by the tabernacle and around the altar, and its cords for all of its service.",
+      "ko": "뜰의 휘장과 및 성막과 단 사면에 있는 뜰의 문장과 그 모든 것에 쓰는 줄들이니라",
+      "source_text_hash": "1155b9d7b5307c2918a62b311287ac2d66dfc6993a6ed643f2005cb8404dc752",
+      "translation_text_hash": "aab45886353d3539a3db549dc77298f37ba245ee1893d60a4841bd5c5d15de99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 휘장과 및 성막과 단 사면에 있는 뜰의 문장과 그 모든 것에 쓰는 줄들이니라"
+      ],
+      "raw_text_hashes": [
+        "aab45886353d3539a3db549dc77298f37ba245ee1893d60a4841bd5c5d15de99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:27",
+      "sequence": 3720,
+      "chapter_label": "NUM 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "Of Kohath was the family of the Amramites, the family of the Izharites, the family of the Hebronites, and the family of the Uzzielites. These are the families of the Kohathites.",
+      "ko": "고핫에게서는 아므람 가족과 이스할 가족과 헤브론 가족과 웃시엘 가족이 났으니 이들이 곧 고핫 가족들이라",
+      "source_text_hash": "a9136953f222e892d2bcd477db1af9510970740529ff3e0841e4d42972a41a03",
+      "translation_text_hash": "c33cb175bcfa33ee6b5f6740c2c92eb6d6effc23aa0e436c0cd06268e1375f55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫에게서는 아므람 가족과 이스할 가족과 헤브론 가족과 웃시엘 가족이 났으니 이들이 곧 고핫 가족들이라"
+      ],
+      "raw_text_hashes": [
+        "c33cb175bcfa33ee6b5f6740c2c92eb6d6effc23aa0e436c0cd06268e1375f55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:28",
+      "sequence": 3721,
+      "chapter_label": "NUM 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "According to the number of all the males from a month old and upward, there were eight thousand six hundred keeping the requirements of the sanctuary.",
+      "ko": "계수함을 입은 일개월 이상 모든 남자의 수효가 팔천 육백명인데 성소를 맡을 것이며",
+      "source_text_hash": "11607f368bb1c1d7de6eb31ead95807724748a3c80ed7fe30a656a1c336a8c3d",
+      "translation_text_hash": "0188d77f7b119340b9dc668ba9c1b4652813012bfd853cb95fd61d81eb3bca16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계수함을 입은 일개월 이상 모든 남자의 수효가 팔천 육백명인데 성소를 맡을 것이며"
+      ],
+      "raw_text_hashes": [
+        "0188d77f7b119340b9dc668ba9c1b4652813012bfd853cb95fd61d81eb3bca16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:29",
+      "sequence": 3722,
+      "chapter_label": "NUM 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "The families of the sons of Kohath shall encamp on the south side of the tabernacle.",
+      "ko": "고핫 자손의 가족들은 성막 남편에 진을 칠 것이요",
+      "source_text_hash": "d4b031c78f56fbe58072fc8099de1673445361cc806db070a0371bf0a9f1d1c1",
+      "translation_text_hash": "a2b563b66c2489b781c55e52b060b29fe5aa53fde43508db3ce4bb82c8693ea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고핫 자손의 가족들은 성막 남편에 진을 칠 것이요"
+      ],
+      "raw_text_hashes": [
+        "a2b563b66c2489b781c55e52b060b29fe5aa53fde43508db3ce4bb82c8693ea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:30",
+      "sequence": 3723,
+      "chapter_label": "NUM 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "The prince of the fathers’ house of the families of the Kohathites shall be Elizaphan the son of Uzziel.",
+      "ko": "웃시엘의 아들 엘리사반은 고핫 사람의 가족과 종족의 족장이 될 것이며",
+      "source_text_hash": "49aa59dd33aef55cbe3f317660007753d4ab78cf0c8d26655f3f7a1c9d734e61",
+      "translation_text_hash": "caf8ea1635454cb705fbf086db62f8e5e5bd6d5283f044108fb661cf950f69a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시엘의 아들 엘리사반은 고핫 사람의 가족과 종족의 족장이 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "caf8ea1635454cb705fbf086db62f8e5e5bd6d5283f044108fb661cf950f69a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:31",
+      "sequence": 3724,
+      "chapter_label": "NUM 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "Their duty shall be the ark, the table, the lamp stand, the altars, the vessels of the sanctuary with which they minister, the screen, and all its service.",
+      "ko": "그들의 맡을 것은 증거궤와 상과 등대와 단들과 성소에서 봉사하는데 쓰는 기구들과 휘장과 그것에 쓰는 모든 것이며",
+      "source_text_hash": "7776f8937cb1e7e31a85684063f1ec023de8b25aee20a0a63ed86b10865734f8",
+      "translation_text_hash": "a34038de1d055fb6cf1cd644b888eedf5e15e043a1f9d9e05956d455e557022b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들의 맡을 것은 증거궤와 상과 등대와 단들과 성소에서 봉사하는데 쓰는 기구들과 휘장과 그것에 쓰는 모든 것이며"
+      ],
+      "raw_text_hashes": [
+        "a34038de1d055fb6cf1cd644b888eedf5e15e043a1f9d9e05956d455e557022b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:32",
+      "sequence": 3725,
+      "chapter_label": "NUM 3",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 32
+        }
+      ],
+      "en": "Eleazar the son of Aaron the priest shall be prince of the princes of the Levites, with the oversight of those who keep the requirements of the sanctuary.",
+      "ko": "제사장 아론의 아들 엘르아살은 레위인의 족장들의 어른이 되고 또 성소를 맡을 자를 통할할 것이니라",
+      "source_text_hash": "fcd206e599fe71f3a4002cb4d6984e11d0afee8df3f34d6ad3a10913424662cb",
+      "translation_text_hash": "3e4e399a557043137a56ecef941eed59d438b9507154f4d96c5abe991e365d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 아들 엘르아살은 레위인의 족장들의 어른이 되고 또 성소를 맡을 자를 통할할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3e4e399a557043137a56ecef941eed59d438b9507154f4d96c5abe991e365d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:33",
+      "sequence": 3726,
+      "chapter_label": "NUM 3",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 33
+        }
+      ],
+      "en": "Of Merari was the family of the Mahlites and the family of the Mushites. These are the families of Merari.",
+      "ko": "므라리에게서는 말리 가족과 무시 가족이 났으니 이들이 곧 므라리 가족들이라",
+      "source_text_hash": "9376b6082598d86840edc032bcea4db915a121d0a59dbddc817574756ca2b951",
+      "translation_text_hash": "f85ebff43a1b938e7a3d161ba84a8cb3c538008992ce213276d24b6d7afdef98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리에게서는 말리 가족과 무시 가족이 났으니 이들이 곧 므라리 가족들이라"
+      ],
+      "raw_text_hashes": [
+        "f85ebff43a1b938e7a3d161ba84a8cb3c538008992ce213276d24b6d7afdef98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:34",
+      "sequence": 3727,
+      "chapter_label": "NUM 3",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 34
+        }
+      ],
+      "en": "Those who were counted of them, according to the number of all the males from a month old and upward, were six thousand two hundred.",
+      "ko": "그 계수함을 입은 자 곧 일개월 이상 남자의 수효 총계가 육천 이백명이며",
+      "source_text_hash": "aee9841a5968325eaa18bd338e8a1f9bc3dbf05cab0906f8918441835b094f49",
+      "translation_text_hash": "3cf9e06cc68627b5c639c52cdd495f21b7332928a8ab85ec5873a533937519d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 계수함을 입은 자 곧 일개월 이상 남자의 수효 총계가 육천 이백명이며"
+      ],
+      "raw_text_hashes": [
+        "3cf9e06cc68627b5c639c52cdd495f21b7332928a8ab85ec5873a533937519d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:35",
+      "sequence": 3728,
+      "chapter_label": "NUM 3",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 35
+        }
+      ],
+      "en": "The prince of the fathers’ house of the families of Merari was Zuriel the son of Abihail. They shall encamp on the north side of the tabernacle.",
+      "ko": "아비하일의 아들 수리엘이 므라리 가족과 종족의 족장이 될 것이요 이 가족은 장막 북편에 진을 칠 것이며",
+      "source_text_hash": "efe0c3c159edb2c76fd7f232bd40c1d5c54a11946888272e070a09d5ee12f242",
+      "translation_text_hash": "8f7683de70744ddd49b1497e8b358f4626915014621c0ccff9a234aef187bd42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비하일의 아들 수리엘이 므라리 가족과 종족의 족장이 될 것이요 이 가족은 장막 북편에 진을 칠 것이며"
+      ],
+      "raw_text_hashes": [
+        "8f7683de70744ddd49b1497e8b358f4626915014621c0ccff9a234aef187bd42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:36",
+      "sequence": 3729,
+      "chapter_label": "NUM 3",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 36
+        }
+      ],
+      "en": "The appointed duty of the sons of Merari shall be the tabernacle’s boards, its bars, its pillars, its sockets, all its instruments, all its service,",
+      "ko": "므라리 자손의 맡을 것은 성막의 널판과 그 띠와 그 기둥과 그 받침과 그 모든 기구와 그것에 쓰는 모든 것이며",
+      "source_text_hash": "284e1cf160a45367472f85f42cf2be7329f86c963b7a8cecc06ff61b321d6090",
+      "translation_text_hash": "68e820a3ff16aa91a8d53cc86a12c2ff79750929b3444d52db6c12ff15fe5dd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손의 맡을 것은 성막의 널판과 그 띠와 그 기둥과 그 받침과 그 모든 기구와 그것에 쓰는 모든 것이며"
+      ],
+      "raw_text_hashes": [
+        "68e820a3ff16aa91a8d53cc86a12c2ff79750929b3444d52db6c12ff15fe5dd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:37",
+      "sequence": 3730,
+      "chapter_label": "NUM 3",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 37
+        }
+      ],
+      "en": "the pillars of the court around it, their sockets, their pins, and their cords.",
+      "ko": "뜰 사면 기둥과 그 받침과 그 말뚝과 그 줄들이니라",
+      "source_text_hash": "63b80652a064954378a58597c3dc63f1b5f2697310c73a303d92a12e33876d48",
+      "translation_text_hash": "6b2ec95b987f1cdbd7d908a74e1c3cda1ff1ac6a28e2680ac658a97c9b01fd61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 사면 기둥과 그 받침과 그 말뚝과 그 줄들이니라"
+      ],
+      "raw_text_hashes": [
+        "6b2ec95b987f1cdbd7d908a74e1c3cda1ff1ac6a28e2680ac658a97c9b01fd61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:38",
+      "sequence": 3731,
+      "chapter_label": "NUM 3",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 38
+        }
+      ],
+      "en": "Those who encamp before the tabernacle eastward, in front of the Tent of Meeting toward the sunrise, shall be Moses, with Aaron and his sons, keeping the requirements of the sanctuary for the duty of the children of Israel. The outsider who comes near shall be put to death.",
+      "ko": "장막 앞 동편 곧 회막 앞 해 돋는 편에는 모세와 아론과 아론의 아들들이 진을 치고 이스라엘 자손의 직무를 대신하여 성소의 직무를 지킬 것이며 외인이 가까이 하면 죽일찌니라",
+      "source_text_hash": "7623d6f1950ec6715a5c498fb25999ebc380becab027368c8ac3229730a40bc8",
+      "translation_text_hash": "e6933dafba109e872af65c844b4f2b7b389ce091ce215a321377dbb0a3585b52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장막 앞 동편 곧 회막 앞 해 돋는 편에는 모세와 아론과 아론의 아들들이 진을 치고 이스라엘 자손의 직무를 대신하여 성소의 직무를 지킬 것이며 외인이 가까이 하면 죽일찌니라"
+      ],
+      "raw_text_hashes": [
+        "e6933dafba109e872af65c844b4f2b7b389ce091ce215a321377dbb0a3585b52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:39",
+      "sequence": 3732,
+      "chapter_label": "NUM 3",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 39
+        }
+      ],
+      "en": "All who were counted of the Levites, whom Moses and Aaron counted at the commandment of the LORD, by their families, all the males from a month old and upward, were twenty-two thousand.",
+      "ko": "모세와 아론이 여호와의 명을 좇아 레위인을 각 가족대로 계수한즉 일개월 이상 남자의 수효가 이만 이천명이었더라",
+      "source_text_hash": "b239b4a03a72d02d1a3d6274b13ac413063de4965ddd5958b6ca92551ced044d",
+      "translation_text_hash": "04a585e3d3735e0b6aa44130fbee778f966e30ca8044e9d91312decfaf61a32f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세와 아론이 여호와의 명을 좇아 레위인을 각 가족대로 계수한즉 일개월 이상 남자의 수효가 이만 이천명이었더라"
+      ],
+      "raw_text_hashes": [
+        "04a585e3d3735e0b6aa44130fbee778f966e30ca8044e9d91312decfaf61a32f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:40",
+      "sequence": 3733,
+      "chapter_label": "NUM 3",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 40
+        }
+      ],
+      "en": "The LORD said to Moses, “Count all the firstborn males of the children of Israel from a month old and upward, and take the number of their names.",
+      "ko": "여호와께서 또 모세에게 이르시되 이스라엘 자손의 처음 난 남자를 일개월 이상으로 다 계수하여 그 명수를 기록하라",
+      "source_text_hash": "529236c44079a4098a5dca2ffa15a3581d5b10bcd3733dcfa45c3aa8d07b22d1",
+      "translation_text_hash": "b25b8cde1dff80a4986cd398e9607f096978adfc89cbd837b4bd21dc0b020e1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 모세에게 이르시되 이스라엘 자손의 처음 난 남자를 일개월 이상으로 다 계수하여 그 명수를 기록하라"
+      ],
+      "raw_text_hashes": [
+        "b25b8cde1dff80a4986cd398e9607f096978adfc89cbd837b4bd21dc0b020e1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:41",
+      "sequence": 3734,
+      "chapter_label": "NUM 3",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 41
+        }
+      ],
+      "en": "You shall take the Levites for me—I am the LORD—instead of all the firstborn among the children of Israel; and the livestock of the Levites instead of all the firstborn among the livestock of the children of Israel.”",
+      "ko": "나는 여호와라 이스라엘 자손 중 모든 처음 난 자의 대신에 레위인을 내게 돌리고 또 이스라엘 자손의 가축 중 모든 처음 난 것의 대신에 레위인의 가축을 내게 돌리라",
+      "source_text_hash": "2164489e1a6f7b1dc07e653880d122b786c78298dda5f532faeab8032ced5c8a",
+      "translation_text_hash": "debab94c911896c4ab86de751fa803a10dfd4e075aa3f1f84383ef09a100b7f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와라 이스라엘 자손 중 모든 처음 난 자의 대신에 레위인을 내게 돌리고 또 이스라엘 자손의 가축 중 모든 처음 난 것의 대신에 레위인의 가축을 내게 돌리라"
+      ],
+      "raw_text_hashes": [
+        "debab94c911896c4ab86de751fa803a10dfd4e075aa3f1f84383ef09a100b7f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:42",
+      "sequence": 3735,
+      "chapter_label": "NUM 3",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 42
+        }
+      ],
+      "en": "Moses counted, as the LORD commanded him, all the firstborn among the children of Israel.",
+      "ko": "모세가 여호와께서 자기에게 명하신대로 이스라엘 자손 중 모든 처음 난 자를 계수하니",
+      "source_text_hash": "9d446db7e31dffc9aeb5e3e64a1422e360ac7055c1d327f3dad06bc93e7ca429",
+      "translation_text_hash": "dbc6f4b7a068502a9c3327308f1ef95dc49fa45deaf080f64271792947e47a7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와께서 자기에게 명하신대로 이스라엘 자손 중 모든 처음 난 자를 계수하니"
+      ],
+      "raw_text_hashes": [
+        "dbc6f4b7a068502a9c3327308f1ef95dc49fa45deaf080f64271792947e47a7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:43",
+      "sequence": 3736,
+      "chapter_label": "NUM 3",
+      "verse_label": "43",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 43
+        }
+      ],
+      "en": "All the firstborn males according to the number of names from a month old and upward, of those who were counted of them, were twenty-two thousand two hundred seventy-three.",
+      "ko": "일개월 이상으로 계수함을 입은 처음 난 남자의 명수의 총계가 이만 이천 이백 칠십 삼명이었더라",
+      "source_text_hash": "5598ad33117478d26ee673bd456f5ca9f05b5a3df8a9d0a2de9492e9df3c3e08",
+      "translation_text_hash": "4adef14926ff4e24a9af0b77f2607475f4291d9c1910fc4cd1e62178ac81ddb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일개월 이상으로 계수함을 입은 처음 난 남자의 명수의 총계가 이만 이천 이백 칠십 삼명이었더라"
+      ],
+      "raw_text_hashes": [
+        "4adef14926ff4e24a9af0b77f2607475f4291d9c1910fc4cd1e62178ac81ddb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:44",
+      "sequence": 3737,
+      "chapter_label": "NUM 3",
+      "verse_label": "44",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 44
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:45",
+      "sequence": 3738,
+      "chapter_label": "NUM 3",
+      "verse_label": "45",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 45
+        }
+      ],
+      "en": "“Take the Levites instead of all the firstborn among the children of Israel, and the livestock of the Levites instead of their livestock; and the Levites shall be mine. I am the LORD.",
+      "ko": "이스라엘 자손 중 모든 처음 난 자의 대신에 레위인을 취하고 또 그들의 가축 대신에 레위인의 가축을 취하라 레위인은 내 것이라 나는 여호와니라",
+      "source_text_hash": "60c03212c26819eceabb606678925c007f2a42cdffd040c01c25ad6eacd029a1",
+      "translation_text_hash": "4337e18b415ed2f7a5ee8185ebd8e1c7dcc6e6de14667c47a21a8e9758004fe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 중 모든 처음 난 자의 대신에 레위인을 취하고 또 그들의 가축 대신에 레위인의 가축을 취하라 레위인은 내 것이라 나는 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "4337e18b415ed2f7a5ee8185ebd8e1c7dcc6e6de14667c47a21a8e9758004fe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:46",
+      "sequence": 3739,
+      "chapter_label": "NUM 3",
+      "verse_label": "46",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 46
+        }
+      ],
+      "en": "For the redemption of the two hundred seventy-three of the firstborn of the children of Israel who exceed the number of the Levites,",
+      "ko": "이스라엘 자손의 처음 난 자가 레위인보다 이백 칠십 삼인이 더한즉 속하기 위하여",
+      "source_text_hash": "a329fe6315632b2f9da9affe36b423ded95c5ac940e5b5ae04a7c8d9f2d13f7f",
+      "translation_text_hash": "15c759cef80abd0fdca32461cfc5afbded44fb837a9cff63aea1214334547687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 처음 난 자가 레위인보다 이백 칠십 삼인이 더한즉 속하기 위하여"
+      ],
+      "raw_text_hashes": [
+        "15c759cef80abd0fdca32461cfc5afbded44fb837a9cff63aea1214334547687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:47",
+      "sequence": 3740,
+      "chapter_label": "NUM 3",
+      "verse_label": "47",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 47
+        }
+      ],
+      "en": "you shall take five shekels apiece for each one; according to the shekel of the sanctuary you shall take them (the shekel is twenty gerahs);",
+      "ko": "매명에 오 세겔씩 취하되 성소의 세겔대로 취하라 한 세겔은 이십 게라니라",
+      "source_text_hash": "2efc9af2f41841c55d2e595f09d5911da8418ae751ba75c7e8865a1f0d643313",
+      "translation_text_hash": "cb86556da9fa4415eef4631dd791a50a4ccdaf98e83d2e3edbe2eed5f6df3813",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매명에 오 세겔씩 취하되 성소의 세겔대로 취하라 한 세겔은 이십 게라니라"
+      ],
+      "raw_text_hashes": [
+        "cb86556da9fa4415eef4631dd791a50a4ccdaf98e83d2e3edbe2eed5f6df3813"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:48",
+      "sequence": 3741,
+      "chapter_label": "NUM 3",
+      "verse_label": "48",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 48
+        }
+      ],
+      "en": "and you shall give the money, with which their remainder is redeemed, to Aaron and to his sons.”",
+      "ko": "그 더한 자의 속전을 아론과 그 아들들에게 줄 것이니라",
+      "source_text_hash": "02a411670a590bff53bbaec95a168d07bb3763bf3dcdf60b8837afea951cc4b7",
+      "translation_text_hash": "cae22cdc48ef117f39143baf1d99331bdde429a0d4420bd846d88a9af825add3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 더한 자의 속전을 아론과 그 아들들에게 줄 것이니라"
+      ],
+      "raw_text_hashes": [
+        "cae22cdc48ef117f39143baf1d99331bdde429a0d4420bd846d88a9af825add3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:49",
+      "sequence": 3742,
+      "chapter_label": "NUM 3",
+      "verse_label": "49",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 49
+        }
+      ],
+      "en": "Moses took the redemption money from those who exceeded the number of those who were redeemed by the Levites;",
+      "ko": "모세가 레위인으로 대속한 이외의 사람에게서 속전을 받았으니",
+      "source_text_hash": "3cf893138c79e6472c92788bd6a49a140cf65bf2f7c7aa93aefc2ce5aed90ae7",
+      "translation_text_hash": "29a5c78ced1af4efb8959a37e01f80d282b6a8ec8bbbe4587bf351d63dde2766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 레위인으로 대속한 이외의 사람에게서 속전을 받았으니"
+      ],
+      "raw_text_hashes": [
+        "29a5c78ced1af4efb8959a37e01f80d282b6a8ec8bbbe4587bf351d63dde2766"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:50",
+      "sequence": 3743,
+      "chapter_label": "NUM 3",
+      "verse_label": "50",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 50
+        }
+      ],
+      "en": "from the firstborn of the children of Israel he took the money, one thousand three hundred sixty-five shekels, according to the shekel of the sanctuary;",
+      "ko": "곧 이스라엘 자손의 처음 난 자에게서 받은 돈이 성소의 세겔대로 일천 삼백 육십 오 세겔이라",
+      "source_text_hash": "41b7137b8672e6040fad94ca809613afc16329927ec735cb3fb32619579aa08d",
+      "translation_text_hash": "d864bcdcc10621f687985a09ad7376fec558244a8aa43c65236692e061a74265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이스라엘 자손의 처음 난 자에게서 받은 돈이 성소의 세겔대로 일천 삼백 육십 오 세겔이라"
+      ],
+      "raw_text_hashes": [
+        "d864bcdcc10621f687985a09ad7376fec558244a8aa43c65236692e061a74265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:3:51",
+      "sequence": 3744,
+      "chapter_label": "NUM 3",
+      "verse_label": "51",
+      "locator": {
+        "book": "NUM",
+        "chapter": 3,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 3,
+          "verse": 51
+        }
+      ],
+      "en": "and Moses gave the redemption money to Aaron and to his sons, according to the LORD’s word, as the LORD commanded Moses.",
+      "ko": "이 속전을 여호와의 말씀대로 아론과 그 아들들에게 주었으니 여호와께서 모세에게 명하심과 같았느니라",
+      "source_text_hash": "2863c6551be0aee9eaa7d919557fe87f4984e1bd0c34a230e8b8125010086968",
+      "translation_text_hash": "6d345e5b239e71c931f96aaa7f6f042b08ade88186013e64559ecf44705392c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 속전을 여호와의 말씀대로 아론과 그 아들들에게 주었으니 여호와께서 모세에게 명하심과 같았느니라"
+      ],
+      "raw_text_hashes": [
+        "6d345e5b239e71c931f96aaa7f6f042b08ade88186013e64559ecf44705392c2"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:COL:chapter:004",
+  "unit_ordinal": 1111,
+  "unit_label": "COL 4",
+  "book_code": "COL",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:COL:4:1",
+      "sequence": 29540,
+      "chapter_label": "COL 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Masters, give to your servants that which is just and equal, knowing that you also have a Master in heaven.",
+      "ko": "상전들아 의와 공평을 종들에게 베풀찌니 너희에게도 하늘에 상전이 계심을 알찌어다",
+      "source_text_hash": "96068f92dcb7b1985e7a1e8cc1a19ed727b6146677637adb895637f522ee59c6",
+      "translation_text_hash": "d87ea12739674152d243c99026e83b7c32d323d8ca6de8ff3c6e719701f87a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상전들아 의와 공평을 종들에게 베풀찌니 너희에게도 하늘에 상전이 계심을 알찌어다"
+      ],
+      "raw_text_hashes": [
+        "d87ea12739674152d243c99026e83b7c32d323d8ca6de8ff3c6e719701f87a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:2",
+      "sequence": 29541,
+      "chapter_label": "COL 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Continue steadfastly in prayer, watching in it with thanksgiving,",
+      "ko": "기도를 항상 힘쓰고 기도에 감사함으로 깨어 있으라",
+      "source_text_hash": "401e7737492afb675d6c0675ae4606fa2f0c85ea42c9a9217fdbd6d208b4841c",
+      "translation_text_hash": "1cd7b6cd3088ddb70728d8c11b6d8c7e5cfeac7b03ec5c9abb2dd7fe7548a69a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기도를 항상 힘쓰고 기도에 감사함으로 깨어 있으라"
+      ],
+      "raw_text_hashes": [
+        "1cd7b6cd3088ddb70728d8c11b6d8c7e5cfeac7b03ec5c9abb2dd7fe7548a69a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:3",
+      "sequence": 29542,
+      "chapter_label": "COL 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "praying together for us also, that God may open to us a door for the word, to speak the mystery of Christ, for which I am also in bonds,",
+      "ko": "또한 우리를 위하여 기도하되 하나님이 전도할 문을 우리에게 열어 주사 그리스도의 비밀을 말하게 하시기를 구하라 내가 이것을 인하여 매임을 당하였노라",
+      "source_text_hash": "f9b138487298916c129ec5bb61b965f95644b155ded2cad98e1e0706547f0088",
+      "translation_text_hash": "3d9205465b77f52b04ca33be7c7dae6f5d755f86e8b8968e72070a40f116762e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 우리를 위하여 기도하되 하나님이 전도할 문을 우리에게 열어 주사 그리스도의 비밀을 말하게 하시기를 구하라 내가 이것을 인하여 매임을 당하였노라"
+      ],
+      "raw_text_hashes": [
+        "3d9205465b77f52b04ca33be7c7dae6f5d755f86e8b8968e72070a40f116762e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:4",
+      "sequence": 29543,
+      "chapter_label": "COL 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "that I may reveal it as I ought to speak.",
+      "ko": "그리하면 내가 마땅히 할 말로써 이 비밀을 나타내리라",
+      "source_text_hash": "1e6669390a6339c61f834225349f630c1ddb5565fd65c4dc7440eb51ca5430f6",
+      "translation_text_hash": "7de8918f9ab73ab0eac059aa89355fcb4c0590d1dc8810e69ac145a68819617c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 내가 마땅히 할 말로써 이 비밀을 나타내리라"
+      ],
+      "raw_text_hashes": [
+        "7de8918f9ab73ab0eac059aa89355fcb4c0590d1dc8810e69ac145a68819617c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:5",
+      "sequence": 29544,
+      "chapter_label": "COL 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "Walk in wisdom toward those who are outside, redeeming the time.",
+      "ko": "외인을 향하여서는 지혜로 행하여 세월을 아끼라",
+      "source_text_hash": "ca82710cd63f4f0d09fae9e8b014190550b7439d62a3c29b26b478c8c0b07137",
+      "translation_text_hash": "9dbb6d9c9a67a2b78a5c37dfa9f7a3eb38d4bde79e7c85d29d471598a2520e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외인을 향하여서는 지혜로 행하여 세월을 아끼라"
+      ],
+      "raw_text_hashes": [
+        "9dbb6d9c9a67a2b78a5c37dfa9f7a3eb38d4bde79e7c85d29d471598a2520e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:6",
+      "sequence": 29545,
+      "chapter_label": "COL 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "Let your speech always be with grace, seasoned with salt, that you may know how you ought to answer each one.",
+      "ko": "너희 말을 항상 은혜 가운데서 소금으로 고루게 함같이 하라 그리하면 각 사람에게 마땅히 대답할 것을 알리라",
+      "source_text_hash": "a80e553cf6623e4dfdd01eff21ab0a8ca12f71f2502b0c1ad86e1a4ebe3175b8",
+      "translation_text_hash": "d928ab181bbdba372df3a2da73fa87929e8d64bf0e3aaed176ab56ee0b06aad5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 말을 항상 은혜 가운데서 소금으로 고루게 함같이 하라 그리하면 각 사람에게 마땅히 대답할 것을 알리라"
+      ],
+      "raw_text_hashes": [
+        "d928ab181bbdba372df3a2da73fa87929e8d64bf0e3aaed176ab56ee0b06aad5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:7",
+      "sequence": 29546,
+      "chapter_label": "COL 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "All my affairs will be made known to you by Tychicus, the beloved brother, faithful servant, and fellow bondservant in the Lord.",
+      "ko": "두기고가 내 사정을 다 너희에게 알게 하리니 그는 사랑을 받는 형제요 신실한 일군이요 주 안에서 함께 된 종이라",
+      "source_text_hash": "93a7ea513ddc96eddc4b33bc66b8a434b40d98b046536cded89511dafa559832",
+      "translation_text_hash": "6da0005ed163a580eb23d01724f40a17f8407d97392fe1b8a0262a6f9ffa2678",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두기고가 내 사정을 다 너희에게 알게 하리니 그는 사랑을 받는 형제요 신실한 일군이요 주 안에서 함께 된 종이라"
+      ],
+      "raw_text_hashes": [
+        "6da0005ed163a580eb23d01724f40a17f8407d97392fe1b8a0262a6f9ffa2678"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:8",
+      "sequence": 29547,
+      "chapter_label": "COL 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "I am sending him to you for this very purpose, that he may know your circumstances and comfort your hearts,",
+      "ko": "내가 저를 특별히 너희에게 보낸 것은 너희로 우리 사정을 알게 하고 너희 마음을 위로하게 하려 함이라",
+      "source_text_hash": "4f34bb1cb8ac340bb63710ad10853526f6b89a8df4b6afc3eb1de84519d92dde",
+      "translation_text_hash": "95df17f99281ab832bbd7b28297f8eb5093662f515ae256c27bcc87605c3ee84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 저를 특별히 너희에게 보낸 것은 너희로 우리 사정을 알게 하고 너희 마음을 위로하게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "95df17f99281ab832bbd7b28297f8eb5093662f515ae256c27bcc87605c3ee84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:9",
+      "sequence": 29548,
+      "chapter_label": "COL 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "together with Onesimus, the faithful and beloved brother, who is one of you. They will make known to you everything that is going on here.",
+      "ko": "신실하고 사랑을 받는 형제 오네시모를 함께 보내노니 그는 너희에게서 온 사람이라 저희가 여기 일을 다 너희에게 알게 하리라",
+      "source_text_hash": "81f17e90885fc312c8a30fd946fef29417c941a9021d397f0f11d3d5ededa826",
+      "translation_text_hash": "85e0dbe6e3b4be842c3bf22a97f6361371ddf8701233d3a2acf343ac970b4619",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신실하고 사랑을 받는 형제 오네시모를 함께 보내노니 그는 너희에게서 온 사람이라 저희가 여기 일을 다 너희에게 알게 하리라"
+      ],
+      "raw_text_hashes": [
+        "85e0dbe6e3b4be842c3bf22a97f6361371ddf8701233d3a2acf343ac970b4619"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:10",
+      "sequence": 29549,
+      "chapter_label": "COL 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Aristarchus, my fellow prisoner, greets you, and Mark the cousin of Barnabas (concerning whom you received instructions, “if he comes to you, receive him”),",
+      "ko": "나와 함께 갇힌 아리스다고와 바나바의 생질 마가와 (이 마가에 대하여 너희가 명을 받았으매 그가 이르거든 영접하라)",
+      "source_text_hash": "827f874eeb7c84a8f3132ee9368340c2e76c186398209ef0828ea066e93ce6b1",
+      "translation_text_hash": "d60cf46bdc00782138f58d0b6f00b41acd3541fa9465777d0a4410791dda2530",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 갇힌 아리스다고와 바나바의 생질 마가와 (이 마가에 대하여 너희가 명을 받았으매 그가 이르거든 영접하라)"
+      ],
+      "raw_text_hashes": [
+        "d60cf46bdc00782138f58d0b6f00b41acd3541fa9465777d0a4410791dda2530"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:11",
+      "sequence": 29550,
+      "chapter_label": "COL 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "and Jesus who is called Justus. These are my only fellow workers for God’s Kingdom who are of the circumcision, men who have been a comfort to me.",
+      "ko": "유스도라 하는 예수도 너희에게 문안하니 저희는 할례당이라 이들만 하나님 나라를 위하여 함께 역사하는 자들이니 이런 사람들이 나의 위로가 되었느니라",
+      "source_text_hash": "8f7b2b3e23d9d73a00a8ddea651954a1d2b4c3d4c60c2732a7a03e518ff021f1",
+      "translation_text_hash": "ff100f09e7bf17ba32cd74f4e03ba45938b3e90f8749f10dd678d306eb41018f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유스도라 하는 예수도 너희에게 문안하니 저희는 할례당이라 이들만 하나님 나라를 위하여 함께 역사하는 자들이니 이런 사람들이 나의 위로가 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "ff100f09e7bf17ba32cd74f4e03ba45938b3e90f8749f10dd678d306eb41018f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:12",
+      "sequence": 29551,
+      "chapter_label": "COL 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Epaphras, who is one of you, a servant of Christ, salutes you, always striving for you in his prayers, that you may stand perfect and complete in all the will of God.",
+      "ko": "그리스도 예수의 종인 너희에게서 온 에바브라가 너희에게 문안하니 저가 항상 너희를 위하여 애써 기도하여 너희로 하나님의 모든 뜻 가운데서 완전하고 확신있게 서기를 구하나니",
+      "source_text_hash": "ea0708aab2a2e54007129220023af5a4ad3e5a3bb394f8673058ffc824680d2c",
+      "translation_text_hash": "886dd316de62000012a4b3ccc7bd72a2e97f28c5423521486a4a73b2ac90655e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수의 종인 너희에게서 온 에바브라가 너희에게 문안하니 저가 항상 너희를 위하여 애써 기도하여 너희로 하나님의 모든 뜻 가운데서 완전하고 확신있게 서기를 구하나니"
+      ],
+      "raw_text_hashes": [
+        "886dd316de62000012a4b3ccc7bd72a2e97f28c5423521486a4a73b2ac90655e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:13",
+      "sequence": 29552,
+      "chapter_label": "COL 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "For I testify about him that he has great zeal for you, and for those in Laodicea, and for those in Hierapolis.",
+      "ko": "그가 너희와 라오디게아에 있는 자들과 히에라볼리에 있는 자들을 위하여 많이 수고하는 것을 내가 증거하노라",
+      "source_text_hash": "5ecb44dd3e4bc560d17845a90c031c1cae2905f0306263f4a1b0fe23cc8f7ca0",
+      "translation_text_hash": "c506dec24777cf9f1efa1be4dadf5aa2c5180183e279badc07aac5636aef326a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 너희와 라오디게아에 있는 자들과 히에라볼리에 있는 자들을 위하여 많이 수고하는 것을 내가 증거하노라"
+      ],
+      "raw_text_hashes": [
+        "c506dec24777cf9f1efa1be4dadf5aa2c5180183e279badc07aac5636aef326a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:14",
+      "sequence": 29553,
+      "chapter_label": "COL 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Luke the beloved physician and Demas greet you.",
+      "ko": "사랑을 받는 의원 누가와 또 데마가 너희에게 문안하느니라",
+      "source_text_hash": "544c5b15cc0295b9edd159b1d0c39bfd9b431f9f6b47149220ed34d478ee8a27",
+      "translation_text_hash": "ae535e958625822b0e7d7bcbd54f710b98da7810db2cce8e82ed97548b7f7a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사랑을 받는 의원 누가와 또 데마가 너희에게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "ae535e958625822b0e7d7bcbd54f710b98da7810db2cce8e82ed97548b7f7a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:15",
+      "sequence": 29554,
+      "chapter_label": "COL 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Greet the brothers who are in Laodicea, with Nymphas and the assembly that is in his house.",
+      "ko": "라오디게아에 있는 형제들과 눔바와 그 여자의 집에 있는 교회에 문안하고",
+      "source_text_hash": "141f9b5fc225d233401a9bb0031bdfbd42cf7d2aa079cf121cfe0b2402d072e2",
+      "translation_text_hash": "dd76ced136ba268458437109d46c5f9ef828cb6e3d0cc95b2fdb260f286742ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라오디게아에 있는 형제들과 눔바와 그 여자의 집에 있는 교회에 문안하고"
+      ],
+      "raw_text_hashes": [
+        "dd76ced136ba268458437109d46c5f9ef828cb6e3d0cc95b2fdb260f286742ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:16",
+      "sequence": 29555,
+      "chapter_label": "COL 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "When this letter has been read among you, cause it to be read also in the assembly of the Laodiceans, and that you also read the letter from Laodicea.",
+      "ko": "이 편지를 너희에게서 읽은 후에 라오디게아인의 교회에서도 읽게 하고 또 라오디게아로서 오는 편지를 너희도 읽으라",
+      "source_text_hash": "beb0cecb6050b6818628879d0f21e22d60de046428efbb3f54724ef2d78c7e63",
+      "translation_text_hash": "fd7b54cf58af0c4db6b3795575575dff6d04100f320e02cb76def0bf9e80835b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 편지를 너희에게서 읽은 후에 라오디게아인의 교회에서도 읽게 하고 또 라오디게아로서 오는 편지를 너희도 읽으라"
+      ],
+      "raw_text_hashes": [
+        "fd7b54cf58af0c4db6b3795575575dff6d04100f320e02cb76def0bf9e80835b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:17",
+      "sequence": 29556,
+      "chapter_label": "COL 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Tell Archippus, “Take heed to the ministry which you have received in the Lord, that you fulfill it.”",
+      "ko": "아킵보에게 이르기를 주 안에서 받은 직분을 삼가 이루라고 하라",
+      "source_text_hash": "3bc3eed1e4753d226187cef1363d500f67d76a0f21110aa33ecbdf73260a051e",
+      "translation_text_hash": "e918dc7590b6322e112358e35db7b77c1d6d02976b1d7a9ef95d28aa67e75e3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아킵보에게 이르기를 주 안에서 받은 직분을 삼가 이루라고 하라"
+      ],
+      "raw_text_hashes": [
+        "e918dc7590b6322e112358e35db7b77c1d6d02976b1d7a9ef95d28aa67e75e3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:COL:4:18",
+      "sequence": 29557,
+      "chapter_label": "COL 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "COL",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "COL",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "I, Paul, write this greeting with my own hand. Remember my chains. Grace be with you. Amen.",
+      "ko": "나 바울은 친필로 문안하노니 나의 매인 것을 생각하라 은혜가 너희에게 있을찌어다",
+      "source_text_hash": "a4a085a726cedb80ef4764c5827b8a1118800d2594c05e7fe8b8fdaa4c4428c2",
+      "translation_text_hash": "62e064ed9a5d3c3173bef48b6291dd1c7cd45fbe890866d6b03d196551fc3991",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 바울은 친필로 문안하노니 나의 매인 것을 생각하라 은혜가 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "62e064ed9a5d3c3173bef48b6291dd1c7cd45fbe890866d6b03d196551fc3991"
+      ]
+    }
+  ]
+}

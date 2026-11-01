@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:018",
+  "unit_ordinal": 171,
+  "unit_label": "DEU 18",
+  "book_code": "DEU",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:18:1",
+      "sequence": 5386,
+      "chapter_label": "DEU 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "The priests and the Levites—all the tribe of Levi—shall have no portion nor inheritance with Israel. They shall eat the offerings of the LORD made by fire and his portion.",
+      "ko": "레위 사람 제사장과 레위의 온 지파는 이스라엘 중에 분깃도 없고 기업도 없을찌니 그들은 여호와의 화제물과 그 기업을 먹을 것이라",
+      "source_text_hash": "dfd837304d28a88bc3a704d3ebc5066b414de2335b3ec04543a65c8ce54da6dd",
+      "translation_text_hash": "307cff72a6faa3824246b732e99bdb13dc79d116a18bf98f720fc523201a3a5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 제사장과 레위의 온 지파는 이스라엘 중에 분깃도 없고 기업도 없을찌니 그들은 여호와의 화제물과 그 기업을 먹을 것이라"
+      ],
+      "raw_text_hashes": [
+        "307cff72a6faa3824246b732e99bdb13dc79d116a18bf98f720fc523201a3a5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:2",
+      "sequence": 5387,
+      "chapter_label": "DEU 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "They shall have no inheritance among their brothers. The LORD is their inheritance, as he has spoken to them.",
+      "ko": "그들이 그 형제 중에 기업이 없을 것은 그들에게 대하여 말씀하심 같이 여호와께서 그들의 기업이 되심이니라",
+      "source_text_hash": "f722ed64b09119d0f5e3329b7cd2724f90f65304313ec8dfc9c3e810ec33a193",
+      "translation_text_hash": "21024ff9c9137bee6a4855ca83e402ffb390142a74fbfbc6564d31e0c2871f53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 형제 중에 기업이 없을 것은 그들에게 대하여 말씀하심 같이 여호와께서 그들의 기업이 되심이니라"
+      ],
+      "raw_text_hashes": [
+        "21024ff9c9137bee6a4855ca83e402ffb390142a74fbfbc6564d31e0c2871f53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:3",
+      "sequence": 5388,
+      "chapter_label": "DEU 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "This shall be the priests’ due from the people, from those who offer a sacrifice, whether it be ox or sheep, that they shall give to the priest: the shoulder, the two cheeks, and the inner parts.",
+      "ko": "제사장이 백성에게서 받을 응식은 이러하니 곧 그 드리는 제물의 우양을 물론하고 그 앞 넓적다리와 두 볼과 위라 이것을 제사장에게 줄 것이요",
+      "source_text_hash": "bfb5f5cd234ff043ef2496a185b929eb2f8e8ef41da8a979938fa1f2b13e0766",
+      "translation_text_hash": "dba595bf2124e9c3592f52fdee0688944c16f1dc5f8342cd8ebbbd14c0cec757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 백성에게서 받을 응식은 이러하니 곧 그 드리는 제물의 우양을 물론하고 그 앞 넓적다리와 두 볼과 위라 이것을 제사장에게 줄 것이요"
+      ],
+      "raw_text_hashes": [
+        "dba595bf2124e9c3592f52fdee0688944c16f1dc5f8342cd8ebbbd14c0cec757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:4",
+      "sequence": 5389,
+      "chapter_label": "DEU 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "You shall give him the first fruits of your grain, of your new wine, and of your oil, and the first of the fleece of your sheep.",
+      "ko": "또 너의 처음 된 곡식과 포도주와 기름과 너의 처음 깎은 양털을 네가 그에게 줄 것이니",
+      "source_text_hash": "6e837ccc8228095ece17a7dab033fb64c0f1d0747c5eb44cedec819ff8868469",
+      "translation_text_hash": "c00d31cd75c721a5e54e08aa5554c756376a238093abbf4588ec2180281b8f79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너의 처음 된 곡식과 포도주와 기름과 너의 처음 깎은 양털을 네가 그에게 줄 것이니"
+      ],
+      "raw_text_hashes": [
+        "c00d31cd75c721a5e54e08aa5554c756376a238093abbf4588ec2180281b8f79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:5",
+      "sequence": 5390,
+      "chapter_label": "DEU 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "For the LORD your God has chosen him out of all your tribes to stand to minister in the LORD’s name, him and his sons forever.",
+      "ko": "이는 네 하나님 여호와께서 네 모든 지파 중에서 그를 택하여 내시고 그와 그의 자손으로 영영히 여호와의 이름으로 서서 섬기게 하셨음이니라",
+      "source_text_hash": "5ccfb6b17ca762781351e2e999a561376ce3e8206def4ec124ecb4a225d49902",
+      "translation_text_hash": "7a64c1538905b0c9685d337c92256edec80adccf1c18c5c6428b73d05b791ca9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 네 하나님 여호와께서 네 모든 지파 중에서 그를 택하여 내시고 그와 그의 자손으로 영영히 여호와의 이름으로 서서 섬기게 하셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "7a64c1538905b0c9685d337c92256edec80adccf1c18c5c6428b73d05b791ca9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:6",
+      "sequence": 5391,
+      "chapter_label": "DEU 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "If a Levite comes from any of your gates out of all Israel where he lives, and comes with all the desire of his soul to the place which the LORD shall choose,",
+      "ko": "이스라엘의 온 땅 어느 성읍에든지 거하는 레위인이 간절한 소원이 있어 그 거한 곳을 떠나 여호와의 택하신 곳에 이르면",
+      "source_text_hash": "7d8ba9f9847400bc5822cd3545635bf7100c3c587325309b2315c055490a3b8a",
+      "translation_text_hash": "3dc65e7198cf34621b6b6f01cb41648c40997fbe9d05bd5ccf497f332378ba6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 온 땅 어느 성읍에든지 거하는 레위인이 간절한 소원이 있어 그 거한 곳을 떠나 여호와의 택하신 곳에 이르면"
+      ],
+      "raw_text_hashes": [
+        "3dc65e7198cf34621b6b6f01cb41648c40997fbe9d05bd5ccf497f332378ba6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:7",
+      "sequence": 5392,
+      "chapter_label": "DEU 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "then he shall minister in the name of the LORD his God, as all his brothers the Levites do, who stand there before the LORD.",
+      "ko": "여호와 앞에 선 그 형제 모든 레위인과 일반으로 그 하나님 여호와의 이름으로 섬길 수 있나니",
+      "source_text_hash": "5f4efcc4ad7165aa1359f4f5a42568e8d0532a99257429bd7ca182ef8d1679c2",
+      "translation_text_hash": "563e083cae08ca52e3d787948fc893c56d86e94ca3f70640cea0c95cb2b38616",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 앞에 선 그 형제 모든 레위인과 일반으로 그 하나님 여호와의 이름으로 섬길 수 있나니"
+      ],
+      "raw_text_hashes": [
+        "563e083cae08ca52e3d787948fc893c56d86e94ca3f70640cea0c95cb2b38616"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:8",
+      "sequence": 5393,
+      "chapter_label": "DEU 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "They shall have like portions to eat, in addition to that which comes from the sale of his family possessions.",
+      "ko": "그 사람의 응식은 그들과 같을 것이요 그 상속 산업을 판 돈은 이 외에 그에게 속할 것이니라",
+      "source_text_hash": "c8dcd4ca00e78bb5203fe264c980a23cd25b96ab9d8f5709efbbfca0178509d8",
+      "translation_text_hash": "e3566e6f6369ba2fdeb92d9a98d4a68a54ae198dc88be79494157e129990c7f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람의 응식은 그들과 같을 것이요 그 상속 산업을 판 돈은 이 외에 그에게 속할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "e3566e6f6369ba2fdeb92d9a98d4a68a54ae198dc88be79494157e129990c7f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:9",
+      "sequence": 5394,
+      "chapter_label": "DEU 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "When you have come into the land which the LORD your God gives you, you shall not learn to imitate the abominations of those nations.",
+      "ko": "네 하나님 여호와께서 네게 주시는 땅에 들어가거든 너는 그 민족들의 가증한 행위를 본받지 말 것이니",
+      "source_text_hash": "7ede421d434542405c28bfd59170a5623cc83aab3c8c046ecb9581c65a8d01b9",
+      "translation_text_hash": "a3d206cbe8e13fe6d22e58f606628abdef48ddf5674f75289f905c074a2ddfae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주시는 땅에 들어가거든 너는 그 민족들의 가증한 행위를 본받지 말 것이니"
+      ],
+      "raw_text_hashes": [
+        "a3d206cbe8e13fe6d22e58f606628abdef48ddf5674f75289f905c074a2ddfae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:10",
+      "sequence": 5395,
+      "chapter_label": "DEU 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "There shall not be found with you anyone who makes his son or his daughter to pass through the fire, one who uses divination, one who tells fortunes, or an enchanter, or a sorcerer,",
+      "ko": "그 아들이나 딸을 불 가운데로 지나게 하는 자나 복술자나 길흉을 말하는 자나 요술하는 자나 무당이나",
+      "source_text_hash": "4723716634421fa6e08f7b3621fccf433cda421fd2ac30bc5cdb7a07fcd0bc5b",
+      "translation_text_hash": "3c715cc178118c2758bf5c112e1f0a6eeea44a88527e8325c9f73611850a6ff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들이나 딸을 불 가운데로 지나게 하는 자나 복술자나 길흉을 말하는 자나 요술하는 자나 무당이나"
+      ],
+      "raw_text_hashes": [
+        "3c715cc178118c2758bf5c112e1f0a6eeea44a88527e8325c9f73611850a6ff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:11",
+      "sequence": 5396,
+      "chapter_label": "DEU 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "or a charmer, or someone who consults with a familiar spirit, or a wizard, or a necromancer.",
+      "ko": "진언자나 신접자나 박수나 초혼자를 너의 중에 용납하지 말라",
+      "source_text_hash": "0a9c2d8719922f35884aa69da3c6c7c97481a4cabe27db22e01b012245379825",
+      "translation_text_hash": "85b1948f64257030c8e2460e61c4fc943fcaaec023a0d5a1cae9b311152d00f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진언자나 신접자나 박수나 초혼자를 너의 중에 용납하지 말라"
+      ],
+      "raw_text_hashes": [
+        "85b1948f64257030c8e2460e61c4fc943fcaaec023a0d5a1cae9b311152d00f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:12",
+      "sequence": 5397,
+      "chapter_label": "DEU 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "For whoever does these things is an abomination to the LORD. Because of these abominations, the LORD your God drives them out from before you.",
+      "ko": "무릇 이런 일을 행하는 자는 여호와께서 가증히 여기시나니 이런 가증한 일로 인하여 네 하나님 여호와께서 그들을 네 앞에서 쫓아 내시느니라",
+      "source_text_hash": "c03e62dea006bb5fbe6e95881964b7068da7ef4d3ef38c302b171693cc3e53ce",
+      "translation_text_hash": "b26d0fa21e4545485dee638362b0540cb49c441f589040f7a9e92cb6557ba7be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이런 일을 행하는 자는 여호와께서 가증히 여기시나니 이런 가증한 일로 인하여 네 하나님 여호와께서 그들을 네 앞에서 쫓아 내시느니라"
+      ],
+      "raw_text_hashes": [
+        "b26d0fa21e4545485dee638362b0540cb49c441f589040f7a9e92cb6557ba7be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:13",
+      "sequence": 5398,
+      "chapter_label": "DEU 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "You shall be blameless with the LORD your God.",
+      "ko": "너는 네 하나님 여호와 앞에 완전하라",
+      "source_text_hash": "e9ff0fcad0c81d9a3e053a4bae073064b87f0be378726f26ffbe7ecbc84c8f9d",
+      "translation_text_hash": "80fa10f4da3468d6f46d5d73f627349c28f2530fdcf6a704515a3e89668d1e07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 하나님 여호와 앞에 완전하라"
+      ],
+      "raw_text_hashes": [
+        "80fa10f4da3468d6f46d5d73f627349c28f2530fdcf6a704515a3e89668d1e07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:14",
+      "sequence": 5399,
+      "chapter_label": "DEU 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "For these nations that you shall dispossess listen to those who practice sorcery and to diviners; but as for you, the LORD your God has not allowed you so to do.",
+      "ko": "네가 쫓아낼 이 민족들은 길흉을 말하는 자나 복술자의 말을 듣거니와 네게는 네 하나님 여호와께서 이런 일을 용납지 아니하시느니라",
+      "source_text_hash": "853dff65bb7ff5a86122cf032f90c693227ed26536558a9690dc2ce2bca70297",
+      "translation_text_hash": "14d0b6af472e8d60e08a301c9ca4718d2f6a10938bc34936b00a5337a1904ba4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 쫓아낼 이 민족들은 길흉을 말하는 자나 복술자의 말을 듣거니와 네게는 네 하나님 여호와께서 이런 일을 용납지 아니하시느니라"
+      ],
+      "raw_text_hashes": [
+        "14d0b6af472e8d60e08a301c9ca4718d2f6a10938bc34936b00a5337a1904ba4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:15",
+      "sequence": 5400,
+      "chapter_label": "DEU 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "The LORD your God will raise up to you a prophet from among you, of your brothers, like me. You shall listen to him.",
+      "ko": "네 하나님 여호와께서 너의 중 네 형제 중에서 나와 같은 선지자 하나를 너를 위하여 일으키시리니 너희는 그를 들을찌니라",
+      "source_text_hash": "45d8b94c42327ff57be47fa57ee58bd6e0831ab5240c7bd35a88d8a397b9e118",
+      "translation_text_hash": "4f1704f3498f3813ca8cab11dce38e4b8204ae9f6e6720a87e21fdc213003bed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 너의 중 네 형제 중에서 나와 같은 선지자 하나를 너를 위하여 일으키시리니 너희는 그를 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "4f1704f3498f3813ca8cab11dce38e4b8204ae9f6e6720a87e21fdc213003bed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:16",
+      "sequence": 5401,
+      "chapter_label": "DEU 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "This is according to all that you desired of the LORD your God in Horeb in the day of the assembly, saying, “Let me not hear again the LORD my God’s voice, neither let me see this great fire any more, that I not die.”",
+      "ko": "이것이 곧 네가 총회의 날에 호렙산에서 너의 하나님 여호와께 구한 것이라 곧 네가 말하기를 나로 다시는 나의 하나님 여호와의 음성을 듣지 않게 하시고 다시는 이 큰 불을 보지 않게 하소서 두렵건대 내가 죽을까 하나이다 하매",
+      "source_text_hash": "b4668a970a293725c885a7929955361c5b98a51a82f7d92594c84a3f919bdd9d",
+      "translation_text_hash": "682861259aa64fc40e50bc3a914f0c7e2935c5497c8f95e491f4d59d79eb0bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 곧 네가 총회의 날에 호렙산에서 너의 하나님 여호와께 구한 것이라 곧 네가 말하기를 나로 다시는 나의 하나님 여호와의 음성을 듣지 않게 하시고 다시는 이 큰 불을 보지 않게 하소서 두렵건대 내가 죽을까 하나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "682861259aa64fc40e50bc3a914f0c7e2935c5497c8f95e491f4d59d79eb0bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:17",
+      "sequence": 5402,
+      "chapter_label": "DEU 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD said to me, “They have well said that which they have spoken.",
+      "ko": "여호와께서 내게 이르시되 그들의 말이 옳도다",
+      "source_text_hash": "dfebe90834a20025903616cbfcb9d031e13dd557eb2a9375a314027bf70c338f",
+      "translation_text_hash": "d420c3d8a5484eb4cdf05776612237dbf53eae040ca422795f91b04e4a01848e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 내게 이르시되 그들의 말이 옳도다"
+      ],
+      "raw_text_hashes": [
+        "d420c3d8a5484eb4cdf05776612237dbf53eae040ca422795f91b04e4a01848e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:18",
+      "sequence": 5403,
+      "chapter_label": "DEU 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "I will raise them up a prophet from among their brothers, like you. I will put my words in his mouth, and he shall speak to them all that I shall command him.",
+      "ko": "내가 그들의 형제 중에 너와 같은 선지자 하나를 그들을 위하여 일으키고 내 말을 그 입에 두리니 내가 그에게 명하는 것을 그가 무리에게 다 고하리라",
+      "source_text_hash": "880c31a2bac84c87c08d6ab7628df9426170fdaebce496eb473c058ba3de8f36",
+      "translation_text_hash": "be1492100415e25425ae2a8b306b10e9142ee82a4a223d5609687984aaef116e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들의 형제 중에 너와 같은 선지자 하나를 그들을 위하여 일으키고 내 말을 그 입에 두리니 내가 그에게 명하는 것을 그가 무리에게 다 고하리라"
+      ],
+      "raw_text_hashes": [
+        "be1492100415e25425ae2a8b306b10e9142ee82a4a223d5609687984aaef116e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:19",
+      "sequence": 5404,
+      "chapter_label": "DEU 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "It shall happen, that whoever will not listen to my words which he shall speak in my name, I will require it of him.",
+      "ko": "무릇 그가 내 이름으로 고하는 내 말을 듣지 아니하는 자는 내게 벌을 받을 것이요",
+      "source_text_hash": "b91fe65986b55fe2be7c7dbf968d2c4dda4a44b8ad15e9c8be1b2acdfc61c03c",
+      "translation_text_hash": "2e7efcef923f3970858661ce0f760dd880595c58c65affa4ec886e79d484baf3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그가 내 이름으로 고하는 내 말을 듣지 아니하는 자는 내게 벌을 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "2e7efcef923f3970858661ce0f760dd880595c58c65affa4ec886e79d484baf3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:20",
+      "sequence": 5405,
+      "chapter_label": "DEU 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "But the prophet who speaks a word presumptuously in my name, which I have not commanded him to speak, or who speaks in the name of other gods, that same prophet shall die.”",
+      "ko": "내가 고하라고 명하지 아니한 말을 어떤 선지자가 만일 방자히 내 이름으로 고하든지 다른 신들의 이름으로 말하면 그 선지자는 죽임을 당하리라 하셨느니라",
+      "source_text_hash": "ce8e20d73470e031d4e9d5baa6a3d394d0ca3720f89a6554f91aa8b3bbd3c798",
+      "translation_text_hash": "3a12f31cdd174250356de8f6656922ae06f5be7ccbcd6053c673afd1ffa0aff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 고하라고 명하지 아니한 말을 어떤 선지자가 만일 방자히 내 이름으로 고하든지 다른 신들의 이름으로 말하면 그 선지자는 죽임을 당하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "3a12f31cdd174250356de8f6656922ae06f5be7ccbcd6053c673afd1ffa0aff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:21",
+      "sequence": 5406,
+      "chapter_label": "DEU 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "You may say in your heart, “How shall we know the word which the LORD has not spoken?”",
+      "ko": "네가 혹시 심중에 이르기를 그 말이 여호와의 이르신 말씀인지 우리가 어떻게 알리요 하리라",
+      "source_text_hash": "07a92ac593416a9394e876f8e7c9c7ae93ac9c94e0740f187c39c1aa49de8249",
+      "translation_text_hash": "b67d477d2abd950790798358d457669f758c8266ba1f01e07e16b55c03fb7885",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 혹시 심중에 이르기를 그 말이 여호와의 이르신 말씀인지 우리가 어떻게 알리요 하리라"
+      ],
+      "raw_text_hashes": [
+        "b67d477d2abd950790798358d457669f758c8266ba1f01e07e16b55c03fb7885"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:18:22",
+      "sequence": 5407,
+      "chapter_label": "DEU 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "When a prophet speaks in the LORD’s name, if the thing doesn’t follow, nor happen, that is the thing which the LORD has not spoken. The prophet has spoken it presumptuously. You shall not be afraid of him.",
+      "ko": "만일 선지자가 있어서 여호와의 이름으로 말한 일에 증험도 없고 성취함도 없으면 이는 여호와의 말씀하신 것이 아니요 그 선지자가 방자히 한 말이니 너는 그를 두려워 말찌니라",
+      "source_text_hash": "4cbac00bd5f325e70ec17a9c1a9f8bdfb2c59eeedb919a5830ce6c7ad54e1476",
+      "translation_text_hash": "b56acd73427f6b23d9fc95d5bf8ceb24aa35fea3f7cab87f7648f27dea769df8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 선지자가 있어서 여호와의 이름으로 말한 일에 증험도 없고 성취함도 없으면 이는 여호와의 말씀하신 것이 아니요 그 선지자가 방자히 한 말이니 너는 그를 두려워 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "b56acd73427f6b23d9fc95d5bf8ceb24aa35fea3f7cab87f7648f27dea769df8"
+      ]
+    }
+  ]
+}

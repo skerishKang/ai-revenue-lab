@@ -1,0 +1,66 @@
+{
+  "schema": "storymemory-pack-registry-1.0",
+  "version": "1.0.0",
+  "generatedAt": "2026-08-27T00:00:00Z",
+  "listings": [
+    {
+      "packId": "pack:odyssey:korean-alias-public:v1",
+      "name": "Odyssey Korean Alias Helper",
+      "packType": "search",
+      "creatorId": "padiem/storymemory",
+      "publisherName": "StoryMemory",
+      "summary": "Korean/English name aliases for Odyssey retrieval. No Source body.",
+      "visibility": "public",
+      "pricingMode": "free",
+      "publicationStatus": "published",
+      "latestVersion": "1.0.0",
+      "sourceTextIncluded": false,
+      "rightsDeclaration": {
+        "distribution": "free-public",
+        "sourceBody": "excluded",
+        "privateSource": false,
+        "containsPrivateData": false
+      },
+      "compatibilitySummary": {
+        "workKey": "odyssey",
+        "language": "ko"
+      },
+      "processingDisclosure": {
+        "aiGenerated": true,
+        "humanVerified": false
+      },
+      "listingMetadata": {
+        "tags": [
+          "odyssey",
+          "alias",
+          "korean"
+        ],
+        "marketplaceStage": "SM-085-MVP"
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "schemaVersion": "storymemory-precision-pack-1.0",
+          "artifactUri": "packs/odyssey-korean-alias-public-v1.json",
+          "artifactFingerprint": "fnv1a:46e27cfa",
+          "declaredTrustTier": "auto-generated",
+          "sourceMatchMode": "exact-fingerprint",
+          "compatibility": {
+            "mode": "exact-fingerprint",
+            "sourceFingerprint": "268cf938678308dbebbea0aee320567f2d9aac31087e557f43a70708676efc7a",
+            "sourceRevision": "storymemory-static-content-1.0",
+            "language": "ko",
+            "locatorScheme": "book"
+          },
+          "rights": {
+            "declaration": "Derived alias/query hints only; no Source body included",
+            "sourceTextIncluded": false,
+            "visibility": "public"
+          },
+          "changelog": "Initial free public alias helper"
+        }
+      ],
+      "attestations": []
+    }
+  ]
+}

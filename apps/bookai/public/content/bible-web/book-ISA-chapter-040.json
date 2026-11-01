@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:040",
+  "unit_ordinal": 719,
+  "unit_label": "ISA 40",
+  "book_code": "ISA",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:40:1",
+      "sequence": 18422,
+      "chapter_label": "ISA 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "“Comfort, comfort my people,” says your God.",
+      "ko": "너희 하나님이 가라사대 너희는 위로하라 내 백성을 위로하라",
+      "source_text_hash": "e2f6b73347e7e3845d4cde9823366438e9d255bd8733f845b115734ee49e9d64",
+      "translation_text_hash": "e75a17c98973d342d04fa2648e7e3828e538609884839358f89a39a9eece69a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님이 가라사대 너희는 위로하라 내 백성을 위로하라"
+      ],
+      "raw_text_hashes": [
+        "e75a17c98973d342d04fa2648e7e3828e538609884839358f89a39a9eece69a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:2",
+      "sequence": 18423,
+      "chapter_label": "ISA 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak comfortably to Jerusalem, and call out to her that her warfare is accomplished, that her iniquity is pardoned, that she has received of the LORD’s hand double for all her sins.”",
+      "ko": "너희는 정다이 예루살렘에 말하며 그것에게 외쳐 고하라 그 복역의 때가 끝났고 그 죄악의 사함을 입었느니라 그 모든 죄를 인하여 여호와의 손에서 배나 받았느니라 할찌니라",
+      "source_text_hash": "5b4d8fbf2abdd05c6c6f194de827c5ff224650733ba5dee199645b0629515e48",
+      "translation_text_hash": "4137e9b83ba3c88e15c1340f43739309b67b84f243ad4fd5f166439c1fa10c46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 정다이 예루살렘에 말하며 그것에게 외쳐 고하라 그 복역의 때가 끝났고 그 죄악의 사함을 입었느니라 그 모든 죄를 인하여 여호와의 손에서 배나 받았느니라 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "4137e9b83ba3c88e15c1340f43739309b67b84f243ad4fd5f166439c1fa10c46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:3",
+      "sequence": 18424,
+      "chapter_label": "ISA 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "The voice of one who calls out, “Prepare the way of the LORD in the wilderness! Make a level highway in the desert for our God.",
+      "ko": "외치는 자의 소리여 가로되 너희는 광야에서 여호와의 길을 예비하라 사막에서 우리 하나님의 대로를 평탄케 하라",
+      "source_text_hash": "37a2a95123208a496b37e90176020196f8c11982d6550f0c16f3c65ca0198a6e",
+      "translation_text_hash": "dde208d80698b41b59509b40803e0012f10935ef9051a1bc9ba773aeba5a7867",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "외치는 자의 소리여 가로되 너희는 광야에서 여호와의 길을 예비하라 사막에서 우리 하나님의 대로를 평탄케 하라"
+      ],
+      "raw_text_hashes": [
+        "dde208d80698b41b59509b40803e0012f10935ef9051a1bc9ba773aeba5a7867"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:4",
+      "sequence": 18425,
+      "chapter_label": "ISA 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "Every valley shall be exalted, and every mountain and hill shall be made low. The uneven shall be made level, and the rough places a plain.",
+      "ko": "골짜기마다 돋우어지며 산마다, 작은 산마다 낮아지며 고르지 않은 곳이 평탄케 되며 험한 곳이 평지가 될 것이요",
+      "source_text_hash": "1b3be48ef0a2d5aa245c0f3f43000b96b1db962165337eeaffd3b3ceaad09761",
+      "translation_text_hash": "ff5bd17fbae2098b50c62f96b4a1f1315719a9ecce2ad46fbcd0c9328b2d2515",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "골짜기마다 돋우어지며 산마다, 작은 산마다 낮아지며 고르지 않은 곳이 평탄케 되며 험한 곳이 평지가 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "ff5bd17fbae2098b50c62f96b4a1f1315719a9ecce2ad46fbcd0c9328b2d2515"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:5",
+      "sequence": 18426,
+      "chapter_label": "ISA 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD’s glory shall be revealed, and all flesh shall see it together; for the mouth of the LORD has spoken it.”",
+      "ko": "여호와의 영광이 나타나고 모든 육체가 그것을 함께 보리라 대저 여호와의 입이 말씀하셨느니라",
+      "source_text_hash": "129116724f13df2431eb438d92a8a7b88b1d9a870fdca77c8bcf17b32014980a",
+      "translation_text_hash": "40b9aa5f781134f8fb5abfc78b6433b485644e9d8c37e47e939297ecbd22bd04",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 영광이 나타나고 모든 육체가 그것을 함께 보리라 대저 여호와의 입이 말씀하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "40b9aa5f781134f8fb5abfc78b6433b485644e9d8c37e47e939297ecbd22bd04"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:6",
+      "sequence": 18427,
+      "chapter_label": "ISA 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "The voice of one saying, “Cry out!” One said, “What shall I cry?” “All flesh is like grass, and all its glory is like the flower of the field.",
+      "ko": "말하는 자의 소리여 가로되 외치라 대답하되 내가 무엇이라 외치리이까 가로되 모든 육체는 풀이요 그 모든 아름다움은 들의 꽃 같으니",
+      "source_text_hash": "b41601688f6254a45e8a6d5e1c44770df7e152d0d30bdb45551d02d56c3f8d38",
+      "translation_text_hash": "d98d9c51a5ea2e207cc6c251783119bc1b4df1d874c37a260a2a764a33d86275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하는 자의 소리여 가로되 외치라 대답하되 내가 무엇이라 외치리이까 가로되 모든 육체는 풀이요 그 모든 아름다움은 들의 꽃 같으니"
+      ],
+      "raw_text_hashes": [
+        "d98d9c51a5ea2e207cc6c251783119bc1b4df1d874c37a260a2a764a33d86275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:7",
+      "sequence": 18428,
+      "chapter_label": "ISA 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "The grass withers, the flower fades, because the LORD’s breath blows on it. Surely the people are like grass.",
+      "ko": "풀은 마르고 꽃은 시듦은 여호와의 기운이 그 위에 붊이라 이 백성은 실로 풀이로다",
+      "source_text_hash": "0c00637a614b0ad3d2f72f614527be9bf7ec3b901627dfa9b6b56ef293f819b1",
+      "translation_text_hash": "078e994b9ff76722eb2bb2de367f1cb953b51e143835b9ea4dc2e26ac7cbbb1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풀은 마르고 꽃은 시듦은 여호와의 기운이 그 위에 붊이라 이 백성은 실로 풀이로다"
+      ],
+      "raw_text_hashes": [
+        "078e994b9ff76722eb2bb2de367f1cb953b51e143835b9ea4dc2e26ac7cbbb1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:8",
+      "sequence": 18429,
+      "chapter_label": "ISA 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "The grass withers, the flower fades; but the word of our God stands forever.”",
+      "ko": "풀은 마르고 꽃은 시드나 우리 하나님의 말씀은 영영히 서리라 하라",
+      "source_text_hash": "a9902aab824969eb0ada7a380c7a0ed3d8b484abb6e667ffbd413f07680e7c96",
+      "translation_text_hash": "fc98e99b2754c521f86fd49751fce6a2397a5825b6812fff24aebcfceb434e9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "풀은 마르고 꽃은 시드나 우리 하나님의 말씀은 영영히 서리라 하라"
+      ],
+      "raw_text_hashes": [
+        "fc98e99b2754c521f86fd49751fce6a2397a5825b6812fff24aebcfceb434e9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:9",
+      "sequence": 18430,
+      "chapter_label": "ISA 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "You who tell good news to Zion, go up on a high mountain. You who tell good news to Jerusalem, lift up your voice with strength! Lift it up! Don’t be afraid! Say to the cities of Judah, “Behold, your God!”",
+      "ko": "아름다운 소식을 시온에 전하는 자여 너는 높은 산에 오르라 아름다운 소식을 예루살렘에 전하는 자여 너는 힘써 소리를 높이라 두려워 말고 소리를 높여 유다의 성읍들에 이르기를 너희 하나님을 보라 하라",
+      "source_text_hash": "2f650ea5258d8576711a7736c3228fccbd8758e218e319feae38f23f1eeec41b",
+      "translation_text_hash": "61ca26355d2e8b71226826ce0790682b8f9148fb8b3e889a9334012b44ee3fc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아름다운 소식을 시온에 전하는 자여 너는 높은 산에 오르라 아름다운 소식을 예루살렘에 전하는 자여 너는 힘써 소리를 높이라 두려워 말고 소리를 높여 유다의 성읍들에 이르기를 너희 하나님을 보라 하라"
+      ],
+      "raw_text_hashes": [
+        "61ca26355d2e8b71226826ce0790682b8f9148fb8b3e889a9334012b44ee3fc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:10",
+      "sequence": 18431,
+      "chapter_label": "ISA 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, the Lord GOD will come as a mighty one, and his arm will rule for him. Behold, his reward is with him, and his recompense before him.",
+      "ko": "보라 주 여호와께서 장차 강한 자로 임하실 것이요 친히 그 팔로 다스리실 것이라 보라 상급이 그에게 있고 보응이 그 앞에 있으며",
+      "source_text_hash": "7d745c60b0c30f19ff682ef0394a4a92d03603fc840bafc9aa8e2eb2e9fa6fac",
+      "translation_text_hash": "f35f8c967a7a08db4f64fe716f2e33913ae3126cf6dc9dc4334e835c4bd851d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 주 여호와께서 장차 강한 자로 임하실 것이요 친히 그 팔로 다스리실 것이라 보라 상급이 그에게 있고 보응이 그 앞에 있으며"
+      ],
+      "raw_text_hashes": [
+        "f35f8c967a7a08db4f64fe716f2e33913ae3126cf6dc9dc4334e835c4bd851d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:11",
+      "sequence": 18432,
+      "chapter_label": "ISA 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "He will feed his flock like a shepherd. He will gather the lambs in his arm, and carry them in his bosom. He will gently lead those who have their young.",
+      "ko": "그는 목자 같이 양무리를 먹이시며 어린 양을 그 팔로 모아 품에 안으시며 젖먹이는 암컷들을 온순히 인도하시리로다",
+      "source_text_hash": "6048f0b7ca1f3f2f882f0968419d0a17fe462e70a82331da4995f11595cb6207",
+      "translation_text_hash": "54d06581aea3aa15c618c52e3c30a47ddf6c385fce7011d1baa80cc4abd727ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 목자 같이 양무리를 먹이시며 어린 양을 그 팔로 모아 품에 안으시며 젖먹이는 암컷들을 온순히 인도하시리로다"
+      ],
+      "raw_text_hashes": [
+        "54d06581aea3aa15c618c52e3c30a47ddf6c385fce7011d1baa80cc4abd727ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:12",
+      "sequence": 18433,
+      "chapter_label": "ISA 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "Who has measured the waters in the hollow of his hand, and marked off the sky with his span, and calculated the dust of the earth in a measuring basket, and weighed the mountains in scales, and the hills in a balance?",
+      "ko": "누가 손바닥으로 바다 물을 헤아렸으며 뼘으로 하늘을 재었으며 땅의 티끌을 되에 담아 보았으며 명칭으로 산들을, 간칭으로 작은 산들을 달아 보았으랴",
+      "source_text_hash": "dc126c05eceaeaef3b55e7ae62d4003f0ea3963b12ddc3a39be8341ab0623b9c",
+      "translation_text_hash": "c9cc043086f7d9b5e776c820cef0f61b45c5e7d38b4c1d120335309679e8eae8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 손바닥으로 바다 물을 헤아렸으며 뼘으로 하늘을 재었으며 땅의 티끌을 되에 담아 보았으며 명칭으로 산들을, 간칭으로 작은 산들을 달아 보았으랴"
+      ],
+      "raw_text_hashes": [
+        "c9cc043086f7d9b5e776c820cef0f61b45c5e7d38b4c1d120335309679e8eae8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:13",
+      "sequence": 18434,
+      "chapter_label": "ISA 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "Who has directed the LORD’s Spirit, or has taught him as his counselor?",
+      "ko": "누가 여호와의 신을 지도하였으며 그의 모사가 되어 그를 가르쳤으랴",
+      "source_text_hash": "9b792a8cf73d39dee9288332ecfbc320bd3f90cacd634b33443ed54dce9e44eb",
+      "translation_text_hash": "bc3f584fe68ff97ad3ee07b619ac8137548dfb02e306ff151b9c456b14b9e2b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 여호와의 신을 지도하였으며 그의 모사가 되어 그를 가르쳤으랴"
+      ],
+      "raw_text_hashes": [
+        "bc3f584fe68ff97ad3ee07b619ac8137548dfb02e306ff151b9c456b14b9e2b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:14",
+      "sequence": 18435,
+      "chapter_label": "ISA 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "Who did he take counsel with, and who instructed him, and taught him in the path of justice, and taught him knowledge, and showed him the way of understanding?",
+      "ko": "그가 누구로 더불어 의논하셨으며 누가 그를 교훈하였으며 그에게 공평의 도로 가르쳤으며 지식을 가르쳤으며 통달의 도를 보여 주었느뇨",
+      "source_text_hash": "0c29203b0fca6ec256664097a4fc55408176b7916c21aee19eed9156c4edabb5",
+      "translation_text_hash": "00b27c6c5c6fad8ddec7cbda9bc506bbfd4f7683c998e097b8358f2339d93136",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 누구로 더불어 의논하셨으며 누가 그를 교훈하였으며 그에게 공평의 도로 가르쳤으며 지식을 가르쳤으며 통달의 도를 보여 주었느뇨"
+      ],
+      "raw_text_hashes": [
+        "00b27c6c5c6fad8ddec7cbda9bc506bbfd4f7683c998e097b8358f2339d93136"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:15",
+      "sequence": 18436,
+      "chapter_label": "ISA 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "Behold, the nations are like a drop in a bucket, and are regarded as a speck of dust on a balance. Behold, he lifts up the islands like a very little thing.",
+      "ko": "보라 그에게는 열방은 통의 한 방울 물 같고 저울의 적은 티끌 같으며 섬들은 떠오르는 먼지 같으니",
+      "source_text_hash": "9d99b18c2f6dc17249e6400f705e46e0bbc68b2456936b4a8537073466ca2abd",
+      "translation_text_hash": "9c2898b21fadced0c4e43cb2dfe1bab2a1c6526f221fd49a340a2e709f9cb858",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 그에게는 열방은 통의 한 방울 물 같고 저울의 적은 티끌 같으며 섬들은 떠오르는 먼지 같으니"
+      ],
+      "raw_text_hashes": [
+        "9c2898b21fadced0c4e43cb2dfe1bab2a1c6526f221fd49a340a2e709f9cb858"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:16",
+      "sequence": 18437,
+      "chapter_label": "ISA 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "Lebanon is not sufficient to burn, nor its animals sufficient for a burnt offering.",
+      "ko": "레바논 짐승들은 번제 소용에도 부족하겠고 그 삼림은 그 화목 소용에도 부족할 것이라",
+      "source_text_hash": "d59535c2cffe0689baf145bae3cfda482e0e29c9fa6a95d0d7e235fa30638842",
+      "translation_text_hash": "484d24086a271e6bd4cc8e71a1764ea13c58a946640b856e2a6289f191a950af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레바논 짐승들은 번제 소용에도 부족하겠고 그 삼림은 그 화목 소용에도 부족할 것이라"
+      ],
+      "raw_text_hashes": [
+        "484d24086a271e6bd4cc8e71a1764ea13c58a946640b856e2a6289f191a950af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:17",
+      "sequence": 18438,
+      "chapter_label": "ISA 40",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 17
+        }
+      ],
+      "en": "All the nations are like nothing before him. They are regarded by him as less than nothing, and vanity.",
+      "ko": "그 앞에는 모든 열방이 아무 것도 아니라 그는 그들을 없는 것 같이, 빈 것 같이 여기시느니라",
+      "source_text_hash": "f10888836a9f6110fc60097d5ca1bd18225ce7ba44b79419607315203e4916fa",
+      "translation_text_hash": "08de8ff19aa7f06ef39682f7bf7a15baba02aa293e86ec730e913d0edf0b998c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 앞에는 모든 열방이 아무 것도 아니라 그는 그들을 없는 것 같이, 빈 것 같이 여기시느니라"
+      ],
+      "raw_text_hashes": [
+        "08de8ff19aa7f06ef39682f7bf7a15baba02aa293e86ec730e913d0edf0b998c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:18",
+      "sequence": 18439,
+      "chapter_label": "ISA 40",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 18
+        }
+      ],
+      "en": "To whom then will you liken God? Or what likeness will you compare to him?",
+      "ko": "그런즉 너희가 하나님을 누구와 같다 하겠으며 무슨 형상에 비기겠느냐",
+      "source_text_hash": "226d5a3c8d939abb1b0670ea3134c9e956bede6de2ef77425080ce4f1e16993c",
+      "translation_text_hash": "8ea0647a44fa39afb556a4e309a9ff07402debc7be1cbb5ad24404b1021e09c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희가 하나님을 누구와 같다 하겠으며 무슨 형상에 비기겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8ea0647a44fa39afb556a4e309a9ff07402debc7be1cbb5ad24404b1021e09c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:19",
+      "sequence": 18440,
+      "chapter_label": "ISA 40",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 19
+        }
+      ],
+      "en": "A workman has cast an image, and the goldsmith overlays it with gold, and casts silver chains for it.",
+      "ko": "우상은 장인이 부어 만들었고 장색이 금으로 입혔고 또 위하여 은사슬을 만든 것이니라",
+      "source_text_hash": "f6937833fa61da63d3f1d0ee74fb2dfa40ed1ef1022568d45123a17f2616c945",
+      "translation_text_hash": "7b6951efb753f427df49b2db78af08aea914264d98ccff33acdff7be5c9b06c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상은 장인이 부어 만들었고 장색이 금으로 입혔고 또 위하여 은사슬을 만든 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7b6951efb753f427df49b2db78af08aea914264d98ccff33acdff7be5c9b06c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:20",
+      "sequence": 18441,
+      "chapter_label": "ISA 40",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 20
+        }
+      ],
+      "en": "He who is too impoverished for such an offering chooses a tree that will not rot. He seeks a skillful workman to set up a carved image for him that will not be moved.",
+      "ko": "궁핍하여 이런 것을 드리지 못하는 자는 썩지 않는 나무를 택하고 공교한 장인을 구하여 우상을 만들어서 흔들리지 않도록 세우느니라",
+      "source_text_hash": "653feb465352e38911635714c8f81b22683461a9494a329f2c7b94de9406f78e",
+      "translation_text_hash": "427bce8571c8ec334b7eb44b47433c90c0cd1767283c68db2c9e6e0492381b5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "궁핍하여 이런 것을 드리지 못하는 자는 썩지 않는 나무를 택하고 공교한 장인을 구하여 우상을 만들어서 흔들리지 않도록 세우느니라"
+      ],
+      "raw_text_hashes": [
+        "427bce8571c8ec334b7eb44b47433c90c0cd1767283c68db2c9e6e0492381b5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:21",
+      "sequence": 18442,
+      "chapter_label": "ISA 40",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 21
+        }
+      ],
+      "en": "Haven’t you known? Haven’t you heard? Haven’t you been told from the beginning? Haven’t you understood from the foundations of the earth?",
+      "ko": "너희가 알지 못하였느냐 너희가 듣지 못하였느냐 태초부터 너희에게 전하지 아니하였느냐 땅의 기초가 창조될 때부터 너희가 깨닫지 못하였느냐",
+      "source_text_hash": "ae25d74ccb082db5073ee1fffcf2243d8b66b8dbef5fb3a5cc286937208153b5",
+      "translation_text_hash": "378cb22c1311e43e055bea46b0c336d328ddc9d6a65b42cd3924bc9fc564485f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 알지 못하였느냐 너희가 듣지 못하였느냐 태초부터 너희에게 전하지 아니하였느냐 땅의 기초가 창조될 때부터 너희가 깨닫지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "378cb22c1311e43e055bea46b0c336d328ddc9d6a65b42cd3924bc9fc564485f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:22",
+      "sequence": 18443,
+      "chapter_label": "ISA 40",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 22
+        }
+      ],
+      "en": "It is he who sits above the circle of the earth, and its inhabitants are like grasshoppers; who stretches out the heavens like a curtain, and spreads them out like a tent to dwell in,",
+      "ko": "그는 땅 위 궁창에 앉으시나니 땅의 거민들은 메뚜기 같으니라 그가 하늘을 차일 같이 펴셨으며 거할 천막 같이 베푸셨고",
+      "source_text_hash": "dd7ea2d4d4e0650aec5189d9fafcc2f54443cc0db5ddfdd14981b1345a21259d",
+      "translation_text_hash": "281b523d24f0f48495bbf657533b0e6406f964241ba4b15c0b306013c89e5d38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 땅 위 궁창에 앉으시나니 땅의 거민들은 메뚜기 같으니라 그가 하늘을 차일 같이 펴셨으며 거할 천막 같이 베푸셨고"
+      ],
+      "raw_text_hashes": [
+        "281b523d24f0f48495bbf657533b0e6406f964241ba4b15c0b306013c89e5d38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:23",
+      "sequence": 18444,
+      "chapter_label": "ISA 40",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 23
+        }
+      ],
+      "en": "who brings princes to nothing, who makes the judges of the earth meaningless.",
+      "ko": "귀인들을 폐하시며 세상의 사사들을 헛되게 하시나니",
+      "source_text_hash": "d1a94465c4762d4de6c0e0b99185e7b3db4bb2883ae4d028be4abcaaae91a761",
+      "translation_text_hash": "f29df197fe2ccd13b5fdd7e81f2b489297578ed478a1585cf186c651380905c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀인들을 폐하시며 세상의 사사들을 헛되게 하시나니"
+      ],
+      "raw_text_hashes": [
+        "f29df197fe2ccd13b5fdd7e81f2b489297578ed478a1585cf186c651380905c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:24",
+      "sequence": 18445,
+      "chapter_label": "ISA 40",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 24
+        }
+      ],
+      "en": "They are planted scarcely. They are sown scarcely. Their stock has scarcely taken root in the ground. He merely blows on them, and they wither, and the whirlwind takes them away as stubble.",
+      "ko": "그들은 겨우 심기웠고 겨우 뿌리웠고 그 줄기가 겨우 땅에 뿌리를 박자 곧 하나님의 부심을 받고 말라 회리바람에 불려가는 초개 같도다",
+      "source_text_hash": "f59a1b8b69025c7930a5b7dc470942560eab0e79e779b9a3b05768f25a0773e2",
+      "translation_text_hash": "78f812407c9bd31b7607ae88894062e39725c85a9486907c401a7ea1f03896c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 겨우 심기웠고 겨우 뿌리웠고 그 줄기가 겨우 땅에 뿌리를 박자 곧 하나님의 부심을 받고 말라 회리바람에 불려가는 초개 같도다"
+      ],
+      "raw_text_hashes": [
+        "78f812407c9bd31b7607ae88894062e39725c85a9486907c401a7ea1f03896c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:25",
+      "sequence": 18446,
+      "chapter_label": "ISA 40",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 25
+        }
+      ],
+      "en": "“To whom then will you liken me? Who is my equal?” says the Holy One.",
+      "ko": "거룩하신 자가 가라사대 그런즉 너희가 나를 누구에게 비기며 나로 그와 동등이 되게 하겠느냐 하시느니라",
+      "source_text_hash": "c270e400082073019aac6b92fa8fa79d5e604191e6684828f5ea2ad92532367e",
+      "translation_text_hash": "e19637339f8cf638efc7f04cbf7a7966b1b4a11eac417c31cdafed9e22e17879",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거룩하신 자가 가라사대 그런즉 너희가 나를 누구에게 비기며 나로 그와 동등이 되게 하겠느냐 하시느니라"
+      ],
+      "raw_text_hashes": [
+        "e19637339f8cf638efc7f04cbf7a7966b1b4a11eac417c31cdafed9e22e17879"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:26",
+      "sequence": 18447,
+      "chapter_label": "ISA 40",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 26
+        }
+      ],
+      "en": "Lift up your eyes on high, and see who has created these, who brings out their army by number. He calls them all by name. By the greatness of his might, and because he is strong in power, not one is lacking.",
+      "ko": "너희는 눈을 높이 들어 누가 이 모든 것을 창조하였나 보라 주께서는 수효대로 만상을 이끌어 내시고 각각 그 이름을 부르시나니 그의 권세가 크고 그의 능력이 강하므로 하나도 빠짐이 없느니라",
+      "source_text_hash": "9c855a0cc4cca6ff3fa2cdc68083cf526c2dff2139bd2875bb824f7fe55a6b9f",
+      "translation_text_hash": "514aab5c8358fff1f85b740b9a2b44cac0b6d4250d72024209cd7892b5a788fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 눈을 높이 들어 누가 이 모든 것을 창조하였나 보라 주께서는 수효대로 만상을 이끌어 내시고 각각 그 이름을 부르시나니 그의 권세가 크고 그의 능력이 강하므로 하나도 빠짐이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "514aab5c8358fff1f85b740b9a2b44cac0b6d4250d72024209cd7892b5a788fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:27",
+      "sequence": 18448,
+      "chapter_label": "ISA 40",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 27
+        }
+      ],
+      "en": "Why do you say, Jacob, and speak, Israel, “My way is hidden from the LORD, and the justice due me is disregarded by my God”?",
+      "ko": "야곱아 네가 어찌하여 말하며 이스라엘아 네가 어찌하여 이르기를 내 사정은 여호와께 숨겨졌으며 원통한 것은 내 하나님에게서 수리하심을 받지 못한다 하느냐",
+      "source_text_hash": "c20035a420a5b320405ccd0f4d70bdb9315da5dbae65a2a8c5fca7b1b839d83e",
+      "translation_text_hash": "87eef4eb5bbc68b34224c22e81b5b700731baafb022ec0c75064c42a81de50da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱아 네가 어찌하여 말하며 이스라엘아 네가 어찌하여 이르기를 내 사정은 여호와께 숨겨졌으며 원통한 것은 내 하나님에게서 수리하심을 받지 못한다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "87eef4eb5bbc68b34224c22e81b5b700731baafb022ec0c75064c42a81de50da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:28",
+      "sequence": 18449,
+      "chapter_label": "ISA 40",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 28
+        }
+      ],
+      "en": "Haven’t you known? Haven’t you heard? The everlasting God, the LORD, the Creator of the ends of the earth, doesn’t faint. He isn’t weary. His understanding is unsearchable.",
+      "ko": "너는 알지 못하였느냐 듣지 못하였느냐 영원하신 하나님 여호와, 땅 끝까지 창조하신 자는 피곤치 아니하시며 곤비치 아니하시며 명철이 한이 없으시며",
+      "source_text_hash": "39dd42c3f3a69ce93fb5b514492a88aaaede26323b653c6b4ab7bfdd3a7ddabb",
+      "translation_text_hash": "436fb63494d9ec49882d840904234e13869a7c5389eea1dd3a34fcb5e12ab5f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 알지 못하였느냐 듣지 못하였느냐 영원하신 하나님 여호와, 땅 끝까지 창조하신 자는 피곤치 아니하시며 곤비치 아니하시며 명철이 한이 없으시며"
+      ],
+      "raw_text_hashes": [
+        "436fb63494d9ec49882d840904234e13869a7c5389eea1dd3a34fcb5e12ab5f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:29",
+      "sequence": 18450,
+      "chapter_label": "ISA 40",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 29
+        }
+      ],
+      "en": "He gives power to the weak. He increases the strength of him who has no might.",
+      "ko": "피곤한 자에게는 능력을 주시며 무능한 자에게는 힘을 더하시나니",
+      "source_text_hash": "fa9525e30dce97770b337eb471cb2ab6d3e1cd4f2e99cfce9324c0b191f6cabc",
+      "translation_text_hash": "76b0e01074a55c8d029f92bdf58c10a24af4bc039cffeb755693ddc6b1606930",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "피곤한 자에게는 능력을 주시며 무능한 자에게는 힘을 더하시나니"
+      ],
+      "raw_text_hashes": [
+        "76b0e01074a55c8d029f92bdf58c10a24af4bc039cffeb755693ddc6b1606930"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:30",
+      "sequence": 18451,
+      "chapter_label": "ISA 40",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 30
+        }
+      ],
+      "en": "Even the youths faint and get weary, and the young men utterly fall;",
+      "ko": "소년이라도 피곤하며 곤비하며 장정이라도 넘어지며 자빠지되",
+      "source_text_hash": "4bd9a64331b000b8f56f9495dc0d0d323cdedfacdc0eaa3858aa91c520a8f18b",
+      "translation_text_hash": "1629fa54be92d0866ec3d490374418e821a927f8e2e5806a3909f311d6548808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소년이라도 피곤하며 곤비하며 장정이라도 넘어지며 자빠지되"
+      ],
+      "raw_text_hashes": [
+        "1629fa54be92d0866ec3d490374418e821a927f8e2e5806a3909f311d6548808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:40:31",
+      "sequence": 18452,
+      "chapter_label": "ISA 40",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 40,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 40,
+          "verse": 31
+        }
+      ],
+      "en": "but those who wait for the LORD will renew their strength. They will mount up with wings like eagles. They will run, and not be weary. They will walk, and not faint.",
+      "ko": "오직 여호와를 앙망하는 자는 새 힘을 얻으리니 독수리의 날개치며 올라감 같을 것이요 달음박질하여도 곤비치 아니하겠고 걸어가도 피곤치 아니하리로다",
+      "source_text_hash": "7cedd9d730715b98eca804974302936036e1917be8872f4790c2eda43eabb56d",
+      "translation_text_hash": "1b3546103d8db89d490dc83de06a95ee3008cbac313f0ab05553b783a6c60104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와를 앙망하는 자는 새 힘을 얻으리니 독수리의 날개치며 올라감 같을 것이요 달음박질하여도 곤비치 아니하겠고 걸어가도 피곤치 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "1b3546103d8db89d490dc83de06a95ee3008cbac313f0ab05553b783a6c60104"
+      ]
+    }
+  ]
+}

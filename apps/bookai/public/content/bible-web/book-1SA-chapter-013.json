@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:013",
+  "unit_ordinal": 249,
+  "unit_label": "1SA 13",
+  "book_code": "1SA",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:13:1",
+      "sequence": 7487,
+      "chapter_label": "1SA 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "Saul was thirty years old when he became king, and he reigned over Israel forty-two years.",
+      "ko": "사울이 왕이 될 때에 사십세라 그가 이스라엘을 다스린지 이년에",
+      "source_text_hash": "144a4f2858d597197bce97beb61ff44383227879171e926fad2b087f8c4528e5",
+      "translation_text_hash": "09f18d008ac4e4c025a4b28222f39d29bc49b82693a15644b54dc1ef684453fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 왕이 될 때에 사십세라 그가 이스라엘을 다스린지 이년에"
+      ],
+      "raw_text_hashes": [
+        "09f18d008ac4e4c025a4b28222f39d29bc49b82693a15644b54dc1ef684453fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:2",
+      "sequence": 7488,
+      "chapter_label": "1SA 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "Saul chose for himself three thousand men of Israel, of which two thousand were with Saul in Michmash and in the Mount of Bethel, and one thousand were with Jonathan in Gibeah of Benjamin. He sent the rest of the people to their own tents.",
+      "ko": "이스라엘 사람 삼천을 택하여 그 중에서 이천은 자기와 함께 믹마스와 벧엘산에 있게 하고 일천은 요나단과 함께 베냐민 기브아에 있게 하고 남은 백성은 각기 장막으로 보내니라",
+      "source_text_hash": "acf0640a9bb0c121b6a96142e776020cc9636ab5149e84ad02695ab9375f8dab",
+      "translation_text_hash": "381220253fe86c0d76228bb93dd07a43c121d1e87b1e7166e1d68b7d81d94409",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람 삼천을 택하여 그 중에서 이천은 자기와 함께 믹마스와 벧엘산에 있게 하고 일천은 요나단과 함께 베냐민 기브아에 있게 하고 남은 백성은 각기 장막으로 보내니라"
+      ],
+      "raw_text_hashes": [
+        "381220253fe86c0d76228bb93dd07a43c121d1e87b1e7166e1d68b7d81d94409"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:3",
+      "sequence": 7489,
+      "chapter_label": "1SA 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "Jonathan struck the garrison of the Philistines that was in Geba, and the Philistines heard of it. Saul blew the trumpet throughout all the land, saying, “Let the Hebrews hear!”",
+      "ko": "요나단이 게바에 있는 블레셋 사람의 수비대를 치매 블레셋 사람이 이를 들은지라 사울이 온 땅에 나팔을 불어 이르되 히브리 사람들은 들으라 하니",
+      "source_text_hash": "0aead4fe3be94dd9ea3abf78af48c6d65c1163d154bdc30bb22cb4927cc43519",
+      "translation_text_hash": "cc9957bff228b4252ed2ae5d688b3d3948eb119fd32377671a17f9628d15bb15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 게바에 있는 블레셋 사람의 수비대를 치매 블레셋 사람이 이를 들은지라 사울이 온 땅에 나팔을 불어 이르되 히브리 사람들은 들으라 하니"
+      ],
+      "raw_text_hashes": [
+        "cc9957bff228b4252ed2ae5d688b3d3948eb119fd32377671a17f9628d15bb15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:4",
+      "sequence": 7490,
+      "chapter_label": "1SA 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "All Israel heard that Saul had struck the garrison of the Philistines, and also that Israel was considered an abomination to the Philistines. The people were gathered together after Saul to Gilgal.",
+      "ko": "온 이스라엘이 사울의 블레셋 사람의 수비대를 친 것과 이스라엘이 블레셋 사람의 가증히 여김이 되었다 함을 듣고 길갈로 모여 사울을 좇으니라",
+      "source_text_hash": "99df678a9b596f8fb922f2b4437832b3b5c2915ba78f9e80efd59780c6810786",
+      "translation_text_hash": "c0e22fb73683f3aa0e328e88113ba431c09ec5efd44701b832351a09c2c83fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘이 사울의 블레셋 사람의 수비대를 친 것과 이스라엘이 블레셋 사람의 가증히 여김이 되었다 함을 듣고 길갈로 모여 사울을 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "c0e22fb73683f3aa0e328e88113ba431c09ec5efd44701b832351a09c2c83fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:5",
+      "sequence": 7491,
+      "chapter_label": "1SA 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "The Philistines assembled themselves together to fight with Israel: thirty thousand chariots, six thousand horsemen, and people as the sand which is on the seashore in multitude. They came up and encamped in Michmash, eastward of Beth Aven.",
+      "ko": "블레셋 사람이 이스라엘과 싸우려 하여 모였는데 병거가 삼만이요 마병이 육천이요 백성은 해변의 모래 같이 많더라 그들이 올라와서 벧아웬 동편 믹마스에 진 치매",
+      "source_text_hash": "2804baa916198276677158370622d5c1fc0a89d03b1ac78be0db02657b9986fb",
+      "translation_text_hash": "dc40a160506c30889fba2cdf735d3b4b952967c955d338390c37ab0715c047fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 이스라엘과 싸우려 하여 모였는데 병거가 삼만이요 마병이 육천이요 백성은 해변의 모래 같이 많더라 그들이 올라와서 벧아웬 동편 믹마스에 진 치매"
+      ],
+      "raw_text_hashes": [
+        "dc40a160506c30889fba2cdf735d3b4b952967c955d338390c37ab0715c047fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:6",
+      "sequence": 7492,
+      "chapter_label": "1SA 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "When the men of Israel saw that they were in trouble (for the people were distressed), then the people hid themselves in caves, in thickets, in rocks, in tombs, and in pits.",
+      "ko": "이스라엘 사람들이 위급함을 보고 절박하여 굴과 수풀과 바위틈과 은밀한 곳과 웅덩이에 숨으며",
+      "source_text_hash": "524d30555e3db513739b076e5450ebb75f4200f28431afc30e56d2a1674fe034",
+      "translation_text_hash": "26f5b9f567004dbfa5db42636b14d9e3609acd89a11e3d3717c5a2fd9035427d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 사람들이 위급함을 보고 절박하여 굴과 수풀과 바위틈과 은밀한 곳과 웅덩이에 숨으며"
+      ],
+      "raw_text_hashes": [
+        "26f5b9f567004dbfa5db42636b14d9e3609acd89a11e3d3717c5a2fd9035427d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:7",
+      "sequence": 7493,
+      "chapter_label": "1SA 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Now some of the Hebrews had gone over the Jordan to the land of Gad and Gilead; but as for Saul, he was yet in Gilgal, and all the people followed him trembling.",
+      "ko": "어떤 히브리 사람들은 요단을 건너 갓과 길르앗 땅으로 가되 사울은 아직 길갈에 있고 그를 좇은 모든 백성은 떨더라",
+      "source_text_hash": "d0ded7a5876b0de130c77263d6d33a70dd079866952bef9c49b72490998bfa2f",
+      "translation_text_hash": "5b71a10034d8b3e739e99f3e9db6e651cf46e63451b3c7a1690d1103826b02d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 히브리 사람들은 요단을 건너 갓과 길르앗 땅으로 가되 사울은 아직 길갈에 있고 그를 좇은 모든 백성은 떨더라"
+      ],
+      "raw_text_hashes": [
+        "5b71a10034d8b3e739e99f3e9db6e651cf46e63451b3c7a1690d1103826b02d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:8",
+      "sequence": 7494,
+      "chapter_label": "1SA 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "He stayed seven days, according to the time set by Samuel; but Samuel didn’t come to Gilgal, and the people were scattering from him.",
+      "ko": "사울이 사무엘의 정한 기한대로 이레를 기다리되 사무엘이 길갈로 오지 아니하매 백성이 사울에게서 흩어지는지라",
+      "source_text_hash": "047a96b6b2e16dd9d0b2553802df332295dee8737485ff154d7e7fca13b2d8a9",
+      "translation_text_hash": "2fb229ca0d5de6afd391f335182e179c89f6cdd19c9e47de631fdbb9e4ae4027",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 사무엘의 정한 기한대로 이레를 기다리되 사무엘이 길갈로 오지 아니하매 백성이 사울에게서 흩어지는지라"
+      ],
+      "raw_text_hashes": [
+        "2fb229ca0d5de6afd391f335182e179c89f6cdd19c9e47de631fdbb9e4ae4027"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:9",
+      "sequence": 7495,
+      "chapter_label": "1SA 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "Saul said, “Bring the burnt offering to me here, and the peace offerings.” He offered the burnt offering.",
+      "ko": "사울이 가로되 번제와 화목제물을 이리로 가져오라 하여 번제를 드렸더니",
+      "source_text_hash": "bf5092c8e254db582aa0acb6eaa67aa6efad65e75b96f5e9507c6156f9e19fa0",
+      "translation_text_hash": "39071cfc495967d7b0a24bcd02f5ddf7132b27bd940fe63d0f380a2a83a57484",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 가로되 번제와 화목제물을 이리로 가져오라 하여 번제를 드렸더니"
+      ],
+      "raw_text_hashes": [
+        "39071cfc495967d7b0a24bcd02f5ddf7132b27bd940fe63d0f380a2a83a57484"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:10",
+      "sequence": 7496,
+      "chapter_label": "1SA 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "It came to pass that as soon as he had finished offering the burnt offering, behold, Samuel came; and Saul went out to meet him, that he might greet him.",
+      "ko": "번제 드리기를 필하자 사무엘이 온지라 사울이 나가 맞으며 문안하매",
+      "source_text_hash": "0195234626c491c5023bfedaf8b5009c28756fe6ed8261ef337aeea2cc875df2",
+      "translation_text_hash": "0c4c64e1b49c8552fd34477fce4965701185d24f69b700fddd34211f894c44e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제 드리기를 필하자 사무엘이 온지라 사울이 나가 맞으며 문안하매"
+      ],
+      "raw_text_hashes": [
+        "0c4c64e1b49c8552fd34477fce4965701185d24f69b700fddd34211f894c44e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:11",
+      "sequence": 7497,
+      "chapter_label": "1SA 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Samuel said, “What have you done?” Saul said, “Because I saw that the people were scattered from me, and that you didn’t come within the days appointed, and that the Philistines assembled themselves together at Michmash,",
+      "ko": "사무엘이 가로되 왕의 행한 것이 무엇이뇨 사울이 가로되 백성은 나에게서 흩어지고 당신은 정한 날 안에 오지 아니하고 블레셋 사람은 믹마스에 모였음을 내가 보았으므로",
+      "source_text_hash": "8cacc9efc4801e5f2b1bb83b5462060c44881906c557ce5fdfddd9283db0b50c",
+      "translation_text_hash": "9a84502cccbcdc90e2a3cc214c439d1fe8b99de718f5ac6acd08b4921b03db88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 가로되 왕의 행한 것이 무엇이뇨 사울이 가로되 백성은 나에게서 흩어지고 당신은 정한 날 안에 오지 아니하고 블레셋 사람은 믹마스에 모였음을 내가 보았으므로"
+      ],
+      "raw_text_hashes": [
+        "9a84502cccbcdc90e2a3cc214c439d1fe8b99de718f5ac6acd08b4921b03db88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:12",
+      "sequence": 7498,
+      "chapter_label": "1SA 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "therefore I said, ‘Now the Philistines will come down on me to Gilgal, and I haven’t entreated the favor of the LORD.’ I forced myself therefore, and offered the burnt offering.”",
+      "ko": "이에 내가 이르기를 블레셋 사람은 나를 치러 길갈로 내려오겠거늘 내가 여호와께 은혜를 간구치 못하였다 하고 부득이하여 번제를 드렸나이다",
+      "source_text_hash": "6ab0b7f8d1c95784b8c21ea0cdef7a754e68af41afb324cd7856f09cada98c96",
+      "translation_text_hash": "293212161540d76fc8730a4a34031317c8bbf4a73bfdd6d9f548b8083ba9be5e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 이르기를 블레셋 사람은 나를 치러 길갈로 내려오겠거늘 내가 여호와께 은혜를 간구치 못하였다 하고 부득이하여 번제를 드렸나이다"
+      ],
+      "raw_text_hashes": [
+        "293212161540d76fc8730a4a34031317c8bbf4a73bfdd6d9f548b8083ba9be5e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:13",
+      "sequence": 7499,
+      "chapter_label": "1SA 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "Samuel said to Saul, “You have done foolishly. You have not kept the commandment of the LORD your God, which he commanded you; for now the LORD would have established your kingdom on Israel forever.",
+      "ko": "사무엘이 사울에게 이르되 왕이 망령되이 행하였도다 왕이 왕의 하나님 여호와께서 왕에게 명하신 명령을 지키지 아니하였도다 그리하였더면 여호와께서 이스라엘 위에 왕의 나라를 영영히 세우셨을 것이어늘",
+      "source_text_hash": "c053bb8d692d3b2ee9e6844ac4ee305033d3147906f356688ee3bdb302ec51c7",
+      "translation_text_hash": "438551e1059792341112a6353673408593346b6ed073ad93c352ed9aed695912",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 사울에게 이르되 왕이 망령되이 행하였도다 왕이 왕의 하나님 여호와께서 왕에게 명하신 명령을 지키지 아니하였도다 그리하였더면 여호와께서 이스라엘 위에 왕의 나라를 영영히 세우셨을 것이어늘"
+      ],
+      "raw_text_hashes": [
+        "438551e1059792341112a6353673408593346b6ed073ad93c352ed9aed695912"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:14",
+      "sequence": 7500,
+      "chapter_label": "1SA 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "But now your kingdom will not continue. The LORD has sought for himself a man after his own heart, and the LORD has appointed him to be prince over his people, because you have not kept that which the LORD commanded you.”",
+      "ko": "지금은 왕의 나라가 길지 못할 것이라 여호와께서 왕에게 명하신 바를 왕이 지키지 아니하였으므로 여호와께서 그 마음에 맞는 사람을 구하여 그 백성의 지도자를 삼으셨느니라 하고",
+      "source_text_hash": "d871498b191f13d16aaa32808278b0dd541e2e1ad01807cc6a1d5ee32af886e0",
+      "translation_text_hash": "7d22ebb8b6c4d1cc6f93aab2712ed09d90533f57150ec18dc6b3ae8e123cb3cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금은 왕의 나라가 길지 못할 것이라 여호와께서 왕에게 명하신 바를 왕이 지키지 아니하였으므로 여호와께서 그 마음에 맞는 사람을 구하여 그 백성의 지도자를 삼으셨느니라 하고"
+      ],
+      "raw_text_hashes": [
+        "7d22ebb8b6c4d1cc6f93aab2712ed09d90533f57150ec18dc6b3ae8e123cb3cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:15",
+      "sequence": 7501,
+      "chapter_label": "1SA 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Samuel arose, and went from Gilgal to Gibeah of Benjamin. Saul counted the people who were present with him, about six hundred men.",
+      "ko": "사무엘이 일어나 길갈에서 떠나 베냐민 기브아로 올라가니라 사울이 자기와 함께한 백성을 계수하니 육백명 가량이라",
+      "source_text_hash": "c6806955a201a0cb9d12ae30534d6231008215f71bb4ba807d74cd37beb3520e",
+      "translation_text_hash": "d25f5b8f4a65cb775051221ce4d57bdf4832df6b9d6c8b5feec3327d8b5cc02d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 일어나 길갈에서 떠나 베냐민 기브아로 올라가니라 사울이 자기와 함께한 백성을 계수하니 육백명 가량이라"
+      ],
+      "raw_text_hashes": [
+        "d25f5b8f4a65cb775051221ce4d57bdf4832df6b9d6c8b5feec3327d8b5cc02d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:16",
+      "sequence": 7502,
+      "chapter_label": "1SA 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "Saul, and Jonathan his son, and the people who were present with them, stayed in Geba of Benjamin; but the Philistines encamped in Michmash.",
+      "ko": "사울과 그 아들 요나단과 그들과 함께한 백성은 베냐민 게바에 있고 블레셋 사람은 믹마스에 진 쳤더니",
+      "source_text_hash": "f8c4e40388642a331d811bfd74d52fc5fb2a7a23a1c9a57f04349f43768db10a",
+      "translation_text_hash": "eb2b611c6b9f413f800b7ed56eb9dbb4ac52a6d4f52579625dc41a18d1ee9ccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울과 그 아들 요나단과 그들과 함께한 백성은 베냐민 게바에 있고 블레셋 사람은 믹마스에 진 쳤더니"
+      ],
+      "raw_text_hashes": [
+        "eb2b611c6b9f413f800b7ed56eb9dbb4ac52a6d4f52579625dc41a18d1ee9ccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:17",
+      "sequence": 7503,
+      "chapter_label": "1SA 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "The raiders came out of the camp of the Philistines in three companies: one company turned to the way that leads to Ophrah, to the land of Shual;",
+      "ko": "노략군들이 삼대로 블레셋 사람의 진에서 나와서 한 대는 오브라 길로 말미암아 수알 땅에 이르렀고",
+      "source_text_hash": "2f32f5c0e2e1c1fa921c0db3c30f72aee6ab8b9b0164356f9f62d471c7fdc5a3",
+      "translation_text_hash": "4044e165a6b63b6fd20ea716eeac55a292963012463ad1b271eec5aae6587513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노략군들이 삼대로 블레셋 사람의 진에서 나와서 한 대는 오브라 길로 말미암아 수알 땅에 이르렀고"
+      ],
+      "raw_text_hashes": [
+        "4044e165a6b63b6fd20ea716eeac55a292963012463ad1b271eec5aae6587513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:18",
+      "sequence": 7504,
+      "chapter_label": "1SA 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "another company turned the way to Beth Horon; and another company turned the way of the border that looks down on the valley of Zeboim toward the wilderness.",
+      "ko": "한 대는 벧호론 길로 향하였고 한 대는 광야를 향한 스보임 골짜기가 내려다 보이는 지경 길로 향하였더라",
+      "source_text_hash": "7737b3797727fa9f86926bcda44857f26111e0efa1ec7e4a107659d2f37f9a56",
+      "translation_text_hash": "044398550b99c84760c0fb35db208a24e0ea8d21834e8729bec09bf370ef5d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 대는 벧호론 길로 향하였고 한 대는 광야를 향한 스보임 골짜기가 내려다 보이는 지경 길로 향하였더라"
+      ],
+      "raw_text_hashes": [
+        "044398550b99c84760c0fb35db208a24e0ea8d21834e8729bec09bf370ef5d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:19",
+      "sequence": 7505,
+      "chapter_label": "1SA 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "Now there was no blacksmith found throughout all the land of Israel, for the Philistines said, “Lest the Hebrews make themselves swords or spears”;",
+      "ko": "때에 이스라엘 온 땅에 철공이 없어졌으니 이는 블레셋 사람이 말하기를 히브리 사람이 칼이나 창을 만들까 두렵다 하였음이라",
+      "source_text_hash": "6da7f57085616843b2d8cfbbb53052282b960591d0ec290b1c0e9fd999651b5f",
+      "translation_text_hash": "e6e284d7c78c976484cfa77d8a75e73d5aac8397acd64ea14d9dd203747edab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 이스라엘 온 땅에 철공이 없어졌으니 이는 블레셋 사람이 말하기를 히브리 사람이 칼이나 창을 만들까 두렵다 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "e6e284d7c78c976484cfa77d8a75e73d5aac8397acd64ea14d9dd203747edab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:20",
+      "sequence": 7506,
+      "chapter_label": "1SA 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "but all the Israelites went down to the Philistines, each man to sharpen his own plowshare, mattock, ax, and sickle.",
+      "ko": "온 이스라엘 사람이 각기 보습이나 삽이나 도끼나 괭이를 벼리려면 블레셋 사람에게로 내려갔었는데",
+      "source_text_hash": "97d9aea4f71ff6aac9b91eb5b6462377e8bdf8bf2cebc6cb0f541123ae8795df",
+      "translation_text_hash": "bc26231cbedfa86d415559e1bd65e2ce6915f014c33788f61a61349ec778bf4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 이스라엘 사람이 각기 보습이나 삽이나 도끼나 괭이를 벼리려면 블레셋 사람에게로 내려갔었는데"
+      ],
+      "raw_text_hashes": [
+        "bc26231cbedfa86d415559e1bd65e2ce6915f014c33788f61a61349ec778bf4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:21",
+      "sequence": 7507,
+      "chapter_label": "1SA 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "The price was one payim each to sharpen mattocks, plowshares, pitchforks, axes, and goads.",
+      "ko": "곧 그들이 괭이나 삽이나 쇠스랑이나 도끼나 쇠채찍이 무딜 때에 그리하였으므로",
+      "source_text_hash": "0356e41ee54c99026cea704d8a0d2d5cf557065ec23e54916e71712f77893702",
+      "translation_text_hash": "75a5508629f54468c9a8031991b3d9370e805279b1910c241ce8b6fe6acb9ec2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 그들이 괭이나 삽이나 쇠스랑이나 도끼나 쇠채찍이 무딜 때에 그리하였으므로"
+      ],
+      "raw_text_hashes": [
+        "75a5508629f54468c9a8031991b3d9370e805279b1910c241ce8b6fe6acb9ec2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:22",
+      "sequence": 7508,
+      "chapter_label": "1SA 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "So it came to pass in the day of battle that neither sword nor spear was found in the hand of any of the people who were with Saul and Jonathan; but Saul and Jonathan his son had them.",
+      "ko": "싸우는 날에 사울과 요나단과 함께한 백성의 손에는 칼이나 창이 없고 오직 사울과 그 아들 요나단에게만 있으니라",
+      "source_text_hash": "6efa25306aa63bd4398382dd35b1d63745f1a23844b78e8f9d3f0f15f9296f80",
+      "translation_text_hash": "1e3ea1787292c9f00140a13b96f2a86016e1bbd8a0aefd44e743b397f4c55dde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싸우는 날에 사울과 요나단과 함께한 백성의 손에는 칼이나 창이 없고 오직 사울과 그 아들 요나단에게만 있으니라"
+      ],
+      "raw_text_hashes": [
+        "1e3ea1787292c9f00140a13b96f2a86016e1bbd8a0aefd44e743b397f4c55dde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:13:23",
+      "sequence": 7509,
+      "chapter_label": "1SA 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "The garrison of the Philistines went out to the pass of Michmash.",
+      "ko": "블레셋 사람의 부대가 나와서 믹마스 어귀에 이르렀더라",
+      "source_text_hash": "87ffb5fd466d55bdf900bcfa8513dbd0fd15e6c42b0f81936768b559add5d3a6",
+      "translation_text_hash": "f88d4e5bd8e0a22a0edc17ae4a28250cf55704ffbfa88a6456f1346f61a411f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람의 부대가 나와서 믹마스 어귀에 이르렀더라"
+      ],
+      "raw_text_hashes": [
+        "f88d4e5bd8e0a22a0edc17ae4a28250cf55704ffbfa88a6456f1346f61a411f3"
+      ]
+    }
+  ]
+}

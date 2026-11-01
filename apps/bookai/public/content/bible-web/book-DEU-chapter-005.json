@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:005",
+  "unit_ordinal": 158,
+  "unit_label": "DEU 5",
+  "book_code": "DEU",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:5:1",
+      "sequence": 5055,
+      "chapter_label": "DEU 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Moses called to all Israel, and said to them, “Hear, Israel, the statutes and the ordinances which I speak in your ears today, that you may learn them, and observe to do them.”",
+      "ko": "모세가 온 이스라엘을 불러 그들에게 이르되 이스라엘아 오늘 내가 너희 귀에 말하는 규례와 법도를 듣고 그것을 배우며 지켜 행하라",
+      "source_text_hash": "d8dbba8ab119c8c69fb77e785e25b24f91e4e39204a5602ad27012df07c9ffb0",
+      "translation_text_hash": "3c5a64f27773b0e9d5dc9746ad54f6d18560bdf505e6658e3620bfea9ea670b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 온 이스라엘을 불러 그들에게 이르되 이스라엘아 오늘 내가 너희 귀에 말하는 규례와 법도를 듣고 그것을 배우며 지켜 행하라"
+      ],
+      "raw_text_hashes": [
+        "3c5a64f27773b0e9d5dc9746ad54f6d18560bdf505e6658e3620bfea9ea670b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:2",
+      "sequence": 5056,
+      "chapter_label": "DEU 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD our God made a covenant with us in Horeb.",
+      "ko": "우리 하나님 여호와께서 호렙산에서 우리와 언약을 세우셨나니",
+      "source_text_hash": "081ee2a8a196a0c67ebe5cc81bd2a11e14e89266be11317e9aa205c23e5e8f1b",
+      "translation_text_hash": "8aeb945dacfac3c4e391a7985873ff0ceff620ffb9c00f7a0da2499b015c4a18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 하나님 여호와께서 호렙산에서 우리와 언약을 세우셨나니"
+      ],
+      "raw_text_hashes": [
+        "8aeb945dacfac3c4e391a7985873ff0ceff620ffb9c00f7a0da2499b015c4a18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:3",
+      "sequence": 5057,
+      "chapter_label": "DEU 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD didn’t make this covenant with our fathers, but with us, even us, who are all of us here alive today.",
+      "ko": "이 언약은 여호와께서 우리 열조와 세우신 것이 아니요 오늘날 여기 살아 있는 우리 곧 우리와 세우신 것이라",
+      "source_text_hash": "b596c194147ae3e1154b0af426818f12cafbf9e4eda492a5078af0c18d0f5d32",
+      "translation_text_hash": "2b030a8dcd313cb0ca8ed1789508645a139b167a33329acb1c0c7c24fd5f6cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 언약은 여호와께서 우리 열조와 세우신 것이 아니요 오늘날 여기 살아 있는 우리 곧 우리와 세우신 것이라"
+      ],
+      "raw_text_hashes": [
+        "2b030a8dcd313cb0ca8ed1789508645a139b167a33329acb1c0c7c24fd5f6cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:4",
+      "sequence": 5058,
+      "chapter_label": "DEU 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD spoke with you face to face on the mountain out of the middle of the fire,",
+      "ko": "여호와께서 산 위 불 가운데서 너희와 대면하여 말씀하시매",
+      "source_text_hash": "93a2d795305ab7da7950d5f21a33acac3b1e6768ba9bfdf597bab044ce620aa3",
+      "translation_text_hash": "8a6a454b43a3989e142a63efa79ba334e5c2232e0007b9ab3246fa21a8a956ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 산 위 불 가운데서 너희와 대면하여 말씀하시매"
+      ],
+      "raw_text_hashes": [
+        "8a6a454b43a3989e142a63efa79ba334e5c2232e0007b9ab3246fa21a8a956ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:5",
+      "sequence": 5059,
+      "chapter_label": "DEU 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "(I stood between the LORD and you at that time, to show you the LORD’s word; for you were afraid because of the fire, and didn’t go up onto the mountain) saying,",
+      "ko": "그 때에 너희가 불을 두려워하여 산에 오르지 못하므로 내가 여호와와 너희 중간에 서서 여호와의 말씀을 너희에게 전하였노라 여호와께서 가라사대",
+      "source_text_hash": "62257d2879812e75f6a0fb91bde555e2ee59a6cd6102a72fa533db2ad23553c8",
+      "translation_text_hash": "377b9d7a423ebd50afee72a4f386788ddcf461f9a0d6a56134f6bbf1cd4f5f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희가 불을 두려워하여 산에 오르지 못하므로 내가 여호와와 너희 중간에 서서 여호와의 말씀을 너희에게 전하였노라 여호와께서 가라사대"
+      ],
+      "raw_text_hashes": [
+        "377b9d7a423ebd50afee72a4f386788ddcf461f9a0d6a56134f6bbf1cd4f5f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:6",
+      "sequence": 5060,
+      "chapter_label": "DEU 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "“I am the LORD your God, who brought you out of the land of Egypt, out of the house of bondage.",
+      "ko": "나는 너를 애굽 땅에서 종 되었던 집에서 인도하여 낸 너희 하나님 여호와로라",
+      "source_text_hash": "6dc63617225e6acdf4400a27bb9207bef363149b8928640283ed8df92b7abcc5",
+      "translation_text_hash": "f3c8d7506e51c31cac4f68fee66edea9c3c48a2b0a42c4d7f46ddd9608860dc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너를 애굽 땅에서 종 되었던 집에서 인도하여 낸 너희 하나님 여호와로라"
+      ],
+      "raw_text_hashes": [
+        "f3c8d7506e51c31cac4f68fee66edea9c3c48a2b0a42c4d7f46ddd9608860dc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:7",
+      "sequence": 5061,
+      "chapter_label": "DEU 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "“You shall have no other gods before me.",
+      "ko": "나 외에는 위하는 신들을 네게 있게 말찌니라",
+      "source_text_hash": "b83afeb8091631e55436b6d33885c3879211112d01dffc5e8b56e5976bc53f65",
+      "translation_text_hash": "b7682f211b9bdbb58247f0db392dd66c18c0d87ae809111d00d664e3351de6c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 외에는 위하는 신들을 네게 있게 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "b7682f211b9bdbb58247f0db392dd66c18c0d87ae809111d00d664e3351de6c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:8",
+      "sequence": 5062,
+      "chapter_label": "DEU 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "“You shall not make a carved image for yourself—any likeness of what is in heaven above, or what is on the earth beneath, or that is in the water under the earth.",
+      "ko": "너는 자기를 위하여 새긴 우상을 만들지 말고 위로 하늘에 있는 것이나 아래로 땅에 있는 것이나 땅 밑 물 속에 있는 것의 아무 형상이든지 만들지 말며",
+      "source_text_hash": "af3866b28020fdee723e998fefc0f9dc1fd2163a3ba82c4d8dabc1590cb17b38",
+      "translation_text_hash": "eb8a7334057925c5a3bfad6b61fc192d8b0252a5ed13b9f35492cdefba9c29b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 자기를 위하여 새긴 우상을 만들지 말고 위로 하늘에 있는 것이나 아래로 땅에 있는 것이나 땅 밑 물 속에 있는 것의 아무 형상이든지 만들지 말며"
+      ],
+      "raw_text_hashes": [
+        "eb8a7334057925c5a3bfad6b61fc192d8b0252a5ed13b9f35492cdefba9c29b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:9",
+      "sequence": 5063,
+      "chapter_label": "DEU 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "You shall not bow yourself down to them, nor serve them, for I, the LORD your God, am a jealous God, visiting the iniquity of the fathers on the children and on the third and on the fourth generation of those who hate me",
+      "ko": "그것들에게 절하지 말며 그것들을 섬기지 말라 나 여호와 너의 하나님은 질투하는 하나님인즉 나를 미워하는 자의 죄를 갚되 아비로부터 아들에게로 삼 사대까지 이르게 하거니와",
+      "source_text_hash": "ab05ef64defb0d538b7fee91c6eaad3fc78ccd3bfdc34e630bf5aef219a96aab",
+      "translation_text_hash": "23fa4ec1f706916b4034235f5ce9af91a0d56780db262532a0c17f7a154c24bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것들에게 절하지 말며 그것들을 섬기지 말라 나 여호와 너의 하나님은 질투하는 하나님인즉 나를 미워하는 자의 죄를 갚되 아비로부터 아들에게로 삼 사대까지 이르게 하거니와"
+      ],
+      "raw_text_hashes": [
+        "23fa4ec1f706916b4034235f5ce9af91a0d56780db262532a0c17f7a154c24bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:10",
+      "sequence": 5064,
+      "chapter_label": "DEU 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "and showing loving kindness to thousands of those who love me and keep my commandments.",
+      "ko": "나를 사랑하고 내 계명을 지키는 자에게는 천대까지 은혜를 베푸느니라",
+      "source_text_hash": "ff9dbbc32767d8bab766ef6c8fe8f7a5cefcc351709ad5487d71aa1de56bb21b",
+      "translation_text_hash": "9f59ebdd38d30e6359f3eb6c9a291f30a600df97fffb90c2ceb2fd742e93a964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 사랑하고 내 계명을 지키는 자에게는 천대까지 은혜를 베푸느니라"
+      ],
+      "raw_text_hashes": [
+        "9f59ebdd38d30e6359f3eb6c9a291f30a600df97fffb90c2ceb2fd742e93a964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:11",
+      "sequence": 5065,
+      "chapter_label": "DEU 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "“You shall not misuse the name of the LORD your God; for the LORD will not hold him guiltless who misuses his name.",
+      "ko": "너는 너의 하나님 여호와의 이름을 망령되이 일컫지 말라 나 여호와는 나의 이름을 망령되이 일컫는 자를 죄 없는 줄로 인정치 아니하리라",
+      "source_text_hash": "f6eeb33557ea047740700c33841f53ae6c2d499917c193c4643a11e0a445bd80",
+      "translation_text_hash": "304cfa2c5de622b7709a8af3ad586be1b6330d64a69370b23c3d7a4f313d8577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 너의 하나님 여호와의 이름을 망령되이 일컫지 말라 나 여호와는 나의 이름을 망령되이 일컫는 자를 죄 없는 줄로 인정치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "304cfa2c5de622b7709a8af3ad586be1b6330d64a69370b23c3d7a4f313d8577"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:12",
+      "sequence": 5066,
+      "chapter_label": "DEU 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "“Observe the Sabbath day, to keep it holy, as the LORD your God commanded you.",
+      "ko": "여호와 너의 하나님이 네게 명한대로 안식일을 지켜 거룩하게 하라",
+      "source_text_hash": "67887d5f1fbdb343f1aa0bc4af3f9cf78f1672f308997c4f97c0b9c777ad26c3",
+      "translation_text_hash": "fb2701ae962c17aa94eee3d354eeef716170b562506991ecf1f80f3131660a8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 너의 하나님이 네게 명한대로 안식일을 지켜 거룩하게 하라"
+      ],
+      "raw_text_hashes": [
+        "fb2701ae962c17aa94eee3d354eeef716170b562506991ecf1f80f3131660a8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:13",
+      "sequence": 5067,
+      "chapter_label": "DEU 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "You shall labor six days, and do all your work;",
+      "ko": "엿새 동안은 힘써 네 모든 일을 행할 것이나",
+      "source_text_hash": "eab8405664a2aec93d7bb65ffab425442a93bd3015d150dca549bc1f32db2674",
+      "translation_text_hash": "1622ce55de004fb6b17d3d9e32a9e960eb179cad497b5a97491a9d51dd95fefe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 동안은 힘써 네 모든 일을 행할 것이나"
+      ],
+      "raw_text_hashes": [
+        "1622ce55de004fb6b17d3d9e32a9e960eb179cad497b5a97491a9d51dd95fefe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:14",
+      "sequence": 5068,
+      "chapter_label": "DEU 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "but the seventh day is a Sabbath to the LORD your God, in which you shall not do any work—neither you, nor your son, nor your daughter, nor your male servant, nor your female servant, nor your ox, nor your donkey, nor any of your livestock, nor your stranger who is within your gates; that your male servant and your female servant may rest as well as you.",
+      "ko": "제 칠일은 너의 하나님 여호와의 안식인즉 너나 네 아들이나 네 딸이나 네 남종이나 네 여종이나 네 소나 네 나귀나 네 모든 육축이나 네 문 안에 유하는 객이라도 아무 일도 하지 말고 네 남종이나 네 여종으로 너 같이 안식하게 할찌니라",
+      "source_text_hash": "801f6ed42e8c50e80c27ca31dedd4f0bfb0940af6c131f916920ccb8619b10e3",
+      "translation_text_hash": "f807bb68354fc1dee4b655a056d7d94b5df55c7a3da48125596a6c5a3d6bfd97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일은 너의 하나님 여호와의 안식인즉 너나 네 아들이나 네 딸이나 네 남종이나 네 여종이나 네 소나 네 나귀나 네 모든 육축이나 네 문 안에 유하는 객이라도 아무 일도 하지 말고 네 남종이나 네 여종으로 너 같이 안식하게 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "f807bb68354fc1dee4b655a056d7d94b5df55c7a3da48125596a6c5a3d6bfd97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:15",
+      "sequence": 5069,
+      "chapter_label": "DEU 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "You shall remember that you were a servant in the land of Egypt, and the LORD your God brought you out of there by a mighty hand and by an outstretched arm. Therefore the LORD your God commanded you to keep the Sabbath day.",
+      "ko": "너는 기억하라 네가 애굽 땅에서 종이 되었더니 너의 하나님 여호와가 강한 손과 편 팔로 너를 거기서 인도하여 내었나니 그러므로 너의 하나님 여호와가 너를 명하여 안식일을 지키라 하느니라",
+      "source_text_hash": "6659285075faf9e1e94616bf2a2e8aa5410f2f53eaf208b3b3e18cf415bbe5b3",
+      "translation_text_hash": "83ec3dff537023b6ea42160cdfeb2e71203a68dbfe9d91c7ddc39fc7c221f1da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 기억하라 네가 애굽 땅에서 종이 되었더니 너의 하나님 여호와가 강한 손과 편 팔로 너를 거기서 인도하여 내었나니 그러므로 너의 하나님 여호와가 너를 명하여 안식일을 지키라 하느니라"
+      ],
+      "raw_text_hashes": [
+        "83ec3dff537023b6ea42160cdfeb2e71203a68dbfe9d91c7ddc39fc7c221f1da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:16",
+      "sequence": 5070,
+      "chapter_label": "DEU 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "“Honor your father and your mother, as the LORD your God commanded you, that your days may be long and that it may go well with you in the land which the LORD your God gives you.",
+      "ko": "너는 너의 하나님 여호와의 명한대로 네 부모를 공경하라 그리하면 너의 하나님 여호와가 네게 준 땅에서 네가 생명이 길고 복을 누리리라",
+      "source_text_hash": "67031ddeab734157776232125190d55890aa66e663f3f16b0b6c898260e86651",
+      "translation_text_hash": "ddde7a4e98cb43cbcce07b6a25c01b28abda83bba04b49cb50136abc5bb95fcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 너의 하나님 여호와의 명한대로 네 부모를 공경하라 그리하면 너의 하나님 여호와가 네게 준 땅에서 네가 생명이 길고 복을 누리리라"
+      ],
+      "raw_text_hashes": [
+        "ddde7a4e98cb43cbcce07b6a25c01b28abda83bba04b49cb50136abc5bb95fcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:17",
+      "sequence": 5071,
+      "chapter_label": "DEU 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "“You shall not murder.",
+      "ko": "살인하지 말찌니라",
+      "source_text_hash": "b6e343f603ab51a362edc6bb2ea48caeb2279c0ccec5c632375b2995a3fb6ab1",
+      "translation_text_hash": "e20bf5231dba26c89b1fffc4cad0d7c8590a79002f51287fdd3842512047598a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살인하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "e20bf5231dba26c89b1fffc4cad0d7c8590a79002f51287fdd3842512047598a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:18",
+      "sequence": 5072,
+      "chapter_label": "DEU 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "“You shall not commit adultery.",
+      "ko": "간음하지도 말찌니라",
+      "source_text_hash": "fda483ccb01b2fca8a47babf320bc0f572186f0b199a0966c166ee5bcb6b793d",
+      "translation_text_hash": "f8a3d60e3446b3328450a1119bf093664fe1750fee3c2dd5fc95978268a01960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "간음하지도 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "f8a3d60e3446b3328450a1119bf093664fe1750fee3c2dd5fc95978268a01960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:19",
+      "sequence": 5073,
+      "chapter_label": "DEU 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "“You shall not steal.",
+      "ko": "도적질 하지도 말찌니라",
+      "source_text_hash": "b33c78c5c5e53e524d5e4a101e434ad9f62599ece738ccf58d120d33eb33234d",
+      "translation_text_hash": "436d5d9c4c055e2e3d7a4f686ddd7437fac5f28a74be0ebe768acc44e2b137cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적질 하지도 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "436d5d9c4c055e2e3d7a4f686ddd7437fac5f28a74be0ebe768acc44e2b137cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:20",
+      "sequence": 5074,
+      "chapter_label": "DEU 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "“You shall not give false testimony against your neighbor.",
+      "ko": "네 이웃에 대하여 거짓 증거하지도 말찌니라",
+      "source_text_hash": "2220b1781ff15833569f5fe053f6621350eeb75259ed1126c1e836ae0b91548e",
+      "translation_text_hash": "3217730b3b9ee13a7618d6239379bdbb473ae515f4ce6b944800c49cc9227a0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃에 대하여 거짓 증거하지도 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "3217730b3b9ee13a7618d6239379bdbb473ae515f4ce6b944800c49cc9227a0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:21",
+      "sequence": 5075,
+      "chapter_label": "DEU 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "“You shall not covet your neighbor’s wife. Neither shall you desire your neighbor’s house, his field, or his male servant, or his female servant, his ox, or his donkey, or anything that is your neighbor’s.”",
+      "ko": "네 이웃의 아내를 탐내지도 말찌니라 네 이웃의 집이나 그의 밭이나 그의 남종이나 그의 여종이나 그의 소나 그의 나귀나 무릇 네 이웃의 소유를 탐내지도 말찌니라",
+      "source_text_hash": "36e20a2a49e8b42b2c2585514d024b32eb8bcdb7dfb98dc93dd153aecf040bee",
+      "translation_text_hash": "81bec7fa4db8fde4f394ed54bedda9f0f3147409e295c762ce060623f3ef143d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이웃의 아내를 탐내지도 말찌니라 네 이웃의 집이나 그의 밭이나 그의 남종이나 그의 여종이나 그의 소나 그의 나귀나 무릇 네 이웃의 소유를 탐내지도 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "81bec7fa4db8fde4f394ed54bedda9f0f3147409e295c762ce060623f3ef143d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:22",
+      "sequence": 5076,
+      "chapter_label": "DEU 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "The LORD spoke these words to all your assembly on the mountain out of the middle of the fire, of the cloud, and of the thick darkness, with a great voice. He added no more. He wrote them on two stone tablets, and gave them to me.",
+      "ko": "여호와께서 이 모든 말씀을 산 위 불 가운데, 구름 가운데, 흑암 가운데서 큰 음성으로 너희 총회에 이르신 후에 더 말씀하지 아니하시고 그것을 두 돌판에 써서 내게 주셨느니라",
+      "source_text_hash": "cdd4dd7cc54d7a7cc7b2076f7f1e2e98127e7127e73d50921693365779671584",
+      "translation_text_hash": "372b190708da84f6fde2b95dd66c94467f3b7de6550f8b9b7af863e3f4060745",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이 모든 말씀을 산 위 불 가운데, 구름 가운데, 흑암 가운데서 큰 음성으로 너희 총회에 이르신 후에 더 말씀하지 아니하시고 그것을 두 돌판에 써서 내게 주셨느니라"
+      ],
+      "raw_text_hashes": [
+        "372b190708da84f6fde2b95dd66c94467f3b7de6550f8b9b7af863e3f4060745"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:23",
+      "sequence": 5077,
+      "chapter_label": "DEU 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "When you heard the voice out of the middle of the darkness, while the mountain was burning with fire, you came near to me, even all the heads of your tribes, and your elders;",
+      "ko": "산이 불에 타며 캄캄한 가운데서 나오는 그 소리를 너희가 듣고 너희 지파의 두령과 장로들이 내게 나아와",
+      "source_text_hash": "dd50fd0829cda3d0b56bad285e4938298def587a8e8a44a060980fcac3eb2c17",
+      "translation_text_hash": "4ec820eba49df1ed3f15ec82edf9572868cad1fc427a6c08ee80e217b05997b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산이 불에 타며 캄캄한 가운데서 나오는 그 소리를 너희가 듣고 너희 지파의 두령과 장로들이 내게 나아와"
+      ],
+      "raw_text_hashes": [
+        "4ec820eba49df1ed3f15ec82edf9572868cad1fc427a6c08ee80e217b05997b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:24",
+      "sequence": 5078,
+      "chapter_label": "DEU 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "and you said, “Behold, the LORD our God has shown us his glory and his greatness, and we have heard his voice out of the middle of the fire. We have seen today that God does speak with man, and he lives.",
+      "ko": "말하되 우리 하나님 여호와께서 그 영광과 위엄을 우리에게 보이시매 불 가운데서 나오는 음성을 우리가 들었고 하나님이 사람과 말씀하시되 그 사람이 생존하는 것을 오늘날 우리가 보았나이다",
+      "source_text_hash": "dd19d35210a6391cf3e31501a06e677086fc598cda7bb46c2cfed88ddc95a9ab",
+      "translation_text_hash": "11fb48223f9f7e384d52d58c5771fe538a3c2af92c0c69ef714379eba6301b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 우리 하나님 여호와께서 그 영광과 위엄을 우리에게 보이시매 불 가운데서 나오는 음성을 우리가 들었고 하나님이 사람과 말씀하시되 그 사람이 생존하는 것을 오늘날 우리가 보았나이다"
+      ],
+      "raw_text_hashes": [
+        "11fb48223f9f7e384d52d58c5771fe538a3c2af92c0c69ef714379eba6301b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:25",
+      "sequence": 5079,
+      "chapter_label": "DEU 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "Now therefore, why should we die? For this great fire will consume us. If we hear the LORD our God’s voice any more, then we shall die.",
+      "ko": "이제 우리가 죽을 까닭이 무엇이니이까 이 큰 불이 우리를 삼킬 것이요 우리가 우리 하나님 여호와의 음성을 다시 들으면 죽을 것이라",
+      "source_text_hash": "0d30ae42d7590648dd9a330002103c0fb9ba71a003b2d1f65efe5178a35b3c84",
+      "translation_text_hash": "81e2cac2819f5061f7ee4e84fb8024c239ff044bd16f7c56ce453ca29c43e954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 우리가 죽을 까닭이 무엇이니이까 이 큰 불이 우리를 삼킬 것이요 우리가 우리 하나님 여호와의 음성을 다시 들으면 죽을 것이라"
+      ],
+      "raw_text_hashes": [
+        "81e2cac2819f5061f7ee4e84fb8024c239ff044bd16f7c56ce453ca29c43e954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:26",
+      "sequence": 5080,
+      "chapter_label": "DEU 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "For who is there of all flesh who has heard the voice of the living God speaking out of the middle of the fire, as we have, and lived?",
+      "ko": "무릇 육신을 가진 자가 우리처럼 사시는 하나님의 음성이 불 가운데서 발함을 듣고 생존한 자가 누구니이까",
+      "source_text_hash": "72e126aa548807638e2c59b0bf2263c4bec02133b7ecd2f15dffc112741cc916",
+      "translation_text_hash": "b5e736b6de9212ac667910ca86df415ce5289c67ff9fa9e9bacc3321c1cbef20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 육신을 가진 자가 우리처럼 사시는 하나님의 음성이 불 가운데서 발함을 듣고 생존한 자가 누구니이까"
+      ],
+      "raw_text_hashes": [
+        "b5e736b6de9212ac667910ca86df415ce5289c67ff9fa9e9bacc3321c1cbef20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:27",
+      "sequence": 5081,
+      "chapter_label": "DEU 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "Go near, and hear all that the LORD our God shall say, and tell us all that the LORD our God tells you; and we will hear it, and do it.”",
+      "ko": "당신은 가까이 나아가서 우리 하나님 여호와의 하시는 말씀을 다 듣고 우리 하나님 여호와의 당신에게 이르시는 것을 다 우리에게 전하소서 우리가 듣고 행하겠나이다 하였느니라",
+      "source_text_hash": "9c2b0ae43f213f90f2d6e3225a28c00f52fe1b6e97573327367552a7d64ae85e",
+      "translation_text_hash": "3fd5d9ec5974cddab908b8f8503c8dbe78397065b98365ca1f8dc50b95552deb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당신은 가까이 나아가서 우리 하나님 여호와의 하시는 말씀을 다 듣고 우리 하나님 여호와의 당신에게 이르시는 것을 다 우리에게 전하소서 우리가 듣고 행하겠나이다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "3fd5d9ec5974cddab908b8f8503c8dbe78397065b98365ca1f8dc50b95552deb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:28",
+      "sequence": 5082,
+      "chapter_label": "DEU 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "The LORD heard the voice of your words when you spoke to me; and the LORD said to me, “I have heard the voice of the words of this people which they have spoken to you. They have well said all that they have spoken.",
+      "ko": "여호와께서 너희가 내게 말할 때에 너희의 말하는 소리를 들으신지라 여호와께서 내게 이르시되 이 백성이 네게 말하는 그 말소리를 내가 들은즉 그 말이 다 옳도다",
+      "source_text_hash": "9ebc79081f2599fb53a8bddaa8da8838ecb234adbbadfab229dd5d387ba60d62",
+      "translation_text_hash": "a272ba28f7b7370712d1298c0f7a731b518ba3ce10f58e1bdf501aef8e91c3e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희가 내게 말할 때에 너희의 말하는 소리를 들으신지라 여호와께서 내게 이르시되 이 백성이 네게 말하는 그 말소리를 내가 들은즉 그 말이 다 옳도다"
+      ],
+      "raw_text_hashes": [
+        "a272ba28f7b7370712d1298c0f7a731b518ba3ce10f58e1bdf501aef8e91c3e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:29",
+      "sequence": 5083,
+      "chapter_label": "DEU 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "Oh that there were such a heart in them that they would fear me and keep all my commandments always, that it might be well with them and with their children forever!",
+      "ko": "다만 그들이 항상 이같은 마음을 품어 나를 경외하며 나의 모든 명령을 지켜서 그들과 그 자손이 영원히 복 받기를 원하노라",
+      "source_text_hash": "c80bb49926ce90ac9b7271b67a5fd1b945cb9861571423c7bdff7acd8d4a2e58",
+      "translation_text_hash": "020ef8dfdc92919d48b29263af4d685aaf7bb722a9c68608dada59236ee80dc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 그들이 항상 이같은 마음을 품어 나를 경외하며 나의 모든 명령을 지켜서 그들과 그 자손이 영원히 복 받기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "020ef8dfdc92919d48b29263af4d685aaf7bb722a9c68608dada59236ee80dc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:30",
+      "sequence": 5084,
+      "chapter_label": "DEU 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "“Go tell them, ‘Return to your tents.’",
+      "ko": "가서 그들에게 각기 장막으로 돌아가라 이르고",
+      "source_text_hash": "51f3b42f092ac5056cbc3d833f7b96081f3b49219bd84af92f202728fc89938f",
+      "translation_text_hash": "43e5f29ae47ed0437057246f5397ec740c56929b7d18f9228ed268a928101807",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 그들에게 각기 장막으로 돌아가라 이르고"
+      ],
+      "raw_text_hashes": [
+        "43e5f29ae47ed0437057246f5397ec740c56929b7d18f9228ed268a928101807"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:31",
+      "sequence": 5085,
+      "chapter_label": "DEU 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "But as for you, stand here by me, and I will tell you all the commandments, and the statutes, and the ordinances, which you shall teach them, that they may do them in the land which I give them to possess.”",
+      "ko": "너는 여기 내 곁에 섰으라 내가 모든 명령과 규례와 법도를 네게 이르리니 너는 그것을 그들에게 가르쳐서 내가 그들에게 기업으로 주는 땅에서 그들로 이를 행하게 하라 하셨나니",
+      "source_text_hash": "fb4df3a8f056f259a66b5fe11011fb95ce6dfc6747b0c0ab759a16598ed18158",
+      "translation_text_hash": "a5ad0c0a2e8efdc67ccc145b3600bfc0c766ece8e793c4fa9a755861d8a6d7cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여기 내 곁에 섰으라 내가 모든 명령과 규례와 법도를 네게 이르리니 너는 그것을 그들에게 가르쳐서 내가 그들에게 기업으로 주는 땅에서 그들로 이를 행하게 하라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "a5ad0c0a2e8efdc67ccc145b3600bfc0c766ece8e793c4fa9a755861d8a6d7cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:32",
+      "sequence": 5086,
+      "chapter_label": "DEU 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "You shall observe to do therefore as the LORD your God has commanded you. You shall not turn away to the right hand or to the left.",
+      "ko": "그런즉 너희 하나님 여호와께서 너희에게 명령하신대로 너희는 삼가 행하여 좌로나 우로나 치우치지 말고",
+      "source_text_hash": "5b333715e2f540189a9f58c581ae5f28172733ec4cf89f1f8ea3dfae19f18bf3",
+      "translation_text_hash": "dd5f4e23105bfbd0c989ec67c4302becc81a7ccee491fd4233069fdd83b6c7cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너희 하나님 여호와께서 너희에게 명령하신대로 너희는 삼가 행하여 좌로나 우로나 치우치지 말고"
+      ],
+      "raw_text_hashes": [
+        "dd5f4e23105bfbd0c989ec67c4302becc81a7ccee491fd4233069fdd83b6c7cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:5:33",
+      "sequence": 5087,
+      "chapter_label": "DEU 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "DEU",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "You shall walk in all the way which the LORD your God has commanded you, that you may live and that it may be well with you, and that you may prolong your days in the land which you shall possess.",
+      "ko": "너희 하나님 여호와께서 너희에게 명하신 모든 도를 행하라 그리하면 너희가 삶을 얻고 복을 얻어서 너희의 얻은 땅에서 너희의 날이 장구하리라",
+      "source_text_hash": "af8f77428cc7427f6bda3f1d15b1ffe710890e20300d5c7afec1ab272c3d13f2",
+      "translation_text_hash": "528131ee39c640fbdf2cea70019405b52101c5b61911941c434187dfbe67c0c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 하나님 여호와께서 너희에게 명하신 모든 도를 행하라 그리하면 너희가 삶을 얻고 복을 얻어서 너희의 얻은 땅에서 너희의 날이 장구하리라"
+      ],
+      "raw_text_hashes": [
+        "528131ee39c640fbdf2cea70019405b52101c5b61911941c434187dfbe67c0c0"
+      ]
+    }
+  ]
+}

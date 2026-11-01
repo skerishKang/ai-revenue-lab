@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JON:chapter:003",
+  "unit_ordinal": 892,
+  "unit_label": "JON 3",
+  "book_code": "JON",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JON:3:1",
+      "sequence": 22560,
+      "chapter_label": "JON 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to Jonah the second time, saying,",
+      "ko": "여호와의 말씀이 두번째 요나에게 임하니라 이르시되",
+      "source_text_hash": "219c05929d42d699e6b3b244daf780228608218ac320748bafe2acc98bebe350",
+      "translation_text_hash": "54edf9611b2fd5523c6cf1ad6e9077acc38f4c31b67644c48049c27b1ae961e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 두번째 요나에게 임하니라 이르시되"
+      ],
+      "raw_text_hashes": [
+        "54edf9611b2fd5523c6cf1ad6e9077acc38f4c31b67644c48049c27b1ae961e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:2",
+      "sequence": 22561,
+      "chapter_label": "JON 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "“Arise, go to Nineveh, that great city, and preach to it the message that I give you.”",
+      "ko": "일어나 저 큰 성읍 니느웨로 가서 내가 네게 명한 바를 그들에게 선포하라 하신지라",
+      "source_text_hash": "1521f6de9fe7513d4a29fb6aa7209ad4ce181a1db0349848879315f11746131b",
+      "translation_text_hash": "2ed4eb6f99f8fb8b001a334439aad2806a2d6457fc26cb452b5db9d765c8375a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 저 큰 성읍 니느웨로 가서 내가 네게 명한 바를 그들에게 선포하라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "2ed4eb6f99f8fb8b001a334439aad2806a2d6457fc26cb452b5db9d765c8375a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:3",
+      "sequence": 22562,
+      "chapter_label": "JON 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "So Jonah arose, and went to Nineveh, according to the LORD’s word. Now Nineveh was an exceedingly great city, three days’ journey across.",
+      "ko": "요나가 여호와의 말씀대로 일어나서 니느웨로 가니라 니느웨는 극히 큰 성읍이므로 삼일길이라",
+      "source_text_hash": "92fc3e9bd9a2da2c38c5a7bfad07aa648ebd17ac1d822d8c5256c6d37088aa1f",
+      "translation_text_hash": "ecaeb2e0fd5c53e7a1107ad46eb21c1b133a2377317d892c02205ba48832b838",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 여호와의 말씀대로 일어나서 니느웨로 가니라 니느웨는 극히 큰 성읍이므로 삼일길이라"
+      ],
+      "raw_text_hashes": [
+        "ecaeb2e0fd5c53e7a1107ad46eb21c1b133a2377317d892c02205ba48832b838"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:4",
+      "sequence": 22563,
+      "chapter_label": "JON 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Jonah began to enter into the city a day’s journey, and he cried out, and said, “In forty days, Nineveh will be overthrown!”",
+      "ko": "요나가 그 성에 들어가며 곧 하룻길을 행하며 외쳐 가로되 사십일이 지나면 니느웨가 무너지리라 하였더니",
+      "source_text_hash": "e8be5995918ca38bd8ae292d833732ce10ad51608ae4b49e97a75641f6fbd118",
+      "translation_text_hash": "87d011403eeb43af74170b2874802e6238d2cb993b2be14db98880a54024efb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나가 그 성에 들어가며 곧 하룻길을 행하며 외쳐 가로되 사십일이 지나면 니느웨가 무너지리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "87d011403eeb43af74170b2874802e6238d2cb993b2be14db98880a54024efb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:5",
+      "sequence": 22564,
+      "chapter_label": "JON 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "The people of Nineveh believed God; and they proclaimed a fast and put on sackcloth, from their greatest even to their least.",
+      "ko": "니느웨 백성이 하나님을 믿고 금식을 선포하고 무론 대소하고 굵은 베를 입은지라",
+      "source_text_hash": "98380f8c070ddea7ae8c2f3e20c6818f03f163975592b407eecd99a1ed6c00da",
+      "translation_text_hash": "ded61677d34089ecf5a5f6d095eeb92daaee761e033596e5c5e4fdffef8cd93b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "니느웨 백성이 하나님을 믿고 금식을 선포하고 무론 대소하고 굵은 베를 입은지라"
+      ],
+      "raw_text_hashes": [
+        "ded61677d34089ecf5a5f6d095eeb92daaee761e033596e5c5e4fdffef8cd93b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:6",
+      "sequence": 22565,
+      "chapter_label": "JON 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "The news reached the king of Nineveh, and he arose from his throne, took off his royal robe, covered himself with sackcloth, and sat in ashes.",
+      "ko": "그 소문이 니느웨 왕에게 들리매 왕이 보좌에서 일어나 조복을 벗고 굵은 베를 입고 재에 앉으니라",
+      "source_text_hash": "536c92b6750a9263483081d1e2ebb7366d8d8c48a8a381227b5fdc5b8c1195be",
+      "translation_text_hash": "8f08202cc01addb36a5af6f0ecf6c6951ba2188e4ac51a1f79aae8dad153b9b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소문이 니느웨 왕에게 들리매 왕이 보좌에서 일어나 조복을 벗고 굵은 베를 입고 재에 앉으니라"
+      ],
+      "raw_text_hashes": [
+        "8f08202cc01addb36a5af6f0ecf6c6951ba2188e4ac51a1f79aae8dad153b9b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:7",
+      "sequence": 22566,
+      "chapter_label": "JON 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "He made a proclamation and published through Nineveh by the decree of the king and his nobles, saying, “Let neither man nor animal, herd nor flock, taste anything; let them not feed, nor drink water;",
+      "ko": "왕이 그 대신으로 더불어 조서를 내려 니느웨에 선포하여 가로되 사람이나 짐승이나 소떼나 양떼나 아무 것도 입에 대지 말찌니 곧 먹지도 말 것이요 물도 마시지 말 것이며",
+      "source_text_hash": "02af2362dc4e4a97bed506feeb3c336dbf75835fd5985073e387a078254fed49",
+      "translation_text_hash": "01a122e6e293ebba24c7ccfab93175df1ae1df4674bce3106e7ff523eca1e065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 그 대신으로 더불어 조서를 내려 니느웨에 선포하여 가로되 사람이나 짐승이나 소떼나 양떼나 아무 것도 입에 대지 말찌니 곧 먹지도 말 것이요 물도 마시지 말 것이며"
+      ],
+      "raw_text_hashes": [
+        "01a122e6e293ebba24c7ccfab93175df1ae1df4674bce3106e7ff523eca1e065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:8",
+      "sequence": 22567,
+      "chapter_label": "JON 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "but let them be covered with sackcloth, both man and animal, and let them cry mightily to God. Yes, let them turn everyone from his evil way and from the violence that is in his hands.",
+      "ko": "사람이든지 짐승이든지 다 굵은 베를 입을 것이요 힘써 여호와께 부르짖을 것이며 각기 악한 길과 손으로 행한 강포에서 떠날 것이라",
+      "source_text_hash": "0ab24a5c38cab093b4c970722061b8971254db88b28d305002c060072c400428",
+      "translation_text_hash": "82bac1b9b9759e122fa8132d3087a1dda831a7e3d11d99b753d2697fccfed00c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이든지 짐승이든지 다 굵은 베를 입을 것이요 힘써 여호와께 부르짖을 것이며 각기 악한 길과 손으로 행한 강포에서 떠날 것이라"
+      ],
+      "raw_text_hashes": [
+        "82bac1b9b9759e122fa8132d3087a1dda831a7e3d11d99b753d2697fccfed00c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:9",
+      "sequence": 22568,
+      "chapter_label": "JON 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Who knows whether God will not turn and relent, and turn away from his fierce anger, so that we might not perish?”",
+      "ko": "하나님이 혹시 뜻을 돌이키시고 그 진노를 그치사 우리로 멸망치 않게 하시리라 그렇지 않을줄을 누가 알겠느냐 한지라",
+      "source_text_hash": "6108905d18479907200b3fdea8326b4117b81c0d1fafdd68f20a2fa81ad2873f",
+      "translation_text_hash": "cbdc5dda43312b7812b4396aed26fce197db1af9c4c77fe0ff520415cf16a3a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 혹시 뜻을 돌이키시고 그 진노를 그치사 우리로 멸망치 않게 하시리라 그렇지 않을줄을 누가 알겠느냐 한지라"
+      ],
+      "raw_text_hashes": [
+        "cbdc5dda43312b7812b4396aed26fce197db1af9c4c77fe0ff520415cf16a3a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JON:3:10",
+      "sequence": 22569,
+      "chapter_label": "JON 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "JON",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JON",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "God saw their works, that they turned from their evil way. God relented of the disaster which he said he would do to them, and he didn’t do it.",
+      "ko": "하나님이 그들의 행한 것 곧 그 악한 길에서 돌이켜 떠난 것을 감찰하시고 뜻을 돌이키사 그들에게 내리리라 말씀하신 재앙을 내리지 아니하시니라",
+      "source_text_hash": "718dcf42654a13180807a6808adde45860aea0d639b4f6a58c358b56a23efeec",
+      "translation_text_hash": "7663e9eb7e9145aa87fb81354fa962345fe28c6b575762327fa407800d8c6905",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그들의 행한 것 곧 그 악한 길에서 돌이켜 떠난 것을 감찰하시고 뜻을 돌이키사 그들에게 내리리라 말씀하신 재앙을 내리지 아니하시니라"
+      ],
+      "raw_text_hashes": [
+        "7663e9eb7e9145aa87fb81354fa962345fe28c6b575762327fa407800d8c6905"
+      ]
+    }
+  ]
+}

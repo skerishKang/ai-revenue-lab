@@ -1,0 +1,1773 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:002",
+  "unit_ordinal": 340,
+  "unit_label": "1CH 2",
+  "book_code": "1CH",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:2:1",
+      "sequence": 10308,
+      "chapter_label": "1CH 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "These are the sons of Israel: Reuben, Simeon, Levi, Judah, Issachar, Zebulun,",
+      "ko": "이스라엘의 아들은 이러하니 르우벤과 시므온과 레위와 유다와 잇사갈과 스불론과",
+      "source_text_hash": "ca540a9538ec383bddfdda06d66530873044633a8bfe3c1b20536e19ceb430c2",
+      "translation_text_hash": "e0753ad0908c7a546b647c654204e1528109f15ee2aa5e41f37b8c939f9b9c15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 아들은 이러하니 르우벤과 시므온과 레위와 유다와 잇사갈과 스불론과"
+      ],
+      "raw_text_hashes": [
+        "e0753ad0908c7a546b647c654204e1528109f15ee2aa5e41f37b8c939f9b9c15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:2",
+      "sequence": 10309,
+      "chapter_label": "1CH 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Dan, Joseph, Benjamin, Naphtali, Gad, and Asher.",
+      "ko": "단과 요셉과 베냐민과 납달리와 갓과 아셀이더라",
+      "source_text_hash": "3776454b81ad749f7a150dbf7d14ed81c3c023281a3d6e48c12c310105fbf1c2",
+      "translation_text_hash": "cd244ddd95a3c0496fd6cfa4dc98ff62503c6eb55ef6303f0ea240d37653d9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단과 요셉과 베냐민과 납달리와 갓과 아셀이더라"
+      ],
+      "raw_text_hashes": [
+        "cd244ddd95a3c0496fd6cfa4dc98ff62503c6eb55ef6303f0ea240d37653d9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:3",
+      "sequence": 10310,
+      "chapter_label": "1CH 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "The sons of Judah: Er, Onan, and Shelah, which three were born to him of Shua’s daughter the Canaanitess. Er, Judah’s firstborn, was wicked in the LORD’s sight; and he killed him.",
+      "ko": "유다의 아들은 에르와 오난과 셀라니 이 세 사람은 가나안 사람 수아의 딸이 유다로 말미암아 낳은 자요 유다의 맏아들 에르는 여호와 보시기에 악하였으므로 여호와께서 죽이셨고",
+      "source_text_hash": "39991bfdd724bf5cea4864aa77c39123a478a3ea53f2e04fe364da99bd2f05ca",
+      "translation_text_hash": "71006e9b030be5c12ff06e4f69c31a3fac310dede100be5f67e2f6ab1ba365d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 아들은 에르와 오난과 셀라니 이 세 사람은 가나안 사람 수아의 딸이 유다로 말미암아 낳은 자요 유다의 맏아들 에르는 여호와 보시기에 악하였으므로 여호와께서 죽이셨고"
+      ],
+      "raw_text_hashes": [
+        "71006e9b030be5c12ff06e4f69c31a3fac310dede100be5f67e2f6ab1ba365d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:4",
+      "sequence": 10311,
+      "chapter_label": "1CH 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Tamar his daughter-in-law bore him Perez and Zerah. All the sons of Judah were five.",
+      "ko": "유다의 며느리 다말이 유다로 말미암아 베레스와 세라를 낳았으니 유다의 아들이 모두 다섯이더라",
+      "source_text_hash": "8ebe813b07cc3a3e4353baa59be2a844e29220230090cf380e3ae4cf264a9621",
+      "translation_text_hash": "83c0eb437250bb55874882f82fd3095c96c0151476c81accaeb6859ad16c85da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다의 며느리 다말이 유다로 말미암아 베레스와 세라를 낳았으니 유다의 아들이 모두 다섯이더라"
+      ],
+      "raw_text_hashes": [
+        "83c0eb437250bb55874882f82fd3095c96c0151476c81accaeb6859ad16c85da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:5",
+      "sequence": 10312,
+      "chapter_label": "1CH 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "The sons of Perez: Hezron and Hamul.",
+      "ko": "베레스의 아들은 헤스론과 하물이요",
+      "source_text_hash": "302321e4d37a49e84f0be921547421e64e354894ed26e59fc38668598bb96530",
+      "translation_text_hash": "f864fbbcfbc5e62110ade6213da58892324d024483e00000fac36721a1c5583b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베레스의 아들은 헤스론과 하물이요"
+      ],
+      "raw_text_hashes": [
+        "f864fbbcfbc5e62110ade6213da58892324d024483e00000fac36721a1c5583b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:6",
+      "sequence": 10313,
+      "chapter_label": "1CH 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "The sons of Zerah: Zimri, Ethan, Heman, Calcol, and Dara—five of them in all.",
+      "ko": "세라의 아들은 시므리와 에단과 헤만과 갈골과 다라니 모두 다섯 사람이요",
+      "source_text_hash": "e25231f2bd6955e9c3f64b3db84cccec052da20ff60de1233150e5608e6b59a5",
+      "translation_text_hash": "44ad013cbfde78089ce3c3d2c83b0ab9c85cfee955a3aa400ad00f287b7600d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세라의 아들은 시므리와 에단과 헤만과 갈골과 다라니 모두 다섯 사람이요"
+      ],
+      "raw_text_hashes": [
+        "44ad013cbfde78089ce3c3d2c83b0ab9c85cfee955a3aa400ad00f287b7600d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:7",
+      "sequence": 10314,
+      "chapter_label": "1CH 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The son of Carmi: Achar, the troubler of Israel, who committed a trespass in the devoted thing.",
+      "ko": "가르미의 아들은 아갈이니 저는 마땅히 멸할 물건으로 인하여 이스라엘을 괴롭게 한 자며",
+      "source_text_hash": "76c87a078568e2da70729f7003373dcd15f595e116014380bf65548920131fe2",
+      "translation_text_hash": "d8ce9157b890c96751ab5aece546bb5300e702d9d93469992abc1e66ca089e56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가르미의 아들은 아갈이니 저는 마땅히 멸할 물건으로 인하여 이스라엘을 괴롭게 한 자며"
+      ],
+      "raw_text_hashes": [
+        "d8ce9157b890c96751ab5aece546bb5300e702d9d93469992abc1e66ca089e56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:8",
+      "sequence": 10315,
+      "chapter_label": "1CH 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The son of Ethan: Azariah.",
+      "ko": "에단의 아들은 아사랴더라",
+      "source_text_hash": "aad8aafb74b255a11ff026487d2a828b9117bca1b556b8606c8f7a7b03da5b2f",
+      "translation_text_hash": "222339fbba66f0ee138499aab0e60b56a37adda067ce110feb057ba87cdae60b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에단의 아들은 아사랴더라"
+      ],
+      "raw_text_hashes": [
+        "222339fbba66f0ee138499aab0e60b56a37adda067ce110feb057ba87cdae60b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:9",
+      "sequence": 10316,
+      "chapter_label": "1CH 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "The sons also of Hezron, who were born to him: Jerahmeel, Ram, and Chelubai.",
+      "ko": "헤스론의 낳은 아들은 여라므엘과 람과 글루배라",
+      "source_text_hash": "583436c48139bb9147bd25b5bfe00be547ff139fa65247387d48db8bcdde9a16",
+      "translation_text_hash": "fb49618aad259c53f34ffa17f8d1a0699c88a59cc135af370add649229f64abc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론의 낳은 아들은 여라므엘과 람과 글루배라"
+      ],
+      "raw_text_hashes": [
+        "fb49618aad259c53f34ffa17f8d1a0699c88a59cc135af370add649229f64abc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:10",
+      "sequence": 10317,
+      "chapter_label": "1CH 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Ram became the father of Amminadab, and Amminadab became the father of Nahshon, prince of the children of Judah;",
+      "ko": "람은 암미나답을 낳았고 암미나답은 나손을 낳았으니 나손은 유다 자손의 방백이며",
+      "source_text_hash": "04fd30ced7f0db59ba53594fd9d1ca37b1652144717b29a958bec375d4e49748",
+      "translation_text_hash": "baa9b5773bdff38a5a8b154951f03e75d3d2e815c452b3b4cf93bd74fead7304",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "람은 암미나답을 낳았고 암미나답은 나손을 낳았으니 나손은 유다 자손의 방백이며"
+      ],
+      "raw_text_hashes": [
+        "baa9b5773bdff38a5a8b154951f03e75d3d2e815c452b3b4cf93bd74fead7304"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:11",
+      "sequence": 10318,
+      "chapter_label": "1CH 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "and Nahshon became the father of Salma, and Salma became the father of Boaz,",
+      "ko": "나손은 살마를 낳았고 살마는 보아스를 낳았고",
+      "source_text_hash": "51891884d4892d9c07f3c61e76430ff383b6446230a03a82b49221ac01733bb6",
+      "translation_text_hash": "38af3e9e4f63282b3bda98c7437a8b92f29393797606ce1ecab8640881caaeed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나손은 살마를 낳았고 살마는 보아스를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "38af3e9e4f63282b3bda98c7437a8b92f29393797606ce1ecab8640881caaeed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:12",
+      "sequence": 10319,
+      "chapter_label": "1CH 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "and Boaz became the father of Obed, and Obed became the father of Jesse;",
+      "ko": "보아스는 오벳을 낳았고 오벳은 이새를 낳았고",
+      "source_text_hash": "c7181906e0804c7f69a511311fd6b1b8ab87b62e7e063c4dfe1f41d78c50c1b5",
+      "translation_text_hash": "e8ce6267be4464f87fd73a2c8c470a2f4ab04298b3fd53f6f26a5121295a941e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아스는 오벳을 낳았고 오벳은 이새를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "e8ce6267be4464f87fd73a2c8c470a2f4ab04298b3fd53f6f26a5121295a941e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:13",
+      "sequence": 10320,
+      "chapter_label": "1CH 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "and Jesse became the father of his firstborn Eliab, Abinadab the second, Shimea the third,",
+      "ko": "이새는 맏아들 엘리압과 둘째로 아비나답과 세째로 시므아와",
+      "source_text_hash": "112ee33fd2ba8173655aa8c3682e4ccc2f3964a1b24a3f4d8fc3939321d78b37",
+      "translation_text_hash": "ec614c8e8c786d66ad098770019db06b308b2c948dd5335f8daec4d805c64aa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새는 맏아들 엘리압과 둘째로 아비나답과 세째로 시므아와"
+      ],
+      "raw_text_hashes": [
+        "ec614c8e8c786d66ad098770019db06b308b2c948dd5335f8daec4d805c64aa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:14",
+      "sequence": 10321,
+      "chapter_label": "1CH 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Nethanel the fourth, Raddai the fifth,",
+      "ko": "네째로 느다넬과 다섯째로 랏대와",
+      "source_text_hash": "7ecdd744ebc60f81fb5deef60e579fe483def821739f37f6a2ba275c48d92b8d",
+      "translation_text_hash": "75fe9e249919455e59cf5ad2bb42b0fea15e7c1c35c9f922cc505ebdb5559b30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네째로 느다넬과 다섯째로 랏대와"
+      ],
+      "raw_text_hashes": [
+        "75fe9e249919455e59cf5ad2bb42b0fea15e7c1c35c9f922cc505ebdb5559b30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:15",
+      "sequence": 10322,
+      "chapter_label": "1CH 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Ozem the sixth, and David the seventh;",
+      "ko": "여섯째로 오셈과 일곱째로 다윗을 낳았으며",
+      "source_text_hash": "4b16ed2cf0b61b27125007e3e6248af12ace81e41c573e44302e62c057dbdfd2",
+      "translation_text_hash": "1bbf6b883367ce92d4e93aed2f1ab59f6aa2cb43bd9aee2be42b7c135ab3afd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째로 오셈과 일곱째로 다윗을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "1bbf6b883367ce92d4e93aed2f1ab59f6aa2cb43bd9aee2be42b7c135ab3afd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:16",
+      "sequence": 10323,
+      "chapter_label": "1CH 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "and their sisters were Zeruiah and Abigail. The sons of Zeruiah: Abishai, Joab, and Asahel, three.",
+      "ko": "저희의 자매는 스루야와 아비가일이라 스루야의 아들은 아비새와 요압과 아사헬 삼형제요",
+      "source_text_hash": "fe9be93cace35b47d1026738554e9e7ba7b1c3027d8d6db9c04669162f20528f",
+      "translation_text_hash": "729b3ac8e36a79cdf4e99c0eff82b3d67580b600685fd2c1c784878b175b1b74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 자매는 스루야와 아비가일이라 스루야의 아들은 아비새와 요압과 아사헬 삼형제요"
+      ],
+      "raw_text_hashes": [
+        "729b3ac8e36a79cdf4e99c0eff82b3d67580b600685fd2c1c784878b175b1b74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:17",
+      "sequence": 10324,
+      "chapter_label": "1CH 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "Abigail bore Amasa; and the father of Amasa was Jether the Ishmaelite.",
+      "ko": "아비가일은 아마사를 낳았으니 아마사의 아비는 이스마엘 사람 예델이었더라",
+      "source_text_hash": "d750c1d021868c3e7c94fb4e6ed90fea254ad39b0f43f5cca48115863f41f9a7",
+      "translation_text_hash": "25c93441bd4d05e2fe450c20ad4ca1783e39e6a709b1efea9cf971125d95d41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가일은 아마사를 낳았으니 아마사의 아비는 이스마엘 사람 예델이었더라"
+      ],
+      "raw_text_hashes": [
+        "25c93441bd4d05e2fe450c20ad4ca1783e39e6a709b1efea9cf971125d95d41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:18",
+      "sequence": 10325,
+      "chapter_label": "1CH 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Caleb the son of Hezron became the father of children by Azubah his wife, and by Jerioth; and these were her sons: Jesher, Shobab, and Ardon.",
+      "ko": "헤스론의 아들 갈렙이 그 아내 아수바와 여리옷에게서 아들을 낳았으니 그 낳은 아들은 예셀과 소밥과 아르돈이며",
+      "source_text_hash": "c119099721f0be797f589faacfc06a9b4fb343c30785bc267c407b56e9d14315",
+      "translation_text_hash": "240bc561975e03b51492201df85651d1a21c6e7986637f48289f32e5bfd6aff3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론의 아들 갈렙이 그 아내 아수바와 여리옷에게서 아들을 낳았으니 그 낳은 아들은 예셀과 소밥과 아르돈이며"
+      ],
+      "raw_text_hashes": [
+        "240bc561975e03b51492201df85651d1a21c6e7986637f48289f32e5bfd6aff3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:19",
+      "sequence": 10326,
+      "chapter_label": "1CH 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Azubah died, and Caleb married Ephrath, who bore him Hur.",
+      "ko": "아수바가 죽은 후에 갈렙이 또 에브랏에게 장가 들었더니 에브랏이 그로 말미암아 훌을 낳았고",
+      "source_text_hash": "0442f27302495952d21a3e9bbd92933bb2c870d514700a90dae4cdfe1815c1f1",
+      "translation_text_hash": "ca78b47c0906162df0544b369eece0476b3640823bc86060e4c3889d32b95ae1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아수바가 죽은 후에 갈렙이 또 에브랏에게 장가 들었더니 에브랏이 그로 말미암아 훌을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "ca78b47c0906162df0544b369eece0476b3640823bc86060e4c3889d32b95ae1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:20",
+      "sequence": 10327,
+      "chapter_label": "1CH 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Hur became the father of Uri, and Uri became the father of Bezalel.",
+      "ko": "훌은 우리를 낳았고 우리는 브살렐을 낳았더라",
+      "source_text_hash": "14ff4c71f0192d1a29a85f8459bb288d4de7dfed95800ef88127c8c0d4ea99b9",
+      "translation_text_hash": "00be33adff78462ce92e755c1e871ea7979687e4802573e9c59ae89b665a3ffa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "훌은 우리를 낳았고 우리는 브살렐을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "00be33adff78462ce92e755c1e871ea7979687e4802573e9c59ae89b665a3ffa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:21",
+      "sequence": 10328,
+      "chapter_label": "1CH 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Afterward Hezron went in to the daughter of Machir the father of Gilead, whom he took as wife when he was sixty years old; and she bore him Segub.",
+      "ko": "그 후에 헤스론이 육십세에 길르앗의 아비 마길의 딸에게 장가들어 동침하였더니 저가 헤스론으로 말미암아 스굽을 낳았으며",
+      "source_text_hash": "ed9c15c3d874278c9b9ebe674d68cb51902922e3712a1cdc2701fd7c959f9b8a",
+      "translation_text_hash": "cd24e3a3c1fc2d47aebe86cc1fe850f71d6fe4ae85a327947eaf53cacb1ad970",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 헤스론이 육십세에 길르앗의 아비 마길의 딸에게 장가들어 동침하였더니 저가 헤스론으로 말미암아 스굽을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "cd24e3a3c1fc2d47aebe86cc1fe850f71d6fe4ae85a327947eaf53cacb1ad970"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:22",
+      "sequence": 10329,
+      "chapter_label": "1CH 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Segub became the father of Jair, who had twenty-three cities in the land of Gilead.",
+      "ko": "스굽은 야일을 낳았고 야일은 길르앗 땅에서 스물 세 성읍을 가졌더니",
+      "source_text_hash": "51cbd2a75ff984c6d4b7adbfc2e03cde766da6d8638d9b10d8e33c0b41200355",
+      "translation_text_hash": "34603c79845fdd382d877c49df691e915be229e22c85aaa161461199c54d345f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스굽은 야일을 낳았고 야일은 길르앗 땅에서 스물 세 성읍을 가졌더니"
+      ],
+      "raw_text_hashes": [
+        "34603c79845fdd382d877c49df691e915be229e22c85aaa161461199c54d345f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:23",
+      "sequence": 10330,
+      "chapter_label": "1CH 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "Geshur and Aram took the towns of Jair from them, with Kenath, and its villages, even sixty cities. All these were the sons of Machir the father of Gilead.",
+      "ko": "그술과 아람이 야일의 성읍들과 그낫과 그 성들 모두 육십을 그들에게서 빼앗았으며 저희는 다 길르앗의 아비 마길의 자손이었더라",
+      "source_text_hash": "eaae7bd2bb793f267b3a2e0fe9d7444730ff3eb3b1377a07b9d06e74c9e32f7d",
+      "translation_text_hash": "11bf27605bd589d72494a3747633266d77bd32d171bb40ee5ec929e8936ec8bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그술과 아람이 야일의 성읍들과 그낫과 그 성들 모두 육십을 그들에게서 빼앗았으며 저희는 다 길르앗의 아비 마길의 자손이었더라"
+      ],
+      "raw_text_hashes": [
+        "11bf27605bd589d72494a3747633266d77bd32d171bb40ee5ec929e8936ec8bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:24",
+      "sequence": 10331,
+      "chapter_label": "1CH 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "After Hezron died in Caleb Ephrathah, Abijah, Hezron’s wife, bore him Ashhur the father of Tekoa.",
+      "ko": "헤스론이 갈렙 에브라다에서 죽은 후에 그 아내 아비야가 그로 말미암아 아스훌을 낳았으니 아스훌은 드고아의 아비더라",
+      "source_text_hash": "b20a91f4973d19e9040ee00577516859d2f251d6ac76f3682ae4dc7015731eba",
+      "translation_text_hash": "a7b5ff670a4716ed61528d231b71bc0c6be560998a5e0ce3debc87912ac76441",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론이 갈렙 에브라다에서 죽은 후에 그 아내 아비야가 그로 말미암아 아스훌을 낳았으니 아스훌은 드고아의 아비더라"
+      ],
+      "raw_text_hashes": [
+        "a7b5ff670a4716ed61528d231b71bc0c6be560998a5e0ce3debc87912ac76441"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:25",
+      "sequence": 10332,
+      "chapter_label": "1CH 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "The sons of Jerahmeel the firstborn of Hezron were Ram the firstborn, Bunah, Oren, Ozem, and Ahijah.",
+      "ko": "헤스론의 맏아들 여라므엘의 아들은 맏아들 람과 그 다음 브나와 오렌과 오셈과 아히야며",
+      "source_text_hash": "5926b587b6b667529b5144b5f3cc08587a63748cae75c6124fb7b4fe8ebd6cdd",
+      "translation_text_hash": "23b23e7861f1b33aa6b5ac6139fb50ad9a5a8b9af56b75b5a2b85acb36d26db0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스론의 맏아들 여라므엘의 아들은 맏아들 람과 그 다음 브나와 오렌과 오셈과 아히야며"
+      ],
+      "raw_text_hashes": [
+        "23b23e7861f1b33aa6b5ac6139fb50ad9a5a8b9af56b75b5a2b85acb36d26db0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:26",
+      "sequence": 10333,
+      "chapter_label": "1CH 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "Jerahmeel had another wife, whose name was Atarah. She was the mother of Onam.",
+      "ko": "여라므엘이 다른 아내가 있었으니 이름은 아다라라 저는 오남의 어미더라",
+      "source_text_hash": "1616d97f78f7bf2c93dd6abd1963e6e63d523d7783b991c9b7972d7331810989",
+      "translation_text_hash": "d3bcedfd6a250457124b50407a498c70a29ec16e8c5f77a9b1ca97e0f8ad5ec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여라므엘이 다른 아내가 있었으니 이름은 아다라라 저는 오남의 어미더라"
+      ],
+      "raw_text_hashes": [
+        "d3bcedfd6a250457124b50407a498c70a29ec16e8c5f77a9b1ca97e0f8ad5ec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:27",
+      "sequence": 10334,
+      "chapter_label": "1CH 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "The sons of Ram the firstborn of Jerahmeel were Maaz, Jamin, and Eker.",
+      "ko": "여라므엘의 맏아들 람의 아들은 마아스와 야민과 에겔이요",
+      "source_text_hash": "b6d0b9c09bc6945efc616e55228e32941df9fa4854d62fa67265af633137ed42",
+      "translation_text_hash": "a56576b720272a55dabfb1029fe546da6ee82bd6f7f58acdae576a2a199c2900",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여라므엘의 맏아들 람의 아들은 마아스와 야민과 에겔이요"
+      ],
+      "raw_text_hashes": [
+        "a56576b720272a55dabfb1029fe546da6ee82bd6f7f58acdae576a2a199c2900"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:28",
+      "sequence": 10335,
+      "chapter_label": "1CH 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "The sons of Onam were Shammai and Jada. The sons of Shammai: Nadab and Abishur.",
+      "ko": "오남의 아들들은 삼매와 야다요 삼매의 아들은 나답과 아비술이며",
+      "source_text_hash": "c3d5eee7bcda7fb6c1e6a236d643b2f7d4198b49f5e91f4b3236b63aab51fc14",
+      "translation_text_hash": "e0da528a1e6b942947dc5bb1017366a107f873f5dbcd152daa0944ca7a57afae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오남의 아들들은 삼매와 야다요 삼매의 아들은 나답과 아비술이며"
+      ],
+      "raw_text_hashes": [
+        "e0da528a1e6b942947dc5bb1017366a107f873f5dbcd152daa0944ca7a57afae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:29",
+      "sequence": 10336,
+      "chapter_label": "1CH 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "The name of the wife of Abishur was Abihail; and she bore him Ahban and Molid.",
+      "ko": "아비술의 아내의 이름은 아비하일이라 저가 그로 말미암아 아반과 몰릿을 낳았으며",
+      "source_text_hash": "ae4e00b1737277e6233901613d9c56eba0c99bd0eb6d7a49db9eb0c40e145151",
+      "translation_text_hash": "8b98b97b85073547aa4eccf3634f8a3c6eebd04308808140879e83af95717b79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비술의 아내의 이름은 아비하일이라 저가 그로 말미암아 아반과 몰릿을 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "8b98b97b85073547aa4eccf3634f8a3c6eebd04308808140879e83af95717b79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:30",
+      "sequence": 10337,
+      "chapter_label": "1CH 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "The sons of Nadab: Seled and Appaim; but Seled died without children.",
+      "ko": "나답의 아들은 셀렛과 압바임이라 셀렛은 아들이 없이 죽었고",
+      "source_text_hash": "8cd61695d5375090722beb5b803922650fbe456a92c7a3fc1e74048a257b1910",
+      "translation_text_hash": "7077ab6b527885ec5022eec3f438e57157f5e49fda5f0b24619957902dbd1768",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나답의 아들은 셀렛과 압바임이라 셀렛은 아들이 없이 죽었고"
+      ],
+      "raw_text_hashes": [
+        "7077ab6b527885ec5022eec3f438e57157f5e49fda5f0b24619957902dbd1768"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:31",
+      "sequence": 10338,
+      "chapter_label": "1CH 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "The son of Appaim: Ishi. The son of Ishi: Sheshan. The son of Sheshan: Ahlai.",
+      "ko": "압바임의 아들은 이시요 이시의 아들은 세산이요 세산의 아들은 알래요",
+      "source_text_hash": "b45436475b302d5f895495e27a5a49c1150169d550e1da0d1779e7af4f875550",
+      "translation_text_hash": "c49d9b9e910aa1c10a233077ca685d659976fae59f60f3ddd8cd2358350dd624",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압바임의 아들은 이시요 이시의 아들은 세산이요 세산의 아들은 알래요"
+      ],
+      "raw_text_hashes": [
+        "c49d9b9e910aa1c10a233077ca685d659976fae59f60f3ddd8cd2358350dd624"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:32",
+      "sequence": 10339,
+      "chapter_label": "1CH 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "The sons of Jada the brother of Shammai: Jether and Jonathan; and Jether died without children.",
+      "ko": "삼매의 아우 야다의 아들은 예델과 요나단이라 예델은 아들이 없이 죽었고",
+      "source_text_hash": "2298adc1d0e23b888e5c3aaed69a21cd53c6ec790534b074fcad26d498430f91",
+      "translation_text_hash": "6faf1405104a536b343f64127df202769eecab51a40df3f99e98e365d2af7329",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼매의 아우 야다의 아들은 예델과 요나단이라 예델은 아들이 없이 죽었고"
+      ],
+      "raw_text_hashes": [
+        "6faf1405104a536b343f64127df202769eecab51a40df3f99e98e365d2af7329"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:33",
+      "sequence": 10340,
+      "chapter_label": "1CH 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "The sons of Jonathan: Peleth and Zaza. These were the sons of Jerahmeel.",
+      "ko": "요나단의 아들은 벨렛과 사사라 여라므엘의 자손은 이러하며",
+      "source_text_hash": "6bf89d8d24a34e846d2073bc6f33840e50c07d8506ce1bded3f16500c4576a4e",
+      "translation_text_hash": "588f2311c64c1e6b78fb7e889b93ba3c9c52dbd77452b20cc8a1f080287f64ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단의 아들은 벨렛과 사사라 여라므엘의 자손은 이러하며"
+      ],
+      "raw_text_hashes": [
+        "588f2311c64c1e6b78fb7e889b93ba3c9c52dbd77452b20cc8a1f080287f64ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:34",
+      "sequence": 10341,
+      "chapter_label": "1CH 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "Now Sheshan had no sons, but only daughters. Sheshan had a servant, an Egyptian, whose name was Jarha.",
+      "ko": "세산은 아들이 없고 딸 뿐이라 그에게 야르하라 하는 애굽 종이 있는고로",
+      "source_text_hash": "4a84ef6ed1913a9a2fd233940194316e22ffc0d712cb33499026ba6f31ad84da",
+      "translation_text_hash": "dcb3d3325d144db0353dc2c4ce2e159d552827d25d5b95814a871f27e82fce49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세산은 아들이 없고 딸 뿐이라 그에게 야르하라 하는 애굽 종이 있는고로"
+      ],
+      "raw_text_hashes": [
+        "dcb3d3325d144db0353dc2c4ce2e159d552827d25d5b95814a871f27e82fce49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:35",
+      "sequence": 10342,
+      "chapter_label": "1CH 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "Sheshan gave his daughter to Jarha his servant as wife; and she bore him Attai.",
+      "ko": "딸을 그 종 야르하에게 주어 아내를 삼게 하였더니 저가 그로 말미암아 앗대를 낳았고",
+      "source_text_hash": "c66f9ef39b0446611547560bf372a1a9c10276fe348448c70219d878d884e4c3",
+      "translation_text_hash": "89fe618907f4bb0a2790010ddc01b1bad98123c57c939f5ea8a5558883a3280d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸을 그 종 야르하에게 주어 아내를 삼게 하였더니 저가 그로 말미암아 앗대를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "89fe618907f4bb0a2790010ddc01b1bad98123c57c939f5ea8a5558883a3280d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:36",
+      "sequence": 10343,
+      "chapter_label": "1CH 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "Attai became the father of Nathan, and Nathan became the father of Zabad,",
+      "ko": "앗대는 나단을 낳았고 나단은 사밧을 낳았고",
+      "source_text_hash": "7998b255cfd711c2641a432e68be6ce117ef11d0245941d1c52480eec911bbef",
+      "translation_text_hash": "b472d342c97df406533e64ee7be8c88b318b6446fdd8f565295133adcf51bc6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앗대는 나단을 낳았고 나단은 사밧을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "b472d342c97df406533e64ee7be8c88b318b6446fdd8f565295133adcf51bc6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:37",
+      "sequence": 10344,
+      "chapter_label": "1CH 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "and Zabad became the father of Ephlal, and Ephlal became the father of Obed,",
+      "ko": "사밧은 에블랄을 낳았고 에블랄은 오벳을 낳았고",
+      "source_text_hash": "4ec00b990c0a92c41edd6b68835ea7ccdbbf187107d8130e518ec03b1ea3567c",
+      "translation_text_hash": "ed36e1a42d908f2f66d2bd0a043c02f218dafed784642fbd04d7292ee3b31b3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사밧은 에블랄을 낳았고 에블랄은 오벳을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "ed36e1a42d908f2f66d2bd0a043c02f218dafed784642fbd04d7292ee3b31b3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:38",
+      "sequence": 10345,
+      "chapter_label": "1CH 2",
+      "verse_label": "38",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 38
+        }
+      ],
+      "en": "and Obed became the father of Jehu, and Jehu became the father of Azariah,",
+      "ko": "오벳은 예후를 낳았고 예후는 아사랴를 낳았고",
+      "source_text_hash": "94341e48768572c2d0663a01ef53883c47fc5b6998e926860045d098e5db04af",
+      "translation_text_hash": "6bc82602d65939920ff3533e2d2ea90fe5ccc372988a86959794e9ac0b1fde34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오벳은 예후를 낳았고 예후는 아사랴를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "6bc82602d65939920ff3533e2d2ea90fe5ccc372988a86959794e9ac0b1fde34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:39",
+      "sequence": 10346,
+      "chapter_label": "1CH 2",
+      "verse_label": "39",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 39
+        }
+      ],
+      "en": "and Azariah became the father of Helez, and Helez became the father of Eleasah,",
+      "ko": "아사랴는 헬레스를 낳았고 헬레스는 엘르아사를 낳았고",
+      "source_text_hash": "6810e19dbe233e1bdfab9e24b7f91331db4911a15353de8b43be02a8dfea90c6",
+      "translation_text_hash": "77797eca6e36a67bc579d2720e82f6034d255185e5b8ec6f8ef290359131dbe8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사랴는 헬레스를 낳았고 헬레스는 엘르아사를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "77797eca6e36a67bc579d2720e82f6034d255185e5b8ec6f8ef290359131dbe8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:40",
+      "sequence": 10347,
+      "chapter_label": "1CH 2",
+      "verse_label": "40",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 40
+        }
+      ],
+      "en": "and Eleasah became the father of Sismai, and Sismai became the father of Shallum,",
+      "ko": "엘르아사는 시스매를 낳았고 시스매는 살룸을 낳았고",
+      "source_text_hash": "8e058db5cf0140845e87f8c5568cd8fad7ce818ab890213532a86cfced9fb1ea",
+      "translation_text_hash": "07afbab9cacf3dc9e065ffaeb67b37500376e5694a1940d297775dd88fc289aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘르아사는 시스매를 낳았고 시스매는 살룸을 낳았고"
+      ],
+      "raw_text_hashes": [
+        "07afbab9cacf3dc9e065ffaeb67b37500376e5694a1940d297775dd88fc289aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:41",
+      "sequence": 10348,
+      "chapter_label": "1CH 2",
+      "verse_label": "41",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 41
+        }
+      ],
+      "en": "and Shallum became the father of Jekamiah, and Jekamiah became the father of Elishama.",
+      "ko": "살룸은 여가먀를 낳았고 여가먀는 엘리사마를 낳았더라",
+      "source_text_hash": "e7edcae73058f3a36d39330f839265a50d91e2ff43ac2fb0e435f96edbc907e0",
+      "translation_text_hash": "e8cd3a075b69e672cc110a28ddfa87bca8ea788580c5ec4a89fffb539e039e23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살룸은 여가먀를 낳았고 여가먀는 엘리사마를 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "e8cd3a075b69e672cc110a28ddfa87bca8ea788580c5ec4a89fffb539e039e23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:42",
+      "sequence": 10349,
+      "chapter_label": "1CH 2",
+      "verse_label": "42",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 42
+        }
+      ],
+      "en": "The sons of Caleb the brother of Jerahmeel were Mesha his firstborn, who was the father of Ziph, and the sons of Mareshah the father of Hebron.",
+      "ko": "여라므엘의 아우 갈렙의 아들 곧 맏아들은 메사니 십의 아비요 그 아들은 마레사니 헤브론의 아비며",
+      "source_text_hash": "303ae1a04ccb826efea21435b8fbdd71c617d21f9e4e2016ec00262f1b953a0e",
+      "translation_text_hash": "60641085d8ea9bba0c5f6588b4503b5f4d3647f31e628e81fbb27272706f2dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여라므엘의 아우 갈렙의 아들 곧 맏아들은 메사니 십의 아비요 그 아들은 마레사니 헤브론의 아비며"
+      ],
+      "raw_text_hashes": [
+        "60641085d8ea9bba0c5f6588b4503b5f4d3647f31e628e81fbb27272706f2dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:43",
+      "sequence": 10350,
+      "chapter_label": "1CH 2",
+      "verse_label": "43",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 43
+        }
+      ],
+      "en": "The sons of Hebron: Korah, Tappuah, Rekem, and Shema.",
+      "ko": "헤브론의 아들은 고라와 답부아와 레겜과 세마라",
+      "source_text_hash": "03059e82341e013fe5c17c6bc7b12315a073f8be7c44cd68811f5650b233e33f",
+      "translation_text_hash": "60aa31d137c9a12d60e58ba9f66179759700bc9bd4bb7ad3c279c0dbd7639eaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론의 아들은 고라와 답부아와 레겜과 세마라"
+      ],
+      "raw_text_hashes": [
+        "60aa31d137c9a12d60e58ba9f66179759700bc9bd4bb7ad3c279c0dbd7639eaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:44",
+      "sequence": 10351,
+      "chapter_label": "1CH 2",
+      "verse_label": "44",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 44
+        }
+      ],
+      "en": "Shema became the father of Raham, the father of Jorkeam; and Rekem became the father of Shammai.",
+      "ko": "세마는 라함을 낳았으니 라함은 요르그암의 아비며 레겜은 삼매를 낳았고",
+      "source_text_hash": "8d87b5e1c381e132a95e2f157da486e55e7850f94bdc9f0349ed02f38f049830",
+      "translation_text_hash": "3ed95be928c646a869f2777a593cb2e38dfcb258015dd1bca9d3ec75c1394517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세마는 라함을 낳았으니 라함은 요르그암의 아비며 레겜은 삼매를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "3ed95be928c646a869f2777a593cb2e38dfcb258015dd1bca9d3ec75c1394517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:45",
+      "sequence": 10352,
+      "chapter_label": "1CH 2",
+      "verse_label": "45",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 45
+        }
+      ],
+      "en": "The son of Shammai was Maon; and Maon was the father of Beth Zur.",
+      "ko": "삼매의 아들은 마온이라 마온은 벳술의 아비며",
+      "source_text_hash": "121d194ef207b2e97d08346db81066d5211f04b0a8f5114af58aee3d40680152",
+      "translation_text_hash": "ba7a16115fbadbd79376a203f7d724786d1ec0836c5b00f2b1e2a6214f45e5d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼매의 아들은 마온이라 마온은 벳술의 아비며"
+      ],
+      "raw_text_hashes": [
+        "ba7a16115fbadbd79376a203f7d724786d1ec0836c5b00f2b1e2a6214f45e5d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:46",
+      "sequence": 10353,
+      "chapter_label": "1CH 2",
+      "verse_label": "46",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 46
+        }
+      ],
+      "en": "Ephah, Caleb’s concubine, bore Haran, Moza, and Gazez; and Haran became the father of Gazez.",
+      "ko": "갈렙의 첩 에바는 하란과 모사와 가세스를 낳았고 하란은 가세스를 낳았으며",
+      "source_text_hash": "c7ff9b70d59ce7d23038954b17d4f4773722299c4b828f34187120d064e25365",
+      "translation_text_hash": "052697f9a03790d87e248adda359eb587e1df5d725a332752e0addb482fcbd9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙의 첩 에바는 하란과 모사와 가세스를 낳았고 하란은 가세스를 낳았으며"
+      ],
+      "raw_text_hashes": [
+        "052697f9a03790d87e248adda359eb587e1df5d725a332752e0addb482fcbd9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:47",
+      "sequence": 10354,
+      "chapter_label": "1CH 2",
+      "verse_label": "47",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 47
+        }
+      ],
+      "en": "The sons of Jahdai: Regem, Jothan, Geshan, Pelet, Ephah, and Shaaph.",
+      "ko": "야대의 아들은 레겜과 요단과 게산과 벨렛과 에바와 사압이며",
+      "source_text_hash": "f60b522ab28658afe34ad8fb428231b8a34625e3a5c3e6eb0c94aacc061f0569",
+      "translation_text_hash": "d40a0c3df3c01640289b77176ded00073d85a95bf4290919662531998637f430",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야대의 아들은 레겜과 요단과 게산과 벨렛과 에바와 사압이며"
+      ],
+      "raw_text_hashes": [
+        "d40a0c3df3c01640289b77176ded00073d85a95bf4290919662531998637f430"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:48",
+      "sequence": 10355,
+      "chapter_label": "1CH 2",
+      "verse_label": "48",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 48
+        }
+      ],
+      "en": "Maacah, Caleb’s concubine, bore Sheber and Tirhanah.",
+      "ko": "갈렙의 첩 마아가는 세벨과 디르하나를 낳았고",
+      "source_text_hash": "6295cbf52c5340e9e71630ca41af3264e2fd4e02ba32f9b86fd55a54ee050d7f",
+      "translation_text_hash": "7369b673cd41e0063f3e507e4dd32f70d1d31173ad3cd7f0d3c75a4705a8c49b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙의 첩 마아가는 세벨과 디르하나를 낳았고"
+      ],
+      "raw_text_hashes": [
+        "7369b673cd41e0063f3e507e4dd32f70d1d31173ad3cd7f0d3c75a4705a8c49b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:49",
+      "sequence": 10356,
+      "chapter_label": "1CH 2",
+      "verse_label": "49",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 49
+        }
+      ],
+      "en": "She bore also Shaaph the father of Madmannah, Sheva the father of Machbena and the father of Gibea; and the daughter of Caleb was Achsah.",
+      "ko": "또 맛만나의 아비 사압을 낳았고 또 막베나와 기브아의 아비 스와를 낳았으며 갈렙의 딸은 악사더라",
+      "source_text_hash": "c12fb4a69ea38085a410815d6d82ddf79374faa529fbe7c246eade99bfd5d279",
+      "translation_text_hash": "be1bf8c87594b681b58cee071f782b52f6e98824046f019d76c6d5062af2b03c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 맛만나의 아비 사압을 낳았고 또 막베나와 기브아의 아비 스와를 낳았으며 갈렙의 딸은 악사더라"
+      ],
+      "raw_text_hashes": [
+        "be1bf8c87594b681b58cee071f782b52f6e98824046f019d76c6d5062af2b03c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:50",
+      "sequence": 10357,
+      "chapter_label": "1CH 2",
+      "verse_label": "50",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 50
+        }
+      ],
+      "en": "These were the sons of Caleb, the son of Hur, the firstborn of Ephrathah: Shobal the father of Kiriath Jearim,",
+      "ko": "갈렙의 자손 곧 에브라다의 맏아들 훌의 아들은 이러하니 기럇여아림의 아비 소발과",
+      "source_text_hash": "825968d198a9153ad4c8f44ebd283512e9fc2e9a72d9dd60f09387575299ed2e",
+      "translation_text_hash": "daa3552377eb44cee545fec6032bd39ba76443cabe33353fdcab4d0e8477bf7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈렙의 자손 곧 에브라다의 맏아들 훌의 아들은 이러하니 기럇여아림의 아비 소발과"
+      ],
+      "raw_text_hashes": [
+        "daa3552377eb44cee545fec6032bd39ba76443cabe33353fdcab4d0e8477bf7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:51",
+      "sequence": 10358,
+      "chapter_label": "1CH 2",
+      "verse_label": "51",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 51
+        }
+      ],
+      "en": "Salma the father of Bethlehem, and Hareph the father of Beth Gader.",
+      "ko": "베들레헴의 아비 살마와 벧가델의 아비 하렙이라",
+      "source_text_hash": "e2ed2b4b5f2dbdaed807ec60a0a01ec2767c83e634fe3e76ce617c4387a7f66f",
+      "translation_text_hash": "4c975df7c41fc2f08783c8b9c58464f8c88b01cc5afdebd7919404e3bef6f52f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베들레헴의 아비 살마와 벧가델의 아비 하렙이라"
+      ],
+      "raw_text_hashes": [
+        "4c975df7c41fc2f08783c8b9c58464f8c88b01cc5afdebd7919404e3bef6f52f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:52",
+      "sequence": 10359,
+      "chapter_label": "1CH 2",
+      "verse_label": "52",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 52
+        }
+      ],
+      "en": "Shobal the father of Kiriath Jearim had sons: Haroeh, half of the Menuhoth.",
+      "ko": "기럇여아림의 아비 소발의 자손은 하로에와 므누홋 사람의 절반이니",
+      "source_text_hash": "a25762dcc9014b8e6a184ec06583e5806bd086f8d87e917a913e6629b0dc82ac",
+      "translation_text_hash": "e7ac9009301dd05be7d1018fef7ff8ff651071e8d2f824792b690f09ae9cc7a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기럇여아림의 아비 소발의 자손은 하로에와 므누홋 사람의 절반이니"
+      ],
+      "raw_text_hashes": [
+        "e7ac9009301dd05be7d1018fef7ff8ff651071e8d2f824792b690f09ae9cc7a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:53",
+      "sequence": 10360,
+      "chapter_label": "1CH 2",
+      "verse_label": "53",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 53
+        }
+      ],
+      "en": "The families of Kiriath Jearim: the Ithrites, the Puthites, the Shumathites, and the Mishraites; from them came the Zorathites and the Eshtaolites.",
+      "ko": "기럇여아림 족속들은 이델 족속과 붓 족속과 수맛 족속과 미스라 족속이라 이로 말미암아 소라와 에스다올 두 족속이 나왔으며",
+      "source_text_hash": "4ef78a4519b7a70dece3445c8e283ecbe273ce743960535b906f28ca72eb329d",
+      "translation_text_hash": "181d9a1a9a52ca0fc756623dca3fc3f423ae7356eea5718fa2acb840946a0821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기럇여아림 족속들은 이델 족속과 붓 족속과 수맛 족속과 미스라 족속이라 이로 말미암아 소라와 에스다올 두 족속이 나왔으며"
+      ],
+      "raw_text_hashes": [
+        "181d9a1a9a52ca0fc756623dca3fc3f423ae7356eea5718fa2acb840946a0821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:54",
+      "sequence": 10361,
+      "chapter_label": "1CH 2",
+      "verse_label": "54",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 54
+        }
+      ],
+      "en": "The sons of Salma: Bethlehem, the Netophathites, Atroth Beth Joab, and half of the Manahathites, the Zorites.",
+      "ko": "살마의 자손들은 베들레헴과 느도바 족속과 아다롯벳요압과 마하낫 족속의 절반과 소라 족속과",
+      "source_text_hash": "b8f9512132c6a2d6c2a78227aca5c840146b343b95201df7f7d185a71dc30d81",
+      "translation_text_hash": "bdb86a1c5f1d9d3a5289697fc2b3ce268203bb2b746981a62b468cc813d81ebd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살마의 자손들은 베들레헴과 느도바 족속과 아다롯벳요압과 마하낫 족속의 절반과 소라 족속과"
+      ],
+      "raw_text_hashes": [
+        "bdb86a1c5f1d9d3a5289697fc2b3ce268203bb2b746981a62b468cc813d81ebd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:2:55",
+      "sequence": 10362,
+      "chapter_label": "1CH 2",
+      "verse_label": "55",
+      "locator": {
+        "book": "1CH",
+        "chapter": 2,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 2,
+          "verse": 55
+        }
+      ],
+      "en": "The families of scribes who lived at Jabez: the Tirathites, the Shimeathites, and the Sucathites. These are the Kenites who came from Hammath, the father of the house of Rechab.",
+      "ko": "야베스에 거한 서기관 족속 곧 디랏 족속과 시므앗 족속과 수갓 족속이니 이는 다 레갑의 집 조상 함맛에게서 나온 겐 족속이더라",
+      "source_text_hash": "e9951f3ffa8ce7750d9daa1015b8d9aed0bd0ff1512a4c3be1f6966a1e2d08b5",
+      "translation_text_hash": "de7858bdc68c1244aa621417291e36203ab090c5b7d56b254e4f9d85b9918895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야베스에 거한 서기관 족속 곧 디랏 족속과 시므앗 족속과 수갓 족속이니 이는 다 레갑의 집 조상 함맛에게서 나온 겐 족속이더라"
+      ],
+      "raw_text_hashes": [
+        "de7858bdc68c1244aa621417291e36203ab090c5b7d56b254e4f9d85b9918895"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:030",
+  "unit_ordinal": 832,
+  "unit_label": "EZK 30",
+  "book_code": "EZK",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:30:1",
+      "sequence": 21206,
+      "chapter_label": "EZK 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came again to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "53317430a9b7a9fdbe9156a35ae512112bae6b6f909738ce12aa74f8e4a71377",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:2",
+      "sequence": 21207,
+      "chapter_label": "EZK 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, prophesy, and say, ‘The Lord GOD says: “Wail, ‘Alas for the day!’",
+      "ko": "인자야 너는 예언하여 이르라 주 여호와의 말씀에 너희는 통곡하며 이르기를 슬프다 이 날이여 하라",
+      "source_text_hash": "a713fbd9dd31bb745b3330f553ecbf56e7147c034f500f98ff78bdfaf7f70b17",
+      "translation_text_hash": "d37800a47f1f9a61adf7f8360a8a3227f669c6b02bb4f4b7615581151c40530e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 예언하여 이르라 주 여호와의 말씀에 너희는 통곡하며 이르기를 슬프다 이 날이여 하라"
+      ],
+      "raw_text_hashes": [
+        "d37800a47f1f9a61adf7f8360a8a3227f669c6b02bb4f4b7615581151c40530e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:3",
+      "sequence": 21208,
+      "chapter_label": "EZK 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "For the day is near, even the LORD’s day is near. It will be a day of clouds, a time of the nations.",
+      "ko": "그 날이 가까왔도다 여호와의 날이 가까왔도다 구름의 날일 것이요 열국의 때이리로다",
+      "source_text_hash": "f7c90484c17b95cc00d12e250001d9767176e1b0920617e8b11e705c8177b9a4",
+      "translation_text_hash": "e2890256f45d0985a9e84d97fe11a53902eef3474ed41c7b2512b1cfe63ce585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날이 가까왔도다 여호와의 날이 가까왔도다 구름의 날일 것이요 열국의 때이리로다"
+      ],
+      "raw_text_hashes": [
+        "e2890256f45d0985a9e84d97fe11a53902eef3474ed41c7b2512b1cfe63ce585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:4",
+      "sequence": 21209,
+      "chapter_label": "EZK 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "A sword will come on Egypt, and anguish will be in Ethiopia, when the slain fall in Egypt. They take away her multitude, and her foundations are broken down.",
+      "ko": "애굽에 칼이 임할 것이라 애굽에서 살륙 당한 자들이 엎드러질 때에 구스에 심한 근심이 있을 것이며 애굽의 무리가 옮기우며 그 기지가 헐릴 것이요",
+      "source_text_hash": "735f288371055710ea4acf0f19e1213eb89b6d8b61a98e3cafae9525a1f860a6",
+      "translation_text_hash": "36504172afe94bddef8e8e055957167f93da2d03229f2f7b6d3421f26251316a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에 칼이 임할 것이라 애굽에서 살륙 당한 자들이 엎드러질 때에 구스에 심한 근심이 있을 것이며 애굽의 무리가 옮기우며 그 기지가 헐릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "36504172afe94bddef8e8e055957167f93da2d03229f2f7b6d3421f26251316a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:5",
+      "sequence": 21210,
+      "chapter_label": "EZK 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "“‘“Ethiopia, Put, Lud, all the mixed people, Cub, and the children of the land that is allied with them, will fall with them by the sword.”",
+      "ko": "구스와 붓과 룻과 모든 섞인 백성과 굽과 및 동맹한 땅의 백성들이 그들과 함께 칼에 엎드러지리라",
+      "source_text_hash": "d3aaa93f4ccf517583abde35b829591632ef60b4db9e2b295234e2939adca91e",
+      "translation_text_hash": "7315bfe2879f18c70812b0d24776326f56a55d9068ad6f2c04c98c0b77b24821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구스와 붓과 룻과 모든 섞인 백성과 굽과 및 동맹한 땅의 백성들이 그들과 함께 칼에 엎드러지리라"
+      ],
+      "raw_text_hashes": [
+        "7315bfe2879f18c70812b0d24776326f56a55d9068ad6f2c04c98c0b77b24821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:6",
+      "sequence": 21211,
+      "chapter_label": "EZK 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "“‘The LORD says: “They also who uphold Egypt will fall. The pride of her power will come down. They will fall by the sword in it from the tower of Seveneh,” says the Lord GOD.",
+      "ko": "나 여호와가 말하노라 애굽을 붙들어 주는 자도 엎드러질 것이요 애굽의 교만한 권세도 낮아질 것이라 믹돌에서부터 수에네까지 무리가 그 가운데서 칼에 엎드러지리라 나 주 여호와의 말이니라",
+      "source_text_hash": "66d9e0f15a41944fb52b03517a37c7139a8621f4f54fc74fe50f2e50370ce7c4",
+      "translation_text_hash": "34f7c1e95a7f7f30e7f0576041da847d9380c3ba7eaac474f65967ef4a4a5fd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 애굽을 붙들어 주는 자도 엎드러질 것이요 애굽의 교만한 권세도 낮아질 것이라 믹돌에서부터 수에네까지 무리가 그 가운데서 칼에 엎드러지리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "34f7c1e95a7f7f30e7f0576041da847d9380c3ba7eaac474f65967ef4a4a5fd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:7",
+      "sequence": 21212,
+      "chapter_label": "EZK 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "“They will be desolate in the middle of the countries that are desolate. Her cities will be among the cities that are wasted.",
+      "ko": "황무한 열방 같이 그들도 황무할 것이며 사막이 된 성읍들 같이 그 성읍들도 사막이 될 것이라",
+      "source_text_hash": "4160c6514572e64b79aac3ce1f5c5912e50258e6725827c1f7d21d65d82fc937",
+      "translation_text_hash": "f8ee8300bb53d334d62feb15cd5cd5b9d4705333d9a9c8de21401170ee26d507",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "황무한 열방 같이 그들도 황무할 것이며 사막이 된 성읍들 같이 그 성읍들도 사막이 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "f8ee8300bb53d334d62feb15cd5cd5b9d4705333d9a9c8de21401170ee26d507"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:8",
+      "sequence": 21213,
+      "chapter_label": "EZK 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "They will know that I am the LORD when I have set a fire in Egypt, and all her helpers are destroyed.",
+      "ko": "내가 애굽에 불을 일으키며 그 모든 돕는 자를 멸할 때에 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "1e2d12caf10ab754b14bfef222fc38ca0c8407905cd113f7a703334a0761725e",
+      "translation_text_hash": "2c92aae7e4c029ee058777d3622c10d4690a53f1a1783b9b8bc3d7d45037a931",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽에 불을 일으키며 그 모든 돕는 자를 멸할 때에 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "2c92aae7e4c029ee058777d3622c10d4690a53f1a1783b9b8bc3d7d45037a931"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:9",
+      "sequence": 21214,
+      "chapter_label": "EZK 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "“‘“In that day messengers will go out from before me in ships to make the careless Ethiopians afraid. There will be anguish on them, as in the day of Egypt; for, behold, it comes.”",
+      "ko": "그 날에 사자들이 내 앞에서 배로 나아가서 염려 없는 구스 사람을 두렵게 하리니 애굽의 재앙의 날과 같이 그들에게도 심한 근심이 있으리라 이것이 오리로다",
+      "source_text_hash": "5236686d5b160d334d738c4c1e3303691ed91b82c76656ea8c1eec1e8fda0e9e",
+      "translation_text_hash": "af8f0baf1bab38e7f530849717fd1f96a0ee4835fc5cf5747cbd2726c7c041ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 사자들이 내 앞에서 배로 나아가서 염려 없는 구스 사람을 두렵게 하리니 애굽의 재앙의 날과 같이 그들에게도 심한 근심이 있으리라 이것이 오리로다"
+      ],
+      "raw_text_hashes": [
+        "af8f0baf1bab38e7f530849717fd1f96a0ee4835fc5cf5747cbd2726c7c041ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:10",
+      "sequence": 21215,
+      "chapter_label": "EZK 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "“‘The Lord GOD says: “I will also make the multitude of Egypt to cease, by the hand of Nebuchadnezzar king of Babylon.",
+      "ko": "나 주 여호와가 말하노라 내가 또 바벨론 왕 느부갓네살의 손으로 애굽 무리들을 끊으리니",
+      "source_text_hash": "22981075e25cf0a7fabd56086301157b112ab5b61ad0b6a34ddce2aa62a00d2e",
+      "translation_text_hash": "e6de15b407aae32987d10ddd0a10235b2d0462a528d1cf0bd24e8bd629a033c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 또 바벨론 왕 느부갓네살의 손으로 애굽 무리들을 끊으리니"
+      ],
+      "raw_text_hashes": [
+        "e6de15b407aae32987d10ddd0a10235b2d0462a528d1cf0bd24e8bd629a033c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:11",
+      "sequence": 21216,
+      "chapter_label": "EZK 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "He and his people with him, the terrible of the nations, will be brought in to destroy the land. They will draw their swords against Egypt, and fill the land with the slain.",
+      "ko": "그가 열국 중에 강포한 자기 군대를 거느리고 와서 그 땅을 멸할 때에 칼을 빼어 애굽을 쳐서 살륙 당한 자로 땅에 가득하게 하리라",
+      "source_text_hash": "f3068aafd57e87b71c317a1f068b2b5733ff3d5310074930be46b145567ce767",
+      "translation_text_hash": "aa6b942c84a65afbecb2074c47b7854d16bd1efd2378dc44c87fac8aec5d68b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 열국 중에 강포한 자기 군대를 거느리고 와서 그 땅을 멸할 때에 칼을 빼어 애굽을 쳐서 살륙 당한 자로 땅에 가득하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "aa6b942c84a65afbecb2074c47b7854d16bd1efd2378dc44c87fac8aec5d68b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:12",
+      "sequence": 21217,
+      "chapter_label": "EZK 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "I will make the rivers dry, and will sell the land into the hand of evil men. I will make the land desolate, and all that is therein, by the hand of foreigners. I, the LORD, have spoken it.”",
+      "ko": "내가 그 모든 강을 말리우고 그 땅을 악인의 손에 팔겠으며 타국 사람의 손으로 그 땅과 그 가운데 있는 모든 것을 황무케 하리라 나 여호와의 말이니라",
+      "source_text_hash": "de9fd85f74da7a64ef8a116b57d535a6c6173113f4a2b43819b61cf6bdc155ec",
+      "translation_text_hash": "2349c11462bbdd90aad05bb5e0ff74d018a2420d94698c0a51af7313f0014a88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 모든 강을 말리우고 그 땅을 악인의 손에 팔겠으며 타국 사람의 손으로 그 땅과 그 가운데 있는 모든 것을 황무케 하리라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2349c11462bbdd90aad05bb5e0ff74d018a2420d94698c0a51af7313f0014a88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:13",
+      "sequence": 21218,
+      "chapter_label": "EZK 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "“‘The Lord GOD says: “I will also destroy the idols, and I will cause the images to cease from Memphis. There will be no more a prince from the land of Egypt. I will put a fear in the land of Egypt.",
+      "ko": "나 주 여호와가 말하노라 내가 그 우상들을 멸하며 신상들을 놉 가운데서 끊으며 애굽 땅에서 왕이 다시 나지 못하게 하고 그 땅에 두려움이 있게 하리라",
+      "source_text_hash": "4a06d0878323340be081f8389ce42626d123fd54c5cb2f7606b6349435658eb7",
+      "translation_text_hash": "0fbbbfcb4cea77a20a79ead9844505d190074d44a137d605ff902dd619335d7b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 그 우상들을 멸하며 신상들을 놉 가운데서 끊으며 애굽 땅에서 왕이 다시 나지 못하게 하고 그 땅에 두려움이 있게 하리라"
+      ],
+      "raw_text_hashes": [
+        "0fbbbfcb4cea77a20a79ead9844505d190074d44a137d605ff902dd619335d7b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:14",
+      "sequence": 21219,
+      "chapter_label": "EZK 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "I will make Pathros desolate, and will set a fire in Zoan, and will execute judgments on No.",
+      "ko": "내가 바드로스를 황무케 하며 소안에 불을 일으키며 노를 국문하며",
+      "source_text_hash": "7d067f65e26fb903a89c60c8540efc8643835c30798589cf46dfa01dabe22d31",
+      "translation_text_hash": "7ae1b791524038383aa0d62da148851b34df152e24f888972864482f0604146f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바드로스를 황무케 하며 소안에 불을 일으키며 노를 국문하며"
+      ],
+      "raw_text_hashes": [
+        "7ae1b791524038383aa0d62da148851b34df152e24f888972864482f0604146f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:15",
+      "sequence": 21220,
+      "chapter_label": "EZK 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "I will pour my wrath on Sin, the stronghold of Egypt. I will cut off the multitude of No.",
+      "ko": "내 분노를 애굽의 견고한 성 신에 쏟고 또 노의 무리를 끊을 것이라",
+      "source_text_hash": "221341cf9a02571c8cc25601b203416127ed5766ee78a1c8ac0ac60ac73c8155",
+      "translation_text_hash": "c9e780baec33506e81b21763914f0fc690b657444a01445408361aa42ab5cd7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 분노를 애굽의 견고한 성 신에 쏟고 또 노의 무리를 끊을 것이라"
+      ],
+      "raw_text_hashes": [
+        "c9e780baec33506e81b21763914f0fc690b657444a01445408361aa42ab5cd7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:16",
+      "sequence": 21221,
+      "chapter_label": "EZK 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "I will set a fire in Egypt Sin will be in great anguish. No will be broken up. Memphis will have adversaries in the daytime.",
+      "ko": "내가 애굽에 불을 일으키리니 신이 심히 근심할 것이며 노는 찢어 나뉠 것이며 놉은 날로 대적이 있을 것이며",
+      "source_text_hash": "e032e85e8c3fdcbe5c5d53ca9e286326b4f01e0ef9f36c442a611b5a8ff8f053",
+      "translation_text_hash": "0fd7e12f3ddaf8efe241a68ba8cc86f38bbd09bc1c76ce0039a03898b3fd9c4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽에 불을 일으키리니 신이 심히 근심할 것이며 노는 찢어 나뉠 것이며 놉은 날로 대적이 있을 것이며"
+      ],
+      "raw_text_hashes": [
+        "0fd7e12f3ddaf8efe241a68ba8cc86f38bbd09bc1c76ce0039a03898b3fd9c4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:17",
+      "sequence": 21222,
+      "chapter_label": "EZK 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "The young men of Aven and of Pibeseth will fall by the sword. They will go into captivity.",
+      "ko": "아웬과 비베셋의 소년들은 칼에 엎드러질 것이며 그 성읍 거민들은 포로 될 것이라",
+      "source_text_hash": "4ec125afe26871615c639a37644effa948f2a5a54329d892c8d15d13b6211fc6",
+      "translation_text_hash": "98ea8ea0cb3f288a686c9c0f07fa9e1d982a304a76f7a3f17c903cd50b72a330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아웬과 비베셋의 소년들은 칼에 엎드러질 것이며 그 성읍 거민들은 포로 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "98ea8ea0cb3f288a686c9c0f07fa9e1d982a304a76f7a3f17c903cd50b72a330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:18",
+      "sequence": 21223,
+      "chapter_label": "EZK 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "At Tehaphnehes also the day will withdraw itself, when I break the yokes of Egypt there. The pride of her power will cease in her. As for her, a cloud will cover her, and her daughters will go into captivity.",
+      "ko": "내가 애굽 멍에를 꺾으며 그 교만한 권세를 그 가운데서 그치게 할 때에 드합느헤스에서는 날이 어둡겠고 그 성읍에는 구름이 덮일 것이며 그 딸들은 포로 될 것이라",
+      "source_text_hash": "dbf4be62a858b54a6ee5b9f99156712d5fd1b205770d4cffb711cd121b2ae92b",
+      "translation_text_hash": "880525a34a11693be5f309d6646da901bbd67429e3a75ede7f38104a8c62c4b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 멍에를 꺾으며 그 교만한 권세를 그 가운데서 그치게 할 때에 드합느헤스에서는 날이 어둡겠고 그 성읍에는 구름이 덮일 것이며 그 딸들은 포로 될 것이라"
+      ],
+      "raw_text_hashes": [
+        "880525a34a11693be5f309d6646da901bbd67429e3a75ede7f38104a8c62c4b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:19",
+      "sequence": 21224,
+      "chapter_label": "EZK 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "Thus I will execute judgments on Egypt. Then they will know that I am the LORD.”’”",
+      "ko": "이와 같이 내가 애굽을 국문하리니 그들이 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "639a6f650bb57dc9e2146600e4276ef46e98d094eef2380983447ca21d28ae9e",
+      "translation_text_hash": "1f9fd4c4306ec686b75e3b3d3b9531dc2961255399c4124ebad573235de2f3d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내가 애굽을 국문하리니 그들이 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "1f9fd4c4306ec686b75e3b3d3b9531dc2961255399c4124ebad573235de2f3d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:20",
+      "sequence": 21225,
+      "chapter_label": "EZK 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "In the eleventh year, in the first month, in the seventh day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십 일년 정월 칠일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "bdf10b771f52c837f51b1ff529c2d13923d333e9792e97180352b8688249ab41",
+      "translation_text_hash": "86d2aead84ea271ed030429e14f3df61f26caec67709540e265b004ace17bab2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 일년 정월 칠일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "86d2aead84ea271ed030429e14f3df61f26caec67709540e265b004ace17bab2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:21",
+      "sequence": 21226,
+      "chapter_label": "EZK 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "“Son of man, I have broken the arm of Pharaoh king of Egypt. Behold, it has not been bound up, to apply medicines, to put a bandage to bind it, that it may become strong to hold the sword.",
+      "ko": "인자야 내가 애굽 왕 바로의 팔을 꺾었더니 칼을 잡을 힘이 있도록 그것을 그저 싸매지도 못하였고 약을 붙여 싸매지도 못하였느니라",
+      "source_text_hash": "87b7ed08e8ca5626c83b247556ffe10e2cece318c5857ff7d6c13711701843ca",
+      "translation_text_hash": "487454e098c776144359dab9e5155fa5f5c583906b66d612a10ac4425829b319",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 내가 애굽 왕 바로의 팔을 꺾었더니 칼을 잡을 힘이 있도록 그것을 그저 싸매지도 못하였고 약을 붙여 싸매지도 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "487454e098c776144359dab9e5155fa5f5c583906b66d612a10ac4425829b319"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:22",
+      "sequence": 21227,
+      "chapter_label": "EZK 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "Therefore the Lord GOD says: ‘Behold, I am against Pharaoh king of Egypt, and will break his arms, the strong arm, and that which was broken. I will cause the sword to fall out of his hand.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 애굽왕 바로를 대적하여 그 두 팔 곧 성한 팔과 이미 꺾인 팔을 꺾어서 칼이 그 손에서 떨어지게 하고",
+      "source_text_hash": "16815f7650bb24f5de66c36e9ccc8003aade49bee35a093d2d8fcd48689f6580",
+      "translation_text_hash": "fd6af92c6d07ff15800317d2197f58bcbf86d11eeb85b49127b7d74997a0eb9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 애굽왕 바로를 대적하여 그 두 팔 곧 성한 팔과 이미 꺾인 팔을 꺾어서 칼이 그 손에서 떨어지게 하고"
+      ],
+      "raw_text_hashes": [
+        "fd6af92c6d07ff15800317d2197f58bcbf86d11eeb85b49127b7d74997a0eb9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:23",
+      "sequence": 21228,
+      "chapter_label": "EZK 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "I will scatter the Egyptians among the nations, and will disperse them through the countries.",
+      "ko": "애굽 사람을 열국 가운데로 흩으며 열방 가운데로 헤칠찌라",
+      "source_text_hash": "8961324ee1c20437e9352fcfa2740ad979e6cd68e525656d98cdcb24719acd70",
+      "translation_text_hash": "99db5bd85bc718280786b7f74394fb5ce406c0b5d2e3d8f39da656e639337b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람을 열국 가운데로 흩으며 열방 가운데로 헤칠찌라"
+      ],
+      "raw_text_hashes": [
+        "99db5bd85bc718280786b7f74394fb5ce406c0b5d2e3d8f39da656e639337b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:24",
+      "sequence": 21229,
+      "chapter_label": "EZK 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "I will strengthen the arms of the king of Babylon, and put my sword in his hand; but I will break the arms of Pharaoh, and he will groan before the king of Babylon with the groaning of a mortally wounded man.",
+      "ko": "내가 바벨론 왕의 팔을 견고하게 하고 내 칼을 그 손에 붙이려니와 내가 바로의 팔을 꺾으리니 그가 바벨론 왕의 앞에서 고통하기를 죽게 상한 자의 고통하듯 하리라",
+      "source_text_hash": "82420540dcf0b621d9dacb27820a005e7fa11682bcb25aa7d2d76ba1bb1475ec",
+      "translation_text_hash": "890ba0717d491f383bb835bfc1099d925ae3c8ff0b9ced77caf9bb6e968234ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바벨론 왕의 팔을 견고하게 하고 내 칼을 그 손에 붙이려니와 내가 바로의 팔을 꺾으리니 그가 바벨론 왕의 앞에서 고통하기를 죽게 상한 자의 고통하듯 하리라"
+      ],
+      "raw_text_hashes": [
+        "890ba0717d491f383bb835bfc1099d925ae3c8ff0b9ced77caf9bb6e968234ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:25",
+      "sequence": 21230,
+      "chapter_label": "EZK 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "I will hold up the arms of the king of Babylon, but the arms of Pharaoh will fall down. Then they will know that I am the LORD when I put my sword into the hand of the king of Babylon, and he stretches it out on the land of Egypt.",
+      "ko": "내가 바벨론왕의 팔은 들어주고 바로의 팔은 떨어뜨릴 것이라 내가 내 칼을 바벨론 왕의 손에 붙이고 그로 들어 애굽 땅을 치게 하리니 그들이 나를 여호와인줄 알겠고",
+      "source_text_hash": "fe1659a6b6d34c308e419fa2cb20347e2d2dbd56894ea48686618d60210779eb",
+      "translation_text_hash": "7ff71e9f7b3feaf91f131b5c93754b9e57e1e854c085df384e45f8005f234f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바벨론왕의 팔은 들어주고 바로의 팔은 떨어뜨릴 것이라 내가 내 칼을 바벨론 왕의 손에 붙이고 그로 들어 애굽 땅을 치게 하리니 그들이 나를 여호와인줄 알겠고"
+      ],
+      "raw_text_hashes": [
+        "7ff71e9f7b3feaf91f131b5c93754b9e57e1e854c085df384e45f8005f234f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:30:26",
+      "sequence": 21231,
+      "chapter_label": "EZK 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "I will scatter the Egyptians among the nations and disperse them through the countries. Then they will know that I am the LORD.’”",
+      "ko": "내가 애굽 사람을 열국 가운데로 흩으며 열방 가운데로 헤치리니 그들이 나를 여호와인줄 알리라",
+      "source_text_hash": "bc57de6812e5ad5011f1c9c9ee5b33441aaeb86e08c7ddd5efe05f85739b0b27",
+      "translation_text_hash": "004b8e886a1614ae8758c1590441593bed0434f8a31cba30257b2be301749416",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 사람을 열국 가운데로 흩으며 열방 가운데로 헤치리니 그들이 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "004b8e886a1614ae8758c1590441593bed0434f8a31cba30257b2be301749416"
+      ]
+    }
+  ]
+}

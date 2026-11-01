@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:020",
+  "unit_ordinal": 949,
+  "unit_label": "MAT 20",
+  "book_code": "MAT",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:20:1",
+      "sequence": 23794,
+      "chapter_label": "MAT 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "“For the Kingdom of Heaven is like a man who was the master of a household, who went out early in the morning to hire laborers for his vineyard.",
+      "ko": "천국은 마치 품군을 얻어 포도원에 들여보내려고 이른 아침에 나간 집 주인과 같으니",
+      "source_text_hash": "3bd24b279b078c77a52520ea1a0f4efb80602cd2a67549900b0a9906adde930b",
+      "translation_text_hash": "59c0bf8060ea8163167acb3bd7397e4c6c652d8aae50a73108aa94cdc8b1355c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천국은 마치 품군을 얻어 포도원에 들여보내려고 이른 아침에 나간 집 주인과 같으니"
+      ],
+      "raw_text_hashes": [
+        "59c0bf8060ea8163167acb3bd7397e4c6c652d8aae50a73108aa94cdc8b1355c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:2",
+      "sequence": 23795,
+      "chapter_label": "MAT 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "When he had agreed with the laborers for a denariusa day, he sent them into his vineyard.",
+      "ko": "저가 하루 한 데나리온씩 품군들과 약속하여 포도원에 들여보내고",
+      "source_text_hash": "94e3ec8d183e94852b738c05b4d232759842accbaa630328a02bd167bbf31148",
+      "translation_text_hash": "889b1b5d3bcf8b73e00ba7005549901814431f46961c8fc9a20dcb73a333b5c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 하루 한 데나리온씩 품군들과 약속하여 포도원에 들여보내고"
+      ],
+      "raw_text_hashes": [
+        "889b1b5d3bcf8b73e00ba7005549901814431f46961c8fc9a20dcb73a333b5c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:3",
+      "sequence": 23796,
+      "chapter_label": "MAT 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "He went out about the third hour,and saw others standing idle in the marketplace.",
+      "ko": "또 제 삼시에 나가보니 장터에 놀고 섰는 사람들이 또 있는지라",
+      "source_text_hash": "09b3f1c5cf7cd4e42ef49a89e870e49a7c49c0e3a0374562a49e057e5528da7b",
+      "translation_text_hash": "fe7b88d822f17204ffefccaf63b280d40b2e03362eecad669fa0ec6c4f0e7c79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 제 삼시에 나가보니 장터에 놀고 섰는 사람들이 또 있는지라"
+      ],
+      "raw_text_hashes": [
+        "fe7b88d822f17204ffefccaf63b280d40b2e03362eecad669fa0ec6c4f0e7c79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:4",
+      "sequence": 23797,
+      "chapter_label": "MAT 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "He said to them, ‘You also go into the vineyard, and whatever is right I will give you.’ So they went their way.",
+      "ko": "저희에게 이르되 너희도 포도원에 들어가라 내가 너희에게 상당하게 주리라 하니 저희가 가고",
+      "source_text_hash": "57e89cc799c727a457dadf344fb9a058c8af685ca0e3fa4efcbd41947e080cf0",
+      "translation_text_hash": "e7ecdebfc1973d62ad94b44e461cf525994c63e3634d3c366826f7715837de0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희에게 이르되 너희도 포도원에 들어가라 내가 너희에게 상당하게 주리라 하니 저희가 가고"
+      ],
+      "raw_text_hashes": [
+        "e7ecdebfc1973d62ad94b44e461cf525994c63e3634d3c366826f7715837de0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:5",
+      "sequence": 23798,
+      "chapter_label": "MAT 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "Again he went out about the sixth and the ninth hour,and did likewise.",
+      "ko": "제 육시와 제 구시에 또 나가 그와 같이하고",
+      "source_text_hash": "24120c26c83847df7a656bc2dd9f044f1ba87899994c8100a30a7f48002c0399",
+      "translation_text_hash": "318cb8363d863535c9d3f9c41355dde603f7155b3e9e6a0af8acbbfb0561887b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 육시와 제 구시에 또 나가 그와 같이하고"
+      ],
+      "raw_text_hashes": [
+        "318cb8363d863535c9d3f9c41355dde603f7155b3e9e6a0af8acbbfb0561887b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:6",
+      "sequence": 23799,
+      "chapter_label": "MAT 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "About the eleventh hourhe went out and found others standing idle. He said to them, ‘Why do you stand here all day idle?’",
+      "ko": "제 십일시에도 나가 보니 섰는 사람들이 또 있는지라",
+      "source_text_hash": "d62f1b0afad4de17178001cc8707fb2642e882f82ce3f0cfd5d822b79e85d6cf",
+      "translation_text_hash": "57913619abc2aee855386dd9e5e1c558c447b6739d5ea7dc6560aa827fd37352",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십일시에도 나가 보니 섰는 사람들이 또 있는지라"
+      ],
+      "raw_text_hashes": [
+        "57913619abc2aee855386dd9e5e1c558c447b6739d5ea7dc6560aa827fd37352"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:7",
+      "sequence": 23800,
+      "chapter_label": "MAT 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "“They said to him, ‘Because no one has hired us.’“He said to them, ‘You also go into the vineyard, and you will receive whatever is right.’",
+      "ko": "가로되 너희는 어찌하여 종일토록 놀고 여기 섰느뇨 가로되 우리를 품군으로 쓰는이가 없음이니이다 가로되 너희도 포도원에 들어가라 하니라",
+      "source_text_hash": "ec358179d03201077eec15817732a4e22f5b096208ca2eed7b76e8dffa2a6aca",
+      "translation_text_hash": "a23a3accbcfaa3b7453f9eeac43970e8d2b6a51d0e0658c4c94f3ca9394e0a4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너희는 어찌하여 종일토록 놀고 여기 섰느뇨 가로되 우리를 품군으로 쓰는이가 없음이니이다 가로되 너희도 포도원에 들어가라 하니라"
+      ],
+      "raw_text_hashes": [
+        "a23a3accbcfaa3b7453f9eeac43970e8d2b6a51d0e0658c4c94f3ca9394e0a4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:8",
+      "sequence": 23801,
+      "chapter_label": "MAT 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "“When evening had come, the lord of the vineyard said to his manager, ‘Call the laborers and pay them their wages, beginning from the last to the first.’",
+      "ko": "저물매 포도원 주인이 청지기에게 이르되 품군들을 불러 나중 온 자로부터 시작하여 먼저 온 자까지 삯을 주라 하니",
+      "source_text_hash": "84c4fca44a2eb7f048bdbbc4b4d22204bb077deb28c022848c864f83e874d426",
+      "translation_text_hash": "e4312638785652e7a2f8fc3194c4462041b4fece1a40bf76c7615d0eaef1b33b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물매 포도원 주인이 청지기에게 이르되 품군들을 불러 나중 온 자로부터 시작하여 먼저 온 자까지 삯을 주라 하니"
+      ],
+      "raw_text_hashes": [
+        "e4312638785652e7a2f8fc3194c4462041b4fece1a40bf76c7615d0eaef1b33b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:9",
+      "sequence": 23802,
+      "chapter_label": "MAT 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "“When those who were hired at about the eleventh hour came, they each received a denarius.",
+      "ko": "제 십일시에 온 자들이 와서 한 데나리온씩을 받거늘",
+      "source_text_hash": "bf00f3cdf92911065c40fabed25050c567cc1762d1c91cb9d141b448b2158dea",
+      "translation_text_hash": "e5ed7063b5533062e66051ed013fd716d8dd7f45ec806a0d3774a1aa6676129c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십일시에 온 자들이 와서 한 데나리온씩을 받거늘"
+      ],
+      "raw_text_hashes": [
+        "e5ed7063b5533062e66051ed013fd716d8dd7f45ec806a0d3774a1aa6676129c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:10",
+      "sequence": 23803,
+      "chapter_label": "MAT 20",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 10
+        }
+      ],
+      "en": "When the first came, they supposed that they would receive more; and they likewise each received a denarius.",
+      "ko": "먼저 온 자들이 와서 더 받을 줄 알았더니 저희도 한 데나리온씩 받은지라",
+      "source_text_hash": "8757da85eeee9f8201c31789fa738c880c9a1a61a214486d471af7d039ac9768",
+      "translation_text_hash": "277bd86fef3c0d99612c08a43abbe38f280d5736bfa9988f1d95adcea2aa9bbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먼저 온 자들이 와서 더 받을 줄 알았더니 저희도 한 데나리온씩 받은지라"
+      ],
+      "raw_text_hashes": [
+        "277bd86fef3c0d99612c08a43abbe38f280d5736bfa9988f1d95adcea2aa9bbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:11",
+      "sequence": 23804,
+      "chapter_label": "MAT 20",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 11
+        }
+      ],
+      "en": "When they received it, they murmured against the master of the household,",
+      "ko": "받은 후 집 주인을 원망하여 가로되",
+      "source_text_hash": "5ec619e058cb21615af4824a8efb3359a8e2626a84a77f5d11377637879b02e2",
+      "translation_text_hash": "7bb23dd11f10ad114d091664fb47c5c49ba256239249dc4c090f467a0f6233f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "받은 후 집 주인을 원망하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "7bb23dd11f10ad114d091664fb47c5c49ba256239249dc4c090f467a0f6233f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:12",
+      "sequence": 23805,
+      "chapter_label": "MAT 20",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 12
+        }
+      ],
+      "en": "saying, ‘These last have spent one hour, and you have made them equal to us who have borne the burden of the day and the scorching heat!’",
+      "ko": "나중 온 이 사람들은 한 시간만 일하였거늘 저희를 종일 수고와 더위를 견딘 우리와 같게 하였나이다",
+      "source_text_hash": "6cd766dad23e2336d4d0c3c4771798aef93fe9ba4d8233a743d7497ed82a03a3",
+      "translation_text_hash": "605bb95e3135cc1ca593b5af3532e285f4db1262e3ad1aef51645943a0f2c095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나중 온 이 사람들은 한 시간만 일하였거늘 저희를 종일 수고와 더위를 견딘 우리와 같게 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "605bb95e3135cc1ca593b5af3532e285f4db1262e3ad1aef51645943a0f2c095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:13",
+      "sequence": 23806,
+      "chapter_label": "MAT 20",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 13
+        }
+      ],
+      "en": "“But he answered one of them, ‘Friend, I am doing you no wrong. Didn’t you agree with me for a denarius?",
+      "ko": "주인이 그 중의 한 사람에게 대답하여 가로되 친구여 내가 네게 잘못한 것이 없노라 네가 나와 한 데나리온의 약속을 하지 아니하였느냐",
+      "source_text_hash": "a0a922d1d037d81ed809ee99829f0f862939c2352319243b09e2de3bdcc38969",
+      "translation_text_hash": "ab8142706ea94062b49cb37ab0febf1ff2b158dfd1994fb8edf947f49f358621",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 그 중의 한 사람에게 대답하여 가로되 친구여 내가 네게 잘못한 것이 없노라 네가 나와 한 데나리온의 약속을 하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "ab8142706ea94062b49cb37ab0febf1ff2b158dfd1994fb8edf947f49f358621"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:14",
+      "sequence": 23807,
+      "chapter_label": "MAT 20",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 14
+        }
+      ],
+      "en": "Take that which is yours, and go your way. It is my desire to give to this last just as much as to you.",
+      "ko": "네 것이나 가지고 가라 나중 온 이 사람에게 너와 같이 주는 것이 내 뜻이니라",
+      "source_text_hash": "baccb62e55a1d302362d34845df05a330c96e46490ef0561321d070bb3ebcbf3",
+      "translation_text_hash": "e1dfa195e2d54ab36a27b9c326fb2ff3a315294638c6675a9e23b873faa28a3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 것이나 가지고 가라 나중 온 이 사람에게 너와 같이 주는 것이 내 뜻이니라"
+      ],
+      "raw_text_hashes": [
+        "e1dfa195e2d54ab36a27b9c326fb2ff3a315294638c6675a9e23b873faa28a3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:15",
+      "sequence": 23808,
+      "chapter_label": "MAT 20",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 15
+        }
+      ],
+      "en": "Isn’t it lawful for me to do what I want to with what I own? Or is your eye evil, because I am good?’",
+      "ko": "내 것을 가지고 내 뜻대로 할것이 아니냐 내가 선하므로 네가 악하게 보느냐",
+      "source_text_hash": "05ddfa6ed91899ff49445d36cafc89563acafa949806122b7097e648d5727653",
+      "translation_text_hash": "c774d9f928dc38bacb77ebc6f8c94a8e793e41d5f4614eb5f31e6fe584199ef8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 것을 가지고 내 뜻대로 할것이 아니냐 내가 선하므로 네가 악하게 보느냐"
+      ],
+      "raw_text_hashes": [
+        "c774d9f928dc38bacb77ebc6f8c94a8e793e41d5f4614eb5f31e6fe584199ef8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:16",
+      "sequence": 23809,
+      "chapter_label": "MAT 20",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 16
+        }
+      ],
+      "en": "So the last will be first, and the first last. For many are called, but few are chosen.”",
+      "ko": "이와 같이 나중 된 자로서 먼저 되고 먼저 된 자로서 나중 되리라",
+      "source_text_hash": "bf82907291bf61384fb61ae5a986e93a4d189727e9d9a6424645c2f946471a38",
+      "translation_text_hash": "3f2d61a3cf762cbb45b08f59278b33c85b92f706b0c13758f48e912975bb72e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 나중 된 자로서 먼저 되고 먼저 된 자로서 나중 되리라"
+      ],
+      "raw_text_hashes": [
+        "3f2d61a3cf762cbb45b08f59278b33c85b92f706b0c13758f48e912975bb72e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:17",
+      "sequence": 23810,
+      "chapter_label": "MAT 20",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 17
+        }
+      ],
+      "en": "As Jesus was going up to Jerusalem, he took the twelve disciples aside, and on the way he said to them,",
+      "ko": "예수께서 예루살렘으로 올라가려 하실 때에 열 두 제자를 따로 데리시고 길에서 이르시되",
+      "source_text_hash": "f47493b29e1ce7a3f75dff04a20d17dbfc323312398b21c6b4d04fb1ac0c7d81",
+      "translation_text_hash": "c6d19c853ab3ee74d333825ca4161bd3ae8c91e152400d1e5d4a03a77c47e30f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 예루살렘으로 올라가려 하실 때에 열 두 제자를 따로 데리시고 길에서 이르시되"
+      ],
+      "raw_text_hashes": [
+        "c6d19c853ab3ee74d333825ca4161bd3ae8c91e152400d1e5d4a03a77c47e30f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:18",
+      "sequence": 23811,
+      "chapter_label": "MAT 20",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 18
+        }
+      ],
+      "en": "“Behold, we are going up to Jerusalem, and the Son of Man will be delivered to the chief priests and scribes, and they will condemn him to death,",
+      "ko": "보라 우리가 예루살렘으로 올라가노니 인자가 대제사장들과 서기관들에게 넘기우매 저희가 죽이기로 결안하고",
+      "source_text_hash": "2db5b82c41c9af1f346278d0530a6f3a5f06ccb3496ed3900a99f83e051c233e",
+      "translation_text_hash": "061977f4702a75a6bdbf6ecf775b19959515b60b3bca98532a04887f71eed373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 우리가 예루살렘으로 올라가노니 인자가 대제사장들과 서기관들에게 넘기우매 저희가 죽이기로 결안하고"
+      ],
+      "raw_text_hashes": [
+        "061977f4702a75a6bdbf6ecf775b19959515b60b3bca98532a04887f71eed373"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:19",
+      "sequence": 23812,
+      "chapter_label": "MAT 20",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 19
+        }
+      ],
+      "en": "and will hand him over to the Gentiles to mock, to scourge, and to crucify; and the third day he will be raised up.”",
+      "ko": "이방인들에게 넘겨주어 그를 능욕하며 채찍질하며 십자가에 못 박게 하리니 제 삼일에 살아나리라",
+      "source_text_hash": "594aa6f96e18e51994030b64c47192f2cb5aecd0dfc95c0cad987cbd3d573fae",
+      "translation_text_hash": "ef7702f4b4b1f7a3d637fd3436b6e1e75f8739cca2d4d5caadd389a9279f26da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인들에게 넘겨주어 그를 능욕하며 채찍질하며 십자가에 못 박게 하리니 제 삼일에 살아나리라"
+      ],
+      "raw_text_hashes": [
+        "ef7702f4b4b1f7a3d637fd3436b6e1e75f8739cca2d4d5caadd389a9279f26da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:20",
+      "sequence": 23813,
+      "chapter_label": "MAT 20",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 20
+        }
+      ],
+      "en": "Then the mother of the sons of Zebedee came to him with her sons, kneeling and asking a certain thing of him.",
+      "ko": "그 때에 세베대의 아들의 어미가 그 아들들을 데리고 예수께 와서 절하며 무엇을 구하니",
+      "source_text_hash": "5de69c6d88632b261ca0f0bf3d8b616782980e445944b55c309ec2955111ad77",
+      "translation_text_hash": "15c106ca6ba2499c96907bb53fc94cfe3cf7ed5de713bdecf95c1ae965ec3822",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 세베대의 아들의 어미가 그 아들들을 데리고 예수께 와서 절하며 무엇을 구하니"
+      ],
+      "raw_text_hashes": [
+        "15c106ca6ba2499c96907bb53fc94cfe3cf7ed5de713bdecf95c1ae965ec3822"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:21",
+      "sequence": 23814,
+      "chapter_label": "MAT 20",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 21
+        }
+      ],
+      "en": "He said to her, “What do you want?”She said to him, “Command that these, my two sons, may sit, one on your right hand and one on your left hand, in your Kingdom.”",
+      "ko": "예수께서 가라사대 무엇을 원하느뇨 가로되 이 나의 두 아들을 주의 나라에서 하나는 주의 우편에, 하나는 주의 좌편에 앉게 명하소서",
+      "source_text_hash": "a55143381abd00e61eac6274299cbe6f6635e1001305ce18e2f705ff0e80adfb",
+      "translation_text_hash": "7ab88056982939c982b6a2ea53e99c4b168ae4eadcdb67ed1137d4b0af3403f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 무엇을 원하느뇨 가로되 이 나의 두 아들을 주의 나라에서 하나는 주의 우편에, 하나는 주의 좌편에 앉게 명하소서"
+      ],
+      "raw_text_hashes": [
+        "7ab88056982939c982b6a2ea53e99c4b168ae4eadcdb67ed1137d4b0af3403f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:22",
+      "sequence": 23815,
+      "chapter_label": "MAT 20",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 22
+        }
+      ],
+      "en": "But Jesus answered, “You don’t know what you are asking. Are you able to drink the cup that I am about to drink, and be baptized with the baptism that I am baptized with?”They said to him, “We are able.”",
+      "ko": "예수께서 대답하여 가라사대 너희 구하는 것을 너희가 알지 못하는도다 나의 마시려는 잔을 너희가 마실 수 있느냐 저희가 말하되 할 수 있나이다",
+      "source_text_hash": "775e68ea85668494240968aea80a90f4cca30acdcecc388fb04ed6055d24c45b",
+      "translation_text_hash": "c72dbc8cd43600201da604bf957ab25b407a54f8043d2e6b2e3baada926f7185",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희 구하는 것을 너희가 알지 못하는도다 나의 마시려는 잔을 너희가 마실 수 있느냐 저희가 말하되 할 수 있나이다"
+      ],
+      "raw_text_hashes": [
+        "c72dbc8cd43600201da604bf957ab25b407a54f8043d2e6b2e3baada926f7185"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:23",
+      "sequence": 23816,
+      "chapter_label": "MAT 20",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 23
+        }
+      ],
+      "en": "He said to them, “You will indeed drink my cup, and be baptized with the baptism that I am baptized with; but to sit on my right hand and on my left hand is not mine to give, but it is for whom it has been prepared by my Father.”",
+      "ko": "가라사대 너희가 과연 내 잔을 마시려니와 내 좌우편에 앉는 것은 나의 줄것이 아니라 내 아버지께서 누구를 위하여 예비하셨든지 그들이 얻을 것이니라",
+      "source_text_hash": "99a7a6ce1830cfa837b2653890cc59dfbc3004d5e9d36c12050588b8f36445a7",
+      "translation_text_hash": "355bac97ffeeb6f2ebb155cf50a9ddee50c2d04ce93fb6a4d4cd4af4a84abd34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희가 과연 내 잔을 마시려니와 내 좌우편에 앉는 것은 나의 줄것이 아니라 내 아버지께서 누구를 위하여 예비하셨든지 그들이 얻을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "355bac97ffeeb6f2ebb155cf50a9ddee50c2d04ce93fb6a4d4cd4af4a84abd34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:24",
+      "sequence": 23817,
+      "chapter_label": "MAT 20",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 24
+        }
+      ],
+      "en": "When the ten heard it, they were indignant with the two brothers.",
+      "ko": "열 제자가 듣고 그 두 형제에 대하여 분히 여기거늘",
+      "source_text_hash": "d562de149fb89050c7405266c9c1e72853fbae9f1b738aa6adf544d5e014f60a",
+      "translation_text_hash": "85b2b80eb652f7f26304ef2a9ba6f46714a18e6849e953da602527a18a4071ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 제자가 듣고 그 두 형제에 대하여 분히 여기거늘"
+      ],
+      "raw_text_hashes": [
+        "85b2b80eb652f7f26304ef2a9ba6f46714a18e6849e953da602527a18a4071ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:25",
+      "sequence": 23818,
+      "chapter_label": "MAT 20",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 25
+        }
+      ],
+      "en": "But Jesus summoned them, and said, “You know that the rulers of the nations lord it over them, and their great ones exercise authority over them.",
+      "ko": "예수께서 제자들을 불러다가 가라사대 이방인의 집권자들이 저희를 임의로 주관하고 그 대인들이 저희에게 권세를 부리는 줄을 너희가 알거니와",
+      "source_text_hash": "e63bc9bd43c081f07c920467300a8aa630b6f0e88c24f69a3cc4c955acf7f9f2",
+      "translation_text_hash": "1154d083562987a0f3e7942d6a7e9e9b6ad4e5365dd610246c06ef00d043b015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 제자들을 불러다가 가라사대 이방인의 집권자들이 저희를 임의로 주관하고 그 대인들이 저희에게 권세를 부리는 줄을 너희가 알거니와"
+      ],
+      "raw_text_hashes": [
+        "1154d083562987a0f3e7942d6a7e9e9b6ad4e5365dd610246c06ef00d043b015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:26",
+      "sequence": 23819,
+      "chapter_label": "MAT 20",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 26
+        }
+      ],
+      "en": "It shall not be so among you; but whoever desires to become great among you shall beyour servant.",
+      "ko": "너희 중에는 그렇지 아니하니 너희 중에 누구든지 크고자 하는 자는 너희를 섬기는 자가 되고",
+      "source_text_hash": "280d061368ce233e7c1831dfd1cdf36e8b97bce6e9fce5f0422e8d25895f1633",
+      "translation_text_hash": "809bef12bfc9eb6f7c4f2ad67f032a749192bd59771fb7e58340d3e66b1261fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에는 그렇지 아니하니 너희 중에 누구든지 크고자 하는 자는 너희를 섬기는 자가 되고"
+      ],
+      "raw_text_hashes": [
+        "809bef12bfc9eb6f7c4f2ad67f032a749192bd59771fb7e58340d3e66b1261fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:27",
+      "sequence": 23820,
+      "chapter_label": "MAT 20",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 27
+        }
+      ],
+      "en": "Whoever desires to be first among you shall be your bondservant,",
+      "ko": "너희 중에 누구든지 으뜸이 되고자 하는 자는 너희 종이 되어야 하리라",
+      "source_text_hash": "ea6aee1e00dd99412eae728fcdf2c496c24c355f9b5f1aa1231f255fa1785a4a",
+      "translation_text_hash": "5ff2ab5b51f3f80bdb094af338db8ddb025ccc520b71fe98e0349655b4ddd223",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누구든지 으뜸이 되고자 하는 자는 너희 종이 되어야 하리라"
+      ],
+      "raw_text_hashes": [
+        "5ff2ab5b51f3f80bdb094af338db8ddb025ccc520b71fe98e0349655b4ddd223"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:28",
+      "sequence": 23821,
+      "chapter_label": "MAT 20",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 28
+        }
+      ],
+      "en": "even as the Son of Man came not to be served, but to serve, and to give his life as a ransom for many.”",
+      "ko": "인자가 온것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라",
+      "source_text_hash": "72f4634356b255bc64a3d6e4b6bdadbeb646ccd28b4919feda1eed969dda02de",
+      "translation_text_hash": "a332dabdc110d6497cf04b2c38c1bb461b7a1141c4905e5a8365dcbdb8a13fe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자가 온것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "a332dabdc110d6497cf04b2c38c1bb461b7a1141c4905e5a8365dcbdb8a13fe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:29",
+      "sequence": 23822,
+      "chapter_label": "MAT 20",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 29
+        }
+      ],
+      "en": "As they went out from Jericho, a great multitude followed him.",
+      "ko": "저희가 여리고에서 떠나 갈 때에 큰 무리가 예수를 좇더라",
+      "source_text_hash": "d10d76a2acec723b1b60572f1b34a4ea0002dfea975cbdbaee7aa583a190af27",
+      "translation_text_hash": "ccddea0799f0fec39a1b05827de6664ebf93ed5415a99e52ef7f119c643d34f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여리고에서 떠나 갈 때에 큰 무리가 예수를 좇더라"
+      ],
+      "raw_text_hashes": [
+        "ccddea0799f0fec39a1b05827de6664ebf93ed5415a99e52ef7f119c643d34f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:30",
+      "sequence": 23823,
+      "chapter_label": "MAT 20",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 30
+        }
+      ],
+      "en": "Behold, two blind men sitting by the road, when they heard that Jesus was passing by, cried out, “Lord, have mercy on us, you son of David!”",
+      "ko": "소경 둘이 길 가에 앉았다가 예수께서 지나가신다 함을 듣고 소리질러 가로되 주여 우리를 불쌍히 여기소서 다윗의 자손이여 하니",
+      "source_text_hash": "1e7abac5f8f03782a27e2b97f8ad941d3082c6a03b6f70825f3dd4ea71d7509e",
+      "translation_text_hash": "8d2e57270ec4d051b5e2666bf7268fed5f4905b14c70555ef04f27a487fcc211",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경 둘이 길 가에 앉았다가 예수께서 지나가신다 함을 듣고 소리질러 가로되 주여 우리를 불쌍히 여기소서 다윗의 자손이여 하니"
+      ],
+      "raw_text_hashes": [
+        "8d2e57270ec4d051b5e2666bf7268fed5f4905b14c70555ef04f27a487fcc211"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:31",
+      "sequence": 23824,
+      "chapter_label": "MAT 20",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 31
+        }
+      ],
+      "en": "The multitude rebuked them, telling them that they should be quiet, but they cried out even more, “Lord, have mercy on us, you son of David!”",
+      "ko": "무리가 꾸짖어 잠잠하라 하되 더욱 소리질러 가로되 주여 우리를 불쌍히 여기소서 다윗의 자손이여 하는지라",
+      "source_text_hash": "48d544d5b7ae651ba8f39006529e6e01cfbda766f86c1e10fa6dbc920b59a24d",
+      "translation_text_hash": "ce00c8792b356651bafc54b9137f2588a761b83b2e56a32cafcb60789e0cf050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 꾸짖어 잠잠하라 하되 더욱 소리질러 가로되 주여 우리를 불쌍히 여기소서 다윗의 자손이여 하는지라"
+      ],
+      "raw_text_hashes": [
+        "ce00c8792b356651bafc54b9137f2588a761b83b2e56a32cafcb60789e0cf050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:32",
+      "sequence": 23825,
+      "chapter_label": "MAT 20",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 32
+        }
+      ],
+      "en": "Jesus stood still and called them, and asked, “What do you want me to do for you?”",
+      "ko": "예수께서 머물러 서서 저희를 불러",
+      "source_text_hash": "c71e731017bb50f9e09a46af04c3c535bc6d8fd2b2b5b469e2ced7e4efffc9c1",
+      "translation_text_hash": "908a9f49845dc04f2e5dd0fbaa72ed6008942c979ac80495a3a74e32b860a555",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 머물러 서서 저희를 불러"
+      ],
+      "raw_text_hashes": [
+        "908a9f49845dc04f2e5dd0fbaa72ed6008942c979ac80495a3a74e32b860a555"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:33",
+      "sequence": 23826,
+      "chapter_label": "MAT 20",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 33
+        }
+      ],
+      "en": "They told him, “Lord, that our eyes may be opened.”",
+      "ko": "가라사대 너희에게 무엇을 하여주기를 원하느냐 가로되 주여 우리 눈 뜨기를 원하나이다",
+      "source_text_hash": "9b5c0f2323f4e5f837d7067affd540116a9c348a10f822d1fc8114a77a82d000",
+      "translation_text_hash": "c2d2804310dfd2af836ed9d667c1d11c001248f39a3e11528726d752d651e01a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 너희에게 무엇을 하여주기를 원하느냐 가로되 주여 우리 눈 뜨기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "c2d2804310dfd2af836ed9d667c1d11c001248f39a3e11528726d752d651e01a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:20:34",
+      "sequence": 23827,
+      "chapter_label": "MAT 20",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 20,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 20,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus, being moved with compassion, touched their eyes; and immediately their eyes received their sight, and they followed him.",
+      "ko": "예수께서 민망히 여기사 저희 눈을 만지시니 곧 보게 되어 저희가 예수를 좇으니라",
+      "source_text_hash": "7a8f98d4077ff49d9dda0c5ebf139283a6a9dd6b6f17a856c3d422232e122e5a",
+      "translation_text_hash": "bd3a598d85cd9ecf78496cf75f15fba11004204dddcb3c8320eb3dc7303e8164",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 민망히 여기사 저희 눈을 만지시니 곧 보게 되어 저희가 예수를 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "bd3a598d85cd9ecf78496cf75f15fba11004204dddcb3c8320eb3dc7303e8164"
+      ]
+    }
+  ]
+}

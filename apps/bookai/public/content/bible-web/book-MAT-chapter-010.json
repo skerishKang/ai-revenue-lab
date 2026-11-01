@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:010",
+  "unit_ordinal": 939,
+  "unit_label": "MAT 10",
+  "book_code": "MAT",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:10:1",
+      "sequence": 23419,
+      "chapter_label": "MAT 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "He called to himself his twelve disciples, and gave them authority over unclean spirits, to cast them out, and to heal every disease and every sickness.",
+      "ko": "예수께서 그 열 두 제자를 부르사 더러운 귀신을 쫓아내며 모든 병과 모든 약한 것을 고치는 권능을 주시니라",
+      "source_text_hash": "4e8d4098b28380e63edf8bd4c9a64fe6c73d8587d1f266ed04659e60e0768506",
+      "translation_text_hash": "27a70f2e4396a7ea578c6e17d7e4a160c9c00d48162ad8da2d17fd6d5e8feadc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 열 두 제자를 부르사 더러운 귀신을 쫓아내며 모든 병과 모든 약한 것을 고치는 권능을 주시니라"
+      ],
+      "raw_text_hashes": [
+        "27a70f2e4396a7ea578c6e17d7e4a160c9c00d48162ad8da2d17fd6d5e8feadc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:2",
+      "sequence": 23420,
+      "chapter_label": "MAT 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "Now the names of the twelve apostles are these. The first, Simon, who is called Peter; Andrew, his brother; James the son of Zebedee; John, his brother;",
+      "ko": "열 두 사도의 이름은 이러하니 베드로라 하는 시몬을 비롯하여 그의 형제 안드레와 세베대의 아들 야고보와 그의 형제 요한,",
+      "source_text_hash": "60312fbd6633f4ed56eea8f703d992261359697ec0b4de3b0b7535a5007c9984",
+      "translation_text_hash": "2b202b9861fefd2931d82a01e6f89df00722723d4468adcd2c0ab03953f86509",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 사도의 이름은 이러하니 베드로라 하는 시몬을 비롯하여 그의 형제 안드레와 세베대의 아들 야고보와 그의 형제 요한,"
+      ],
+      "raw_text_hashes": [
+        "2b202b9861fefd2931d82a01e6f89df00722723d4468adcd2c0ab03953f86509"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:3",
+      "sequence": 23421,
+      "chapter_label": "MAT 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "Philip; Bartholomew; Thomas; Matthew the tax collector; James the son of Alphaeus; Lebbaeus, who was also called Thaddaeus;",
+      "ko": "빌립과 바돌로매, 도마와 세리 마태, 알패오의 아들 야고보와 다대오,",
+      "source_text_hash": "d9b20fa1143396ec8a290ac8ec3d86c983a14f9bf0fe3fde692edebbfb9ca393",
+      "translation_text_hash": "a53ede063ad24280ffc782f74a0e97185017647198920588fda73cae17306e40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립과 바돌로매, 도마와 세리 마태, 알패오의 아들 야고보와 다대오,"
+      ],
+      "raw_text_hashes": [
+        "a53ede063ad24280ffc782f74a0e97185017647198920588fda73cae17306e40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:4",
+      "sequence": 23422,
+      "chapter_label": "MAT 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "Simon the Zealot; and Judas Iscariot, who also betrayed him.",
+      "ko": "가나안인 시몬과 및 가룟 유다 곧 예수를 판 자라",
+      "source_text_hash": "5c0bb91e2e2cf4840e3ea92d9dae1f6e9f68ac024e96e02916ac774715846080",
+      "translation_text_hash": "cc026d7bb88487af8683876bd183e30dbc7846d500a7a62e7c48322571ee2e05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안인 시몬과 및 가룟 유다 곧 예수를 판 자라"
+      ],
+      "raw_text_hashes": [
+        "cc026d7bb88487af8683876bd183e30dbc7846d500a7a62e7c48322571ee2e05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:5",
+      "sequence": 23423,
+      "chapter_label": "MAT 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Jesus sent these twelve out and commanded them, saying, “Don’t go among the Gentiles, and don’t enter into any city of the Samaritans.",
+      "ko": "예수께서 이 열 둘을 내어보내시며 명하여 가라사대 이방인의 길로도 가지 말고 사마리아인의 고을에도 들어가지 말고",
+      "source_text_hash": "f2aa7f9e78c0f6a8d96e142cb03b493703f59df6397284e4c4302a84a4e7e010",
+      "translation_text_hash": "468e1b8dd0d3f9de99653af310d62bb9938a2198f1d448468511c726defc4b34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 열 둘을 내어보내시며 명하여 가라사대 이방인의 길로도 가지 말고 사마리아인의 고을에도 들어가지 말고"
+      ],
+      "raw_text_hashes": [
+        "468e1b8dd0d3f9de99653af310d62bb9938a2198f1d448468511c726defc4b34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:6",
+      "sequence": 23424,
+      "chapter_label": "MAT 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "Rather, go to the lost sheep of the house of Israel.",
+      "ko": "차라리 이스라엘 집의 잃어버린 양에게로 가라",
+      "source_text_hash": "20204debe3c87f3489060fd3a819816ed18184abdfe6267a553b12fa33014bbb",
+      "translation_text_hash": "b43cbfc9653a45e79df68d67e1621578a05688fc5eefa043e94bfc3d9eed96cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "차라리 이스라엘 집의 잃어버린 양에게로 가라"
+      ],
+      "raw_text_hashes": [
+        "b43cbfc9653a45e79df68d67e1621578a05688fc5eefa043e94bfc3d9eed96cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:7",
+      "sequence": 23425,
+      "chapter_label": "MAT 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "As you go, preach, saying, ‘The Kingdom of Heaven is at hand!’",
+      "ko": "가면서 전파하여 말하되 천국이 가까왔다 하고",
+      "source_text_hash": "a5551b0f80354288bd634220631b86a5f17616e34a6a996d2abc33d7fd3846f4",
+      "translation_text_hash": "d849b6afbc39f693af59241290ba8a7faf6ccdcb8575ccb8da6346f9471f4f86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가면서 전파하여 말하되 천국이 가까왔다 하고"
+      ],
+      "raw_text_hashes": [
+        "d849b6afbc39f693af59241290ba8a7faf6ccdcb8575ccb8da6346f9471f4f86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:8",
+      "sequence": 23426,
+      "chapter_label": "MAT 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Heal the sick, cleanse the lepers,and cast out demons. Freely you received, so freely give.",
+      "ko": "병든 자를 고치며 죽은 자를 살리며 문둥이를 깨끗하게 하며 귀신을 쫓아내되 너희가 거저 받았으니 거저 주어라",
+      "source_text_hash": "53f0b0ce3788fa54c56b9911aaab7e763e37c481ac7d7389734baa6a3696b230",
+      "translation_text_hash": "4f02b4dc6de67eb1b02a7d1a15a9ba73ff21eb33bc47f1ce14c59239455dc0e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "병든 자를 고치며 죽은 자를 살리며 문둥이를 깨끗하게 하며 귀신을 쫓아내되 너희가 거저 받았으니 거저 주어라"
+      ],
+      "raw_text_hashes": [
+        "4f02b4dc6de67eb1b02a7d1a15a9ba73ff21eb33bc47f1ce14c59239455dc0e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:9",
+      "sequence": 23427,
+      "chapter_label": "MAT 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Don’t take any gold, silver, or brass in your money belts.",
+      "ko": "너희 전대에 금이나 은이나 동이나 가지지 말고",
+      "source_text_hash": "8418dca35fa10bf95923a120d79a52c00a2a902a52be324b152aa0ea673c0f65",
+      "translation_text_hash": "fa2e19378fc8382626ff2a99a898850294055716a68db92f247837ab94a24aae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 전대에 금이나 은이나 동이나 가지지 말고"
+      ],
+      "raw_text_hashes": [
+        "fa2e19378fc8382626ff2a99a898850294055716a68db92f247837ab94a24aae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:10",
+      "sequence": 23428,
+      "chapter_label": "MAT 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "Take no bag for your journey, neither two coats, nor sandals, nor staff: for the laborer is worthy of his food.",
+      "ko": "여행을 위하여 주머니나 두 벌 옷이나 신이나 지팡이를 가지지 말라 이는 일군이 저 먹을것 받는 것이 마땅함이니라",
+      "source_text_hash": "f1d431f7104940d08a8d1d7d2e4cc2c48c579551c301c8c171e76e3b837c85bf",
+      "translation_text_hash": "a720da235afc0dae0a3b845177fb0962fd87f282f2a19456f55e1a7972fb6e54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여행을 위하여 주머니나 두 벌 옷이나 신이나 지팡이를 가지지 말라 이는 일군이 저 먹을것 받는 것이 마땅함이니라"
+      ],
+      "raw_text_hashes": [
+        "a720da235afc0dae0a3b845177fb0962fd87f282f2a19456f55e1a7972fb6e54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:11",
+      "sequence": 23429,
+      "chapter_label": "MAT 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "Into whatever city or village you enter, find out who in it is worthy, and stay there until you go on.",
+      "ko": "아무 성이나 촌에 들어가든지 그 중에 합당한 자를 찾아내어 너희 떠나기까지 거기서 머물라",
+      "source_text_hash": "dc82fce43975e3a87c996c0272f4c414882146b7c8843179fdd21eee686ce345",
+      "translation_text_hash": "ad5507a84424f6d2fe36cfb465648903f363973b1cf99d30383f40ba55ec9670",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 성이나 촌에 들어가든지 그 중에 합당한 자를 찾아내어 너희 떠나기까지 거기서 머물라"
+      ],
+      "raw_text_hashes": [
+        "ad5507a84424f6d2fe36cfb465648903f363973b1cf99d30383f40ba55ec9670"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:12",
+      "sequence": 23430,
+      "chapter_label": "MAT 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "As you enter into the household, greet it.",
+      "ko": "또 그 집에 들어가면서 평안하기를 빌라",
+      "source_text_hash": "3d3889b9261d442622cd44b1261a964f7d32a079ef4886e326782e94ef1bcbd9",
+      "translation_text_hash": "87e201f68a90ea01e79346d0339e146d2e1370e1b601d0bcf891a06436cd0952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 집에 들어가면서 평안하기를 빌라"
+      ],
+      "raw_text_hashes": [
+        "87e201f68a90ea01e79346d0339e146d2e1370e1b601d0bcf891a06436cd0952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:13",
+      "sequence": 23431,
+      "chapter_label": "MAT 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "If the household is worthy, let your peace come on it, but if it isn’t worthy, let your peace return to you.",
+      "ko": "그 집이 이에 합당하면 너희 빈 평안이 거기 임할 것이요 만일 합당치 아니하면 그 평안이 너희에게 돌아올 것이니라",
+      "source_text_hash": "4f9ec684a9710765fdf71f4e2d81d51aacbe0bdd66bf910db128d3b5bb4ea7c3",
+      "translation_text_hash": "cf464f9ceb57c16663da9e4ab9f2b1f322d4ce856cd3296164103b90c0607a85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 집이 이에 합당하면 너희 빈 평안이 거기 임할 것이요 만일 합당치 아니하면 그 평안이 너희에게 돌아올 것이니라"
+      ],
+      "raw_text_hashes": [
+        "cf464f9ceb57c16663da9e4ab9f2b1f322d4ce856cd3296164103b90c0607a85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:14",
+      "sequence": 23432,
+      "chapter_label": "MAT 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "Whoever doesn’t receive you or hear your words, as you go out of that house or that city, shake the dust off your feet.",
+      "ko": "누구든지 너희를 영접도 아니하고 너희 말을 듣지도 아니하거든 그 집이나 성에서 나가 너희 발의 먼지를 떨어 버리라",
+      "source_text_hash": "5ae6ffa63431ba958b02843472a81ac323f90127ae524fa3ed657a625812e8ad",
+      "translation_text_hash": "a7fe3cdb741267c7727fadfd89b9b17afeb521fabfcaaa6064a0042bee1a00d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 너희를 영접도 아니하고 너희 말을 듣지도 아니하거든 그 집이나 성에서 나가 너희 발의 먼지를 떨어 버리라"
+      ],
+      "raw_text_hashes": [
+        "a7fe3cdb741267c7727fadfd89b9b17afeb521fabfcaaa6064a0042bee1a00d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:15",
+      "sequence": 23433,
+      "chapter_label": "MAT 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "Most certainly I tell you, it will be more tolerable for the land of Sodom and Gomorrah in the day of judgment than for that city.",
+      "ko": "내가 진실로 너희에게 이르노니 심판날에 소돔과 고모라 땅이 그 성보다 견디기 쉬우리라",
+      "source_text_hash": "cc7a24c04db45f6c1f4062c341f3c6f841953ad7d5ba0dd78b4c77c3d86e398c",
+      "translation_text_hash": "97e2cfedda15e6a47fab22bc045eb28c8e081fdcd2dd294c4c3539be7d05dcef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 심판날에 소돔과 고모라 땅이 그 성보다 견디기 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "97e2cfedda15e6a47fab22bc045eb28c8e081fdcd2dd294c4c3539be7d05dcef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:16",
+      "sequence": 23434,
+      "chapter_label": "MAT 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "“Behold, I send you out as sheep among wolves. Therefore be wise as serpents and harmless as doves.",
+      "ko": "보라 내가 너희를 보냄이 양을 이리 가운데 보냄과 같도다 그러므로 너희는 뱀 같이 지혜롭고 비둘기 같이 순결하라",
+      "source_text_hash": "acfa9ba500664075e226644579f0488a4a85ac96da47f39a585ffb502bb1af4f",
+      "translation_text_hash": "7dde316fda16c5e0a848b228be9a5ae86d17344768cb6a2b32191f8907a22adb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너희를 보냄이 양을 이리 가운데 보냄과 같도다 그러므로 너희는 뱀 같이 지혜롭고 비둘기 같이 순결하라"
+      ],
+      "raw_text_hashes": [
+        "7dde316fda16c5e0a848b228be9a5ae86d17344768cb6a2b32191f8907a22adb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:17",
+      "sequence": 23435,
+      "chapter_label": "MAT 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "But beware of men, for they will deliver you up to councils, and in their synagogues they will scourge you.",
+      "ko": "사람들을 삼가라 저희가 너희를 공회에 넘겨 주겠고 저희 회당에서 채찍질 하리라",
+      "source_text_hash": "13f5b4b8cea4a7358b331d7a0c1db73a9083e42751e2c4f79b4ddce899872ef7",
+      "translation_text_hash": "546808be5e1a5aaa9f17b617a6422ab5eea76da799366e7e55d7240e73334739",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들을 삼가라 저희가 너희를 공회에 넘겨 주겠고 저희 회당에서 채찍질 하리라"
+      ],
+      "raw_text_hashes": [
+        "546808be5e1a5aaa9f17b617a6422ab5eea76da799366e7e55d7240e73334739"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:18",
+      "sequence": 23436,
+      "chapter_label": "MAT 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "Yes, and you will be brought before governors and kings for my sake, for a testimony to them and to the nations.",
+      "ko": "또 너희가 나를 인하여 총독들과 임금들 앞에 끌려 가리니 이는 저희와 이방인들에게 증거가 되게 하려 하심이라",
+      "source_text_hash": "28606c72d5e2d286b7acd15a45739ea9fe788a5659b7d552361dbabf334ea087",
+      "translation_text_hash": "fa15faf7aabc52f126d182f211ab3bc25c669ca6cbf31d7cf0e9009a550ef0a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 나를 인하여 총독들과 임금들 앞에 끌려 가리니 이는 저희와 이방인들에게 증거가 되게 하려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "fa15faf7aabc52f126d182f211ab3bc25c669ca6cbf31d7cf0e9009a550ef0a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:19",
+      "sequence": 23437,
+      "chapter_label": "MAT 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "But when they deliver you up, don’t be anxious how or what you will say, for it will be given you in that hour what you will say.",
+      "ko": "너희를 넘겨줄 때에 어떻게 또는 무엇을 말할까 염려치 말라 그 때에 무슨 말할 것을 주시리니",
+      "source_text_hash": "6aa19be00379db6bcd04418a93d71714b20777e870b64112ed42207bb3e3bb23",
+      "translation_text_hash": "f6c263d293cdb261274e5a37f12aa7348c9e904a5abb01260fcd969c1cacfa61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 넘겨줄 때에 어떻게 또는 무엇을 말할까 염려치 말라 그 때에 무슨 말할 것을 주시리니"
+      ],
+      "raw_text_hashes": [
+        "f6c263d293cdb261274e5a37f12aa7348c9e904a5abb01260fcd969c1cacfa61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:20",
+      "sequence": 23438,
+      "chapter_label": "MAT 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "For it is not you who speak, but the Spirit of your Father who speaks in you.",
+      "ko": "말하는 이는 너희가 아니라 너희 속에서 말씀하시는 자 곧 너희 아버지의 성령이시니라",
+      "source_text_hash": "10bc810bed2b1475faa4dcab4a3dadcd022d34002a62cd6bbe556059818afd3c",
+      "translation_text_hash": "0bee228b95f9323a1211ab0e48f20d457ea0a0b6cd706b62e735b7b149e589ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하는 이는 너희가 아니라 너희 속에서 말씀하시는 자 곧 너희 아버지의 성령이시니라"
+      ],
+      "raw_text_hashes": [
+        "0bee228b95f9323a1211ab0e48f20d457ea0a0b6cd706b62e735b7b149e589ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:21",
+      "sequence": 23439,
+      "chapter_label": "MAT 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "“Brother will deliver up brother to death, and the father his child. Children will rise up against parents and cause them to be put to death.",
+      "ko": "장차 형제가 형제를, 아비가 자식을 죽는데 내어주며 자식들이 부모를 대적하여 죽게 하리라",
+      "source_text_hash": "ca272e70d2acbb00872aea2c6dcd18c95a4c018df6027605308640427aa11db0",
+      "translation_text_hash": "3d771a993602918e91b85c7b3b78be5342e391444a9e795262f2f83d20681d74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장차 형제가 형제를, 아비가 자식을 죽는데 내어주며 자식들이 부모를 대적하여 죽게 하리라"
+      ],
+      "raw_text_hashes": [
+        "3d771a993602918e91b85c7b3b78be5342e391444a9e795262f2f83d20681d74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:22",
+      "sequence": 23440,
+      "chapter_label": "MAT 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "You will be hated by all men for my name’s sake, but he who endures to the end will be saved.",
+      "ko": "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나 나중까지 견디는 자는 구원을 얻으리라",
+      "source_text_hash": "4f3ea14516451152fa40bdcfe738bfc0bb80a7223015269caf870438eb075fab",
+      "translation_text_hash": "bfe88ee00fc0fce2380c4eca3794c9ccee5ebf4d28572aa709e6608daf106059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나 나중까지 견디는 자는 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "bfe88ee00fc0fce2380c4eca3794c9ccee5ebf4d28572aa709e6608daf106059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:23",
+      "sequence": 23441,
+      "chapter_label": "MAT 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "But when they persecute you in this city, flee into the next, for most certainly I tell you, you will not have gone through the cities of Israel until the Son of Man has come.",
+      "ko": "이 동네에서 너희를 핍박하거든 저 동네로 피하라 내가 진실로 너희에게 이르노니 이스라엘의 모든 동네를 다 다니지 못하여서 인자가 오리라",
+      "source_text_hash": "ecc50ebf7ec9583b8394e4fa6b90071bc553329836dc19201d746c6eb2e627f5",
+      "translation_text_hash": "295a2045d0902b7c73e23d9e8d7db73da02facf8e25cac3e7bc254abd3935cb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 동네에서 너희를 핍박하거든 저 동네로 피하라 내가 진실로 너희에게 이르노니 이스라엘의 모든 동네를 다 다니지 못하여서 인자가 오리라"
+      ],
+      "raw_text_hashes": [
+        "295a2045d0902b7c73e23d9e8d7db73da02facf8e25cac3e7bc254abd3935cb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:24",
+      "sequence": 23442,
+      "chapter_label": "MAT 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "“A disciple is not above his teacher, nor a servant above his lord.",
+      "ko": "제자가 그 선생보다, 또는 종이 그 상전보다 높지 못하나니",
+      "source_text_hash": "502267161ad898fd3e4e361770d066ac44e4cfb2c2822aab7d75d07a2be3fa0c",
+      "translation_text_hash": "4b190b386f8d9caa0df10b3fea6694f00052b77b3f01d25e57441aac3c993823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자가 그 선생보다, 또는 종이 그 상전보다 높지 못하나니"
+      ],
+      "raw_text_hashes": [
+        "4b190b386f8d9caa0df10b3fea6694f00052b77b3f01d25e57441aac3c993823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:25",
+      "sequence": 23443,
+      "chapter_label": "MAT 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "It is enough for the disciple that he be like his teacher, and the servant like his lord. If they have called the master of the house Beelzebul,how much more those of his household!",
+      "ko": "제자가 그 선생 같고 종이 그 상전 같으면 족하도다 집 주인을 바알세불이라 하였거든 하물며 그 집 사람들이랴",
+      "source_text_hash": "bb1cae9c014e545a0601b5b0589c796325fa1bbef4b94524503e687a65df1814",
+      "translation_text_hash": "f8e457412e6c9525ed8825c58914bb8fd349424c9d52eebf29fe8c8440c2bf27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자가 그 선생 같고 종이 그 상전 같으면 족하도다 집 주인을 바알세불이라 하였거든 하물며 그 집 사람들이랴"
+      ],
+      "raw_text_hashes": [
+        "f8e457412e6c9525ed8825c58914bb8fd349424c9d52eebf29fe8c8440c2bf27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:26",
+      "sequence": 23444,
+      "chapter_label": "MAT 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "Therefore don’t be afraid of them, for there is nothing covered that will not be revealed, or hidden that will not be known.",
+      "ko": "그런즉 저희를 두려워하지 말라 감추인 것이 드러나지 않을 것이 없고 숨은 것이 알려지지 않을 것이 없느니라",
+      "source_text_hash": "18ef740353dddfb78ad587dfe267d54c87931466dd9ca340eda54224bde47ec6",
+      "translation_text_hash": "8ff5d3f06575ff7d1a9a07bd994e32e6636942fc64f7bd34e416c316bb905f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 저희를 두려워하지 말라 감추인 것이 드러나지 않을 것이 없고 숨은 것이 알려지지 않을 것이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8ff5d3f06575ff7d1a9a07bd994e32e6636942fc64f7bd34e416c316bb905f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:27",
+      "sequence": 23445,
+      "chapter_label": "MAT 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "What I tell you in the darkness, speak in the light; and what you hear whispered in the ear, proclaim on the housetops.",
+      "ko": "내가 너희에게 어두운데서 이르는 것을 광명한데서 말하며 너희가 귓속으로 듣는 것을 집 위에서 전파하라",
+      "source_text_hash": "77297b0415dc40d896b7612b068e31c00924dee8b93211912e0bb0cffbd1ecc3",
+      "translation_text_hash": "59ada4c82475e891f4f81aa645cad3a08f38508be248e31ebe3a0c05de793330",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 어두운데서 이르는 것을 광명한데서 말하며 너희가 귓속으로 듣는 것을 집 위에서 전파하라"
+      ],
+      "raw_text_hashes": [
+        "59ada4c82475e891f4f81aa645cad3a08f38508be248e31ebe3a0c05de793330"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:28",
+      "sequence": 23446,
+      "chapter_label": "MAT 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "Don’t be afraid of those who kill the body, but are not able to kill the soul. Rather, fear him who is able to destroy both soul and body in Gehenna.",
+      "ko": "몸은 죽여도 영혼은 능히 죽이지 못하는 자들을 두려워하지 말고 오직 몸과 영혼을 능히 지옥에 멸하시는 자를 두려워하라",
+      "source_text_hash": "7e581c84b9b9daefa883a61495391b543fbe96acdf9aad4bfe9ea4f254c6f9d5",
+      "translation_text_hash": "6c5713d285cb33e7bb5fe79de699be92fe7cb7c41b0a701949e5572a66f3923e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸은 죽여도 영혼은 능히 죽이지 못하는 자들을 두려워하지 말고 오직 몸과 영혼을 능히 지옥에 멸하시는 자를 두려워하라"
+      ],
+      "raw_text_hashes": [
+        "6c5713d285cb33e7bb5fe79de699be92fe7cb7c41b0a701949e5572a66f3923e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:29",
+      "sequence": 23447,
+      "chapter_label": "MAT 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "“Aren’t two sparrows sold for an assarion coin?Not one of them falls to the ground apart from your Father’s will.",
+      "ko": "참새 두 마리가 한 앗사리온에 팔리는 것이 아니냐 그러나 너희 아버지께서 허락지 아니하시면 그 하나라도 땅에 떨어지지 아니하리라",
+      "source_text_hash": "82df7ae3f0d88a101a8a07bd08d4dee374ee950f5e514e29c2644e42b966b182",
+      "translation_text_hash": "f76813cf04098b4909f27a377c232d4efc0cd223e65de851de64ee29c0b3e90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참새 두 마리가 한 앗사리온에 팔리는 것이 아니냐 그러나 너희 아버지께서 허락지 아니하시면 그 하나라도 땅에 떨어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "f76813cf04098b4909f27a377c232d4efc0cd223e65de851de64ee29c0b3e90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:30",
+      "sequence": 23448,
+      "chapter_label": "MAT 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "But the very hairs of your head are all numbered.",
+      "ko": "너희에게는 머리털까지 다 세신바 되었나니",
+      "source_text_hash": "0f5b89fb3a30ce4651ba3f828d003c2cb4eee9cfa7a07ad4da029ceec7f2334e",
+      "translation_text_hash": "98203243cc895c1d68ef9fda25f4483cf600b0314302c3fd8a6956d425bbd144",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게는 머리털까지 다 세신바 되었나니"
+      ],
+      "raw_text_hashes": [
+        "98203243cc895c1d68ef9fda25f4483cf600b0314302c3fd8a6956d425bbd144"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:31",
+      "sequence": 23449,
+      "chapter_label": "MAT 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "Therefore don’t be afraid. You are of more value than many sparrows.",
+      "ko": "두려워하지 말라 너희는 많은 참새보다 귀하니라",
+      "source_text_hash": "9b3576cf4021748e42e52f49dba5454f8787aaf2c985c839bbc4ce99a786d335",
+      "translation_text_hash": "d4be382b653b9a0c043eff0517993c9fa8bf616f5edff05280b621a945be24e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려워하지 말라 너희는 많은 참새보다 귀하니라"
+      ],
+      "raw_text_hashes": [
+        "d4be382b653b9a0c043eff0517993c9fa8bf616f5edff05280b621a945be24e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:32",
+      "sequence": 23450,
+      "chapter_label": "MAT 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Everyone therefore who confesses me before men, I will also confess him before my Father who is in heaven.",
+      "ko": "누구든지 사람 앞에서 나를 시인하면 나도 하늘에 계신 내 아버지 앞에서 저를 시인할 것이요",
+      "source_text_hash": "6e9da1b202239619f4db4993458b00b8b432caa2980cb44813eca0bd68ff0dc5",
+      "translation_text_hash": "70cbbe498977929253209d12f05f0c69c1c9a87e5acfb024b34b61dea2377a14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 사람 앞에서 나를 시인하면 나도 하늘에 계신 내 아버지 앞에서 저를 시인할 것이요"
+      ],
+      "raw_text_hashes": [
+        "70cbbe498977929253209d12f05f0c69c1c9a87e5acfb024b34b61dea2377a14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:33",
+      "sequence": 23451,
+      "chapter_label": "MAT 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "But whoever denies me before men, I will also deny him before my Father who is in heaven.",
+      "ko": "누구든지 사람 앞에서 나를 부인하면 나도 하늘에 계신 내 아버지 앞에서 저를 부인하리라",
+      "source_text_hash": "62589cf5262d52565b09c0edfab6b2c046e7046cad74dcbb12eab199e4734572",
+      "translation_text_hash": "bf04d2f58fd8cb7860a6d5092f263bd2bc656579d60b7bb3d0e47ebfefc32946",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 사람 앞에서 나를 부인하면 나도 하늘에 계신 내 아버지 앞에서 저를 부인하리라"
+      ],
+      "raw_text_hashes": [
+        "bf04d2f58fd8cb7860a6d5092f263bd2bc656579d60b7bb3d0e47ebfefc32946"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:34",
+      "sequence": 23452,
+      "chapter_label": "MAT 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "“Don’t think that I came to send peace on the earth. I didn’t come to send peace, but a sword.",
+      "ko": "내가 세상에 화평을 주러 온 줄로 생각지 말라 화평이 아니요 검을 주러 왔노라",
+      "source_text_hash": "461918adc17f9fc3ab016e9ab8ca80801a7ad2e697ebbb21ccfb9ffb8e3d7cca",
+      "translation_text_hash": "380ce98707db5d6df809df5f0e7c77d30346c39b09241ea25c172d920b9dade1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 세상에 화평을 주러 온 줄로 생각지 말라 화평이 아니요 검을 주러 왔노라"
+      ],
+      "raw_text_hashes": [
+        "380ce98707db5d6df809df5f0e7c77d30346c39b09241ea25c172d920b9dade1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:35",
+      "sequence": 23453,
+      "chapter_label": "MAT 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "For I came to set a man at odds against his father, and a daughter against her mother, and a daughter-in-law against her mother-in-law.",
+      "ko": "내가 온 것은 사람이 그 아비와, 딸이 어미와, 며느리가 시어미와 불화하게 하려 함이니",
+      "source_text_hash": "31174e2fd8f0a7edb062cab8f6cfa5ac0d573e7568c099ec5417de19872c2b57",
+      "translation_text_hash": "f95cada9fdc89ac7157735b782a40f08d32efb082b0eac7c294e927039f570d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 온 것은 사람이 그 아비와, 딸이 어미와, 며느리가 시어미와 불화하게 하려 함이니"
+      ],
+      "raw_text_hashes": [
+        "f95cada9fdc89ac7157735b782a40f08d32efb082b0eac7c294e927039f570d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:36",
+      "sequence": 23454,
+      "chapter_label": "MAT 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "A man’s foes will be those of his own household.",
+      "ko": "사람의 원수가 자기 집안 식구리라",
+      "source_text_hash": "80d18c6d48de8ebed6d505b280cbb0f3d11e3a40a9227257f9211c3de509fcf8",
+      "translation_text_hash": "9826a0520f6559ccf12a6da4da4b7e86de45f99d1415571d79a51737e031a2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람의 원수가 자기 집안 식구리라"
+      ],
+      "raw_text_hashes": [
+        "9826a0520f6559ccf12a6da4da4b7e86de45f99d1415571d79a51737e031a2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:37",
+      "sequence": 23455,
+      "chapter_label": "MAT 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "He who loves father or mother more than me is not worthy of me; and he who loves son or daughter more than me isn’t worthy of me.",
+      "ko": "아비나 어미를 나보다 더 사랑하는 자는 내게 합당치 아니하고 아들이나 딸을 나보다 더 사랑하는 자도 내게 합당치 아니하고",
+      "source_text_hash": "9192b6f21aa8c420511e65922cf4ba91b73aeca28d2216a43d30ae72d7a096cb",
+      "translation_text_hash": "6df7a93b2578b80c29e088e1af11e0fee3f9b067ffc655dfc6132854cbc3209e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비나 어미를 나보다 더 사랑하는 자는 내게 합당치 아니하고 아들이나 딸을 나보다 더 사랑하는 자도 내게 합당치 아니하고"
+      ],
+      "raw_text_hashes": [
+        "6df7a93b2578b80c29e088e1af11e0fee3f9b067ffc655dfc6132854cbc3209e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:38",
+      "sequence": 23456,
+      "chapter_label": "MAT 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "He who doesn’t take his cross and follow after me isn’t worthy of me.",
+      "ko": "또 자기 십자가를 지고 나를 좇지 않는 자도 내게 합당치 아니하니라",
+      "source_text_hash": "13caea47aa4e40f91889ba723ca63436cc73a2375bd04d01140d65f2fb47aba4",
+      "translation_text_hash": "f1b88567bc087c32804b8178f2acf741b3344dc490feaed0549c66f8b4e83c6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 자기 십자가를 지고 나를 좇지 않는 자도 내게 합당치 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "f1b88567bc087c32804b8178f2acf741b3344dc490feaed0549c66f8b4e83c6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:39",
+      "sequence": 23457,
+      "chapter_label": "MAT 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "He who seeks his life will lose it; and he who loses his life for my sake will find it.",
+      "ko": "자기 목숨을 얻는 자는 잃을 것이요 나를 위하여 자기 목숨을 잃는 자는 얻으리라",
+      "source_text_hash": "403885d817ea758fbc4a1d0d790e8b27be8db249ef9b9d2c105364a1104c536c",
+      "translation_text_hash": "315f396851922ed22db6dc2bf294d25b4bcb1bb1ede29d3e3d667ac19b54244f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 목숨을 얻는 자는 잃을 것이요 나를 위하여 자기 목숨을 잃는 자는 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "315f396851922ed22db6dc2bf294d25b4bcb1bb1ede29d3e3d667ac19b54244f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:40",
+      "sequence": 23458,
+      "chapter_label": "MAT 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "“He who receives you receives me, and he who receives me receives him who sent me.",
+      "ko": "너희를 영접하는 자는 나를 영접하는 것이요 나를 영접하는 자는 나 보내신 이를 영접하는 것이니라",
+      "source_text_hash": "bed0e6a7e41ff477809dccdc5a4dde0a5d02e2827af2aa6f82859a79a0270c0f",
+      "translation_text_hash": "7751f1dd4c21d7b3fdf09880b3a440fd4900e1a0f803ab49db99775831c4b54e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 영접하는 자는 나를 영접하는 것이요 나를 영접하는 자는 나 보내신 이를 영접하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7751f1dd4c21d7b3fdf09880b3a440fd4900e1a0f803ab49db99775831c4b54e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:41",
+      "sequence": 23459,
+      "chapter_label": "MAT 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "He who receives a prophet in the name of a prophet will receive a prophet’s reward. He who receives a righteous man in the name of a righteous man will receive a righteous man’s reward.",
+      "ko": "선지자의 이름으로 선지자를 영접하는 자는 선지자의 상을 받을 것이요 의인의 이름으로 의인을 영접하는 자는 의인의 상을 받을 것이요",
+      "source_text_hash": "181db8d14fc7260a69fccf979e7bec1da566b0c8daf13f6b4e4f5a355532c0a2",
+      "translation_text_hash": "121b94d9367770291c4a5f712c0be936861b71ea94f48cb6dd734d653954771c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 이름으로 선지자를 영접하는 자는 선지자의 상을 받을 것이요 의인의 이름으로 의인을 영접하는 자는 의인의 상을 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "121b94d9367770291c4a5f712c0be936861b71ea94f48cb6dd734d653954771c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:10:42",
+      "sequence": 23460,
+      "chapter_label": "MAT 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "Whoever gives one of these little ones just a cup of cold water to drink in the name of a disciple, most certainly I tell you, he will in no way lose his reward.”",
+      "ko": "또 누구든지 제자의 이름으로 이 소자 중 하나에게 냉수 한 그릇이라도 주는 자는 내가 진실로 너희에게 이르노니 그 사람이 결단코 상을 잃지 아니하리라 하시니라",
+      "source_text_hash": "aaf80736b24504cfc563e49aa376ff359943f28f8ab2e4cf96902fa32f0ae159",
+      "translation_text_hash": "82c4dca9490d7f631dc3212f39b27e8d68f49e74224e3e1f253495fd4ece918a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 누구든지 제자의 이름으로 이 소자 중 하나에게 냉수 한 그릇이라도 주는 자는 내가 진실로 너희에게 이르노니 그 사람이 결단코 상을 잃지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "82c4dca9490d7f631dc3212f39b27e8d68f49e74224e3e1f253495fd4ece918a"
+      ]
+    }
+  ]
+}

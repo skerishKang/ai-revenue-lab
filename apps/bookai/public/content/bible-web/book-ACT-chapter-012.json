@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:012",
+  "unit_ordinal": 1030,
+  "unit_label": "ACT 12",
+  "book_code": "ACT",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:12:1",
+      "sequence": 27337,
+      "chapter_label": "ACT 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Now about that time, King Herod stretched out his hands to oppress some of the assembly.",
+      "ko": "그 때에 헤롯왕이 손을 들어 교회 중 몇 사람을 해하려하여",
+      "source_text_hash": "092222134588f4f39bab8c31b05c473ac713d6f45812d7d95342b33cabc56340",
+      "translation_text_hash": "cf122d8d161f20341a6f87968f308dc208f7f6fd84d74cb2a611cfb29157aa1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 헤롯왕이 손을 들어 교회 중 몇 사람을 해하려하여"
+      ],
+      "raw_text_hashes": [
+        "cf122d8d161f20341a6f87968f308dc208f7f6fd84d74cb2a611cfb29157aa1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:2",
+      "sequence": 27338,
+      "chapter_label": "ACT 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "He killed James, the brother of John, with the sword.",
+      "ko": "요한의 형제 야고보를 칼로 죽이니",
+      "source_text_hash": "93d0f47ed46fc7a92af374075e8e27c036550c5d2c3def3120ea06a73266d6ad",
+      "translation_text_hash": "4f0f3467df1ebe704e8050e1acd3490fed973b4c28613a224a58058e2c4fcda2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 형제 야고보를 칼로 죽이니"
+      ],
+      "raw_text_hashes": [
+        "4f0f3467df1ebe704e8050e1acd3490fed973b4c28613a224a58058e2c4fcda2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:3",
+      "sequence": 27339,
+      "chapter_label": "ACT 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "When he saw that it pleased the Jews, he proceeded to seize Peter also. This was during the days of unleavened bread.",
+      "ko": "유대인들이 이 일을 기뻐하는 것을 보고 베드로도 잡으려 할쌔 때는 무교절일이라",
+      "source_text_hash": "36977008bcd6c98ab9955e5646951eea6d8d6503ec0eca1516d1f4619bd6b697",
+      "translation_text_hash": "3b86f03a933b4b8eace4fe11a4498e38fac1160dc9924a7e9e12c61700a20c3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 이 일을 기뻐하는 것을 보고 베드로도 잡으려 할쌔 때는 무교절일이라"
+      ],
+      "raw_text_hashes": [
+        "3b86f03a933b4b8eace4fe11a4498e38fac1160dc9924a7e9e12c61700a20c3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:4",
+      "sequence": 27340,
+      "chapter_label": "ACT 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "When he had arrested him, he put him in prison and delivered him to four squads of four soldiers each to guard him, intending to bring him out to the people after the Passover.",
+      "ko": "잡으매 옥에 가두어 군사 넷씩인 네 패에게 맡겨 지키고 유월절 후에 백성 앞에 끌어 내고자 하더라",
+      "source_text_hash": "82125e67e9da5c8cfd6ffb80364eddaf046daa725bb876d43d4f96aa5fe027ae",
+      "translation_text_hash": "92eabb46a7e3572743979f249317ee01afaa989c79ea20f8aa59379fa74c84d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잡으매 옥에 가두어 군사 넷씩인 네 패에게 맡겨 지키고 유월절 후에 백성 앞에 끌어 내고자 하더라"
+      ],
+      "raw_text_hashes": [
+        "92eabb46a7e3572743979f249317ee01afaa989c79ea20f8aa59379fa74c84d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:5",
+      "sequence": 27341,
+      "chapter_label": "ACT 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Peter therefore was kept in the prison, but constant prayer was made by the assembly to God for him.",
+      "ko": "이에 베드로는 옥에 갇혔고 교회는 그를 위하여 간절히 하나님께 빌더라",
+      "source_text_hash": "a7bdb18e60d37c25c60408b4f4118de728a537e5c4c12aed2d35e5bb9cac0335",
+      "translation_text_hash": "21915d7a916cb9a00edc5266fa49c010c7bf33e8e0fa0b28f7b122d4c15e506d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로는 옥에 갇혔고 교회는 그를 위하여 간절히 하나님께 빌더라"
+      ],
+      "raw_text_hashes": [
+        "21915d7a916cb9a00edc5266fa49c010c7bf33e8e0fa0b28f7b122d4c15e506d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:6",
+      "sequence": 27342,
+      "chapter_label": "ACT 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "The same night when Herod was about to bring him out, Peter was sleeping between two soldiers, bound with two chains. Guards in front of the door kept the prison.",
+      "ko": "헤롯이 잡아 내려고 하는 그 전날 밤에 베드로가 두 군사 틈에서 두 쇠사슬에 매여 누워 자는데 파숫군들이 문 밖에서 옥을 지키더니",
+      "source_text_hash": "458eeb2799fcc3da27df9d9565e0485f9b9ee55941c5ab45225c9bcbebcbfc3a",
+      "translation_text_hash": "f00f88107aab7408795b7a929e2889423925bc32af95a68bb210fdd527f18177",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 잡아 내려고 하는 그 전날 밤에 베드로가 두 군사 틈에서 두 쇠사슬에 매여 누워 자는데 파숫군들이 문 밖에서 옥을 지키더니"
+      ],
+      "raw_text_hashes": [
+        "f00f88107aab7408795b7a929e2889423925bc32af95a68bb210fdd527f18177"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:7",
+      "sequence": 27343,
+      "chapter_label": "ACT 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "And behold, an angel of the Lord stood by him, and a light shone in the cell. He struck Peter on the side and woke him up, saying, “Stand up quickly!” His chains fell off his hands.",
+      "ko": "홀연히 주의 사자가 곁에 서매 옥중에 광채가 조요하며 또 베드로의 옆구리를 쳐 깨워 가로되 급히 일어나라 하니 쇠사슬이 그 손에서 벗어지더라",
+      "source_text_hash": "9d98593c570dbe33a5499e2ad76326a565c0b6df9b4fc8e38a8c542ace69f514",
+      "translation_text_hash": "3ea6ec74f5969796b50ef76706b18329afa0f527605824733f36797b1d463792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀연히 주의 사자가 곁에 서매 옥중에 광채가 조요하며 또 베드로의 옆구리를 쳐 깨워 가로되 급히 일어나라 하니 쇠사슬이 그 손에서 벗어지더라"
+      ],
+      "raw_text_hashes": [
+        "3ea6ec74f5969796b50ef76706b18329afa0f527605824733f36797b1d463792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:8",
+      "sequence": 27344,
+      "chapter_label": "ACT 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "The angel said to him, “Get dressed and put on your sandals.” He did so. He said to him, “Put on your cloak and follow me.”",
+      "ko": "천사가 가로되 띠를 띠고 신을 들메라 하거늘 베드로가 그대로 하니 천사가 또 가로되 겉옷을 입고 따라 오라 한대",
+      "source_text_hash": "77e6ae4ed6a0365ab6dc1592e2a4a8c59e63822068795326190155e2d4e7b04d",
+      "translation_text_hash": "aa0a7fce87194c06515bd780ea8d321465087cc02d819355d7bdecefc9863d80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천사가 가로되 띠를 띠고 신을 들메라 하거늘 베드로가 그대로 하니 천사가 또 가로되 겉옷을 입고 따라 오라 한대"
+      ],
+      "raw_text_hashes": [
+        "aa0a7fce87194c06515bd780ea8d321465087cc02d819355d7bdecefc9863d80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:9",
+      "sequence": 27345,
+      "chapter_label": "ACT 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "And he went out and followed him. He didn’t know that what was being done by the angel was real, but thought he saw a vision.",
+      "ko": "베드로가 나와서 따라갈쌔 천사의 하는 것이 참인줄 알지 못하고 환상을 보는가 하니라",
+      "source_text_hash": "f8e89e3478fad65fdab125828377af11bdd69ef5f932ddee27d00fd44b78db6f",
+      "translation_text_hash": "11d053ca5c197753dcaa6e30ad4f847b90bb03c62412100ad890f6a796f4928b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 나와서 따라갈쌔 천사의 하는 것이 참인줄 알지 못하고 환상을 보는가 하니라"
+      ],
+      "raw_text_hashes": [
+        "11d053ca5c197753dcaa6e30ad4f847b90bb03c62412100ad890f6a796f4928b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:10",
+      "sequence": 27346,
+      "chapter_label": "ACT 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "When they were past the first and the second guard, they came to the iron gate that leads into the city, which opened to them by itself. They went out and went down one street, and immediately the angel departed from him.",
+      "ko": "이에 첫째와 둘째 파수를 지나 성으로 통한 쇠문에 이르니 문이 절로 열리는지라 나와 한 거리를 지나매 천사가 곧 떠나더라",
+      "source_text_hash": "ccdd054e99178c53ab1d72e676aa9b66041eb8017f324bd222eba946e0914061",
+      "translation_text_hash": "d13d156fd31e475c8b975d6a7f83db246d16f93c4e2194c54e501a28f90a38f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 첫째와 둘째 파수를 지나 성으로 통한 쇠문에 이르니 문이 절로 열리는지라 나와 한 거리를 지나매 천사가 곧 떠나더라"
+      ],
+      "raw_text_hashes": [
+        "d13d156fd31e475c8b975d6a7f83db246d16f93c4e2194c54e501a28f90a38f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:11",
+      "sequence": 27347,
+      "chapter_label": "ACT 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "When Peter had come to himself, he said, “Now I truly know that the Lord has sent out his angel and delivered me out of the hand of Herod, and from everything the Jewish people were expecting.”",
+      "ko": "이에 베드로가 정신이 나서 가로되 내가 이제야 참으로 주께서 그의 천사를 보내어 나를 헤롯의 손과 유대 백성의 모든 기대에서 벗어나게 하신줄 알겠노라 하여",
+      "source_text_hash": "fd26986b83b2d2c52b77caf02c589d7122fc794d78934b0e4933eb5e199d0ee2",
+      "translation_text_hash": "adb9ebfbfeb964361314771c7ecde396a39d1ea6c449a867480fcf771cad52ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 정신이 나서 가로되 내가 이제야 참으로 주께서 그의 천사를 보내어 나를 헤롯의 손과 유대 백성의 모든 기대에서 벗어나게 하신줄 알겠노라 하여"
+      ],
+      "raw_text_hashes": [
+        "adb9ebfbfeb964361314771c7ecde396a39d1ea6c449a867480fcf771cad52ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:12",
+      "sequence": 27348,
+      "chapter_label": "ACT 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Thinking about that, he came to the house of Mary, the mother of John who was called Mark, where many were gathered together and were praying.",
+      "ko": "깨닫고 마가라 하는 요한의 어머니 마리아의 집에 가니 여러 사람이 모여 기도하더라",
+      "source_text_hash": "548cfc4acb44209185745ef2c78dacecb38adf8d6084baa9efd34916dfa14039",
+      "translation_text_hash": "acd1634cce717968fece3658a7bd2cefd5e6ed352f1e146aa4bb3223ecf96a58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨닫고 마가라 하는 요한의 어머니 마리아의 집에 가니 여러 사람이 모여 기도하더라"
+      ],
+      "raw_text_hashes": [
+        "acd1634cce717968fece3658a7bd2cefd5e6ed352f1e146aa4bb3223ecf96a58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:13",
+      "sequence": 27349,
+      "chapter_label": "ACT 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "When Peter knocked at the door of the gate, a servant girl named Rhoda came to answer.",
+      "ko": "베드로가 대문을 두드린대 로데라 하는 계집 아이가 영접하러 나왔다가",
+      "source_text_hash": "13c022bd1dce1df59627c159964d7c47ba32e203360cd0cf99495c810e58c6d7",
+      "translation_text_hash": "7cd5ca2bec5f3006a08137a080c6bfde41deefccf1b444c96ec9b19c87988cdb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 대문을 두드린대 로데라 하는 계집 아이가 영접하러 나왔다가"
+      ],
+      "raw_text_hashes": [
+        "7cd5ca2bec5f3006a08137a080c6bfde41deefccf1b444c96ec9b19c87988cdb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:14",
+      "sequence": 27350,
+      "chapter_label": "ACT 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "When she recognized Peter’s voice, she didn’t open the gate for joy, but ran in and reported that Peter was standing in front of the gate.",
+      "ko": "베드로의 음성인줄 알고 기뻐하여 문을 미처 열지 못하고 달려 들어가 말하되 베드로가 대문 밖에 섰더라 하니",
+      "source_text_hash": "d057bd983044b44d557d657d3a55e615506790b2cd7b4c539e615e3eb2ac558e",
+      "translation_text_hash": "246956674fae5e11cde8620abc789db8913c74ab6f99b0d91d7b45dcffb399cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로의 음성인줄 알고 기뻐하여 문을 미처 열지 못하고 달려 들어가 말하되 베드로가 대문 밖에 섰더라 하니"
+      ],
+      "raw_text_hashes": [
+        "246956674fae5e11cde8620abc789db8913c74ab6f99b0d91d7b45dcffb399cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:15",
+      "sequence": 27351,
+      "chapter_label": "ACT 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "They said to her, “You are crazy!” But she insisted that it was so. They said, “It is his angel.”",
+      "ko": "저희가 말하되 네가 미쳤다 하나 계집 아이는 힘써 말하되 참말이라 하니 저희가 말하되 그러면 그의 천사라 하더라",
+      "source_text_hash": "643054d1b9f0ada99026579228a16b0fd1d448fb2a04e29ddcbcaeeceebd0d0b",
+      "translation_text_hash": "efe7372ef30c9ab86ea7a4d1854e777415b7563f48ef77bd625f0238a5085322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하되 네가 미쳤다 하나 계집 아이는 힘써 말하되 참말이라 하니 저희가 말하되 그러면 그의 천사라 하더라"
+      ],
+      "raw_text_hashes": [
+        "efe7372ef30c9ab86ea7a4d1854e777415b7563f48ef77bd625f0238a5085322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:16",
+      "sequence": 27352,
+      "chapter_label": "ACT 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "But Peter continued knocking. When they had opened, they saw him and were amazed.",
+      "ko": "베드로가 문 두드리기를 그치지 아니하니 저희가 문을 열어 베드로를 보고 놀라는지라",
+      "source_text_hash": "d17032c3141ae40c428bd9cd31531882b9abe8e7dff3f31bcb34f3afb87bb372",
+      "translation_text_hash": "10d8a9b387c2867da1a7d791b53c70501f5ac71785b74023a43431afde5d788c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 문 두드리기를 그치지 아니하니 저희가 문을 열어 베드로를 보고 놀라는지라"
+      ],
+      "raw_text_hashes": [
+        "10d8a9b387c2867da1a7d791b53c70501f5ac71785b74023a43431afde5d788c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:17",
+      "sequence": 27353,
+      "chapter_label": "ACT 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "But he, beckoning to them with his hand to be silent, declared to them how the Lord had brought him out of the prison. He said, “Tell these things to James and to the brothers.” Then he departed and went to another place.",
+      "ko": "베드로가 저희에게 손짓하여 종용하게 하고 주께서 자기를 이끌어 옥에서 나오게 하던 일을 말하고 또 야고보와 형제들에게 이 말을 전하라 하고 떠나 다른 곳으로 가니라",
+      "source_text_hash": "b03f2bba9b380f3e792a22fbecd6d47407344b3efb34bd09cb7051460d6642bc",
+      "translation_text_hash": "42c591a400ea2e9d9522354ad44c74b7928b2b55a5adf89640b372b0bd4b14d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 저희에게 손짓하여 종용하게 하고 주께서 자기를 이끌어 옥에서 나오게 하던 일을 말하고 또 야고보와 형제들에게 이 말을 전하라 하고 떠나 다른 곳으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "42c591a400ea2e9d9522354ad44c74b7928b2b55a5adf89640b372b0bd4b14d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:18",
+      "sequence": 27354,
+      "chapter_label": "ACT 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Now as soon as it was day, there was no small stir among the soldiers about what had become of Peter.",
+      "ko": "날이 새매 군사들은 베드로가 어떻게 되었는지 알지 못하여 적지 않게 소동하니",
+      "source_text_hash": "d457841cb46af72477e2e7258e8ff76f03c31feb1fc68de92fe3c26df214443c",
+      "translation_text_hash": "cf22fa49a652938470275c17d2a5ead4798b97e1b2b8bbae1b91ce30bb0898f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 새매 군사들은 베드로가 어떻게 되었는지 알지 못하여 적지 않게 소동하니"
+      ],
+      "raw_text_hashes": [
+        "cf22fa49a652938470275c17d2a5ead4798b97e1b2b8bbae1b91ce30bb0898f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:19",
+      "sequence": 27355,
+      "chapter_label": "ACT 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "When Herod had sought for him and didn’t find him, he examined the guards, then commanded that they should be put to death. He went down from Judea to Caesarea, and stayed there.",
+      "ko": "헤롯이 그를 찾아도 보지 못하매 파숫군들을 심문하고 죽이라 명하니라 헤롯이 유대를 떠나 가이사랴로 내려가서 거하니라",
+      "source_text_hash": "3174714da22c94c7979e5bd787659b94fbebaf4d08421254ff7072af4114ae14",
+      "translation_text_hash": "aaa8bfd3ee93f3e2cc8883cd329ab96fe57ed538e1947397946423decd69bc2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 그를 찾아도 보지 못하매 파숫군들을 심문하고 죽이라 명하니라 헤롯이 유대를 떠나 가이사랴로 내려가서 거하니라"
+      ],
+      "raw_text_hashes": [
+        "aaa8bfd3ee93f3e2cc8883cd329ab96fe57ed538e1947397946423decd69bc2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:20",
+      "sequence": 27356,
+      "chapter_label": "ACT 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "Now Herod was very angry with the people of Tyre and Sidon. They came with one accord to him and, having made Blastus, the king’s personal aide, their friend, they asked for peace, because their country depended on the king’s country for food.",
+      "ko": "헤롯이 두로와 시돈 사람들을 대단히 노여워하나 저희 지방이 왕국에서 나는 양식을 쓰는고로 일심으로 그에게 나아와 왕의 침소 맡은 신하 블라스도를 친하여 화목하기를 청한지라",
+      "source_text_hash": "69e1d8e2eba5d92a84539042e2717921def7c677336bf66afc9fd9db73fccb32",
+      "translation_text_hash": "dd8c0fa4c4164e7696704bd80c798a1c9a77032dca1ab0890629d3b678848eea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 두로와 시돈 사람들을 대단히 노여워하나 저희 지방이 왕국에서 나는 양식을 쓰는고로 일심으로 그에게 나아와 왕의 침소 맡은 신하 블라스도를 친하여 화목하기를 청한지라"
+      ],
+      "raw_text_hashes": [
+        "dd8c0fa4c4164e7696704bd80c798a1c9a77032dca1ab0890629d3b678848eea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:21",
+      "sequence": 27357,
+      "chapter_label": "ACT 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "On an appointed day, Herod dressed himself in royal clothing, sat on the throne, and gave a speech to them.",
+      "ko": "헤롯이 날을 택하여 왕복을 입고 위에 앉아 백성을 효유한대",
+      "source_text_hash": "e5e0a98e5e4e769f72ba55dc41903b9ba15e64b1de11072f1a6cb9662802c585",
+      "translation_text_hash": "73265eb73ae60d083b395317de9f40662fb0e862b5d29609581b70a62acd4faa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 날을 택하여 왕복을 입고 위에 앉아 백성을 효유한대"
+      ],
+      "raw_text_hashes": [
+        "73265eb73ae60d083b395317de9f40662fb0e862b5d29609581b70a62acd4faa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:22",
+      "sequence": 27358,
+      "chapter_label": "ACT 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "The people shouted, “The voice of a god, and not of a man!”",
+      "ko": "백성들이 크게 부르되 이것은 신의 소리요 사람의 소리는 아니라 하거늘",
+      "source_text_hash": "2ea1f0a5253f7d604c36e36698919c2036d26e72def62f45e068c1ede3f9d147",
+      "translation_text_hash": "334bf4d326c05494bd4a14efcc8b62ff48595a14f406b96311b28391a5689f9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성들이 크게 부르되 이것은 신의 소리요 사람의 소리는 아니라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "334bf4d326c05494bd4a14efcc8b62ff48595a14f406b96311b28391a5689f9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:23",
+      "sequence": 27359,
+      "chapter_label": "ACT 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Immediately an angel of the Lord struck him, because he didn’t give God the glory. Then he was eaten by worms and died.",
+      "ko": "헤롯이 영광을 하나님께로 돌리지 아니하는고로 주의 사자가 곧 치니 충이 먹어 죽으니라",
+      "source_text_hash": "43e68d883f3b85bc5a142c650d536cd6ea1928cd1bd124864164e5ae5b306fd6",
+      "translation_text_hash": "df7ac566c714d7778bdfcedb481b3c37bdc8ca6bf9ac6a7fa04cd142b1f39ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤롯이 영광을 하나님께로 돌리지 아니하는고로 주의 사자가 곧 치니 충이 먹어 죽으니라"
+      ],
+      "raw_text_hashes": [
+        "df7ac566c714d7778bdfcedb481b3c37bdc8ca6bf9ac6a7fa04cd142b1f39ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:24",
+      "sequence": 27360,
+      "chapter_label": "ACT 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "But the word of God grew and multiplied.",
+      "ko": "하나님의 말씀은 흥왕하여 더하더라",
+      "source_text_hash": "9a7c3ff90b758aea8a98e399c28107954fadc8c756c54f751f5a1cb487f65a3e",
+      "translation_text_hash": "1e509e5c48b0a4e3fb851407aa724ce2ca9186e041724a60a2ca316135fcdfac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀은 흥왕하여 더하더라"
+      ],
+      "raw_text_hashes": [
+        "1e509e5c48b0a4e3fb851407aa724ce2ca9186e041724a60a2ca316135fcdfac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:12:25",
+      "sequence": 27361,
+      "chapter_label": "ACT 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "Barnabas and Saul returned to Jerusalem when they had fulfilled their service, also taking with them John who was called Mark.",
+      "ko": "바나바와 사울이 부조의 일을 마치고 마가라 하는 요한을 데리고 예루살렘에서 돌아오니라",
+      "source_text_hash": "b6cfd171121c455882cadae213ca406b079db2abf1be0c7f550952be0fbbe150",
+      "translation_text_hash": "e272a6f7d62ccf3f9979b93521d4bba938395535b1cd95acc50146d0e0b64f85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바나바와 사울이 부조의 일을 마치고 마가라 하는 요한을 데리고 예루살렘에서 돌아오니라"
+      ],
+      "raw_text_hashes": [
+        "e272a6f7d62ccf3f9979b93521d4bba938395535b1cd95acc50146d0e0b64f85"
+      ]
+    }
+  ]
+}

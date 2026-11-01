@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1TI:chapter:006",
+  "unit_ordinal": 1125,
+  "unit_label": "1TI 6",
+  "book_code": "1TI",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1TI:6:1",
+      "sequence": 29786,
+      "chapter_label": "1TI 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Let as many as are bondservants under the yoke count their own masters worthy of all honor, that the name of God and the doctrine not be blasphemed.",
+      "ko": "무릇 멍에 아래 있는 종들은 자기 상전들을 범사에 마땅히 공경할 자로 알찌니 이는 하나님의 이름과 교훈으로 훼방을 받지 않게 하려 함이라",
+      "source_text_hash": "985388a9965526668331dd05bd89303987cf3c24f4a66f90fe01692de7b6c96e",
+      "translation_text_hash": "0c99e4ac7f1ca0b9ae7792852c0f616b66f16b186624bdb03ab03ab6ffb56ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 멍에 아래 있는 종들은 자기 상전들을 범사에 마땅히 공경할 자로 알찌니 이는 하나님의 이름과 교훈으로 훼방을 받지 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "0c99e4ac7f1ca0b9ae7792852c0f616b66f16b186624bdb03ab03ab6ffb56ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:2",
+      "sequence": 29787,
+      "chapter_label": "1TI 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Those who have believing masters, let them not despise them because they are brothers, but rather let them serve them, because those who partake of the benefit are believing and beloved. Teach and exhort these things.",
+      "ko": "믿는 상전이 있는 자들은 그 상전을 형제라고 경히 여기지 말고 더 잘 섬기게 하라 이는 유익을 받는 자들이 믿는 자요 사랑을 받는 자임이니라 너는 이것들을 가르치고 권하라",
+      "source_text_hash": "7c21e433413f15e830c5b160df98147a4ffbd70712e690556365ef4a5005f8c1",
+      "translation_text_hash": "a038881f50059d66a2735373d96bff24041da4dc237c411ce07165907a911065",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿는 상전이 있는 자들은 그 상전을 형제라고 경히 여기지 말고 더 잘 섬기게 하라 이는 유익을 받는 자들이 믿는 자요 사랑을 받는 자임이니라 너는 이것들을 가르치고 권하라"
+      ],
+      "raw_text_hashes": [
+        "a038881f50059d66a2735373d96bff24041da4dc237c411ce07165907a911065"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:3",
+      "sequence": 29788,
+      "chapter_label": "1TI 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "If anyone teaches a different doctrine and doesn’t consent to sound words, the words of our Lord Jesus Christ, and to the doctrine which is according to godliness,",
+      "ko": "누구든지 다른 교훈을 하며 바른 말 곧 우리 주 예수 그리스도의 말씀과 경건에 관한 교훈에 착념치 아니하면",
+      "source_text_hash": "84d657ff5be4087b1fd4129ef7fed612ce618162963419866ab771e4ef9de639",
+      "translation_text_hash": "de3a1dd3084a02421838d0f13450d8b23d43d27364fc8b3c2e627801a07b5115",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 다른 교훈을 하며 바른 말 곧 우리 주 예수 그리스도의 말씀과 경건에 관한 교훈에 착념치 아니하면"
+      ],
+      "raw_text_hashes": [
+        "de3a1dd3084a02421838d0f13450d8b23d43d27364fc8b3c2e627801a07b5115"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:4",
+      "sequence": 29789,
+      "chapter_label": "1TI 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "he is conceited, knowing nothing, but obsessed with arguments, disputes, and word battles, from which come envy, strife, insulting, evil suspicions,",
+      "ko": "저는 교만하여 아무 것도 알지 못하고 변론과 언쟁을 좋아하는 자니 이로써 투기와 분쟁과 훼방과 악한 생각이 나며",
+      "source_text_hash": "de0c0a19ad664e3af58bc6c5534076d306cbf34f8603369bb6526f0aed1eb682",
+      "translation_text_hash": "da85637ff7084208f97284401b2c91bae6191939a7e8a209c803c7d0e87d4b8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 교만하여 아무 것도 알지 못하고 변론과 언쟁을 좋아하는 자니 이로써 투기와 분쟁과 훼방과 악한 생각이 나며"
+      ],
+      "raw_text_hashes": [
+        "da85637ff7084208f97284401b2c91bae6191939a7e8a209c803c7d0e87d4b8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:5",
+      "sequence": 29790,
+      "chapter_label": "1TI 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "constant friction of people of corrupt minds and destitute of the truth, who suppose that godliness is a means of gain. Withdraw yourself from such.",
+      "ko": "마음이 부패하여지고 진리를 잃어버려 경건을 이익의 재료로 생각하는 자들의 다툼이 일어나느니라",
+      "source_text_hash": "eb850e77d8358073a6f82aeb5350067e2cb2650b7c210e4d646a79c420454d3b",
+      "translation_text_hash": "1adf95e09bd5faa72eaa41615d855bc3bd8d208fef4bc750171cffbcb640595c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마음이 부패하여지고 진리를 잃어버려 경건을 이익의 재료로 생각하는 자들의 다툼이 일어나느니라"
+      ],
+      "raw_text_hashes": [
+        "1adf95e09bd5faa72eaa41615d855bc3bd8d208fef4bc750171cffbcb640595c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:6",
+      "sequence": 29791,
+      "chapter_label": "1TI 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "But godliness with contentment is great gain.",
+      "ko": "그러나 지족하는 마음이 있으면 경건이 큰 이익이 되느니라",
+      "source_text_hash": "53629658917c8a4ea517ee8fc80ae5cb7530907ff728c2bfccdb14e4b1f89cc2",
+      "translation_text_hash": "5870798dca0abcfa5015b897a1acc89d2f7296dc56a2ae40bb43aae9e86c7ef7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 지족하는 마음이 있으면 경건이 큰 이익이 되느니라"
+      ],
+      "raw_text_hashes": [
+        "5870798dca0abcfa5015b897a1acc89d2f7296dc56a2ae40bb43aae9e86c7ef7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:7",
+      "sequence": 29792,
+      "chapter_label": "1TI 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "For we brought nothing into the world, and we certainly can’t carry anything out.",
+      "ko": "우리가 세상에 아무것도 가지고 온 것이 없으매 또한 아무 것도 가지고 가지 못하리니",
+      "source_text_hash": "b91fe2171582bea64c93bc63e783357cef9305b1bcc2a856f9700ea0e44b42ce",
+      "translation_text_hash": "6e2d19b7651506c2c279199c8edbb2ec8b2fe2c5ac8541f95880b245a57ea04b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 세상에 아무것도 가지고 온 것이 없으매 또한 아무 것도 가지고 가지 못하리니"
+      ],
+      "raw_text_hashes": [
+        "6e2d19b7651506c2c279199c8edbb2ec8b2fe2c5ac8541f95880b245a57ea04b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:8",
+      "sequence": 29793,
+      "chapter_label": "1TI 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "But having food and clothing, we will be content with that.",
+      "ko": "우리가 먹을 것과 입을 것이 있은즉 족한 줄로 알 것이니라",
+      "source_text_hash": "fec72dd6235a18023604bea81db69d3aa8ad88cf4ac1246cefc3cf8957d679a8",
+      "translation_text_hash": "735897adf73a08af10acf817f001ca26cd084b6532bf9a46715d73a03d867b19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 먹을 것과 입을 것이 있은즉 족한 줄로 알 것이니라"
+      ],
+      "raw_text_hashes": [
+        "735897adf73a08af10acf817f001ca26cd084b6532bf9a46715d73a03d867b19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:9",
+      "sequence": 29794,
+      "chapter_label": "1TI 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "But those who are determined to be rich fall into a temptation, a snare, and many foolish and harmful lusts, such as drown men in ruin and destruction.",
+      "ko": "부하려 하는 자들은 시험과 올무와 여러가지 어리석고 해로운 정욕에 떨어지나니 곧 사람으로 침륜과 멸망에 빠지게 하는 것이라",
+      "source_text_hash": "f1019abd432f1db60bb777e547a7792555b1b8f8928906a24bec95d8404b8bf5",
+      "translation_text_hash": "8485c4da498d53cf2ddf48bd2f09649d18927ec67918daeef1b4a3ccbc12e64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부하려 하는 자들은 시험과 올무와 여러가지 어리석고 해로운 정욕에 떨어지나니 곧 사람으로 침륜과 멸망에 빠지게 하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "8485c4da498d53cf2ddf48bd2f09649d18927ec67918daeef1b4a3ccbc12e64f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:10",
+      "sequence": 29795,
+      "chapter_label": "1TI 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "For the love of money is a root of all kinds of evil. Some have been led astray from the faith in their greed, and have pierced themselves through with many sorrows.",
+      "ko": "돈을 사랑함이 일만 악의 뿌리가 되나니 이것을 사모하는 자들이 미혹을 받아 믿음에서 떠나 많은 근심으로써 자기를 찔렀도다",
+      "source_text_hash": "8c5f42ba576b7b3d8f4df3917513114b4d0c9cf78b49c13e8a2e0578fd6898c7",
+      "translation_text_hash": "551d688035457fec7a65eab92202912669bffef8c8f438c2989fb8ef7d3668fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "돈을 사랑함이 일만 악의 뿌리가 되나니 이것을 사모하는 자들이 미혹을 받아 믿음에서 떠나 많은 근심으로써 자기를 찔렀도다"
+      ],
+      "raw_text_hashes": [
+        "551d688035457fec7a65eab92202912669bffef8c8f438c2989fb8ef7d3668fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:11",
+      "sequence": 29796,
+      "chapter_label": "1TI 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "But you, man of God, flee these things, and follow after righteousness, godliness, faith, love, perseverance, and gentleness.",
+      "ko": "오직 너 하나님의 사람아 이것들을 피하고 의와 경건과 믿음과 사랑과 인내와 온유를 좇으며",
+      "source_text_hash": "248218aff77c81643b28444bb894811389d73880dad0ab1ffc55dd62f4ef8f98",
+      "translation_text_hash": "c279495f1d6645ce6e86c58045b079ffb7e33d11b17baaa48c5ca5b291f8add8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너 하나님의 사람아 이것들을 피하고 의와 경건과 믿음과 사랑과 인내와 온유를 좇으며"
+      ],
+      "raw_text_hashes": [
+        "c279495f1d6645ce6e86c58045b079ffb7e33d11b17baaa48c5ca5b291f8add8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:12",
+      "sequence": 29797,
+      "chapter_label": "1TI 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Fight the good fight of faith. Take hold of the eternal life to which you were called, and you confessed the good confession in the sight of many witnesses.",
+      "ko": "믿음의 선한 싸움을 싸우라 영생을 취하라 이를 위하여 네가 부르심을 입었고 많은 증인 앞에서 선한 증거를 증거하였도다",
+      "source_text_hash": "49d86736969f2e914b64c6795db7ef7904395945c9e7bc93306549926d5bd692",
+      "translation_text_hash": "61840c409e2bd08648b4d8d69d62652198ace0678932564b0d4ecaa58036fbe0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음의 선한 싸움을 싸우라 영생을 취하라 이를 위하여 네가 부르심을 입었고 많은 증인 앞에서 선한 증거를 증거하였도다"
+      ],
+      "raw_text_hashes": [
+        "61840c409e2bd08648b4d8d69d62652198ace0678932564b0d4ecaa58036fbe0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:13",
+      "sequence": 29798,
+      "chapter_label": "1TI 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "I command you before God who gives life to all things, and before Christ Jesus who before Pontius Pilate testified the good confession,",
+      "ko": "만물을 살게 하신 하나님 앞과 본디오 빌라도를 향하여 선한 증거로 증거하신 그리스도 예수 앞에서 내가 너를 명하노니",
+      "source_text_hash": "c98f01c7b6a5dbc1b5e354d5b88f55077b220981cc9e90673c8475252cdfcff6",
+      "translation_text_hash": "bdf5adf1a032a4251a3938c02357c675ebd7665585c90128b74f5179d389684c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물을 살게 하신 하나님 앞과 본디오 빌라도를 향하여 선한 증거로 증거하신 그리스도 예수 앞에서 내가 너를 명하노니"
+      ],
+      "raw_text_hashes": [
+        "bdf5adf1a032a4251a3938c02357c675ebd7665585c90128b74f5179d389684c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:14",
+      "sequence": 29799,
+      "chapter_label": "1TI 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "that you keep the commandment without spot, blameless until the appearing of our Lord Jesus Christ,",
+      "ko": "우리 주 예수 그리스도 나타나실 때까지 점도 없고 책망 받을 것도 없이 이 명령을 지키라",
+      "source_text_hash": "edbf6ae58554a1fbf84321a6bc7ea0d07606cc0c43dc064259014e45f6b0d236",
+      "translation_text_hash": "04abb4fe625769c3aeefc07a18d8027d6398a94334d0fb57be6e937caeebcc18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주 예수 그리스도 나타나실 때까지 점도 없고 책망 받을 것도 없이 이 명령을 지키라"
+      ],
+      "raw_text_hashes": [
+        "04abb4fe625769c3aeefc07a18d8027d6398a94334d0fb57be6e937caeebcc18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:15",
+      "sequence": 29800,
+      "chapter_label": "1TI 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "which at the right time he will show, who is the blessed and only Ruler, the King of kings and Lord of lords.",
+      "ko": "기약이 이르면 하나님이 그의 나타나심을 보이시리니 하나님은 복되시고 홀로 한 분이신 능하신 자이며 만왕의 왕이시며 만주의 주시요",
+      "source_text_hash": "70b6c19f31ef77da97a949e60cee2f3619b65e67e3382bb58fe22163eb33c700",
+      "translation_text_hash": "ce2b26ce419a697632989d9b0ea24577db56eef5b034f485f6474f43d033e1b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기약이 이르면 하나님이 그의 나타나심을 보이시리니 하나님은 복되시고 홀로 한 분이신 능하신 자이며 만왕의 왕이시며 만주의 주시요"
+      ],
+      "raw_text_hashes": [
+        "ce2b26ce419a697632989d9b0ea24577db56eef5b034f485f6474f43d033e1b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:16",
+      "sequence": 29801,
+      "chapter_label": "1TI 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "He alone has immortality, dwelling in unapproachable light, whom no man has seen nor can see, to whom be honor and eternal power. Amen.",
+      "ko": "오직 그에게만 죽지 아니함이 있고 가까이 가지 못할 빛에 거하시고 아무 사람도 보지 못하였고 또 볼 수 없는 자시니 그에게 존귀와 영원한 능력을 돌릴찌어다 아멘",
+      "source_text_hash": "b8750402fac8a6eb32d67a84c85174de74faaae9f824395e3326f0ffa6298dbf",
+      "translation_text_hash": "1ae4791e08489776ef572ef8094ce17b5765796d3d32ac3c0332cf40d2dcc17d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그에게만 죽지 아니함이 있고 가까이 가지 못할 빛에 거하시고 아무 사람도 보지 못하였고 또 볼 수 없는 자시니 그에게 존귀와 영원한 능력을 돌릴찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "1ae4791e08489776ef572ef8094ce17b5765796d3d32ac3c0332cf40d2dcc17d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:17",
+      "sequence": 29802,
+      "chapter_label": "1TI 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "Charge those who are rich in this present age that they not be arrogant, nor have their hope set on the uncertainty of riches, but on the living God, who richly provides us with everything to enjoy;",
+      "ko": "네가 이 세대에 부한 자들을 명하여 마음을 높이지 말고 정함이 없는 재물에 소망을 두지 말고 오직 우리에게 모든 것을 후히 주사 누리게 하시는 하나님께 두며",
+      "source_text_hash": "6a10af54950777d42ba513cad1e330e73fc10f1f570470e154d2698411f2caa0",
+      "translation_text_hash": "930f2a6557b80a354c730012525ffc959fcf98074cf48a0abe5dd3a7d2c78f2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 이 세대에 부한 자들을 명하여 마음을 높이지 말고 정함이 없는 재물에 소망을 두지 말고 오직 우리에게 모든 것을 후히 주사 누리게 하시는 하나님께 두며"
+      ],
+      "raw_text_hashes": [
+        "930f2a6557b80a354c730012525ffc959fcf98074cf48a0abe5dd3a7d2c78f2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:18",
+      "sequence": 29803,
+      "chapter_label": "1TI 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "that they do good, that they be rich in good works, that they be ready to distribute, willing to share;",
+      "ko": "선한 일을 행하고 선한 사업에 부하고 나눠주기를 좋아하며 동정하는 자가 되게 하라",
+      "source_text_hash": "2850743203e3492a801da843c31161636875f4d74a53dd6afaff9bacfd4bf32c",
+      "translation_text_hash": "28d146ab2f0c4044ff204c1cf3c3a7a181b1aeb056e55365434121e7513be6d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 일을 행하고 선한 사업에 부하고 나눠주기를 좋아하며 동정하는 자가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "28d146ab2f0c4044ff204c1cf3c3a7a181b1aeb056e55365434121e7513be6d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:19",
+      "sequence": 29804,
+      "chapter_label": "1TI 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "laying up in store for themselves a good foundation against the time to come, that they may lay hold of eternal life.",
+      "ko": "이것이 장래에 자기를 위하여 좋은 터를 쌓아 참된 생명을 취하는 것이니라",
+      "source_text_hash": "fb279533f78e82cfaf42aa024c9eb8fe5420dee081c41a0440749dd363e60c66",
+      "translation_text_hash": "fe062d336346801ab60750660731399d36189a5572c1caef4fdf5e46f735eb5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 장래에 자기를 위하여 좋은 터를 쌓아 참된 생명을 취하는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "fe062d336346801ab60750660731399d36189a5572c1caef4fdf5e46f735eb5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:20",
+      "sequence": 29805,
+      "chapter_label": "1TI 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "Timothy, guard that which is committed to you, turning away from the empty chatter and oppositions of what is falsely called knowledge,",
+      "ko": "디모데야 네게 부탁한 것을 지키고 거짓되이 일컫는 지식의 망령되고 허한 말과 변론을 피하라",
+      "source_text_hash": "f04911f51cc76f55aa05e1b7c13c95467fd57c7c749fb027832d72809e8a6822",
+      "translation_text_hash": "a799222f423dae81db8e8389476f645e64cd38a755573899121be75c7f72f432",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "디모데야 네게 부탁한 것을 지키고 거짓되이 일컫는 지식의 망령되고 허한 말과 변론을 피하라"
+      ],
+      "raw_text_hashes": [
+        "a799222f423dae81db8e8389476f645e64cd38a755573899121be75c7f72f432"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1TI:6:21",
+      "sequence": 29806,
+      "chapter_label": "1TI 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "1TI",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1TI",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "which some profess, and thus have wandered from the faith. Grace be with you. Amen.",
+      "ko": "이것을 좇는 사람들이 있어 믿음에서 벗어났느니라 은혜가 너희와 함께 있을찌어다",
+      "source_text_hash": "fca468d122512076953855bceb27edf4f5a300f1a988e9fe0a79ad5c3836af58",
+      "translation_text_hash": "98bca6b3a6ee7af271ab45e270052815c6464eb742c157487d75d9bcd3684ad9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것을 좇는 사람들이 있어 믿음에서 벗어났느니라 은혜가 너희와 함께 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "98bca6b3a6ee7af271ab45e270052815c6464eb742c157487d75d9bcd3684ad9"
+      ]
+    }
+  ]
+}

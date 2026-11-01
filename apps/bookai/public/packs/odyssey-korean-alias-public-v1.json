@@ -1,0 +1,62 @@
+{
+  "schema": "storymemory-precision-pack-1.0",
+  "id": "pack:odyssey:korean-alias-public:v1",
+  "name": "Odyssey Korean Alias Helper",
+  "kind": "search",
+  "version": "1.0.0",
+  "priority": 10,
+  "creator": "padiem/storymemory",
+  "trustTier": "auto-generated",
+  "compatibility": {
+    "mode": "exact-fingerprint",
+    "sourceFingerprint": "268cf938678308dbebbea0aee320567f2d9aac31087e557f43a70708676efc7a",
+    "sourceRevision": "storymemory-static-content-1.0",
+    "language": "ko",
+    "locatorScheme": "book"
+  },
+  "rights": {
+    "declaration": "Derived alias/query hints only; no Source body included",
+    "sourceTextIncluded": false,
+    "visibility": "public"
+  },
+  "payload": {
+    "aliases": [
+      {
+        "from": "헬렌",
+        "to": [
+          "헬레네",
+          "Helen"
+        ]
+      },
+      {
+        "from": "이로스",
+        "to": [
+          "아르나이오스",
+          "Irus"
+        ]
+      }
+    ],
+    "searchHints": [
+      {
+        "when": "헬렌",
+        "hints": [
+          "헬레네",
+          "Helen"
+        ]
+      },
+      {
+        "when": "이로스",
+        "hints": [
+          "아르나이오스",
+          "Irus"
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "purpose": "Public free retrieval helper demonstrating Pack discovery/install without Source-body redistribution",
+    "marketplaceEligible": true,
+    "sourceBodyIncluded": false
+  },
+  "artifactFingerprint": "fnv1a:46e27cfa"
+}

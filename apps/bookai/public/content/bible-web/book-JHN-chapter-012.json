@@ -1,0 +1,1613 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:012",
+  "unit_ordinal": 1009,
+  "unit_label": "JHN 12",
+  "book_code": "JHN",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:12:1",
+      "sequence": 26581,
+      "chapter_label": "JHN 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Then, six days before the Passover, Jesus came to Bethany, where Lazarus was, who had been dead, whom he raised from the dead.",
+      "ko": "유월절 엿새 전에 예수께서 베다니에 이르시니 이곳은 예수께서 죽은 자 가운데서 살리신 나사로의 있는 곳이라",
+      "source_text_hash": "6f94578a399356543b86eb0a9010e06205071fa59b4d89cb70ba68e80365f7f7",
+      "translation_text_hash": "8023324121b543695195e9511e6d9071745db9a99c2a2a7984e30801258ad533",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 엿새 전에 예수께서 베다니에 이르시니 이곳은 예수께서 죽은 자 가운데서 살리신 나사로의 있는 곳이라"
+      ],
+      "raw_text_hashes": [
+        "8023324121b543695195e9511e6d9071745db9a99c2a2a7984e30801258ad533"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:2",
+      "sequence": 26582,
+      "chapter_label": "JHN 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "So they made him a supper there. Martha served, but Lazarus was one of those who sat at the table with him.",
+      "ko": "거기서 예수를 위하여 잔치할쌔 마르다는 일을 보고 나사로는 예수와 함께 앉은자 중에 있더라",
+      "source_text_hash": "643ca393dda4c12ec3659a705783d6d2106174b0b3ee73df8926c7f7b961b10c",
+      "translation_text_hash": "de769b2bb55b0da5bae616d4d7cd1a969a67787e7b97172374109c5e5daec0ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 예수를 위하여 잔치할쌔 마르다는 일을 보고 나사로는 예수와 함께 앉은자 중에 있더라"
+      ],
+      "raw_text_hashes": [
+        "de769b2bb55b0da5bae616d4d7cd1a969a67787e7b97172374109c5e5daec0ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:3",
+      "sequence": 26583,
+      "chapter_label": "JHN 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore Mary took a pound of ointment of pure nard, very precious, and anointed Jesus’ feet and wiped his feet with her hair. The house was filled with the fragrance of the ointment.",
+      "ko": "마리아는 지극히 비싼 향유 곧 순전한 나드 한 근을 가져다가 예수의 발에 붓고 자기 머리털로 그의 발을 씻으니 향유 냄새가 집에 가득하더라",
+      "source_text_hash": "91a1010cbd57d5b7244cca7f361c8630cb7c3d98496f6f6efaa9b078f1cdcb9f",
+      "translation_text_hash": "ab4f496555708aac9c5bf9b66ec76e773821b3373bdfa3f57561e9159bef167c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아는 지극히 비싼 향유 곧 순전한 나드 한 근을 가져다가 예수의 발에 붓고 자기 머리털로 그의 발을 씻으니 향유 냄새가 집에 가득하더라"
+      ],
+      "raw_text_hashes": [
+        "ab4f496555708aac9c5bf9b66ec76e773821b3373bdfa3f57561e9159bef167c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:4",
+      "sequence": 26584,
+      "chapter_label": "JHN 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Then Judas Iscariot, Simon’s son, one of his disciples, who would betray him, said,",
+      "ko": "제자 중 하나로서 예수를 잡아 줄 가룟 유다가 말하되",
+      "source_text_hash": "d55e152928419b7aaca9c6416c2cc215332882fd73ec7e7c58f9f59cafd15bcd",
+      "translation_text_hash": "a3579fdb5a498e7cffb342ef377c9894554175e57b39c768b849b808c96b65b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중 하나로서 예수를 잡아 줄 가룟 유다가 말하되"
+      ],
+      "raw_text_hashes": [
+        "a3579fdb5a498e7cffb342ef377c9894554175e57b39c768b849b808c96b65b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:5",
+      "sequence": 26585,
+      "chapter_label": "JHN 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "“Why wasn’t this ointment sold for three hundred denarii and given to the poor?”",
+      "ko": "이 향유를 어찌하여 삼백 데나리온에 팔아 가난한 자들에게 주지 아니하였느냐 하니",
+      "source_text_hash": "c8528e9fab86cdd474ad135528efd92421e8c78d3438755b3287b8640c419b73",
+      "translation_text_hash": "5bba9d85d5a8b824d77e400c25604e48f1b8641aab9e76ca35baf40343f29043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 향유를 어찌하여 삼백 데나리온에 팔아 가난한 자들에게 주지 아니하였느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "5bba9d85d5a8b824d77e400c25604e48f1b8641aab9e76ca35baf40343f29043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:6",
+      "sequence": 26586,
+      "chapter_label": "JHN 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Now he said this, not because he cared for the poor, but because he was a thief, and having the money box, used to steal what was put into it.",
+      "ko": "이렇게 말함은 가난한 자들을 생각함이 아니요 저는 도적이라 돈 궤를 맡고 거기 넣는 것을 훔쳐 감이러라",
+      "source_text_hash": "dd1a1bc314b74967db47cc65178926d2b905025089aca85420bfd28a13be2d93",
+      "translation_text_hash": "72cfd4370568067bc2a4ed828d5975c6c9c96158357fc8ea06fb56f65076667c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 말함은 가난한 자들을 생각함이 아니요 저는 도적이라 돈 궤를 맡고 거기 넣는 것을 훔쳐 감이러라"
+      ],
+      "raw_text_hashes": [
+        "72cfd4370568067bc2a4ed828d5975c6c9c96158357fc8ea06fb56f65076667c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:7",
+      "sequence": 26587,
+      "chapter_label": "JHN 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "But Jesus said, “Leave her alone. She has kept this for the day of my burial.",
+      "ko": "예수께서 가라사대 저를 가만 두어 나의 장사할 날을 위하여 이를 두게 하라",
+      "source_text_hash": "423dd8f8439a76eb458f9be5f67d96edc452aa13f6798b99b360d587eb91da68",
+      "translation_text_hash": "ca34e1133e72a217c8b240d5644e4a8a68fe7f023a8bc8923ff82bd80406a5f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 저를 가만 두어 나의 장사할 날을 위하여 이를 두게 하라"
+      ],
+      "raw_text_hashes": [
+        "ca34e1133e72a217c8b240d5644e4a8a68fe7f023a8bc8923ff82bd80406a5f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:8",
+      "sequence": 26588,
+      "chapter_label": "JHN 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "For you always have the poor with you, but you don’t always have me.”",
+      "ko": "가난한 자들은 항상 너희와 함께 있거니와 나는 항상 있지 아니하리라 하시니라",
+      "source_text_hash": "0473c1e8e47024b68ae2e8476089bbfbb2b98867236ab575fe26a19fefb8af64",
+      "translation_text_hash": "cb918b24f8cfb2e42fb4c345e8e61ca7b0155079265e27aaa7201a252dff68e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자들은 항상 너희와 함께 있거니와 나는 항상 있지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "cb918b24f8cfb2e42fb4c345e8e61ca7b0155079265e27aaa7201a252dff68e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:9",
+      "sequence": 26589,
+      "chapter_label": "JHN 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "A large crowd therefore of the Jews learned that he was there; and they came, not for Jesus’ sake only, but that they might see Lazarus also, whom he had raised from the dead.",
+      "ko": "유대인의 큰 무리가 예수께서 여기 계신줄을 알고 오니 이는 예수만 위함이 아니요 죽은 자 가운데서 살리신 나사로도 보려 함이러라",
+      "source_text_hash": "74a04beb86cf159ea78c148d20408609a97b6c3e6cffb370f7b8bdded28b8f37",
+      "translation_text_hash": "debce4c3b2b6c5775ee6b46b32c19ab3281e2810ecb1572eaa5b55bba8e72299",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인의 큰 무리가 예수께서 여기 계신줄을 알고 오니 이는 예수만 위함이 아니요 죽은 자 가운데서 살리신 나사로도 보려 함이러라"
+      ],
+      "raw_text_hashes": [
+        "debce4c3b2b6c5775ee6b46b32c19ab3281e2810ecb1572eaa5b55bba8e72299"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:10",
+      "sequence": 26590,
+      "chapter_label": "JHN 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "But the chief priests conspired to put Lazarus to death also,",
+      "ko": "대제사장들이 나사로까지 죽이려고 모의하니",
+      "source_text_hash": "1926bdf869a254cd5e7f5502f32e72d1c3a95533574f5ac7888be8fb5065eb7a",
+      "translation_text_hash": "1a881d479a1d2e014f565ed0659632f08c5d959ff6270b1894f8b1f37a038ef5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들이 나사로까지 죽이려고 모의하니"
+      ],
+      "raw_text_hashes": [
+        "1a881d479a1d2e014f565ed0659632f08c5d959ff6270b1894f8b1f37a038ef5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:11",
+      "sequence": 26591,
+      "chapter_label": "JHN 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "because on account of him many of the Jews went away and believed in Jesus.",
+      "ko": "나사로 까닭에 많은 유대인이 가서 예수를 믿음이러라",
+      "source_text_hash": "4bce17876e124d126c241844c3148e0bf49f8ca85cb936302901e48cfd64b5b7",
+      "translation_text_hash": "d81aa7386f5cd1eaaaf578e00c6c7142fb06e6b52e64306cd1659dfc29dba202",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사로 까닭에 많은 유대인이 가서 예수를 믿음이러라"
+      ],
+      "raw_text_hashes": [
+        "d81aa7386f5cd1eaaaf578e00c6c7142fb06e6b52e64306cd1659dfc29dba202"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:12",
+      "sequence": 26592,
+      "chapter_label": "JHN 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "On the next day a great multitude had come to the feast. When they heard that Jesus was coming to Jerusalem,",
+      "ko": "그 이튿날에는 명절에 온 큰 무리가 예수께서 예루살렘으로 오신다 함을 듣고",
+      "source_text_hash": "3f4bd4062175087f9864902d580f6f49d33fcee357a3c00f4535feb31c5077b8",
+      "translation_text_hash": "f18afd1cb5a898403c5e96ddee46f2cfda185135699c3c41bb640d4e20c32519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이튿날에는 명절에 온 큰 무리가 예수께서 예루살렘으로 오신다 함을 듣고"
+      ],
+      "raw_text_hashes": [
+        "f18afd1cb5a898403c5e96ddee46f2cfda185135699c3c41bb640d4e20c32519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:13",
+      "sequence": 26593,
+      "chapter_label": "JHN 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "they took the branches of the palm trees and went out to meet him, and cried out, “Hosanna! Blessed is he who comes in the name of the Lord, the King of Israel!”",
+      "ko": "종려나무 가지를 가지고 맞으러 나가 외치되 호산나 찬송하리로다 주의 이름으로 오시는이 곧 이스라엘의 왕이시여 하더라",
+      "source_text_hash": "7bc601082f47781633e97e3b9022670eb3ca0734303c369bf2c25588beba8168",
+      "translation_text_hash": "77be793248282fa4b63c5edf5174b6c9f1eb74e870a138a2767eda2da0692519",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종려나무 가지를 가지고 맞으러 나가 외치되 호산나 찬송하리로다 주의 이름으로 오시는이 곧 이스라엘의 왕이시여 하더라"
+      ],
+      "raw_text_hashes": [
+        "77be793248282fa4b63c5edf5174b6c9f1eb74e870a138a2767eda2da0692519"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:14",
+      "sequence": 26594,
+      "chapter_label": "JHN 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "Jesus, having found a young donkey, sat on it. As it is written,",
+      "ko": "예수는 한 어린 나귀를 만나서 타시니",
+      "source_text_hash": "3f5a02b0466c4a7beb207b3aeed47f1e5dc3c47b8c387cdfbb0dad5a2809c86a",
+      "translation_text_hash": "d53b2a25e709d924fe863d778808322197e1db7cd4b30b76c1fe64dd030023d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 한 어린 나귀를 만나서 타시니"
+      ],
+      "raw_text_hashes": [
+        "d53b2a25e709d924fe863d778808322197e1db7cd4b30b76c1fe64dd030023d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:15",
+      "sequence": 26595,
+      "chapter_label": "JHN 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "“Don’t be afraid, daughter of Zion. Behold, your King comes, sitting on a donkey’s colt.”",
+      "ko": "이는 기록된바 시온 딸아 두려워 말라 보라 너의 왕이 나귀새끼를 타고 오신다 함과 같더라",
+      "source_text_hash": "f5a6af00d6f7a5950ec061e758b33c2b57bcc96108e6d72aa47f93f67b9f22fb",
+      "translation_text_hash": "cc20cacb5bccea2cc2969960cb6617836a978a52559c5a1b2ffdad81492d837c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 기록된바 시온 딸아 두려워 말라 보라 너의 왕이 나귀새끼를 타고 오신다 함과 같더라"
+      ],
+      "raw_text_hashes": [
+        "cc20cacb5bccea2cc2969960cb6617836a978a52559c5a1b2ffdad81492d837c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:16",
+      "sequence": 26596,
+      "chapter_label": "JHN 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "His disciples didn’t understand these things at first, but when Jesus was glorified, then they remembered that these things were written about him, and that they had done these things to him.",
+      "ko": "제자들은 처음에 이 일을 깨닫지 못하였다가 예수께서 영광을 얻으신 후에야 이것이 예수께 대하여 기록된 것임과 사람들이 예수께 이같이 한 것인줄 생각났더라",
+      "source_text_hash": "679e5055349c5b977978e83a404332fed7835ce4b2f6e44e04efda56b2d382e1",
+      "translation_text_hash": "bc8f8603e9d591db115b1bea162bde552abb548ae03bc1aa9d8fc901e07579e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들은 처음에 이 일을 깨닫지 못하였다가 예수께서 영광을 얻으신 후에야 이것이 예수께 대하여 기록된 것임과 사람들이 예수께 이같이 한 것인줄 생각났더라"
+      ],
+      "raw_text_hashes": [
+        "bc8f8603e9d591db115b1bea162bde552abb548ae03bc1aa9d8fc901e07579e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:17",
+      "sequence": 26597,
+      "chapter_label": "JHN 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "The multitude therefore that was with him when he called Lazarus out of the tomb and raised him from the dead was testifying about it.",
+      "ko": "나사로를 무덤에서 불러내어 죽은자 가운데서 살리실 때에 함께 있던 무리가 증거한지라",
+      "source_text_hash": "bcbf2b12072b0735e9fa8f9d6ab5b67ccd0dfb45ab0e3d8cbc8dec89637c3872",
+      "translation_text_hash": "e3a8b8cc5c0da9cd8920a79123ff00e0d99ae6faf51fa276e8227016f1ee2167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사로를 무덤에서 불러내어 죽은자 가운데서 살리실 때에 함께 있던 무리가 증거한지라"
+      ],
+      "raw_text_hashes": [
+        "e3a8b8cc5c0da9cd8920a79123ff00e0d99ae6faf51fa276e8227016f1ee2167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:18",
+      "sequence": 26598,
+      "chapter_label": "JHN 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "For this cause also the multitude went and met him, because they heard that he had done this sign.",
+      "ko": "이에 무리가 예수를 맞음은 이 표적 행하심을 들었음이러라",
+      "source_text_hash": "a041c103f82a17991803540308be1c94a757914b2ed54c468781b197860b7afe",
+      "translation_text_hash": "d6512c22c43544c8c1bce7a4d9027d0a0fe990ab9d509d22ebd4fe313bc9804b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 무리가 예수를 맞음은 이 표적 행하심을 들었음이러라"
+      ],
+      "raw_text_hashes": [
+        "d6512c22c43544c8c1bce7a4d9027d0a0fe990ab9d509d22ebd4fe313bc9804b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:19",
+      "sequence": 26599,
+      "chapter_label": "JHN 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "The Pharisees therefore said among themselves, “See how you accomplish nothing. Behold, the world has gone after him.”",
+      "ko": "바리새인들이 서로 말하되 볼찌어다 너희 하는 일이 쓸데 없다 보라 온 세상이 저를 좇는도다 하니라",
+      "source_text_hash": "16f33473f2cefd3033cc6fde467d8bf0aa72ba0735793c884c46ceb4e4e87eb9",
+      "translation_text_hash": "2657fc7a71236c47567d194854426b1ed6611dafd8de9f685d60833db1bf2605",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 서로 말하되 볼찌어다 너희 하는 일이 쓸데 없다 보라 온 세상이 저를 좇는도다 하니라"
+      ],
+      "raw_text_hashes": [
+        "2657fc7a71236c47567d194854426b1ed6611dafd8de9f685d60833db1bf2605"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:20",
+      "sequence": 26600,
+      "chapter_label": "JHN 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "Now there were certain Greeks among those who went up to worship at the feast.",
+      "ko": "명절에 예배하러 올라온 사람 중에 헬라인 몇이 있는데",
+      "source_text_hash": "52f124d61b9ebf34018c5f9d9b880cb39bb7b23b23757cb21c5487b867fc1921",
+      "translation_text_hash": "caf94a86d22880a8ea17f82471567901083abf6299727fd172e13fcb89fb0c23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명절에 예배하러 올라온 사람 중에 헬라인 몇이 있는데"
+      ],
+      "raw_text_hashes": [
+        "caf94a86d22880a8ea17f82471567901083abf6299727fd172e13fcb89fb0c23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:21",
+      "sequence": 26601,
+      "chapter_label": "JHN 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore, these came to Philip, who was from Bethsaida of Galilee, and asked him, saying, “Sir, we want to see Jesus.”",
+      "ko": "저희가 갈릴리 벳새다 사람 빌립에게 가서 청하여 가로되 선생이여 우리가 예수를 뵈옵고자 하나이다 하니",
+      "source_text_hash": "ad57ffcccb70f79cd93d04798f756a01aa782a6539e13784a3c679ad6c9b46fc",
+      "translation_text_hash": "0165de7b564084f68389e3a9357b8252eed99a1b4d47b245ee077179ab7af43c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 갈릴리 벳새다 사람 빌립에게 가서 청하여 가로되 선생이여 우리가 예수를 뵈옵고자 하나이다 하니"
+      ],
+      "raw_text_hashes": [
+        "0165de7b564084f68389e3a9357b8252eed99a1b4d47b245ee077179ab7af43c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:22",
+      "sequence": 26602,
+      "chapter_label": "JHN 12",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 22
+        }
+      ],
+      "en": "Philip came and told Andrew, and in turn, Andrew came with Philip, and they told Jesus.",
+      "ko": "빌립이 안드레에게 가서 말하고 안드레와 빌립이 예수께 가서 여짜온대",
+      "source_text_hash": "e0cbba18b60cb187060cd7ae7ad29d14949343a4ab34b4ab244a918585419641",
+      "translation_text_hash": "0c3665ba0dd81b8ccd28fb1925de1bd72a07bb5a33ed5065f911babbafe9213c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 안드레에게 가서 말하고 안드레와 빌립이 예수께 가서 여짜온대"
+      ],
+      "raw_text_hashes": [
+        "0c3665ba0dd81b8ccd28fb1925de1bd72a07bb5a33ed5065f911babbafe9213c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:23",
+      "sequence": 26603,
+      "chapter_label": "JHN 12",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 23
+        }
+      ],
+      "en": "Jesus answered them, “The time has come for the Son of Man to be glorified.",
+      "ko": "예수께서 대답하여 가라사대 인자의 영광을 얻을 때가 왔도다",
+      "source_text_hash": "b1ed360b7fa9ee067a4b1f2f44b0b6e81a187c8ea92fd2bfd8cd6b492ac23030",
+      "translation_text_hash": "ff150893ff2d79486cb34e6db1703d3e681adc365d7c43f4881473396e18d780",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 인자의 영광을 얻을 때가 왔도다"
+      ],
+      "raw_text_hashes": [
+        "ff150893ff2d79486cb34e6db1703d3e681adc365d7c43f4881473396e18d780"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:24",
+      "sequence": 26604,
+      "chapter_label": "JHN 12",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 24
+        }
+      ],
+      "en": "Most certainly I tell you, unless a grain of wheat falls into the earth and dies, it remains by itself alone. But if it dies, it bears much fruit.",
+      "ko": "내가 진실로 진실로 너희에게 이르노니 한 알의 밀이 땅에 떨어져 죽지 아니하면 한 알 그대로 있고 죽으면 많은 열매를 맺느니라",
+      "source_text_hash": "a173e6f9a19b507e090e4bc20c055fd4db4d4b2d6516c16893708da09ce39457",
+      "translation_text_hash": "be58725df6ce39f9746c79cf6a9549b749323c041bef87e17d07c7132961ded8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 진실로 너희에게 이르노니 한 알의 밀이 땅에 떨어져 죽지 아니하면 한 알 그대로 있고 죽으면 많은 열매를 맺느니라"
+      ],
+      "raw_text_hashes": [
+        "be58725df6ce39f9746c79cf6a9549b749323c041bef87e17d07c7132961ded8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:25",
+      "sequence": 26605,
+      "chapter_label": "JHN 12",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 25
+        }
+      ],
+      "en": "He who loves his life will lose it. He who hates his life in this world will keep it to eternal life.",
+      "ko": "자기 생명을 사랑하는 자는 잃어버릴 것이요 이 세상에서 자기 생명을 미워하는 자는 영생하도록 보존하리라",
+      "source_text_hash": "9c271987250acd767f7eebe94fdcc93b743625a26ffbde7a21a67c6980fa8740",
+      "translation_text_hash": "26fb7dff776f1cc408c98dd968c77e4141f7bca02895f27773212d39dd4030bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 생명을 사랑하는 자는 잃어버릴 것이요 이 세상에서 자기 생명을 미워하는 자는 영생하도록 보존하리라"
+      ],
+      "raw_text_hashes": [
+        "26fb7dff776f1cc408c98dd968c77e4141f7bca02895f27773212d39dd4030bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:26",
+      "sequence": 26606,
+      "chapter_label": "JHN 12",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 26
+        }
+      ],
+      "en": "If anyone serves me, let him follow me. Where I am, there my servant will also be. If anyone serves me, the Father will honor him.",
+      "ko": "사람이 나를 섬기려면 나를 따르라 나 있는 곳에 나를 섬기는 자도 거기 있으리니 사람이 나를 섬기면 내 아버지께서 저를 귀히 여기시리라",
+      "source_text_hash": "ac0e77a831b1f1a840f7c66e3e40742c5a7d4711de6652cfa8325f16efb7e5b8",
+      "translation_text_hash": "730aa7f11d9da823c06adaa267693ca125a698402427662aa3fd3d5f3e5deefd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 나를 섬기려면 나를 따르라 나 있는 곳에 나를 섬기는 자도 거기 있으리니 사람이 나를 섬기면 내 아버지께서 저를 귀히 여기시리라"
+      ],
+      "raw_text_hashes": [
+        "730aa7f11d9da823c06adaa267693ca125a698402427662aa3fd3d5f3e5deefd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:27",
+      "sequence": 26607,
+      "chapter_label": "JHN 12",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 27
+        }
+      ],
+      "en": "“Now my soul is troubled. What shall I say? ‘Father, save me from this time’? But I came to this time for this cause.",
+      "ko": "지금 내 마음이 민망하니 무슨 말을 하리요 아버지여 나를 구원하여 이 때를 면하게 하여 주옵소서 그러나 내가 이를 위하여 이 때에 왔나이다",
+      "source_text_hash": "30d329d2f137ca163a2938b79696fab6fb3abf9acf13b1d5cfe1c4d1be40e27c",
+      "translation_text_hash": "f732124d12c463656652d76cb1f6130fd96dd538937e677bd0fd0c7527b8ef81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 내 마음이 민망하니 무슨 말을 하리요 아버지여 나를 구원하여 이 때를 면하게 하여 주옵소서 그러나 내가 이를 위하여 이 때에 왔나이다"
+      ],
+      "raw_text_hashes": [
+        "f732124d12c463656652d76cb1f6130fd96dd538937e677bd0fd0c7527b8ef81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:28",
+      "sequence": 26608,
+      "chapter_label": "JHN 12",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 28
+        }
+      ],
+      "en": "Father, glorify your name!”Then a voice came out of the sky, saying, “I have both glorified it and will glorify it again.”",
+      "ko": "아버지여 아버지의 이름을 영광스럽게 하옵소서 하시니 이에 하늘에서 소리가 나서 가로되 내가 이미 영광스럽게 하였고 또 다시 영광스럽게 하리라 하신대",
+      "source_text_hash": "849f9fff053daa9fadc6cc1c53bb2db13c5f1772b7125a899cd183c115294b86",
+      "translation_text_hash": "0a2f80f56dd45738fff02d4a1c7e50bda2ad8b9d300faf60ed5cca6cc3ab8720",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아버지여 아버지의 이름을 영광스럽게 하옵소서 하시니 이에 하늘에서 소리가 나서 가로되 내가 이미 영광스럽게 하였고 또 다시 영광스럽게 하리라 하신대"
+      ],
+      "raw_text_hashes": [
+        "0a2f80f56dd45738fff02d4a1c7e50bda2ad8b9d300faf60ed5cca6cc3ab8720"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:29",
+      "sequence": 26609,
+      "chapter_label": "JHN 12",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 29
+        }
+      ],
+      "en": "Therefore the multitude who stood by and heard it said that it had thundered. Others said, “An angel has spoken to him.”",
+      "ko": "곁에 서서 들은 무리는 우뢰가 울었다고도 하며 또 어떤이들은 천사가 저에게 말하였다고도 하니",
+      "source_text_hash": "81861b1270ece91992e50274f2d2c7ae26c5751b843a9bd0d3311d749ba5cb70",
+      "translation_text_hash": "74fef3b301d1a56bc6420e160bc9af5b300a782e6255c29ec7d648dfb511efa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곁에 서서 들은 무리는 우뢰가 울었다고도 하며 또 어떤이들은 천사가 저에게 말하였다고도 하니"
+      ],
+      "raw_text_hashes": [
+        "74fef3b301d1a56bc6420e160bc9af5b300a782e6255c29ec7d648dfb511efa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:30",
+      "sequence": 26610,
+      "chapter_label": "JHN 12",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 30
+        }
+      ],
+      "en": "Jesus answered, “This voice hasn’t come for my sake, but for your sakes.",
+      "ko": "예수께서 대답하여 가라사대 이 소리가 난 것은 나를 위한 것이 아니요 너희를 위한 것이니라",
+      "source_text_hash": "217d2e4154127ef1e351ceddcf3b99415571f958df9f7cb65c213c36439008d5",
+      "translation_text_hash": "3cac9b7c4a97d9c941cc2f8ff102558a8daaecba6c14b8ed72655975f63c6acc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 이 소리가 난 것은 나를 위한 것이 아니요 너희를 위한 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3cac9b7c4a97d9c941cc2f8ff102558a8daaecba6c14b8ed72655975f63c6acc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:31",
+      "sequence": 26611,
+      "chapter_label": "JHN 12",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 31
+        }
+      ],
+      "en": "Now is the judgment of this world. Now the prince of this world will be cast out.",
+      "ko": "이제 이 세상의 심판이 이르렀으니 이 세상 임금이 쫓겨나리라",
+      "source_text_hash": "37af268b1533936d2c4b37da3d342371fd259f3f3ba6a2dc20770243986ad568",
+      "translation_text_hash": "3e3c58d5d0d5e3d9bb7644209045ef57aca444e54e5b5d85db3a39f24b1f3c05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 이 세상의 심판이 이르렀으니 이 세상 임금이 쫓겨나리라"
+      ],
+      "raw_text_hashes": [
+        "3e3c58d5d0d5e3d9bb7644209045ef57aca444e54e5b5d85db3a39f24b1f3c05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:32",
+      "sequence": 26612,
+      "chapter_label": "JHN 12",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 32
+        }
+      ],
+      "en": "And I, if I am lifted up from the earth, will draw all people to myself.”",
+      "ko": "내가 땅에서 들리면 모든 사람을 내게로 이끌겠노라 하시니",
+      "source_text_hash": "2a5077263bf33b761656ba7bd6bd795cf14801cf310c04a1aacba82e50f48334",
+      "translation_text_hash": "d8c97927a4a04d94d321b6d3b187b725b52429d4e113a169c30d9a8b34af70c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅에서 들리면 모든 사람을 내게로 이끌겠노라 하시니"
+      ],
+      "raw_text_hashes": [
+        "d8c97927a4a04d94d321b6d3b187b725b52429d4e113a169c30d9a8b34af70c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:33",
+      "sequence": 26613,
+      "chapter_label": "JHN 12",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 33
+        }
+      ],
+      "en": "But he said this, signifying by what kind of death he should die.",
+      "ko": "이렇게 말씀하심은 자기가 어떠한 죽음으로 죽을 것을 보이심이러라",
+      "source_text_hash": "bd55475c9b6fbe4bd385c35fea3ab15b207b98fd26bb5e6c158cae77f7639212",
+      "translation_text_hash": "5fad2554bee1480ead98db04e31850d206202791353704304d42e8069ec0db22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 말씀하심은 자기가 어떠한 죽음으로 죽을 것을 보이심이러라"
+      ],
+      "raw_text_hashes": [
+        "5fad2554bee1480ead98db04e31850d206202791353704304d42e8069ec0db22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:34",
+      "sequence": 26614,
+      "chapter_label": "JHN 12",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 34
+        }
+      ],
+      "en": "The multitude answered him, “We have heard out of the law that the Christ remains forever. How do you say, ‘The Son of Man must be lifted up’? Who is this Son of Man?”",
+      "ko": "이에 무리가 대답하되 우리는 율법에서 그리스도가 영원히 계신다 함을 들었거늘 너는 어찌하여 인자가 들려야 하리라 하느냐 이 인자는 누구냐",
+      "source_text_hash": "f7ddd2fed4119a0aab58ad4131e73a1783d0d3dd458e7c0df1df865e246875d0",
+      "translation_text_hash": "5efdfa624e1d683cfbeab3b5d2c6f759003043137fa4e8bc7a3a12f58ec72255",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 무리가 대답하되 우리는 율법에서 그리스도가 영원히 계신다 함을 들었거늘 너는 어찌하여 인자가 들려야 하리라 하느냐 이 인자는 누구냐"
+      ],
+      "raw_text_hashes": [
+        "5efdfa624e1d683cfbeab3b5d2c6f759003043137fa4e8bc7a3a12f58ec72255"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:35",
+      "sequence": 26615,
+      "chapter_label": "JHN 12",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus therefore said to them, “Yet a little while the light is with you. Walk while you have the light, that darkness doesn’t overtake you. He who walks in the darkness doesn’t know where he is going.",
+      "ko": "예수께서 가라사대 아직 잠시 동안 빛이 너희 중에 있으니 빛이 있을 동안에 다녀 어두움에 붙잡히지 않게 하라 어두움에 다니는 자는 그 가는 바를 알지 못하느니라",
+      "source_text_hash": "865b2f42102a2b5e200176027b996623659bf68b9b3971538f3089ac745b0b2c",
+      "translation_text_hash": "805e3933a5271f8adbc72eb38a5f8465bbf606d790e91e23b693b46aecda06c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 아직 잠시 동안 빛이 너희 중에 있으니 빛이 있을 동안에 다녀 어두움에 붙잡히지 않게 하라 어두움에 다니는 자는 그 가는 바를 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "805e3933a5271f8adbc72eb38a5f8465bbf606d790e91e23b693b46aecda06c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:36",
+      "sequence": 26616,
+      "chapter_label": "JHN 12",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 36
+        }
+      ],
+      "en": "While you have the light, believe in the light, that you may become children of light.”Jesus said these things, and he departed and hid himself from them.",
+      "ko": "너희에게 아직 빛이 있을 동안에 빛을 믿으라 그리하면 빛의 아들이 되리라 예수께서 이 말씀을 하시고 저희를 떠나가서 숨으시니라",
+      "source_text_hash": "acb410239c72082b84d8cf28712e33c5b67d7c62c067b5bebc3ace2d9bd0d2c6",
+      "translation_text_hash": "2e617ca44957976730479178b6ce683ac0ef7135fdd5b4d8cf53d9ba30984ca1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 아직 빛이 있을 동안에 빛을 믿으라 그리하면 빛의 아들이 되리라 예수께서 이 말씀을 하시고 저희를 떠나가서 숨으시니라"
+      ],
+      "raw_text_hashes": [
+        "2e617ca44957976730479178b6ce683ac0ef7135fdd5b4d8cf53d9ba30984ca1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:37",
+      "sequence": 26617,
+      "chapter_label": "JHN 12",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 37
+        }
+      ],
+      "en": "But though he had done so many signs before them, yet they didn’t believe in him,",
+      "ko": "이렇게 많은 표적을 저희 앞에서 행하셨으나 저를 믿지 아니하니",
+      "source_text_hash": "3d70f0e6bfcea77b86af15f85abd615c955e650e70c6323fcec01232d0102e78",
+      "translation_text_hash": "13eaf34dea9bb5d2d1129b7a06dc9260fcda414579725cf8e4d7da24edbf3343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 많은 표적을 저희 앞에서 행하셨으나 저를 믿지 아니하니"
+      ],
+      "raw_text_hashes": [
+        "13eaf34dea9bb5d2d1129b7a06dc9260fcda414579725cf8e4d7da24edbf3343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:38",
+      "sequence": 26618,
+      "chapter_label": "JHN 12",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 38
+        }
+      ],
+      "en": "that the word of Isaiah the prophet might be fulfilled, which he spoke: “Lord, who has believed our report? To whom has the arm of the Lord been revealed?”",
+      "ko": "이는 선지자 이사야의 말씀을 이루려 하심이라 가로되 주여 우리에게 들은 바를 누가 믿었으며 주의 팔이 뉘게 나타났나이까 하였더라",
+      "source_text_hash": "a911f79fca8c109f76c0354e700a6a7b8253bb855b1ba613c29d2e831b4d5a40",
+      "translation_text_hash": "f72fbe6d301960dddc0befdd7537777d8496384719d177846af7dd782001ac21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자 이사야의 말씀을 이루려 하심이라 가로되 주여 우리에게 들은 바를 누가 믿었으며 주의 팔이 뉘게 나타났나이까 하였더라"
+      ],
+      "raw_text_hashes": [
+        "f72fbe6d301960dddc0befdd7537777d8496384719d177846af7dd782001ac21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:39",
+      "sequence": 26619,
+      "chapter_label": "JHN 12",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 39
+        }
+      ],
+      "en": "For this cause they couldn’t believe, for Isaiah said again:",
+      "ko": "저희가 능히 믿지 못한 것은 이 까닭이니 곧 이사야가 다시 일렀으되",
+      "source_text_hash": "0111b72ef639173cbe086ac1c6462714f5c7bfeb50de4cd5b60e1822d433cd55",
+      "translation_text_hash": "afb40c691abb1363df8706dbc8339e8194cc6cf26f4658da01d314a4a3d93925",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 능히 믿지 못한 것은 이 까닭이니 곧 이사야가 다시 일렀으되"
+      ],
+      "raw_text_hashes": [
+        "afb40c691abb1363df8706dbc8339e8194cc6cf26f4658da01d314a4a3d93925"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:40",
+      "sequence": 26620,
+      "chapter_label": "JHN 12",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 40
+        }
+      ],
+      "en": "“He has blinded their eyes and he hardened their heart, lest they should see with their eyes, and perceive with their heart, and would turn, and I would heal them.”",
+      "ko": "저희 눈을 멀게 하시고 저희 마음을 완고하게 하셨으니 이는 저희로 하여금 눈으로 보고 마음으로 깨닫고 돌이켜 내게 고침을 받지 못하게 하려 함이니라 하였음이더라",
+      "source_text_hash": "6f52931bdd512030b466901ae31abf3250072014eca5db3236de19686e12e980",
+      "translation_text_hash": "bbefa33fb17cc9b04d473ae3bdbfefe57cd22863e02417a542f279b3697b7f1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 눈을 멀게 하시고 저희 마음을 완고하게 하셨으니 이는 저희로 하여금 눈으로 보고 마음으로 깨닫고 돌이켜 내게 고침을 받지 못하게 하려 함이니라 하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "bbefa33fb17cc9b04d473ae3bdbfefe57cd22863e02417a542f279b3697b7f1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:41",
+      "sequence": 26621,
+      "chapter_label": "JHN 12",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 41
+        }
+      ],
+      "en": "Isaiah said these things when he saw his glory, and spoke of him.",
+      "ko": "이사야가 이렇게 말한 것은 주의 영광을 보고 주를 가리켜 말한 것이라",
+      "source_text_hash": "09318e895ec566d330efcccd1709d6c7d082da6ba896d913b133d4646a6dac82",
+      "translation_text_hash": "4e5c605814345b2cfc33f876bbb7da93f5d0f1305caf83fbea061a555a0e9436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 이렇게 말한 것은 주의 영광을 보고 주를 가리켜 말한 것이라"
+      ],
+      "raw_text_hashes": [
+        "4e5c605814345b2cfc33f876bbb7da93f5d0f1305caf83fbea061a555a0e9436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:42",
+      "sequence": 26622,
+      "chapter_label": "JHN 12",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 42
+        }
+      ],
+      "en": "Nevertheless, even many of the rulers believed in him, but because of the Pharisees they didn’t confess it, so that they wouldn’t be put out of the synagogue,",
+      "ko": "그러나 관원 중에도 저를 믿는 자가 많되 바리새인들을 인하여 드러나게 말하지 못하니 이는 출회를 당할까 두려워함이라",
+      "source_text_hash": "82f7b764cbfe701902d13b0417c0c07e6e433205f22cb4d51cba57db02bbe421",
+      "translation_text_hash": "37069786ac4c674ba2891c46c61fa1d93fddd0082387bfec04e118b56b0a5053",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 관원 중에도 저를 믿는 자가 많되 바리새인들을 인하여 드러나게 말하지 못하니 이는 출회를 당할까 두려워함이라"
+      ],
+      "raw_text_hashes": [
+        "37069786ac4c674ba2891c46c61fa1d93fddd0082387bfec04e118b56b0a5053"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:43",
+      "sequence": 26623,
+      "chapter_label": "JHN 12",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 43
+        }
+      ],
+      "en": "for they loved men’s praise more than God’s praise.",
+      "ko": "저희는 사람의 영광을 하나님의 영광보다 더 사랑하였더라",
+      "source_text_hash": "6308272bff7dbad034f14ad8bb8981ef51bcb7277d39df62ac3395efdfffc8af",
+      "translation_text_hash": "7dc1c57b36bb934015904298f6304440c9fb61fbdab86dbcad97241bde5c32f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 사람의 영광을 하나님의 영광보다 더 사랑하였더라"
+      ],
+      "raw_text_hashes": [
+        "7dc1c57b36bb934015904298f6304440c9fb61fbdab86dbcad97241bde5c32f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:44",
+      "sequence": 26624,
+      "chapter_label": "JHN 12",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 44
+        }
+      ],
+      "en": "Jesus cried out and said, “Whoever believes in me, believes not in me, but in him who sent me.",
+      "ko": "예수께서 외쳐 가라사대 나를 믿는 자는 나를 믿는 것이 아니요 나를 보내신 이를 믿는 것이며",
+      "source_text_hash": "1ef6f3fa56174396b5773c1aad533c6605d1ebaf3e17ce9e584edc7bac1302d9",
+      "translation_text_hash": "7687d4abc5b91d06e2e4c51e646fd06844d5ee55d9f5cf73549ad7a10deef611",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 외쳐 가라사대 나를 믿는 자는 나를 믿는 것이 아니요 나를 보내신 이를 믿는 것이며"
+      ],
+      "raw_text_hashes": [
+        "7687d4abc5b91d06e2e4c51e646fd06844d5ee55d9f5cf73549ad7a10deef611"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:45",
+      "sequence": 26625,
+      "chapter_label": "JHN 12",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 45
+        }
+      ],
+      "en": "He who sees me sees him who sent me.",
+      "ko": "나를 보는 자는 나를 보내신 이를 보는 것이니라",
+      "source_text_hash": "5f9277e78c79baee5c611e515bbe8668afd49f7865cc084fa5d685d705849123",
+      "translation_text_hash": "38a29846bd7cee10c66e62ddb2239a5338599bd0ad8310ce3c77f23d101c665d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보는 자는 나를 보내신 이를 보는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "38a29846bd7cee10c66e62ddb2239a5338599bd0ad8310ce3c77f23d101c665d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:46",
+      "sequence": 26626,
+      "chapter_label": "JHN 12",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 46
+        }
+      ],
+      "en": "I have come as a light into the world, that whoever believes in me may not remain in the darkness.",
+      "ko": "나는 빛으로 세상에 왔나니 무릇 나를 믿는 자로 어두움에 거하지 않게 하려 함이로라",
+      "source_text_hash": "71637d32e31dea81eb66b0c8d07cc88a1d4ab48074841cfcdd50a9121782459d",
+      "translation_text_hash": "791f3da1a14dcb0863c33238f4a995cb1b2e043750a87b3f9e1e69254106ac1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 빛으로 세상에 왔나니 무릇 나를 믿는 자로 어두움에 거하지 않게 하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "791f3da1a14dcb0863c33238f4a995cb1b2e043750a87b3f9e1e69254106ac1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:47",
+      "sequence": 26627,
+      "chapter_label": "JHN 12",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 47
+        }
+      ],
+      "en": "If anyone listens to my sayings and doesn’t believe, I don’t judge him. For I came not to judge the world, but to save the world.",
+      "ko": "사람이 내 말을 듣고 지키지 아니할찌라도 내가 저를 심판하지 아니하노라 내가 온 것은 세상을 심판하려 함이 아니요 세상을 구원하려 함이로라",
+      "source_text_hash": "567eaef097c64e3dea2d7d12893a1d70a89fc8fc0ed8dfe54ad3551be7baa78c",
+      "translation_text_hash": "a460052edc7b2791e2a039864163636c052145046cbf61fa8548215b9f44598b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 내 말을 듣고 지키지 아니할찌라도 내가 저를 심판하지 아니하노라 내가 온 것은 세상을 심판하려 함이 아니요 세상을 구원하려 함이로라"
+      ],
+      "raw_text_hashes": [
+        "a460052edc7b2791e2a039864163636c052145046cbf61fa8548215b9f44598b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:48",
+      "sequence": 26628,
+      "chapter_label": "JHN 12",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 48
+        }
+      ],
+      "en": "He who rejects me, and doesn’t receive my sayings, has one who judges him. The word that I spoke will judge him in the last day.",
+      "ko": "나를 저버리고 내 말을 받지 아니하는 자를 심판할 이가 있으니 곧 나의 한 그 말이 마지막 날에 저를 심판하리라",
+      "source_text_hash": "8180058550811f12ebbc731e328371542ee113d81091c59be1ece3cfb20ee18e",
+      "translation_text_hash": "e8bef6706dcc9108f5831b0d2dd74e594e2f997168e01559dae636335d0013fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 저버리고 내 말을 받지 아니하는 자를 심판할 이가 있으니 곧 나의 한 그 말이 마지막 날에 저를 심판하리라"
+      ],
+      "raw_text_hashes": [
+        "e8bef6706dcc9108f5831b0d2dd74e594e2f997168e01559dae636335d0013fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:49",
+      "sequence": 26629,
+      "chapter_label": "JHN 12",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 49
+        }
+      ],
+      "en": "For I spoke not from myself, but the Father who sent me gave me a commandment, what I should say and what I should speak.",
+      "ko": "내가 내 자의로 말한 것이 아니요 나를 보내신 아버지께서 나의 말할 것과 이를 것을 친히 명령하여 주셨으니",
+      "source_text_hash": "75f55a8c38cc395ef14358cf8e5011c0758b0beebf5bbd770609c7cbdce1a573",
+      "translation_text_hash": "50440a54f11ef64bce12a015988e3da8cf3e6cedd1ea918e7a4b46783c2af33d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 자의로 말한 것이 아니요 나를 보내신 아버지께서 나의 말할 것과 이를 것을 친히 명령하여 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "50440a54f11ef64bce12a015988e3da8cf3e6cedd1ea918e7a4b46783c2af33d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:12:50",
+      "sequence": 26630,
+      "chapter_label": "JHN 12",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 12,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 12,
+          "verse": 50
+        }
+      ],
+      "en": "I know that his commandment is eternal life. The things therefore which I speak, even as the Father has said to me, so I speak.”",
+      "ko": "나는 그의 명령이 영생인줄 아노라 그러므로 나의 이르는 것은 내 아버지께서 내게 말씀하신 그대로 이르노라 하시니라",
+      "source_text_hash": "7a37c4d1f68917337992e77028741d972af5c689d54b9ee684ae99ba4ba8e50d",
+      "translation_text_hash": "8f94791eff808e1312619ba1f1360bebad0e1f0858e6b88bbde77da10fc49d3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 그의 명령이 영생인줄 아노라 그러므로 나의 이르는 것은 내 아버지께서 내게 말씀하신 그대로 이르노라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8f94791eff808e1312619ba1f1360bebad0e1f0858e6b88bbde77da10fc49d3c"
+      ]
+    }
+  ]
+}

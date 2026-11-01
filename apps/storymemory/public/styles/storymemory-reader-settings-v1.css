@@ -22,23 +22,23 @@ body.smr-open #reader.active .srsg-panel{display:block}
   .srsg-btn{right:10px;bottom:10px}
 }
 /* font size (default 'base' renders no rule) */
-body.smr-fs-sm #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*.92)!important}
-body.smr-fs-lg #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.1)!important}
-body.smr-fs-xl #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.22)!important}
-body.smr-fs-sm #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*.92)!important}
-body.smr-fs-lg #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.1)!important}
-body.smr-fs-xl #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.22)!important}
+body.smr-fs-sm #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*.92)}
+body.smr-fs-lg #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.1)}
+body.smr-fs-xl #readerPageBody .verse{font-size:calc(clamp(17px,1.4vw,21px)*1.22)}
+body.smr-fs-sm #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*.92)}
+body.smr-fs-lg #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.1)}
+body.smr-fs-xl #readerPageBody .verse-en{font-size:calc(clamp(13px,1.1vw,15px)*1.22)}
 @media(max-width:768px){
-  body.smr-fs-sm #readerPageBody .verse{font-size:14.7px!important}
-  body.smr-fs-lg #readerPageBody .verse{font-size:17.6px!important}
-  body.smr-fs-xl #readerPageBody .verse{font-size:19.5px!important}
-  body.smr-fs-sm #readerPageBody .verse-en{font-size:12px!important}
-  body.smr-fs-lg #readerPageBody .verse-en{font-size:14.3px!important}
-  body.smr-fs-xl #readerPageBody .verse-en{font-size:15.9px!important}
+  body.smr-fs-sm #readerPageBody .verse{font-size:14.7px}
+  body.smr-fs-lg #readerPageBody .verse{font-size:17.6px}
+  body.smr-fs-xl #readerPageBody .verse{font-size:19.5px}
+  body.smr-fs-sm #readerPageBody .verse-en{font-size:12px}
+  body.smr-fs-lg #readerPageBody .verse-en{font-size:14.3px}
+  body.smr-fs-xl #readerPageBody .verse-en{font-size:15.9px}
 }
 /* line height (default 'relaxed'=1.9 renders no rule) */
-body.smr-lh-tight #readerPageBody .verse{line-height:1.6!important}
-body.smr-lh-loose #readerPageBody .verse{line-height:2.2!important}
+body.smr-lh-tight #readerPageBody .verse{line-height:1.6}
+body.smr-lh-loose #readerPageBody .verse{line-height:2.2}
 /* english WEB mode */
 body.smr-en-compact #readerPageBody .verse-en{font-size:12px;line-height:1.5;margin:2px 0 8px;opacity:.58}
 body.smr-en-hide #readerPageBody .verse-en{display:none!important}
@@ -115,6 +115,3 @@ body.ai-open .smal-overflow-menu{right:272px}
 .ai-panel .ai-head-compact{height:auto!important;min-height:42px!important;flex-wrap:wrap!important}
 .ai-panel .ai-head-compact .ai-head-actions{flex-wrap:wrap!important;min-width:0!important}
 .ai-panel .ai-head-compact small{white-space:normal!important;overflow:hidden!important}
-
-/* Keep reading settings above the AI panel while open. */
-body.smr-open #reader.active .reader-stage{z-index:100!important}

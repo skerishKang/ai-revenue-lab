@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:SNG:chapter:008",
+  "unit_ordinal": 679,
+  "unit_label": "SNG 8",
+  "book_code": "SNG",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:SNG:8:1",
+      "sequence": 17642,
+      "chapter_label": "SNG 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "Oh that you were like my brother, who nursed from the breasts of my mother! If I found you outside, I would kiss you; yes, and no one would despise me.",
+      "ko": "네가 내 어미의 젖을 먹은 오라비 같았었더면 내가 밖에서 너를 만날 때에 입을 맞추어도 나를 업신여길 자가 없었을 것이라",
+      "source_text_hash": "a3ce39268df2497a140ed21701282b03982e615e80b7c6f087469c35cbfe8e61",
+      "translation_text_hash": "34e1551dede94caf18485b9af558d43b0583e260dc4bcb9c3e382e9b5793a2a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내 어미의 젖을 먹은 오라비 같았었더면 내가 밖에서 너를 만날 때에 입을 맞추어도 나를 업신여길 자가 없었을 것이라"
+      ],
+      "raw_text_hashes": [
+        "34e1551dede94caf18485b9af558d43b0583e260dc4bcb9c3e382e9b5793a2a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:2",
+      "sequence": 17643,
+      "chapter_label": "SNG 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "I would lead you, bringing you into the house of my mother, who would instruct me. I would have you drink spiced wine, of the juice of my pomegranate.",
+      "ko": "내가 너를 이끌어 내 어미 집에 들이고 네게서 교훈을 받았으리라 나는 향기로운 술 곧 석류즙으로 네게 마시웠겠고",
+      "source_text_hash": "740df05504c8252f34e3931c6ac71e67dfba503c296e54eda156599de1c3498d",
+      "translation_text_hash": "2370d55d901bc1cd8110c2b4a42014c95d0c3301bd55ade57c30469c25d7e7de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 이끌어 내 어미 집에 들이고 네게서 교훈을 받았으리라 나는 향기로운 술 곧 석류즙으로 네게 마시웠겠고"
+      ],
+      "raw_text_hashes": [
+        "2370d55d901bc1cd8110c2b4a42014c95d0c3301bd55ade57c30469c25d7e7de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:3",
+      "sequence": 17644,
+      "chapter_label": "SNG 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "His left hand would be under my head. His right hand would embrace me.",
+      "ko": "너는 왼손으론 내 머리에 베개하고 오른손으론 나를 안았었으리라",
+      "source_text_hash": "47ccc954cdf7ae45034d2a4c5ad495bba00378c7c1882c4639584b1b06381f74",
+      "translation_text_hash": "09d8dee417a7d922057de197d09269f56cd8dda8c03915db910f3e2dde2b2074",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 왼손으론 내 머리에 베개하고 오른손으론 나를 안았었으리라"
+      ],
+      "raw_text_hashes": [
+        "09d8dee417a7d922057de197d09269f56cd8dda8c03915db910f3e2dde2b2074"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:4",
+      "sequence": 17645,
+      "chapter_label": "SNG 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "I adjure you, daughters of Jerusalem, that you not stir up, nor awaken love, until it so desires. Friends",
+      "ko": "예루살렘 여자들아 내가 너희에게 부탁한다 나의 사랑하는 자가 원하기 전에는 흔들지 말며 깨우지 말찌니라",
+      "source_text_hash": "2fec4c59c8f2796496f9eaf19455f9386c14d23d029e7c7ee09f3073c92d405f",
+      "translation_text_hash": "cbef1e6b44795f82054670a3291daff53c1411a2fd5132e64670edf443d4f5a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 여자들아 내가 너희에게 부탁한다 나의 사랑하는 자가 원하기 전에는 흔들지 말며 깨우지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "cbef1e6b44795f82054670a3291daff53c1411a2fd5132e64670edf443d4f5a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:5",
+      "sequence": 17646,
+      "chapter_label": "SNG 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Who is this who comes up from the wilderness, leaning on her beloved? Beloved Under the apple tree I awakened you. There your mother conceived you. There she was in labor and bore you.",
+      "ko": "그 사랑하는 자를 의지하고 거친 들에서 올라 오는 여자가 누구인고 너를 인하여 네 어미가 신고한, 너를 낳은 자가 애쓴 그 곳 사과나무 아래서 내가 너를 깨웠노라",
+      "source_text_hash": "171f34b249e377ea514e0dc371dd05a6813d79e0394a0dcb4f8f10faa93d432d",
+      "translation_text_hash": "7acac87d1504a6535cbbd1fbd7a5ae6910b8cc1d7a729412fb9c8ef9ff00f06c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사랑하는 자를 의지하고 거친 들에서 올라 오는 여자가 누구인고 너를 인하여 네 어미가 신고한, 너를 낳은 자가 애쓴 그 곳 사과나무 아래서 내가 너를 깨웠노라"
+      ],
+      "raw_text_hashes": [
+        "7acac87d1504a6535cbbd1fbd7a5ae6910b8cc1d7a729412fb9c8ef9ff00f06c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:6",
+      "sequence": 17647,
+      "chapter_label": "SNG 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "Set me as a seal on your heart, as a seal on your arm; for love is strong as death. Jealousy is as cruel as Sheol. Its flashes are flashes of fire, a very flame of the LORD.",
+      "ko": "너는 나를 인 같이 마음에 품고 도장 같이 팔에 두라 사랑은 죽음 같이 강하고 투기는 음부 같이 잔혹하며 불 같이 일어나니 그 기세가 여호와의 불과 같으니라",
+      "source_text_hash": "bb0e9511325b99b45d15a10b5d59c88e22a7e87da67e4b378a38abf33e4c1462",
+      "translation_text_hash": "e290cba7fa2bba9d73e6289e7922895cc62a903a4b47a53419383199d804517e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 나를 인 같이 마음에 품고 도장 같이 팔에 두라 사랑은 죽음 같이 강하고 투기는 음부 같이 잔혹하며 불 같이 일어나니 그 기세가 여호와의 불과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "e290cba7fa2bba9d73e6289e7922895cc62a903a4b47a53419383199d804517e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:7",
+      "sequence": 17648,
+      "chapter_label": "SNG 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Many waters can’t quench love, neither can floods drown it. If a man would give all the wealth of his house for love, he would be utterly scorned. Brothers",
+      "ko": "이 사랑은 많은 물이 꺼치지 못하겠고 홍수라도 엄몰하지 못하나니 사람이 그 온 가산을 다 주고 사랑과 바꾸려 할찌라도 오히려 멸시를 받으리라",
+      "source_text_hash": "56f80f6e45f88bb0f353480f1c5b8841c86e94009b30a7da02c348914d1e292d",
+      "translation_text_hash": "c495021488e27d4491eec0d46963f10970c2b8b0de758e74311d4b746c951af0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 사랑은 많은 물이 꺼치지 못하겠고 홍수라도 엄몰하지 못하나니 사람이 그 온 가산을 다 주고 사랑과 바꾸려 할찌라도 오히려 멸시를 받으리라"
+      ],
+      "raw_text_hashes": [
+        "c495021488e27d4491eec0d46963f10970c2b8b0de758e74311d4b746c951af0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:8",
+      "sequence": 17649,
+      "chapter_label": "SNG 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "We have a little sister. She has no breasts. What shall we do for our sister in the day when she is to be spoken for?",
+      "ko": "우리에게 있는 작은 누이는 아직도 유방이 없구나 그가 청혼함을 받는 날에는 우리가 그를 위하여 무엇을 할꼬",
+      "source_text_hash": "bff5e76e25927c6b623c810e53b2422561f8e1d9b26e9997d360776c977df31a",
+      "translation_text_hash": "b66706b62bd3b23a388f8059965c39771cf082bb8e9c5ee5a16fe55eb6022e40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 있는 작은 누이는 아직도 유방이 없구나 그가 청혼함을 받는 날에는 우리가 그를 위하여 무엇을 할꼬"
+      ],
+      "raw_text_hashes": [
+        "b66706b62bd3b23a388f8059965c39771cf082bb8e9c5ee5a16fe55eb6022e40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:9",
+      "sequence": 17650,
+      "chapter_label": "SNG 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "If she is a wall, we will build on her a turret of silver. If she is a door, we will enclose her with boards of cedar. Beloved",
+      "ko": "그가 성벽일찐대 우리는 은 망대를 그 위에 세울 것이요 그가 문일찐대 우리는 백향목 판자로 두르리라",
+      "source_text_hash": "5bc87a7c6d7c29ea63a701b5cd48613cb7a37e32127b6e2c7177af6715c0a92a",
+      "translation_text_hash": "b1a6102931e7fe90c522f8e65cc69c195f780b4703d88fec6e473c6516edfd0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 성벽일찐대 우리는 은 망대를 그 위에 세울 것이요 그가 문일찐대 우리는 백향목 판자로 두르리라"
+      ],
+      "raw_text_hashes": [
+        "b1a6102931e7fe90c522f8e65cc69c195f780b4703d88fec6e473c6516edfd0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:10",
+      "sequence": 17651,
+      "chapter_label": "SNG 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "I am a wall, and my breasts like towers, then I was in his eyes like one who found peace.",
+      "ko": "나는 성벽이요 나의 유방은 망대 같으니 그러므로 나는 그의 보기에 화평을 얻은 자 같구나",
+      "source_text_hash": "56ea4ca549d5dee724754bf218d6de9c61c187f07873a46df492dd1457314e56",
+      "translation_text_hash": "3dc7f11fac7f59bde866508012176611ca1e3e47b4f36d45452e25c2e116a9f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 성벽이요 나의 유방은 망대 같으니 그러므로 나는 그의 보기에 화평을 얻은 자 같구나"
+      ],
+      "raw_text_hashes": [
+        "3dc7f11fac7f59bde866508012176611ca1e3e47b4f36d45452e25c2e116a9f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:11",
+      "sequence": 17652,
+      "chapter_label": "SNG 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "Solomon had a vineyard at Baal Hamon. He leased out the vineyard to keepers. Each was to bring a thousand shekels of silver for its fruit.",
+      "ko": "솔로몬이 바알하몬에 포도원이 있어 지키는 자들에게 맡겨두고 그들로 각기 그 실과를 인하여서 은 일천을 바치게 하였구나",
+      "source_text_hash": "97bb8ad05f3c8115b128d9ecc4c160dbc9fd0a2651fe913427cfd4770de584a9",
+      "translation_text_hash": "7ca6511c3e53fccb51efce31a0b2e9d058da6e8015dcb0ed759b47c8446aab80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬이 바알하몬에 포도원이 있어 지키는 자들에게 맡겨두고 그들로 각기 그 실과를 인하여서 은 일천을 바치게 하였구나"
+      ],
+      "raw_text_hashes": [
+        "7ca6511c3e53fccb51efce31a0b2e9d058da6e8015dcb0ed759b47c8446aab80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:12",
+      "sequence": 17653,
+      "chapter_label": "SNG 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "My own vineyard is before me. The thousand are for you, Solomon, two hundred for those who tend its fruit. Lover",
+      "ko": "솔로몬 너는 일천을 얻겠고 실과 지키는 자도 이백을 얻으려니와 내게 속한 내 포도원은 내 앞에 있구나",
+      "source_text_hash": "f2d554faf97bcda8d0511c142c4b40d29fb908d6125973399816a9468c2785ee",
+      "translation_text_hash": "0e7180dd3cbe6afb702c8c5b00472c338757cfc0fca61d11d50bd85d841e768b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬 너는 일천을 얻겠고 실과 지키는 자도 이백을 얻으려니와 내게 속한 내 포도원은 내 앞에 있구나"
+      ],
+      "raw_text_hashes": [
+        "0e7180dd3cbe6afb702c8c5b00472c338757cfc0fca61d11d50bd85d841e768b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:13",
+      "sequence": 17654,
+      "chapter_label": "SNG 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "You who dwell in the gardens, with friends in attendance, let me hear your voice! Beloved",
+      "ko": "너 동산에 거한 자야 동무들이 네 소리에 귀를 기울이니 나로 듣게 하려무나",
+      "source_text_hash": "36cc0e5d9b72ab6627806f95e3c74b3de6adc04d7747bf4908354082a7108530",
+      "translation_text_hash": "eb3cea72f88a7c9942874238332a893eac87b74516d5551415b6cdef4ce3dd62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 동산에 거한 자야 동무들이 네 소리에 귀를 기울이니 나로 듣게 하려무나"
+      ],
+      "raw_text_hashes": [
+        "eb3cea72f88a7c9942874238332a893eac87b74516d5551415b6cdef4ce3dd62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:SNG:8:14",
+      "sequence": 17655,
+      "chapter_label": "SNG 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "SNG",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "SNG",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Come away, my beloved! Be like a gazelle or a young stag on the mountains of spices!",
+      "ko": "나의 사랑하는 자야 너는 빨리 달리라 향기로운 산들에서 노루와도 같고 어린 사슴과도 같아여라",
+      "source_text_hash": "af69c5e37385bbb4cbd29021a9b3e2b31bbaea84df5e1e4c6dfc3edb9e1588f5",
+      "translation_text_hash": "412babc61c06ac09528c94e45ecb996a9d4e70a4146ff5b79a03762563fed1e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 사랑하는 자야 너는 빨리 달리라 향기로운 산들에서 노루와도 같고 어린 사슴과도 같아여라"
+      ],
+      "raw_text_hashes": [
+        "412babc61c06ac09528c94e45ecb996a9d4e70a4146ff5b79a03762563fed1e8"
+      ]
+    }
+  ]
+}

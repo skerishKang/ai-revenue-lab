@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:012",
+  "unit_ordinal": 12,
+  "unit_label": "GEN 12",
+  "book_code": "GEN",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:12:1",
+      "sequence": 300,
+      "chapter_label": "GEN 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Now the LORD said to Abram, “Leave your country, and your relatives, and your father’s house, and go to the land that I will show you.",
+      "ko": "여호와께서 아브람에게 이르시되 너는 너의 본토 친척 아비 집을 떠나 내가 네게 지시할 땅으로 가라",
+      "source_text_hash": "feecb0b5c12c87b8a3a260377ec06aff3f9b7bf4ccc6960401a709a76a771990",
+      "translation_text_hash": "102359b404c773e4200967d93fee258ba643085f0b0d89307c4b32c44dfcfb36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브람에게 이르시되 너는 너의 본토 친척 아비 집을 떠나 내가 네게 지시할 땅으로 가라"
+      ],
+      "raw_text_hashes": [
+        "102359b404c773e4200967d93fee258ba643085f0b0d89307c4b32c44dfcfb36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:2",
+      "sequence": 301,
+      "chapter_label": "GEN 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "I will make of you a great nation. I will bless you and make your name great. You will be a blessing.",
+      "ko": "내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대케 하리니 너는 복의 근원이 될찌라",
+      "source_text_hash": "d533849186c794d9dbe8fe097cdb3faea06f2297af914fe2d1e77417b99255a1",
+      "translation_text_hash": "dad9f224c6665db95d60451d8ec2348468c749bc7554de1865f7133c96e51ed0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대케 하리니 너는 복의 근원이 될찌라"
+      ],
+      "raw_text_hashes": [
+        "dad9f224c6665db95d60451d8ec2348468c749bc7554de1865f7133c96e51ed0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:3",
+      "sequence": 302,
+      "chapter_label": "GEN 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "I will bless those who bless you, and I will curse him who treats you with contempt. All the families of the earth will be blessed through you.”",
+      "ko": "너를 축복하는 자에게는 내가 복을 내리고 너를 저주하는 자에게는 내가 저주하리니 땅의 모든 족속이 너를 인하여 복을 얻을 것이니라 하신지라",
+      "source_text_hash": "f0a4a00a6602e96c68db319e493fb6d8039026d72e97da0d399a9cbe4cef798c",
+      "translation_text_hash": "6c48409368a435aa255ed506d6bba53ebd63bcfe70b654db9ee5c3e88bc36471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 축복하는 자에게는 내가 복을 내리고 너를 저주하는 자에게는 내가 저주하리니 땅의 모든 족속이 너를 인하여 복을 얻을 것이니라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "6c48409368a435aa255ed506d6bba53ebd63bcfe70b654db9ee5c3e88bc36471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:4",
+      "sequence": 303,
+      "chapter_label": "GEN 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "So Abram went, as the LORD had told him. Lot went with him. Abram was seventy-five years old when he departed from Haran.",
+      "ko": "이에 아브람이 여호와의 말씀을 좇아 갔고 롯도 그와 함께 갔으며 아브람이 하란을 떠날 때에 그 나이 칠십 오세였더라",
+      "source_text_hash": "128481b103db70f69eecac502d6d5c9abee234b8fc61039cb350efd6b67d7aa8",
+      "translation_text_hash": "df0b746dc8f857c070739aab0fc6dd2a9b157282632028bc7888adfa7b059792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아브람이 여호와의 말씀을 좇아 갔고 롯도 그와 함께 갔으며 아브람이 하란을 떠날 때에 그 나이 칠십 오세였더라"
+      ],
+      "raw_text_hashes": [
+        "df0b746dc8f857c070739aab0fc6dd2a9b157282632028bc7888adfa7b059792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:5",
+      "sequence": 304,
+      "chapter_label": "GEN 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Abram took Sarai his wife, Lot his brother’s son, all their possessions that they had gathered, and the people whom they had acquired in Haran, and they went to go into the land of Canaan. They entered into the land of Canaan.",
+      "ko": "아브람이 그 아내 사래와 조카 롯과 하란에서 모은 모든 소유와 얻은 사람들을 이끌고 가나안 땅으로 가려고 떠나서 마침내 가나안 땅에 들어 갔더라",
+      "source_text_hash": "624664cd9f753a10c9bfb78eddf6fda307f2d11206f5f0d2cf67514c8c9c35ff",
+      "translation_text_hash": "1a0f976daf65b85db3caa6918a716b34c720760b25ce6f6a86a49598d0e83ce9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 그 아내 사래와 조카 롯과 하란에서 모은 모든 소유와 얻은 사람들을 이끌고 가나안 땅으로 가려고 떠나서 마침내 가나안 땅에 들어 갔더라"
+      ],
+      "raw_text_hashes": [
+        "1a0f976daf65b85db3caa6918a716b34c720760b25ce6f6a86a49598d0e83ce9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:6",
+      "sequence": 305,
+      "chapter_label": "GEN 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Abram passed through the land to the place of Shechem, to the oak of Moreh. At that time, Canaanites were in the land.",
+      "ko": "아브람이 그 땅을 통과하여 세겜 땅 모레 상수리 나무에 이르니 그 때에 가나안 사람이 그 땅에 거하였더라",
+      "source_text_hash": "2aa6f0f2ec20cb68d97e5be29b6ec07f352755c3cc31257493c3228999f2226b",
+      "translation_text_hash": "9cdb8af704e53d8890a664cb79d2e5ecbd26fdaeba384cadb8325fe4b281df0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 그 땅을 통과하여 세겜 땅 모레 상수리 나무에 이르니 그 때에 가나안 사람이 그 땅에 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "9cdb8af704e53d8890a664cb79d2e5ecbd26fdaeba384cadb8325fe4b281df0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:7",
+      "sequence": 306,
+      "chapter_label": "GEN 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD appeared to Abram and said, “I will give this land to your offspring.” He built an altar there to the LORD, who had appeared to him.",
+      "ko": "여호와께서 아브람에게 나타나 가라사대 내가 이 땅을 네 자손에게 주리라 하신지라 그가 자기에게 나타나신 여호와를 위하여 그곳에 단을 쌓고",
+      "source_text_hash": "12556dd47d0467d09be7bc63a3370182e9d1b8251e521dfa66a4e25cb6db1baf",
+      "translation_text_hash": "e2fceefc22ca51b3bdba5dc913d7235e0e51b09fee26f3dd29d78fbf4237cf01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브람에게 나타나 가라사대 내가 이 땅을 네 자손에게 주리라 하신지라 그가 자기에게 나타나신 여호와를 위하여 그곳에 단을 쌓고"
+      ],
+      "raw_text_hashes": [
+        "e2fceefc22ca51b3bdba5dc913d7235e0e51b09fee26f3dd29d78fbf4237cf01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:8",
+      "sequence": 307,
+      "chapter_label": "GEN 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "He left from there to go to the mountain on the east of Bethel and pitched his tent, having Bethel on the west, and Ai on the east. There he built an altar to the LORD and called on the LORD’s name.",
+      "ko": "거기서 벧엘 동편 산으로 옮겨 장막을 치니 서는 벧엘이요 동은 아이라 그가 그곳에서 여호와를 위하여 단을 쌓고 여호와의 이름을 부르더니",
+      "source_text_hash": "2ef62050bc96891d5cf858ec110ce6ebb28f7bb72ab58f93e59f6bd05616c5ea",
+      "translation_text_hash": "fd368ac7bb9f547f81af764e2fd0d7be28ba1010a07ae1263df9d96fe41488ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기서 벧엘 동편 산으로 옮겨 장막을 치니 서는 벧엘이요 동은 아이라 그가 그곳에서 여호와를 위하여 단을 쌓고 여호와의 이름을 부르더니"
+      ],
+      "raw_text_hashes": [
+        "fd368ac7bb9f547f81af764e2fd0d7be28ba1010a07ae1263df9d96fe41488ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:9",
+      "sequence": 308,
+      "chapter_label": "GEN 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "Abram traveled, still going on toward the South.",
+      "ko": "점점 남방으로 옮겨 갔더라",
+      "source_text_hash": "31fa511b15ecaadaf2c341ea998848a65ac9a9338ce3ac8e55d1437b6b231634",
+      "translation_text_hash": "efd2348d7fbcd0ac500dddc1dc23723ef4da714abd6b5255fbd2e05ee81272aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "점점 남방으로 옮겨 갔더라"
+      ],
+      "raw_text_hashes": [
+        "efd2348d7fbcd0ac500dddc1dc23723ef4da714abd6b5255fbd2e05ee81272aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:10",
+      "sequence": 309,
+      "chapter_label": "GEN 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "There was a famine in the land. Abram went down into Egypt to live as a foreigner there, for the famine was severe in the land.",
+      "ko": "그 땅에 기근이 있으므로 아브람이 애굽에 우거하려 하여 그리로 내려갔으니 이는 그 땅에 기근이 심하였음이라",
+      "source_text_hash": "21d0a0804619d3c2c1f72d2878dd31a3423e631d17d45252735bc17cd6f2c974",
+      "translation_text_hash": "c9bbf73b9e3c9816800d459689d0ab0bf39a780d77ac6a7c4453c31cead9aaa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅에 기근이 있으므로 아브람이 애굽에 우거하려 하여 그리로 내려갔으니 이는 그 땅에 기근이 심하였음이라"
+      ],
+      "raw_text_hashes": [
+        "c9bbf73b9e3c9816800d459689d0ab0bf39a780d77ac6a7c4453c31cead9aaa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:11",
+      "sequence": 310,
+      "chapter_label": "GEN 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "When he had come near to enter Egypt, he said to Sarai his wife, “See now, I know that you are a beautiful woman to look at.",
+      "ko": "그가 애굽에 가까이 이를 때에 그 아내 사래더러 말하되 나 알기에 그대는 아리따운 여인이라",
+      "source_text_hash": "ef530fd1e3b48f42b6e0a9e27b3c9baccc3989980c9895631a90e699643191c8",
+      "translation_text_hash": "c4283091b8fcb1e07a3b3f650fd713ea517772bf9a3d816686040fb60cbdef42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 애굽에 가까이 이를 때에 그 아내 사래더러 말하되 나 알기에 그대는 아리따운 여인이라"
+      ],
+      "raw_text_hashes": [
+        "c4283091b8fcb1e07a3b3f650fd713ea517772bf9a3d816686040fb60cbdef42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:12",
+      "sequence": 311,
+      "chapter_label": "GEN 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "It will happen that when the Egyptians see you, they will say, ‘This is his wife.’ They will kill me, but they will save you alive.",
+      "ko": "애굽 사람이 그대를 볼 때에 이르기를 이는 그의 아내라 하고 나는 죽이고 그대는 살리리니",
+      "source_text_hash": "ed5a61dbd8c2ec1dfde0ec00d340579315c3c556b87525c9a81b4c8bdf5a1da8",
+      "translation_text_hash": "6ba7aa4d3719fa92b03a9dd999f88e4ad95d2d20167ae655aee3038444411d92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽 사람이 그대를 볼 때에 이르기를 이는 그의 아내라 하고 나는 죽이고 그대는 살리리니"
+      ],
+      "raw_text_hashes": [
+        "6ba7aa4d3719fa92b03a9dd999f88e4ad95d2d20167ae655aee3038444411d92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:13",
+      "sequence": 312,
+      "chapter_label": "GEN 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "Please say that you are my sister, that it may be well with me for your sake, and that my soul may live because of you.”",
+      "ko": "원컨대 그대는 나의 누이라 하라 그리하면 내가 그대로 인하여 안전하고 내 목숨이 그대로 인하여 보존하겠노라 하니라",
+      "source_text_hash": "e7fb45014ad1f30ea6e7bdb382ec0857f0416e27f7d3caf86504ffac8520f36c",
+      "translation_text_hash": "e53e769adec3e95c601994d3b3670052066c15f57612203735852d4a87c8c686",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "원컨대 그대는 나의 누이라 하라 그리하면 내가 그대로 인하여 안전하고 내 목숨이 그대로 인하여 보존하겠노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "e53e769adec3e95c601994d3b3670052066c15f57612203735852d4a87c8c686"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:14",
+      "sequence": 313,
+      "chapter_label": "GEN 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "When Abram had come into Egypt, some Egyptians saw that the woman was very beautiful.",
+      "ko": "아브람이 애굽에 이르렀을 때에 애굽 사람들이 그 여인의 심히 아리따움을 보았고",
+      "source_text_hash": "ffe36bf5b004298f143b015a8334b9ae67233d053badcf916d4c4eb4e11bb972",
+      "translation_text_hash": "20ff014ce0a3295498eefe8d1ac37408c3df6dbe86e7c08c479943d00b47c2b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 애굽에 이르렀을 때에 애굽 사람들이 그 여인의 심히 아리따움을 보았고"
+      ],
+      "raw_text_hashes": [
+        "20ff014ce0a3295498eefe8d1ac37408c3df6dbe86e7c08c479943d00b47c2b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:15",
+      "sequence": 314,
+      "chapter_label": "GEN 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "The princes of Pharaoh saw her, and praised her to Pharaoh; and the woman was taken into Pharaoh’s house.",
+      "ko": "바로의 대신들도 그를 보고 바로 앞에 칭찬하므로 그 여인을 바로의 궁으로 취하여 들인지라",
+      "source_text_hash": "2b84f28218a94615c8f99f501eaeb665258089c2d21e4f22ccffd7afdbfc814e",
+      "translation_text_hash": "d374a971a6f568d82a57635468260459ceb2affe4936f99a4a48ada65fff8e38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 대신들도 그를 보고 바로 앞에 칭찬하므로 그 여인을 바로의 궁으로 취하여 들인지라"
+      ],
+      "raw_text_hashes": [
+        "d374a971a6f568d82a57635468260459ceb2affe4936f99a4a48ada65fff8e38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:16",
+      "sequence": 315,
+      "chapter_label": "GEN 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "He dealt well with Abram for her sake. He had sheep, cattle, male donkeys, male servants, female servants, female donkeys, and camels.",
+      "ko": "이에 바로가 그를 인하여 아브람을 후대하므로 아브람이 양과 소와 노비와 암 수 나귀와 약대를 얻었더라",
+      "source_text_hash": "4d5dda4e8631ed3051be422fbdfd0198e03d268797d01e72a62846ddfd747010",
+      "translation_text_hash": "63d7c7e1c9132d0e4435bb954bc6ca561a5fa38a64724988cdd3115f1a8105eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 바로가 그를 인하여 아브람을 후대하므로 아브람이 양과 소와 노비와 암 수 나귀와 약대를 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "63d7c7e1c9132d0e4435bb954bc6ca561a5fa38a64724988cdd3115f1a8105eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:17",
+      "sequence": 316,
+      "chapter_label": "GEN 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD afflicted Pharaoh and his house with great plagues because of Sarai, Abram’s wife.",
+      "ko": "여호와께서 아브람의 아내 사래의 연고로 바로와 그 집에 큰 재앙을 내리신지라",
+      "source_text_hash": "8382ed99ef4f849dd275d2f98a387aba93ebf8717e3a42654ca7e100f40ffcce",
+      "translation_text_hash": "ec696fa2fdf757a8524c0f317517ff10f2145d49fdbda2797fc5349f2a68ff5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브람의 아내 사래의 연고로 바로와 그 집에 큰 재앙을 내리신지라"
+      ],
+      "raw_text_hashes": [
+        "ec696fa2fdf757a8524c0f317517ff10f2145d49fdbda2797fc5349f2a68ff5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:18",
+      "sequence": 317,
+      "chapter_label": "GEN 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Pharaoh called Abram and said, “What is this that you have done to me? Why didn’t you tell me that she was your wife?",
+      "ko": "바로가 아브람을 불러서 이르되 네가 어찌하여 나를 이렇게 대접하였느냐 네가 어찌하여 그를 네 아내라고 내게 고하지 아니하였느냐",
+      "source_text_hash": "254e4bc91d7d0b1b7e154b5055f45e7d3cd251a1d18ffa3fc94b10c0edd070c5",
+      "translation_text_hash": "a6d7cc43cafaf4d2a79c9b8b0aa55bc393f3156b3ef52bc3b63bba2cf2d91a99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 아브람을 불러서 이르되 네가 어찌하여 나를 이렇게 대접하였느냐 네가 어찌하여 그를 네 아내라고 내게 고하지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "a6d7cc43cafaf4d2a79c9b8b0aa55bc393f3156b3ef52bc3b63bba2cf2d91a99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:19",
+      "sequence": 318,
+      "chapter_label": "GEN 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Why did you say, ‘She is my sister,’ so that I took her to be my wife? Now therefore, see your wife, take her, and go your way.”",
+      "ko": "네가 어찌 그를 누이라 하여 나로 그를 취하여 아내를 삼게 하였느냐 네 아내가 여기 있으니 이제 데려가라 하고",
+      "source_text_hash": "1189dc62dd616048745733e06ab677bfa2ad9d0663172a1d5d5fa76e99cc814f",
+      "translation_text_hash": "dc34f0b6889c25ca41a399569bf6174ad3d03973f5a2c5eaf3ccfc07c229fd13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 그를 누이라 하여 나로 그를 취하여 아내를 삼게 하였느냐 네 아내가 여기 있으니 이제 데려가라 하고"
+      ],
+      "raw_text_hashes": [
+        "dc34f0b6889c25ca41a399569bf6174ad3d03973f5a2c5eaf3ccfc07c229fd13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:12:20",
+      "sequence": 319,
+      "chapter_label": "GEN 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "Pharaoh commanded men concerning him, and they escorted him away with his wife and all that he had.",
+      "ko": "바로가 사람들에게 그의 일을 명하매 그들이 그 아내와 그 모든 소유를 보내었더라",
+      "source_text_hash": "b74895b66c612bc1b54c08b966d41dbe0093466be7b2ec578a771ba907f2bb2b",
+      "translation_text_hash": "412489c5ac354ed557d1bc08f8043392538496666b793ce97e795de12a8c559e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 사람들에게 그의 일을 명하매 그들이 그 아내와 그 모든 소유를 보내었더라"
+      ],
+      "raw_text_hashes": [
+        "412489c5ac354ed557d1bc08f8043392538496666b793ce97e795de12a8c559e"
+      ]
+    }
+  ]
+}

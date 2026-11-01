@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:013",
+  "unit_ordinal": 815,
+  "unit_label": "EZK 13",
+  "book_code": "EZK",
+  "chapter_number": 13,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:13:1",
+      "sequence": 20710,
+      "chapter_label": "EZK 13",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:2",
+      "sequence": 20711,
+      "chapter_label": "EZK 13",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, prophesy against the prophets of Israel who prophesy, and say to those who prophesy out of their own heart, ‘Hear the LORD’s word:",
+      "ko": "인자야 너는 이스라엘의 예언하는 선지자를 쳐서 예언하되 자기 마음에서 나는대로 예언하는 자에게 말하기를 너희는 여호와의 말씀을 들으라",
+      "source_text_hash": "249b24baf0b1f20389c8e4914c85368005b5ee71a24a1e67581b2898c6e261f5",
+      "translation_text_hash": "68cc49aa4796c2656914e70857848c887f50873059cc72860b031e7edc4dc548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 이스라엘의 예언하는 선지자를 쳐서 예언하되 자기 마음에서 나는대로 예언하는 자에게 말하기를 너희는 여호와의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "68cc49aa4796c2656914e70857848c887f50873059cc72860b031e7edc4dc548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:3",
+      "sequence": 20712,
+      "chapter_label": "EZK 13",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 3
+        }
+      ],
+      "en": "The Lord GOD says, “Woe to the foolish prophets, who follow their own spirit, and have seen nothing!",
+      "ko": "주 여호와의 말씀에 본 것이 없이 자기 심령을 따라 예언하는 우매한 선지자에게 화가 있을찐저",
+      "source_text_hash": "4fe183db8131b92e384aed19bf3a8c67fb6c3b2016a8f2552b3fb5d0dd6871bd",
+      "translation_text_hash": "f627458105f4db4f8c5d51cabe2ccaf9761de705f1971ef401a9444cd0743ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 본 것이 없이 자기 심령을 따라 예언하는 우매한 선지자에게 화가 있을찐저"
+      ],
+      "raw_text_hashes": [
+        "f627458105f4db4f8c5d51cabe2ccaf9761de705f1971ef401a9444cd0743ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:4",
+      "sequence": 20713,
+      "chapter_label": "EZK 13",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 4
+        }
+      ],
+      "en": "Israel, your prophets have been like foxes in the waste places.",
+      "ko": "이스라엘아 너의 선지자들은 황무지에 있는 여우 같으니라",
+      "source_text_hash": "a66400796c0c45141578a17a0ae27f54d206a2b9dc1a0eceaaacd9dd95a1c502",
+      "translation_text_hash": "3da407584725f79ce34cb8e9cc3d04c6163740ac61b8abc7eb8e4b41ffc379bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 너의 선지자들은 황무지에 있는 여우 같으니라"
+      ],
+      "raw_text_hashes": [
+        "3da407584725f79ce34cb8e9cc3d04c6163740ac61b8abc7eb8e4b41ffc379bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:5",
+      "sequence": 20714,
+      "chapter_label": "EZK 13",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 5
+        }
+      ],
+      "en": "You have not gone up into the gaps or built up the wall for the house of Israel, to stand in the battle in the LORD’s day.",
+      "ko": "너희 선지자들이 성 무너진 곳에 올라 가지도 아니하였으며 이스라엘 족속을 위하여 여호와의 날에 전쟁을 방비하게 하려고 성벽을 수축하지도 아니하였느니라",
+      "source_text_hash": "785651e1368ff204bb1ed753c2875f8cf092c1a017fc9888e26b239b10beaed3",
+      "translation_text_hash": "342e7cdcdbbf83d53fb0d130d6d8b946b2b865999a490a1b9dbaaa37f27634a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 선지자들이 성 무너진 곳에 올라 가지도 아니하였으며 이스라엘 족속을 위하여 여호와의 날에 전쟁을 방비하게 하려고 성벽을 수축하지도 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "342e7cdcdbbf83d53fb0d130d6d8b946b2b865999a490a1b9dbaaa37f27634a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:6",
+      "sequence": 20715,
+      "chapter_label": "EZK 13",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 6
+        }
+      ],
+      "en": "They have seen falsehood and lying divination, who say, ‘The LORD says;’ but the LORD has not sent them. They have made men to hope that the word would be confirmed.",
+      "ko": "여호와께서 말씀하셨다고 하는 자들이 허탄한 것과 거짓된 점괘를 보며 사람으로 그 말이 굳게 이루기를 바라게 하거니와 여호와가 보낸 자가 아니라",
+      "source_text_hash": "e19e7b00846427faa34d9ed500b227a13134832c29687b7f5b4fc4ec814df6a8",
+      "translation_text_hash": "efd1242930aa8cb91711ed39b316052b92d14205fd1129f1c1b29e3041fe0d48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하셨다고 하는 자들이 허탄한 것과 거짓된 점괘를 보며 사람으로 그 말이 굳게 이루기를 바라게 하거니와 여호와가 보낸 자가 아니라"
+      ],
+      "raw_text_hashes": [
+        "efd1242930aa8cb91711ed39b316052b92d14205fd1129f1c1b29e3041fe0d48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:7",
+      "sequence": 20716,
+      "chapter_label": "EZK 13",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 7
+        }
+      ],
+      "en": "Haven’t you seen a false vision, and haven’t you spoken a lying divination, in that you say, ‘The LORD says;’ but I have not spoken?”",
+      "ko": "너희가 말하기는 여호와의 말씀이라 하여도 내가 말한 것이 아닌즉 어찌 허탄한 묵시를 보며 거짓된 점괘를 말한 것이 아니냐",
+      "source_text_hash": "1c04ab203d33de4c3d92022b926e8dc966759f1c7495b059e43ec844b58c531b",
+      "translation_text_hash": "162b738f235f7b287b8ae6381fbc49c4c4a9c39687596dde655413e3ed13382c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 말하기는 여호와의 말씀이라 하여도 내가 말한 것이 아닌즉 어찌 허탄한 묵시를 보며 거짓된 점괘를 말한 것이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "162b738f235f7b287b8ae6381fbc49c4c4a9c39687596dde655413e3ed13382c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:8",
+      "sequence": 20717,
+      "chapter_label": "EZK 13",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 8
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “Because you have spoken falsehood and seen lies, therefore, behold, I am against you,” says the Lord GOD.",
+      "ko": "그러므로 나 주 여호와가 또 말하노라 너희가 허탄한 것을 말하며 거짓된 것을 보았은즉 내가 너희를 치리라 나 주 여호와의 말이니라",
+      "source_text_hash": "9b78fc09bcf8a0e631558c344e6aa536b08a35680360d2d760445fca86a3260c",
+      "translation_text_hash": "c118ef8b5af4eff8a2b2c37541942a37a92996a9317e6bfe334240d42af6e562",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 또 말하노라 너희가 허탄한 것을 말하며 거짓된 것을 보았은즉 내가 너희를 치리라 나 주 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "c118ef8b5af4eff8a2b2c37541942a37a92996a9317e6bfe334240d42af6e562"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:9",
+      "sequence": 20718,
+      "chapter_label": "EZK 13",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 9
+        }
+      ],
+      "en": "“My hand will be against the prophets who see false visions and who utter lying divinations. They will not be in the council of my people, neither will they be written in the writing of the house of Israel, neither will they enter into the land of Israel. Then you will know that I am the Lord GOD.”",
+      "ko": "그 선지자들이 허탄한 묵시를 보며 거짓 것을 점쳤으니 내 손이 그들을 쳐서 내 백성의 공회에 들어 오지 못하게 하며 이스라엘 족속의 호적에도 기록되지 못하게 하며 이스라엘 땅에도 들어가지 못하게 하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "b57837afd1aeb3232a9d35a5235dccb666832fb68cc1cdb67f4ecb3cafb2819e",
+      "translation_text_hash": "d50ba24b091ce1170602de721173ce581bbf9c4acf67c69833a7f430d07beea4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 선지자들이 허탄한 묵시를 보며 거짓 것을 점쳤으니 내 손이 그들을 쳐서 내 백성의 공회에 들어 오지 못하게 하며 이스라엘 족속의 호적에도 기록되지 못하게 하며 이스라엘 땅에도 들어가지 못하게 하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "d50ba24b091ce1170602de721173ce581bbf9c4acf67c69833a7f430d07beea4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:10",
+      "sequence": 20719,
+      "chapter_label": "EZK 13",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 10
+        }
+      ],
+      "en": "“‘Because, even because they have seduced my people, saying, “Peace;” and there is no peace. When one builds up a wall, behold, they plaster it with whitewash.",
+      "ko": "이렇게 칠 것은 그들이 내 백성을 유혹하여 평강이 없으나 평강이 있다 함이라 혹이 담을 쌓을 때에 그들이 회칠을 하는도다",
+      "source_text_hash": "4c66946c478fdeebeaff93717990324197ff025bcbec9cc1ec6a84535968c561",
+      "translation_text_hash": "def4b11a1e160871aadcb06f7af7a73a04024a85db0c2188d5c9a5d6243aa750",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이렇게 칠 것은 그들이 내 백성을 유혹하여 평강이 없으나 평강이 있다 함이라 혹이 담을 쌓을 때에 그들이 회칠을 하는도다"
+      ],
+      "raw_text_hashes": [
+        "def4b11a1e160871aadcb06f7af7a73a04024a85db0c2188d5c9a5d6243aa750"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:11",
+      "sequence": 20720,
+      "chapter_label": "EZK 13",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 11
+        }
+      ],
+      "en": "Tell those who plaster it with whitewash that it will fall. There will be an overflowing shower; and you, great hailstones, will fall. A stormy wind will tear it.",
+      "ko": "그러므로 너는 회칠하는 자에게 이르기를 그것이 무너지리라 폭우가 내리며 큰 우박덩이가 떨어지며 폭풍이 열파하리니",
+      "source_text_hash": "35424280da9318652f27777620b53005c4466f1b1c2bc9b20d3285719b65ef89",
+      "translation_text_hash": "5092f06c444a798b24add7aff507d9d10583018e079409dadaf12a51428148c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너는 회칠하는 자에게 이르기를 그것이 무너지리라 폭우가 내리며 큰 우박덩이가 떨어지며 폭풍이 열파하리니"
+      ],
+      "raw_text_hashes": [
+        "5092f06c444a798b24add7aff507d9d10583018e079409dadaf12a51428148c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:12",
+      "sequence": 20721,
+      "chapter_label": "EZK 13",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 12
+        }
+      ],
+      "en": "Behold, when the wall has fallen, won’t it be said to you, “Where is the plaster with which you have plastered it?”",
+      "ko": "그 담이 무너진즉 혹이 너희에게 말하기를 그것에 칠한 회가 어디 있느뇨 하지 아니하겠느냐",
+      "source_text_hash": "802c60bdb74aecd658d6fb6dcfebc1461c6d4941deb28f2c9f4a0c677888f90f",
+      "translation_text_hash": "53e86de327f4b6b6d98d21d47d885273eed3528d752e5b14eb83be101e592f59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 담이 무너진즉 혹이 너희에게 말하기를 그것에 칠한 회가 어디 있느뇨 하지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "53e86de327f4b6b6d98d21d47d885273eed3528d752e5b14eb83be101e592f59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:13",
+      "sequence": 20722,
+      "chapter_label": "EZK 13",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 13
+        }
+      ],
+      "en": "“‘Therefore the Lord GOD says: “I will even tear it with a stormy wind in my wrath. There will be an overflowing shower in my anger, and great hailstones in wrath to consume it.",
+      "ko": "그러므로 나 주 여호와가 말하노라 내가 분노하여 폭풍으로 열파하고 내가 진노하여 폭우를 내리고 분노하여 큰 우박덩이로 훼멸하리라",
+      "source_text_hash": "5485c48cbacda64cc9a6a8b7b0b48ea665436a03da8c4a4a7353bf0ec4c5dcab",
+      "translation_text_hash": "5deed8521b01bc3b3c2c362ee4198aa6b84260fbc71cc16c383a34c227001525",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 내가 분노하여 폭풍으로 열파하고 내가 진노하여 폭우를 내리고 분노하여 큰 우박덩이로 훼멸하리라"
+      ],
+      "raw_text_hashes": [
+        "5deed8521b01bc3b3c2c362ee4198aa6b84260fbc71cc16c383a34c227001525"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:14",
+      "sequence": 20723,
+      "chapter_label": "EZK 13",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 14
+        }
+      ],
+      "en": "So I will break down the wall that you have plastered with whitewash, and bring it down to the ground, so that its foundation will be uncovered. It will fall, and you will be consumed in the middle of it. Then you will know that I am the LORD.",
+      "ko": "회칠한 담을 내가 이렇게 훼파하여 땅에 넘어뜨리고 그 기초를 드러낼 것이라 담이 무너진즉 너희가 그 가운데서 망하리니 나를 여호와인줄 알리라",
+      "source_text_hash": "17e88efe8ad074585af12302029dac63a709538c4c49fb197bfb580d67789021",
+      "translation_text_hash": "05e64bc573c5fe17212ba1afaaaf07a7f08288f0d12888d27c62d6f818f7dbcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회칠한 담을 내가 이렇게 훼파하여 땅에 넘어뜨리고 그 기초를 드러낼 것이라 담이 무너진즉 너희가 그 가운데서 망하리니 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "05e64bc573c5fe17212ba1afaaaf07a7f08288f0d12888d27c62d6f818f7dbcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:15",
+      "sequence": 20724,
+      "chapter_label": "EZK 13",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 15
+        }
+      ],
+      "en": "Thus I will accomplish my wrath on the wall, and on those who have plastered it with whitewash. I will tell you, ‘The wall is no more, nor those who plastered it—",
+      "ko": "이와 같이 내가 내 노를 담과 회칠한 자에게 다 이루고 또 너희에게 말하기를 담도 없어지고 칠한 자들도 없어졌다 하리니",
+      "source_text_hash": "5eb7e7b1d6d9dcbb10186a9caeaf0eb34a664f8405f9509deb90301453190a80",
+      "translation_text_hash": "2b27b3f07699b0daccb88a2066b646f3c76cf3587df7534d4a522d1c630cac91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 내가 내 노를 담과 회칠한 자에게 다 이루고 또 너희에게 말하기를 담도 없어지고 칠한 자들도 없어졌다 하리니"
+      ],
+      "raw_text_hashes": [
+        "2b27b3f07699b0daccb88a2066b646f3c76cf3587df7534d4a522d1c630cac91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:16",
+      "sequence": 20725,
+      "chapter_label": "EZK 13",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 16
+        }
+      ],
+      "en": "to wit, the prophets of Israel who prophesy concerning Jerusalem, and who see visions of peace for her, and there is no peace,’” says the Lord GOD.’”",
+      "ko": "이들은 예루살렘에 대하여 예언하여 평강이 없으나 평강의 묵시를 본다 하는 이스라엘의 선지자들이니라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "8b18a559b3c8f01bc6aa910b9da1045e6fe5d1b6a5ee06f9033518a0f8b76191",
+      "translation_text_hash": "72455fe3908caabacb5ff7916f871fdf9dead8cd9bb5a93ab3f0aa1400f7e60f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들은 예루살렘에 대하여 예언하여 평강이 없으나 평강의 묵시를 본다 하는 이스라엘의 선지자들이니라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "72455fe3908caabacb5ff7916f871fdf9dead8cd9bb5a93ab3f0aa1400f7e60f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:17",
+      "sequence": 20726,
+      "chapter_label": "EZK 13",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 17
+        }
+      ],
+      "en": "You, son of man, set your face against the daughters of your people, who prophesy out of their own heart; and prophesy against them,",
+      "ko": "너 인자야 너의 백성 중 자기 마음에서 나는 대로 예언하는 부녀들을 대면하여 쳐서 예언하여",
+      "source_text_hash": "e70bcd43d2d1e9273f4bce52c4f4c2f117508292edfb6ff0014ccdbd43557f93",
+      "translation_text_hash": "8e8caf1ab41867631720d6107cd286769ba413d40ffb9795deb8945bd318a059",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 인자야 너의 백성 중 자기 마음에서 나는 대로 예언하는 부녀들을 대면하여 쳐서 예언하여"
+      ],
+      "raw_text_hashes": [
+        "8e8caf1ab41867631720d6107cd286769ba413d40ffb9795deb8945bd318a059"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:18",
+      "sequence": 20727,
+      "chapter_label": "EZK 13",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 18
+        }
+      ],
+      "en": "and say, “The Lord GOD says: ‘Woe to the women who sew magic bands on all elbows and make veils for the head of persons of every stature to hunt souls! Will you hunt the souls of my people and save souls alive for yourselves?",
+      "ko": "이르기를 주 여호와의 말씀에 사람의 영혼을 사냥하고자 하여 방석을 모든 팔뚝에 꿰어 매고 수건을 키가 큰 자나 작은 자의 머리를 위하여 만드는 부녀들에게 화 있을찐저 너희가 어찌하여 내 백성의 영혼을 사냥하면서 자기를 위하여 영혼을 살리려하느냐",
+      "source_text_hash": "ae5ac796cc65b1563f7cdb710148f0622f5f868b23f7a85d045e55dcd54589d4",
+      "translation_text_hash": "c1fc02e10c3e793a5623f80be77f2a447519e7a4d1e8538289fb71f06a13f6c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 주 여호와의 말씀에 사람의 영혼을 사냥하고자 하여 방석을 모든 팔뚝에 꿰어 매고 수건을 키가 큰 자나 작은 자의 머리를 위하여 만드는 부녀들에게 화 있을찐저 너희가 어찌하여 내 백성의 영혼을 사냥하면서 자기를 위하여 영혼을 살리려하느냐"
+      ],
+      "raw_text_hashes": [
+        "c1fc02e10c3e793a5623f80be77f2a447519e7a4d1e8538289fb71f06a13f6c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:19",
+      "sequence": 20728,
+      "chapter_label": "EZK 13",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 19
+        }
+      ],
+      "en": "You have profaned me among my people for handfuls of barley and for pieces of bread, to kill the souls who should not die and to save the souls alive who should not live, by your lying to my people who listen to lies.’",
+      "ko": "너희가 두어웅큼 보리와 두어조각 떡을 위하여 나를 내 백성 가운데서 욕되게 하여 거짓말을 곧이 듣는 내 백성에게 너희가 거짓말을 지어서 죽지 아니할 영혼을 죽이고 살지 못할 영혼을 살리는도다",
+      "source_text_hash": "4cd3b678282ce348b56d5347b26695997986da5dc60cb31bd41ca785dc22e069",
+      "translation_text_hash": "b2c87d0f038bb15b6d376b69b1d558e8dfac157273014fc88436fe30a31d2fa7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 두어웅큼 보리와 두어조각 떡을 위하여 나를 내 백성 가운데서 욕되게 하여 거짓말을 곧이 듣는 내 백성에게 너희가 거짓말을 지어서 죽지 아니할 영혼을 죽이고 살지 못할 영혼을 살리는도다"
+      ],
+      "raw_text_hashes": [
+        "b2c87d0f038bb15b6d376b69b1d558e8dfac157273014fc88436fe30a31d2fa7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:20",
+      "sequence": 20729,
+      "chapter_label": "EZK 13",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 20
+        }
+      ],
+      "en": "“Therefore the Lord GOD says: ‘Behold, I am against your magic bands, with which you hunt the souls to make them fly, and I will tear them from your arms. I will let the souls fly free, even the souls whom you ensnare like birds.",
+      "ko": "그러므로 나 주 여호와가 말하노라 너희가 새를 사냥하듯 영혼들을 사냥하는 그 방석을 내가 너희 팔에서 떼어 버리고 너희가 새처럼 사냥한 그 영혼들을 놓으며",
+      "source_text_hash": "6c2b16d67411582004d7acbec11ea2e5c1dd0b16adb37f185645440360968555",
+      "translation_text_hash": "b992ee6ab6ceebbd85dd97115ce582a9d1beee996d73069aaf8e7aa8e4b9e7b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 너희가 새를 사냥하듯 영혼들을 사냥하는 그 방석을 내가 너희 팔에서 떼어 버리고 너희가 새처럼 사냥한 그 영혼들을 놓으며"
+      ],
+      "raw_text_hashes": [
+        "b992ee6ab6ceebbd85dd97115ce582a9d1beee996d73069aaf8e7aa8e4b9e7b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:21",
+      "sequence": 20730,
+      "chapter_label": "EZK 13",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 21
+        }
+      ],
+      "en": "I will also tear your veils and deliver my people out of your hand; and they will no longer be in your hand to be ensnared. Then you will know that I am the LORD.",
+      "ko": "또 너희 수건을 찢고 내 백성을 너희 손에서 건지고 다시는 너희 손에 사냥물이 되지 않게 하리니 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "ec7740bc3c5947298bae8d3dd7a6a5ab0a481806bc9398e18f49d8de13acefdf",
+      "translation_text_hash": "f3615d3879e0e5fab6bad97f7770756c0de365318072ad28050b2e68c551b486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희 수건을 찢고 내 백성을 너희 손에서 건지고 다시는 너희 손에 사냥물이 되지 않게 하리니 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "f3615d3879e0e5fab6bad97f7770756c0de365318072ad28050b2e68c551b486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:22",
+      "sequence": 20731,
+      "chapter_label": "EZK 13",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 22
+        }
+      ],
+      "en": "Because with lies you have grieved the heart of the righteous, whom I have not made sad; and strengthened the hands of the wicked, that he should not return from his wicked way, and be saved alive.",
+      "ko": "내가 슬프게 하지 아니한 의인의 마음을 너희가 거짓말로 근심하게 하며 너희가 또 악인의 손을 굳게 하여 그 악한 길에서 돌이켜 떠나 삶을 얻지 못하게 하였은즉",
+      "source_text_hash": "34972544477bcbac548b880f3cd86d40c5f8664c2b74d7a7f94c23a77c39eefe",
+      "translation_text_hash": "dbc11c9085a2598fa108043c1cb02ca92cf02e79573464b572064b9f278bda15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 슬프게 하지 아니한 의인의 마음을 너희가 거짓말로 근심하게 하며 너희가 또 악인의 손을 굳게 하여 그 악한 길에서 돌이켜 떠나 삶을 얻지 못하게 하였은즉"
+      ],
+      "raw_text_hashes": [
+        "dbc11c9085a2598fa108043c1cb02ca92cf02e79573464b572064b9f278bda15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:13:23",
+      "sequence": 20732,
+      "chapter_label": "EZK 13",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 13,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 13,
+          "verse": 23
+        }
+      ],
+      "en": "Therefore you shall no more see false visions nor practice divination. I will deliver my people out of your hand. Then you will know that I am the LORD.’”",
+      "ko": "너희가 다시는 허탄한 묵시를 보지 못하고 점복도 못할찌라 내가 내 백성을 너희 손에서 건져 내리니 너희가 나를 여호와인줄 알리라 하셨다 하라",
+      "source_text_hash": "b65c1323e55bd5803e1e7139ca3255758b7c388be51555fc7177355930c323ce",
+      "translation_text_hash": "8f4a42a34b284649311479b92827ee636431c8f7de68e0ae0e13508312a6b8c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다시는 허탄한 묵시를 보지 못하고 점복도 못할찌라 내가 내 백성을 너희 손에서 건져 내리니 너희가 나를 여호와인줄 알리라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "8f4a42a34b284649311479b92827ee636431c8f7de68e0ae0e13508312a6b8c0"
+      ]
+    }
+  ]
+}

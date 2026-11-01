@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:014",
+  "unit_ordinal": 1060,
+  "unit_label": "ROM 14",
+  "book_code": "ROM",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:14:1",
+      "sequence": 28278,
+      "chapter_label": "ROM 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Now accept one who is weak in faith, but not for disputes over opinions.",
+      "ko": "믿음이 연약한 자를 너희가 받되 그의 의심하는 바를 비판하지 말라",
+      "source_text_hash": "db5e7c996b0d45c320886ea82c9541868622031983d12b715d48ff670a1c5929",
+      "translation_text_hash": "b12c674fcd40fea05026a256f25a51564ad83f76441f31ba238ad6e4c0341673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿음이 연약한 자를 너희가 받되 그의 의심하는 바를 비판하지 말라"
+      ],
+      "raw_text_hashes": [
+        "b12c674fcd40fea05026a256f25a51564ad83f76441f31ba238ad6e4c0341673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:2",
+      "sequence": 28279,
+      "chapter_label": "ROM 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "One man has faith to eat all things, but he who is weak eats only vegetables.",
+      "ko": "어떤 사람은 모든 것을 먹을만한 믿음이 있고 연약한 자는 채소를 먹느니라",
+      "source_text_hash": "17cc1d8f95218263ae331bf9c62d0937a88c4ea62bada81659b73a5f1dd30671",
+      "translation_text_hash": "7cc170d9f1a6dfc6f89ca7ed14a52958dc404ecd15aafc7bf8321f0bb48b88ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람은 모든 것을 먹을만한 믿음이 있고 연약한 자는 채소를 먹느니라"
+      ],
+      "raw_text_hashes": [
+        "7cc170d9f1a6dfc6f89ca7ed14a52958dc404ecd15aafc7bf8321f0bb48b88ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:3",
+      "sequence": 28280,
+      "chapter_label": "ROM 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t let him who eats despise him who doesn’t eat. Don’t let him who doesn’t eat judge him who eats, for God has accepted him.",
+      "ko": "먹는 자는 먹지 않는 자를 업신여기지 말고 먹지 못하는 자는 먹는 자를 판단하지 말라 이는 하나님이 저를 받으셨음이니라",
+      "source_text_hash": "9f35a9d7c617512e0a9277eb04b6680e4c6294882f805a7f30e61922592b03c3",
+      "translation_text_hash": "0fe389de2ab925f1d5de54530862f715cb375723acd0c7b1789c8290c1f27323",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹는 자는 먹지 않는 자를 업신여기지 말고 먹지 못하는 자는 먹는 자를 판단하지 말라 이는 하나님이 저를 받으셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "0fe389de2ab925f1d5de54530862f715cb375723acd0c7b1789c8290c1f27323"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:4",
+      "sequence": 28281,
+      "chapter_label": "ROM 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "Who are you who judge another’s servant? To his own lord he stands or falls. Yes, he will be made to stand, for God has power to make him stand.",
+      "ko": "남의 하인을 판단하는 너는 누구뇨 그 섰는 것이나 넘어지는 것이 제 주인에게 있으매 저가 세움을 받으리니 이는 저를 세우시는 권능이 주께 있음이니라",
+      "source_text_hash": "4298f4baaa7ddf23af1224c6212f158d7a7483393cb006b688c6c6fafef3b641",
+      "translation_text_hash": "71944407179f16c191f8097a882693bcb137a3fd502e7a129e4aef547cedae80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남의 하인을 판단하는 너는 누구뇨 그 섰는 것이나 넘어지는 것이 제 주인에게 있으매 저가 세움을 받으리니 이는 저를 세우시는 권능이 주께 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "71944407179f16c191f8097a882693bcb137a3fd502e7a129e4aef547cedae80"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:5",
+      "sequence": 28282,
+      "chapter_label": "ROM 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "One man esteems one day as more important. Another esteems every day alike. Let each man be fully assured in his own mind.",
+      "ko": "혹은 이 날을 저 날보다 낫게 여기고 혹은 모든 날을 같게 여기나니 각각 자기 마음에 확정할찌니라",
+      "source_text_hash": "a8e1a283bbf5cb49af898ed157ab10ceabba98f319811bea251fe82d86c29d41",
+      "translation_text_hash": "6e7a984c3e9dd392dc9c028546596d339cbb998328b93f82a376bbbe63ef01eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 이 날을 저 날보다 낫게 여기고 혹은 모든 날을 같게 여기나니 각각 자기 마음에 확정할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6e7a984c3e9dd392dc9c028546596d339cbb998328b93f82a376bbbe63ef01eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:6",
+      "sequence": 28283,
+      "chapter_label": "ROM 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "He who observes the day, observes it to the Lord; and he who does not observe the day, to the Lord he does not observe it. He who eats, eats to the Lord, for he gives God thanks. He who doesn’t eat, to the Lord he doesn’t eat, and gives God thanks.",
+      "ko": "날을 중히 여기는 자도 주를 위하여 중히 여기고 먹는 자도 주를 위하여 먹으니 이는 하나님께 감사함이요 먹지 않는 자도 주를 위하여 먹지 아니하며 하나님께 감사하느니라",
+      "source_text_hash": "53083116acb508f74ecc03d298068f57748b191aa3d846a53510706567879604",
+      "translation_text_hash": "b3f31808bde014691967418d8c8bc85683cadc55e7cace06c33f8d38cd061a12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날을 중히 여기는 자도 주를 위하여 중히 여기고 먹는 자도 주를 위하여 먹으니 이는 하나님께 감사함이요 먹지 않는 자도 주를 위하여 먹지 아니하며 하나님께 감사하느니라"
+      ],
+      "raw_text_hashes": [
+        "b3f31808bde014691967418d8c8bc85683cadc55e7cace06c33f8d38cd061a12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:7",
+      "sequence": 28284,
+      "chapter_label": "ROM 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "For none of us lives to himself, and none dies to himself.",
+      "ko": "우리 중에 누구든지 자기를 위하여 사는 자가 없고 자기를 위하여 죽는 자도 없도다",
+      "source_text_hash": "fd02d52c0058ecf7f582f42039beec5197151784b85f43e47c895f5e404e792f",
+      "translation_text_hash": "f2d0910ab40c38d15ce0c370fc482abd76259a7e2f3411d4ce03c08ad0e5e22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 중에 누구든지 자기를 위하여 사는 자가 없고 자기를 위하여 죽는 자도 없도다"
+      ],
+      "raw_text_hashes": [
+        "f2d0910ab40c38d15ce0c370fc482abd76259a7e2f3411d4ce03c08ad0e5e22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:8",
+      "sequence": 28285,
+      "chapter_label": "ROM 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "For if we live, we live to the Lord. Or if we die, we die to the Lord. If therefore we live or die, we are the Lord’s.",
+      "ko": "우리가 살아도 주를 위하여 살고 죽어도 주를 위하여 죽나니 그러므로 사나 죽으나 우리가 주의 것이로라",
+      "source_text_hash": "e4f64ebf04e799a823dc351fa046b1ee56d24e4c48b3137a9d191bbaa6fef630",
+      "translation_text_hash": "898543efde2d3d17db5cd6304beb8cecdc92c790da936b00e341d2606251ff10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 살아도 주를 위하여 살고 죽어도 주를 위하여 죽나니 그러므로 사나 죽으나 우리가 주의 것이로라"
+      ],
+      "raw_text_hashes": [
+        "898543efde2d3d17db5cd6304beb8cecdc92c790da936b00e341d2606251ff10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:9",
+      "sequence": 28286,
+      "chapter_label": "ROM 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "For to this end Christ died, rose, and lived again, that he might be Lord of both the dead and the living.",
+      "ko": "이를 위하여 그리스도께서 죽었다가 다시 살으셨으니 곧 죽은 자와 산 자의 주가 되려 하심이니라",
+      "source_text_hash": "1981b74f6201d481383200725d6a17f07b5a1dadfa86f0dceabf0e8b46a0475e",
+      "translation_text_hash": "c916258f57b0c7a15e9b64172aca0b0377cfb47a553c9fd237e4a40cf4dac96d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이를 위하여 그리스도께서 죽었다가 다시 살으셨으니 곧 죽은 자와 산 자의 주가 되려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "c916258f57b0c7a15e9b64172aca0b0377cfb47a553c9fd237e4a40cf4dac96d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:10",
+      "sequence": 28287,
+      "chapter_label": "ROM 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "But you, why do you judge your brother? Or you again, why do you despise your brother? For we will all stand before the judgment seat of Christ.",
+      "ko": "네가 어찌하여 네 형제를 판단하느뇨 어찌하여 네 형제를 업신여기느뇨 우리가 다 하나님의 심판대 앞에 서리라",
+      "source_text_hash": "758d0be7b54c42f382dde87cd4e267e412448c1a46b44bb2b9852d9a05abbbfe",
+      "translation_text_hash": "ddfec91a3d855d7279dd06769bd2a64ff3ef570ef20174851fdb33a69c2bcbf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌하여 네 형제를 판단하느뇨 어찌하여 네 형제를 업신여기느뇨 우리가 다 하나님의 심판대 앞에 서리라"
+      ],
+      "raw_text_hashes": [
+        "ddfec91a3d855d7279dd06769bd2a64ff3ef570ef20174851fdb33a69c2bcbf6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:11",
+      "sequence": 28288,
+      "chapter_label": "ROM 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "For it is written, “‘As I live,’ says the Lord, ‘to me every knee will bow. Every tongue will confess to God.’”",
+      "ko": "기록되었으되 주께서 가라사대 내가 살았노니 모든 무릎이 내게 꿇을 것이요 모든 혀가 하나님께 자백하리라 하였느니라",
+      "source_text_hash": "0fec06eb6624500c580616bd9ae75daea0183698509e512a1837b3d24e9e2043",
+      "translation_text_hash": "ba29b3509568ee8b6bc7c44a8484b61d1e6f9081446683ea81638ddd75faee68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록되었으되 주께서 가라사대 내가 살았노니 모든 무릎이 내게 꿇을 것이요 모든 혀가 하나님께 자백하리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ba29b3509568ee8b6bc7c44a8484b61d1e6f9081446683ea81638ddd75faee68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:12",
+      "sequence": 28289,
+      "chapter_label": "ROM 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "So then each one of us will give account of himself to God.",
+      "ko": "이러므로 우리 각인이 자기 일을 하나님께 직고하리라",
+      "source_text_hash": "982cf60aaccc959d3e6e9d150836ada4a54c2915e3fd57bf00eeb73d1003715a",
+      "translation_text_hash": "a152f3524c18ea5b96c7817818446de58883e3568a4a6f0f71f8423330b913c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리 각인이 자기 일을 하나님께 직고하리라"
+      ],
+      "raw_text_hashes": [
+        "a152f3524c18ea5b96c7817818446de58883e3568a4a6f0f71f8423330b913c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:13",
+      "sequence": 28290,
+      "chapter_label": "ROM 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "Therefore let’s not judge one another any more, but judge this rather, that no man put a stumbling block in his brother’s way, or an occasion for falling.",
+      "ko": "그런즉 우리가 다시는 서로 판단하지 말고 도리어 부딪힐 것이나 거칠 것으로 형제 앞에 두지 아니할 것을 주의하라",
+      "source_text_hash": "29bba2cb0ca949d9a3efa71a1f9c1b625b6155e3e456b9f3562017dbdee078c6",
+      "translation_text_hash": "17493c3e671096b1e5ffd78e935cd2530c11d4dec2c37c91cd6783812a79b6e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 다시는 서로 판단하지 말고 도리어 부딪힐 것이나 거칠 것으로 형제 앞에 두지 아니할 것을 주의하라"
+      ],
+      "raw_text_hashes": [
+        "17493c3e671096b1e5ffd78e935cd2530c11d4dec2c37c91cd6783812a79b6e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:14",
+      "sequence": 28291,
+      "chapter_label": "ROM 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "I know and am persuaded in the Lord Jesus that nothing is unclean of itself; except that to him who considers anything to be unclean, to him it is unclean.",
+      "ko": "내가 주 예수 안에서 알고 확신하는 것은 무엇이든지 스스로 속된 것이 없으되 다만 속되게 여기는 그 사람에게는 속되니라",
+      "source_text_hash": "374ea5fe4d467f9d1f72074c494070b0e32c294bcf67102fe0890e9cd9a44bf1",
+      "translation_text_hash": "fc6d7e56df33dacec3015153eadd7a236b1c61135657501a6dfed8456b9e562f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주 예수 안에서 알고 확신하는 것은 무엇이든지 스스로 속된 것이 없으되 다만 속되게 여기는 그 사람에게는 속되니라"
+      ],
+      "raw_text_hashes": [
+        "fc6d7e56df33dacec3015153eadd7a236b1c61135657501a6dfed8456b9e562f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:15",
+      "sequence": 28292,
+      "chapter_label": "ROM 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "Yet if because of food your brother is grieved, you walk no longer in love. Don’t destroy with your food him for whom Christ died.",
+      "ko": "만일 식물을 인하여 네 형제가 근심하게 되면 이는 네가 사랑으로 행치 아니함이라 그리스도께서 대신하여 죽으신 형제를 네 식물로 망케 하지 말라",
+      "source_text_hash": "fe42d0e380ad58a26a2e8883138f092353f03465537008e18d3af6b524f8eb15",
+      "translation_text_hash": "5a64d3aea834f47499463de64f58e93b3b17293d727f20f1530fcdec126713fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 식물을 인하여 네 형제가 근심하게 되면 이는 네가 사랑으로 행치 아니함이라 그리스도께서 대신하여 죽으신 형제를 네 식물로 망케 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "5a64d3aea834f47499463de64f58e93b3b17293d727f20f1530fcdec126713fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:16",
+      "sequence": 28293,
+      "chapter_label": "ROM 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "Then don’t let your good be slandered,",
+      "ko": "그러므로 너희의 선한 것이 비방을 받지 않게 하라",
+      "source_text_hash": "ebe3462fc9b7a2e500ed568f0ddd55224e1c46622b4b501a980791eb0471a050",
+      "translation_text_hash": "377c70eababd48df77fbd73c4898463d96d6719b227663aebee303a3f3ff3153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희의 선한 것이 비방을 받지 않게 하라"
+      ],
+      "raw_text_hashes": [
+        "377c70eababd48df77fbd73c4898463d96d6719b227663aebee303a3f3ff3153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:17",
+      "sequence": 28294,
+      "chapter_label": "ROM 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "for God’s Kingdom is not eating and drinking, but righteousness, peace, and joy in the Holy Spirit.",
+      "ko": "하나님의 나라는 먹는 것과 마시는 것이 아니요 오직 성령 안에서 의와 평강과 희락이라",
+      "source_text_hash": "435889762ad336ae3ba357eb934477f267f57b44fc8044861bf6d95029038adb",
+      "translation_text_hash": "3fe1932cc3b4f272ed2203a2189f8d6520a122944ff102166da802c59fb291d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 나라는 먹는 것과 마시는 것이 아니요 오직 성령 안에서 의와 평강과 희락이라"
+      ],
+      "raw_text_hashes": [
+        "3fe1932cc3b4f272ed2203a2189f8d6520a122944ff102166da802c59fb291d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:18",
+      "sequence": 28295,
+      "chapter_label": "ROM 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "For he who serves Christ in these things is acceptable to God and approved by men.",
+      "ko": "이로써 그리스도를 섬기는 자는 하나님께 기뻐하심을 받으며 사람에게도 칭찬을 받느니라",
+      "source_text_hash": "161847c174d6f3a780b3a21aab2efa82816e8d43b855dcbdcf0b42e5e387b7fe",
+      "translation_text_hash": "ea9a632fae20eb8d87fedc5b7a8732ec40c8503fa3f53c40e5c133f16110cf6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로써 그리스도를 섬기는 자는 하나님께 기뻐하심을 받으며 사람에게도 칭찬을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "ea9a632fae20eb8d87fedc5b7a8732ec40c8503fa3f53c40e5c133f16110cf6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:19",
+      "sequence": 28296,
+      "chapter_label": "ROM 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "So then, let’s follow after things which make for peace, and things by which we may build one another up.",
+      "ko": "이러므로 우리가 화평의 일과 서로 덕을 세우는 일을 힘쓰나니",
+      "source_text_hash": "e91d93032bdda3bc7d20c20d2261797cd7637e02fc5469101366ab2cc945d80a",
+      "translation_text_hash": "0a95e10406f8ad4c31269599d0f88dc47bc63e61829da998c1b2ef9638e159df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 우리가 화평의 일과 서로 덕을 세우는 일을 힘쓰나니"
+      ],
+      "raw_text_hashes": [
+        "0a95e10406f8ad4c31269599d0f88dc47bc63e61829da998c1b2ef9638e159df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:20",
+      "sequence": 28297,
+      "chapter_label": "ROM 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "Don’t overthrow God’s work for food’s sake. All things indeed are clean, however it is evil for that man who creates a stumbling block by eating.",
+      "ko": "식물을 인하여 하나님의 사업을 무너지게 말라 만물이 다 정하되 거리낌으로 먹는 사람에게는 악하니라",
+      "source_text_hash": "eddc8651568f446b24b3087fd284ced542d8fa6ada4172d2371cb088857795f4",
+      "translation_text_hash": "a3f99de6b03ea95986ee8e1bbf3375722b72004b1ca924dc790d9772c69f153c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "식물을 인하여 하나님의 사업을 무너지게 말라 만물이 다 정하되 거리낌으로 먹는 사람에게는 악하니라"
+      ],
+      "raw_text_hashes": [
+        "a3f99de6b03ea95986ee8e1bbf3375722b72004b1ca924dc790d9772c69f153c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:21",
+      "sequence": 28298,
+      "chapter_label": "ROM 14",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 21
+        }
+      ],
+      "en": "It is good to not eat meat, drink wine, nor do anything by which your brother stumbles, is offended, or is made weak.",
+      "ko": "고기도 먹지 아니하고 포도주도 마시지 아니하고 무엇이든지 네 형제로 거리끼게 하는 일을 아니함이 아름다우니라",
+      "source_text_hash": "35fbdb23e3ef0b7e0772b20e10fba9f02f1078bb5659fc1e1528ac255ccdbe0f",
+      "translation_text_hash": "8859a2b9bf6664aba8ed7c61b9e9c397486b3b7e02d1d266e761b0738d0eaf5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고기도 먹지 아니하고 포도주도 마시지 아니하고 무엇이든지 네 형제로 거리끼게 하는 일을 아니함이 아름다우니라"
+      ],
+      "raw_text_hashes": [
+        "8859a2b9bf6664aba8ed7c61b9e9c397486b3b7e02d1d266e761b0738d0eaf5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:22",
+      "sequence": 28299,
+      "chapter_label": "ROM 14",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 22
+        }
+      ],
+      "en": "Do you have faith? Have it to yourself before God. Happy is he who doesn’t judge himself in that which he approves.",
+      "ko": "네게 있는 믿음을 하나님 앞에서 스스로 가지고 있으라 자기의 옳다 하는 바로 자기를 책하지 아니하는 자는 복이 있도다",
+      "source_text_hash": "2952a4e41fbdd95d0dd1c0d913189d4e0d7b077d6f6d5b65fc5bdc4376aeded4",
+      "translation_text_hash": "bf41dcb2d1d7c841e9c470397e1e36eed1bc69b9247ede6b7f6ab7b245553067",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네게 있는 믿음을 하나님 앞에서 스스로 가지고 있으라 자기의 옳다 하는 바로 자기를 책하지 아니하는 자는 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "bf41dcb2d1d7c841e9c470397e1e36eed1bc69b9247ede6b7f6ab7b245553067"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:23",
+      "sequence": 28300,
+      "chapter_label": "ROM 14",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 14,
+          "verse": 23
+        }
+      ],
+      "en": "But he who doubts is condemned if he eats, because it isn’t of faith; and whatever is not of faith is sin.",
+      "ko": "의심하고 먹는 자는 정죄되었나니 이는 믿음으로 좇아 하지 아니한 연고라 믿음으로 좇아 하지 아니하는 모든 것이 죄니라",
+      "source_text_hash": "eced832c76f0f654546ed4011622f390e6bc1e9d8a1144539f9586d84187c164",
+      "translation_text_hash": "2ed9f17a694e70133631f13806fb6afec3ec8d75bb68f0c3527ea8201c8040b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "의심하고 먹는 자는 정죄되었나니 이는 믿음으로 좇아 하지 아니한 연고라 믿음으로 좇아 하지 아니하는 모든 것이 죄니라"
+      ],
+      "raw_text_hashes": [
+        "2ed9f17a694e70133631f13806fb6afec3ec8d75bb68f0c3527ea8201c8040b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:24",
+      "sequence": 28301,
+      "chapter_label": "ROM 14",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "Now to him who is able to establish you according to my Good News and the preaching of Jesus Christ, according to the revelation of the mystery which has been kept secret through long ages,",
+      "ko": "나의 복음과 예수 그리스도를 전파함은 영세전부터 감취었다가",
+      "source_text_hash": "c7e2d24de5cb8bec768fe5e1cabfd739ffd138a22793cf5fb069d328a25f63c9",
+      "translation_text_hash": "90e72c04941972904f508d1cb601b00442d44a451dbd71edef46afd7a0d67af7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "chapter_shift",
+      "mapping_note": "WEB ROM 14:24 maps to KRV ROM 16:25.",
+      "raw_texts": [
+        "나의 복음과 예수 그리스도를 전파함은 영세전부터 감취었다가"
+      ],
+      "raw_text_hashes": [
+        "90e72c04941972904f508d1cb601b00442d44a451dbd71edef46afd7a0d67af7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:25",
+      "sequence": 28302,
+      "chapter_label": "ROM 14",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "but now is revealed, and by the Scriptures of the prophets, according to the commandment of the eternal God, is made known for obedience of faith to all the nations;",
+      "ko": "이제는 나타내신바 되었으며 영원하신 하나님의 명을 좇아 선지자들의 글로 말미암아 모든 민족으로 믿어 순종케 하시려고 알게 하신바 그 비밀의 계시를 좇아 된 것이니 이 복음으로 너희를 능히 견고케 하실",
+      "source_text_hash": "4176d3b5d94508e7278f6b74bbd5accfb0eedf17ef12239c7eedd551cb6f6467",
+      "translation_text_hash": "14b85515c9b97cc9562ce5b73c982c32e0a245b4ab6c992c4e24720bd8dc5ba5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "chapter_shift",
+      "mapping_note": "WEB ROM 14:25 maps to KRV ROM 16:26.",
+      "raw_texts": [
+        "이제는 나타내신바 되었으며 영원하신 하나님의 명을 좇아 선지자들의 글로 말미암아 모든 민족으로 믿어 순종케 하시려고 알게 하신바 그 비밀의 계시를 좇아 된 것이니 이 복음으로 너희를 능히 견고케 하실"
+      ],
+      "raw_text_hashes": [
+        "14b85515c9b97cc9562ce5b73c982c32e0a245b4ab6c992c4e24720bd8dc5ba5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:14:26",
+      "sequence": 28303,
+      "chapter_label": "ROM 14",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 14,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "to the only wise God, through Jesus Christ, to whom be the glory forever! Amen.",
+      "ko": "지혜로우신 하나님께 예수 그리스도로 말미암아 영광이 세세무궁토록 있을찌어다 아멘",
+      "source_text_hash": "53aab2b7583b6698487efb4ded169eee5182aa0e63d901b713c2e005164de043",
+      "translation_text_hash": "fac9647f34a8b9d81d0be503885a02cf2bab74bb04f2f3eba2d58d69c1924599",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "chapter_shift",
+      "mapping_note": "WEB ROM 14:26 maps to KRV ROM 16:27.",
+      "raw_texts": [
+        "지혜로우신 하나님께 예수 그리스도로 말미암아 영광이 세세무궁토록 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "fac9647f34a8b9d81d0be503885a02cf2bab74bb04f2f3eba2d58d69c1924599"
+      ]
+    }
+  ]
+}

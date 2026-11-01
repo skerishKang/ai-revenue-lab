@@ -13,7 +13,7 @@ function esc(s){return (window.CSS&&CSS.escape)?CSS.escape(String(s)):String(s).
 var unitOf=STORE.unitOf;
 var sanitizeItem=STORE.sanitizeItem;
 function load(){items=STORE.load();}
-function save(){STORE.save(items);syncAnnotationPanel();}
+function save(){STORE.save(items);}
 
 function storyMemoryGetExactBookmarkMemory(locator){
   loadUserMemories();
@@ -134,35 +134,9 @@ function applyItem(it){
     last.parentNode.insertBefore(badge,last.nextSibling);
   }
 }
-function syncAnnotationPanel(){
-  var host=document.getElementById('annotationMemoryList');
-  var source=document.querySelector('#readerPageBody [data-source-locator]');
-  if(!host||!source)return;
-  var unit=unitOf(source.getAttribute('data-source-locator'));
-  var current=items.filter(function(it){return it.unit===unit&&(it.kind==='highlight'||it.kind==='underline');});
-  var legacy=[];
-  try{legacy=__smAnnotations.filter(function(a){return a.context===__smCurrentReaderLabel;});}catch(_){}
-  var hc=document.getElementById('highlightCount'),uc=document.getElementById('underlineCount');
-  if(hc)hc.textContent=String(legacy.filter(function(a){return String(a.type||'').startsWith('hl-');}).length+current.filter(function(a){return a.kind==='highlight';}).length);
-  if(uc)uc.textContent=String(legacy.filter(function(a){return a.type==='annot-line';}).length+current.filter(function(a){return a.kind==='underline';}).length);
-  host.querySelectorAll('.smal-memory-entry').forEach(function(el){el.remove();});
-  var empty=host.querySelector('.annotation-empty');if(empty)empty.hidden=current.length>0;
-  current.slice().reverse().forEach(function(it){
-    var wrap=document.createElement('div');wrap.className='annotation-memory-entry-wrap smal-memory-entry';
-    var entry=document.createElement('div');entry.className='annotation-memory-entry';
-    var kind=document.createElement('b');kind.textContent=it.kind==='highlight'?'형광펜':'밑줄';
-    var quote=document.createElement('span');quote.textContent=it.text;
-    var ref=document.createElement('small');var book=(document.getElementById('readerVolumeTitle')||{}).textContent||'';var chapter=(document.getElementById('readerChapterTitle')||{}).textContent||'';var verse=it.locator.indexOf('bible:')===0?it.locator.split(':').pop()+'절':'';ref.textContent=[book,chapter,verse].filter(Boolean).join(' · ');
-    entry.append(kind,quote,ref);
-    var actions=document.createElement('div');actions.className='annotation-entry-actions';
-    var del=document.createElement('button');del.type='button';del.title='표시 삭제';del.setAttribute('aria-label','표시 삭제');del.textContent='×';
-    del.addEventListener('click',function(){removeItem(it.id);});
-    actions.append(del);wrap.append(entry,actions);host.append(wrap);
-  });
-}
 function renderAll(){
   items.forEach(function(it){if(it.kind!=='bookmark')applyItem(it);});
-  syncHeader();syncAnnotationPanel();
+  syncHeader();
 }
 var renderTimer=null,busy=false;
 function scheduleRender(){

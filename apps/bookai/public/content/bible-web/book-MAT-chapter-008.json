@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:008",
+  "unit_ordinal": 937,
+  "unit_label": "MAT 8",
+  "book_code": "MAT",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:8:1",
+      "sequence": 23347,
+      "chapter_label": "MAT 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "When he came down from the mountain, great multitudes followed him.",
+      "ko": "예수께서 산에서 내려 오시니 허다한 무리가 좇으니라",
+      "source_text_hash": "715ab180ec87394471d1a64d00764af5e27d3bf6fd971886d1c3443f72b25698",
+      "translation_text_hash": "a47764d17c63643ae7ed0d6635ded849118aa4da89a683b56f49a0a073f0c9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 산에서 내려 오시니 허다한 무리가 좇으니라"
+      ],
+      "raw_text_hashes": [
+        "a47764d17c63643ae7ed0d6635ded849118aa4da89a683b56f49a0a073f0c9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:2",
+      "sequence": 23348,
+      "chapter_label": "MAT 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, a leper came to him and worshiped him, saying, “Lord, if you want to, you can make me clean.”",
+      "ko": "한 문둥병자가 나아와 절하고 가로되 주여 원하시면 저를 깨끗케 하실 수 있나이다 하거늘",
+      "source_text_hash": "42119402188d951f5d00338ff28cde8fb7cbb872c2099ee275629f9bc4847a06",
+      "translation_text_hash": "d41e97032ba7d1a6e5e367dca45bd0349e450a01a3766f5f8b9b28550730f0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 문둥병자가 나아와 절하고 가로되 주여 원하시면 저를 깨끗케 하실 수 있나이다 하거늘"
+      ],
+      "raw_text_hashes": [
+        "d41e97032ba7d1a6e5e367dca45bd0349e450a01a3766f5f8b9b28550730f0ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:3",
+      "sequence": 23349,
+      "chapter_label": "MAT 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus stretched out his hand and touched him, saying, “I want to. Be made clean.”Immediately his leprosy was cleansed.",
+      "ko": "예수께서 손을 내밀어 저에게 대시며 가라사대 내가 원하노니 깨끗함을 받으라 하신대 즉시 그의 문둥병이 깨끗하여진지라",
+      "source_text_hash": "e71c392f04809ff11e1a5043929f32b79e8711204c1cb49ba5f75733694a1a41",
+      "translation_text_hash": "e8eb4265e1879c4d6e66ae2baed15d4786786d4d7cc20ecb92365d2a27c994bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 손을 내밀어 저에게 대시며 가라사대 내가 원하노니 깨끗함을 받으라 하신대 즉시 그의 문둥병이 깨끗하여진지라"
+      ],
+      "raw_text_hashes": [
+        "e8eb4265e1879c4d6e66ae2baed15d4786786d4d7cc20ecb92365d2a27c994bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:4",
+      "sequence": 23350,
+      "chapter_label": "MAT 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus said to him, “See that you tell nobody; but go, show yourself to the priest, and offer the gift that Moses commanded, as a testimony to them.”",
+      "ko": "예수께서 이르시되 삼가 아무에게도 이르지 말고 다만 가서 제사장에게 네 몸을 보이고 모세의 명한 예물을 드려 저희에게 증거하라 하시니라",
+      "source_text_hash": "d0470c784ae31871b52f987aff3f9498570086b3c79bbdf47318dbd9400432ad",
+      "translation_text_hash": "b9652c172ef96eb7156bd8568b6d8f270077a1e5877a7f9639555e54b2d132e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 삼가 아무에게도 이르지 말고 다만 가서 제사장에게 네 몸을 보이고 모세의 명한 예물을 드려 저희에게 증거하라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "b9652c172ef96eb7156bd8568b6d8f270077a1e5877a7f9639555e54b2d132e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:5",
+      "sequence": 23351,
+      "chapter_label": "MAT 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "When he came into Capernaum, a centurion came to him, asking him for help,",
+      "ko": "예수께서 가버나움에 들어가시니 한 백부장이 나아와 간구하여",
+      "source_text_hash": "8257251a1195b096e1b4ee887d2d8bac03716c7b8b2027a7ad2da1d24280e112",
+      "translation_text_hash": "186cc172f0c02fe792bd4167d24cf519943023629144ed542b88cea9b5e9e808",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가버나움에 들어가시니 한 백부장이 나아와 간구하여"
+      ],
+      "raw_text_hashes": [
+        "186cc172f0c02fe792bd4167d24cf519943023629144ed542b88cea9b5e9e808"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:6",
+      "sequence": 23352,
+      "chapter_label": "MAT 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "saying, “Lord, my servant lies in the house paralyzed, grievously tormented.”",
+      "ko": "가로되 주여 내 하인이 중풍병으로 집에 누워 몹시 괴로와하나이다",
+      "source_text_hash": "42eecc186a28f0a562b04bcd05ce67d648590405f37d6d09a301a2c4e5251d5e",
+      "translation_text_hash": "26c29c2770d44675705200fbaa4675af9db4973dbb7094a33b2bfeaf6961f481",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 주여 내 하인이 중풍병으로 집에 누워 몹시 괴로와하나이다"
+      ],
+      "raw_text_hashes": [
+        "26c29c2770d44675705200fbaa4675af9db4973dbb7094a33b2bfeaf6961f481"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:7",
+      "sequence": 23353,
+      "chapter_label": "MAT 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "Jesus said to him, “I will come and heal him.”",
+      "ko": "가라사대 내가 가서 고쳐 주리라",
+      "source_text_hash": "fc560b2db613b5d29e8c59cad5254e9035e9889118cecde229cb626f9b918947",
+      "translation_text_hash": "e9c0a819f6923068ab0c7b6a1fec5f1a781ba30b2733777f0ae989bcf4085abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내가 가서 고쳐 주리라"
+      ],
+      "raw_text_hashes": [
+        "e9c0a819f6923068ab0c7b6a1fec5f1a781ba30b2733777f0ae989bcf4085abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:8",
+      "sequence": 23354,
+      "chapter_label": "MAT 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "The centurion answered, “Lord, I’m not worthy for you to come under my roof. Just say the word, and my servant will be healed.",
+      "ko": "백부장이 대답하여 가로되 주여 내 집에 들어오심을 나는 감당치 못하겠사오니 다만 말씀으로만 하옵소서 그러면 내 하인이 낫겠삽나이다",
+      "source_text_hash": "ad490462953d17aba84b6e7b7e03e22eb05bee5c933aafc0dfa142639186c20d",
+      "translation_text_hash": "6576387eaea2e4a15da80adfb65ec8a47ac8380b3d4051c044b36192ae62702e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장이 대답하여 가로되 주여 내 집에 들어오심을 나는 감당치 못하겠사오니 다만 말씀으로만 하옵소서 그러면 내 하인이 낫겠삽나이다"
+      ],
+      "raw_text_hashes": [
+        "6576387eaea2e4a15da80adfb65ec8a47ac8380b3d4051c044b36192ae62702e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:9",
+      "sequence": 23355,
+      "chapter_label": "MAT 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "For I am also a man under authority, having under myself soldiers. I tell this one, ‘Go,’ and he goes; and tell another, ‘Come,’ and he comes; and tell my servant, ‘Do this,’ and he does it.”",
+      "ko": "나도 남의 수하에 있는 사람이요 내 아래도 군사가 있으니 이더러 가라 하면 가고 저더러 오라 하면 오고 내 종더러 이것을 하라 하면 하나이다",
+      "source_text_hash": "3ab28626aa7d78c77fa05c0ae61d3a012c373246035a3225e68707a1acfb3b16",
+      "translation_text_hash": "7e9d8bd876bd1212a56c4184dfd9a03e2bb1806118d73e1dc1dc2e46541aa729",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 남의 수하에 있는 사람이요 내 아래도 군사가 있으니 이더러 가라 하면 가고 저더러 오라 하면 오고 내 종더러 이것을 하라 하면 하나이다"
+      ],
+      "raw_text_hashes": [
+        "7e9d8bd876bd1212a56c4184dfd9a03e2bb1806118d73e1dc1dc2e46541aa729"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:10",
+      "sequence": 23356,
+      "chapter_label": "MAT 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "When Jesus heard it, he marveled and said to those who followed, “Most certainly I tell you, I haven’t found so great a faith, not even in Israel.",
+      "ko": "예수께서 들으시고 기이히 여겨 좇는 자들에게 이르시되 내가 진실로 너희에게 이르노니 이스라엘 중 아무에게서도 이만한 믿음을 만나보지 못하였노라",
+      "source_text_hash": "e7bf1fb2da483bc567aedaead94050161b9d73b107e0dafdfc33a0e7cebb9533",
+      "translation_text_hash": "35fde5fb1ce69125810f5405b424b95d6e24f7bbdb1c99aaf9ccb71fc05d8679",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 들으시고 기이히 여겨 좇는 자들에게 이르시되 내가 진실로 너희에게 이르노니 이스라엘 중 아무에게서도 이만한 믿음을 만나보지 못하였노라"
+      ],
+      "raw_text_hashes": [
+        "35fde5fb1ce69125810f5405b424b95d6e24f7bbdb1c99aaf9ccb71fc05d8679"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:11",
+      "sequence": 23357,
+      "chapter_label": "MAT 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "I tell you that many will come from the east and the west, and will sit down with Abraham, Isaac, and Jacob in the Kingdom of Heaven,",
+      "ko": "또 너희에게 이르노니 동서로부터 많은 사람이 이르러 아브라함과 이삭과 야곱과 함께 천국에 앉으려니와",
+      "source_text_hash": "9e8437a4a92173000da142e3d64d5c3d3dece406799f2f8f3489a5b0fc7fa6fc",
+      "translation_text_hash": "1316183283125d7476899602817389c41e1e6d8eaadf969142198253294cc05c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희에게 이르노니 동서로부터 많은 사람이 이르러 아브라함과 이삭과 야곱과 함께 천국에 앉으려니와"
+      ],
+      "raw_text_hashes": [
+        "1316183283125d7476899602817389c41e1e6d8eaadf969142198253294cc05c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:12",
+      "sequence": 23358,
+      "chapter_label": "MAT 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "but the children of the Kingdom will be thrown out into the outer darkness. There will be weeping and gnashing of teeth.”",
+      "ko": "나라의 본 자손들은 바깥 어두운데 쫓겨나 거기서 울며 이를 갊이 있으리라",
+      "source_text_hash": "c4985a58e37218da961bb7f2ec6c22af86843795b5cc04bc75abf5279504ee0e",
+      "translation_text_hash": "51293f343218d1b37dcf9f620d601d01044dd9662ffc97fa08e05970db305565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라의 본 자손들은 바깥 어두운데 쫓겨나 거기서 울며 이를 갊이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "51293f343218d1b37dcf9f620d601d01044dd9662ffc97fa08e05970db305565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:13",
+      "sequence": 23359,
+      "chapter_label": "MAT 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "Jesus said to the centurion, “Go your way. Let it be done for you as you have believed.”His servant was healed in that hour.",
+      "ko": "예수께서 백부장에게 이르시되 가라 네 믿은대로 될찌어다 하시니 그 시로 하인이 나으니라",
+      "source_text_hash": "8ec4239188b668c1eafac34b09ef749c8a907428830b179c6ede65bbf31037f3",
+      "translation_text_hash": "5d14bc4e74cb511820a97b4e38ff89ee3d1989970682fff9963a607073bbfc5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 백부장에게 이르시되 가라 네 믿은대로 될찌어다 하시니 그 시로 하인이 나으니라"
+      ],
+      "raw_text_hashes": [
+        "5d14bc4e74cb511820a97b4e38ff89ee3d1989970682fff9963a607073bbfc5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:14",
+      "sequence": 23360,
+      "chapter_label": "MAT 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "When Jesus came into Peter’s house, he saw his wife’s mother lying sick with a fever.",
+      "ko": "예수께서 베드로의 집에 들어가사 그의 장모가 열병으로 앓아 누운 것을 보시고",
+      "source_text_hash": "24a7721d86d742ec6f669e1e85b65886dbf161407598af44078d85c35ee35349",
+      "translation_text_hash": "af27ce8dab4164522dd9ba870a566a1c194fef626ebe784dadd07703fc1162ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 베드로의 집에 들어가사 그의 장모가 열병으로 앓아 누운 것을 보시고"
+      ],
+      "raw_text_hashes": [
+        "af27ce8dab4164522dd9ba870a566a1c194fef626ebe784dadd07703fc1162ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:15",
+      "sequence": 23361,
+      "chapter_label": "MAT 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "He touched her hand, and the fever left her. So she got up and served him.",
+      "ko": "그의 손을 만지시니 열병이 떠나가고 여인이 일어나서 예수께 수종들더라",
+      "source_text_hash": "6f569da95b1c219560150cf3181e8d95c14935bcb3be0e69dfcef7dd6cbff984",
+      "translation_text_hash": "d276f351845512c30188a124c0a6471096f421a264eab002739a0a00308de120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 손을 만지시니 열병이 떠나가고 여인이 일어나서 예수께 수종들더라"
+      ],
+      "raw_text_hashes": [
+        "d276f351845512c30188a124c0a6471096f421a264eab002739a0a00308de120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:16",
+      "sequence": 23362,
+      "chapter_label": "MAT 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "When evening came, they brought to him many possessed with demons. He cast out the spirits with a word, and healed all who were sick,",
+      "ko": "저물매 사람들이 귀신 들린 자를 많이 데리고 예수께 오거늘 예수께서 말씀으로 귀신들을 쫓아 내시고 병든 자를 다 고치시니",
+      "source_text_hash": "aeb285f087c0e87e12367ca6cf2d68ff67b1f651ed8ece6d8725934f3942fb1c",
+      "translation_text_hash": "432c08170bb5c3b41df49ec376d496007d8281062ee92a6e79efca5c3386cfcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저물매 사람들이 귀신 들린 자를 많이 데리고 예수께 오거늘 예수께서 말씀으로 귀신들을 쫓아 내시고 병든 자를 다 고치시니"
+      ],
+      "raw_text_hashes": [
+        "432c08170bb5c3b41df49ec376d496007d8281062ee92a6e79efca5c3386cfcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:17",
+      "sequence": 23363,
+      "chapter_label": "MAT 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "that it might be fulfilled which was spoken through Isaiah the prophet, saying, “He took our infirmities and bore our diseases.”",
+      "ko": "이는 선지자 이사야로 하신 말씀에 우리 연약한 것을 친히 담당하시고 병을 짊어지셨도다 함을 이루려 하심이더라",
+      "source_text_hash": "7e0cb5a4416e99d8a1773685837210287f77435c26619cc3dd414eb60d40de7d",
+      "translation_text_hash": "cabdc51406851bb1237c3a7a44f791efaa33125326db7a23cb39750bff90d14c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 선지자 이사야로 하신 말씀에 우리 연약한 것을 친히 담당하시고 병을 짊어지셨도다 함을 이루려 하심이더라"
+      ],
+      "raw_text_hashes": [
+        "cabdc51406851bb1237c3a7a44f791efaa33125326db7a23cb39750bff90d14c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:18",
+      "sequence": 23364,
+      "chapter_label": "MAT 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "Now when Jesus saw great multitudes around him, he gave the order to depart to the other side.",
+      "ko": "예수께서 무리가 자기를 에워쌈을 보시고 저 편으로 건너가기를 명하시니라",
+      "source_text_hash": "b02bf6004e8503269cef9706533903133331d72546af4415bfcd0fac626a0efc",
+      "translation_text_hash": "258e2e3c4da2e843e9ca56bf739d90f7e31363c0d333854a8898c82ae4fcc92a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 무리가 자기를 에워쌈을 보시고 저 편으로 건너가기를 명하시니라"
+      ],
+      "raw_text_hashes": [
+        "258e2e3c4da2e843e9ca56bf739d90f7e31363c0d333854a8898c82ae4fcc92a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:19",
+      "sequence": 23365,
+      "chapter_label": "MAT 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "A scribe came and said to him, “Teacher, I will follow you wherever you go.”",
+      "ko": "한 서기관이 나아와 예수께 말씀하되 선생님이여 어디로 가시든지 저는 좇으리이다",
+      "source_text_hash": "8a6fb304393461664e7b8fa62a9f919640cd39bb48ae13856f36021a8e58e1db",
+      "translation_text_hash": "95cf4ab8ac6027e8d8408148b13627cf663cdd5da5e08e91555c13a0851e5dae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 서기관이 나아와 예수께 말씀하되 선생님이여 어디로 가시든지 저는 좇으리이다"
+      ],
+      "raw_text_hashes": [
+        "95cf4ab8ac6027e8d8408148b13627cf663cdd5da5e08e91555c13a0851e5dae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:20",
+      "sequence": 23366,
+      "chapter_label": "MAT 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Jesus said to him, “The foxes have holes and the birds of the sky have nests, but the Son of Man has nowhere to lay his head.”",
+      "ko": "예수께서 이르시되 여우도 굴이 있고 공중의 새도 거처가 있으되 오직 인자는 머리 둘 곳이 없다 하시더라",
+      "source_text_hash": "c75e38ba7b9e5fa5bd95d5dae5619bee1d9d101398c424aa0f145cd643de3b25",
+      "translation_text_hash": "85138a9a0900afe46265a752477f308e40f0d711d143ffa8e3d4ad2b559b29b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 여우도 굴이 있고 공중의 새도 거처가 있으되 오직 인자는 머리 둘 곳이 없다 하시더라"
+      ],
+      "raw_text_hashes": [
+        "85138a9a0900afe46265a752477f308e40f0d711d143ffa8e3d4ad2b559b29b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:21",
+      "sequence": 23367,
+      "chapter_label": "MAT 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Another of his disciples said to him, “Lord, allow me first to go and bury my father.”",
+      "ko": "제자 중에 또 하나가 가로되 주여 나로 먼저 가서 내 부친을 장사하게 허락하옵소서",
+      "source_text_hash": "8596282d227025f399dcb625967e80adc78da3020e42e0c9b784285363631ccb",
+      "translation_text_hash": "d0c64df7f9704b71455b4b8720dda85b1c20f954a50a803949a7049ecf9443d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자 중에 또 하나가 가로되 주여 나로 먼저 가서 내 부친을 장사하게 허락하옵소서"
+      ],
+      "raw_text_hashes": [
+        "d0c64df7f9704b71455b4b8720dda85b1c20f954a50a803949a7049ecf9443d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:22",
+      "sequence": 23368,
+      "chapter_label": "MAT 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "But Jesus said to him, “Follow me, and leave the dead to bury their own dead.”",
+      "ko": "예수께서 가라사대 죽은 자들로 저희 죽은 자를 장사하게 하고 너는 나를 좇으라 하시니라",
+      "source_text_hash": "9e6f082e8e31953d810347dfe744515750dc76586c971b60ef965b2541f5637a",
+      "translation_text_hash": "24f6fcf984983fcec266cb6f710a0cd952611b8e70ff5420bfa0eee7cb787b9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 죽은 자들로 저희 죽은 자를 장사하게 하고 너는 나를 좇으라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "24f6fcf984983fcec266cb6f710a0cd952611b8e70ff5420bfa0eee7cb787b9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:23",
+      "sequence": 23369,
+      "chapter_label": "MAT 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "When he got into a boat, his disciples followed him.",
+      "ko": "배에 오르시매 제자들이 좇았더니",
+      "source_text_hash": "44c3fe54cadb51ef8f34b7c43c02f697ea56fd0903b8a1f5c58526552cc2d761",
+      "translation_text_hash": "449e7b89157210744321c68d3f48f762a79d1afdfd8bfaaa1f23e77db387545c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에 오르시매 제자들이 좇았더니"
+      ],
+      "raw_text_hashes": [
+        "449e7b89157210744321c68d3f48f762a79d1afdfd8bfaaa1f23e77db387545c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:24",
+      "sequence": 23370,
+      "chapter_label": "MAT 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, a violent storm came up on the sea, so much that the boat was covered with the waves; but he was asleep.",
+      "ko": "바다에 큰 놀이 일어나 물결이 배에 덮이게 되었으되 예수는 주무시는지라",
+      "source_text_hash": "4c14a6d0789e8c990cf8a01cd2912291271ec200fc6f9cdf1ce7059b82223719",
+      "translation_text_hash": "ae4bb80f4a2837d4f74a4ff8882cd5f0cc3c647184d6853fc67d8c610c09159f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바다에 큰 놀이 일어나 물결이 배에 덮이게 되었으되 예수는 주무시는지라"
+      ],
+      "raw_text_hashes": [
+        "ae4bb80f4a2837d4f74a4ff8882cd5f0cc3c647184d6853fc67d8c610c09159f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:25",
+      "sequence": 23371,
+      "chapter_label": "MAT 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "The disciples came to him and woke him up, saying, “Save us, Lord! We are dying!”",
+      "ko": "그 제자들이 나아와 깨우며 가로되 주여 구원하소서 우리가 죽겠나이다",
+      "source_text_hash": "adec1beb2fb8dc0069e22f13ee4a83fdb05306c854dd006596e9bfb372a4fd3e",
+      "translation_text_hash": "5a16c0040a8d578eba030c617cfecd7ea44bc89b39f129904dfd282e1f2e59a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제자들이 나아와 깨우며 가로되 주여 구원하소서 우리가 죽겠나이다"
+      ],
+      "raw_text_hashes": [
+        "5a16c0040a8d578eba030c617cfecd7ea44bc89b39f129904dfd282e1f2e59a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:26",
+      "sequence": 23372,
+      "chapter_label": "MAT 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "He said to them, “Why are you fearful, O you of little faith?” Then he got up, rebuked the wind and the sea, and there was a great calm.",
+      "ko": "예수께서 이르시되 어찌하여 무서워하느냐 믿음이 적은 자들아 하시고 곧 일어나사 바람과 바다를 꾸짖으신대 아주 잔잔하게 되거늘",
+      "source_text_hash": "4fc0861bd77cdf2c157ac6ef03d044bc5141ea9818f18a7112091b539e4604e4",
+      "translation_text_hash": "135bc52c18074552bfa004895f466e86d19c1648fcb0763bfa8f0fa49a0ca483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 어찌하여 무서워하느냐 믿음이 적은 자들아 하시고 곧 일어나사 바람과 바다를 꾸짖으신대 아주 잔잔하게 되거늘"
+      ],
+      "raw_text_hashes": [
+        "135bc52c18074552bfa004895f466e86d19c1648fcb0763bfa8f0fa49a0ca483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:27",
+      "sequence": 23373,
+      "chapter_label": "MAT 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "The men marveled, saying, “What kind of man is this, that even the wind and the sea obey him?”",
+      "ko": "그 사람들이 기이히 여겨 가로되 이 어떠한 사람이기에 바람과 바다도 순종하는고 하더라",
+      "source_text_hash": "53251af425c8d71cf82544ff11ebe4ff6c8fa8198f96af79c3a463aac1fbbdbe",
+      "translation_text_hash": "253ba5a93ef990eccfa1df5f146ff299954f76d9bffaad638c49303831a445bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 기이히 여겨 가로되 이 어떠한 사람이기에 바람과 바다도 순종하는고 하더라"
+      ],
+      "raw_text_hashes": [
+        "253ba5a93ef990eccfa1df5f146ff299954f76d9bffaad638c49303831a445bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:28",
+      "sequence": 23374,
+      "chapter_label": "MAT 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "When he came to the other side, into the country of the Gergesenes, two people possessed by demons met him there, coming out of the tombs, exceedingly fierce, so that nobody could pass that way.",
+      "ko": "또 예수께서 건너편 가다라 지방에 가시매 귀신 들린 자 둘이 무덤 사이에서 나와 예수를 만나니 저희는 심히 사나와 아무도 그 길로 지나갈 수 없을만하더라",
+      "source_text_hash": "48b55f01655405f8f1d397b949745b2d6a8aa0ad4f74e8f08f6855fb4ff215e2",
+      "translation_text_hash": "b4cb99f95bdbf6203ffdc451d7027b466d7192abc32f4e0da3e3f7eb667bc49d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 예수께서 건너편 가다라 지방에 가시매 귀신 들린 자 둘이 무덤 사이에서 나와 예수를 만나니 저희는 심히 사나와 아무도 그 길로 지나갈 수 없을만하더라"
+      ],
+      "raw_text_hashes": [
+        "b4cb99f95bdbf6203ffdc451d7027b466d7192abc32f4e0da3e3f7eb667bc49d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:29",
+      "sequence": 23375,
+      "chapter_label": "MAT 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "Behold, they cried out, saying, “What do we have to do with you, Jesus, Son of God? Have you come here to torment us before the time?”",
+      "ko": "이에 저희가 소리질러 가로되 하나님의 아들이여 우리와 당신과 무슨 상관이 있나이까 때가 이르기 전에 우리를 괴롭게 하려고 여기 오셨나이까 하더니",
+      "source_text_hash": "1c2c2cf396d8d9247eadcc3ad4b94350f1e0223378342168127c5bdfb29166b3",
+      "translation_text_hash": "69b318dab3cc7db5437b53cdd5dbeca7f0b1f8c80dc43575006b9f494fc9563c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 소리질러 가로되 하나님의 아들이여 우리와 당신과 무슨 상관이 있나이까 때가 이르기 전에 우리를 괴롭게 하려고 여기 오셨나이까 하더니"
+      ],
+      "raw_text_hashes": [
+        "69b318dab3cc7db5437b53cdd5dbeca7f0b1f8c80dc43575006b9f494fc9563c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:30",
+      "sequence": 23376,
+      "chapter_label": "MAT 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "Now there was a herd of many pigs feeding far away from them.",
+      "ko": "마침 멀리서 많은 돼지 떼가 먹고 있는지라",
+      "source_text_hash": "14e42c5f61b3d7f7859871d7e3a4f87495e70831e332f58683003cbe6d09490f",
+      "translation_text_hash": "0717b739b30470744db5df151c0a2e0a58c61082b011d300f30147cd2ba042ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 멀리서 많은 돼지 떼가 먹고 있는지라"
+      ],
+      "raw_text_hashes": [
+        "0717b739b30470744db5df151c0a2e0a58c61082b011d300f30147cd2ba042ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:31",
+      "sequence": 23377,
+      "chapter_label": "MAT 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "The demons begged him, saying, “If you cast us out, permit us to go away into the herd of pigs.”",
+      "ko": "귀신들이 예수께 간구하여 가로되 만일 우리를 쫓아 내실찐대 돼지떼에 들여 보내소서 한대",
+      "source_text_hash": "0e51d3f2904104592a20b8a5257fdc03a0f7055ad959dd36100acfb187549c54",
+      "translation_text_hash": "62a1751afa43f366676700b89b0c87aefb7be86fafb736665f68cf5976adb5d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀신들이 예수께 간구하여 가로되 만일 우리를 쫓아 내실찐대 돼지떼에 들여 보내소서 한대"
+      ],
+      "raw_text_hashes": [
+        "62a1751afa43f366676700b89b0c87aefb7be86fafb736665f68cf5976adb5d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:32",
+      "sequence": 23378,
+      "chapter_label": "MAT 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "He said to them, “Go!”They came out and went into the herd of pigs; and behold, the whole herd of pigs rushed down the cliff into the sea and died in the water.",
+      "ko": "저희더러 가라 하시니 귀신들이 나와서 돼지에게로 들어가는지라 온 떼가 비탈로 내리달아 바다에 들어가서 물에서 몰사하거늘",
+      "source_text_hash": "75e88175c9c79b744a885701664bf4e99ba56ed8f50536b965f874e48e4c5132",
+      "translation_text_hash": "0939e8c26ce4466f2a706fca969c8afc9a2c03cbbbd49e247eea978e2baa41f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희더러 가라 하시니 귀신들이 나와서 돼지에게로 들어가는지라 온 떼가 비탈로 내리달아 바다에 들어가서 물에서 몰사하거늘"
+      ],
+      "raw_text_hashes": [
+        "0939e8c26ce4466f2a706fca969c8afc9a2c03cbbbd49e247eea978e2baa41f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:33",
+      "sequence": 23379,
+      "chapter_label": "MAT 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "Those who fed them fled and went away into the city and told everything, including what happened to those who were possessed with demons.",
+      "ko": "치던 자들이 달아나 시내에 들어가 이 모든 일과 귀신들린 자의 일을 고하니",
+      "source_text_hash": "fdc51bc5247a374b285b57d838049f9e37248541ffa2915332c4f0a69b1f209b",
+      "translation_text_hash": "7aa7dc24c25b92c54de6ced086ef6062fb6102698b0f8b12e9c87e818e2f5472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "치던 자들이 달아나 시내에 들어가 이 모든 일과 귀신들린 자의 일을 고하니"
+      ],
+      "raw_text_hashes": [
+        "7aa7dc24c25b92c54de6ced086ef6062fb6102698b0f8b12e9c87e818e2f5472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:8:34",
+      "sequence": 23380,
+      "chapter_label": "MAT 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Behold, all the city came out to meet Jesus. When they saw him, they begged that he would depart from their borders.",
+      "ko": "온 시내가 예수를 만나려고 나가서 보고 그 지방에서 떠나시기를 간구하더라",
+      "source_text_hash": "ab2ce1d08c7137f23bbf4352700edf4885046dafc3319d273120f9fa84affb48",
+      "translation_text_hash": "61ccf291dbef658add1aebc42362dc6d7e8132002674c32dee17cbdba582495e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 시내가 예수를 만나려고 나가서 보고 그 지방에서 떠나시기를 간구하더라"
+      ],
+      "raw_text_hashes": [
+        "61ccf291dbef658add1aebc42362dc6d7e8132002674c32dee17cbdba582495e"
+      ]
+    }
+  ]
+}

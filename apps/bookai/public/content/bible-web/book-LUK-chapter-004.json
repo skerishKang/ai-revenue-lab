@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:004",
+  "unit_ordinal": 977,
+  "unit_label": "LUK 4",
+  "book_code": "LUK",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:4:1",
+      "sequence": 25065,
+      "chapter_label": "LUK 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Jesus, full of the Holy Spirit, returned from the Jordan and was led by the Spirit into the wilderness",
+      "ko": "예수께서 성령의 충만함을 입어 요단강에서 돌아오사 광야에서 사십일 동안 성령에게 이끌리시며",
+      "source_text_hash": "0e8360bf0a61b74e26e7c268f7a31eac63ddf858eed665f93df6be3f723b7435",
+      "translation_text_hash": "d01fd43103e43ee6c057a19e672391fd105bf899424d90493c99276ad5da7e1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성령의 충만함을 입어 요단강에서 돌아오사 광야에서 사십일 동안 성령에게 이끌리시며"
+      ],
+      "raw_text_hashes": [
+        "d01fd43103e43ee6c057a19e672391fd105bf899424d90493c99276ad5da7e1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:2",
+      "sequence": 25066,
+      "chapter_label": "LUK 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "for forty days, being tempted by the devil. He ate nothing in those days. Afterward, when they were completed, he was hungry.",
+      "ko": "마귀에게 시험을 받으시더라 이 모든 날에 아무 것도 잡수시지 아니하시니 날 수가 다하매 주리신지라",
+      "source_text_hash": "96808c99c962dc0ac187d70f908ce02eec7676e1d0ce35a0545f4ea15522a44e",
+      "translation_text_hash": "cfb0ea7474ee9949820822ac1a7fe9dd95ab8b7e32cf8c1c69781be70b32c5fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀에게 시험을 받으시더라 이 모든 날에 아무 것도 잡수시지 아니하시니 날 수가 다하매 주리신지라"
+      ],
+      "raw_text_hashes": [
+        "cfb0ea7474ee9949820822ac1a7fe9dd95ab8b7e32cf8c1c69781be70b32c5fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:3",
+      "sequence": 25067,
+      "chapter_label": "LUK 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "The devil said to him, “If you are the Son of God, command this stone to become bread.”",
+      "ko": "마귀가 가로되 네가 만일 하나님의 아들이어든 이 돌들에게 명하여 떡덩이가 되게 하라",
+      "source_text_hash": "07e3fd4ae49a30b169db2bee3b79844081ef3eca88e61e9ada36f819553cc5ef",
+      "translation_text_hash": "1cbb8fd7e730657801aa2871e4b6a0575be820e9c84fba894ff9f3084dfac06f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀가 가로되 네가 만일 하나님의 아들이어든 이 돌들에게 명하여 떡덩이가 되게 하라"
+      ],
+      "raw_text_hashes": [
+        "1cbb8fd7e730657801aa2871e4b6a0575be820e9c84fba894ff9f3084dfac06f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:4",
+      "sequence": 25068,
+      "chapter_label": "LUK 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus answered him, saying, “It is written, ‘Man shall not live by bread alone, but by every word of God.’”",
+      "ko": "예수께서 대답하시되 기록하기를 사람이 떡으로만 살 것이 아니라 하였느니라",
+      "source_text_hash": "581cbed1bbf1e53c572ad4a92a81f948554cb41e1dce29f4316d435c504279d2",
+      "translation_text_hash": "1dfb243dfe6f11ee13ea6381050c64f73cb809490242ed5f9770ad37850420ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 기록하기를 사람이 떡으로만 살 것이 아니라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1dfb243dfe6f11ee13ea6381050c64f73cb809490242ed5f9770ad37850420ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:5",
+      "sequence": 25069,
+      "chapter_label": "LUK 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "The devil, leading him up on a high mountain, showed him all the kingdoms of the world in a moment of time.",
+      "ko": "마귀가 또 예수를 이끌고 올라가서 순식간에 천하 만국을 보이며",
+      "source_text_hash": "1e89ae451a896838128e920f0839a703045a2471dacace254761b751a5c7ef0c",
+      "translation_text_hash": "7c9a587f4f06d2cce836720b34b1847529cbd801281a6f6319eaacca9a1f5ed2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀가 또 예수를 이끌고 올라가서 순식간에 천하 만국을 보이며"
+      ],
+      "raw_text_hashes": [
+        "7c9a587f4f06d2cce836720b34b1847529cbd801281a6f6319eaacca9a1f5ed2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:6",
+      "sequence": 25070,
+      "chapter_label": "LUK 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "The devil said to him, “I will give you all this authority and their glory, for it has been delivered to me, and I give it to whomever I want.",
+      "ko": "가로되 이 모든 권세와 그 영광을 내가 네게 주리라 이것은 내게 넘겨준 것이므로 나의 원하는 자에게 주노라",
+      "source_text_hash": "7b3fb682bd34e90b765b142b30df3132a8b48f4df063359d302bca45e5247349",
+      "translation_text_hash": "eff1e45602ba8e5d2f94ff29abdf69e05f144590653a0634cf62e2d3940b2db4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 이 모든 권세와 그 영광을 내가 네게 주리라 이것은 내게 넘겨준 것이므로 나의 원하는 자에게 주노라"
+      ],
+      "raw_text_hashes": [
+        "eff1e45602ba8e5d2f94ff29abdf69e05f144590653a0634cf62e2d3940b2db4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:7",
+      "sequence": 25071,
+      "chapter_label": "LUK 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "If you therefore will worship before me, it will all be yours.”",
+      "ko": "그러므로 네가 만일 내게 절하면 다 네 것이 되리라",
+      "source_text_hash": "25a472138107c30f5da0e7393eb31c47993aa39b4eb2216be5fff467e88f4ac8",
+      "translation_text_hash": "0cd21045e7ec31919fd023151aead0e98467798ff2d40e14e125ed8c1fd55318",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 네가 만일 내게 절하면 다 네 것이 되리라"
+      ],
+      "raw_text_hashes": [
+        "0cd21045e7ec31919fd023151aead0e98467798ff2d40e14e125ed8c1fd55318"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:8",
+      "sequence": 25072,
+      "chapter_label": "LUK 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Jesus answered him, “Get behind me, Satan! For it is written, ‘You shall worship the Lord your God, and you shall serve him only.’”",
+      "ko": "예수께서 대답하여 가라사대 기록하기를 주 너의 하나님께 경배하고 다만 그를 섬기라 하였느니라",
+      "source_text_hash": "fc99b31f1fd94889dadc71fafd02474f944a700ac3d96001550df347e63e78ac",
+      "translation_text_hash": "5574824596c72b16656544855522888ec413515746c5fc32d5c09b5735d50f77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 기록하기를 주 너의 하나님께 경배하고 다만 그를 섬기라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5574824596c72b16656544855522888ec413515746c5fc32d5c09b5735d50f77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:9",
+      "sequence": 25073,
+      "chapter_label": "LUK 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "He led him to Jerusalem and set him on the pinnacle of the temple, and said to him, “If you are the Son of God, cast yourself down from here,",
+      "ko": "또 이끌고 예루살렘으로 가서 성전 꼭대기에 세우고 가로되 네가 만일 하나님의 아들이어든 여기서 뛰어 내리라",
+      "source_text_hash": "d52a8d95a521085e12aad4b21b7452fdc49ca5cca23c48f50419dcb9fcf6845c",
+      "translation_text_hash": "4ff7fadb780f1a2b25c0eb05e764ba51d9124d7b12ddc898427064bb12a9a88c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이끌고 예루살렘으로 가서 성전 꼭대기에 세우고 가로되 네가 만일 하나님의 아들이어든 여기서 뛰어 내리라"
+      ],
+      "raw_text_hashes": [
+        "4ff7fadb780f1a2b25c0eb05e764ba51d9124d7b12ddc898427064bb12a9a88c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:10",
+      "sequence": 25074,
+      "chapter_label": "LUK 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "for it is written, ‘He will put his angels in charge of you, to guard you;’",
+      "ko": "기록하였으되 하나님이 너를 위하여 그 사자들을 명하사 너를 지키게 하시리라 하였고",
+      "source_text_hash": "34acaa23423326a0de3cc24c5b2026524737a1947fb1e3b548f80187dff266f6",
+      "translation_text_hash": "d47cd7b4a77823dad170d7d6ab0dc876388c5a7daa8f7b7195aa64e44e19ef63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록하였으되 하나님이 너를 위하여 그 사자들을 명하사 너를 지키게 하시리라 하였고"
+      ],
+      "raw_text_hashes": [
+        "d47cd7b4a77823dad170d7d6ab0dc876388c5a7daa8f7b7195aa64e44e19ef63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:11",
+      "sequence": 25075,
+      "chapter_label": "LUK 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "and, ‘On their hands they will bear you up, lest perhaps you dash your foot against a stone.’”",
+      "ko": "또한 저희가 손으로 너를 받들어 네 발이 돌에 부딪히지 않게 하시리라 하였느니라",
+      "source_text_hash": "5d576eec157be927afd611d5a3dc952e0e5df8eab571dc009fc957eb63e8f09d",
+      "translation_text_hash": "265f6de69b50a1bab67661255ba3b4475b4efec5457b8915b044d14118876c55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 저희가 손으로 너를 받들어 네 발이 돌에 부딪히지 않게 하시리라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "265f6de69b50a1bab67661255ba3b4475b4efec5457b8915b044d14118876c55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:12",
+      "sequence": 25076,
+      "chapter_label": "LUK 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Jesus answering, said to him, “It has been said, ‘You shall not tempt the Lord your God.’”",
+      "ko": "예수께서 대답하여 가라사대 말씀하기를 주 너의 하나님을 시험치 말라 하였느니라",
+      "source_text_hash": "3434a5a43b45417275ebdd004d6d80d21778f4aff2bb87f3a7a865d36ed8ee08",
+      "translation_text_hash": "d7a31e4534baae2147e0847826bece2b5e0cb778117523f751ce8ffb281ad0b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 말씀하기를 주 너의 하나님을 시험치 말라 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "d7a31e4534baae2147e0847826bece2b5e0cb778117523f751ce8ffb281ad0b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:13",
+      "sequence": 25077,
+      "chapter_label": "LUK 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "When the devil had completed every temptation, he departed from him until another time.",
+      "ko": "마귀가 모든 시험을 다 한 후에 얼마 동안 떠나니라",
+      "source_text_hash": "a0ddcf2c2013582173267c4f1c4cae7968a8d283935f30a6588b85dd76a6e1b7",
+      "translation_text_hash": "789da8f15f186840208b381f4a483054e343778fcd5bf7d3e0d401c37a242956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀가 모든 시험을 다 한 후에 얼마 동안 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "789da8f15f186840208b381f4a483054e343778fcd5bf7d3e0d401c37a242956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:14",
+      "sequence": 25078,
+      "chapter_label": "LUK 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Jesus returned in the power of the Spirit into Galilee, and news about him spread through all the surrounding area.",
+      "ko": "예수께서 성령의 권능으로 갈릴리에 돌아가시니 그 소문이 사방에 퍼졌고",
+      "source_text_hash": "c8ca1cab958efcf1eccaa519d87a79d312567cbf2d1caad7a067d92e016288f5",
+      "translation_text_hash": "426b3ecdf1f26162292f486def74774150f26a8335471096e550052df3c991ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성령의 권능으로 갈릴리에 돌아가시니 그 소문이 사방에 퍼졌고"
+      ],
+      "raw_text_hashes": [
+        "426b3ecdf1f26162292f486def74774150f26a8335471096e550052df3c991ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:15",
+      "sequence": 25079,
+      "chapter_label": "LUK 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "He taught in their synagogues, being glorified by all.",
+      "ko": "친히 그 여러 회당에서 가르치시매 뭇사람에게 칭송을 받으시더라",
+      "source_text_hash": "a698081fd47ee6d801ec0acc4cf1a53d79f558500b17cbb9c0f7c272bc11b207",
+      "translation_text_hash": "f7e5bca2bfdbfc95effebc9efd3f4abdbcad80ac6ff00b9d4678ebc7aba3a841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "친히 그 여러 회당에서 가르치시매 뭇사람에게 칭송을 받으시더라"
+      ],
+      "raw_text_hashes": [
+        "f7e5bca2bfdbfc95effebc9efd3f4abdbcad80ac6ff00b9d4678ebc7aba3a841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:16",
+      "sequence": 25080,
+      "chapter_label": "LUK 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "He came to Nazareth, where he had been brought up. He entered, as was his custom, into the synagogue on the Sabbath day, and stood up to read.",
+      "ko": "예수께서 그 자라나신 곳 나사렛에 이르사 안식일에 자기 규례대로 회당에 들어가사 성경을 읽으려고 서시매",
+      "source_text_hash": "480fe0dc0147b7e45471e042a0023b88fabfc4bab78a8b948afdff953de42876",
+      "translation_text_hash": "96f862d0d929f058ade81acebdcdb3c39ae7d9ac21eadf64a247afb5778e51c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 자라나신 곳 나사렛에 이르사 안식일에 자기 규례대로 회당에 들어가사 성경을 읽으려고 서시매"
+      ],
+      "raw_text_hashes": [
+        "96f862d0d929f058ade81acebdcdb3c39ae7d9ac21eadf64a247afb5778e51c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:17",
+      "sequence": 25081,
+      "chapter_label": "LUK 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The book of the prophet Isaiah was handed to him. He opened the book, and found the place where it was written,",
+      "ko": "선지자 이사야의 글을 드리거늘 책을 펴서 이렇게 기록한 데를 찾으시니 곧",
+      "source_text_hash": "e3c154307c78fe495ac34e19db811ddfe92dbbf4786465655ebb6c5f719a934b",
+      "translation_text_hash": "f52f737d3c3be672b05a94882e8d0ffd6d7b70ac41145503b02c3aac5f3c2881",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 이사야의 글을 드리거늘 책을 펴서 이렇게 기록한 데를 찾으시니 곧"
+      ],
+      "raw_text_hashes": [
+        "f52f737d3c3be672b05a94882e8d0ffd6d7b70ac41145503b02c3aac5f3c2881"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:18",
+      "sequence": 25082,
+      "chapter_label": "LUK 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "“The Spirit of the Lord is on me,because he has anointed me to preach good news to the poor. He has sent me to heal the broken hearted, to proclaim release to the captives, recovering of sight to the blind, to deliver those who are crushed,",
+      "ko": "주의 성령이 내게 임하셨으니 이는 가난한 자에게 복음을 전하게 하시려고 내게 기름을 부으시고 나를 보내사 포로 된 자에게 자유를, 눈먼 자에게 다시 보게 함을 전파하며 눌린 자를 자유케 하고",
+      "source_text_hash": "56c6cc815265237254f5d20802e314a14ec95fe478a929c0d7d7a9ce57848ca0",
+      "translation_text_hash": "044088800468b02c353efff79029e0cf67a523f7429cc515d4f3c146345088a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 성령이 내게 임하셨으니 이는 가난한 자에게 복음을 전하게 하시려고 내게 기름을 부으시고 나를 보내사 포로 된 자에게 자유를, 눈먼 자에게 다시 보게 함을 전파하며 눌린 자를 자유케 하고"
+      ],
+      "raw_text_hashes": [
+        "044088800468b02c353efff79029e0cf67a523f7429cc515d4f3c146345088a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:19",
+      "sequence": 25083,
+      "chapter_label": "LUK 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "and to proclaim the acceptable year of the Lord.”",
+      "ko": "주의 은혜의 해를 전파하게 하려 하심이라 하였더라",
+      "source_text_hash": "3f2bd0046ad7850073eff11de023b5dc0454ca323ca02f1f3faf539d1d41f436",
+      "translation_text_hash": "0b512423de4a6df696d248cb70304dacf4e59190a171e027589042d13422810a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 은혜의 해를 전파하게 하려 하심이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "0b512423de4a6df696d248cb70304dacf4e59190a171e027589042d13422810a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:20",
+      "sequence": 25084,
+      "chapter_label": "LUK 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "He closed the book, gave it back to the attendant, and sat down. The eyes of all in the synagogue were fastened on him.",
+      "ko": "책을 덮어 그 맡은 자에게 주시고 앉으시니 회당에 있는 자들이 다 주목하여 보더라",
+      "source_text_hash": "3aa8241fd766113efb396adfc95f6fc893d5bf436915c3875c0a4b5386f4b699",
+      "translation_text_hash": "c57d326b208412890c37f104476473823370196d225ca978ce5a5393a4e47d88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "책을 덮어 그 맡은 자에게 주시고 앉으시니 회당에 있는 자들이 다 주목하여 보더라"
+      ],
+      "raw_text_hashes": [
+        "c57d326b208412890c37f104476473823370196d225ca978ce5a5393a4e47d88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:21",
+      "sequence": 25085,
+      "chapter_label": "LUK 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "He began to tell them, “Today, this Scripture has been fulfilled in your hearing.”",
+      "ko": "이에 예수께서 저희에게 말씀하시되 이 글이 오늘날 너희 귀에 응하였느니라 하시니",
+      "source_text_hash": "6a0752c14b1c41bd1d162ce2e983ac7789d35dbd0789b63043522d5f5161b12f",
+      "translation_text_hash": "45971e2eccbcd6cae2c0e9e61a71692d8842fb05bc2d64465579a3e6f4c06ae0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 저희에게 말씀하시되 이 글이 오늘날 너희 귀에 응하였느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "45971e2eccbcd6cae2c0e9e61a71692d8842fb05bc2d64465579a3e6f4c06ae0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:22",
+      "sequence": 25086,
+      "chapter_label": "LUK 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "All testified about him and wondered at the gracious words which proceeded out of his mouth; and they said, “Isn’t this Joseph’s son?”",
+      "ko": "저희가 다 그를 증거하고 그 입으로 나오는바 은혜로운 말을 기이히 여겨 가로되 이 사람이 요셉의 아들이 아니냐",
+      "source_text_hash": "f849e5b611564097a92842aed9e0f5f98dd7f856d8e99f880b45b48ffce26e97",
+      "translation_text_hash": "1a1f31dec145c9731a5d082cde370ec9672b367585468d3f9032632a4693b6d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다 그를 증거하고 그 입으로 나오는바 은혜로운 말을 기이히 여겨 가로되 이 사람이 요셉의 아들이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "1a1f31dec145c9731a5d082cde370ec9672b367585468d3f9032632a4693b6d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:23",
+      "sequence": 25087,
+      "chapter_label": "LUK 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "He said to them, “Doubtless you will tell me this proverb, ‘Physician, heal yourself! Whatever we have heard done at Capernaum, do also here in your hometown.’”",
+      "ko": "예수께서 저희에게 이르시되 너희가 반드시 의원아 너를 고치라 하는 속담을 인증하여 내게 말하기를 우리의 들은바 가버나움에서 행한 일을 네 고향 여기서도 행하라 하리라",
+      "source_text_hash": "e7a1c9c85bdfee87a973179dcb3d79a43242260ebe9d698184b61083c34e042d",
+      "translation_text_hash": "34a16c9d7ab9aa78c0956b9dfd5374f4d9570bc904ca59893b74b3feda222ea1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 너희가 반드시 의원아 너를 고치라 하는 속담을 인증하여 내게 말하기를 우리의 들은바 가버나움에서 행한 일을 네 고향 여기서도 행하라 하리라"
+      ],
+      "raw_text_hashes": [
+        "34a16c9d7ab9aa78c0956b9dfd5374f4d9570bc904ca59893b74b3feda222ea1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:24",
+      "sequence": 25088,
+      "chapter_label": "LUK 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "He said, “Most certainly I tell you, no prophet is acceptable in his hometown.",
+      "ko": "또 가라사대 내가 진실로 너희에게 이르노니 선지자가 고향에서 환영을 받는 자가 없느니라",
+      "source_text_hash": "25edb615d80fcdab1377e699d8ba035d8cb83981e1657fbfe3792a31aa0a1f8c",
+      "translation_text_hash": "063946bbd0b221bc73b92c5c8597c429586f368429cbdb2fb282e424ff59eb38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 내가 진실로 너희에게 이르노니 선지자가 고향에서 환영을 받는 자가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "063946bbd0b221bc73b92c5c8597c429586f368429cbdb2fb282e424ff59eb38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:25",
+      "sequence": 25089,
+      "chapter_label": "LUK 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "But truly I tell you, there were many widows in Israel in the days of Elijah, when the sky was shut up three years and six months, when a great famine came over all the land.",
+      "ko": "내가 참으로 너희에게 이르노니 엘리야 시대에 하늘이 세 해 여섯 달을 닫히어 온 땅에 큰 흉년이 들었을 때에 이스라엘에 많은 과부가 있었으되",
+      "source_text_hash": "e104607af4c00aa90b41bf03899fc78a0e28ef0ac5b2088d30429188a8faea95",
+      "translation_text_hash": "1970024881a90e174908a4d7dde5a9e8ca17230b83052e442f201388508f93d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 참으로 너희에게 이르노니 엘리야 시대에 하늘이 세 해 여섯 달을 닫히어 온 땅에 큰 흉년이 들었을 때에 이스라엘에 많은 과부가 있었으되"
+      ],
+      "raw_text_hashes": [
+        "1970024881a90e174908a4d7dde5a9e8ca17230b83052e442f201388508f93d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:26",
+      "sequence": 25090,
+      "chapter_label": "LUK 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Elijah was sent to none of them, except to Zarephath, in the land of Sidon, to a woman who was a widow.",
+      "ko": "엘리야가 그 중 한 사람에게도 보내심을 받지 않고 오직 시돈 땅에 있는 사렙다의 한 과부에게 뿐이었으며",
+      "source_text_hash": "c13d283b1d7ae62ac69f4a9b847b294a34b45520ef008ab1055bae72907f5b0f",
+      "translation_text_hash": "e08add0025ef53362b342b610db1c6b783641cf7c2998f7514260c307ad6d7ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리야가 그 중 한 사람에게도 보내심을 받지 않고 오직 시돈 땅에 있는 사렙다의 한 과부에게 뿐이었으며"
+      ],
+      "raw_text_hashes": [
+        "e08add0025ef53362b342b610db1c6b783641cf7c2998f7514260c307ad6d7ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:27",
+      "sequence": 25091,
+      "chapter_label": "LUK 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "There were many lepers in Israel in the time of Elisha the prophet, yet not one of them was cleansed, except Naaman, the Syrian.”",
+      "ko": "또 선지자 엘리사 때에 이스라엘에 많은 문둥이가 있었으되 그 중에 한 사람도 깨끗함을 얻지 못하고 오직 수리아 사람 나아만 뿐이니라",
+      "source_text_hash": "fd09d318f106a405140313138250f2f6281228ad496a5a18e0ba025fa7421ee0",
+      "translation_text_hash": "64079afe904f79078d61ad4408625978e1423ccbdece5a5f8ca62f9a0e72f9c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 선지자 엘리사 때에 이스라엘에 많은 문둥이가 있었으되 그 중에 한 사람도 깨끗함을 얻지 못하고 오직 수리아 사람 나아만 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "64079afe904f79078d61ad4408625978e1423ccbdece5a5f8ca62f9a0e72f9c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:28",
+      "sequence": 25092,
+      "chapter_label": "LUK 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "They were all filled with wrath in the synagogue as they heard these things.",
+      "ko": "회당에 있는 자들이 이것을 듣고 다 분이 가득하여",
+      "source_text_hash": "b436c2c682b157469b63b8449b1773e3acd9531f58fea055aa521fea711b9858",
+      "translation_text_hash": "8b7e5282ea8bf929a7245504195ceb429e5787f24a63643b8389e6bbde292ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당에 있는 자들이 이것을 듣고 다 분이 가득하여"
+      ],
+      "raw_text_hashes": [
+        "8b7e5282ea8bf929a7245504195ceb429e5787f24a63643b8389e6bbde292ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:29",
+      "sequence": 25093,
+      "chapter_label": "LUK 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "They rose up, threw him out of the city, and led him to the brow of the hill that their city was built on, that they might throw him off the cliff.",
+      "ko": "일어나 동네 밖으로 쫓아내어 그 동네가 건설된 산 낭떠러지까지 끌고 가서 밀쳐 내리치고자 하되",
+      "source_text_hash": "21ce159dd80cea8d83fad340445faa48913204fddaee94fc311c9731e7844f0e",
+      "translation_text_hash": "2533e0457b6294d157875c0e11518a4b9ddd700ca88817fc427347d67e8d96c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 동네 밖으로 쫓아내어 그 동네가 건설된 산 낭떠러지까지 끌고 가서 밀쳐 내리치고자 하되"
+      ],
+      "raw_text_hashes": [
+        "2533e0457b6294d157875c0e11518a4b9ddd700ca88817fc427347d67e8d96c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:30",
+      "sequence": 25094,
+      "chapter_label": "LUK 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "But he, passing through the middle of them, went his way.",
+      "ko": "예수께서 저희 가운데로 지나서 가시니라",
+      "source_text_hash": "c16a66da4ce44067ab0489578912e956f864c620e77f268da30fbad02132270c",
+      "translation_text_hash": "6ad577f0891bfadb960a549d0e662058319d1c27e1c8de10106562064e1e0d13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희 가운데로 지나서 가시니라"
+      ],
+      "raw_text_hashes": [
+        "6ad577f0891bfadb960a549d0e662058319d1c27e1c8de10106562064e1e0d13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:31",
+      "sequence": 25095,
+      "chapter_label": "LUK 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "He came down to Capernaum, a city of Galilee. He was teaching them on the Sabbath day,",
+      "ko": "갈릴리 가버나움 동네에 내려오사 안식일에 가르치시매",
+      "source_text_hash": "17d3b31693820b6a56118bb46d258b8b65ef35b07e604610e28d75e316ec0ef0",
+      "translation_text_hash": "9c4c6879855d99fb3aedb70534670575c9d4f59dbb1f230e91de55b6ff69e108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 가버나움 동네에 내려오사 안식일에 가르치시매"
+      ],
+      "raw_text_hashes": [
+        "9c4c6879855d99fb3aedb70534670575c9d4f59dbb1f230e91de55b6ff69e108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:32",
+      "sequence": 25096,
+      "chapter_label": "LUK 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "and they were astonished at his teaching, for his word was with authority.",
+      "ko": "저희가 그 가르치심에 놀라니 이는 그 말씀이 권세가 있음이러라",
+      "source_text_hash": "80b372e31746b9e4154ffd725bc87299643bc2bb5c8a822c23677c55e34f92ef",
+      "translation_text_hash": "496ad55faef5d468bdfe6331ad9f8ddf8214b3bbc53244e28b86d00edef1363e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 가르치심에 놀라니 이는 그 말씀이 권세가 있음이러라"
+      ],
+      "raw_text_hashes": [
+        "496ad55faef5d468bdfe6331ad9f8ddf8214b3bbc53244e28b86d00edef1363e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:33",
+      "sequence": 25097,
+      "chapter_label": "LUK 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "In the synagogue there was a man who had a spirit of an unclean demon; and he cried out with a loud voice,",
+      "ko": "회당에 더러운 귀신 들린 사람이 있어 크게 소리질러 가로되",
+      "source_text_hash": "366a4903c47d0d63d52c0e1be157975a27df5935ebca907961eb234a73f35d5d",
+      "translation_text_hash": "374647ba3923de754160efeb0d0cf3218121a93dfe6603a9c43d06fcbb7b2583",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당에 더러운 귀신 들린 사람이 있어 크게 소리질러 가로되"
+      ],
+      "raw_text_hashes": [
+        "374647ba3923de754160efeb0d0cf3218121a93dfe6603a9c43d06fcbb7b2583"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:34",
+      "sequence": 25098,
+      "chapter_label": "LUK 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "saying, “Ah! what have we to do with you, Jesus of Nazareth? Have you come to destroy us? I know who you are: the Holy One of God!”",
+      "ko": "아 나사렛 예수여 우리가 당신과 무슨 상관이 있나이까 우리를 멸하러 왔나이까 나는 당신이 누구인줄 아노니 하나님의 거룩한 자니이다",
+      "source_text_hash": "b3f85127abae836aa8da204f5d3a6ade4b187d18770e683c4f4b4333a344711c",
+      "translation_text_hash": "ad6ef9e720a8f656f9e669046e3ea9c6fe30713de0dddc19a90772f759ab1cde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아 나사렛 예수여 우리가 당신과 무슨 상관이 있나이까 우리를 멸하러 왔나이까 나는 당신이 누구인줄 아노니 하나님의 거룩한 자니이다"
+      ],
+      "raw_text_hashes": [
+        "ad6ef9e720a8f656f9e669046e3ea9c6fe30713de0dddc19a90772f759ab1cde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:35",
+      "sequence": 25099,
+      "chapter_label": "LUK 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "Jesus rebuked him, saying, “Be silent and come out of him!” When the demon had thrown him down in the middle of them, he came out of him, having done him no harm.",
+      "ko": "예수께서 꾸짖어 가라사대 잠잠하고 그 사람에게서 나오라 하시니 귀신이 그 사람을 무리 중에 넘어뜨리고 나오되 그 사람은 상하지 아니한지라",
+      "source_text_hash": "033b800cbae7abae5e602a82ba85e702fa4d3cd909e8e524ec7bbe55898570c5",
+      "translation_text_hash": "2a17e3c2ec305d58e0b9158b0e1fe075a33d0754dfb825410547c37eee454b19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 꾸짖어 가라사대 잠잠하고 그 사람에게서 나오라 하시니 귀신이 그 사람을 무리 중에 넘어뜨리고 나오되 그 사람은 상하지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "2a17e3c2ec305d58e0b9158b0e1fe075a33d0754dfb825410547c37eee454b19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:36",
+      "sequence": 25100,
+      "chapter_label": "LUK 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "Amazement came on all and they spoke together, one with another, saying, “What is this word? For with authority and power he commands the unclean spirits, and they come out!”",
+      "ko": "다 놀라 서로 말하여 가로되 이 어떠한 말씀인고 권세와 능력으로 더러운 귀신을 명하매 나가는도다 하더라",
+      "source_text_hash": "d9f2336eb4b9dd04f1b83e86ebdeb0eedbc56f222b8262327bbd1cedf4f0969f",
+      "translation_text_hash": "36fbb93bde13eeef64c365a9fe29b644ea305ae4ecae9f066ddefc48771fe399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 놀라 서로 말하여 가로되 이 어떠한 말씀인고 권세와 능력으로 더러운 귀신을 명하매 나가는도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "36fbb93bde13eeef64c365a9fe29b644ea305ae4ecae9f066ddefc48771fe399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:37",
+      "sequence": 25101,
+      "chapter_label": "LUK 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "News about him went out into every place of the surrounding region.",
+      "ko": "이에 예수의 소문이 그 근처 사방에 퍼지니라",
+      "source_text_hash": "266aab59bda67d4513be5e7525c2db8a6e5e0889b74c0ceff986e97949131ec0",
+      "translation_text_hash": "61f98e90ebafad7bed94aeb854f576dddc3bea8a5cdd9ee3e58f879bc1477061",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수의 소문이 그 근처 사방에 퍼지니라"
+      ],
+      "raw_text_hashes": [
+        "61f98e90ebafad7bed94aeb854f576dddc3bea8a5cdd9ee3e58f879bc1477061"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:38",
+      "sequence": 25102,
+      "chapter_label": "LUK 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "He rose up from the synagogue and entered into Simon’s house. Simon’s mother-in-law was afflicted with a great fever, and they begged him to help her.",
+      "ko": "예수께서 일어나 회당에서 나가사 시몬의 집에 들어가시니 시몬의 장모가 중한 열병에 붙들린지라 사람이 저를 위하여 예수께 구하니",
+      "source_text_hash": "f184fa97b754123939ed85828dbf3b80fb56b530cbfd55fe5520a3e6ae399fe1",
+      "translation_text_hash": "86581ca697f68f6113ca507de044cad30cec3d0d779af1cd44ce753187fe314d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일어나 회당에서 나가사 시몬의 집에 들어가시니 시몬의 장모가 중한 열병에 붙들린지라 사람이 저를 위하여 예수께 구하니"
+      ],
+      "raw_text_hashes": [
+        "86581ca697f68f6113ca507de044cad30cec3d0d779af1cd44ce753187fe314d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:39",
+      "sequence": 25103,
+      "chapter_label": "LUK 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "He stood over her and rebuked the fever, and it left her. Immediately she rose up and served them.",
+      "ko": "예수께서 가까이 서서 열병을 꾸짖으신대 병이 떠나고 여자가 곧 일어나 저희에게 수종드니라",
+      "source_text_hash": "082d14b0bdf6ee72590821dd2747a013801933ac065f2d012f3dc9079268e132",
+      "translation_text_hash": "e88a0f73484523e35ee45639087445f7ae5fb75ea1a57e0a25575201f104328a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가까이 서서 열병을 꾸짖으신대 병이 떠나고 여자가 곧 일어나 저희에게 수종드니라"
+      ],
+      "raw_text_hashes": [
+        "e88a0f73484523e35ee45639087445f7ae5fb75ea1a57e0a25575201f104328a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:40",
+      "sequence": 25104,
+      "chapter_label": "LUK 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "When the sun was setting, all those who had any sick with various diseases brought them to him; and he laid his hands on every one of them, and healed them.",
+      "ko": "해 질 적에 각색병으로 앓는 자 있는 사람들이 다 병인을 데리고 나아오매 예수께서 일일이 그 위에 손을 얹으사 고치시니",
+      "source_text_hash": "241bacf94e26613ea86157e0ea7aae7e335246aa3db7f68cfb8443e561a4c496",
+      "translation_text_hash": "b887c630872d6a69a27b9417c0ec8a92c850793ee40d9610e66ee3318b89e354",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 질 적에 각색병으로 앓는 자 있는 사람들이 다 병인을 데리고 나아오매 예수께서 일일이 그 위에 손을 얹으사 고치시니"
+      ],
+      "raw_text_hashes": [
+        "b887c630872d6a69a27b9417c0ec8a92c850793ee40d9610e66ee3318b89e354"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:41",
+      "sequence": 25105,
+      "chapter_label": "LUK 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "Demons also came out of many, crying out and saying, “You are the Christ, the Son of God!” Rebuking them, he didn’t allow them to speak, because they knew that he was the Christ.",
+      "ko": "여러 사람에게서 귀신들이 나가며 소리질러 가로되 당신은 하나님의 아들이니이다 예수께서 꾸짖으사 저희의 말함을 허락지 아니하시니 이는 자기를 그리스도인줄 앎이러라",
+      "source_text_hash": "38a0ba132254030137230b15b5669aaa8c5782e6496687b4070ccabfdf6609e3",
+      "translation_text_hash": "244bde90848b0ed663201033a75c8f46fdfe1d8a00aadc8dbc5e128f5a8acc30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 사람에게서 귀신들이 나가며 소리질러 가로되 당신은 하나님의 아들이니이다 예수께서 꾸짖으사 저희의 말함을 허락지 아니하시니 이는 자기를 그리스도인줄 앎이러라"
+      ],
+      "raw_text_hashes": [
+        "244bde90848b0ed663201033a75c8f46fdfe1d8a00aadc8dbc5e128f5a8acc30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:42",
+      "sequence": 25106,
+      "chapter_label": "LUK 4",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 42
+        }
+      ],
+      "en": "When it was day, he departed and went into an uninhabited place and the multitudes looked for him, and came to him, and held on to him, so that he wouldn’t go away from them.",
+      "ko": "날이 밝으매 예수께서 나오사 한적한 곳에 가시니 무리가 찾다가 만나서 자기들에게서 떠나시지 못하게 만류하려 하매",
+      "source_text_hash": "af99decb9e45e8f3e35e4d24495da906090940ecab3a29aa8a8d7f617950f70c",
+      "translation_text_hash": "e29f1baf8a64b4d8a61f41f9e04ef0381924789d930acb163a59df579169e0a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "날이 밝으매 예수께서 나오사 한적한 곳에 가시니 무리가 찾다가 만나서 자기들에게서 떠나시지 못하게 만류하려 하매"
+      ],
+      "raw_text_hashes": [
+        "e29f1baf8a64b4d8a61f41f9e04ef0381924789d930acb163a59df579169e0a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:43",
+      "sequence": 25107,
+      "chapter_label": "LUK 4",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 43
+        }
+      ],
+      "en": "But he said to them, “I must preach the good news of God’s Kingdom to the other cities also. For this reason I have been sent.”",
+      "ko": "예수께서 이르시되 내가 다른 동네에서도 하나님의 나라 복음을 전하여야 하리니 나는 이 일로 보내심을 입었노라 하시고",
+      "source_text_hash": "0dd01d3b527e49b1369a109a022ea68d2f28f039642517fd4d4373e8e36c052b",
+      "translation_text_hash": "a03f1b195251694aa990fa77570aacdd6c3c5bd544de8e6d3dd7a76dfcc9fb73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 내가 다른 동네에서도 하나님의 나라 복음을 전하여야 하리니 나는 이 일로 보내심을 입었노라 하시고"
+      ],
+      "raw_text_hashes": [
+        "a03f1b195251694aa990fa77570aacdd6c3c5bd544de8e6d3dd7a76dfcc9fb73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:4:44",
+      "sequence": 25108,
+      "chapter_label": "LUK 4",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 4,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 4,
+          "verse": 44
+        }
+      ],
+      "en": "He was preaching in the synagogues of Galilee.",
+      "ko": "갈릴리 여러 회당에서 전도하시더라",
+      "source_text_hash": "245a361088250d4848eb3006a09ac842a3ded6a8485e3d931f2e710db86de979",
+      "translation_text_hash": "98fd75c38f640ab52b09528bc3dcb3968a6adea3aa3b55af0d90207e362e4ca5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈릴리 여러 회당에서 전도하시더라"
+      ],
+      "raw_text_hashes": [
+        "98fd75c38f640ab52b09528bc3dcb3968a6adea3aa3b55af0d90207e362e4ca5"
+      ]
+    }
+  ]
+}

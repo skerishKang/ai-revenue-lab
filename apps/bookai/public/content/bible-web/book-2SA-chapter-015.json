@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2SA:chapter:015",
+  "unit_ordinal": 282,
+  "unit_label": "2SA 15",
+  "book_code": "2SA",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2SA:15:1",
+      "sequence": 8391,
+      "chapter_label": "2SA 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "After this, Absalom prepared a chariot and horses for himself, and fifty men to run before him.",
+      "ko": "이 후에 압살롬이 자기를 위하여 병거와 말들을 준비하고 전배 오십명을 세우니라",
+      "source_text_hash": "4bbebe767ecbc042964b906e4e48694cd34df2479140336ff82279696903a9df",
+      "translation_text_hash": "ebb9d1af1d880377fb6959715b79e7348b177bb6febdcda72782d2ff6afd39d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 압살롬이 자기를 위하여 병거와 말들을 준비하고 전배 오십명을 세우니라"
+      ],
+      "raw_text_hashes": [
+        "ebb9d1af1d880377fb6959715b79e7348b177bb6febdcda72782d2ff6afd39d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:2",
+      "sequence": 8392,
+      "chapter_label": "2SA 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Absalom rose up early, and stood beside the way of the gate. When any man had a suit which should come to the king for judgment, then Absalom called to him, and said, “What city are you from?” He said, “Your servant is of one of the tribes of Israel.”",
+      "ko": "압살롬이 일찌기 일어나 성문 길 곁에 서서 어떤 사람이든지 송사가 있어 왕에게 재판을 청하러 올 때에 그 사람을 불러서 이르되 너는 어느 성 사람이냐 그 사람의 대답이 종은 이스라엘 아무 지파에 속하였나이다 하면",
+      "source_text_hash": "87fa41d5688636832c741b14d36f5b281e426f3d5d60179633a7f0d63e293d72",
+      "translation_text_hash": "667185f4045c1f82c7ffe2f572843941c33c025639902846c326020429c4a129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 일찌기 일어나 성문 길 곁에 서서 어떤 사람이든지 송사가 있어 왕에게 재판을 청하러 올 때에 그 사람을 불러서 이르되 너는 어느 성 사람이냐 그 사람의 대답이 종은 이스라엘 아무 지파에 속하였나이다 하면"
+      ],
+      "raw_text_hashes": [
+        "667185f4045c1f82c7ffe2f572843941c33c025639902846c326020429c4a129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:3",
+      "sequence": 8393,
+      "chapter_label": "2SA 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Absalom said to him, “Behold, your matters are good and right; but there is no man deputized by the king to hear you.”",
+      "ko": "압살롬이 저에게 이르기를 네 일이 옳고 바르다마는 네 송사 들을 사람을 왕께서 세우지 아니하셨다 하고",
+      "source_text_hash": "248d08461582456cca778a95a17685b70e4eb1eeda05703dc979a4f864132738",
+      "translation_text_hash": "0693bbab369b6b399f3e36b203c562d96e9f423c0e9c15f6df298ea4d83c3d27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "압살롬이 저에게 이르기를 네 일이 옳고 바르다마는 네 송사 들을 사람을 왕께서 세우지 아니하셨다 하고"
+      ],
+      "raw_text_hashes": [
+        "0693bbab369b6b399f3e36b203c562d96e9f423c0e9c15f6df298ea4d83c3d27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:4",
+      "sequence": 8394,
+      "chapter_label": "2SA 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Absalom said moreover, “Oh that I were made judge in the land, that every man who has any suit or cause might come to me, and I would do him justice!”",
+      "ko": "또 이르기를 내가 이 땅에서 재판관이 되고 누구든지 송사나 재판할 일이 있어 내게로 오는 자에게 내가 공의 베풀기를 원하노라 하고",
+      "source_text_hash": "54c81d906557282d6328889b2238b4966f27483405895bc2d2a54e3e86de17cd",
+      "translation_text_hash": "946f51dfaafbbd4a9223793a8098c8a00ddc1ca7461a38389fafe0c4af916153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르기를 내가 이 땅에서 재판관이 되고 누구든지 송사나 재판할 일이 있어 내게로 오는 자에게 내가 공의 베풀기를 원하노라 하고"
+      ],
+      "raw_text_hashes": [
+        "946f51dfaafbbd4a9223793a8098c8a00ddc1ca7461a38389fafe0c4af916153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:5",
+      "sequence": 8395,
+      "chapter_label": "2SA 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "It was so, that when any man came near to bow down to him, he stretched out his hand, took hold of him, and kissed him.",
+      "ko": "사람이 가까이 와서 절하려 하면 압살롬이 손을 펴서 그 사람을 붙들고 입을 맞추니",
+      "source_text_hash": "4e59ec59fff59746d7a0c5c6e28f8a9729f278d89e76f3cad599d148f9b727c0",
+      "translation_text_hash": "f15f06f50589eda36c742dc41173c40d41cb027c76643969c08003075b7ad5dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 가까이 와서 절하려 하면 압살롬이 손을 펴서 그 사람을 붙들고 입을 맞추니"
+      ],
+      "raw_text_hashes": [
+        "f15f06f50589eda36c742dc41173c40d41cb027c76643969c08003075b7ad5dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:6",
+      "sequence": 8396,
+      "chapter_label": "2SA 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Absalom did this sort of thing to all Israel who came to the king for judgment. So Absalom stole the hearts of the men of Israel.",
+      "ko": "무릇 이스라엘 무리 중에 왕께 재판을 청하러 오는 자들에게 압살롬의 행함이 이 같아서 이스라엘 사람의 마음을 도적하니라",
+      "source_text_hash": "ba6739abbc47fea8c246075f196da211c9fdc0230aedb5dfc79619a024630f86",
+      "translation_text_hash": "2004ef64eea4abc6902eedc1063cb5f0319146b0bf5817a369f67add77c6e3e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 이스라엘 무리 중에 왕께 재판을 청하러 오는 자들에게 압살롬의 행함이 이 같아서 이스라엘 사람의 마음을 도적하니라"
+      ],
+      "raw_text_hashes": [
+        "2004ef64eea4abc6902eedc1063cb5f0319146b0bf5817a369f67add77c6e3e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:7",
+      "sequence": 8397,
+      "chapter_label": "2SA 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "At the end of forty years, Absalom said to the king, “Please let me go and pay my vow, which I have vowed to the LORD, in Hebron.",
+      "ko": "사년만에 압살롬이 왕께 고하되 내가 여호와께 서원한 것이 있사오니 청컨대 나로 헤브론에 가서 그 서원을 이루게 하소서",
+      "source_text_hash": "39da5a359cb19c1b4de5fe25e0da44df3e5038bc1d75d30daeae4a815013ecfc",
+      "translation_text_hash": "fb9b69ba483d1018295eafb33e2d6721c29cfe7b312a33efb783b69c375aaac6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사년만에 압살롬이 왕께 고하되 내가 여호와께 서원한 것이 있사오니 청컨대 나로 헤브론에 가서 그 서원을 이루게 하소서"
+      ],
+      "raw_text_hashes": [
+        "fb9b69ba483d1018295eafb33e2d6721c29cfe7b312a33efb783b69c375aaac6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:8",
+      "sequence": 8398,
+      "chapter_label": "2SA 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "For your servant vowed a vow while I stayed at Geshur in Syria, saying, ‘If the LORD shall indeed bring me again to Jerusalem, then I will serve the LORD.’”",
+      "ko": "종이 아람 그술에 있을 때에 서원하기를 만일 여호와께서 나를 예루살렘으로 돌아가게 하시면 내가 여호와를 섬기리이다 하였나이다",
+      "source_text_hash": "b4467ad9d5ab0698afded9f2a91050ab2de7e19b8680d0c233993af39f92c15a",
+      "translation_text_hash": "4b74a78c22e752d6fbc9198b9c6f08777c12fcb2f38f9a1fde09a7fda2a61314",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종이 아람 그술에 있을 때에 서원하기를 만일 여호와께서 나를 예루살렘으로 돌아가게 하시면 내가 여호와를 섬기리이다 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "4b74a78c22e752d6fbc9198b9c6f08777c12fcb2f38f9a1fde09a7fda2a61314"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:9",
+      "sequence": 8399,
+      "chapter_label": "2SA 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "The king said to him, “Go in peace.” So he arose and went to Hebron.",
+      "ko": "왕이 저에게 이르되 평안히 가라 하니 저가 일어나 헤브론으로 가니라",
+      "source_text_hash": "b4b510961d7578116aea44c619116e785ca29ccfb3432ce2777587518a984094",
+      "translation_text_hash": "d1d8d12c879544d1950d3513297249757a7862b53d0e699ca87df2cc73b9def9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 저에게 이르되 평안히 가라 하니 저가 일어나 헤브론으로 가니라"
+      ],
+      "raw_text_hashes": [
+        "d1d8d12c879544d1950d3513297249757a7862b53d0e699ca87df2cc73b9def9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:10",
+      "sequence": 8400,
+      "chapter_label": "2SA 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "But Absalom sent spies throughout all the tribes of Israel, saying, “As soon as you hear the sound of the trumpet, then you shall say, ‘Absalom is king in Hebron!’”",
+      "ko": "이에 압살롬이 정탐을 이스라엘 모든 지파 가운데 두루 보내어 이르기를 너희는 나팔소리를 듣거든 곧 부르기를 압살롬이 헤브론에서 왕이 되었다 하라 하니라",
+      "source_text_hash": "025702cded9f76f9bd9ac9601e11c9bd0892e32fbd2941ceefec965fb2b08dbb",
+      "translation_text_hash": "9032c1685ff2c1c4d1b55705df336b91d2249a8ba09dde74500abce48d7ae4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 압살롬이 정탐을 이스라엘 모든 지파 가운데 두루 보내어 이르기를 너희는 나팔소리를 듣거든 곧 부르기를 압살롬이 헤브론에서 왕이 되었다 하라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9032c1685ff2c1c4d1b55705df336b91d2249a8ba09dde74500abce48d7ae4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:11",
+      "sequence": 8401,
+      "chapter_label": "2SA 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Two hundred men went with Absalom out of Jerusalem, who were invited, and went in their simplicity; and they didn’t know anything.",
+      "ko": "그 때에 압살롬에게 청함을 받은 이백명이 그 사기를 알지 못하고 아무 뜻 없이 예루살렘에서 저와 함께 갔으며",
+      "source_text_hash": "7c264ef6a1f57f46d0b9c5b31e5bdcf9cd72b3918d0821de77ca4b46bd1c70c5",
+      "translation_text_hash": "20683b95d52a776c263b9b9927323ca58c960d36d8ab2378239c00fc30d9d836",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 압살롬에게 청함을 받은 이백명이 그 사기를 알지 못하고 아무 뜻 없이 예루살렘에서 저와 함께 갔으며"
+      ],
+      "raw_text_hashes": [
+        "20683b95d52a776c263b9b9927323ca58c960d36d8ab2378239c00fc30d9d836"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:12",
+      "sequence": 8402,
+      "chapter_label": "2SA 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "Absalom sent for Ahithophel the Gilonite, David’s counselor, from his city, even from Giloh, while he was offering the sacrifices. The conspiracy was strong, for the people increased continually with Absalom.",
+      "ko": "제사 드릴 때에 압살롬이 사람을 보내어 다윗의 모사 길로 사람 아히도벨을 그 성읍 길로에서 청하여 온지라 반역하는 일이 커가매 압살롬에게로 돌아오는 백성이 많아지니라",
+      "source_text_hash": "32005601cfa33574a09f0eb3edc8265761a9b690a8803d50632ca504818174dd",
+      "translation_text_hash": "4ca8c024ae4116daecec6214e751190def694a69983956b11e96f05a1d8bd432",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사 드릴 때에 압살롬이 사람을 보내어 다윗의 모사 길로 사람 아히도벨을 그 성읍 길로에서 청하여 온지라 반역하는 일이 커가매 압살롬에게로 돌아오는 백성이 많아지니라"
+      ],
+      "raw_text_hashes": [
+        "4ca8c024ae4116daecec6214e751190def694a69983956b11e96f05a1d8bd432"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:13",
+      "sequence": 8403,
+      "chapter_label": "2SA 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "A messenger came to David, saying, “The hearts of the men of Israel are after Absalom.”",
+      "ko": "사자가 다윗에게 와서 고하되 이스라엘의 인심이 다 압살롬에게로 돌아갔나이다 한지라",
+      "source_text_hash": "ef20b5c41ff1d794dac9e127b6b7f4738a929a9f6df60975eebf21b8c20823e4",
+      "translation_text_hash": "c35fc6ed07c982ab639d4f9f865a9172c67be218867ad1e390e46e8a49e0521e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자가 다윗에게 와서 고하되 이스라엘의 인심이 다 압살롬에게로 돌아갔나이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "c35fc6ed07c982ab639d4f9f865a9172c67be218867ad1e390e46e8a49e0521e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:14",
+      "sequence": 8404,
+      "chapter_label": "2SA 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "David said to all his servants who were with him at Jerusalem, “Arise! Let’s flee, or else none of us will escape from Absalom. Hurry to depart, lest he overtake us quickly and bring down evil on us, and strike the city with the edge of the sword.”",
+      "ko": "다윗이 예루살렘에 함께 있는 모든 신복에게 이르되 일어나 도망하자 그렇지 아니하면 우리 한 사람도 압살롬에게서 피하지 못하리라 빨리 가자 두렵건대 저가 우리를 급히 따라와서 해하고 칼로 성을 칠까 하노라",
+      "source_text_hash": "7d47716586c1c27dbc261e3db14834e3b4d77d62e0506aef09dddea489c8abfb",
+      "translation_text_hash": "8fbbd3719b8f243ebd88db7abc21a016d027891976a10910d93dcac30364018b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 예루살렘에 함께 있는 모든 신복에게 이르되 일어나 도망하자 그렇지 아니하면 우리 한 사람도 압살롬에게서 피하지 못하리라 빨리 가자 두렵건대 저가 우리를 급히 따라와서 해하고 칼로 성을 칠까 하노라"
+      ],
+      "raw_text_hashes": [
+        "8fbbd3719b8f243ebd88db7abc21a016d027891976a10910d93dcac30364018b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:15",
+      "sequence": 8405,
+      "chapter_label": "2SA 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "The king’s servants said to the king, “Behold, your servants are ready to do whatever my lord the king chooses.”",
+      "ko": "왕의 신복들이 왕께 고하되 우리 주 왕의 하고자 하시는대로 우리가 행하리이다 하더라",
+      "source_text_hash": "2a00bc626e70dea3a6315f29b5b1b10124d6ea5965df935f9f0c52cfcf390b0e",
+      "translation_text_hash": "727bc827b681fe49f4e04c912c91cf3700bc3a0f86b71ec6022d85df452245d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 신복들이 왕께 고하되 우리 주 왕의 하고자 하시는대로 우리가 행하리이다 하더라"
+      ],
+      "raw_text_hashes": [
+        "727bc827b681fe49f4e04c912c91cf3700bc3a0f86b71ec6022d85df452245d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:16",
+      "sequence": 8406,
+      "chapter_label": "2SA 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "The king went out, and all his household after him. The king left ten women, who were concubines, to keep the house.",
+      "ko": "왕이 나갈 때에 권속을 다 따르게 하고 후궁 열명을 남겨 두어 궁을 지키게 하니라",
+      "source_text_hash": "4d111732ba56e588784fa1c29d59e1f105d5af67379d68d02603e2f84aac6e9b",
+      "translation_text_hash": "ecc9c34b87cab0220eb4aee6938deed48aea7f807155b9be1cbc55e22565d233",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 나갈 때에 권속을 다 따르게 하고 후궁 열명을 남겨 두어 궁을 지키게 하니라"
+      ],
+      "raw_text_hashes": [
+        "ecc9c34b87cab0220eb4aee6938deed48aea7f807155b9be1cbc55e22565d233"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:17",
+      "sequence": 8407,
+      "chapter_label": "2SA 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "The king went out, and all the people after him; and they stayed in Beth Merhak.",
+      "ko": "왕이 나가매 모든 백성이 다 따라서 벧메르학에 이르러 머무니",
+      "source_text_hash": "b3d9cae1ac2601a9fcf755a5248c9b94c6011cf501c82b5aee4ca2eb2c357624",
+      "translation_text_hash": "02cf563d0101f0373d674e02471606c5cc11700f5ae2be56c8ba6ebdb9444208",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 나가매 모든 백성이 다 따라서 벧메르학에 이르러 머무니"
+      ],
+      "raw_text_hashes": [
+        "02cf563d0101f0373d674e02471606c5cc11700f5ae2be56c8ba6ebdb9444208"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:18",
+      "sequence": 8408,
+      "chapter_label": "2SA 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "All his servants passed on beside him; and all the Cherethites, and all the Pelethites, and all the Gittites, six hundred men who came after him from Gath, passed on before the king.",
+      "ko": "모든 신복이 그 곁으로 지나가고 모든 그렛 사람과 모든 블렛 사람과 및 왕을 따라 가드에서 온 육백인이 왕의 앞으로 진행하니라",
+      "source_text_hash": "c053bfd9eee69f252b8f8ffe590e96b83b62c95e84a1c8a2ad2482de99edd350",
+      "translation_text_hash": "723b5c24fe4c8b55612f393615598aaecafc33a6a5edb8e29de617293eba6ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 신복이 그 곁으로 지나가고 모든 그렛 사람과 모든 블렛 사람과 및 왕을 따라 가드에서 온 육백인이 왕의 앞으로 진행하니라"
+      ],
+      "raw_text_hashes": [
+        "723b5c24fe4c8b55612f393615598aaecafc33a6a5edb8e29de617293eba6ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:19",
+      "sequence": 8409,
+      "chapter_label": "2SA 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "Then the king said to Ittai the Gittite, “Why do you also go with us? Return, and stay with the king; for you are a foreigner and also an exile. Return to your own place.",
+      "ko": "그 때에 왕이 가드 사람 잇대에게 이르되 어찌하여 너도 우리와 함께 가느냐 너는 쫓겨난 나그네니 돌아가서 왕과 함께 네 곳에 있으라",
+      "source_text_hash": "d800bbe1f7c6d8b917542ce7c22d5ce78e6988a5f62fd9aeb4c7402f774d8eec",
+      "translation_text_hash": "d3447e9b85c4177cd1ecdc84189aff28c2f7b7c114c660824453765fcd49bc1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 왕이 가드 사람 잇대에게 이르되 어찌하여 너도 우리와 함께 가느냐 너는 쫓겨난 나그네니 돌아가서 왕과 함께 네 곳에 있으라"
+      ],
+      "raw_text_hashes": [
+        "d3447e9b85c4177cd1ecdc84189aff28c2f7b7c114c660824453765fcd49bc1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:20",
+      "sequence": 8410,
+      "chapter_label": "2SA 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Whereas you came but yesterday, should I today make you go up and down with us, since I go where I may? Return, and take back your brothers. Mercy and truth be with you.”",
+      "ko": "너는 어제 왔고 나는 정처없이 가니 오늘날 어찌 너로 우리와 함께 유리하게 하리요 너도 돌아가고 네 동포들도 데려가라 은혜와 진리가 너와 함께 있기를 원하노라",
+      "source_text_hash": "db93337b57273af3e97b9893abfa78fa60242d347ab9ffec03a1fb86ff2d0657",
+      "translation_text_hash": "a191636b71c3458db5642910725ba08c5699c1838cebeaab37f0d882a060b034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 어제 왔고 나는 정처없이 가니 오늘날 어찌 너로 우리와 함께 유리하게 하리요 너도 돌아가고 네 동포들도 데려가라 은혜와 진리가 너와 함께 있기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "a191636b71c3458db5642910725ba08c5699c1838cebeaab37f0d882a060b034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:21",
+      "sequence": 8411,
+      "chapter_label": "2SA 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Ittai answered the king and said, “As the LORD lives, and as my lord the king lives, surely in what place my lord the king is, whether for death or for life, your servant will be there also.”",
+      "ko": "잇대가 왕께 대답하여 가로되 여호와의 사심과 우리 주 왕의 사심으로 맹세하옵나니 진실로 내 주 왕께서 어느 곳에 계시든지 무론 사생하고 종도 그곳에 있겠나이다",
+      "source_text_hash": "9b224b435e7a108991138733dcd93a5797637d681b6dff7e343c135d16b74e25",
+      "translation_text_hash": "8b80526e70d6b70a8acea3785237a0734d04f0c209ae9dbf5a24124ed818a80a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇대가 왕께 대답하여 가로되 여호와의 사심과 우리 주 왕의 사심으로 맹세하옵나니 진실로 내 주 왕께서 어느 곳에 계시든지 무론 사생하고 종도 그곳에 있겠나이다"
+      ],
+      "raw_text_hashes": [
+        "8b80526e70d6b70a8acea3785237a0734d04f0c209ae9dbf5a24124ed818a80a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:22",
+      "sequence": 8412,
+      "chapter_label": "2SA 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "David said to Ittai, “Go and pass over.” Ittai the Gittite passed over, and all his men, and all the little ones who were with him.",
+      "ko": "다윗이 잇대에게 이르되 앞서 건너가라 하매 가드 사람 잇대와 그 종자들과 그와 함께한 아이들이 다 건너가고",
+      "source_text_hash": "d76f49fc624cb292979c39905f1878b7267d72bc382d31bbf5ca5ce587fa7d8a",
+      "translation_text_hash": "f1741c942c3ec4e9e5068d513442633f63eb8c9a32c1a1bf24aab5202d73e2bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 잇대에게 이르되 앞서 건너가라 하매 가드 사람 잇대와 그 종자들과 그와 함께한 아이들이 다 건너가고"
+      ],
+      "raw_text_hashes": [
+        "f1741c942c3ec4e9e5068d513442633f63eb8c9a32c1a1bf24aab5202d73e2bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:23",
+      "sequence": 8413,
+      "chapter_label": "2SA 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "All the country wept with a loud voice, and all the people passed over. The king also himself passed over the brook Kidron, and all the people passed over toward the way of the wilderness.",
+      "ko": "온 땅 사람이 대성통곡하며 모든 인민이 앞서 건너가매 왕도 기드론 시내를 건너가니 건너간 모든 백성이 광야 길로 향하니라",
+      "source_text_hash": "4c4aae8039c564d7758603dc6e9dc818a9804e92836b51e14df639394f6af718",
+      "translation_text_hash": "5203b6afba7df2ed179ea8191daaa0155c956ab539de48f69dad0f454e323674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅 사람이 대성통곡하며 모든 인민이 앞서 건너가매 왕도 기드론 시내를 건너가니 건너간 모든 백성이 광야 길로 향하니라"
+      ],
+      "raw_text_hashes": [
+        "5203b6afba7df2ed179ea8191daaa0155c956ab539de48f69dad0f454e323674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:24",
+      "sequence": 8414,
+      "chapter_label": "2SA 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "Behold, Zadok also came, and all the Levites with him, bearing the ark of the covenant of God; and they set down God’s ark; and Abiathar went up until all the people finished passing out of the city.",
+      "ko": "사독과 그와 함께한 모든 레위 사람이 하나님의 언약궤를 메어다가 내려놓고 아비아달도 올라와서 모든 백성이 성에서 나오기를 기다리더니",
+      "source_text_hash": "a01c8f0ffc8cf7132ecc41aface3766a6c11fe1024b5314dd22e7ba62f3e6490",
+      "translation_text_hash": "fc44d525b5d5385fc0e2cc3275bc42730ed7024e58ee00cc09f71dc8ea85a5ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독과 그와 함께한 모든 레위 사람이 하나님의 언약궤를 메어다가 내려놓고 아비아달도 올라와서 모든 백성이 성에서 나오기를 기다리더니"
+      ],
+      "raw_text_hashes": [
+        "fc44d525b5d5385fc0e2cc3275bc42730ed7024e58ee00cc09f71dc8ea85a5ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:25",
+      "sequence": 8415,
+      "chapter_label": "2SA 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "The king said to Zadok, “Carry God’s ark back into the city. If I find favor in the LORD’s eyes, he will bring me again, and show me both it and his habitation;",
+      "ko": "왕이 사독에게 이르되 하나님의 궤를 성으로 도로 메어 가라 만일 내가 여호와 앞에서 은혜를 얻으면 도로 나를 인도하사 내게 그 궤와 그 계신데를 보이시리라",
+      "source_text_hash": "e81214e8ae926de79956ab718c6239f9675aa994ab38462baa6ad696e5e59b9c",
+      "translation_text_hash": "84cef085f3d09bc284945d8f4e35de5466478dffc94c46dc084e1afc091e0e2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 사독에게 이르되 하나님의 궤를 성으로 도로 메어 가라 만일 내가 여호와 앞에서 은혜를 얻으면 도로 나를 인도하사 내게 그 궤와 그 계신데를 보이시리라"
+      ],
+      "raw_text_hashes": [
+        "84cef085f3d09bc284945d8f4e35de5466478dffc94c46dc084e1afc091e0e2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:26",
+      "sequence": 8416,
+      "chapter_label": "2SA 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "but if he says, ‘I have no delight in you,’ behold, here I am. Let him do to me as seems good to him.”",
+      "ko": "그러나 저가 말씀하시기를 내가 너를 기뻐하지 아니한다 하시면 종이 여기 있사오니 선히 여기시는대로 내게 행하시옵소서 하리라",
+      "source_text_hash": "3f08d401a3273d7dfc3940a4fe32ef87fd78b66fee037ffb787ad97f18d3a72c",
+      "translation_text_hash": "44cd8dd18ed8d93e83803887b2a4fe7a2933760db9e7fb3c0f672337aa577821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 저가 말씀하시기를 내가 너를 기뻐하지 아니한다 하시면 종이 여기 있사오니 선히 여기시는대로 내게 행하시옵소서 하리라"
+      ],
+      "raw_text_hashes": [
+        "44cd8dd18ed8d93e83803887b2a4fe7a2933760db9e7fb3c0f672337aa577821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:27",
+      "sequence": 8417,
+      "chapter_label": "2SA 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "The king said also to Zadok the priest, “Aren’t you a seer? Return into the city in peace, and your two sons with you, Ahimaaz your son and Jonathan the son of Abiathar.",
+      "ko": "왕이 또 제사장 사독에게 이르되 네가 선견자가 아니냐 너는 너희의 두 아들 곧 네 아들 아히마아스와 아비아달의 아들 요나단을 데리고 평안히 성으로 돌아가라",
+      "source_text_hash": "95bd9f256efe09ac597d55e0dc71ab7c890216d7c2e940dd222d9789bdf1a94f",
+      "translation_text_hash": "3cb02510a677f2378e0d3279ca3299aea41f7068a833a3ea006ad65c3b22fb29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 또 제사장 사독에게 이르되 네가 선견자가 아니냐 너는 너희의 두 아들 곧 네 아들 아히마아스와 아비아달의 아들 요나단을 데리고 평안히 성으로 돌아가라"
+      ],
+      "raw_text_hashes": [
+        "3cb02510a677f2378e0d3279ca3299aea41f7068a833a3ea006ad65c3b22fb29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:28",
+      "sequence": 8418,
+      "chapter_label": "2SA 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "Behold, I will stay at the fords of the wilderness until word comes from you to inform me.”",
+      "ko": "너희에게서 내게 고하는 기별이 올 때까지 내가 광야 나룻터에서 기다리리라",
+      "source_text_hash": "2ebe9f294b14290ba594fb6fa7e05cbd9fe1766a5cc1a2b943a1e3efec0927cd",
+      "translation_text_hash": "3d73ad07421b25c25e4f77558f6bba3eaa78e7104be47395050e88c71a20d474",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게서 내게 고하는 기별이 올 때까지 내가 광야 나룻터에서 기다리리라"
+      ],
+      "raw_text_hashes": [
+        "3d73ad07421b25c25e4f77558f6bba3eaa78e7104be47395050e88c71a20d474"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:29",
+      "sequence": 8419,
+      "chapter_label": "2SA 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "Zadok therefore and Abiathar carried God’s ark to Jerusalem again; and they stayed there.",
+      "ko": "사독과 아비아달이 하나님의 궤를 예루살렘으로 도로 메어다놓고 거기 유하니라",
+      "source_text_hash": "966e047e9127354b2155b4ed8e12022f65a8571753b581cc3974a2992c71d655",
+      "translation_text_hash": "1681bf303cc0484a33fb875dcbd2e0cbb21078980cdb0fc3b6fc3e80a7c86176",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독과 아비아달이 하나님의 궤를 예루살렘으로 도로 메어다놓고 거기 유하니라"
+      ],
+      "raw_text_hashes": [
+        "1681bf303cc0484a33fb875dcbd2e0cbb21078980cdb0fc3b6fc3e80a7c86176"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:30",
+      "sequence": 8420,
+      "chapter_label": "2SA 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "David went up by the ascent of the Mount of Olives, and wept as he went up; and he had his head covered and went barefoot. All the people who were with him each covered his head, and they went up, weeping as they went up.",
+      "ko": "다윗이 감람산 길로 올라갈 때에 머리를 가리우고 맨발로 울며 행하고 저와 함께 가는 백성들도 각각 그 머리를 가리우고 울며 올라가니라",
+      "source_text_hash": "eebaf698cbdeb3f4ee73b7234a3c5758282452001fb7a8b28cde55b3fc878216",
+      "translation_text_hash": "0a92e77569e78c9e45365ff07c21c02ba2e029062e83491c8738dbdc896b2bd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 감람산 길로 올라갈 때에 머리를 가리우고 맨발로 울며 행하고 저와 함께 가는 백성들도 각각 그 머리를 가리우고 울며 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "0a92e77569e78c9e45365ff07c21c02ba2e029062e83491c8738dbdc896b2bd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:31",
+      "sequence": 8421,
+      "chapter_label": "2SA 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Someone told David, saying, “Ahithophel is among the conspirators with Absalom.” David said, “LORD, please turn the counsel of Ahithophel into foolishness.”",
+      "ko": "혹이 다윗에게 고하되 압살롬과 함께 모반한 자들 가운데 아히도벨이 있나이다 하니 다윗이 가로되 여호와여 원컨대 아히도벨의 모략을 어리석게 하옵소서 하니라",
+      "source_text_hash": "fdcf1715b15519c77ca699119cbb2d2e88c4ffa32df99d0115abe3d09f0267d0",
+      "translation_text_hash": "da58837780019f59c496a21785bdb4dad4a6d67f82ad3c82c0dd36642c513015",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗에게 고하되 압살롬과 함께 모반한 자들 가운데 아히도벨이 있나이다 하니 다윗이 가로되 여호와여 원컨대 아히도벨의 모략을 어리석게 하옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "da58837780019f59c496a21785bdb4dad4a6d67f82ad3c82c0dd36642c513015"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:32",
+      "sequence": 8422,
+      "chapter_label": "2SA 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "When David had come to the top, where God was worshiped, behold, Hushai the Archite came to meet him with his tunic torn and earth on his head.",
+      "ko": "다윗이 하나님을 경배하는 마루턱에 이를 때에 아렉 사람 후새가 옷을 찢고 흙을 머리에 무릅쓰고 다윗을 맞으러 온지라",
+      "source_text_hash": "daf6eca957166bf6c6a7c1dbfb3e8d11737e37cb7df3832115eb19c91ea6d7de",
+      "translation_text_hash": "ec33f139b761bd9f691ca7b4f2ed47b8e0d55a7c30db07e9aad6457ad6abcb89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 하나님을 경배하는 마루턱에 이를 때에 아렉 사람 후새가 옷을 찢고 흙을 머리에 무릅쓰고 다윗을 맞으러 온지라"
+      ],
+      "raw_text_hashes": [
+        "ec33f139b761bd9f691ca7b4f2ed47b8e0d55a7c30db07e9aad6457ad6abcb89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:33",
+      "sequence": 8423,
+      "chapter_label": "2SA 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "David said to him, “If you pass on with me, then you will be a burden to me;",
+      "ko": "다윗이 저에게 이르되 네가 만일 나와 함께 나아가면 내게 누를 끼치리라",
+      "source_text_hash": "5714c9ee314667ce758e8a03dbfde1dae5d6b9dd14fc6e82b80686f6eb1afd8f",
+      "translation_text_hash": "0b2542216ae198f56d5b2c0d580eb709714fd949cd890f287f3f361d9edf0f3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 저에게 이르되 네가 만일 나와 함께 나아가면 내게 누를 끼치리라"
+      ],
+      "raw_text_hashes": [
+        "0b2542216ae198f56d5b2c0d580eb709714fd949cd890f287f3f361d9edf0f3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:34",
+      "sequence": 8424,
+      "chapter_label": "2SA 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "but if you return to the city, and tell Absalom, ‘I will be your servant, O king. As I have been your father’s servant in time past, so I will now be your servant; then you will defeat for me the counsel of Ahithophel.’",
+      "ko": "그러나 네가 만일 성으로 돌아가서 압살롬에게 말하기를 왕이여 내가 왕의 종이니이다 이왕에는 왕의 부친의 종이었더니 내가 이제는 왕의 종이니이다 하면 네가 나를 위하여 아히도벨의 모략을 패하게 하리라",
+      "source_text_hash": "232766f79b2f2fa2a53b7e38a48f23435d55e1347e17f88e36199401782ef184",
+      "translation_text_hash": "b7bb64462b34b63dcd4741977251eeb8e8217d5dd5127425bee645bd5225a5d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 네가 만일 성으로 돌아가서 압살롬에게 말하기를 왕이여 내가 왕의 종이니이다 이왕에는 왕의 부친의 종이었더니 내가 이제는 왕의 종이니이다 하면 네가 나를 위하여 아히도벨의 모략을 패하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "b7bb64462b34b63dcd4741977251eeb8e8217d5dd5127425bee645bd5225a5d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:35",
+      "sequence": 8425,
+      "chapter_label": "2SA 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "Don’t you have Zadok and Abiathar the priests there with you? Therefore whatever you hear out of the king’s house, tell it to Zadok and Abiathar the priests.",
+      "ko": "사독과 아비아달 두 제사장이 너와 함께 거기 있지 아니하냐 네가 궁중에서 무엇을 듣든지 사독과 아비아달 두 제사장에게 고하라",
+      "source_text_hash": "24fac3aefd8cda390b88dbc84674a6a1d81caffc7eeae518cec10ed4f3403854",
+      "translation_text_hash": "c40fcf643b0e83b2a74417bcc059fc35550d96dc04a697bd9a39d40df3956743",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사독과 아비아달 두 제사장이 너와 함께 거기 있지 아니하냐 네가 궁중에서 무엇을 듣든지 사독과 아비아달 두 제사장에게 고하라"
+      ],
+      "raw_text_hashes": [
+        "c40fcf643b0e83b2a74417bcc059fc35550d96dc04a697bd9a39d40df3956743"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:36",
+      "sequence": 8426,
+      "chapter_label": "2SA 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "Behold, they have there with them their two sons, Ahimaaz, Zadok’s son, and Jonathan, Abiathar’s son. Send to me everything that you shall hear by them.”",
+      "ko": "저희의 두 아들 곧 사독의 아히마아스와 아비아달의 요나단이 저희와 함께 거기 있나니 무릇 너희 듣는 것을 저희 편으로 내게 기별할찌니라",
+      "source_text_hash": "b1cea049c3101d365ded88dc7a46f6d3e7778e9816d31147f6ba4cbc04f1edf3",
+      "translation_text_hash": "d54bc735de66a5e63a4befa7de74e9ecf3258034bf1b84110d64521365cfe44d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 두 아들 곧 사독의 아히마아스와 아비아달의 요나단이 저희와 함께 거기 있나니 무릇 너희 듣는 것을 저희 편으로 내게 기별할찌니라"
+      ],
+      "raw_text_hashes": [
+        "d54bc735de66a5e63a4befa7de74e9ecf3258034bf1b84110d64521365cfe44d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2SA:15:37",
+      "sequence": 8427,
+      "chapter_label": "2SA 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "2SA",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2SA",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "So Hushai, David’s friend, came into the city; and Absalom came into Jerusalem.",
+      "ko": "다윗의 친구 후새가 곧 성으로 들어가고 압살롬도 예루살렘으로 들어갔더라",
+      "source_text_hash": "40beb2b9027c724d0b168da0b1422fce5752a2a09d16a456d7ed57dab0e671e0",
+      "translation_text_hash": "71cbed2d6cf43ae76fbb00edd63636adcb4f6c1dc67eea4f508a81704dc10cb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 친구 후새가 곧 성으로 들어가고 압살롬도 예루살렘으로 들어갔더라"
+      ],
+      "raw_text_hashes": [
+        "71cbed2d6cf43ae76fbb00edd63636adcb4f6c1dc67eea4f508a81704dc10cb0"
+      ]
+    }
+  ]
+}

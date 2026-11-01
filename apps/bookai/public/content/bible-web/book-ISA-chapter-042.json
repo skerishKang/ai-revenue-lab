@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:042",
+  "unit_ordinal": 721,
+  "unit_label": "ISA 42",
+  "book_code": "ISA",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:42:1",
+      "sequence": 18482,
+      "chapter_label": "ISA 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "“Behold, my servant, whom I uphold, my chosen, in whom my soul delights: I have put my Spirit on him. He will bring justice to the nations.",
+      "ko": "내가 붙드는 나의 종, 내 마음에 기뻐하는 나의 택한 사람을 보라 내가 나의 신을 그에게 주었은즉 그가 이방에 공의를 베풀리라",
+      "source_text_hash": "be70dadc3dbb038c2a0c2435ed9226434b739b059b2702dad2ae4fc20d4bd79e",
+      "translation_text_hash": "61d1a1f29a19350df85a60313e9ede5cb28c302e1bdceeaeb94dd03d08a9c0fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 붙드는 나의 종, 내 마음에 기뻐하는 나의 택한 사람을 보라 내가 나의 신을 그에게 주었은즉 그가 이방에 공의를 베풀리라"
+      ],
+      "raw_text_hashes": [
+        "61d1a1f29a19350df85a60313e9ede5cb28c302e1bdceeaeb94dd03d08a9c0fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:2",
+      "sequence": 18483,
+      "chapter_label": "ISA 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "He will not shout, nor raise his voice, nor cause it to be heard in the street.",
+      "ko": "그는 외치지 아니하며 목소리를 높이지 아니하며 그 소리로 거리에 들리게 아니하며",
+      "source_text_hash": "f75a10baa74e0fc3a51abb714353e1429832b8e82e11241c5b2907cd11e33c9e",
+      "translation_text_hash": "7ae43686774edae3f07d64675810ccff14f6f38828067b557ae1c39d10eb6260",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 외치지 아니하며 목소리를 높이지 아니하며 그 소리로 거리에 들리게 아니하며"
+      ],
+      "raw_text_hashes": [
+        "7ae43686774edae3f07d64675810ccff14f6f38828067b557ae1c39d10eb6260"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:3",
+      "sequence": 18484,
+      "chapter_label": "ISA 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "He won’t break a bruised reed. He won’t quench a dimly burning wick. He will faithfully bring justice.",
+      "ko": "상한 갈대를 꺾지 아니하며 꺼져가는 등불을 끄지 아니하고 진리로 공의를 베풀 것이며",
+      "source_text_hash": "6e4ae048207113166d8f87f45b33508382cf60c80cf0d63235b3b42569fe2808",
+      "translation_text_hash": "f173e1a4940c6b012913698d9603aa9e4b38505ca5e2530dc44f9e84d4004d84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상한 갈대를 꺾지 아니하며 꺼져가는 등불을 끄지 아니하고 진리로 공의를 베풀 것이며"
+      ],
+      "raw_text_hashes": [
+        "f173e1a4940c6b012913698d9603aa9e4b38505ca5e2530dc44f9e84d4004d84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:4",
+      "sequence": 18485,
+      "chapter_label": "ISA 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "He will not fail nor be discouraged, until he has set justice on the earth, and the islands wait for his law.”",
+      "ko": "그는 쇠하지 아니하며 낙담하지 아니하고 세상에 공의를 세우기에 이르리니 섬들이 그 교훈을 앙망하리라",
+      "source_text_hash": "281392b5fe2a686f7e98f42fffca906c096e07db6d0f365e5e706a88611da762",
+      "translation_text_hash": "f8ea01b11957a306285ab6384017eb5deb9640c6421eb6707a6ca7ffd5c7c67c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 쇠하지 아니하며 낙담하지 아니하고 세상에 공의를 세우기에 이르리니 섬들이 그 교훈을 앙망하리라"
+      ],
+      "raw_text_hashes": [
+        "f8ea01b11957a306285ab6384017eb5deb9640c6421eb6707a6ca7ffd5c7c67c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:5",
+      "sequence": 18486,
+      "chapter_label": "ISA 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "God the LORD, he who created the heavens and stretched them out, he who spread out the earth and that which comes out of it, he who gives breath to its people and spirit to those who walk in it, says:",
+      "ko": "하늘을 창조하여 펴시고 땅과 그 소산을 베푸시며 땅 위의 백성에게 호흡을 주시며 땅에 행하는 자에게 신을 주시는 하나님 여호와께서 이같이 말씀하시되",
+      "source_text_hash": "082a5545f747557a284fcace45f1d855bc50d0a20a68319b2d6717b4ff6af450",
+      "translation_text_hash": "838b99f052d6ff04f60bf1ffec406f3df8c223cf8e39b4117189eae07dc7f411",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘을 창조하여 펴시고 땅과 그 소산을 베푸시며 땅 위의 백성에게 호흡을 주시며 땅에 행하는 자에게 신을 주시는 하나님 여호와께서 이같이 말씀하시되"
+      ],
+      "raw_text_hashes": [
+        "838b99f052d6ff04f60bf1ffec406f3df8c223cf8e39b4117189eae07dc7f411"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:6",
+      "sequence": 18487,
+      "chapter_label": "ISA 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "“I, the LORD, have called you in righteousness. I will hold your hand. I will keep you, and make you a covenant for the people, as a light for the nations,",
+      "ko": "나 여호와가 의로 너를 불렀은즉 내가 네 손을 잡아 너를 보호하며 너를 세워 백성의 언약과 이방의 빛이 되게 하리니",
+      "source_text_hash": "6831d8385d7faa9c19176f74b5b439c738d3bc0f8234bdfdcebccd2d64a94878",
+      "translation_text_hash": "cbfc5359a9170f04633d1c45740c7cef6036b7dcf842239abcb68675a84e27fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 의로 너를 불렀은즉 내가 네 손을 잡아 너를 보호하며 너를 세워 백성의 언약과 이방의 빛이 되게 하리니"
+      ],
+      "raw_text_hashes": [
+        "cbfc5359a9170f04633d1c45740c7cef6036b7dcf842239abcb68675a84e27fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:7",
+      "sequence": 18488,
+      "chapter_label": "ISA 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "to open the blind eyes, to bring the prisoners out of the dungeon, and those who sit in darkness out of the prison.",
+      "ko": "네가 소경의 눈을 밝히며 갇힌 자를 옥에서 이끌어 내며 흑암에 처한 자를 간에서 나오게 하리라",
+      "source_text_hash": "82ec9cc62a0450fc3ecfa8c7ad236299598b4c4bb9276540d0f40919e117af8c",
+      "translation_text_hash": "5d225082b943fa6b4ea44da969c6d5bd533e2aa1a60e8b95c26d4889ea29acd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 소경의 눈을 밝히며 갇힌 자를 옥에서 이끌어 내며 흑암에 처한 자를 간에서 나오게 하리라"
+      ],
+      "raw_text_hashes": [
+        "5d225082b943fa6b4ea44da969c6d5bd533e2aa1a60e8b95c26d4889ea29acd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:8",
+      "sequence": 18489,
+      "chapter_label": "ISA 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "“I am the LORD. That is my name. I will not give my glory to another, nor my praise to engraved images.",
+      "ko": "나는 여호와니 이는 내 이름이라 나는 내 영광을 다른 자에게, 내 찬송을 우상에게 주지 아니하리라",
+      "source_text_hash": "a133f2ef252ef9d1a9b91b31058f5445020d2f0bff95642463f7416b263fa985",
+      "translation_text_hash": "fdea5a39a1109898a7ba5315c6eb4f5afdaa3da58583282ef4e4e49a5ef989d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 여호와니 이는 내 이름이라 나는 내 영광을 다른 자에게, 내 찬송을 우상에게 주지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "fdea5a39a1109898a7ba5315c6eb4f5afdaa3da58583282ef4e4e49a5ef989d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:9",
+      "sequence": 18490,
+      "chapter_label": "ISA 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, the former things have happened and I declare new things. I tell you about them before they come up.”",
+      "ko": "보라 전에 예언한 일이 이미 이루었느니라 이제 내가 새 일을 고하노라 그 일이 시작되기 전이라도 너희에게 이르노라",
+      "source_text_hash": "1eb8ddeb1241d8ce7dabaf5db4882b4263d4908a93f54ba0ac55b9498aeec02c",
+      "translation_text_hash": "aee842b839e575fd12fcdf4d36cea82fbcda227053e674772cf71401dacdf16b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 전에 예언한 일이 이미 이루었느니라 이제 내가 새 일을 고하노라 그 일이 시작되기 전이라도 너희에게 이르노라"
+      ],
+      "raw_text_hashes": [
+        "aee842b839e575fd12fcdf4d36cea82fbcda227053e674772cf71401dacdf16b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:10",
+      "sequence": 18491,
+      "chapter_label": "ISA 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "Sing to the LORD a new song, and his praise from the end of the earth, you who go down to the sea, and all that is therein, the islands and their inhabitants.",
+      "ko": "항해하는 자와 바다 가운데 만물과 섬들과 그 거민들아 여호와께 새 노래로 노래하며 땅 끝에서부터 찬송하라",
+      "source_text_hash": "7406a373d93c0b42455f846a93ee74d94fed9ca626e483eb38bad83f2e15842f",
+      "translation_text_hash": "f2079c58944c77bf4552f922d6e5ad70c2e6a12eccef3c478f80622767546ddb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "항해하는 자와 바다 가운데 만물과 섬들과 그 거민들아 여호와께 새 노래로 노래하며 땅 끝에서부터 찬송하라"
+      ],
+      "raw_text_hashes": [
+        "f2079c58944c77bf4552f922d6e5ad70c2e6a12eccef3c478f80622767546ddb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:11",
+      "sequence": 18492,
+      "chapter_label": "ISA 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "Let the wilderness and its cities raise their voices, with the villages that Kedar inhabits. Let the inhabitants of Sela sing. Let them shout from the top of the mountains!",
+      "ko": "광야와 거기 있는 성읍들과 게달 사람의 거하는 촌락들은 소리를 높이라 셀라의 거민들은 노래하며 산 꼭대기에서 즐거이 부르라",
+      "source_text_hash": "5833b4307b3a6cc3a0238e005ba80088de0977bb0da367eb3dc179c4f1e87073",
+      "translation_text_hash": "49231c63fe82925149e1527df4526f20572c5451462f7d7871e902bd2cafecd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야와 거기 있는 성읍들과 게달 사람의 거하는 촌락들은 소리를 높이라 셀라의 거민들은 노래하며 산 꼭대기에서 즐거이 부르라"
+      ],
+      "raw_text_hashes": [
+        "49231c63fe82925149e1527df4526f20572c5451462f7d7871e902bd2cafecd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:12",
+      "sequence": 18493,
+      "chapter_label": "ISA 42",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 12
+        }
+      ],
+      "en": "Let them give glory to the LORD, and declare his praise in the islands.",
+      "ko": "여호와께 영광을 돌리며 섬들 중에서 그의 찬송을 선전할찌어다",
+      "source_text_hash": "cdf0f0ca0a64eaff3fd3fb637cd0111ae11f7ca11aa127caac834c342713d0ed",
+      "translation_text_hash": "95874bedcc3002f98e325dc3f62244e0d6366dca0bf87b38edfd844d8f369c73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 영광을 돌리며 섬들 중에서 그의 찬송을 선전할찌어다"
+      ],
+      "raw_text_hashes": [
+        "95874bedcc3002f98e325dc3f62244e0d6366dca0bf87b38edfd844d8f369c73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:13",
+      "sequence": 18494,
+      "chapter_label": "ISA 42",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD will go out like a mighty man. He will stir up zeal like a man of war. He will raise a war cry. Yes, he will shout aloud. He will triumph over his enemies.",
+      "ko": "여호와께서 용사 같이 나가시며 전사 같이 분발하여 외쳐 크게 부르시며 그 대적을 크게 치시리로다",
+      "source_text_hash": "f83ba016cbe49a6a7039e9c5a7c9cb6df23dd4054e3e8f2dbb026d2922ae5128",
+      "translation_text_hash": "09fde8f973fca344cf3a9d94ba148161dbb61d032c6106ffe55ea723e936f43f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 용사 같이 나가시며 전사 같이 분발하여 외쳐 크게 부르시며 그 대적을 크게 치시리로다"
+      ],
+      "raw_text_hashes": [
+        "09fde8f973fca344cf3a9d94ba148161dbb61d032c6106ffe55ea723e936f43f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:14",
+      "sequence": 18495,
+      "chapter_label": "ISA 42",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 14
+        }
+      ],
+      "en": "“I have been silent a long time. I have been quiet and restrained myself. Now I will cry out like a travailing woman. I will both gasp and pant.",
+      "ko": "내가 오래 동안 고요히 하며 잠잠하여 참았으나 이제는 내가 해산하는 여인 같이 부르짖으리니 숨이 차서 심히 헐떡일 것이라",
+      "source_text_hash": "d445f2813fab1cfd802e79288d115ec199394bd7af03c7f054039cdc07e8935c",
+      "translation_text_hash": "ad4c9969a23ef85d308e095a070d2e21da46f97d3de1d47f3d9091acf41e429e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 오래 동안 고요히 하며 잠잠하여 참았으나 이제는 내가 해산하는 여인 같이 부르짖으리니 숨이 차서 심히 헐떡일 것이라"
+      ],
+      "raw_text_hashes": [
+        "ad4c9969a23ef85d308e095a070d2e21da46f97d3de1d47f3d9091acf41e429e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:15",
+      "sequence": 18496,
+      "chapter_label": "ISA 42",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 15
+        }
+      ],
+      "en": "I will destroy mountains and hills, and dry up all their herbs. I will make the rivers islands, and will dry up the pools.",
+      "ko": "내가 큰 산과 작은 산을 황무케 하며 그 초목을 마르게 하며 강들로 섬이 되게 하며 못들을 마르게 할 것이며",
+      "source_text_hash": "2fe228950b9ce6649dec64db828afe97fa78c7ca5c31a363599715a89a4706ee",
+      "translation_text_hash": "6dc151a5634ac63b3180ba1a05d2425a346255a857beb81038109202cd8046d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 큰 산과 작은 산을 황무케 하며 그 초목을 마르게 하며 강들로 섬이 되게 하며 못들을 마르게 할 것이며"
+      ],
+      "raw_text_hashes": [
+        "6dc151a5634ac63b3180ba1a05d2425a346255a857beb81038109202cd8046d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:16",
+      "sequence": 18497,
+      "chapter_label": "ISA 42",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 16
+        }
+      ],
+      "en": "I will bring the blind by a way that they don’t know. I will lead them in paths that they don’t know. I will make darkness light before them, and crooked places straight. I will do these things, and I will not forsake them.",
+      "ko": "내가 소경을 그들의 알지 못하는 길로 이끌며 그들의 알지 못하는 첩경으로 인도하며 흑암으로 그 앞에 광명이 되게 하며 굽은데를 곧게 할 것이라 내가 이 일을 행하여 그들을 버리지 아니하리니",
+      "source_text_hash": "e7ebd3d9d99fc564d13de7477d05ece46b4b5f1648114ca9ffd5c4f6cc73a542",
+      "translation_text_hash": "fa84b609b98a7863555122db932a371912d87c6d1eabdab02b1df4b7213e52b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 소경을 그들의 알지 못하는 길로 이끌며 그들의 알지 못하는 첩경으로 인도하며 흑암으로 그 앞에 광명이 되게 하며 굽은데를 곧게 할 것이라 내가 이 일을 행하여 그들을 버리지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "fa84b609b98a7863555122db932a371912d87c6d1eabdab02b1df4b7213e52b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:17",
+      "sequence": 18498,
+      "chapter_label": "ISA 42",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 17
+        }
+      ],
+      "en": "“Those who trust in engraved images, who tell molten images, ‘You are our gods,’ will be turned back. They will be utterly disappointed.",
+      "ko": "조각한 우상을 의뢰하며 부어 만든 우상을 향하여 너희는 우리의 신이라 하는 자는 물리침을 받아 크게 수치를 당하리라",
+      "source_text_hash": "0f69db7da55e831be305daddca14685e27d80de3291e4869668003dbe1c02e52",
+      "translation_text_hash": "8d34aab45c5c9505720999935a07ea0925f0caf1635ab4b95b23a9587976975a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조각한 우상을 의뢰하며 부어 만든 우상을 향하여 너희는 우리의 신이라 하는 자는 물리침을 받아 크게 수치를 당하리라"
+      ],
+      "raw_text_hashes": [
+        "8d34aab45c5c9505720999935a07ea0925f0caf1635ab4b95b23a9587976975a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:18",
+      "sequence": 18499,
+      "chapter_label": "ISA 42",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 18
+        }
+      ],
+      "en": "“Hear, you deaf, and look, you blind, that you may see.",
+      "ko": "너희 귀머거리들아 들으라 너희 소경들아 밝히 보라",
+      "source_text_hash": "d49850ff9de20540f611c0cc1bede7c4aa8947cd2d0219917824636daaf14774",
+      "translation_text_hash": "e61013511408eccf7ab2ea45d65d3ba6ac89336682b6612951014924474977b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 귀머거리들아 들으라 너희 소경들아 밝히 보라"
+      ],
+      "raw_text_hashes": [
+        "e61013511408eccf7ab2ea45d65d3ba6ac89336682b6612951014924474977b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:19",
+      "sequence": 18500,
+      "chapter_label": "ISA 42",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 19
+        }
+      ],
+      "en": "Who is blind, but my servant? Or who is as deaf as my messenger whom I send? Who is as blind as he who is at peace, and as blind as the LORD’s servant?",
+      "ko": "소경이 누구냐 내 종이 아니냐 누가 나의 보내는 나의 사자 같이 귀머거리겠느냐 누가 나와 친한 자 같이 소경이겠느냐 누가 여호와의 종 같이 소경이겠느냐",
+      "source_text_hash": "bd351335b1276943ff8fa08d6161977d509dc33f8155f01df55337f61942481a",
+      "translation_text_hash": "f3b22d9d4777dda68b52b8399bae26c3d3450c5454fb17ac5f58b218f9fd85e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소경이 누구냐 내 종이 아니냐 누가 나의 보내는 나의 사자 같이 귀머거리겠느냐 누가 나와 친한 자 같이 소경이겠느냐 누가 여호와의 종 같이 소경이겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f3b22d9d4777dda68b52b8399bae26c3d3450c5454fb17ac5f58b218f9fd85e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:20",
+      "sequence": 18501,
+      "chapter_label": "ISA 42",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 20
+        }
+      ],
+      "en": "You see many things, but don’t observe. His ears are open, but he doesn’t listen.",
+      "ko": "네가 많은 것을 볼찌라도 유의치 아니하며 귀는 밝을찌라도 듣지 아니하는도다",
+      "source_text_hash": "5c12f5ca9860d41fb9ac1ac5023cb420bfe6245e61611b9e3bc910aa4e87c394",
+      "translation_text_hash": "76c75037470ea83f41efa0d871edfbea5531af98c90066ee8ba2c711ae88d69c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 많은 것을 볼찌라도 유의치 아니하며 귀는 밝을찌라도 듣지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "76c75037470ea83f41efa0d871edfbea5531af98c90066ee8ba2c711ae88d69c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:21",
+      "sequence": 18502,
+      "chapter_label": "ISA 42",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 21
+        }
+      ],
+      "en": "It pleased the LORD, for his righteousness’ sake, to magnify the law and make it honorable.",
+      "ko": "여호와께서 자기의 의로우심을 인하여 기쁨으로 그 교훈을 크게 하며 존귀케 하려 하셨으나",
+      "source_text_hash": "2a9ff067b20aaab89e93da62064bc80ab34ddd14c686b89d9b79eaffad53ee98",
+      "translation_text_hash": "32f755cdf78ce6c79ce5878016cac76971bafd0d65d06e748c743bf29e1a1cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기의 의로우심을 인하여 기쁨으로 그 교훈을 크게 하며 존귀케 하려 하셨으나"
+      ],
+      "raw_text_hashes": [
+        "32f755cdf78ce6c79ce5878016cac76971bafd0d65d06e748c743bf29e1a1cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:22",
+      "sequence": 18503,
+      "chapter_label": "ISA 42",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 22
+        }
+      ],
+      "en": "But this is a robbed and plundered people. All of them are snared in holes, and they are hidden in prisons. They have become captives, and no one delivers, and a plunder, and no one says, ‘Restore them!’",
+      "ko": "이 백성이 도적 맞으며 탈취를 당하며 다 굴속에 잡히며 옥에 갇히도다 노략을 당하되 구할 자가 없고 탈취를 당하되 도로 주라 할 자가 없도다",
+      "source_text_hash": "fd7fd4ea804c24d5df72065e94d9453f42cefb19545ba3a0f54062cd5e38bf68",
+      "translation_text_hash": "d43dc1308202bff0d1622e924a881349b7f52fca2c14a4c703cce23dc0b047c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성이 도적 맞으며 탈취를 당하며 다 굴속에 잡히며 옥에 갇히도다 노략을 당하되 구할 자가 없고 탈취를 당하되 도로 주라 할 자가 없도다"
+      ],
+      "raw_text_hashes": [
+        "d43dc1308202bff0d1622e924a881349b7f52fca2c14a4c703cce23dc0b047c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:23",
+      "sequence": 18504,
+      "chapter_label": "ISA 42",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 23
+        }
+      ],
+      "en": "Who is there among you who will give ear to this? Who will listen and hear for the time to come?",
+      "ko": "너희 중에 누가 이 일에 귀를 기울이겠느냐 누가 장래사를 삼가 듣겠느냐",
+      "source_text_hash": "bb2cba88463dcf0f303118578e4a0417f61d80cd3c1e091816e46b2344bdfcbf",
+      "translation_text_hash": "2a65e9e0389d834183b7d20f7422091cc9adfff74e052f7a213d0ca1d880e086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 이 일에 귀를 기울이겠느냐 누가 장래사를 삼가 듣겠느냐"
+      ],
+      "raw_text_hashes": [
+        "2a65e9e0389d834183b7d20f7422091cc9adfff74e052f7a213d0ca1d880e086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:24",
+      "sequence": 18505,
+      "chapter_label": "ISA 42",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 24
+        }
+      ],
+      "en": "Who gave Jacob as plunder, and Israel to the robbers? Didn’t the LORD, he against whom we have sinned? For they would not walk in his ways, and they disobeyed his law.",
+      "ko": "야곱으로 탈취를 당케 하신 자가 누구냐 이스라엘을 도적에게 붙이신 자가 누구냐 여호와가 아니시냐 우리가 그에게 범죄하였도다 백성들이 그 길로 행치 아니하며 그 율법을 순종치 아니하였도다",
+      "source_text_hash": "627177df5f96cf136c566dae64c440825a442016408a298a7b74cf87f1df21d4",
+      "translation_text_hash": "d91da5dfb933ce6ca11f449a80bab7b1890b39ef631fe96337edcdc64d040f6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱으로 탈취를 당케 하신 자가 누구냐 이스라엘을 도적에게 붙이신 자가 누구냐 여호와가 아니시냐 우리가 그에게 범죄하였도다 백성들이 그 길로 행치 아니하며 그 율법을 순종치 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "d91da5dfb933ce6ca11f449a80bab7b1890b39ef631fe96337edcdc64d040f6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:42:25",
+      "sequence": 18506,
+      "chapter_label": "ISA 42",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 42,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 42,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore he poured the fierceness of his anger on him, and the strength of battle. It set him on fire all around, but he didn’t know. It burned him, but he didn’t take it to heart.”",
+      "ko": "그러므로 여호와께서 맹렬한 진노와 전쟁의 위력으로 이스라엘에게 베푸시매 그 사방으로 불붙듯하나 깨닫지 못하며 몸이 타나 마음에 두지 아니하는도다",
+      "source_text_hash": "5c363a489cd331e347e9d4fb9f650525645e0a8eed247352cb892c09ed2287dd",
+      "translation_text_hash": "96ebfbfae79d8ee1e8dde82e79462d42c425a4b8d80a52d2591c3f588fa6ddce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 여호와께서 맹렬한 진노와 전쟁의 위력으로 이스라엘에게 베푸시매 그 사방으로 불붙듯하나 깨닫지 못하며 몸이 타나 마음에 두지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "96ebfbfae79d8ee1e8dde82e79462d42c425a4b8d80a52d2591c3f588fa6ddce"
+      ]
+    }
+  ]
+}

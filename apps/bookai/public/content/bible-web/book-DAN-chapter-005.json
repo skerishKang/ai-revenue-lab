@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:005",
+  "unit_ordinal": 855,
+  "unit_label": "DAN 5",
+  "book_code": "DAN",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:5:1",
+      "sequence": 21876,
+      "chapter_label": "DAN 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "Belshazzar the king made a great feast to a thousand of his lords, and drank wine before the thousand.",
+      "ko": "벨사살왕이 그 귀인 일천명을 위하여 큰 잔치를 배설하고 그 일천명 앞에서 술을 마시니라",
+      "source_text_hash": "94126eb929f1a6938450f6445eb245a2cd399e94c03eb61a23c1ca24ba2221f8",
+      "translation_text_hash": "2c301ffc5c8e671dc6e7ac834ed69e931ef6920ef7d4c5265c5f7920359f6c33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨사살왕이 그 귀인 일천명을 위하여 큰 잔치를 배설하고 그 일천명 앞에서 술을 마시니라"
+      ],
+      "raw_text_hashes": [
+        "2c301ffc5c8e671dc6e7ac834ed69e931ef6920ef7d4c5265c5f7920359f6c33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:2",
+      "sequence": 21877,
+      "chapter_label": "DAN 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "Belshazzar, while he tasted the wine, commanded that the golden and silver vessels which Nebuchadnezzar his father had taken out of the temple which was in Jerusalem be brought to him, that the king and his lords, his wives and his concubines, might drink from them.",
+      "ko": "벨사살이 술을 마실 때에 명하여 그 부친 느부갓네살이 예루살렘 전에서 취하여 온 금, 은 기명을 가져오게 하였으니 이는 왕과 귀인들과 왕후들과 빈궁들이 다 그것으로 마시려 함이었더라",
+      "source_text_hash": "c00385a5f35b50a13f59856c4567e398c230f8b6988176c7263c755bb202acaa",
+      "translation_text_hash": "988bfafc5e9638fd47383ab8cfd4b58bd485751e2aab6f8c5bf9c47802f25247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨사살이 술을 마실 때에 명하여 그 부친 느부갓네살이 예루살렘 전에서 취하여 온 금, 은 기명을 가져오게 하였으니 이는 왕과 귀인들과 왕후들과 빈궁들이 다 그것으로 마시려 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "988bfafc5e9638fd47383ab8cfd4b58bd485751e2aab6f8c5bf9c47802f25247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:3",
+      "sequence": 21878,
+      "chapter_label": "DAN 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "Then they brought the golden vessels that were taken out of the temple of God’s house which was at Jerusalem; and the king and his lords, his wives and his concubines, drank from them.",
+      "ko": "이에 예루살렘 하나님의 전 성소 중에서 취하여 온 금 기명을 가져오매 왕이 그 귀인들과 왕후들과 빈궁들로 더불어 그것으로 마시고",
+      "source_text_hash": "4f4694d47900e2382f4fe94ad39de0bd67bda455cf172eb79d517dd27370d2f4",
+      "translation_text_hash": "0f5684d3916e6e77b10d02279fea2f44119689535c8f7076b0c54c9e5de60b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예루살렘 하나님의 전 성소 중에서 취하여 온 금 기명을 가져오매 왕이 그 귀인들과 왕후들과 빈궁들로 더불어 그것으로 마시고"
+      ],
+      "raw_text_hashes": [
+        "0f5684d3916e6e77b10d02279fea2f44119689535c8f7076b0c54c9e5de60b2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:4",
+      "sequence": 21879,
+      "chapter_label": "DAN 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "They drank wine, and praised the gods of gold, and of silver, of bronze, of iron, of wood, and of stone.",
+      "ko": "무리가 술을 마시고는 그 금, 은, 동, 철, 목, 석으로 만든 신들을 찬양하니라",
+      "source_text_hash": "f6849c1e0fb33030533e0840eb9c3f7a7a766ed7ddaff9c70c03c2ed31cc8bb9",
+      "translation_text_hash": "dee2cb9eec92f54af9bc3bac5d0e74c908d004d32347173d205b8f22b5a058f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 술을 마시고는 그 금, 은, 동, 철, 목, 석으로 만든 신들을 찬양하니라"
+      ],
+      "raw_text_hashes": [
+        "dee2cb9eec92f54af9bc3bac5d0e74c908d004d32347173d205b8f22b5a058f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:5",
+      "sequence": 21880,
+      "chapter_label": "DAN 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "In the same hour, the fingers of a man’s hand came out and wrote near the lamp stand on the plaster of the wall of the king’s palace. The king saw the part of the hand that wrote.",
+      "ko": "그 때에 사람의 손가락이 나타나서 왕궁 촛대 맞은편 분벽에 글자를 쓰는데 왕이 그 글자 쓰는 손가락을 본지라",
+      "source_text_hash": "169304ed40720fbc0ea34ecbe7fbf7f3a3840858a16ddd4b530d70d7a9f9df48",
+      "translation_text_hash": "5cd271b2ecc01c8ac49c547f03ffd23b81b1be68fcc317f1a1a9753c35e5ec49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람의 손가락이 나타나서 왕궁 촛대 맞은편 분벽에 글자를 쓰는데 왕이 그 글자 쓰는 손가락을 본지라"
+      ],
+      "raw_text_hashes": [
+        "5cd271b2ecc01c8ac49c547f03ffd23b81b1be68fcc317f1a1a9753c35e5ec49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:6",
+      "sequence": 21881,
+      "chapter_label": "DAN 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "Then the king’s face was changed in him, and his thoughts troubled him; and the joints of his thighs were loosened, and his knees struck one against another.",
+      "ko": "이에 왕의 즐기던 빛이 변하고 그 생각이 번민하여 넓적다리 마디가 녹는듯하고 그 무릎이 서로 부딪힌지라",
+      "source_text_hash": "6d8deb50403bd84fa8dc4f5dde6e9bf34ac729ecca82e8e542d91982a70e8198",
+      "translation_text_hash": "60914b2b4b3247b7f86ac2da4df552e92b1ccfd554a1a4f998636f77af98f98b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕의 즐기던 빛이 변하고 그 생각이 번민하여 넓적다리 마디가 녹는듯하고 그 무릎이 서로 부딪힌지라"
+      ],
+      "raw_text_hashes": [
+        "60914b2b4b3247b7f86ac2da4df552e92b1ccfd554a1a4f998636f77af98f98b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:7",
+      "sequence": 21882,
+      "chapter_label": "DAN 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "The king cried aloud to bring in the enchanters, the Chaldeans, and the soothsayers. The king spoke and said to the wise men of Babylon, “Whoever reads this writing and shows me its interpretation shall be clothed with purple, and have a chain of gold about his neck, and shall be the third ruler in the kingdom.”",
+      "ko": "왕이 크게 소리하여 술객과 갈대아 술사와 점장이를 불러 오게 하고 바벨론 박사들에게 일러 가로되 무론 누구든지 이 글자를 읽고 그 해석을 내게 보이면 자주옷을 입히고 금 사슬로 그 목에 드리우고 그로 나라의 세째 치리자를 삼으리라 하니라",
+      "source_text_hash": "eddf413d0e19b27c22a0cb74c6b29ed76f01f8c7fd93a533eadff54e5b5094fb",
+      "translation_text_hash": "ade123e973e8377968dbc793f5695151c11a94f7ccfdf2ffcbf9e7604af86e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 크게 소리하여 술객과 갈대아 술사와 점장이를 불러 오게 하고 바벨론 박사들에게 일러 가로되 무론 누구든지 이 글자를 읽고 그 해석을 내게 보이면 자주옷을 입히고 금 사슬로 그 목에 드리우고 그로 나라의 세째 치리자를 삼으리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "ade123e973e8377968dbc793f5695151c11a94f7ccfdf2ffcbf9e7604af86e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:8",
+      "sequence": 21883,
+      "chapter_label": "DAN 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Then all the king’s wise men came in; but they could not read the writing, and couldn’t make known to the king the interpretation.",
+      "ko": "때에 왕의 박사가 다 들어 왔으나 능히 그 글자를 읽지 못하며 그 해석을 왕께 알게 하지 못하는지라",
+      "source_text_hash": "af10be407b8095b1df97a5258e2f523f335b0414555373f89357b5ce1f0880fc",
+      "translation_text_hash": "2c24f22b4c12d29728062d2e84308a939e923c0b657190a1e9de5e629db7686d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 왕의 박사가 다 들어 왔으나 능히 그 글자를 읽지 못하며 그 해석을 왕께 알게 하지 못하는지라"
+      ],
+      "raw_text_hashes": [
+        "2c24f22b4c12d29728062d2e84308a939e923c0b657190a1e9de5e629db7686d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:9",
+      "sequence": 21884,
+      "chapter_label": "DAN 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Then King Belshazzar was greatly troubled, and his face was changed in him, and his lords were perplexed.",
+      "ko": "그러므로 벨사살왕이 크게 번민하여 그 낯빛이 변하였고 귀인들도 다 놀라니라",
+      "source_text_hash": "43fa18606179c3db5b824847e69a2ee90244703fcb3816a5026814ca1ff658a6",
+      "translation_text_hash": "4641fb8c994355a460a312d8d336cc22d4bde4d3ae736e3d8c469eefa8cd11cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 벨사살왕이 크게 번민하여 그 낯빛이 변하였고 귀인들도 다 놀라니라"
+      ],
+      "raw_text_hashes": [
+        "4641fb8c994355a460a312d8d336cc22d4bde4d3ae736e3d8c469eefa8cd11cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:10",
+      "sequence": 21885,
+      "chapter_label": "DAN 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "The queen by reason of the words of the king and his lords came into the banquet house. The queen spoke and said, “O king, live forever; don’t let your thoughts trouble you, nor let your face be changed.",
+      "ko": "태후가 왕과 그 귀인들의 말로 인하여 잔치하는 궁에 들어 왔더니 이에 말하여 가로되 왕이여 만세수를 하옵소서 왕의 생각을 번민케 말며 낯빛을 변할 것이 아니니이다",
+      "source_text_hash": "f3d7339f03e55a6a088a9f34a6136ed28d3e71cbd49792a5ddb336c11389e56f",
+      "translation_text_hash": "76a1a7a55d42cbd80c7a6e3f33f175d292245ae1c1b30a5d77afb387eb3ec4aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태후가 왕과 그 귀인들의 말로 인하여 잔치하는 궁에 들어 왔더니 이에 말하여 가로되 왕이여 만세수를 하옵소서 왕의 생각을 번민케 말며 낯빛을 변할 것이 아니니이다"
+      ],
+      "raw_text_hashes": [
+        "76a1a7a55d42cbd80c7a6e3f33f175d292245ae1c1b30a5d77afb387eb3ec4aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:11",
+      "sequence": 21886,
+      "chapter_label": "DAN 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "There is a man in your kingdom in whom is the spirit of the holy gods; and in the days of your father, light and understanding and wisdom, like the wisdom of the gods, were found in him. The king, Nebuchadnezzar, your father—yes, the king, your father—made him master of the magicians, enchanters, Chaldeans, and soothsayers,",
+      "ko": "왕의 나라에 거룩한 신들의 영이 있는 사람이 있으니 곧 왕의 부친 때에 있던 자로서 명철과 총명과 지혜가 있어 신들의 지혜와 같은 자라 왕의 부친 느부갓네살왕이 그를 세워 박수와 술객과 갈대아 술사와 점장이의 어른을 삼으셨으니",
+      "source_text_hash": "09de3e3b4edb46802e090eab854a2982e5c43e3f758b55b640e8e0f320905d87",
+      "translation_text_hash": "095e990dc3c3f3d01142a294fc08866a7a583f794a443f3fa91880f2ab3469d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 나라에 거룩한 신들의 영이 있는 사람이 있으니 곧 왕의 부친 때에 있던 자로서 명철과 총명과 지혜가 있어 신들의 지혜와 같은 자라 왕의 부친 느부갓네살왕이 그를 세워 박수와 술객과 갈대아 술사와 점장이의 어른을 삼으셨으니"
+      ],
+      "raw_text_hashes": [
+        "095e990dc3c3f3d01142a294fc08866a7a583f794a443f3fa91880f2ab3469d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:12",
+      "sequence": 21887,
+      "chapter_label": "DAN 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "because an excellent spirit, knowledge, understanding, interpreting of dreams, showing of dark sentences, and dissolving of doubts were found in the same Daniel, whom the king named Belteshazzar. Now let Daniel be called, and he will show the interpretation.”",
+      "ko": "왕이 벨드사살이라 이름한 이 다니엘의 마음이 민첩하고 지식과 총명이 있어 능히 꿈을 해석하며 은밀한 말을 밝히며 의문을 파할 수 있었음이라 이제 다니엘을 부르소서 그리하시면 그가 그 해석을 알려드리리이다",
+      "source_text_hash": "a0396217e7d521270639904b1dfa4c8b0b03d5fa80f153d9a67e2ab3c749881f",
+      "translation_text_hash": "de335ed554aca70371f991e0169a613e38c98ba001282b7560f84db51d455bf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 벨드사살이라 이름한 이 다니엘의 마음이 민첩하고 지식과 총명이 있어 능히 꿈을 해석하며 은밀한 말을 밝히며 의문을 파할 수 있었음이라 이제 다니엘을 부르소서 그리하시면 그가 그 해석을 알려드리리이다"
+      ],
+      "raw_text_hashes": [
+        "de335ed554aca70371f991e0169a613e38c98ba001282b7560f84db51d455bf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:13",
+      "sequence": 21888,
+      "chapter_label": "DAN 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "Then Daniel was brought in before the king. The king spoke and said to Daniel, “Are you that Daniel of the children of the captivity of Judah, whom the king my father brought out of Judah?",
+      "ko": "이에 다니엘이 부름을 입어 왕의 앞에 나오매 왕이 다니엘에게 말하여 가로되 네가 우리 부왕이 유다에서 사로잡아 온 유다 자손 중의 그 다니엘이냐",
+      "source_text_hash": "0102ad35a6076af4d6a130295e8e2d87953ea3fe319322404875420f1213edb9",
+      "translation_text_hash": "a3234eff9ebb7b0fa8af6f042032f0cef14ff6cd8fe95f88c1598827af3f60e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다니엘이 부름을 입어 왕의 앞에 나오매 왕이 다니엘에게 말하여 가로되 네가 우리 부왕이 유다에서 사로잡아 온 유다 자손 중의 그 다니엘이냐"
+      ],
+      "raw_text_hashes": [
+        "a3234eff9ebb7b0fa8af6f042032f0cef14ff6cd8fe95f88c1598827af3f60e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:14",
+      "sequence": 21889,
+      "chapter_label": "DAN 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "I have heard of you, that the spirit of the gods is in you and that light, understanding, and excellent wisdom are found in you.",
+      "ko": "내가 네게 대하여 들은즉 네 안에는 신들의 영이 있으므로 네가 명철과 총명과 비상한 지혜가 있다 하도다",
+      "source_text_hash": "81a922eec7ee2aaed7b128c0de67d81236499c780747618abc83ff9b38ef285d",
+      "translation_text_hash": "7946ffd28e21167c93bad718562cfa483cc0b3164c7d0bf6f671a548fb0e0465",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 대하여 들은즉 네 안에는 신들의 영이 있으므로 네가 명철과 총명과 비상한 지혜가 있다 하도다"
+      ],
+      "raw_text_hashes": [
+        "7946ffd28e21167c93bad718562cfa483cc0b3164c7d0bf6f671a548fb0e0465"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:15",
+      "sequence": 21890,
+      "chapter_label": "DAN 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "Now the wise men, the enchanters, have been brought in before me, that they should read this writing, and make known to me its interpretation; but they could not show the interpretation of the thing.",
+      "ko": "지금 여러 박사와 술객을 내 앞에 불러다가 그들로 이 글을 읽고 그 해석을 내게 알게 하라 하였으나 그들이 다 능히 그 해석을 내게 보이지 못하였느니라",
+      "source_text_hash": "d602c3d7b05656fef2d7443a20a6fd3c42ba366283986f8ffadb5810358c4be7",
+      "translation_text_hash": "eb20fca0f3229a9b739d0ebde7bc96f8c811081f0aa9bd810e0f8f3d53660911",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 여러 박사와 술객을 내 앞에 불러다가 그들로 이 글을 읽고 그 해석을 내게 알게 하라 하였으나 그들이 다 능히 그 해석을 내게 보이지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "eb20fca0f3229a9b739d0ebde7bc96f8c811081f0aa9bd810e0f8f3d53660911"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:16",
+      "sequence": 21891,
+      "chapter_label": "DAN 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "But I have heard of you, that you can give interpretations and dissolve doubts. Now if you can read the writing and make known to me its interpretation, you shall be clothed with purple, and have a chain of gold around your neck, and shall be the third ruler in the kingdom.”",
+      "ko": "내가 네게 대하여 들은즉 너는 해석을 잘하고 의문을 파한다 하도다 그런즉 이제 네가 이 글을 읽고 그 해석을 내게 알게 하면 네게 자주옷을 입히고 금 사슬을 네 목에 드리우고 너로 나라의 세째 치리자를 삼으리라",
+      "source_text_hash": "30dfd607bc652ce0f73709cf1f92dc310d421afcf2de94be4f6df7dd8bf2fdfc",
+      "translation_text_hash": "9965fefd3ec11e4381a00d34a71825f44628f4131d64f5d2c6266e9c2a8c0ec3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 대하여 들은즉 너는 해석을 잘하고 의문을 파한다 하도다 그런즉 이제 네가 이 글을 읽고 그 해석을 내게 알게 하면 네게 자주옷을 입히고 금 사슬을 네 목에 드리우고 너로 나라의 세째 치리자를 삼으리라"
+      ],
+      "raw_text_hashes": [
+        "9965fefd3ec11e4381a00d34a71825f44628f4131d64f5d2c6266e9c2a8c0ec3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:17",
+      "sequence": 21892,
+      "chapter_label": "DAN 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "Then Daniel answered before the king, “Let your gifts be to yourself, and give your rewards to another. Nevertheless, I will read the writing to the king, and make known to him the interpretation.",
+      "ko": "다니엘이 왕에게 대답하여 가로되 왕의 예물은 왕이 스스로 취하시며 왕의 상급은 다른 사람에게 주옵소서 그럴찌라도 내가 왕을 위하여 이 글을 읽으며 그 해석을 아시게 하리이다",
+      "source_text_hash": "95ee09c8c645c185cbe4af6207769996db2630d62fd57bd2a77ba86b2cc69aea",
+      "translation_text_hash": "1f5da91acca793682a3f41ae4665ee58ad8a374f9e6a4835886a399a73bb6b67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 왕에게 대답하여 가로되 왕의 예물은 왕이 스스로 취하시며 왕의 상급은 다른 사람에게 주옵소서 그럴찌라도 내가 왕을 위하여 이 글을 읽으며 그 해석을 아시게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "1f5da91acca793682a3f41ae4665ee58ad8a374f9e6a4835886a399a73bb6b67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:18",
+      "sequence": 21893,
+      "chapter_label": "DAN 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "“To you, king, the Most High God gave Nebuchadnezzar your father the kingdom, and greatness, and glory, and majesty.",
+      "ko": "왕이여 지극히 높으신 하나님이 왕의 부친 느부갓네살에게 나라와 큰 권세와 영광과 위엄을 주셨고",
+      "source_text_hash": "637ccc6054929f9af05e39f8dfe928b18d317464c11dae7bc51ab0d4a7e0a9cb",
+      "translation_text_hash": "1e98f55c9f234abd630e6b56bd0b2e655c5a6b758a57f0b0486765d7ac1dea0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이여 지극히 높으신 하나님이 왕의 부친 느부갓네살에게 나라와 큰 권세와 영광과 위엄을 주셨고"
+      ],
+      "raw_text_hashes": [
+        "1e98f55c9f234abd630e6b56bd0b2e655c5a6b758a57f0b0486765d7ac1dea0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:19",
+      "sequence": 21894,
+      "chapter_label": "DAN 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "Because of the greatness that he gave him, all the peoples, nations, and languages trembled and feared before him. He killed whom he wanted to, and he kept alive whom he wanted to. He raised up whom he wanted to, and he put down whom he wanted to.",
+      "ko": "그에게 큰 권세를 주셨으므로 백성들과 나라들과 각 방언하는 자들이 그의 앞에서 떨며 두려워하였으며 그는 임의로 죽이며 임의로 살리며 임의로 높이며 임의로 낮추었더니",
+      "source_text_hash": "284bd88c8f75de00ef380f44d29a9af2b9c04593d4490b759985af302e919741",
+      "translation_text_hash": "fc797c889abd67448972848571c03c4e8c22f859ea99fa2dba1371f98625bbd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 큰 권세를 주셨으므로 백성들과 나라들과 각 방언하는 자들이 그의 앞에서 떨며 두려워하였으며 그는 임의로 죽이며 임의로 살리며 임의로 높이며 임의로 낮추었더니"
+      ],
+      "raw_text_hashes": [
+        "fc797c889abd67448972848571c03c4e8c22f859ea99fa2dba1371f98625bbd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:20",
+      "sequence": 21895,
+      "chapter_label": "DAN 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "But when his heart was lifted up, and his spirit was hardened so that he dealt proudly, he was deposed from his kingly throne, and they took his glory from him.",
+      "ko": "그가 마음이 높아지며 뜻이 강퍅하여 교만을 행하므로 그 왕위가 폐한바 되며 그 영광을 빼앗기고",
+      "source_text_hash": "8adcf17fc0715b30b4964bbeda6e75c6486f3246813ea6b2007f9e7f71dda8e9",
+      "translation_text_hash": "4cf2f5e5cfcc4b07ba0653de78e3123a6519173e089d04bb3b402c270d4e2b62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 마음이 높아지며 뜻이 강퍅하여 교만을 행하므로 그 왕위가 폐한바 되며 그 영광을 빼앗기고"
+      ],
+      "raw_text_hashes": [
+        "4cf2f5e5cfcc4b07ba0653de78e3123a6519173e089d04bb3b402c270d4e2b62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:21",
+      "sequence": 21896,
+      "chapter_label": "DAN 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "He was driven from the sons of men, and his heart was made like the animals’, and his dwelling was with the wild donkeys. He was fed with grass like oxen, and his body was wet with the dew of the sky, until he knew that the Most High God rules in the kingdom of men, and that he sets up over it whomever he will.",
+      "ko": "인생 중에서 쫓겨나서 그 마음이 들짐승의 마음과 같았고 또 들나귀와 함께 거하며 또 소처럼 풀을 먹으며 그 몸이 하늘 이슬에 젖었으며 지극히 높으신 하나님이 인간 나라를 다스리시며 자기의 뜻대로 누구든지 그 위에 세우시는줄을 알기까지 이르게 되었었나이다",
+      "source_text_hash": "edee1281bf42957dbe9976f9465615f0e28eac8a78f79636e6b8a298ddce6c3e",
+      "translation_text_hash": "4777ff2356593b55e1ec6edeb2f8a6b3eb03eccb490a4c0de42723b60feb5761",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인생 중에서 쫓겨나서 그 마음이 들짐승의 마음과 같았고 또 들나귀와 함께 거하며 또 소처럼 풀을 먹으며 그 몸이 하늘 이슬에 젖었으며 지극히 높으신 하나님이 인간 나라를 다스리시며 자기의 뜻대로 누구든지 그 위에 세우시는줄을 알기까지 이르게 되었었나이다"
+      ],
+      "raw_text_hashes": [
+        "4777ff2356593b55e1ec6edeb2f8a6b3eb03eccb490a4c0de42723b60feb5761"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:22",
+      "sequence": 21897,
+      "chapter_label": "DAN 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "“You, his son, Belshazzar, have not humbled your heart, though you knew all this,",
+      "ko": "벨사살이여 왕은 그의 아들이 되어서 이것을 다 알고도 오히려 마음을 낮추지 아니하고",
+      "source_text_hash": "a28be3bac9e53372e5f392b31fca7e19c4926fd0739d0a53523105fb8d5e49ed",
+      "translation_text_hash": "124cb1da090fffb1018926794e4e930790e60e388d98ce588960a2bf8b6ba9bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벨사살이여 왕은 그의 아들이 되어서 이것을 다 알고도 오히려 마음을 낮추지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "124cb1da090fffb1018926794e4e930790e60e388d98ce588960a2bf8b6ba9bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:23",
+      "sequence": 21898,
+      "chapter_label": "DAN 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "but have lifted up yourself against the Lord of heaven; and they have brought the vessels of his house before you, and you and your lords, your wives, and your concubines, have drunk wine from them. You have praised the gods of silver and gold, of bronze, iron, wood, and stone, which don’t see, or hear, or know; and you have not glorified the God in whose hand your breath is, and whose are all your ways.",
+      "ko": "도리어 스스로 높여서 하늘의 주재를 거역하고 그 전 기명을 왕의 앞으로 가져다가 왕과 귀인들과 왕후들과 빈궁들이 다 그것으로 술을 마시고 왕이 또 보지도 듣지도 알지도 못하는 금, 은, 동, 철과 목, 석으로 만든 신상들을 찬양하고 도리어 왕의 호흡을 주장하시고 왕의 모든 길을 작정하시는 하나님께는 영광을 돌리지 아니한지라",
+      "source_text_hash": "51234cf100980c78ea707db651ed04a265aca92f88c1319f1f4d1f2f21ec8fca",
+      "translation_text_hash": "9d63d5686a667ea190b628bb0a0a9c7de019f6d0f91385fe5a454a46be242be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도리어 스스로 높여서 하늘의 주재를 거역하고 그 전 기명을 왕의 앞으로 가져다가 왕과 귀인들과 왕후들과 빈궁들이 다 그것으로 술을 마시고 왕이 또 보지도 듣지도 알지도 못하는 금, 은, 동, 철과 목, 석으로 만든 신상들을 찬양하고 도리어 왕의 호흡을 주장하시고 왕의 모든 길을 작정하시는 하나님께는 영광을 돌리지 아니한지라"
+      ],
+      "raw_text_hashes": [
+        "9d63d5686a667ea190b628bb0a0a9c7de019f6d0f91385fe5a454a46be242be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:24",
+      "sequence": 21899,
+      "chapter_label": "DAN 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Then the part of the hand was sent from before him, and this writing was inscribed.",
+      "ko": "이러므로 그의 앞에서 이 손가락이 나와서 이 글을 기록하였나이다",
+      "source_text_hash": "441403d9852414760c83d661f24daa6e20a16cd980c5388de679d7c67ce82824",
+      "translation_text_hash": "6570fce4260a841e0569c1b1937f872c7c5c213763ae5ad971297ffecb16a4a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 그의 앞에서 이 손가락이 나와서 이 글을 기록하였나이다"
+      ],
+      "raw_text_hashes": [
+        "6570fce4260a841e0569c1b1937f872c7c5c213763ae5ad971297ffecb16a4a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:25",
+      "sequence": 21900,
+      "chapter_label": "DAN 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "“This is the writing that was inscribed: ‘MENE, MENE, TEKEL, UPHARSIN.’",
+      "ko": "기록한 글자는 이것이니 곧 메네 메네 데겔 우바르신이라",
+      "source_text_hash": "a95e995a335f248b472d388a4cb07dd9f5c50ea9e4e27c2b22a01e146ac23e25",
+      "translation_text_hash": "9ec24f952d7a3efe133c436270d6313199ed1612cca65f78ad16dbbd31c25ac3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한 글자는 이것이니 곧 메네 메네 데겔 우바르신이라"
+      ],
+      "raw_text_hashes": [
+        "9ec24f952d7a3efe133c436270d6313199ed1612cca65f78ad16dbbd31c25ac3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:26",
+      "sequence": 21901,
+      "chapter_label": "DAN 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "“This is the interpretation of the thing: MENE: God has counted your kingdom, and brought it to an end.",
+      "ko": "그 뜻을 해석하건대 메네는 하나님이 이미 왕의 나라의 시대를 세어서 그것을 끝나게 하셨다 함이요",
+      "source_text_hash": "eb33141d880cb699c1c390b833335b6e1de2882ea6f01716df5ef11ae6bf4af9",
+      "translation_text_hash": "65e795f96c78bb24a482c6190c17173c7fdfc586c1cd061ccee19c3171abcc85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뜻을 해석하건대 메네는 하나님이 이미 왕의 나라의 시대를 세어서 그것을 끝나게 하셨다 함이요"
+      ],
+      "raw_text_hashes": [
+        "65e795f96c78bb24a482c6190c17173c7fdfc586c1cd061ccee19c3171abcc85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:27",
+      "sequence": 21902,
+      "chapter_label": "DAN 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "TEKEL: you are weighed in the balances, and are found wanting.",
+      "ko": "데겔은 왕이 저울에 달려서 부족함이 뵈었다 함이요",
+      "source_text_hash": "841180befeb3a853d8ead35948358b8361a9446d43a486709e2dfbd6c3252048",
+      "translation_text_hash": "15820dc4db98384253b7a9571416fc157da12722cd824ac52abae40b79f45001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데겔은 왕이 저울에 달려서 부족함이 뵈었다 함이요"
+      ],
+      "raw_text_hashes": [
+        "15820dc4db98384253b7a9571416fc157da12722cd824ac52abae40b79f45001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:28",
+      "sequence": 21903,
+      "chapter_label": "DAN 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "PERES: your kingdom is divided, and given to the Medes and Persians.”",
+      "ko": "베레스는 왕의 나라가 나뉘어서 메대와 바사 사람에게 준바 되었다 함이니이다",
+      "source_text_hash": "cf8b3d5ef92089379f1b8a3ad7e1eef74cfca2a4e3b58e86b4ab1d8a34216785",
+      "translation_text_hash": "22ef472e62487106d472cab36f0725aeafab2bbbd5bf89bf7b7515fc4b2f2dcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베레스는 왕의 나라가 나뉘어서 메대와 바사 사람에게 준바 되었다 함이니이다"
+      ],
+      "raw_text_hashes": [
+        "22ef472e62487106d472cab36f0725aeafab2bbbd5bf89bf7b7515fc4b2f2dcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:29",
+      "sequence": 21904,
+      "chapter_label": "DAN 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "Then Belshazzar commanded, and they clothed Daniel with purple, and put a chain of gold about his neck, and made proclamation concerning him, that he should be the third ruler in the kingdom.",
+      "ko": "이에 벨사살이 명하여 무리로 다니엘에게 자주옷을 입히게 하며 금 사슬로 그의 목에 드리우게 하고 그를 위하여 조서를 내려 나라의 세째 치리자를 삼으니라",
+      "source_text_hash": "b41ab28a0a1562fb2a5cb28adc80e7113b6b8c28c03193d1b09becac826459fd",
+      "translation_text_hash": "200426ff6871091f1428d4b35eca4a8f9727ea27f115c55b2508e95ae3e100bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 벨사살이 명하여 무리로 다니엘에게 자주옷을 입히게 하며 금 사슬로 그의 목에 드리우게 하고 그를 위하여 조서를 내려 나라의 세째 치리자를 삼으니라"
+      ],
+      "raw_text_hashes": [
+        "200426ff6871091f1428d4b35eca4a8f9727ea27f115c55b2508e95ae3e100bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:30",
+      "sequence": 21905,
+      "chapter_label": "DAN 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "In that night Belshazzar the Chaldean King was slain.",
+      "ko": "그날 밤에 갈대아왕 벨사살이 죽임을 당하였고",
+      "source_text_hash": "fc6e40c38e5f0ce81ab31cacd420ca2c183eb5746ae8f4566458e090f4327031",
+      "translation_text_hash": "77750b0b40486da02f5e880c14c451c6b69a9bec2e773bce9700905f2d8144aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날 밤에 갈대아왕 벨사살이 죽임을 당하였고"
+      ],
+      "raw_text_hashes": [
+        "77750b0b40486da02f5e880c14c451c6b69a9bec2e773bce9700905f2d8144aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:5:31",
+      "sequence": 21906,
+      "chapter_label": "DAN 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "DAN",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "Darius the Mede received the kingdom, being about sixty-two years old.",
+      "ko": "메대 사람 다리오가 나라를 얻었는데 때에 다리오는 육십 이세였더라",
+      "source_text_hash": "1b1099ba331560282792e3ec862eb42183a12767d3995bd5a56de64cdb30c085",
+      "translation_text_hash": "bc08de8cd8d3167def8d41afa5423e6f6e7916b8a9e49bc285ac07822f30ad38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "메대 사람 다리오가 나라를 얻었는데 때에 다리오는 육십 이세였더라"
+      ],
+      "raw_text_hashes": [
+        "bc08de8cd8d3167def8d41afa5423e6f6e7916b8a9e49bc285ac07822f30ad38"
+      ]
+    }
+  ]
+}

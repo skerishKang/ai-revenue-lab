@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:048",
+  "unit_ordinal": 48,
+  "unit_label": "GEN 48",
+  "book_code": "GEN",
+  "chapter_number": 48,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:48:1",
+      "sequence": 1453,
+      "chapter_label": "GEN 48",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, someone said to Joseph, “Behold, your father is sick.” He took with him his two sons, Manasseh and Ephraim.",
+      "ko": "이 일 후에 혹이 요셉에게 고하기를 네 부친이 병들었다 하므로 그가 곧 두 아들 므낫세와 에브라임과 함께 이르니",
+      "source_text_hash": "57f49c6751a74c69a5d998492036335475d2cb01b48b0e1eb67dd26365916060",
+      "translation_text_hash": "62880b0a84e1a2e98b982f4c2429301ef70c3c12907826fae31b11d43bce853f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 혹이 요셉에게 고하기를 네 부친이 병들었다 하므로 그가 곧 두 아들 므낫세와 에브라임과 함께 이르니"
+      ],
+      "raw_text_hashes": [
+        "62880b0a84e1a2e98b982f4c2429301ef70c3c12907826fae31b11d43bce853f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:2",
+      "sequence": 1454,
+      "chapter_label": "GEN 48",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 2
+        }
+      ],
+      "en": "Someone told Jacob, and said, “Behold, your son Joseph comes to you,” and Israel strengthened himself, and sat on the bed.",
+      "ko": "혹이 야곱에게 고하되 네 아들 요셉이 네게 왔다 하매 이스라엘이 힘을 내어 침상에 앉아",
+      "source_text_hash": "aa73dff6f76e81da184ee8331228349f2a5ec99925d9aa643119ab38e3311e27",
+      "translation_text_hash": "0428dbf1169e0396cbf3d324757727cb1bb265a3fb269d2a7c171a2628beb4e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 야곱에게 고하되 네 아들 요셉이 네게 왔다 하매 이스라엘이 힘을 내어 침상에 앉아"
+      ],
+      "raw_text_hashes": [
+        "0428dbf1169e0396cbf3d324757727cb1bb265a3fb269d2a7c171a2628beb4e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:3",
+      "sequence": 1455,
+      "chapter_label": "GEN 48",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 3
+        }
+      ],
+      "en": "Jacob said to Joseph, “God Almighty appeared to me at Luz in the land of Canaan, and blessed me,",
+      "ko": "요셉에게 이르되 이전에 가나안 땅 루스에서 전능한 하나님이 내게 나타나 복을 허락하여",
+      "source_text_hash": "1d1d43990be4dcebb33913e55d3e9e1d5fbd6979d8655aac3b1d0b41a87b55b6",
+      "translation_text_hash": "65a4eee0ae737c42541ee49fcdf434bcf95239003940ddbfe83d96e6d6b544f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉에게 이르되 이전에 가나안 땅 루스에서 전능한 하나님이 내게 나타나 복을 허락하여"
+      ],
+      "raw_text_hashes": [
+        "65a4eee0ae737c42541ee49fcdf434bcf95239003940ddbfe83d96e6d6b544f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:4",
+      "sequence": 1456,
+      "chapter_label": "GEN 48",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 4
+        }
+      ],
+      "en": "and said to me, ‘Behold, I will make you fruitful, and multiply you, and I will make of you a company of peoples, and will give this land to your offspring after you for an everlasting possession.’",
+      "ko": "내게 이르시되 내가 너로 생육하게 하며 번성하게 하여 네게서 많은 백성이 나게 하고 내가 이 땅을 네 후손에게 주어 영원한 기업이 되게 하리라 하셨느니라",
+      "source_text_hash": "3ed2432387f15561b45aba19792ab8b7ff1f77a7e1ac69b7a41c9564497730c6",
+      "translation_text_hash": "8a854f218f7ac9c8465447086ac7ff8b90874708c967419de3987b326812db2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 내가 너로 생육하게 하며 번성하게 하여 네게서 많은 백성이 나게 하고 내가 이 땅을 네 후손에게 주어 영원한 기업이 되게 하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "8a854f218f7ac9c8465447086ac7ff8b90874708c967419de3987b326812db2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:5",
+      "sequence": 1457,
+      "chapter_label": "GEN 48",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 5
+        }
+      ],
+      "en": "Now your two sons, who were born to you in the land of Egypt before I came to you into Egypt, are mine; Ephraim and Manasseh, even as Reuben and Simeon, will be mine.",
+      "ko": "내가 애굽으로 와서 네게 이르기 전에 애굽에서 네게 낳은 두 아들 에브라임과 므낫세는 내것이라 르우벤과 시므온처럼 내것이 될 것이요",
+      "source_text_hash": "9868b510ace12e95614f83556acd5552c0fceeb8c0fa7f1b1fe887a2cb1c263f",
+      "translation_text_hash": "fd69b96f719029905be140abcc9efceef3d9653a1a0f0073f5c9c5f0014955c4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽으로 와서 네게 이르기 전에 애굽에서 네게 낳은 두 아들 에브라임과 므낫세는 내것이라 르우벤과 시므온처럼 내것이 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "fd69b96f719029905be140abcc9efceef3d9653a1a0f0073f5c9c5f0014955c4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:6",
+      "sequence": 1458,
+      "chapter_label": "GEN 48",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 6
+        }
+      ],
+      "en": "Your offspring, whom you become the father of after them, will be yours. They will be called after the name of their brothers in their inheritance.",
+      "ko": "이들 후의 네 소생이 네 것이 될 것이며 그 산업은 그 형의 명의하에서 함께 하리라",
+      "source_text_hash": "06a68f41669aaf2596d70d239c40c36bead19a545484e00c99b59518448b8f42",
+      "translation_text_hash": "4eaea7fbc3f351a5c566d28fb5a73e9b6f17c039191846ed4d8195161c7c08d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이들 후의 네 소생이 네 것이 될 것이며 그 산업은 그 형의 명의하에서 함께 하리라"
+      ],
+      "raw_text_hashes": [
+        "4eaea7fbc3f351a5c566d28fb5a73e9b6f17c039191846ed4d8195161c7c08d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:7",
+      "sequence": 1459,
+      "chapter_label": "GEN 48",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 7
+        }
+      ],
+      "en": "As for me, when I came from Paddan, Rachel died beside me in the land of Canaan on the way, when there was still some distance to come to Ephrath, and I buried her there on the way to Ephrath (also called Bethlehem).”",
+      "ko": "내게 관하여는 내가 이전에 밧단에서 올 때에 라헬이 나를 따르는 노중 가나안 땅에서 죽었는데 그곳은 에브랏까지 길이 오히려 격한 곳이라 내가 거기서 그를 에브랏 길에 장사하였느니라 (에브랏은 곧 베들레헴이라)",
+      "source_text_hash": "7d3ba485264ca3088e876b7b214ab886039471748b2c9c902e397cc47e71611d",
+      "translation_text_hash": "51f4f72ae428a4b9dd37f128c17e10060e11e3065ad3e5f54c79607ec2f6dcd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 관하여는 내가 이전에 밧단에서 올 때에 라헬이 나를 따르는 노중 가나안 땅에서 죽었는데 그곳은 에브랏까지 길이 오히려 격한 곳이라 내가 거기서 그를 에브랏 길에 장사하였느니라 (에브랏은 곧 베들레헴이라)"
+      ],
+      "raw_text_hashes": [
+        "51f4f72ae428a4b9dd37f128c17e10060e11e3065ad3e5f54c79607ec2f6dcd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:8",
+      "sequence": 1460,
+      "chapter_label": "GEN 48",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 8
+        }
+      ],
+      "en": "Israel saw Joseph’s sons, and said, “Who are these?”",
+      "ko": "이스라엘이 요셉의 아들들을 보고 가로되 이들은 누구냐",
+      "source_text_hash": "e6a29b6296d8e8a6c4fa619288b0ccdaea05c8b439db591ce9a0acf0bdf3c3e7",
+      "translation_text_hash": "c8a87ab3aa7d22085e52077d81b3e9f57db3784c5999c773c06209462f5d7f15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 요셉의 아들들을 보고 가로되 이들은 누구냐"
+      ],
+      "raw_text_hashes": [
+        "c8a87ab3aa7d22085e52077d81b3e9f57db3784c5999c773c06209462f5d7f15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:9",
+      "sequence": 1461,
+      "chapter_label": "GEN 48",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 9
+        }
+      ],
+      "en": "Joseph said to his father, “They are my sons, whom God has given me here.” He said, “Please bring them to me, and I will bless them.”",
+      "ko": "요셉이 그 아비에게 고하되 이는 하나님이 여기서 내게 주신 아들들이니이다 아비가 가로되 그들을 이끌어 내 앞으로 나아오라 내가 그들에게 축복하리라",
+      "source_text_hash": "d60c23797d1045b35d52c1f92199cd32b40d32ed236231f6ce161a9dc6746f78",
+      "translation_text_hash": "b7d7c280c7b8a568b185b241249d91b6f81d931b496d45247121548460a4b874",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 아비에게 고하되 이는 하나님이 여기서 내게 주신 아들들이니이다 아비가 가로되 그들을 이끌어 내 앞으로 나아오라 내가 그들에게 축복하리라"
+      ],
+      "raw_text_hashes": [
+        "b7d7c280c7b8a568b185b241249d91b6f81d931b496d45247121548460a4b874"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:10",
+      "sequence": 1462,
+      "chapter_label": "GEN 48",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 10
+        }
+      ],
+      "en": "Now the eyes of Israel were dim for age, so that he couldn’t see well. Joseph brought them near to him; and he kissed them, and embraced them.",
+      "ko": "이스라엘의 눈이 나이로 인하여 어두워서 보지 못하더라 요셉이 두 아들을 이끌어 아비 앞으로 나아가니 이스라엘이 그들에게 입맞추고 그들을 안고",
+      "source_text_hash": "ecfa69c7f0805451faf65ae13714f058b24abbc8ff2157df16f6801b728202e3",
+      "translation_text_hash": "02d858e84e8b8b0ba387b72b493e80b94c0172645af13bfcc5bf8d5ab4ff7bea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 눈이 나이로 인하여 어두워서 보지 못하더라 요셉이 두 아들을 이끌어 아비 앞으로 나아가니 이스라엘이 그들에게 입맞추고 그들을 안고"
+      ],
+      "raw_text_hashes": [
+        "02d858e84e8b8b0ba387b72b493e80b94c0172645af13bfcc5bf8d5ab4ff7bea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:11",
+      "sequence": 1463,
+      "chapter_label": "GEN 48",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 11
+        }
+      ],
+      "en": "Israel said to Joseph, “I didn’t think I would see your face, and behold, God has let me see your offspring also.”",
+      "ko": "요셉에게 이르되 내가 네 얼굴을 보리라고는 뜻하지 못하였더니 하나님이 내게 네 소생까지 보이셨도다",
+      "source_text_hash": "5c870e356409b78db5bac50c8c7685e808b31054ee849d270a67f24b0a5e9e20",
+      "translation_text_hash": "fc42808a39e5c9622a691375b607bdca76b85ec62a31f845f06a63a030200b82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉에게 이르되 내가 네 얼굴을 보리라고는 뜻하지 못하였더니 하나님이 내게 네 소생까지 보이셨도다"
+      ],
+      "raw_text_hashes": [
+        "fc42808a39e5c9622a691375b607bdca76b85ec62a31f845f06a63a030200b82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:12",
+      "sequence": 1464,
+      "chapter_label": "GEN 48",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 12
+        }
+      ],
+      "en": "Joseph brought them out from between his knees, and he bowed himself with his face to the earth.",
+      "ko": "요셉이 아비 무릎 사이에서 두 아들을 물리고 땅에 엎드려 절하고",
+      "source_text_hash": "91eb7cee96c24987f0ce04261ae9ea23e9957ed284715fae55c460590f798f26",
+      "translation_text_hash": "e512631ba9b53df5151afa45a858a49b591986521ff30c6df9a18ca8ebf7588c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 아비 무릎 사이에서 두 아들을 물리고 땅에 엎드려 절하고"
+      ],
+      "raw_text_hashes": [
+        "e512631ba9b53df5151afa45a858a49b591986521ff30c6df9a18ca8ebf7588c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:13",
+      "sequence": 1465,
+      "chapter_label": "GEN 48",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 13
+        }
+      ],
+      "en": "Joseph took them both, Ephraim in his right hand toward Israel’s left hand, and Manasseh in his left hand toward Israel’s right hand, and brought them near to him.",
+      "ko": "우수로는 에브라임을 이스라엘의 좌수를 향하게 하고 좌수로는 므낫세를 이스라엘의 우수를 향하게 하고 이끌어 그에게 가까이 나아가매",
+      "source_text_hash": "16c04cda92903ba35191ae3e93d8fd68b99532c564a67818c848a47e459b040c",
+      "translation_text_hash": "acabfb6bcc27b01e1d330d0c1217d6e53a2608d32082f801586b2a7de3f54e62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우수로는 에브라임을 이스라엘의 좌수를 향하게 하고 좌수로는 므낫세를 이스라엘의 우수를 향하게 하고 이끌어 그에게 가까이 나아가매"
+      ],
+      "raw_text_hashes": [
+        "acabfb6bcc27b01e1d330d0c1217d6e53a2608d32082f801586b2a7de3f54e62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:14",
+      "sequence": 1466,
+      "chapter_label": "GEN 48",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 14
+        }
+      ],
+      "en": "Israel stretched out his right hand, and laid it on Ephraim’s head, who was the younger, and his left hand on Manasseh’s head, guiding his hands knowingly, for Manasseh was the firstborn.",
+      "ko": "이스라엘이 우수를 펴서 차자 에브라임의 머리에 얹고 좌수를 펴서 므낫세의 머리에 얹으니 므낫세는 장자라도 팔을 어긋맞겨 얹었더라",
+      "source_text_hash": "c1ef961d76b74bb07c808af0f257b0ef46f2a4acf6ece3f6c370d1f00e352e66",
+      "translation_text_hash": "1ddb4785b4e9a6b6339cd326f38d508662829151b4f56f65d6c6e327ed0bab8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 우수를 펴서 차자 에브라임의 머리에 얹고 좌수를 펴서 므낫세의 머리에 얹으니 므낫세는 장자라도 팔을 어긋맞겨 얹었더라"
+      ],
+      "raw_text_hashes": [
+        "1ddb4785b4e9a6b6339cd326f38d508662829151b4f56f65d6c6e327ed0bab8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:15",
+      "sequence": 1467,
+      "chapter_label": "GEN 48",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 15
+        }
+      ],
+      "en": "He blessed Joseph, and said, “The God before whom my fathers Abraham and Isaac walked, the God who has fed me all my life long to this day,",
+      "ko": "그가 요셉을 위하여 축복하여 가로되 내 조부 아브라함과 아버지 이삭의 섬기던 하나님, 나의 남으로부터 지금까지 나를 기르신 하나님,",
+      "source_text_hash": "995627448e7dd5882daae3cf8df227c61caa4f8efbad95187007fc91b6029ec9",
+      "translation_text_hash": "5888d11f2d1b8e72ac358ae349240a152574313a01e3bc498e05e9de8117ea1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 요셉을 위하여 축복하여 가로되 내 조부 아브라함과 아버지 이삭의 섬기던 하나님, 나의 남으로부터 지금까지 나를 기르신 하나님,"
+      ],
+      "raw_text_hashes": [
+        "5888d11f2d1b8e72ac358ae349240a152574313a01e3bc498e05e9de8117ea1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:16",
+      "sequence": 1468,
+      "chapter_label": "GEN 48",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 16
+        }
+      ],
+      "en": "the angel who has redeemed me from all evil, bless the lads, and let my name be named on them, and the name of my fathers Abraham and Isaac. Let them grow into a multitude upon the earth.”",
+      "ko": "나를 모든 환난에서 건지신 사자께서 이 아이에게 복을 주시오며 이들로 내 이름과 내 조부 아브라함과 아버지 이삭의 이름으로 칭하게 하시오며 이들로 세상에서 번식되게 하시기를 원하나이다",
+      "source_text_hash": "625afd9fe8222b0fd9ad77dc98f9e616d87b09d834ae95b9c0da2c2a6ce9b64e",
+      "translation_text_hash": "00b263b722ecf6af3f89c01639478e6fd9ba7fd7b9c041138624499897a6178b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 모든 환난에서 건지신 사자께서 이 아이에게 복을 주시오며 이들로 내 이름과 내 조부 아브라함과 아버지 이삭의 이름으로 칭하게 하시오며 이들로 세상에서 번식되게 하시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "00b263b722ecf6af3f89c01639478e6fd9ba7fd7b9c041138624499897a6178b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:17",
+      "sequence": 1469,
+      "chapter_label": "GEN 48",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 17
+        }
+      ],
+      "en": "When Joseph saw that his father laid his right hand on the head of Ephraim, it displeased him. He held up his father’s hand, to remove it from Ephraim’s head to Manasseh’s head.",
+      "ko": "요셉이 그 아비가 우수를 에브라임의 머리에 얹은 것을 보고 기뻐 아니하여 아비의 손을 들어 에브라임의 머리에서 므낫세의 머리로 옮기고자 하여",
+      "source_text_hash": "d0e69ea481b739b243581ee10788c6bc00d5eefea4848ea8c512b96f5f794f79",
+      "translation_text_hash": "1d424b2a3f090011e1185bd66fb7ac37fd9c3dbfcc1ab9a3e8419fce5ee4a67c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 그 아비가 우수를 에브라임의 머리에 얹은 것을 보고 기뻐 아니하여 아비의 손을 들어 에브라임의 머리에서 므낫세의 머리로 옮기고자 하여"
+      ],
+      "raw_text_hashes": [
+        "1d424b2a3f090011e1185bd66fb7ac37fd9c3dbfcc1ab9a3e8419fce5ee4a67c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:18",
+      "sequence": 1470,
+      "chapter_label": "GEN 48",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 18
+        }
+      ],
+      "en": "Joseph said to his father, “Not so, my father, for this is the firstborn. Put your right hand on his head.”",
+      "ko": "그 아비에게 이르되 아버지여 그리 마옵소서 이는 장자니 우수를 그 머리에 얹으소서",
+      "source_text_hash": "01810c9fbc114690bcdd436125b101e7efd35217608a0e542fc31b9ea80f6ec5",
+      "translation_text_hash": "71d9289e419c959e03023d0001286ca0654086ecc6f427fb0ada3219cc414045",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비에게 이르되 아버지여 그리 마옵소서 이는 장자니 우수를 그 머리에 얹으소서"
+      ],
+      "raw_text_hashes": [
+        "71d9289e419c959e03023d0001286ca0654086ecc6f427fb0ada3219cc414045"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:19",
+      "sequence": 1471,
+      "chapter_label": "GEN 48",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 19
+        }
+      ],
+      "en": "His father refused, and said, “I know, my son, I know. He also will become a people, and he also will be great. However, his younger brother will be greater than he, and his offspring will become a multitude of nations.”",
+      "ko": "아비가 허락지 아니하여 가로되 나도 안다 내 아들아 나도 안다 그도 한 족속이 되며 그도 크게 되려니와 그 아우가 그보다 큰 자가 되고 그 자손이 여러 민족을 이루리라 하고",
+      "source_text_hash": "d711433ae2643388c1e12a65a1d42ee851650ae8c0db981c8babc34f6a161591",
+      "translation_text_hash": "90b69b25f3e365239f503819aff793d9d7e0af94db52f0816f7dc203060aaf6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 허락지 아니하여 가로되 나도 안다 내 아들아 나도 안다 그도 한 족속이 되며 그도 크게 되려니와 그 아우가 그보다 큰 자가 되고 그 자손이 여러 민족을 이루리라 하고"
+      ],
+      "raw_text_hashes": [
+        "90b69b25f3e365239f503819aff793d9d7e0af94db52f0816f7dc203060aaf6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:20",
+      "sequence": 1472,
+      "chapter_label": "GEN 48",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 20
+        }
+      ],
+      "en": "He blessed them that day, saying, “Israel will bless in your name, saying, ‘God make you as Ephraim and as Manasseh’” He set Ephraim before Manasseh.",
+      "ko": "그 날에 그들에게 축복하여 가로되 이스라엘 족속이 너로 축복하기를 하나님이 너로 에브라임 같고 므낫세 같게 하시리라 하리라 하여 에브라임을 므낫세보다 앞세웠더라",
+      "source_text_hash": "3e2fbe7df7b29a41c684ea59a3da80af1bcbac97d1255c306041185a437d9c41",
+      "translation_text_hash": "03cf0381f837670f57387633de1b07284931bc099718cc3bc3a84cf7f9a394f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 그들에게 축복하여 가로되 이스라엘 족속이 너로 축복하기를 하나님이 너로 에브라임 같고 므낫세 같게 하시리라 하리라 하여 에브라임을 므낫세보다 앞세웠더라"
+      ],
+      "raw_text_hashes": [
+        "03cf0381f837670f57387633de1b07284931bc099718cc3bc3a84cf7f9a394f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:21",
+      "sequence": 1473,
+      "chapter_label": "GEN 48",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 21
+        }
+      ],
+      "en": "Israel said to Joseph, “Behold, I am dying, but God will be with you, and bring you again to the land of your fathers.",
+      "ko": "이스라엘이 요셉에게 또 이르되 나는 죽으나 하나님이 너희와 함께 계시사 너희를 인도하여 너희 조상의 땅으로 돌아가게 하시려니와",
+      "source_text_hash": "53865e48e49c5dfb92ae625efe747c710b14dbb9bcf2b7ff93307ddde49cfe74",
+      "translation_text_hash": "78239745d35bbfbf741adbbac721b259fe36817f500db406a8c12780d77185e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 요셉에게 또 이르되 나는 죽으나 하나님이 너희와 함께 계시사 너희를 인도하여 너희 조상의 땅으로 돌아가게 하시려니와"
+      ],
+      "raw_text_hashes": [
+        "78239745d35bbfbf741adbbac721b259fe36817f500db406a8c12780d77185e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:48:22",
+      "sequence": 1474,
+      "chapter_label": "GEN 48",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 48,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 48,
+          "verse": 22
+        }
+      ],
+      "en": "Moreover I have given to you one portion above your brothers, which I took out of the hand of the Amorite with my sword and with my bow.”",
+      "ko": "내가 네게 네 형제보다 일부분을 더 주었나니 이는 내가 내 칼과 활로 아모리 족속의 손에서 빼앗은 것이니라",
+      "source_text_hash": "7c44dd39e4ea095f4a695313705d07bf80966c02052d1adeba4596554f226c82",
+      "translation_text_hash": "92cd1b652f96b03838895f51663018b7b88040b6849b7b8ff3d3093bcc9caf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네게 네 형제보다 일부분을 더 주었나니 이는 내가 내 칼과 활로 아모리 족속의 손에서 빼앗은 것이니라"
+      ],
+      "raw_text_hashes": [
+        "92cd1b652f96b03838895f51663018b7b88040b6849b7b8ff3d3093bcc9caf5b"
+      ]
+    }
+  ]
+}

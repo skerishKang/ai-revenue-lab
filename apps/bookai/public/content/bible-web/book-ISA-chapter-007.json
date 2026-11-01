@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:007",
+  "unit_ordinal": 686,
+  "unit_label": "ISA 7",
+  "book_code": "ISA",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:7:1",
+      "sequence": 17784,
+      "chapter_label": "ISA 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "In the days of Ahaz the son of Jotham, the son of Uzziah, king of Judah, Rezin the king of Syria and Pekah the son of Remaliah, king of Israel, went up to Jerusalem to war against it, but could not prevail against it.",
+      "ko": "웃시야의 손자요 요담의 아들인 유다 왕 아하스 때에 아람 왕 르신과 르말리야의 아들 이스라엘 왕 베가가 올라와서 예루살렘을 쳤으나 능히 이기지 못하니라",
+      "source_text_hash": "80eca23e5e04861eaaea5e9840a5cd424487de7d3f4835f98b9874d426e08747",
+      "translation_text_hash": "489c4cfe2208c5b01a23f9c27bbf2e15f99a522e2993bb14292e90c7fe7f019f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야의 손자요 요담의 아들인 유다 왕 아하스 때에 아람 왕 르신과 르말리야의 아들 이스라엘 왕 베가가 올라와서 예루살렘을 쳤으나 능히 이기지 못하니라"
+      ],
+      "raw_text_hashes": [
+        "489c4cfe2208c5b01a23f9c27bbf2e15f99a522e2993bb14292e90c7fe7f019f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:2",
+      "sequence": 17785,
+      "chapter_label": "ISA 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "David’s house was told, “Syria is allied with Ephraim.” His heart trembled, and the heart of his people, as the trees of the forest tremble with the wind.",
+      "ko": "혹이 다윗집에 고하여 가로되 아람이 에브라임과 동맹하였다 하였으므로 왕의 마음과 그 백성의 마음이 삼림이 바람에 흔들림 같이 흔들렸더라",
+      "source_text_hash": "678aa56a0acc340d3a2080ac3dc67a32332c4cc6d46be64d82a0b665d43cca81",
+      "translation_text_hash": "e1390375f9c95789f32290eaf3d4422d1f353e370b14a6cdb67c2c2088ee1cac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 다윗집에 고하여 가로되 아람이 에브라임과 동맹하였다 하였으므로 왕의 마음과 그 백성의 마음이 삼림이 바람에 흔들림 같이 흔들렸더라"
+      ],
+      "raw_text_hashes": [
+        "e1390375f9c95789f32290eaf3d4422d1f353e370b14a6cdb67c2c2088ee1cac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:3",
+      "sequence": 17786,
+      "chapter_label": "ISA 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Then the LORD said to Isaiah, “Go out now to meet Ahaz, you, and Shearjashub your son, at the end of the conduit of the upper pool, on the highway of the fuller’s field.",
+      "ko": "때에 여호와께서 이사야에게 이르시되 너와 네 아들 스알야숩은 윗못 수도 끝 세탁자의 밭 큰 길에 나가서 아하스를 만나",
+      "source_text_hash": "53ad7d5ad572702a68ea9e1272006c9269da899ec57353ada4e5f6bd4956e732",
+      "translation_text_hash": "bf7665dbe387d5e9418dac06099a2331db13f3c8dbfa41ba9b0723df2c581758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 여호와께서 이사야에게 이르시되 너와 네 아들 스알야숩은 윗못 수도 끝 세탁자의 밭 큰 길에 나가서 아하스를 만나"
+      ],
+      "raw_text_hashes": [
+        "bf7665dbe387d5e9418dac06099a2331db13f3c8dbfa41ba9b0723df2c581758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:4",
+      "sequence": 17787,
+      "chapter_label": "ISA 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Tell him, ‘Be careful, and keep calm. Don’t be afraid, neither let your heart be faint because of these two tails of smoking torches, for the fierce anger of Rezin and Syria, and of the son of Remaliah.",
+      "ko": "그에게 이르기를 너는 삼가며 종용하라 아람 왕 르신과 르말리야의 아들이 심히 노할찌라도 연기나는 두 부지깽이 그루터기에 불과하니 두려워 말며 낙심치 말라",
+      "source_text_hash": "54072a57d60a867c29133041fa82f6101b9d9310f8f5e74dc49a5a588e166582",
+      "translation_text_hash": "455b99d89a529bed32a0bd215139062aa7e3d771f0a620415975a472228f822c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르기를 너는 삼가며 종용하라 아람 왕 르신과 르말리야의 아들이 심히 노할찌라도 연기나는 두 부지깽이 그루터기에 불과하니 두려워 말며 낙심치 말라"
+      ],
+      "raw_text_hashes": [
+        "455b99d89a529bed32a0bd215139062aa7e3d771f0a620415975a472228f822c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:5",
+      "sequence": 17788,
+      "chapter_label": "ISA 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Because Syria, Ephraim, and the son of Remaliah, have plotted evil against you, saying,",
+      "ko": "아람과 에브라임 왕과 르말리야의 아들이 악한 꾀로 너를 대적하여 이르기를",
+      "source_text_hash": "10b4d31cfdc915d492a46b9febcf7d655795fb471bc3e8d216d1c3d38f63aa64",
+      "translation_text_hash": "404819c4f288b227e0f6e5d315f5b946cbbabb965fd9fa66f0753a0e0b9261ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아람과 에브라임 왕과 르말리야의 아들이 악한 꾀로 너를 대적하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "404819c4f288b227e0f6e5d315f5b946cbbabb965fd9fa66f0753a0e0b9261ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:6",
+      "sequence": 17789,
+      "chapter_label": "ISA 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "“Let’s go up against Judah, and tear it apart, and let’s divide it among ourselves, and set up a king within it, even the son of Tabeel.”",
+      "ko": "우리가 올라가 유다를 쳐서 그것을 곤하게 하고 우리를 위하여 그것을 파하고 다브엘의 아들을 그 중에 세워 왕을 삼자 하였으나",
+      "source_text_hash": "e3e706df8e403b368b41ec4e584a081f44156b4cc6b5925661f4a17c1a4ce38b",
+      "translation_text_hash": "28bfe02cd978bbf01a4906e2a85e4673a6b4f9cb1283626e000a711febc2d8fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 올라가 유다를 쳐서 그것을 곤하게 하고 우리를 위하여 그것을 파하고 다브엘의 아들을 그 중에 세워 왕을 삼자 하였으나"
+      ],
+      "raw_text_hashes": [
+        "28bfe02cd978bbf01a4906e2a85e4673a6b4f9cb1283626e000a711febc2d8fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:7",
+      "sequence": 17790,
+      "chapter_label": "ISA 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "This is what the Lord GOD says: “It shall not stand, neither shall it happen.”",
+      "ko": "주 여호와의 말씀에 이 도모가 서지 못하며 이루지 못하리라",
+      "source_text_hash": "e0d9bf79b47f1c4f39def365202e9c880e556630abfe291a66283b72a7a342b9",
+      "translation_text_hash": "3df34470cc708d7c1da3dcbc8d81165dca458ce7cedc8c9c998f83ba9a2761c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와의 말씀에 이 도모가 서지 못하며 이루지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "3df34470cc708d7c1da3dcbc8d81165dca458ce7cedc8c9c998f83ba9a2761c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:8",
+      "sequence": 17791,
+      "chapter_label": "ISA 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "For the head of Syria is Damascus, and the head of Damascus is Rezin. Within sixty-five years Ephraim shall be broken in pieces, so that it shall not be a people.",
+      "ko": "대저 아람의 머리는 다메섹이요 다메섹의 머리는 르신이며 에브라임의 머리는 사마리아요 사마리아의 머리는 르말리야의 아들이라도 육십 오년 내에 에브라임이 패하여 다시는 나라를 이루지 못하리라 만일 너희가 믿지 아니하면 정녕히 굳게 서지 못하리라 하셨다 할찌니라",
+      "source_text_hash": "ef8421e13f401e7befed5774358e9b0cbd8f2f0b7a8593452c6ba141fc5d3ecf",
+      "translation_text_hash": "97ab195ad8d42bfc5a8a330ee7f5a50dfe4aaf24b5ac6889e31365b2d699536c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 아람의 머리는 다메섹이요 다메섹의 머리는 르신이며 에브라임의 머리는 사마리아요 사마리아의 머리는 르말리야의 아들이라도 육십 오년 내에 에브라임이 패하여 다시는 나라를 이루지 못하리라 만일 너희가 믿지 아니하면 정녕히 굳게 서지 못하리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "97ab195ad8d42bfc5a8a330ee7f5a50dfe4aaf24b5ac6889e31365b2d699536c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:9",
+      "sequence": 17792,
+      "chapter_label": "ISA 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "The head of Ephraim is Samaria, and the head of Samaria is Remaliah’s son. If you will not believe, surely you shall not be established.’”",
+      "ko": "(8절에 포함되어 있음)",
+      "source_text_hash": "c350f42601bae2d78460526566ef62659b0e3e21152d26ccc1ab44319f639e07",
+      "translation_text_hash": "1716fc239ff2c5be2722b87ceb6f04da2f4f37ea6d8c8bd2852ad9cbebabcaf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(8절에 포함되어 있음)"
+      ],
+      "raw_text_hashes": [
+        "1716fc239ff2c5be2722b87ceb6f04da2f4f37ea6d8c8bd2852ad9cbebabcaf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:10",
+      "sequence": 17793,
+      "chapter_label": "ISA 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD spoke again to Ahaz, saying,",
+      "ko": "여호와께서 또 아하스에게 일러 가라사대",
+      "source_text_hash": "37be1aa2f0e4d61235afbdca70f4cdb66871db757de7da94ed04717a0e84f012",
+      "translation_text_hash": "d381cbcdb8fa826c036f3b32c595491805945e7851af62e0ea9f62f070f20bc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 아하스에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d381cbcdb8fa826c036f3b32c595491805945e7851af62e0ea9f62f070f20bc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:11",
+      "sequence": 17794,
+      "chapter_label": "ISA 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "“Ask a sign of the LORD your God; ask it either in the depth, or in the height above.”",
+      "ko": "너는 네 하나님 여호와께 한 징조를 구하되 깊은데서든지 높은데서든지 구하라",
+      "source_text_hash": "f111341031221392777965ccf57714b9789e4c9bde94ef5254a1f54d8baba2bd",
+      "translation_text_hash": "a45cb82e5a765073b85e441bcef558c93c1882db582bd89355c15842b321ba21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 하나님 여호와께 한 징조를 구하되 깊은데서든지 높은데서든지 구하라"
+      ],
+      "raw_text_hashes": [
+        "a45cb82e5a765073b85e441bcef558c93c1882db582bd89355c15842b321ba21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:12",
+      "sequence": 17795,
+      "chapter_label": "ISA 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "But Ahaz said, “I won’t ask. I won’t tempt the LORD.”",
+      "ko": "아하스가 가로되 나는 구하지 아니하겠나이다 나는 여호와를 시험치 아니하겠나이다 한지라",
+      "source_text_hash": "fab97795f17e6b1034255cf341d9dacc2c59fb644b7d6a43a74fa93a641b1b8d",
+      "translation_text_hash": "2f6fc2003b7929a69ad18672d4297754bab431cd6e8973386b40f0de91c8d932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아하스가 가로되 나는 구하지 아니하겠나이다 나는 여호와를 시험치 아니하겠나이다 한지라"
+      ],
+      "raw_text_hashes": [
+        "2f6fc2003b7929a69ad18672d4297754bab431cd6e8973386b40f0de91c8d932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:13",
+      "sequence": 17796,
+      "chapter_label": "ISA 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "He said, “Listen now, house of David. Is it not enough for you to try the patience of men, that you will try the patience of my God also?",
+      "ko": "이사야가 가로되 다윗의 집이여 청컨대 들을찌어다 너희가 사람을 괴롭게 하고 그것을 작은 일로 여겨서 또 나의 하나님을 괴로우시게 하려느냐",
+      "source_text_hash": "3dfa69bf695a9f99da95a0c80991f1990c9382559b187c58493e22a097153e78",
+      "translation_text_hash": "ffc5e50f383d2106b35e2a62bd5ade9b72836e3d3ef21bccb1fe14762c26d05d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야가 가로되 다윗의 집이여 청컨대 들을찌어다 너희가 사람을 괴롭게 하고 그것을 작은 일로 여겨서 또 나의 하나님을 괴로우시게 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "ffc5e50f383d2106b35e2a62bd5ade9b72836e3d3ef21bccb1fe14762c26d05d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:14",
+      "sequence": 17797,
+      "chapter_label": "ISA 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore the Lord himself will give you a sign. Behold, the virgin will conceive, and bear a son, and shall call his name Immanuel.",
+      "ko": "그러므로 주께서 친히 징조로 너희에게 주실 것이라 보라 처녀가 잉태하여 아들을 낳을 것이요 그 이름을 임마누엘이라 하리라",
+      "source_text_hash": "c538234dd33ffd33fb0a566a5a35f0ba72577faf5d7eaeb0803f539a7def7ed3",
+      "translation_text_hash": "244401a43e9cef601c3504af3c08df2fa770090f9e284b6bd8ac6a3860a09eac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주께서 친히 징조로 너희에게 주실 것이라 보라 처녀가 잉태하여 아들을 낳을 것이요 그 이름을 임마누엘이라 하리라"
+      ],
+      "raw_text_hashes": [
+        "244401a43e9cef601c3504af3c08df2fa770090f9e284b6bd8ac6a3860a09eac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:15",
+      "sequence": 17798,
+      "chapter_label": "ISA 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "He shall eat butter and honey when he knows to refuse the evil and choose the good.",
+      "ko": "그가 악을 버리며 선을 택할줄 알 때에 미쳐 뻐터와 꿀을 먹을 것이라",
+      "source_text_hash": "e74f31126faf7b5f02267b13c8f0540791bc5ff52e2c4a3094cc77f9d4d89ad0",
+      "translation_text_hash": "003d397bcc8ffe2450c8e1163b48a22fa4f4385c317f8d867b3bdf6ecf749240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 악을 버리며 선을 택할줄 알 때에 미쳐 뻐터와 꿀을 먹을 것이라"
+      ],
+      "raw_text_hashes": [
+        "003d397bcc8ffe2450c8e1163b48a22fa4f4385c317f8d867b3bdf6ecf749240"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:16",
+      "sequence": 17799,
+      "chapter_label": "ISA 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "For before the child knows to refuse the evil and choose the good, the land whose two kings you abhor shall be forsaken.",
+      "ko": "대저 이 아이가 악을 버리며 선을 택할줄 알기 전에 너의 미워하는 두 왕의 땅이 폐한바 되리라",
+      "source_text_hash": "0036be657bee49c091a2d5530cf3799bcfa063588f84dfae3e07aa14eae5dc28",
+      "translation_text_hash": "5dd28c264312c71bc6c24aafbfe62778a556b67df11c6687a665a353f11ffc5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 이 아이가 악을 버리며 선을 택할줄 알기 전에 너의 미워하는 두 왕의 땅이 폐한바 되리라"
+      ],
+      "raw_text_hashes": [
+        "5dd28c264312c71bc6c24aafbfe62778a556b67df11c6687a665a353f11ffc5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:17",
+      "sequence": 17800,
+      "chapter_label": "ISA 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD will bring on you, on your people, and on your father’s house days that have not come, from the day that Ephraim departed from Judah, even the king of Assyria.",
+      "ko": "여호와께서 에브라임이 유다를 떠날 때부터 당하여 보지 못한 날을 너와 네 백성과 네 아비 집에 임하게 하시리니 곧 앗수르 왕의 오는 날이니라",
+      "source_text_hash": "c3db90ea399b3bf0a2bf9438419f85fa99964b7db540df267b87476c301d6cd0",
+      "translation_text_hash": "a67bfd962c08ad793344edf8fd952e9fe60ccb766cfb6f243a6c57e0a0264cd3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 에브라임이 유다를 떠날 때부터 당하여 보지 못한 날을 너와 네 백성과 네 아비 집에 임하게 하시리니 곧 앗수르 왕의 오는 날이니라"
+      ],
+      "raw_text_hashes": [
+        "a67bfd962c08ad793344edf8fd952e9fe60ccb766cfb6f243a6c57e0a0264cd3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:18",
+      "sequence": 17801,
+      "chapter_label": "ISA 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "It will happen in that day that the LORD will whistle for the fly that is in the uttermost part of the rivers of Egypt, and for the bee that is in the land of Assyria.",
+      "ko": "그 날에는 여호와께서 애굽 하수에서 먼 지경의 파리와 앗수르 땅의 벌을 부르시리니",
+      "source_text_hash": "5f3e4ba1d9cb4bb015e1ceb6e779db82c076691bce8d12b7828d4e34d2d93e8f",
+      "translation_text_hash": "97ae8ddce7ec1a079b9255d8788b68c6c0a1af1dcec5bd0761ff81f1847db01b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 여호와께서 애굽 하수에서 먼 지경의 파리와 앗수르 땅의 벌을 부르시리니"
+      ],
+      "raw_text_hashes": [
+        "97ae8ddce7ec1a079b9255d8788b68c6c0a1af1dcec5bd0761ff81f1847db01b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:19",
+      "sequence": 17802,
+      "chapter_label": "ISA 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "They shall come, and shall all rest in the desolate valleys, in the clefts of the rocks, on all thorn hedges, and on all pastures.",
+      "ko": "다 와서 거친 골짜기와 바위틈과 가시나무 울타리와 모든 초장에 앉으리라",
+      "source_text_hash": "599b7d3a63788ed6b2eac7e583adc66ff969b960b1be49f0052af0482ea26714",
+      "translation_text_hash": "2dd169bf913fb087488fa8a23f713ab63ba1ea1b41dd44b1fe5bb51b2c4cb7a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 와서 거친 골짜기와 바위틈과 가시나무 울타리와 모든 초장에 앉으리라"
+      ],
+      "raw_text_hashes": [
+        "2dd169bf913fb087488fa8a23f713ab63ba1ea1b41dd44b1fe5bb51b2c4cb7a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:20",
+      "sequence": 17803,
+      "chapter_label": "ISA 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "In that day the Lord will shave with a razor that is hired in the parts beyond the River, even with the king of Assyria, the head and the hair of the feet; and it shall also consume the beard.",
+      "ko": "그 날에는 주께서 하수 저편에서 세내어 온 삭도 곧 앗수르 왕으로 네 백성의 머리털과 발털을 미실 것이요 수염도 깎으시리라",
+      "source_text_hash": "0f746abe3a2d8ca66040440503decd530e6d486ee677c4ffa0be39d3e256d7e5",
+      "translation_text_hash": "3f42d60c5e04f416472980930d097e22689d69608feda8c45efd4210aa85b237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 주께서 하수 저편에서 세내어 온 삭도 곧 앗수르 왕으로 네 백성의 머리털과 발털을 미실 것이요 수염도 깎으시리라"
+      ],
+      "raw_text_hashes": [
+        "3f42d60c5e04f416472980930d097e22689d69608feda8c45efd4210aa85b237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:21",
+      "sequence": 17804,
+      "chapter_label": "ISA 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "It shall happen in that day that a man shall keep alive a young cow, and two sheep.",
+      "ko": "그 날에는 사람이 한 어린 암소와 두 양을 기르리니",
+      "source_text_hash": "b0d64f9a3d18db818e24f7e492eb88a92579ad1bef7df9e3d22578a1033076b3",
+      "translation_text_hash": "7559b7310ffc15854a66bdcb76e7d62373c2357df9ff854078bf82bdd945799a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 사람이 한 어린 암소와 두 양을 기르리니"
+      ],
+      "raw_text_hashes": [
+        "7559b7310ffc15854a66bdcb76e7d62373c2357df9ff854078bf82bdd945799a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:22",
+      "sequence": 17805,
+      "chapter_label": "ISA 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "It shall happen, that because of the abundance of milk which they shall give he shall eat butter, for everyone will eat butter and honey that is left within the land.",
+      "ko": "그 내는 젖이 많으므로 뻐터를 먹을 것이라 무릇 그 땅 가운데 남아 있는 자는 뻐터와 꿀을 먹으리라",
+      "source_text_hash": "0934d7834449e55846054a4242899ee5b6e7dae3cbfbec748bb8bc722b1f7187",
+      "translation_text_hash": "6cde43139296651f0fe6b3bfe2c70ddbbc6d70eb5fd04e44787e6de2988cdaa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 내는 젖이 많으므로 뻐터를 먹을 것이라 무릇 그 땅 가운데 남아 있는 자는 뻐터와 꿀을 먹으리라"
+      ],
+      "raw_text_hashes": [
+        "6cde43139296651f0fe6b3bfe2c70ddbbc6d70eb5fd04e44787e6de2988cdaa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:23",
+      "sequence": 17806,
+      "chapter_label": "ISA 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "It will happen in that day that every place where there were a thousand vines worth a thousand silver shekels, will be for briers and thorns.",
+      "ko": "그 날에는 천 주에 은 일천 개의 가치 되는 포도나무 있던 곳마다 질려와 형극이 날 것이라",
+      "source_text_hash": "0bfc359655c13473d587b3409050122e86faefa53ba60849d0402d061eae4b9b",
+      "translation_text_hash": "30768c85c22ff5d4d0b2e51489a7907e9c3d55b0931400519945f3d1c036784b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 천 주에 은 일천 개의 가치 되는 포도나무 있던 곳마다 질려와 형극이 날 것이라"
+      ],
+      "raw_text_hashes": [
+        "30768c85c22ff5d4d0b2e51489a7907e9c3d55b0931400519945f3d1c036784b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:24",
+      "sequence": 17807,
+      "chapter_label": "ISA 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "People will go there with arrows and with bow, because all the land will be briers and thorns.",
+      "ko": "온 땅에 질려와 형극이 있으므로 살과 활을 가지고 그리로 갈 것이요",
+      "source_text_hash": "daa44996774fde2d0e5473ef3d3aed80fa73be5a2b042f578e85114ee44ba064",
+      "translation_text_hash": "51e7dd4cdc3d7150c871ba8f6103da14d4c7234a78e7562645564e3ab9ffa21d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 땅에 질려와 형극이 있으므로 살과 활을 가지고 그리로 갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "51e7dd4cdc3d7150c871ba8f6103da14d4c7234a78e7562645564e3ab9ffa21d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:7:25",
+      "sequence": 17808,
+      "chapter_label": "ISA 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "All the hills that were cultivated with the hoe, you shall not come there for fear of briers and thorns; but it shall be for the sending out of oxen, and for sheep to tread on.”",
+      "ko": "보습으로 갈던 산에도 질려와 형극 까닭에 두려워서 그리로 가지 못할 것이요 그 땅은 소를 놓으며 양의 밟는 곳이 되리라",
+      "source_text_hash": "ad6f83b8b699b3762295d6e899b87696d7e9008a3bc2d3ed76b1b3348f8db39d",
+      "translation_text_hash": "2deb02dffc7b885ba3e1f04376a50b93b0f33f09fa1920a76916d16dde0590e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보습으로 갈던 산에도 질려와 형극 까닭에 두려워서 그리로 가지 못할 것이요 그 땅은 소를 놓으며 양의 밟는 곳이 되리라"
+      ],
+      "raw_text_hashes": [
+        "2deb02dffc7b885ba3e1f04376a50b93b0f33f09fa1920a76916d16dde0590e3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZR:chapter:004",
+  "unit_ordinal": 407,
+  "unit_label": "EZR 4",
+  "book_code": "EZR",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZR:4:1",
+      "sequence": 12112,
+      "chapter_label": "EZR 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Now when the adversaries of Judah and Benjamin heard that the children of the captivity were building a temple to the LORD, the God of Israel,",
+      "ko": "유다와 베냐민의 대적이 사로잡혔던 자의 자손이 이스라엘 하나님 여호와를 위하여 전을 건축한다 함을 듣고",
+      "source_text_hash": "fafe90f3f877d0dd236937875b85cbcf2f5caebcb7936d0f4820176c17f3797a",
+      "translation_text_hash": "1f4b098219fa8ca33fb0847e29c0beac99cb606df0a6490eba0019901a2ef83e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다와 베냐민의 대적이 사로잡혔던 자의 자손이 이스라엘 하나님 여호와를 위하여 전을 건축한다 함을 듣고"
+      ],
+      "raw_text_hashes": [
+        "1f4b098219fa8ca33fb0847e29c0beac99cb606df0a6490eba0019901a2ef83e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:2",
+      "sequence": 12113,
+      "chapter_label": "EZR 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "they came near to Zerubbabel, and to the heads of fathers’ households, and said to them, “Let us build with you, for we seek your God as you do; and we have been sacrificing to him since the days of Esar Haddon king of Assyria, who brought us up here.”",
+      "ko": "스룹바벨과 족장들에게 나아와 이르되 우리로 너희와 함께 건축하게 하라 우리도 너희 같이 너희 하나님을 구하노라 앗수르 왕 에살핫돈이 우리를 이리로 오게한 날부터 우리가 하나님께 제사를 드리노라",
+      "source_text_hash": "468672b0993b51de5ccd4f4e832d9d5b8b59de8a92d80139715e9eb4f3c79645",
+      "translation_text_hash": "622f6502d40eab873b61386615e55db7b5bf66df576b25d907e3a9505b191f78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룹바벨과 족장들에게 나아와 이르되 우리로 너희와 함께 건축하게 하라 우리도 너희 같이 너희 하나님을 구하노라 앗수르 왕 에살핫돈이 우리를 이리로 오게한 날부터 우리가 하나님께 제사를 드리노라"
+      ],
+      "raw_text_hashes": [
+        "622f6502d40eab873b61386615e55db7b5bf66df576b25d907e3a9505b191f78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:3",
+      "sequence": 12114,
+      "chapter_label": "EZR 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "But Zerubbabel, Jeshua, and the rest of the heads of fathers’ households of Israel said to them, “You have nothing to do with us in building a house to our God; but we ourselves together will build to the LORD, the God of Israel, as King Cyrus the king of Persia has commanded us.”",
+      "ko": "스룹바벨과 예수아와 기타 이스라엘 족장들이 이르되 우리 하나님의 전을 건축하는데 너희는 우리와 상관이 없느니라 바사 왕 고레스가 우리에게 명하신대로 우리가 이스라엘 하나님 여호와를 위하여 홀로 건축하리라 하였더니",
+      "source_text_hash": "da701335b55782d9d2865477e953f612763657db3f6c25ad4c36903092b82cce",
+      "translation_text_hash": "1a2bb4f4dc942fe41e675efac3b70adaaa656b9af7c3390dbd272c6e71b53f09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룹바벨과 예수아와 기타 이스라엘 족장들이 이르되 우리 하나님의 전을 건축하는데 너희는 우리와 상관이 없느니라 바사 왕 고레스가 우리에게 명하신대로 우리가 이스라엘 하나님 여호와를 위하여 홀로 건축하리라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "1a2bb4f4dc942fe41e675efac3b70adaaa656b9af7c3390dbd272c6e71b53f09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:4",
+      "sequence": 12115,
+      "chapter_label": "EZR 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Then the people of the land weakened the hands of the people of Judah, and troubled them in building.",
+      "ko": "이로부터 그 땅 백성이 유다 백성의 손을 약하게 하여 그 건축을 방해하되",
+      "source_text_hash": "3a07b42a42be9c32e12e7290786eea849c0ce0fd5cdcbe0fe2f7be02387101c5",
+      "translation_text_hash": "d97aabd9af26ffc318ef2ce0b13b44b9ddcfd66eacf78e842f784c5a7736c09e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이로부터 그 땅 백성이 유다 백성의 손을 약하게 하여 그 건축을 방해하되"
+      ],
+      "raw_text_hashes": [
+        "d97aabd9af26ffc318ef2ce0b13b44b9ddcfd66eacf78e842f784c5a7736c09e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:5",
+      "sequence": 12116,
+      "chapter_label": "EZR 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "They hired counselors against them to frustrate their purpose all the days of Cyrus king of Persia, even until the reign of Darius king of Persia.",
+      "ko": "바사 왕 고레스의 시대부터 바사 왕 다리오가 즉위할 때까지 의사들에게 뇌물을 주어 그 경영을 저희하였으며",
+      "source_text_hash": "1ab47ae9252e8a1c0035a01ecfda2524b57c56d5bbd4f825d01d24ca26326427",
+      "translation_text_hash": "d8afb3064e73dfc018364f37a5fe4888e1667c3dc25a303d879246ea18f54c66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바사 왕 고레스의 시대부터 바사 왕 다리오가 즉위할 때까지 의사들에게 뇌물을 주어 그 경영을 저희하였으며"
+      ],
+      "raw_text_hashes": [
+        "d8afb3064e73dfc018364f37a5fe4888e1667c3dc25a303d879246ea18f54c66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:6",
+      "sequence": 12117,
+      "chapter_label": "EZR 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "In the reign of Ahasuerus, in the beginning of his reign, they wrote an accusation against the inhabitants of Judah and Jerusalem.",
+      "ko": "또 아하수에로가 즉위할 때에 저희가 글을 올려 유다와 예루살렘 거민을 고소하니라",
+      "source_text_hash": "b0d118cde9e303c3e051d68e78a7d83307b3801752e9096f4cf68127c75471df",
+      "translation_text_hash": "e350d5ad844eae343d7d559b9654d9ce2dd804069ad0a67cdb6da7105fbaa901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 아하수에로가 즉위할 때에 저희가 글을 올려 유다와 예루살렘 거민을 고소하니라"
+      ],
+      "raw_text_hashes": [
+        "e350d5ad844eae343d7d559b9654d9ce2dd804069ad0a67cdb6da7105fbaa901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:7",
+      "sequence": 12118,
+      "chapter_label": "EZR 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "In the days of Artaxerxes, Bishlam, Mithredath, Tabeel, and the rest of his companions wrote to Artaxerxes king of Persia; and the writing of the letter was written in Syrian and delivered in the Syrian language.",
+      "ko": "아닥사스다 때에 비슬람과 미드르닷과 다브엘과 그 동료들이 바사 왕 아닥사스다에게 글을 올렸으니 그 글은 아람 문자와 아람 방언으로 써서 진술하였더라",
+      "source_text_hash": "fdada0d10b73123faf6e3372b1c18cf6f6c60f7d3b1c85758caa0178e1a38c6d",
+      "translation_text_hash": "47a973647d1ba35b2d1a6c94bee40045551fbd6108606660a3f3727cc5d4d16b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다 때에 비슬람과 미드르닷과 다브엘과 그 동료들이 바사 왕 아닥사스다에게 글을 올렸으니 그 글은 아람 문자와 아람 방언으로 써서 진술하였더라"
+      ],
+      "raw_text_hashes": [
+        "47a973647d1ba35b2d1a6c94bee40045551fbd6108606660a3f3727cc5d4d16b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:8",
+      "sequence": 12119,
+      "chapter_label": "EZR 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Rehum the chancellor and Shimshai the scribe wrote a letter against Jerusalem to Artaxerxes the king as follows.",
+      "ko": "방백 르훔과 서기관 심새가 아닥사스다왕에게 올려 예루살렘 백성을 고소한 그 글에",
+      "source_text_hash": "d5af735c7f1ef380dba036ff2644b03ebae93ebba13181bfbf82796a873c21b8",
+      "translation_text_hash": "de3f8e6697dc78cdedb9778a8bace2220a9b5f95dc44d0a78c1bd72ea1418665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백 르훔과 서기관 심새가 아닥사스다왕에게 올려 예루살렘 백성을 고소한 그 글에"
+      ],
+      "raw_text_hashes": [
+        "de3f8e6697dc78cdedb9778a8bace2220a9b5f95dc44d0a78c1bd72ea1418665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:9",
+      "sequence": 12120,
+      "chapter_label": "EZR 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Then Rehum the chancellor, Shimshai the scribe, and the rest of their companions, the Dinaites, and the Apharsathchites, the Tarpelites, the Apharsites, the Archevites, the Babylonians, the Shushanchites, the Dehaites, the Elamites,",
+      "ko": "방백 르훔과 서기관 심새와 그 동료 디나 사람과 아바삿 사람과 다블래 사람과 아바새 사람과 아렉 사람과 바벨론 사람과 수산 사람과 데해 사람과 엘람 사람과",
+      "source_text_hash": "5d5888f8d196a3de438a9e7fbf77480abae68e332939734af64b6c981425400e",
+      "translation_text_hash": "b155757ea3ea95c3486db003b9818b3ff655462ae71a0b75edef156e55d77184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백 르훔과 서기관 심새와 그 동료 디나 사람과 아바삿 사람과 다블래 사람과 아바새 사람과 아렉 사람과 바벨론 사람과 수산 사람과 데해 사람과 엘람 사람과"
+      ],
+      "raw_text_hashes": [
+        "b155757ea3ea95c3486db003b9818b3ff655462ae71a0b75edef156e55d77184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:10",
+      "sequence": 12121,
+      "chapter_label": "EZR 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "and the rest of the nations whom the great and noble Osnappar brought over and settled in the city of Samaria, and in the rest of the country beyond the River, and so forth, wrote.",
+      "ko": "기타 백성 곧 존귀한 오스납발이 사마리아 성과 강 서편 다른 땅에 옮겨 둔 자들과 함께 고한다 하였더라",
+      "source_text_hash": "f987921d933217e1524698381fe2e82a122fc9cb520716548ca7fb2ad021732e",
+      "translation_text_hash": "bfc84e822de4e7aa6f5de6f09441dd0df6de0bd278a2ece0eb8976b9e68607ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기타 백성 곧 존귀한 오스납발이 사마리아 성과 강 서편 다른 땅에 옮겨 둔 자들과 함께 고한다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "bfc84e822de4e7aa6f5de6f09441dd0df6de0bd278a2ece0eb8976b9e68607ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:11",
+      "sequence": 12122,
+      "chapter_label": "EZR 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "This is the copy of the letter that they sent: i To King Artaxerxes, from your servants, the people beyond the River. i1",
+      "ko": "아닥사스다왕에게 올린 그 글의 초본은 이러하니 강 서편에 있는 신복들은",
+      "source_text_hash": "2e8492d9b899a66e900daed6b52d804ae8786ea8415488832f68629f90b7305b",
+      "translation_text_hash": "d4ed356550ffd0c51ec64a3254bedafbdd1ff40d63e39e6370f4e229048d4f4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다왕에게 올린 그 글의 초본은 이러하니 강 서편에 있는 신복들은"
+      ],
+      "raw_text_hashes": [
+        "d4ed356550ffd0c51ec64a3254bedafbdd1ff40d63e39e6370f4e229048d4f4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:12",
+      "sequence": 12123,
+      "chapter_label": "EZR 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "Be it known to the king that the Jews who came up from you have come to us to Jerusalem. They are building the rebellious and bad city, and have finished the walls and repaired the foundations.",
+      "ko": "왕에게 고하나이다 왕에게서 올라온 유다 사람들이 우리의 곳 예루살렘에 이르러 이 패역하고 악한 성읍을 건축하는데 이미 그 지대를 수축하고 성곽을 건축하오니",
+      "source_text_hash": "88f88d18b27db91d6159569f702f26785e4b3b884dac6d6e5a43695585bcb22b",
+      "translation_text_hash": "0a9f629a8a7592454aefb8aaf33ee7c19a6ed316bcd6eb3a0395650e406d5206",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕에게 고하나이다 왕에게서 올라온 유다 사람들이 우리의 곳 예루살렘에 이르러 이 패역하고 악한 성읍을 건축하는데 이미 그 지대를 수축하고 성곽을 건축하오니"
+      ],
+      "raw_text_hashes": [
+        "0a9f629a8a7592454aefb8aaf33ee7c19a6ed316bcd6eb3a0395650e406d5206"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:13",
+      "sequence": 12124,
+      "chapter_label": "EZR 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Be it known now to the king that if this city is built and the walls finished, they will not pay tribute, custom, or toll, and in the end it will be hurtful to the kings.",
+      "ko": "이제 왕은 아시옵소서 만일 이 성읍을 건축하며 그 성곽을 마치면 저 무리가 다시는 조공과 잡세와 부세를 바치지 아니하리니 필경 왕들에게 손해가 되리이다",
+      "source_text_hash": "65064539119589268be1dab2d2aa9284bfb5893838e6dcc427d5a9f59f460351",
+      "translation_text_hash": "cabd6c8ad2fe5c76c1ebe6942cd8099f6f85d836c2754fe2074b5d96e0e9eff0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 왕은 아시옵소서 만일 이 성읍을 건축하며 그 성곽을 마치면 저 무리가 다시는 조공과 잡세와 부세를 바치지 아니하리니 필경 왕들에게 손해가 되리이다"
+      ],
+      "raw_text_hashes": [
+        "cabd6c8ad2fe5c76c1ebe6942cd8099f6f85d836c2754fe2074b5d96e0e9eff0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:14",
+      "sequence": 12125,
+      "chapter_label": "EZR 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Now because we eat the salt of the palace and it is not appropriate for us to see the king’s dishonor, therefore we have sent and informed the king,",
+      "ko": "우리가 이제 궁의 소금을 먹는고로 왕의 수치 당함을 참아 보지못하여 보내어 왕에게 고하오니",
+      "source_text_hash": "512f7b402e85422a25b8fccb30c2d01ee66e7454e34fe930f4f4f0842fe667ef",
+      "translation_text_hash": "15a7a19f0aa5406dcdc3e006d6a52b7c25550963facc604e5a575ae03d23016e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이제 궁의 소금을 먹는고로 왕의 수치 당함을 참아 보지못하여 보내어 왕에게 고하오니"
+      ],
+      "raw_text_hashes": [
+        "15a7a19f0aa5406dcdc3e006d6a52b7c25550963facc604e5a575ae03d23016e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:15",
+      "sequence": 12126,
+      "chapter_label": "EZR 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "that search may be made in the book of the records of your fathers. You will see in the book of the records, and know that this city is a rebellious city, and hurtful to kings and provinces, and that they have started rebellions within it in the past. That is why this city was destroyed.",
+      "ko": "왕은 열조의 사기를 살피시면 그 사기에서 이 성읍은 패역한 성읍이라 예로부터 그 중에서 항상 반역하는 일을 행하여 열왕과 각 도에 손해가 된 것을 보시고 아실찌라 이 성읍이 훼파됨도 이 까닭이니이다",
+      "source_text_hash": "151456bade7a199c832752e01ad82f27121e69e25eb960410e4d7ef7dbbd586a",
+      "translation_text_hash": "58c55ff14d8caf4d8fb2caf4ddc89f96fe8a53b58198c4f7a5cda268e5fccf6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 열조의 사기를 살피시면 그 사기에서 이 성읍은 패역한 성읍이라 예로부터 그 중에서 항상 반역하는 일을 행하여 열왕과 각 도에 손해가 된 것을 보시고 아실찌라 이 성읍이 훼파됨도 이 까닭이니이다"
+      ],
+      "raw_text_hashes": [
+        "58c55ff14d8caf4d8fb2caf4ddc89f96fe8a53b58198c4f7a5cda268e5fccf6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:16",
+      "sequence": 12127,
+      "chapter_label": "EZR 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "We inform the king that if this city is built and the walls finished, then you will have no possession beyond the River.",
+      "ko": "이제 감히 왕에게 고하오니 이 성읍이 중건되어 성곽을 필역하면 이로 말미암아 왕의 강 서편 영지가 없어지리이다 하였더라",
+      "source_text_hash": "43a60364a7fbe141a68bee362f4b20baa9bff5c48be8b2d40e90a72b904f5129",
+      "translation_text_hash": "6bdad095879d542f42204c168d2e22a72b213e2a5b65b1716c4ea58d2a99477f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 감히 왕에게 고하오니 이 성읍이 중건되어 성곽을 필역하면 이로 말미암아 왕의 강 서편 영지가 없어지리이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "6bdad095879d542f42204c168d2e22a72b213e2a5b65b1716c4ea58d2a99477f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:17",
+      "sequence": 12128,
+      "chapter_label": "EZR 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "Then the king sent an answer to Rehum the chancellor, and to Shimshai the scribe, and to the rest of their companions who live in Samaria, and in the rest of the country beyond the River: i Peace. i1",
+      "ko": "왕이 방백 르훔과 서기관 심새와 사마리아에 거한 저희 동료와 강 서편 다른 땅 백성에게 조서를 내리니 일렀으되 너희는 평안할지어다",
+      "source_text_hash": "caf9fc63cfc99544cd0861e969dca1eda0bbd57d311b9a82b897106ebb3c4245",
+      "translation_text_hash": "302a5699de475f8c6a0a4cd507f056c35fc4ac03868511f88aa1436c6475c0d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 방백 르훔과 서기관 심새와 사마리아에 거한 저희 동료와 강 서편 다른 땅 백성에게 조서를 내리니 일렀으되 너희는 평안할지어다"
+      ],
+      "raw_text_hashes": [
+        "302a5699de475f8c6a0a4cd507f056c35fc4ac03868511f88aa1436c6475c0d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:18",
+      "sequence": 12129,
+      "chapter_label": "EZR 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "The letter which you sent to us has been plainly read before me.",
+      "ko": "너희의 올린 글을 내 앞에서 낭독시키고",
+      "source_text_hash": "a8dd702a076f2999056dbc6e71933a1729297c674479594df0e4fe883674bb8b",
+      "translation_text_hash": "c38b4501237f00672ac7cbea707c8fa671501f02c81b1955f96642a5e3f68644",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 올린 글을 내 앞에서 낭독시키고"
+      ],
+      "raw_text_hashes": [
+        "c38b4501237f00672ac7cbea707c8fa671501f02c81b1955f96642a5e3f68644"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:19",
+      "sequence": 12130,
+      "chapter_label": "EZR 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "I decreed, and search has been made, and it was found that this city has made insurrection against kings in the past, and that rebellion and revolts have been made in it.",
+      "ko": "명하여 살펴보니 과연 이 성읍이 예로부터 열왕을 거역하며 그 중에서 항상 패역하고 모반하는 일을 행하였으며",
+      "source_text_hash": "5961d35b4adc0f72e911e278e547cc85635f8a6b0717c7476b88174c9338fd83",
+      "translation_text_hash": "cf8704b1e6ada882dec8cf89c213215e8c6feb7445111ea89128907cc046d166",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 살펴보니 과연 이 성읍이 예로부터 열왕을 거역하며 그 중에서 항상 패역하고 모반하는 일을 행하였으며"
+      ],
+      "raw_text_hashes": [
+        "cf8704b1e6ada882dec8cf89c213215e8c6feb7445111ea89128907cc046d166"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:20",
+      "sequence": 12131,
+      "chapter_label": "EZR 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "There have also been mighty kings over Jerusalem who have ruled over all the country beyond the River; and tribute, custom, and toll was paid to them.",
+      "ko": "옛적에는 예루살렘을 주재하는 큰 군왕이 있어서 강 서편 모든 땅도 주재하매 조공과 잡세와 부세를 저에게 다 바쳤도다",
+      "source_text_hash": "348e75f6ffde0bf5f3a6125e9e738192a5e75b631f4027e45fc2d68a91147da7",
+      "translation_text_hash": "3fa51de61356f85eae5463252105104dfaa7c3e82ccf9b609b5bd1d147354f5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적에는 예루살렘을 주재하는 큰 군왕이 있어서 강 서편 모든 땅도 주재하매 조공과 잡세와 부세를 저에게 다 바쳤도다"
+      ],
+      "raw_text_hashes": [
+        "3fa51de61356f85eae5463252105104dfaa7c3e82ccf9b609b5bd1d147354f5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:21",
+      "sequence": 12132,
+      "chapter_label": "EZR 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Make a decree now to cause these men to cease, and that this city not be built until a decree is made by me.",
+      "ko": "이제 너희는 명을 전하여 그 사람들로 역사를 그치게 하여 그 성을 건축지 못하게 하고 내가 다시 조서 내리기를 기다리라",
+      "source_text_hash": "dd762dc8921e4d37be15f8acb1cc82647a8959f6b8249c50d82c982ff93be922",
+      "translation_text_hash": "676b39eb48247f848e449d731eaf35d4603f53f62f39f406be8b8ccfd1dee609",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너희는 명을 전하여 그 사람들로 역사를 그치게 하여 그 성을 건축지 못하게 하고 내가 다시 조서 내리기를 기다리라"
+      ],
+      "raw_text_hashes": [
+        "676b39eb48247f848e449d731eaf35d4603f53f62f39f406be8b8ccfd1dee609"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:22",
+      "sequence": 12133,
+      "chapter_label": "EZR 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "Be careful that you not be slack doing so. Why should damage grow to the hurt of the kings?",
+      "ko": "너희는 삼가서 이 일에 게으르지 말라 어찌하여 화를 더하여 왕들에게 손해가 되게 하랴 하였더라",
+      "source_text_hash": "4153e3c93bde92eb01cc96fc174556828fb8227d74bfbcc88e273b6fb80ad01b",
+      "translation_text_hash": "d788024e76c16c1db1e06099f2467e6e5e89e31c5b74d58150b7dbc7d850cb1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 삼가서 이 일에 게으르지 말라 어찌하여 화를 더하여 왕들에게 손해가 되게 하랴 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d788024e76c16c1db1e06099f2467e6e5e89e31c5b74d58150b7dbc7d850cb1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:23",
+      "sequence": 12134,
+      "chapter_label": "EZR 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "Then when the copy of King Artaxerxes’ letter was read before Rehum, Shimshai the scribe, and their companions, they went in haste to Jerusalem to the Jews, and made them to cease by force of arms.",
+      "ko": "아닥사스다왕의 조서 초본이 르훔과 서기관 심새와 그 동료 앞에서 낭독되매 저희가 예루살렘으로 급히 가서 유다 사람들을 보고 권력으로 억제하여 그 역사를 그치게 하니",
+      "source_text_hash": "55d681322ca600f4544be22adac10763fb20f76a024281d68a44f2941cb336cb",
+      "translation_text_hash": "a87646d01afc8caeb1cd0eba31b1065445633e256f1f5eac25b70e5c1ba247e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아닥사스다왕의 조서 초본이 르훔과 서기관 심새와 그 동료 앞에서 낭독되매 저희가 예루살렘으로 급히 가서 유다 사람들을 보고 권력으로 억제하여 그 역사를 그치게 하니"
+      ],
+      "raw_text_hashes": [
+        "a87646d01afc8caeb1cd0eba31b1065445633e256f1f5eac25b70e5c1ba247e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZR:4:24",
+      "sequence": 12135,
+      "chapter_label": "EZR 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZR",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZR",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "Then work stopped on God’s house which is at Jerusalem. It stopped until the second year of the reign of Darius king of Persia.",
+      "ko": "이에 예루살렘에서 하나님의 전 역사가 그쳐서 바사 왕 다리오 제 이년까지 이르니라",
+      "source_text_hash": "48fb85b617c9245ae09bf99c2379322b82a4d1fcd4abd71776f333d23fa18283",
+      "translation_text_hash": "55bf3bc53e2030389fa5d00f778539e4a2075d2663f9f1c5a7c36e63bbdf1c16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예루살렘에서 하나님의 전 역사가 그쳐서 바사 왕 다리오 제 이년까지 이르니라"
+      ],
+      "raw_text_hashes": [
+        "55bf3bc53e2030389fa5d00f778539e4a2075d2663f9f1c5a7c36e63bbdf1c16"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:115",
+  "unit_ordinal": 593,
+  "unit_label": "PSA 115",
+  "book_code": "PSA",
+  "chapter_number": 115,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:115:1",
+      "sequence": 15832,
+      "chapter_label": "PSA 115",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 1
+        }
+      ],
+      "en": "Not to us, LORD, not to us, but to your name give glory, for your loving kindness, and for your truth’s sake.",
+      "ko": "여호와여 영광을 우리에게 돌리지 마옵소서 우리에게 돌리지 마옵소서 오직 주의 인자하심과 진실하심을 인하여 주의 이름에 돌리소서",
+      "source_text_hash": "a361c84dbbfa207b723092cb499e7333c1595db0f4f1c95cf4aa539e8295f2b3",
+      "translation_text_hash": "6e5b743ee834d9d79ed168fbcf0e8872fd43790f90580004fe22bf80b10d2461",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 영광을 우리에게 돌리지 마옵소서 우리에게 돌리지 마옵소서 오직 주의 인자하심과 진실하심을 인하여 주의 이름에 돌리소서"
+      ],
+      "raw_text_hashes": [
+        "6e5b743ee834d9d79ed168fbcf0e8872fd43790f90580004fe22bf80b10d2461"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:2",
+      "sequence": 15833,
+      "chapter_label": "PSA 115",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 2
+        }
+      ],
+      "en": "Why should the nations say, “Where is their God, now?”",
+      "ko": "어찌하여 열방으로 저희 하나님이 이제 어디 있느냐 말하게 하리이까",
+      "source_text_hash": "33d4ff610e09c2cc92da112fd64c9424d26193372e26c77a73195f76038491b8",
+      "translation_text_hash": "80e5d424034a56afede4ce3f9a965bafbabdd295353bbb43f7979b79aa5d54da",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 열방으로 저희 하나님이 이제 어디 있느냐 말하게 하리이까"
+      ],
+      "raw_text_hashes": [
+        "80e5d424034a56afede4ce3f9a965bafbabdd295353bbb43f7979b79aa5d54da"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:3",
+      "sequence": 15834,
+      "chapter_label": "PSA 115",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 3
+        }
+      ],
+      "en": "But our God is in the heavens. He does whatever he pleases.",
+      "ko": "오직 우리 하나님은 하늘에 계셔서 원하시는 모든 것을 행하셨나이다",
+      "source_text_hash": "f746a00c5781030cb5c51825f7b3915e6318191b7a1332e0efc3899327317dec",
+      "translation_text_hash": "2e7ad45ca6a87c441263625435586a900cc628aadf63b9dc393e30897901ad35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 우리 하나님은 하늘에 계셔서 원하시는 모든 것을 행하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "2e7ad45ca6a87c441263625435586a900cc628aadf63b9dc393e30897901ad35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:4",
+      "sequence": 15835,
+      "chapter_label": "PSA 115",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 4
+        }
+      ],
+      "en": "Their idols are silver and gold, the work of men’s hands.",
+      "ko": "저희 우상은 은과 금이요 사람의 수공물이라",
+      "source_text_hash": "1ceb98762b298f6d51f161d8df560157a5e31f23b1c567d22be5609251e92553",
+      "translation_text_hash": "4e266d1b0b11ee41b7823a9e5bc0c23bf12c8f70de13cb96f1b2b650e992937f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 우상은 은과 금이요 사람의 수공물이라"
+      ],
+      "raw_text_hashes": [
+        "4e266d1b0b11ee41b7823a9e5bc0c23bf12c8f70de13cb96f1b2b650e992937f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:5",
+      "sequence": 15836,
+      "chapter_label": "PSA 115",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 5
+        }
+      ],
+      "en": "They have mouths, but they don’t speak. They have eyes, but they don’t see.",
+      "ko": "입이 있어도 말하지 못하며 눈이 있어도 보지 못하며",
+      "source_text_hash": "d79e9aadd3a46bf210ad34fc9650bd62dc0588144bb7786971b2bde5eb5b61d5",
+      "translation_text_hash": "5a14239067eb5de107d70a665b30de3708d552e536772e8681f1b6d60125e94d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입이 있어도 말하지 못하며 눈이 있어도 보지 못하며"
+      ],
+      "raw_text_hashes": [
+        "5a14239067eb5de107d70a665b30de3708d552e536772e8681f1b6d60125e94d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:6",
+      "sequence": 15837,
+      "chapter_label": "PSA 115",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 6
+        }
+      ],
+      "en": "They have ears, but they don’t hear. They have noses, but they don’t smell.",
+      "ko": "귀가 있어도 듣지 못하며 코가 있어도 맡지 못하며",
+      "source_text_hash": "9284f97b0134715a1b5d9ffaf3ad01cc0fe882582fa6dae397a793ce1a229f96",
+      "translation_text_hash": "491c0efbb2a56dd8e990393361652ca87bb59d59185c1f766489941ff251af52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "귀가 있어도 듣지 못하며 코가 있어도 맡지 못하며"
+      ],
+      "raw_text_hashes": [
+        "491c0efbb2a56dd8e990393361652ca87bb59d59185c1f766489941ff251af52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:7",
+      "sequence": 15838,
+      "chapter_label": "PSA 115",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 7
+        }
+      ],
+      "en": "They have hands, but they don’t feel. They have feet, but they don’t walk, neither do they speak through their throat.",
+      "ko": "손이 있어도 만지지 못하며 발이 있어도 걷지 못하며 목구멍으로 소리도 못하느니라",
+      "source_text_hash": "01887dd34df1027c58e90814de3179f7cc85b9d4a5c576c976297bb287641c61",
+      "translation_text_hash": "1b73c5767203204f1e07417c1b7785d8d2b0fd8c32665e98973d33229fe59d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손이 있어도 만지지 못하며 발이 있어도 걷지 못하며 목구멍으로 소리도 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "1b73c5767203204f1e07417c1b7785d8d2b0fd8c32665e98973d33229fe59d70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:8",
+      "sequence": 15839,
+      "chapter_label": "PSA 115",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 8
+        }
+      ],
+      "en": "Those who make them will be like them; yes, everyone who trusts in them.",
+      "ko": "우상을 만드는 자와 그것을 의지하는 자가 다 그와 같으리로다",
+      "source_text_hash": "336b3b7e101de0f79a0ed4969862bd4fa5ff730823bee9604f3edb9fbf4a624d",
+      "translation_text_hash": "bc8d3ed64f5556f4a49be3e1a65b65a983a65232cd76834873f0f76a6ddeb26f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우상을 만드는 자와 그것을 의지하는 자가 다 그와 같으리로다"
+      ],
+      "raw_text_hashes": [
+        "bc8d3ed64f5556f4a49be3e1a65b65a983a65232cd76834873f0f76a6ddeb26f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:9",
+      "sequence": 15840,
+      "chapter_label": "PSA 115",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 9
+        }
+      ],
+      "en": "Israel, trust in the LORD! He is their help and their shield.",
+      "ko": "이스라엘아 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다",
+      "source_text_hash": "7c88970d56dbc98f5f83fcc08c0262cb501396b61a9eaecff85c7f3b95d8e314",
+      "translation_text_hash": "bbeaf0ef2fb493885be3f5b70fb891b7102f5083dc2a966d09f0685f4a2abe26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "bbeaf0ef2fb493885be3f5b70fb891b7102f5083dc2a966d09f0685f4a2abe26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:10",
+      "sequence": 15841,
+      "chapter_label": "PSA 115",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 10
+        }
+      ],
+      "en": "House of Aaron, trust in the LORD! He is their help and their shield.",
+      "ko": "아론의 집이여 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다",
+      "source_text_hash": "e4f47dd67c9e95c64915a640296ec77135da44cee07d1103c7a2c8a232c6e7a7",
+      "translation_text_hash": "012a2163f6438b03d2182ee39bf454a1e5c5780f2ef38366b0e8ff04ec65b542",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아론의 집이여 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "012a2163f6438b03d2182ee39bf454a1e5c5780f2ef38366b0e8ff04ec65b542"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:11",
+      "sequence": 15842,
+      "chapter_label": "PSA 115",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 11
+        }
+      ],
+      "en": "You who fear the LORD, trust in the LORD! He is their help and their shield.",
+      "ko": "여호와를 경외하는 너희는 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다",
+      "source_text_hash": "c5c2937d30c05d497a383df59c28234699d0a36934f95b9077ff95e20b944fb1",
+      "translation_text_hash": "cd9453315eacc3ec829c88dc7d40092bc6970889ed5bfce8c029b54831d61af2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 경외하는 너희는 여호와를 의지하라 그는 너희 도움이시요 너희 방패시로다"
+      ],
+      "raw_text_hashes": [
+        "cd9453315eacc3ec829c88dc7d40092bc6970889ed5bfce8c029b54831d61af2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:12",
+      "sequence": 15843,
+      "chapter_label": "PSA 115",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD remembers us. He will bless us. He will bless the house of Israel. He will bless the house of Aaron.",
+      "ko": "여호와께서 우리를 생각하사 복을 주시되 이스라엘 집에도 복을 주시고 아론의 집에도 복을 주시며",
+      "source_text_hash": "e625c2851888090b222f2ec71466984c6ceb6845c52c39e99ee7ddb84c44648a",
+      "translation_text_hash": "c00b2fbe8144abf1f85eb4afd2f7a62a93ae74bc88ee7e15339db5a68a6aa7c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 우리를 생각하사 복을 주시되 이스라엘 집에도 복을 주시고 아론의 집에도 복을 주시며"
+      ],
+      "raw_text_hashes": [
+        "c00b2fbe8144abf1f85eb4afd2f7a62a93ae74bc88ee7e15339db5a68a6aa7c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:13",
+      "sequence": 15844,
+      "chapter_label": "PSA 115",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 13
+        }
+      ],
+      "en": "He will bless those who fear the LORD, both small and great.",
+      "ko": "대소 무론하고 여호와를 경외하는 자에게 복을 주시리로다",
+      "source_text_hash": "f77a2c7279d895a9dded402c9fccd1f09dfead7b3e8f7bfa22ad8a84a4c49726",
+      "translation_text_hash": "ea0212bfacba870af26e4e87c6b4fdbd34d84689f2e0cedccf5d5820188c02d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대소 무론하고 여호와를 경외하는 자에게 복을 주시리로다"
+      ],
+      "raw_text_hashes": [
+        "ea0212bfacba870af26e4e87c6b4fdbd34d84689f2e0cedccf5d5820188c02d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:14",
+      "sequence": 15845,
+      "chapter_label": "PSA 115",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 14
+        }
+      ],
+      "en": "May the LORD increase you more and more, you and your children.",
+      "ko": "여호와께서 너희 곧 너희와 또 너희 자손을 더욱 번창케 하시기를 원하노라",
+      "source_text_hash": "7f2f797c62db6a455b6e39eb1963f90a9501538da67a45a04bf89f6995de7acf",
+      "translation_text_hash": "4168e3f213d126146e2877ce7548c4b7e63ae111120125c6d4cb1ab3c63ceb3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 너희 곧 너희와 또 너희 자손을 더욱 번창케 하시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "4168e3f213d126146e2877ce7548c4b7e63ae111120125c6d4cb1ab3c63ceb3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:15",
+      "sequence": 15846,
+      "chapter_label": "PSA 115",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 15
+        }
+      ],
+      "en": "Blessed are you by the LORD, who made heaven and earth.",
+      "ko": "너희는 천지를 지으신 여호와께 복을 받는 자로다",
+      "source_text_hash": "92047374db60ca6c86fffd241e9a0e6b0a09924af13a5bf7ac8d64b1cd428496",
+      "translation_text_hash": "0068449ecf69f6405ca97aad768157df916819d52e36a49a28f723b4a29652f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 천지를 지으신 여호와께 복을 받는 자로다"
+      ],
+      "raw_text_hashes": [
+        "0068449ecf69f6405ca97aad768157df916819d52e36a49a28f723b4a29652f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:16",
+      "sequence": 15847,
+      "chapter_label": "PSA 115",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 16
+        }
+      ],
+      "en": "The heavens are the LORD’s heavens, but he has given the earth to the children of men.",
+      "ko": "하늘은 여호와의 하늘이라도 땅은 인생에게 주셨도다",
+      "source_text_hash": "414b4fc4a64e0c750042522c29a2f22247e3f5e58455939bc822b258b2d58a6e",
+      "translation_text_hash": "5d8a8862d638d8a77fe0d91d0a09c1dfddd32ea14ec5a165088b205325fb84ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘은 여호와의 하늘이라도 땅은 인생에게 주셨도다"
+      ],
+      "raw_text_hashes": [
+        "5d8a8862d638d8a77fe0d91d0a09c1dfddd32ea14ec5a165088b205325fb84ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:17",
+      "sequence": 15848,
+      "chapter_label": "PSA 115",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 17
+        }
+      ],
+      "en": "The dead don’t praise the LORD, nor any who go down into silence,",
+      "ko": "죽은 자가 여호와를 찬양하지 못하나니 적막한데 내려가는 아무도 못하리로다",
+      "source_text_hash": "4f8eb140e4f9dabbea2f09e89af16902e06155d912f18dadc73dc72aef55a7e9",
+      "translation_text_hash": "5145ff293de7fdc4cd6fa37f704ea34b61ffcccc37d149fdb0b7475a59481096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽은 자가 여호와를 찬양하지 못하나니 적막한데 내려가는 아무도 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "5145ff293de7fdc4cd6fa37f704ea34b61ffcccc37d149fdb0b7475a59481096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:115:18",
+      "sequence": 15849,
+      "chapter_label": "PSA 115",
+      "verse_label": "18",
+      "locator": {
+        "book": "PSA",
+        "chapter": 115,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 115,
+          "verse": 18
+        }
+      ],
+      "en": "but we will bless the LORD, from this time forward and forever more. Praise the LORD!",
+      "ko": "우리는 이제부터 영원까지 여호와를 송축하리로다 할렐루야",
+      "source_text_hash": "d2ae2926cd78f91f6d90b3280a06609310fbd9b179c9503e963f34c64e3b277e",
+      "translation_text_hash": "4484c6904f29001a7390ed26142a3ff5dc7395e7501fc6fda294530c97e51072",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 이제부터 영원까지 여호와를 송축하리로다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "4484c6904f29001a7390ed26142a3ff5dc7395e7501fc6fda294530c97e51072"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1165 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:002",
+  "unit_ordinal": 238,
+  "unit_label": "1SA 2",
+  "book_code": "1SA",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:2:1",
+      "sequence": 7242,
+      "chapter_label": "1SA 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "Hannah prayed, and said, “My heart exults in the LORD! My horn is exalted in the LORD. My mouth is enlarged over my enemies, because I rejoice in your salvation.",
+      "ko": "한나가 기도하여 가로되 내 마음이 여호와를 인하여 즐거워하며 내 뿔이 여호와를 인하여 높아졌으며 내 입이 내 원수들을 향하여 크게 열렸으니 이는 내가 주의 구원을 인하여 기뻐함이니이다",
+      "source_text_hash": "30142423b9d9fb3a7620fd20f353e16b1ba11f97eda35508e62ce34e5f541dc0",
+      "translation_text_hash": "36bacc4616f7b56a93ceea2a9c15e7979641f0acdd3b4dcb44a03ca29b787710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한나가 기도하여 가로되 내 마음이 여호와를 인하여 즐거워하며 내 뿔이 여호와를 인하여 높아졌으며 내 입이 내 원수들을 향하여 크게 열렸으니 이는 내가 주의 구원을 인하여 기뻐함이니이다"
+      ],
+      "raw_text_hashes": [
+        "36bacc4616f7b56a93ceea2a9c15e7979641f0acdd3b4dcb44a03ca29b787710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:2",
+      "sequence": 7243,
+      "chapter_label": "1SA 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "There is no one as holy as the LORD, for there is no one besides you, nor is there any rock like our God.",
+      "ko": "여호와와 같이 거룩하신 이가 없으시니 이는 주 밖에 다른 이가 없고 우리 하나님 같은 반석도 없으심이니이다",
+      "source_text_hash": "18b1afa32ad7333c54f228bb03ce2b23a503d61554fe3e5e82d0b98461efcce2",
+      "translation_text_hash": "344db09d8d0a100f7fb57d52216282de2380a68f48d4d26a03cf2f688be7f149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와와 같이 거룩하신 이가 없으시니 이는 주 밖에 다른 이가 없고 우리 하나님 같은 반석도 없으심이니이다"
+      ],
+      "raw_text_hashes": [
+        "344db09d8d0a100f7fb57d52216282de2380a68f48d4d26a03cf2f688be7f149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:3",
+      "sequence": 7244,
+      "chapter_label": "1SA 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "“Don’t keep talking so exceedingly proudly. Don’t let arrogance come out of your mouth, for the LORD is a God of knowledge. By him actions are weighed.",
+      "ko": "심히 교만한 말을 다시 하지 말것이며 오만한 말을 너희 입에서 내지 말찌어다 여호와는 지식의 하나님이시라 행동을 달아보시느니라",
+      "source_text_hash": "c2304f42e72cd22cf0348b0e4b554d6b3bc731d269af47ee6d419bd2a6f6d085",
+      "translation_text_hash": "b95be9b7a4379d6b0490c0ba47b33ea99370db22f9431693ee5c8fa743342f5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심히 교만한 말을 다시 하지 말것이며 오만한 말을 너희 입에서 내지 말찌어다 여호와는 지식의 하나님이시라 행동을 달아보시느니라"
+      ],
+      "raw_text_hashes": [
+        "b95be9b7a4379d6b0490c0ba47b33ea99370db22f9431693ee5c8fa743342f5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:4",
+      "sequence": 7245,
+      "chapter_label": "1SA 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "“The bows of the mighty men are broken. Those who stumbled are armed with strength.",
+      "ko": "용사의 활은 꺾이고 넘어진 자는 힘으로 띠를 띠도다",
+      "source_text_hash": "7a9d85fd794c4dd5474e225f5f720641baac80eccff37bcbd7bfd82e623d6a88",
+      "translation_text_hash": "4d28173e47619df8af750904399cf0a3931cf6ae34dcb949e486f9e72a9cec42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사의 활은 꺾이고 넘어진 자는 힘으로 띠를 띠도다"
+      ],
+      "raw_text_hashes": [
+        "4d28173e47619df8af750904399cf0a3931cf6ae34dcb949e486f9e72a9cec42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:5",
+      "sequence": 7246,
+      "chapter_label": "1SA 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Those who were full have hired themselves out for bread. Those who were hungry are satisfied. Yes, the barren has borne seven. She who has many children languishes.",
+      "ko": "유족하던 자들은 양식을 위하여 품을 팔고 주리던 자들은 다시 주리지 않도다 전에 잉태치 못하던 자는 일곱을 낳았고 많은 자녀를 둔 자는 쇠약하도다",
+      "source_text_hash": "5c4ca84a1d09106b9b2ed21126ea170673c529ad9ce04a4578bfb4b53697ffdc",
+      "translation_text_hash": "5398a13f79845928ff55b86087037ca88b7fe2d40ae9ec744bd54d9c45cc3a7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유족하던 자들은 양식을 위하여 품을 팔고 주리던 자들은 다시 주리지 않도다 전에 잉태치 못하던 자는 일곱을 낳았고 많은 자녀를 둔 자는 쇠약하도다"
+      ],
+      "raw_text_hashes": [
+        "5398a13f79845928ff55b86087037ca88b7fe2d40ae9ec744bd54d9c45cc3a7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:6",
+      "sequence": 7247,
+      "chapter_label": "1SA 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "“The LORD kills and makes alive. He brings down to Sheol and brings up.",
+      "ko": "여호와는 죽이기도 하시고 살리기도 하시며 음부에 내리게도 하시고 올리기도 하시는도다",
+      "source_text_hash": "76083bf1cce8dd6ed91c74f00f0187b84789fb9f6136e8de17ed4546ddd03f52",
+      "translation_text_hash": "dc45a066b740c3af6282828442e1275474c8f2f468f9fcc6ecd5aa3442eee8b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 죽이기도 하시고 살리기도 하시며 음부에 내리게도 하시고 올리기도 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "dc45a066b740c3af6282828442e1275474c8f2f468f9fcc6ecd5aa3442eee8b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:7",
+      "sequence": 7248,
+      "chapter_label": "1SA 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD makes poor and makes rich. He brings low, he also lifts up.",
+      "ko": "여호와는 가난하게도 하시고 부하게도 하시며 낮추기도 하시고 높이기도 하시는도다",
+      "source_text_hash": "f01b2d21ea5c2bb55d45dfe132299aea218cbe19a87453979adbb6a2d17ab0cd",
+      "translation_text_hash": "c2abadc5c5793ea22cc4ddec947490f266d49bcba2f23fce4ca43e3485af00c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 가난하게도 하시고 부하게도 하시며 낮추기도 하시고 높이기도 하시는도다"
+      ],
+      "raw_text_hashes": [
+        "c2abadc5c5793ea22cc4ddec947490f266d49bcba2f23fce4ca43e3485af00c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:8",
+      "sequence": 7249,
+      "chapter_label": "1SA 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "He raises up the poor out of the dust. He lifts up the needy from the dunghill to make them sit with princes and inherit the throne of glory. For the pillars of the earth are the LORD’s. He has set the world on them.",
+      "ko": "가난한 자를 진토에서 일으키시며 빈핍한 자를 거름더미에서 드사 귀족들과 함께 앉게 하시며 영광의 위를 차지하게 하시는도다 땅의 기둥들은 여호와의 것이라 여호와께서 세계를 그 위에 세우셨도다",
+      "source_text_hash": "22836bf813092d71cb3350880ba6e720d689a1d282491e802a5bb314649717c9",
+      "translation_text_hash": "31f271e96c684a013ea26b1fad426b92a3c87da7a3b4c54f2763647539b81527",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자를 진토에서 일으키시며 빈핍한 자를 거름더미에서 드사 귀족들과 함께 앉게 하시며 영광의 위를 차지하게 하시는도다 땅의 기둥들은 여호와의 것이라 여호와께서 세계를 그 위에 세우셨도다"
+      ],
+      "raw_text_hashes": [
+        "31f271e96c684a013ea26b1fad426b92a3c87da7a3b4c54f2763647539b81527"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:9",
+      "sequence": 7250,
+      "chapter_label": "1SA 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "He will keep the feet of his holy ones, but the wicked will be put to silence in darkness; for no man will prevail by strength.",
+      "ko": "그가 그 거룩한 자들의 발을 지키실 것이요 악인으로 흑암 중에서 잠잠케 하시리니 힘으로는 이길 사람이 없음이로다",
+      "source_text_hash": "174d08ebc790ad17d2ad25339027c9b42e7a5e9b872961b6d5a83400b22c3657",
+      "translation_text_hash": "2f0722d1a6880d6950cc70d7ca216ebd06cb0eb2aa64c3a35eba82a8de685ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 거룩한 자들의 발을 지키실 것이요 악인으로 흑암 중에서 잠잠케 하시리니 힘으로는 이길 사람이 없음이로다"
+      ],
+      "raw_text_hashes": [
+        "2f0722d1a6880d6950cc70d7ca216ebd06cb0eb2aa64c3a35eba82a8de685ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:10",
+      "sequence": 7251,
+      "chapter_label": "1SA 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Those who strive with the LORD shall be broken to pieces. He will thunder against them in the sky. “The LORD will judge the ends of the earth. He will give strength to his king, and exalt the horn of his anointed.”",
+      "ko": "여호와를 대적하는 자는 산산이 깨어질 것이라 하늘 우뢰로 그들을 치시리로다 여호와께서 땅 끝까지 심판을 베푸시고 자기 왕에게 힘을 주시며 자기의 기름 부음을 받은 자의 뿔을 높이시리로다 하니라",
+      "source_text_hash": "cc618e449de620ee342cf240fc5f1f4e6f7be471d4062c988255a15e96055ff5",
+      "translation_text_hash": "2e31f12512668e005e1543ae58a4d0e8fb4d5004ee385d744a119db3483cef60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 대적하는 자는 산산이 깨어질 것이라 하늘 우뢰로 그들을 치시리로다 여호와께서 땅 끝까지 심판을 베푸시고 자기 왕에게 힘을 주시며 자기의 기름 부음을 받은 자의 뿔을 높이시리로다 하니라"
+      ],
+      "raw_text_hashes": [
+        "2e31f12512668e005e1543ae58a4d0e8fb4d5004ee385d744a119db3483cef60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:11",
+      "sequence": 7252,
+      "chapter_label": "1SA 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Elkanah went to Ramah to his house. The child served the LORD before Eli the priest.",
+      "ko": "엘가나는 라마의 자기 집으로 돌아가고 그 아이는 제사장 엘리 앞에서 여호와를 섬기니라",
+      "source_text_hash": "47bf3a4f0793fa2a7bd0ae6b6830b6f46a0721ae85446d6a9cb84af062ee437a",
+      "translation_text_hash": "40d63797c9c39f6b82a3dee11e12194370df684686a2cb70bb5a18f56300591a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘가나는 라마의 자기 집으로 돌아가고 그 아이는 제사장 엘리 앞에서 여호와를 섬기니라"
+      ],
+      "raw_text_hashes": [
+        "40d63797c9c39f6b82a3dee11e12194370df684686a2cb70bb5a18f56300591a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:12",
+      "sequence": 7253,
+      "chapter_label": "1SA 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "Now the sons of Eli were wicked men. They didn’t know the LORD.",
+      "ko": "엘리의 아들들은 불량자라 여호와를 알지 아니하더라",
+      "source_text_hash": "582f1095ed460649c7176bb4f2860e05d63971b14531e0da0ee64f15e03c96b9",
+      "translation_text_hash": "305d1e3b827f2047b015cc80997b1b330ab60951c934a4e8e5ef87a9804feebb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리의 아들들은 불량자라 여호와를 알지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "305d1e3b827f2047b015cc80997b1b330ab60951c934a4e8e5ef87a9804feebb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:13",
+      "sequence": 7254,
+      "chapter_label": "1SA 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "The custom of the priests with the people was that when anyone offered a sacrifice, the priest’s servant came while the meat was boiling, with a fork of three teeth in his hand;",
+      "ko": "그 제사장들이 백성에게 행하는 습관은 이러하니 곧 아무 사람이 제사를 드리고 그 고기를 삶을 때에 제사장의 사환이 손에 세살 갈고리를 가지고 와서",
+      "source_text_hash": "5738188f8e8a1dfad225a5ef8cc151285a1c523afd2b849b5756adff6832c0e5",
+      "translation_text_hash": "ceaae8b608b59aa001618b1ae2ef19248972c514412e9d00ce0633595ade01d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 제사장들이 백성에게 행하는 습관은 이러하니 곧 아무 사람이 제사를 드리고 그 고기를 삶을 때에 제사장의 사환이 손에 세살 갈고리를 가지고 와서"
+      ],
+      "raw_text_hashes": [
+        "ceaae8b608b59aa001618b1ae2ef19248972c514412e9d00ce0633595ade01d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:14",
+      "sequence": 7255,
+      "chapter_label": "1SA 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "and he stabbed it into the pan, or kettle, or cauldron, or pot. The priest took all that the fork brought up for himself. They did this to all the Israelites who came there to Shiloh.",
+      "ko": "그것으로 남비에나 솥에나 큰 솥에나 가마에 찔러 넣어서 갈고리에 걸려 나오는 것은 제사장이 자기 것으로 취하되 실로에서 무릇 그곳에 온 이스라엘 사람에게 이같이 할뿐 아니라",
+      "source_text_hash": "c847d81d9926409db45cc4bddae634c62afef644415b1e0673abbfcfe5a59956",
+      "translation_text_hash": "974cff958089bc9f6385a4e4d9c6540107f49a954a01a0fd9a755cf1996cd842",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것으로 남비에나 솥에나 큰 솥에나 가마에 찔러 넣어서 갈고리에 걸려 나오는 것은 제사장이 자기 것으로 취하되 실로에서 무릇 그곳에 온 이스라엘 사람에게 이같이 할뿐 아니라"
+      ],
+      "raw_text_hashes": [
+        "974cff958089bc9f6385a4e4d9c6540107f49a954a01a0fd9a755cf1996cd842"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:15",
+      "sequence": 7256,
+      "chapter_label": "1SA 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Yes, before they burned the fat, the priest’s servant came, and said to the man who sacrificed, “Give meat to roast for the priest; for he will not accept boiled meat from you, but raw.”",
+      "ko": "기름을 태우기 전에도 제사장의 사환이 와서 제사 드리는 사람에게 이르기를 제사장에게 구워 드릴 고기를 내라 그가 네게 삶은 고기를 원치 아니하고 날것을 원하신다 하다가",
+      "source_text_hash": "13e60ac18a829b018ddcba79a0fc06e53dc6dd8600c9bc54baf1eebac87787d8",
+      "translation_text_hash": "ce3a2518bcea04df6fd16d350b43a1e1b40a245e78d77b5eb1de0c7842eb8b02",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기름을 태우기 전에도 제사장의 사환이 와서 제사 드리는 사람에게 이르기를 제사장에게 구워 드릴 고기를 내라 그가 네게 삶은 고기를 원치 아니하고 날것을 원하신다 하다가"
+      ],
+      "raw_text_hashes": [
+        "ce3a2518bcea04df6fd16d350b43a1e1b40a245e78d77b5eb1de0c7842eb8b02"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:16",
+      "sequence": 7257,
+      "chapter_label": "1SA 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "If the man said to him, “Let the fat be burned first, and then take as much as your soul desires;” then he would say, “No, but you shall give it to me now; and if not, I will take it by force.”",
+      "ko": "그 사람이 이르기를 반드시 먼저 기름을 태운 후에 네 마음에 원하는대로 취하라 하면 그가 말하기를 아니라 지금 내게 내라 그렇지 아니하면 내가 억지로 빼앗으리라 하였으니",
+      "source_text_hash": "ce88da8aad1efefc35577703515be3cf3a54c0fa12f67d18fe88e745b52fe663",
+      "translation_text_hash": "476e2cd0d9613ec51b8e273b3d2e202560c1bb37e1c730ad704375d17430694c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 이르기를 반드시 먼저 기름을 태운 후에 네 마음에 원하는대로 취하라 하면 그가 말하기를 아니라 지금 내게 내라 그렇지 아니하면 내가 억지로 빼앗으리라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "476e2cd0d9613ec51b8e273b3d2e202560c1bb37e1c730ad704375d17430694c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:17",
+      "sequence": 7258,
+      "chapter_label": "1SA 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The sin of the young men was very great before the LORD; for the men despised the LORD’s offering.",
+      "ko": "이 소년들의 죄가 여호와 앞에 심히 큼은 그들이 여호와의 제사를 멸시함이었더라",
+      "source_text_hash": "3769355df7b7331d88c26292c0c741a2ecb0f79b7279a17493575a56b97ba8d9",
+      "translation_text_hash": "08060312e8ee76577578f46eda35220935afb3cd44253b3416fa0d0e68ab350a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 소년들의 죄가 여호와 앞에 심히 큼은 그들이 여호와의 제사를 멸시함이었더라"
+      ],
+      "raw_text_hashes": [
+        "08060312e8ee76577578f46eda35220935afb3cd44253b3416fa0d0e68ab350a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:18",
+      "sequence": 7259,
+      "chapter_label": "1SA 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "But Samuel ministered before the LORD, being a child, clothed with a linen ephod.",
+      "ko": "사무엘이 어렸을 때에 세마포 에봇을 입고 여호와 앞에 섬겼더라",
+      "source_text_hash": "602b1b11a78c0aaf2d0ab6ee44c8e2a89cd99926394fbc12726968c94d91c35a",
+      "translation_text_hash": "3ddf529f54441b6f21ff7583f7e9ef4729296e160a50bfb9c23606141a087e09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 어렸을 때에 세마포 에봇을 입고 여호와 앞에 섬겼더라"
+      ],
+      "raw_text_hashes": [
+        "3ddf529f54441b6f21ff7583f7e9ef4729296e160a50bfb9c23606141a087e09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:19",
+      "sequence": 7260,
+      "chapter_label": "1SA 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "Moreover his mother made him a little robe, and brought it to him from year to year when she came up with her husband to offer the yearly sacrifice.",
+      "ko": "그 어미가 매년제를 드리러 그 남편과 함께 올라갈 때마다 작은 겉옷을 지어다가 그에게 주었더니",
+      "source_text_hash": "133ea3614155d21ea7e190283b864ff122b0f7e9cbd9e552b74de034092a761c",
+      "translation_text_hash": "9076094c1066f2a817b5df41262c20b96864cf44d19f8a37b8cd0089d4c62aa2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어미가 매년제를 드리러 그 남편과 함께 올라갈 때마다 작은 겉옷을 지어다가 그에게 주었더니"
+      ],
+      "raw_text_hashes": [
+        "9076094c1066f2a817b5df41262c20b96864cf44d19f8a37b8cd0089d4c62aa2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:20",
+      "sequence": 7261,
+      "chapter_label": "1SA 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "Eli blessed Elkanah and his wife, and said, “May the LORD give you offspring from this woman for the petition which was asked of the LORD.” Then they went to their own home.",
+      "ko": "엘리가 엘가나와 그 아내에게 축복하여 가로되 여호와께서 이 여인으로 말미암아 네게 후사를 주사 이가 여호와께 간구하여 얻어 드린 아들을 대신하게 하시기를 원하노라 하였더니 그들이 그 집으로 돌아가매",
+      "source_text_hash": "c1aac996a61919a75cb65b03c6981ba59c28b15df2d4c1e6a4c0e7474b5be57f",
+      "translation_text_hash": "79b9a14482b16182077ca6c6b48ae222d6a004d18d342b8f74f950a921944e06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 엘가나와 그 아내에게 축복하여 가로되 여호와께서 이 여인으로 말미암아 네게 후사를 주사 이가 여호와께 간구하여 얻어 드린 아들을 대신하게 하시기를 원하노라 하였더니 그들이 그 집으로 돌아가매"
+      ],
+      "raw_text_hashes": [
+        "79b9a14482b16182077ca6c6b48ae222d6a004d18d342b8f74f950a921944e06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:21",
+      "sequence": 7262,
+      "chapter_label": "1SA 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD visited Hannah, and she conceived and bore three sons and two daughters. The child Samuel grew before the LORD.",
+      "ko": "여호와께서 한나를 권고하사 그로 잉태하여 세 아들과 두 딸을 낳게 하셨고 아이 사무엘은 여호와 앞에서 자라니라",
+      "source_text_hash": "ae612a3645d08405368a5e3fbe674243513bf60951ddc701038deeb145e8655c",
+      "translation_text_hash": "7391ad5f6f3b3da2293972f08f9a470768a8413447d1cf90b5d56d4e77f1f483",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 한나를 권고하사 그로 잉태하여 세 아들과 두 딸을 낳게 하셨고 아이 사무엘은 여호와 앞에서 자라니라"
+      ],
+      "raw_text_hashes": [
+        "7391ad5f6f3b3da2293972f08f9a470768a8413447d1cf90b5d56d4e77f1f483"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:22",
+      "sequence": 7263,
+      "chapter_label": "1SA 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "Now Eli was very old; and he heard all that his sons did to all Israel, and how that they slept with the women who served at the door of the Tent of Meeting.",
+      "ko": "엘리가 매우 늙었더니 그 아들들이 온 이스라엘에게 행한 모든 일과 회막문에서 수종드는 여인과 동침하였음을 듣고",
+      "source_text_hash": "b65299661b60d11d62d8b223a9686b21873aefb6d82b2f2cc4335193660ceab8",
+      "translation_text_hash": "434cc74a5c7ae40332d1221ea54b37fe4fa51b6424cafa694e4e1f8e97611ab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 매우 늙었더니 그 아들들이 온 이스라엘에게 행한 모든 일과 회막문에서 수종드는 여인과 동침하였음을 듣고"
+      ],
+      "raw_text_hashes": [
+        "434cc74a5c7ae40332d1221ea54b37fe4fa51b6424cafa694e4e1f8e97611ab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:23",
+      "sequence": 7264,
+      "chapter_label": "1SA 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "He said to them, “Why do you do such things? For I hear of your evil dealings from all these people.",
+      "ko": "그들에게 이르되 너희가 어찌하여 이런 일을 하느냐 내가 너희의 악행을 이 모든 백성에게서 듣노라",
+      "source_text_hash": "77aa9e8a25b660cf12982135c4bb751d87688c31a9ebbe6cdbb4c5ac47ffe06b",
+      "translation_text_hash": "a6018bfb12d4193d0ec8b86c6ed49f7c2eb8efef79eaf0b311344688f2449393",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 이르되 너희가 어찌하여 이런 일을 하느냐 내가 너희의 악행을 이 모든 백성에게서 듣노라"
+      ],
+      "raw_text_hashes": [
+        "a6018bfb12d4193d0ec8b86c6ed49f7c2eb8efef79eaf0b311344688f2449393"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:24",
+      "sequence": 7265,
+      "chapter_label": "1SA 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "No, my sons; for it is not a good report that I hear! You make the LORD’s people disobey.",
+      "ko": "내 아들아 그리 말라 내게 들리는 소문이 좋지 아니하니라 너희가 여호와의 백성으로 범과케 하는도다",
+      "source_text_hash": "bf9beaa1c6eb54caf4092517887d351eb01e5c8bcd55861540952b1d3d43c509",
+      "translation_text_hash": "293544961c3578cbcf708f9a239ff66caf36c9e9bf108085a3a5f067c17652ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 그리 말라 내게 들리는 소문이 좋지 아니하니라 너희가 여호와의 백성으로 범과케 하는도다"
+      ],
+      "raw_text_hashes": [
+        "293544961c3578cbcf708f9a239ff66caf36c9e9bf108085a3a5f067c17652ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:25",
+      "sequence": 7266,
+      "chapter_label": "1SA 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "If one man sins against another, God will judge him; but if a man sins against the LORD, who will intercede for him?” Notwithstanding, they didn’t listen to the voice of their father, because the LORD intended to kill them.",
+      "ko": "사람이 사람에게 범죄하면 하나님이 판결하시려니와 사람이 여호와께 범죄하면 누가 위하여 간구하겠느냐 하되 그들이 그 아비의 말을 듣지 아니하였으니 이는 여호와께서 그들을 죽이기로 뜻하셨음이었더라",
+      "source_text_hash": "d3e3835ed67003edcf96e278ccdad1e430c2b55f8fca102b7ab0bf5648ee7dc8",
+      "translation_text_hash": "3a7a403ef4e7d27cc08baebff1c0e9c1b24468fcea84022656d8602c00408d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 사람에게 범죄하면 하나님이 판결하시려니와 사람이 여호와께 범죄하면 누가 위하여 간구하겠느냐 하되 그들이 그 아비의 말을 듣지 아니하였으니 이는 여호와께서 그들을 죽이기로 뜻하셨음이었더라"
+      ],
+      "raw_text_hashes": [
+        "3a7a403ef4e7d27cc08baebff1c0e9c1b24468fcea84022656d8602c00408d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:26",
+      "sequence": 7267,
+      "chapter_label": "1SA 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "The child Samuel grew on, and increased in favor both with the LORD and also with men.",
+      "ko": "아이 사무엘이 점점 자라매 여호와와 사람들에게 은총을 더욱 받더라",
+      "source_text_hash": "1ff0b0f6072e321d354fcb3e439bac6d5469e2d91bb68b9ac5841f8ccb0c2756",
+      "translation_text_hash": "ff0cdb98fcea163c60eef21a51bb46d911f4783b8f2e94063c0084ccc0de8298",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 사무엘이 점점 자라매 여호와와 사람들에게 은총을 더욱 받더라"
+      ],
+      "raw_text_hashes": [
+        "ff0cdb98fcea163c60eef21a51bb46d911f4783b8f2e94063c0084ccc0de8298"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:27",
+      "sequence": 7268,
+      "chapter_label": "1SA 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "A man of God came to Eli and said to him, “The LORD says, ‘Did I reveal myself to the house of your father when they were in Egypt in bondage to Pharaoh’s house?",
+      "ko": "하나님의 사람이 엘리에게 와서 그에게 이르되 여호와의 말씀에 너희 조상의 집이 애굽에서 바로의 집에 속하였을 때에 내가 그들에게 나타나지 아니하였느냐",
+      "source_text_hash": "4459c3cebb45628850e0846fb3831edbb7159019b2652a35258d842ef2f54afb",
+      "translation_text_hash": "1a6a63f00863f67dc692251aca650633067db8e33e8f9771df25f7bf2b18205a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 사람이 엘리에게 와서 그에게 이르되 여호와의 말씀에 너희 조상의 집이 애굽에서 바로의 집에 속하였을 때에 내가 그들에게 나타나지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "1a6a63f00863f67dc692251aca650633067db8e33e8f9771df25f7bf2b18205a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:28",
+      "sequence": 7269,
+      "chapter_label": "1SA 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "Didn’t I choose him out of all the tribes of Israel to be my priest, to go up to my altar, to burn incense, to wear an ephod before me? Didn’t I give to the house of your father all the offerings of the children of Israel made by fire?",
+      "ko": "이스라엘 모든 지파 중에서 내가 그를 택하여 나의 제사장을 삼아 그로 내 단에 올라 분향하며 내 앞에서 에봇을 입게 하지 아니하였느냐 이스라엘 자손의 드리는 모든 화제를 내가 네 조상의 집에 주지 아니하였느냐",
+      "source_text_hash": "3f6ff3ab68d7454a30efad2473f0eae8cc9d395f1489ced30031d782bc6c5090",
+      "translation_text_hash": "14e0e77bedfe4ea6c28927399c09ceb3085d054038295edfb2e3148b4102b27d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 모든 지파 중에서 내가 그를 택하여 나의 제사장을 삼아 그로 내 단에 올라 분향하며 내 앞에서 에봇을 입게 하지 아니하였느냐 이스라엘 자손의 드리는 모든 화제를 내가 네 조상의 집에 주지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "14e0e77bedfe4ea6c28927399c09ceb3085d054038295edfb2e3148b4102b27d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:29",
+      "sequence": 7270,
+      "chapter_label": "1SA 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "Why do you kick at my sacrifice and at my offering, which I have commanded in my habitation, and honor your sons above me, to make yourselves fat with the best of all the offerings of Israel my people?’",
+      "ko": "너희는 어찌하여 내가 나의 처소에서 명한 나의 제물과 예물을 밟으며 네 아들들을 나보다 더 중히 여겨 내 백성 이스라엘의 드리는 가장 좋은 것으로 스스로 살찌게 하느냐",
+      "source_text_hash": "ef3abc83f8fc10a5f5ad762af2eeec7dbd856856d594f8daf48a8beb58b39539",
+      "translation_text_hash": "7d47d2d6d31d6cd0cad61621c6dfd617e1e45286eab9c68ec111e192243732bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 어찌하여 내가 나의 처소에서 명한 나의 제물과 예물을 밟으며 네 아들들을 나보다 더 중히 여겨 내 백성 이스라엘의 드리는 가장 좋은 것으로 스스로 살찌게 하느냐"
+      ],
+      "raw_text_hashes": [
+        "7d47d2d6d31d6cd0cad61621c6dfd617e1e45286eab9c68ec111e192243732bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:30",
+      "sequence": 7271,
+      "chapter_label": "1SA 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "“Therefore the LORD, the God of Israel, says, ‘I said indeed that your house and the house of your father should walk before me forever.’ But now the LORD says, ‘Far be it from me; for those who honor me I will honor, and those who despise me will be cursed.",
+      "ko": "그러므로 이스라엘의 하나님 나 여호와가 말하노라 내가 전에 네 집과 네 조상의 집이 내 앞에 영영히 행하리라 하였으나 이제 나 여호와가 말하노니 결단코 그렇게 아니하리라 나를 존중히 여기는 자를 내가 존중히 여기고 나를 멸시하는 자를 내가 경멸히 여기리라",
+      "source_text_hash": "8439b18217d4691fcceb95e2977a55e7fdcf55129f0857894ad4760cb52ce11c",
+      "translation_text_hash": "4604321983c9b9bd56e339dc3f535f54e70b7491dccc81336c14d016fd313e8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이스라엘의 하나님 나 여호와가 말하노라 내가 전에 네 집과 네 조상의 집이 내 앞에 영영히 행하리라 하였으나 이제 나 여호와가 말하노니 결단코 그렇게 아니하리라 나를 존중히 여기는 자를 내가 존중히 여기고 나를 멸시하는 자를 내가 경멸히 여기리라"
+      ],
+      "raw_text_hashes": [
+        "4604321983c9b9bd56e339dc3f535f54e70b7491dccc81336c14d016fd313e8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:31",
+      "sequence": 7272,
+      "chapter_label": "1SA 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "Behold, the days come that I will cut off your arm and the arm of your father’s house, that there will not be an old man in your house.",
+      "ko": "보라 내가 네 팔과 네 조상의 집 팔을 끊어 네 집에 노인이 하나도 없게 하는 날이 이를찌라",
+      "source_text_hash": "e9619cb6856e923a1a7e067b605487137b4a8d3df42ff4538b74f478e583ff5b",
+      "translation_text_hash": "d4c5a9e6e2a8b110dfba35c8cd5d0ac40c43c29c9817543a8d0fb6384bb1323b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 네 팔과 네 조상의 집 팔을 끊어 네 집에 노인이 하나도 없게 하는 날이 이를찌라"
+      ],
+      "raw_text_hashes": [
+        "d4c5a9e6e2a8b110dfba35c8cd5d0ac40c43c29c9817543a8d0fb6384bb1323b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:32",
+      "sequence": 7273,
+      "chapter_label": "1SA 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "You will see the affliction of my habitation, in all the wealth which I will give Israel. There shall not be an old man in your house forever.",
+      "ko": "이스라엘에게 모든 복을 베푸는 중에 너는 내 처소의 환난을 볼 것이요 네 집에 영영토록 노인이 없을 것이며",
+      "source_text_hash": "8ed2d6c3740de0757796f9cc796a380ecab1b557c238ae247b3b9d28e6f19f78",
+      "translation_text_hash": "66cd0bdee4da5df47f8ed016f9eabca688caf3dc8f8b9a44aabf45e80e47264d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘에게 모든 복을 베푸는 중에 너는 내 처소의 환난을 볼 것이요 네 집에 영영토록 노인이 없을 것이며"
+      ],
+      "raw_text_hashes": [
+        "66cd0bdee4da5df47f8ed016f9eabca688caf3dc8f8b9a44aabf45e80e47264d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:33",
+      "sequence": 7274,
+      "chapter_label": "1SA 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "The man of yours whom I don’t cut off from my altar will consume your eyes and grieve your heart. All the increase of your house will die in the flower of their age.",
+      "ko": "내 단에서 내가 끊어 버리지 아니할 너의 사람이 네 눈을 쇠잔케 하고 네 마음을 슬프게 할 것이요 네 집에 생산하는 모든 자가 젊어서 죽으리라",
+      "source_text_hash": "08bdca691c5f8789bb040e6dea8c4d6b725f2aa757285fc3633502f6ed2ec061",
+      "translation_text_hash": "28acd25eb4cb9204c680081324fbecfcc66a11c68479f2f247035822582d3d23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 단에서 내가 끊어 버리지 아니할 너의 사람이 네 눈을 쇠잔케 하고 네 마음을 슬프게 할 것이요 네 집에 생산하는 모든 자가 젊어서 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "28acd25eb4cb9204c680081324fbecfcc66a11c68479f2f247035822582d3d23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:34",
+      "sequence": 7275,
+      "chapter_label": "1SA 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "This will be the sign to you that will come on your two sons, on Hophni and Phinehas: in one day they will both die.",
+      "ko": "네 두 아들 홉니와 비느하스가 한날에 죽으리니 그 둘의 당할 그 일이 네게 표징이 되리라",
+      "source_text_hash": "655df964f038f9791f2bdfedfa92da8376bc15d68c154351bd4d5f767396f84c",
+      "translation_text_hash": "110abc92669ad85c4ed0bf198778340ce80a1c87ce5daf42544ab26dbe138d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 두 아들 홉니와 비느하스가 한날에 죽으리니 그 둘의 당할 그 일이 네게 표징이 되리라"
+      ],
+      "raw_text_hashes": [
+        "110abc92669ad85c4ed0bf198778340ce80a1c87ce5daf42544ab26dbe138d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:35",
+      "sequence": 7276,
+      "chapter_label": "1SA 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "I will raise up a faithful priest for myself who will do according to that which is in my heart and in my mind. I will build him a sure house. He will walk before my anointed forever.",
+      "ko": "내가 나를 위하여 충실한 제사장을 일으키리니 그 사람은 내 마음, 내 뜻대로 행할 것이라 내가 그를 위하여 견고한 집을 세우리니 그가 나의 기름 부음을 받은 자 앞에서 영구히 행하리라",
+      "source_text_hash": "5fcfd8733e0dc660c2b6e49486f5c9b142b567f78c47b58dfa5be2b9b4a1efb9",
+      "translation_text_hash": "6e97c21af526b9f03b356f4eafe6b6bde62bafa137eb17b45621b30201cf44e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나를 위하여 충실한 제사장을 일으키리니 그 사람은 내 마음, 내 뜻대로 행할 것이라 내가 그를 위하여 견고한 집을 세우리니 그가 나의 기름 부음을 받은 자 앞에서 영구히 행하리라"
+      ],
+      "raw_text_hashes": [
+        "6e97c21af526b9f03b356f4eafe6b6bde62bafa137eb17b45621b30201cf44e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:2:36",
+      "sequence": 7277,
+      "chapter_label": "1SA 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "1SA",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "It will happen that everyone who is left in your house will come and bow down to him for a piece of silver and a loaf of bread, and will say, “Please put me into one of the priests’ offices, that I may eat a morsel of bread.”’”",
+      "ko": "네 집에 남은 사람이 각기 와서 은 한 조각과 떡 한 덩이를 위하여 그에게 엎드려 가로되 청하노니 내게 한 제사장의 직분을 맡겨 나로 떡 조각을 먹게 하소서 하리라 하셨다 하니라",
+      "source_text_hash": "8afb09c12559c08f0a1cbb74ecf3c101f6edda5d70b73c936c0d302919a21bb9",
+      "translation_text_hash": "7c3d63f66ecbfac4509618207ef049a7a505a25c8af4f17df8788515f6ca891b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 집에 남은 사람이 각기 와서 은 한 조각과 떡 한 덩이를 위하여 그에게 엎드려 가로되 청하노니 내게 한 제사장의 직분을 맡겨 나로 떡 조각을 먹게 하소서 하리라 하셨다 하니라"
+      ],
+      "raw_text_hashes": [
+        "7c3d63f66ecbfac4509618207ef049a7a505a25c8af4f17df8788515f6ca891b"
+      ]
+    }
+  ]
+}

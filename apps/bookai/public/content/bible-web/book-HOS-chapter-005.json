@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:HOS:chapter:005",
+  "unit_ordinal": 867,
+  "unit_label": "HOS 5",
+  "book_code": "HOS",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:HOS:5:1",
+      "sequence": 22154,
+      "chapter_label": "HOS 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "“Listen to this, you priests! Listen, house of Israel, and give ear, house of the king! For the judgment is against you; for you have been a snare at Mizpah, and a net spread on Tabor.",
+      "ko": "제사장들아 이를 들으라 이스라엘 족속들아 깨달으라 왕족들아 귀를 기울이라 너희에게 심판이 있나니 너희가 미스바에서 올무가 되며 다볼 위에서 친 그물이 됨이라",
+      "source_text_hash": "75af2270303ac3fcb34ae8503ac03ff849a421e91e792cf1aa6d59e32556a915",
+      "translation_text_hash": "3c0a265f1e263410f629a1f6581f904a45a006c1555a2d10f665bf20efa509d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들아 이를 들으라 이스라엘 족속들아 깨달으라 왕족들아 귀를 기울이라 너희에게 심판이 있나니 너희가 미스바에서 올무가 되며 다볼 위에서 친 그물이 됨이라"
+      ],
+      "raw_text_hashes": [
+        "3c0a265f1e263410f629a1f6581f904a45a006c1555a2d10f665bf20efa509d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:2",
+      "sequence": 22155,
+      "chapter_label": "HOS 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "The rebels are deep in slaughter, but I discipline all of them.",
+      "ko": "패역자가 살륙죄에 깊이 빠졌으매 내가 저희를 다 징책하노라",
+      "source_text_hash": "4e8a02916487532fef29b2a107c676ca0d4f7e09981f0969dcee536bb575d9aa",
+      "translation_text_hash": "c82eb3f5164aef6185e2cb0f460fbefa29e9fc9d8f6ed0202c93cdbde6ddd4b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "패역자가 살륙죄에 깊이 빠졌으매 내가 저희를 다 징책하노라"
+      ],
+      "raw_text_hashes": [
+        "c82eb3f5164aef6185e2cb0f460fbefa29e9fc9d8f6ed0202c93cdbde6ddd4b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:3",
+      "sequence": 22156,
+      "chapter_label": "HOS 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "I know Ephraim, and Israel is not hidden from me; for now, Ephraim, you have played the prostitute. Israel is defiled.",
+      "ko": "에브라임은 내가 알고 이스라엘은 내게 숨기지 못하나니 에브라임아 이제 네가 행음하였고 이스라엘이 이미 더러웠느니라",
+      "source_text_hash": "e758816b63673d47cd00bae927dc54f29ee7e3cb8cd2ac7fe90ce5b0178283cc",
+      "translation_text_hash": "fd528c9c693d1e5d9eb9a6187664b02ea485e50f13c4d7b1c87663e3575c099d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 내가 알고 이스라엘은 내게 숨기지 못하나니 에브라임아 이제 네가 행음하였고 이스라엘이 이미 더러웠느니라"
+      ],
+      "raw_text_hashes": [
+        "fd528c9c693d1e5d9eb9a6187664b02ea485e50f13c4d7b1c87663e3575c099d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:4",
+      "sequence": 22157,
+      "chapter_label": "HOS 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "Their deeds won’t allow them to turn to their God, for the spirit of prostitution is within them, and they don’t know the LORD.",
+      "ko": "저희의 행위가 저희로 자기 하나님에게 돌아가지 못하게 하나니 이는 음란한 마음이 그 속에 있어 여호와를 알지 못하는 까닭이라",
+      "source_text_hash": "2725d8f91a4becf4d233999d800f58b1f72898d4bd7ec9bf770986b7e76933ec",
+      "translation_text_hash": "0fab8184c9e856f3d652137f346d0211a134e6389adf5253962a61bf55d012ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 행위가 저희로 자기 하나님에게 돌아가지 못하게 하나니 이는 음란한 마음이 그 속에 있어 여호와를 알지 못하는 까닭이라"
+      ],
+      "raw_text_hashes": [
+        "0fab8184c9e856f3d652137f346d0211a134e6389adf5253962a61bf55d012ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:5",
+      "sequence": 22158,
+      "chapter_label": "HOS 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "The pride of Israel testifies to his face. Therefore Israel and Ephraim will stumble in their iniquity. Judah also will stumble with them.",
+      "ko": "이스라엘의 교만이 그 얼굴에 증거가 되나니 그 죄악을 인하여 이스라엘과 에브라임이 넘어지고 유다도 저희와 한가지로 넘어지리라",
+      "source_text_hash": "1bfb3107144ad2e971e82f987a67e70be8bf944c74bb0fd4a21fb604c7bcc6a2",
+      "translation_text_hash": "8538b07f61b6ed71e651e18f086534f3fbc814a446f8d2c86dd8b618435748f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 교만이 그 얼굴에 증거가 되나니 그 죄악을 인하여 이스라엘과 에브라임이 넘어지고 유다도 저희와 한가지로 넘어지리라"
+      ],
+      "raw_text_hashes": [
+        "8538b07f61b6ed71e651e18f086534f3fbc814a446f8d2c86dd8b618435748f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:6",
+      "sequence": 22159,
+      "chapter_label": "HOS 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "They will go with their flocks and with their herds to seek the LORD, but they won’t find him. He has withdrawn himself from them.",
+      "ko": "저희가 양떼와 소떼를 끌고 여호와를 찾으러 갈찌라도 만나지 못할 것은 이미 저희에게서 떠나셨음이라",
+      "source_text_hash": "fc15afa6494d1521d9735e7c545b2ad5ff16ba07d207083576bd003de681a471",
+      "translation_text_hash": "300976ad652009e8c3c3e8247959db27f3ef42d09c718ca28034068521a6e3a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 양떼와 소떼를 끌고 여호와를 찾으러 갈찌라도 만나지 못할 것은 이미 저희에게서 떠나셨음이라"
+      ],
+      "raw_text_hashes": [
+        "300976ad652009e8c3c3e8247959db27f3ef42d09c718ca28034068521a6e3a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:7",
+      "sequence": 22160,
+      "chapter_label": "HOS 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "They are unfaithful to the LORD; for they have borne illegitimate children. Now the new moon will devour them with their fields.",
+      "ko": "저희가 여호와께 정조를 지키지 아니하고 사생자를 낳았으니 그러므로 새 달이 저희와 그 기업을 함께 삼키리로다",
+      "source_text_hash": "c3b83021123900e25e13aeadd1eacac9c799f568d195a297b4be6aa52d7ad051",
+      "translation_text_hash": "5129ac843c44b732ab1bf94a6483964bcc8f8a76431064bcadb0b9f8bb9d3c22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 여호와께 정조를 지키지 아니하고 사생자를 낳았으니 그러므로 새 달이 저희와 그 기업을 함께 삼키리로다"
+      ],
+      "raw_text_hashes": [
+        "5129ac843c44b732ab1bf94a6483964bcc8f8a76431064bcadb0b9f8bb9d3c22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:8",
+      "sequence": 22161,
+      "chapter_label": "HOS 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "“Blow the cornet in Gibeah, and the trumpet in Ramah! Sound a battle cry at Beth Aven, behind you, Benjamin!",
+      "ko": "너희가 기브아에서 나팔을 불며 라마에서 호각을 불며 벧아웬에서 깨우쳐 소리하기를 베냐민아 네 뒤를 쫓는다 할찌어다",
+      "source_text_hash": "0f8ec5866b9957fb26f4121d1d3180adb9f0ba39b9adf70766376f68142ad61f",
+      "translation_text_hash": "5815946632c2b705a85d624249c22998d03a2e91c23c5d10aa53a4ca4cd38188",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 기브아에서 나팔을 불며 라마에서 호각을 불며 벧아웬에서 깨우쳐 소리하기를 베냐민아 네 뒤를 쫓는다 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "5815946632c2b705a85d624249c22998d03a2e91c23c5d10aa53a4ca4cd38188"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:9",
+      "sequence": 22162,
+      "chapter_label": "HOS 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "Ephraim will become a desolation in the day of rebuke. Among the tribes of Israel, I have made known that which will surely be.",
+      "ko": "견책하는 날에 에브라임이 황무할 것이라 내가 이스라엘 지파 중에 필연 있을 일을 보였노라",
+      "source_text_hash": "524f75aaebfdcd3ef3379c5bdf2a6ea7639dc3c743f18765c313dca1a93935a8",
+      "translation_text_hash": "b9cbd94d2aa91e62f6712ad45ecbcd56b28a0b00a8fc65196f466d6add32c846",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "견책하는 날에 에브라임이 황무할 것이라 내가 이스라엘 지파 중에 필연 있을 일을 보였노라"
+      ],
+      "raw_text_hashes": [
+        "b9cbd94d2aa91e62f6712ad45ecbcd56b28a0b00a8fc65196f466d6add32c846"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:10",
+      "sequence": 22163,
+      "chapter_label": "HOS 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "The princes of Judah are like those who remove a landmark. I will pour out my wrath on them like water.",
+      "ko": "유다 방백들은 지계표를 옮기는 자 같으니 내가 나의 진노를 저희에게 물 같이 부으리라",
+      "source_text_hash": "7c3388940fb72c419ecc35f32a6724ec8a5f7c3ff916e5f539de8373b96221c5",
+      "translation_text_hash": "505ac5e406fa23a4e967ec6ef3229beb422d013668ab855e98772e1fb1790a61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 방백들은 지계표를 옮기는 자 같으니 내가 나의 진노를 저희에게 물 같이 부으리라"
+      ],
+      "raw_text_hashes": [
+        "505ac5e406fa23a4e967ec6ef3229beb422d013668ab855e98772e1fb1790a61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:11",
+      "sequence": 22164,
+      "chapter_label": "HOS 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Ephraim is oppressed, he is crushed in judgment, because he is intent in his pursuit of idols.",
+      "ko": "에브라임은 사람의 명령 좇기를 좋아하므로 학대를 받고 재판의 압제를 당하는도다",
+      "source_text_hash": "a8014fcfaf0198c897403abbb20d228c7a5917bdf2a1761fe82880960ea19373",
+      "translation_text_hash": "f2515b107287d059c92a468eb9aa782bf6edf70691eeb2f6adac2bca432847c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임은 사람의 명령 좇기를 좋아하므로 학대를 받고 재판의 압제를 당하는도다"
+      ],
+      "raw_text_hashes": [
+        "f2515b107287d059c92a468eb9aa782bf6edf70691eeb2f6adac2bca432847c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:12",
+      "sequence": 22165,
+      "chapter_label": "HOS 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore I am to Ephraim like a moth, and to the house of Judah like rottenness.",
+      "ko": "그러므로 내가 에브라임에게는 좀 같으며 유다 족속에게는 썩이는 것 같도다",
+      "source_text_hash": "de4da004238e5798376eb0d2d8cb06b4a1c3f1c873aa19e66d8e80d817317a90",
+      "translation_text_hash": "f9a4ba7e6ef05f0981cd0d3c7f13f9a66f516da54054fdfc7525e31a5eaad90f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 에브라임에게는 좀 같으며 유다 족속에게는 썩이는 것 같도다"
+      ],
+      "raw_text_hashes": [
+        "f9a4ba7e6ef05f0981cd0d3c7f13f9a66f516da54054fdfc7525e31a5eaad90f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:13",
+      "sequence": 22166,
+      "chapter_label": "HOS 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "“When Ephraim saw his sickness, and Judah his wound, then Ephraim went to Assyria, and sent to King Jareb: but he is not able to heal you, neither will he cure you of your wound.",
+      "ko": "에브라임이 자기의 병을 깨달으며 유다가 자기의 상처를 깨달았고 에브라임은 앗수르로 가서 야렙 왕에게 사람을 보내었으나 저가 능히 너희를 고치지 못하겠고 너희 상처를 낫게 하지 못하리라",
+      "source_text_hash": "9ef5d540305abf00f80f1389b032dca134539691c5d80471a6cd553b3fc75383",
+      "translation_text_hash": "01961dcac034a18a5e3a18f1b3ba1cf7996fac416f757ec73a69503ee5550a9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임이 자기의 병을 깨달으며 유다가 자기의 상처를 깨달았고 에브라임은 앗수르로 가서 야렙 왕에게 사람을 보내었으나 저가 능히 너희를 고치지 못하겠고 너희 상처를 낫게 하지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "01961dcac034a18a5e3a18f1b3ba1cf7996fac416f757ec73a69503ee5550a9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:14",
+      "sequence": 22167,
+      "chapter_label": "HOS 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "For I will be to Ephraim like a lion, and like a young lion to the house of Judah. I myself will tear in pieces and go away. I will carry off, and there will be no one to deliver.",
+      "ko": "내가 에브라임에게는 사자 같고 유다 족속에게는 젊은 사자 같으니 나 곧 내가 움켜갈찌라 내가 탈취하여 갈찌라도 건져낼 자가 없으리라",
+      "source_text_hash": "d3e846238b1185bfa91e9b7dad2666549538d55e4040adcdacce45fc153117c6",
+      "translation_text_hash": "dcee4dded3c1b6e1d099afe18436dd1a954219979bd8fd76017adb8fc8f45450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 에브라임에게는 사자 같고 유다 족속에게는 젊은 사자 같으니 나 곧 내가 움켜갈찌라 내가 탈취하여 갈찌라도 건져낼 자가 없으리라"
+      ],
+      "raw_text_hashes": [
+        "dcee4dded3c1b6e1d099afe18436dd1a954219979bd8fd76017adb8fc8f45450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:HOS:5:15",
+      "sequence": 22168,
+      "chapter_label": "HOS 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "HOS",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "HOS",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "I will go and return to my place, until they acknowledge their offense, and seek my face. In their affliction they will seek me earnestly.”",
+      "ko": "내가 내 곳으로 돌아가서 저희가 그 죄를 뉘우치고 내 얼굴을 구하기까지 기다리리라 저희가 고난을 받을 때에 나를 간절히 구하여 이르기를",
+      "source_text_hash": "84c43640669460e492f983555075c28936187d28367058762e32a1e650c42ac8",
+      "translation_text_hash": "6d11e114628ee9578119f56ae8447bc845ed809e77626d8b1156eb90605a350f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 내 곳으로 돌아가서 저희가 그 죄를 뉘우치고 내 얼굴을 구하기까지 기다리리라 저희가 고난을 받을 때에 나를 간절히 구하여 이르기를"
+      ],
+      "raw_text_hashes": [
+        "6d11e114628ee9578119f56ae8447bc845ed809e77626d8b1156eb90605a350f"
+      ]
+    }
+  ]
+}

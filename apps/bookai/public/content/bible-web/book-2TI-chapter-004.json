@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2TI:chapter:004",
+  "unit_ordinal": 1129,
+  "unit_label": "2TI 4",
+  "book_code": "2TI",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2TI:4:1",
+      "sequence": 29868,
+      "chapter_label": "2TI 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "I command you therefore before God and the Lord Jesus Christ, who will judge the living and the dead at his appearing and his Kingdom:",
+      "ko": "하나님 앞과 산 자와 죽은 자를 심판하실 그리스도 예수 앞에서 그의 나타나실 것과 그의 나라를 두고 엄히 명하노니",
+      "source_text_hash": "e654db6871a63e43b3bc94a2584f8cbccc96059971bacaa9adbe1dbc8473f6bb",
+      "translation_text_hash": "061edc2778ae0a669b7c2d5b90cde05c0188b11d1b0092bf533b7e7f7cd2adc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님 앞과 산 자와 죽은 자를 심판하실 그리스도 예수 앞에서 그의 나타나실 것과 그의 나라를 두고 엄히 명하노니"
+      ],
+      "raw_text_hashes": [
+        "061edc2778ae0a669b7c2d5b90cde05c0188b11d1b0092bf533b7e7f7cd2adc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:2",
+      "sequence": 29869,
+      "chapter_label": "2TI 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "preach the word; be urgent in season and out of season; reprove, rebuke, and exhort with all patience and teaching.",
+      "ko": "너는 말씀을 전파하라 때를 얻든지 못 얻든지 항상 힘쓰라 범사에 오래 참음과 가르침으로 경책하며 경계하며 권하라",
+      "source_text_hash": "2ecb740a16a2837ba3eef47a10628d6e874ce2cb50e581240d0f4f0d3b4b8ae2",
+      "translation_text_hash": "09819ae43db026067c01841dfe76c5bcaa9e9c3ea5b4fda1dc28843306f6bb1e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 말씀을 전파하라 때를 얻든지 못 얻든지 항상 힘쓰라 범사에 오래 참음과 가르침으로 경책하며 경계하며 권하라"
+      ],
+      "raw_text_hashes": [
+        "09819ae43db026067c01841dfe76c5bcaa9e9c3ea5b4fda1dc28843306f6bb1e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:3",
+      "sequence": 29870,
+      "chapter_label": "2TI 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "For the time will come when they will not listen to the sound doctrine, but having itching ears, will heap up for themselves teachers after their own lusts,",
+      "ko": "때가 이르리니 사람이 바른 교훈을 받지 아니하며 귀가 가려워서 자기의 사욕을 좇을 스승을 많이 두고",
+      "source_text_hash": "150ae4289eb9549ee970c300dc6b6d1d592c3027515fbcaae800fb4de5035e0c",
+      "translation_text_hash": "5a2c99af467966948eeb465524ca5c0d69fcc432b4dbd53de5ea9f2806f6e72a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때가 이르리니 사람이 바른 교훈을 받지 아니하며 귀가 가려워서 자기의 사욕을 좇을 스승을 많이 두고"
+      ],
+      "raw_text_hashes": [
+        "5a2c99af467966948eeb465524ca5c0d69fcc432b4dbd53de5ea9f2806f6e72a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:4",
+      "sequence": 29871,
+      "chapter_label": "2TI 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "and will turn away their ears from the truth, and turn away to fables.",
+      "ko": "또 그 귀를 진리에서 돌이켜 허탄한 이야기를 좇으리라",
+      "source_text_hash": "0aa99736db0560f0c81307e07757a9b715fbbb290565e6a02f6de7939c7d7ab7",
+      "translation_text_hash": "7f73f8332daad175ac2cc03e28e3a7dc91eb3c9e72f3bed708aca2dbff97313d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 귀를 진리에서 돌이켜 허탄한 이야기를 좇으리라"
+      ],
+      "raw_text_hashes": [
+        "7f73f8332daad175ac2cc03e28e3a7dc91eb3c9e72f3bed708aca2dbff97313d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:5",
+      "sequence": 29872,
+      "chapter_label": "2TI 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "But you be sober in all things, suffer hardship, do the work of an evangelist, and fulfill your ministry.",
+      "ko": "그러나 너는 모든 일에 근신하여 고난을 받으며 전도인의 일을 하며 네 직무를 다하라",
+      "source_text_hash": "bf45dc7f8e9f7fa632245b3e3de8a7cc769b74d93391615430c1849f4b356a53",
+      "translation_text_hash": "ddb5f87a632f81e01ee458b03b17bb400342b6f35b1ef654ba700ec55aad0ddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 모든 일에 근신하여 고난을 받으며 전도인의 일을 하며 네 직무를 다하라"
+      ],
+      "raw_text_hashes": [
+        "ddb5f87a632f81e01ee458b03b17bb400342b6f35b1ef654ba700ec55aad0ddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:6",
+      "sequence": 29873,
+      "chapter_label": "2TI 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "For I am already being offered, and the time of my departure has come.",
+      "ko": "관제와 같이 벌써 내가 부음이 되고 나의 떠날 기약이 가까왔도다",
+      "source_text_hash": "fbe6ffbf4f6e5d3ca1b2167878eb43e72bd5db400eff926b48756ff3d872a666",
+      "translation_text_hash": "0ebde8914a983a143df12da2899e5ebb69598c489304460d129a51918ec50b2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관제와 같이 벌써 내가 부음이 되고 나의 떠날 기약이 가까왔도다"
+      ],
+      "raw_text_hashes": [
+        "0ebde8914a983a143df12da2899e5ebb69598c489304460d129a51918ec50b2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:7",
+      "sequence": 29874,
+      "chapter_label": "2TI 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "I have fought the good fight. I have finished the course. I have kept the faith.",
+      "ko": "내가 선한 싸움을 싸우고 나의 달려갈 길을 마치고 믿음을 지켰으니",
+      "source_text_hash": "51d2eaa571af90aa647ca5100af700eca2c45c1a949c38eaef36475776bd5c0e",
+      "translation_text_hash": "86a8194c0d2dc5ef01d09eb50e299ec288656949d3c382ca9074790d6f0dfa63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 선한 싸움을 싸우고 나의 달려갈 길을 마치고 믿음을 지켰으니"
+      ],
+      "raw_text_hashes": [
+        "86a8194c0d2dc5ef01d09eb50e299ec288656949d3c382ca9074790d6f0dfa63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:8",
+      "sequence": 29875,
+      "chapter_label": "2TI 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "From now on, the crown of righteousness is stored up for me, which the Lord, the righteous judge, will give to me on that day; and not to me only, but also to all those who have loved his appearing.",
+      "ko": "이제 후로는 나를 위하여 의의 면류관이 예비되었으므로 주 곧 의로우신 재판장이 그 날에 내게 주실 것이니 내게만 아니라 주의 나타나심을 사모하는 모든 자에게니라",
+      "source_text_hash": "2d96cf8363e1872c521acda15b5333a172fe32da1d992e1136f031f0fda56d9d",
+      "translation_text_hash": "4b975896050bb57152a34dda877cb4c1d0a057ab5301af4aac7298fa4207e3a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 후로는 나를 위하여 의의 면류관이 예비되었으므로 주 곧 의로우신 재판장이 그 날에 내게 주실 것이니 내게만 아니라 주의 나타나심을 사모하는 모든 자에게니라"
+      ],
+      "raw_text_hashes": [
+        "4b975896050bb57152a34dda877cb4c1d0a057ab5301af4aac7298fa4207e3a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:9",
+      "sequence": 29876,
+      "chapter_label": "2TI 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Be diligent to come to me soon,",
+      "ko": "너는 어서 속히 내게로 오라",
+      "source_text_hash": "99f28f45fb7ceb9bffaafc002a55f8f253cb7f900506e77cf4c2874974a2c64d",
+      "translation_text_hash": "517233e5632b944d4896bca94aa8a63663b6fa74487d061c566439463f17a674",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 어서 속히 내게로 오라"
+      ],
+      "raw_text_hashes": [
+        "517233e5632b944d4896bca94aa8a63663b6fa74487d061c566439463f17a674"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:10",
+      "sequence": 29877,
+      "chapter_label": "2TI 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "for Demas left me, having loved this present world, and went to Thessalonica; Crescens to Galatia; and Titus to Dalmatia.",
+      "ko": "데마는 이 세상을 사랑하여 나를 버리고 데살로니가로 갔고 그레스게는 갈라디아로, 디도는 달마디아로 갔고",
+      "source_text_hash": "eb42edb5418b6ef1442e5ae63f032d0b1fa09d120c3d7752acd9f4879451a914",
+      "translation_text_hash": "762621b96ef76b1c02d10b1b4058ea6e25c53004ad5c6673bfa65c8bf1d1ebbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데마는 이 세상을 사랑하여 나를 버리고 데살로니가로 갔고 그레스게는 갈라디아로, 디도는 달마디아로 갔고"
+      ],
+      "raw_text_hashes": [
+        "762621b96ef76b1c02d10b1b4058ea6e25c53004ad5c6673bfa65c8bf1d1ebbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:11",
+      "sequence": 29878,
+      "chapter_label": "2TI 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "Only Luke is with me. Take Mark and bring him with you, for he is useful to me for service.",
+      "ko": "누가만 나와 함께 있느니라 네가 올 때에 마가를 데리고 오라 저가 나의 일에 유익하니라",
+      "source_text_hash": "b5c9d2e8b74e9bed1bd84e472d5d5d6f27e898001ff7ca807ff312083e3deefc",
+      "translation_text_hash": "3ec9226f1bc892b1ea1edae9dcf82edf7ac7dfa1e92dbb5e0b4023b50b67eeb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가만 나와 함께 있느니라 네가 올 때에 마가를 데리고 오라 저가 나의 일에 유익하니라"
+      ],
+      "raw_text_hashes": [
+        "3ec9226f1bc892b1ea1edae9dcf82edf7ac7dfa1e92dbb5e0b4023b50b67eeb2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:12",
+      "sequence": 29879,
+      "chapter_label": "2TI 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "But I sent Tychicus to Ephesus.",
+      "ko": "두기고는 에베소로 보내었노라",
+      "source_text_hash": "1f25c8613a3eafb2c7832cff9595c1bcc204607eb8202f7056c24647b26a794b",
+      "translation_text_hash": "983cc1723dcbec51a99004cea12e71e8d0f5eda10b02c529423057d21859db63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두기고는 에베소로 보내었노라"
+      ],
+      "raw_text_hashes": [
+        "983cc1723dcbec51a99004cea12e71e8d0f5eda10b02c529423057d21859db63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:13",
+      "sequence": 29880,
+      "chapter_label": "2TI 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "Bring the cloak that I left at Troas with Carpus when you come—and the books, especially the parchments.",
+      "ko": "네가 올 때에 내가 드로아 가보의 집에 둔 겉옷을 가지고 오고 또 책은 특별히 가죽 종이에 쓴 것을 가져오라",
+      "source_text_hash": "6450cff685b6c41db0b60b4f18ad39ec7c71a13fc9fb2db5569f519f9281f2a6",
+      "translation_text_hash": "1fa41f2dd48bfbf9dd092ec35489279a60cd3b0ff164e39e9c182b9f7edba60c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 올 때에 내가 드로아 가보의 집에 둔 겉옷을 가지고 오고 또 책은 특별히 가죽 종이에 쓴 것을 가져오라"
+      ],
+      "raw_text_hashes": [
+        "1fa41f2dd48bfbf9dd092ec35489279a60cd3b0ff164e39e9c182b9f7edba60c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:14",
+      "sequence": 29881,
+      "chapter_label": "2TI 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "Alexander the coppersmith did much evil to me. The Lord will repay him according to his deeds.",
+      "ko": "구리 장색 알렉산더가 내게 해를 많이 보였으매 주께서 그 행한대로 저에게 갚으시리니",
+      "source_text_hash": "3146c8d8790001fa153da0f92fa32d5701d8aea845da380a32ed5e85a98abd7b",
+      "translation_text_hash": "e7e52eaa807ed9a0961cefa9faacb3d1dbb9cc7714179a741badf454a96da0f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "구리 장색 알렉산더가 내게 해를 많이 보였으매 주께서 그 행한대로 저에게 갚으시리니"
+      ],
+      "raw_text_hashes": [
+        "e7e52eaa807ed9a0961cefa9faacb3d1dbb9cc7714179a741badf454a96da0f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:15",
+      "sequence": 29882,
+      "chapter_label": "2TI 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Beware of him, for he greatly opposed our words.",
+      "ko": "너도 저를 주의하라 저가 우리 말을 심히 대적하였느니라",
+      "source_text_hash": "99c5389f8b3b0428cd4bfd8589bdcc7bc81cad4a9777777e59593ee6e5422487",
+      "translation_text_hash": "38b856a67b72604806a9a12b64b61faf4eaa8e128736a8b9891c0918112555ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너도 저를 주의하라 저가 우리 말을 심히 대적하였느니라"
+      ],
+      "raw_text_hashes": [
+        "38b856a67b72604806a9a12b64b61faf4eaa8e128736a8b9891c0918112555ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:16",
+      "sequence": 29883,
+      "chapter_label": "2TI 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "At my first defense, no one came to help me, but all left me. May it not be held against them.",
+      "ko": "내가 처음 변명할 때에 나와 함께한 자가 하나도 없고 다 나를 버렸으나 저희에게 허물을 돌리지 않기를 원하노라",
+      "source_text_hash": "dbf1c313bf1df524319bcd2b6e7885663657a59ea6e797b40b467dad79418c61",
+      "translation_text_hash": "480a4e8875e590173e771be15d4941f1219cf2c25232e7e68c08d351455c3300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 처음 변명할 때에 나와 함께한 자가 하나도 없고 다 나를 버렸으나 저희에게 허물을 돌리지 않기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "480a4e8875e590173e771be15d4941f1219cf2c25232e7e68c08d351455c3300"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:17",
+      "sequence": 29884,
+      "chapter_label": "2TI 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "But the Lord stood by me and strengthened me, that through me the message might be fully proclaimed, and that all the Gentiles might hear. So I was delivered out of the mouth of the lion.",
+      "ko": "주께서 내 곁에 서서 나를 강건케 하심은 나로 말미암아 전도의 말씀이 온전히 전파되어 이방인으로 듣게 하려 하심이니 내가 사자의 입에서 건지웠느니라",
+      "source_text_hash": "ee28912d40c797befad20278e741581e9f01c47b067a8453e9f54fcda06fa8d5",
+      "translation_text_hash": "98c7b065513480c188c1415f314d974cbbf9333d5f226eb1c43e14bf6f43b245",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내 곁에 서서 나를 강건케 하심은 나로 말미암아 전도의 말씀이 온전히 전파되어 이방인으로 듣게 하려 하심이니 내가 사자의 입에서 건지웠느니라"
+      ],
+      "raw_text_hashes": [
+        "98c7b065513480c188c1415f314d974cbbf9333d5f226eb1c43e14bf6f43b245"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:18",
+      "sequence": 29885,
+      "chapter_label": "2TI 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "And the Lord will deliver me from every evil work and will preserve me for his heavenly Kingdom. To him be the glory forever and ever. Amen.",
+      "ko": "주께서 나를 모든 악한 일에서 건져내시고 또 그의 천국에 들어가도록 구원하시리니 그에게 영광이 세세 무궁토록 있을찌어다 아멘",
+      "source_text_hash": "e8ad87931be7739857e95b8084a9285d3e2d8596f91a4abb7c432e32097619a1",
+      "translation_text_hash": "d8d17856bd80dfb90be1ac62b32b01c64b97a4e3fd2b4882e4f5ff59eccc80e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 나를 모든 악한 일에서 건져내시고 또 그의 천국에 들어가도록 구원하시리니 그에게 영광이 세세 무궁토록 있을찌어다 아멘"
+      ],
+      "raw_text_hashes": [
+        "d8d17856bd80dfb90be1ac62b32b01c64b97a4e3fd2b4882e4f5ff59eccc80e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:19",
+      "sequence": 29886,
+      "chapter_label": "2TI 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "Greet Prisca and Aquila, and the house of Onesiphorus.",
+      "ko": "브리스가와 아굴라와 및 오네시보로의 집에 문안하라",
+      "source_text_hash": "755ef24c2abf6216dbbae041e671399e76f516c4c7ff7931164ae4096c702033",
+      "translation_text_hash": "333bfabbef75a544cf7297009b387e239f70d2cdc9292d044309c1ab14c74234",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "브리스가와 아굴라와 및 오네시보로의 집에 문안하라"
+      ],
+      "raw_text_hashes": [
+        "333bfabbef75a544cf7297009b387e239f70d2cdc9292d044309c1ab14c74234"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:20",
+      "sequence": 29887,
+      "chapter_label": "2TI 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "Erastus remained at Corinth, but I left Trophimus at Miletus sick.",
+      "ko": "에라스도는 고린도에 머물렀고 드로비모는 병듦으로 밀레도에 두었노니",
+      "source_text_hash": "dcefe9b1fb22b1282f9d973c8057bf8033b3203d87d2c96f530d5bdb51651730",
+      "translation_text_hash": "7a8c71a07cad53f6f2d10509aac4c366a26349d67a62ffe5372fc66e0a0f0e5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에라스도는 고린도에 머물렀고 드로비모는 병듦으로 밀레도에 두었노니"
+      ],
+      "raw_text_hashes": [
+        "7a8c71a07cad53f6f2d10509aac4c366a26349d67a62ffe5372fc66e0a0f0e5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:21",
+      "sequence": 29888,
+      "chapter_label": "2TI 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "Be diligent to come before winter. Eubulus salutes you, as do Pudens, Linus, Claudia, and all the brothers.",
+      "ko": "겨울 전에 너는 어서 오라 으불로와 부데와 리노와 글라우디아와 모든 형제가 다 네게 문안하느니라",
+      "source_text_hash": "b8fa06d3f537523aee1d32d776207afe272339e61b756741d36fd83633d4cfde",
+      "translation_text_hash": "8331481547688600c5aef39b33d79d1e9aa9012284f2b76acaf221c60b95e149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겨울 전에 너는 어서 오라 으불로와 부데와 리노와 글라우디아와 모든 형제가 다 네게 문안하느니라"
+      ],
+      "raw_text_hashes": [
+        "8331481547688600c5aef39b33d79d1e9aa9012284f2b76acaf221c60b95e149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2TI:4:22",
+      "sequence": 29889,
+      "chapter_label": "2TI 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "2TI",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2TI",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "The Lord Jesus Christ be with your spirit. Grace be with you. Amen.",
+      "ko": "나는 주께서 네 심령에 함께 계시기를 바라노니 은혜가 너희와 함께 있을찌어다",
+      "source_text_hash": "58bf48d7cb4dfb90163a42d26918547902edd3966646b6381afdcc70e1d97975",
+      "translation_text_hash": "a78cf69b06447fb97ed7fb3ca7aae7c47f7eb6618262a2a52d8d7e78d7fd5b2d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주께서 네 심령에 함께 계시기를 바라노니 은혜가 너희와 함께 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "a78cf69b06447fb97ed7fb3ca7aae7c47f7eb6618262a2a52d8d7e78d7fd5b2d"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,493 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:012",
+  "unit_ordinal": 223,
+  "unit_label": "JDG 12",
+  "book_code": "JDG",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:12:1",
+      "sequence": 6871,
+      "chapter_label": "JDG 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "The men of Ephraim were gathered together, and passed northward; and they said to Jephthah, “Why did you pass over to fight against the children of Ammon, and didn’t call us to go with you? We will burn your house around you with fire!”",
+      "ko": "에브라임 사람들이 모여 북으로 가서 입다에게 이르되 네가 암몬 자손과 싸우러 건너갈 때에 어찌하여 우리를 불러 너와 함께 가게 하지 아니하였느냐 우리가 반드시 불로 너와 네 집을 사르리라",
+      "source_text_hash": "f11c481f5be0bfb0ee9f546eab19e3ad72364596c3ca7bc1bbcd5c419fc73ccd",
+      "translation_text_hash": "34f1d55e74589ef3efdcd009b67b673a571a6d073252e3bb87257c19fd4e1dec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에브라임 사람들이 모여 북으로 가서 입다에게 이르되 네가 암몬 자손과 싸우러 건너갈 때에 어찌하여 우리를 불러 너와 함께 가게 하지 아니하였느냐 우리가 반드시 불로 너와 네 집을 사르리라"
+      ],
+      "raw_text_hashes": [
+        "34f1d55e74589ef3efdcd009b67b673a571a6d073252e3bb87257c19fd4e1dec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:2",
+      "sequence": 6872,
+      "chapter_label": "JDG 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Jephthah said to them, “I and my people were at great strife with the children of Ammon; and when I called you, you didn’t save me out of their hand.",
+      "ko": "입다가 그들에게 이르되 나와 나의 백성이 암몬 자손과 크게 다툴 때에 내가 너희를 부르되 너희가 나를 그들의 손에서 구원하지 아니한고로",
+      "source_text_hash": "6d6ac31dd3243b2ecac1c5920bb7f5c992b2dd0f2dc8d0c636fa6f4fb470c942",
+      "translation_text_hash": "9bf398cdce9bb462b138d770784a107a684162c526c06aff11f4ad9f1bec3943",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입다가 그들에게 이르되 나와 나의 백성이 암몬 자손과 크게 다툴 때에 내가 너희를 부르되 너희가 나를 그들의 손에서 구원하지 아니한고로"
+      ],
+      "raw_text_hashes": [
+        "9bf398cdce9bb462b138d770784a107a684162c526c06aff11f4ad9f1bec3943"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:3",
+      "sequence": 6873,
+      "chapter_label": "JDG 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "When I saw that you didn’t save me, I put my life in my hand, and passed over against the children of Ammon, and the LORD delivered them into my hand. Why then have you come up to me today, to fight against me?”",
+      "ko": "내가 너희의 구원치 아니하는 것을 보고 내 생명을 돌아보지 아니하고 건너가서 암몬 자손을 쳤더니 여호와께서 그들을 내 손에 붙이셨거늘 너희가 어찌하여 오늘날 내게 올라와서 나로 더불어 싸우고자 하느냐 하고",
+      "source_text_hash": "c24c7f50c78598134bfe77585084be337b24209507942a7d51bcf75ef6b25204",
+      "translation_text_hash": "689151b96344ec07dad7551b64940940924e596ea060b1ab7a2da7741b8f62f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 구원치 아니하는 것을 보고 내 생명을 돌아보지 아니하고 건너가서 암몬 자손을 쳤더니 여호와께서 그들을 내 손에 붙이셨거늘 너희가 어찌하여 오늘날 내게 올라와서 나로 더불어 싸우고자 하느냐 하고"
+      ],
+      "raw_text_hashes": [
+        "689151b96344ec07dad7551b64940940924e596ea060b1ab7a2da7741b8f62f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:4",
+      "sequence": 6874,
+      "chapter_label": "JDG 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Then Jephthah gathered together all the men of Gilead, and fought with Ephraim. The men of Gilead struck Ephraim, because they said, “You are fugitives of Ephraim, you Gileadites, in the middle of Ephraim, and in the middle of Manasseh.”",
+      "ko": "입다가 길르앗 사람을 다 모으고 에브라임과 싸웠더니 길르앗 사람들이 에브라임을 쳐서 파하였으니 이는 에브라임의 말이 너희 길르앗 사람은 본래 에브라임에서 도망한 자로서 에브라임과 므낫세 중에 있다 하였음이라",
+      "source_text_hash": "61a211c838541f26bd8d11f2bab428a9cab23f8a8626d10103f4ba74e884414b",
+      "translation_text_hash": "93130bd418bd0bfaecaca3bbef5403aefc4a820b7747eb6516877705eb3d2b48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입다가 길르앗 사람을 다 모으고 에브라임과 싸웠더니 길르앗 사람들이 에브라임을 쳐서 파하였으니 이는 에브라임의 말이 너희 길르앗 사람은 본래 에브라임에서 도망한 자로서 에브라임과 므낫세 중에 있다 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "93130bd418bd0bfaecaca3bbef5403aefc4a820b7747eb6516877705eb3d2b48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:5",
+      "sequence": 6875,
+      "chapter_label": "JDG 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "The Gileadites took the fords of the Jordan against the Ephraimites. Whenever a fugitive of Ephraim said, “Let me go over,” the men of Gilead said to him, “Are you an Ephraimite?” If he said, “No;”",
+      "ko": "길르앗 사람이 에브라임 사람 앞서 요단 나루턱을 잡아 지키고 에브라임 사람의 도망하는 자가 말하기를 청컨대 나로 건너게 하라 하면 그에게 묻기를 네가 에브라임 사람이냐 하여 그가 만일 아니라 하면",
+      "source_text_hash": "de84dfc07347535ed08ad7d021d0f4c863ddf30456b0b94c670e0ffa23fd2ade",
+      "translation_text_hash": "c8daf666a2951dbd775c68ed5c3f663299124b1fb0253d31894e5f685ed87e5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗 사람이 에브라임 사람 앞서 요단 나루턱을 잡아 지키고 에브라임 사람의 도망하는 자가 말하기를 청컨대 나로 건너게 하라 하면 그에게 묻기를 네가 에브라임 사람이냐 하여 그가 만일 아니라 하면"
+      ],
+      "raw_text_hashes": [
+        "c8daf666a2951dbd775c68ed5c3f663299124b1fb0253d31894e5f685ed87e5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:6",
+      "sequence": 6876,
+      "chapter_label": "JDG 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "then they said to him, “Now say ‘Shibboleth;’” and he said “Sibboleth”; for he couldn’t manage to pronounce it correctly, then they seized him and killed him at the fords of the Jordan. At that time, forty-two thousand of Ephraim fell.",
+      "ko": "그에게 이르기를 십볼렛이라 하라 하여 에브라임 사람이 능히 구음을 바로 하지 못하고 씹볼렛이라 하면 길르앗 사람이 곧 그를 잡아서 요단 나루턱에서 죽였더라 그 때에 에브라임 사람의 죽은 자가 사만 이천명이었더라",
+      "source_text_hash": "a25703545cc3567a0406a3be6dbc4dd413cc4ecae753f740aeaac720a0a20f1a",
+      "translation_text_hash": "c8ad9877af1a21e910c5becb70b26c3fd29ab3eecfed3fbd08aa8386848aa0f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 이르기를 십볼렛이라 하라 하여 에브라임 사람이 능히 구음을 바로 하지 못하고 씹볼렛이라 하면 길르앗 사람이 곧 그를 잡아서 요단 나루턱에서 죽였더라 그 때에 에브라임 사람의 죽은 자가 사만 이천명이었더라"
+      ],
+      "raw_text_hashes": [
+        "c8ad9877af1a21e910c5becb70b26c3fd29ab3eecfed3fbd08aa8386848aa0f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:7",
+      "sequence": 6877,
+      "chapter_label": "JDG 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "Jephthah judged Israel six years. Then Jephthah the Gileadite died, and was buried in the cities of Gilead.",
+      "ko": "입다가 이스라엘 사사가 된지 육년이라 길르앗 사람 입다가 죽으매 길르앗 한 성읍에 장사되었더라",
+      "source_text_hash": "4677ca749008a9d7510031e6316367f7f9218161104fcf405a723b0727104166",
+      "translation_text_hash": "728ba4ac270a1a9a163e110ab36f1e8f4ec6bb30ef686390ea6cd0da742e1cfc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입다가 이스라엘 사사가 된지 육년이라 길르앗 사람 입다가 죽으매 길르앗 한 성읍에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "728ba4ac270a1a9a163e110ab36f1e8f4ec6bb30ef686390ea6cd0da742e1cfc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:8",
+      "sequence": 6878,
+      "chapter_label": "JDG 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "After him Ibzan of Bethlehem judged Israel.",
+      "ko": "그의 뒤에는 베들레헴 입산이 이스라엘의 사사이었더라",
+      "source_text_hash": "97494b9ddce065f3bfc70c3b886db1206c11fa9434f9bb576146b2dcc760fa99",
+      "translation_text_hash": "fcf9d692dc2c89f5e029bd7e2c72e7c057a5d40deb5efbb70d3edd47f47e7a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 뒤에는 베들레헴 입산이 이스라엘의 사사이었더라"
+      ],
+      "raw_text_hashes": [
+        "fcf9d692dc2c89f5e029bd7e2c72e7c057a5d40deb5efbb70d3edd47f47e7a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:9",
+      "sequence": 6879,
+      "chapter_label": "JDG 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "He had thirty sons. He sent his thirty daughters outside his clan, and he brought in thirty daughters from outside his clan for his sons. He judged Israel seven years.",
+      "ko": "그가 아들 삼십과 딸 삼십을 두었더니 딸들은 타국으로 시집 보내었고 아들들을 위하여는 타국에서 여자 삼십을 데려왔더라 그가 이스라엘 사사가 된지 칠년이라",
+      "source_text_hash": "b7460c20eb117a7343b7496c6042d55f7e409a6cde4869ef23c97c75f42f49b6",
+      "translation_text_hash": "61fc20ac12157ebea74f4a27fc38f9bf3e889b2775d020ae8d71bdb45319b8aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아들 삼십과 딸 삼십을 두었더니 딸들은 타국으로 시집 보내었고 아들들을 위하여는 타국에서 여자 삼십을 데려왔더라 그가 이스라엘 사사가 된지 칠년이라"
+      ],
+      "raw_text_hashes": [
+        "61fc20ac12157ebea74f4a27fc38f9bf3e889b2775d020ae8d71bdb45319b8aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:10",
+      "sequence": 6880,
+      "chapter_label": "JDG 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "Ibzan died, and was buried at Bethlehem.",
+      "ko": "입산이 죽으매 베들레헴에 장사되었더라",
+      "source_text_hash": "d8a96ba010872fe6cdbc1f278bfb8b15b2603dbe126a9dcf17783d6d54be4bef",
+      "translation_text_hash": "d4ee9869300542ecb958bb50c6e0804ea69da7a4d1de9dc4f1b600492bb69ed7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "입산이 죽으매 베들레헴에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "d4ee9869300542ecb958bb50c6e0804ea69da7a4d1de9dc4f1b600492bb69ed7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:11",
+      "sequence": 6881,
+      "chapter_label": "JDG 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "After him, Elon the Zebulunite judged Israel; and he judged Israel ten years.",
+      "ko": "그의 뒤에는 스불론 사람 엘론이 이스라엘의 사사가 되어 십년 동안 이스라엘을 다스렸더라",
+      "source_text_hash": "431f1606bbe443137c857ae58207785c8e3819839a2dcfc4b0d4bc7a7cd764eb",
+      "translation_text_hash": "9f15509fcdcadef2d7f007467efd47a896d391562c051762d4725641b3b863c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 뒤에는 스불론 사람 엘론이 이스라엘의 사사가 되어 십년 동안 이스라엘을 다스렸더라"
+      ],
+      "raw_text_hashes": [
+        "9f15509fcdcadef2d7f007467efd47a896d391562c051762d4725641b3b863c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:12",
+      "sequence": 6882,
+      "chapter_label": "JDG 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "Elon the Zebulunite died, and was buried in Aijalon in the land of Zebulun.",
+      "ko": "스불론 사람 엘론이 죽으매 스불론 땅 아얄론에 장사되었더라",
+      "source_text_hash": "bce3be4a7106e98528ec06eaab034910573527393c8f588a2ddd9ca924fd1949",
+      "translation_text_hash": "3a7fb4446ff27789c530bd66af561bb00e7b84f7356acf1e4cecb699014d45ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 사람 엘론이 죽으매 스불론 땅 아얄론에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "3a7fb4446ff27789c530bd66af561bb00e7b84f7356acf1e4cecb699014d45ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:13",
+      "sequence": 6883,
+      "chapter_label": "JDG 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "After him, Abdon the son of Hillel the Pirathonite judged Israel.",
+      "ko": "그의 뒤에는 비라돈 사람 힐렐의 아들 압돈이 이스라엘의 사사이었더라",
+      "source_text_hash": "63314372a0dadd75cd04a7de213ef7318ac3102a8203a20787f6317358048e7d",
+      "translation_text_hash": "6399f212dd37d3e764b50b6b21e594488ac8e34899c2e3049ce516d8e069b23c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 뒤에는 비라돈 사람 힐렐의 아들 압돈이 이스라엘의 사사이었더라"
+      ],
+      "raw_text_hashes": [
+        "6399f212dd37d3e764b50b6b21e594488ac8e34899c2e3049ce516d8e069b23c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:14",
+      "sequence": 6884,
+      "chapter_label": "JDG 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "He had forty sons and thirty sons’ sons who rode on seventy donkey colts. He judged Israel eight years.",
+      "ko": "그에게 아들 사십과 손자 삼십이 있어서 어린 나귀 칠십필을 탔었더라 압돈이 이스라엘의 사사가 된지 팔년이라",
+      "source_text_hash": "4ae6c7759b8a40f96e37f10bc80c1cf6e5868d905f9a26bb4755f3c0758292d5",
+      "translation_text_hash": "f7ae13d6ae48b2f0bad8c5a46dfd3b03c13ad628c91f011ba0fff145812f6f74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 아들 사십과 손자 삼십이 있어서 어린 나귀 칠십필을 탔었더라 압돈이 이스라엘의 사사가 된지 팔년이라"
+      ],
+      "raw_text_hashes": [
+        "f7ae13d6ae48b2f0bad8c5a46dfd3b03c13ad628c91f011ba0fff145812f6f74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:12:15",
+      "sequence": 6885,
+      "chapter_label": "JDG 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Abdon the son of Hillel the Pirathonite died, and was buried in Pirathon in the land of Ephraim, in the hill country of the Amalekites.",
+      "ko": "비라돈 사람 힐렐의 아들 압돈이 죽으매 에브라임 땅 아말렉 사람의 산지 비라돈에 장사되었더라",
+      "source_text_hash": "85c14ce5719985ba5339cc7ee88cb4c72f4ff4b19ba3ed924ea8d8ce0684609d",
+      "translation_text_hash": "e63be056bf4cf1d4f1e82be757233b50f1f6ab41c03b318b7964cebd9e43a4b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비라돈 사람 힐렐의 아들 압돈이 죽으매 에브라임 땅 아말렉 사람의 산지 비라돈에 장사되었더라"
+      ],
+      "raw_text_hashes": [
+        "e63be056bf4cf1d4f1e82be757233b50f1f6ab41c03b318b7964cebd9e43a4b9"
+      ]
+    }
+  ]
+}

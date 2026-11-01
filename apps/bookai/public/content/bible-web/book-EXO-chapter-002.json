@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:002",
+  "unit_ordinal": 52,
+  "unit_label": "EXO 2",
+  "book_code": "EXO",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:2:1",
+      "sequence": 1556,
+      "chapter_label": "EXO 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "A man of the house of Levi went and took a daughter of Levi as his wife.",
+      "ko": "레위 족속중 한 사람이 가서 레위 여자에게 장가 들었더니",
+      "source_text_hash": "81113a39c5e8621b26e738bfda60329d4e0df6d3e2150360cab83332cade4f20",
+      "translation_text_hash": "e8c7774ee8d97d3de646201eb570beee984e8afe00ad21820fdddca7eb520c06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 족속중 한 사람이 가서 레위 여자에게 장가 들었더니"
+      ],
+      "raw_text_hashes": [
+        "e8c7774ee8d97d3de646201eb570beee984e8afe00ad21820fdddca7eb520c06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:2",
+      "sequence": 1557,
+      "chapter_label": "EXO 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "The woman conceived and bore a son. When she saw that he was a fine child, she hid him three months.",
+      "ko": "그 여자가 잉태하여 아들을 낳아 그 준수함을 보고 그를 석달을 숨겼더니",
+      "source_text_hash": "5f5244f402fb621fcfb915a18993cbdf90ea4ea1f73c6a05893309f70cbedc73",
+      "translation_text_hash": "5bb98dce683245179ae63b20e37356cd2db449efdccf4d07e58e2159265b271e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자가 잉태하여 아들을 낳아 그 준수함을 보고 그를 석달을 숨겼더니"
+      ],
+      "raw_text_hashes": [
+        "5bb98dce683245179ae63b20e37356cd2db449efdccf4d07e58e2159265b271e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:3",
+      "sequence": 1558,
+      "chapter_label": "EXO 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "When she could no longer hide him, she took a papyrus basket for him, and coated it with tar and with pitch. She put the child in it, and laid it in the reeds by the river’s bank.",
+      "ko": "더 숨길 수 없이 되매 그를 위하여 갈 상자를 가져다가 역청과 나무 진을 칠하고 아이를 거기 담아 하숫가 갈대 사이에 두고",
+      "source_text_hash": "23a762b52d0092ef99011fc14251c216f10d69c12b6f6cc31e98c2c1f1abf229",
+      "translation_text_hash": "0f5d33e99ac49d6f73b7fac71d258764d20dfce512543060e8b67d803a0d73dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더 숨길 수 없이 되매 그를 위하여 갈 상자를 가져다가 역청과 나무 진을 칠하고 아이를 거기 담아 하숫가 갈대 사이에 두고"
+      ],
+      "raw_text_hashes": [
+        "0f5d33e99ac49d6f73b7fac71d258764d20dfce512543060e8b67d803a0d73dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:4",
+      "sequence": 1559,
+      "chapter_label": "EXO 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "His sister stood far off, to see what would be done to him.",
+      "ko": "그 누이가 어떻게 되는 것을 알려고 멀리 섰더니",
+      "source_text_hash": "326ee778d977f81da00558894341d15163fff1ac9dca7daced22edad62712365",
+      "translation_text_hash": "0c3e979d27adea33fba06aa4dea5f18c99221f15b13089b6840a31198b749656",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 누이가 어떻게 되는 것을 알려고 멀리 섰더니"
+      ],
+      "raw_text_hashes": [
+        "0c3e979d27adea33fba06aa4dea5f18c99221f15b13089b6840a31198b749656"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:5",
+      "sequence": 1560,
+      "chapter_label": "EXO 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "Pharaoh’s daughter came down to bathe at the river. Her maidens walked along by the riverside. She saw the basket among the reeds, and sent her servant to get it.",
+      "ko": "바로의 딸이 목욕하러 하수로 내려오고 시녀들은 하숫가에 거닐 때에 그가 갈대 사이의 상자를 보고 시녀를 보내어 가져다가",
+      "source_text_hash": "e747f7ca166e66c1ea7d9f3fc78f53bcd05d845325adb3ed5df9e1ad69c0a757",
+      "translation_text_hash": "cde0977c20f29dd2af578f06e3fd9f9a096d8200a7e4c10e735273c1151e4cda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 딸이 목욕하러 하수로 내려오고 시녀들은 하숫가에 거닐 때에 그가 갈대 사이의 상자를 보고 시녀를 보내어 가져다가"
+      ],
+      "raw_text_hashes": [
+        "cde0977c20f29dd2af578f06e3fd9f9a096d8200a7e4c10e735273c1151e4cda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:6",
+      "sequence": 1561,
+      "chapter_label": "EXO 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "She opened it, and saw the child, and behold, the baby cried. She had compassion on him, and said, “This is one of the Hebrews’ children.”",
+      "ko": "열고 그 아이를 보니 아이가 우는지라 그가 불쌍히 여겨 가로되 이는 히브리 사람의 아이로다",
+      "source_text_hash": "b6a1d60c956a574f6a3bc5c651a1901cbc3037baba836139a4b1415823f08b2f",
+      "translation_text_hash": "27b32e733bf9d9a7f70944b0c71fc1b255fcffd88970c08ac7400a8d42e643df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열고 그 아이를 보니 아이가 우는지라 그가 불쌍히 여겨 가로되 이는 히브리 사람의 아이로다"
+      ],
+      "raw_text_hashes": [
+        "27b32e733bf9d9a7f70944b0c71fc1b255fcffd88970c08ac7400a8d42e643df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:7",
+      "sequence": 1562,
+      "chapter_label": "EXO 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "Then his sister said to Pharaoh’s daughter, “Should I go and call a nurse for you from the Hebrew women, that she may nurse the child for you?”",
+      "ko": "그 누이가 바로의 딸에게 이르되 내가 가서 히브리 여인 중에서 유모를 불러다가 당신을 위하여 이 아이를 젖 먹이게 하리이까",
+      "source_text_hash": "3584fb58835b78979e9db8b7521356afe6b9c12d5c2ef7dba1411d9d4f49bd5e",
+      "translation_text_hash": "7aaf6e834496d14474e4a3bca972cdfdaced3b7ff10a71f12304c93a2c26aeeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 누이가 바로의 딸에게 이르되 내가 가서 히브리 여인 중에서 유모를 불러다가 당신을 위하여 이 아이를 젖 먹이게 하리이까"
+      ],
+      "raw_text_hashes": [
+        "7aaf6e834496d14474e4a3bca972cdfdaced3b7ff10a71f12304c93a2c26aeeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:8",
+      "sequence": 1563,
+      "chapter_label": "EXO 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "Pharaoh’s daughter said to her, “Go.” The young woman went and called the child’s mother.",
+      "ko": "바로의 딸이 그에게 이르되 가라 그 소녀가 가서 아이의 어미를 불러오니",
+      "source_text_hash": "d6b91dca96711b894a3f12a8fcb2e6ba05a10ea617db8b0d134032971ef73dcb",
+      "translation_text_hash": "fa487755d6fc88551f51164e77fefdae42322848677974d3fb423e0bbb7f3d9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 딸이 그에게 이르되 가라 그 소녀가 가서 아이의 어미를 불러오니"
+      ],
+      "raw_text_hashes": [
+        "fa487755d6fc88551f51164e77fefdae42322848677974d3fb423e0bbb7f3d9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:9",
+      "sequence": 1564,
+      "chapter_label": "EXO 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "Pharaoh’s daughter said to her, “Take this child away, and nurse him for me, and I will give you your wages.” The woman took the child, and nursed him.",
+      "ko": "바로의 딸이 그에게 이르되 이 아이를 데려다가 나를 위하여 젖을 먹이라 내가 그 삯을 주리라 여인이 아이를 데려다가 젖을 먹이더니",
+      "source_text_hash": "6e414192c97dc14793ca3557fe9e9c8eb4dde8dcbe6fcf7dc008d94ea497cc38",
+      "translation_text_hash": "73301ea0af389cc81c14d3bf7c84318ed826e2874545fa9bbaef73ff5967db50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 딸이 그에게 이르되 이 아이를 데려다가 나를 위하여 젖을 먹이라 내가 그 삯을 주리라 여인이 아이를 데려다가 젖을 먹이더니"
+      ],
+      "raw_text_hashes": [
+        "73301ea0af389cc81c14d3bf7c84318ed826e2874545fa9bbaef73ff5967db50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:10",
+      "sequence": 1565,
+      "chapter_label": "EXO 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "The child grew, and she brought him to Pharaoh’s daughter, and he became her son. She named him Moses, and said, “Because I drew him out of the water.”",
+      "ko": "그 아이가 자라매 바로의 딸에게로 데려가니 그의 아들이 되니라 그가 그 이름을 모세라 하여 가로되 이는 내가 그를 물에서 건져 내었음이라 하였더라",
+      "source_text_hash": "eabc40c6b64a7452c1568ac9f04245374b8f7b3c3a1337249d496ab3f1627191",
+      "translation_text_hash": "ffa82e49fd4e9fdb60361b0efcefd3861ae320f8a144faf061827ed377e6cc53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이가 자라매 바로의 딸에게로 데려가니 그의 아들이 되니라 그가 그 이름을 모세라 하여 가로되 이는 내가 그를 물에서 건져 내었음이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "ffa82e49fd4e9fdb60361b0efcefd3861ae320f8a144faf061827ed377e6cc53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:11",
+      "sequence": 1566,
+      "chapter_label": "EXO 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "In those days, when Moses had grown up, he went out to his brothers and saw their burdens. He saw an Egyptian striking a Hebrew, one of his brothers.",
+      "ko": "모세가 장성한 후에 한번은 자기 형제들에게 나가서 그 고역함을 보더니 어떤 애굽 사람이 어떤 히브리 사람 곧 자기 형제를 치는 것을 본지라",
+      "source_text_hash": "b5509493a7d3bea065cab9eeff7f353bc64bad1cf853bee063cc0921d4c82391",
+      "translation_text_hash": "f7af9f7f4f6dafc4b20cc277e632d012be671fccae3d4a82a818a3c643e1408e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 장성한 후에 한번은 자기 형제들에게 나가서 그 고역함을 보더니 어떤 애굽 사람이 어떤 히브리 사람 곧 자기 형제를 치는 것을 본지라"
+      ],
+      "raw_text_hashes": [
+        "f7af9f7f4f6dafc4b20cc277e632d012be671fccae3d4a82a818a3c643e1408e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:12",
+      "sequence": 1567,
+      "chapter_label": "EXO 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "He looked this way and that way, and when he saw that there was no one, he killed the Egyptian, and hid him in the sand.",
+      "ko": "좌우로 살펴 사람이 없음을 보고 그 애굽 사람을 쳐죽여 모래에 감추니라",
+      "source_text_hash": "e1a283c4fb0bc712f871fba120e728ec9a55c2058bc50e2fbfbc545f52fbc222",
+      "translation_text_hash": "08a531b3e8cee0da547ff0787ab8c77bc7d3c946e5e72f7c071e4bfd3d32cb1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좌우로 살펴 사람이 없음을 보고 그 애굽 사람을 쳐죽여 모래에 감추니라"
+      ],
+      "raw_text_hashes": [
+        "08a531b3e8cee0da547ff0787ab8c77bc7d3c946e5e72f7c071e4bfd3d32cb1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:13",
+      "sequence": 1568,
+      "chapter_label": "EXO 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "He went out the second day, and behold, two men of the Hebrews were fighting with each other. He said to him who did the wrong, “Why do you strike your fellow?”",
+      "ko": "이튿날 다시 나가니 두 히브리 사람이 서로 싸우는지라 그 그른 자에게 이르되 네가 어찌하여 동포를 치느냐 하매",
+      "source_text_hash": "d340733ef1f2ec80d6367b41de032f76331f1169c7c3907a7c9c7cf07ef84731",
+      "translation_text_hash": "66ac41190621b9bb94d8253522daa47d7441bfeb61d714cdde32023d5b978d85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 다시 나가니 두 히브리 사람이 서로 싸우는지라 그 그른 자에게 이르되 네가 어찌하여 동포를 치느냐 하매"
+      ],
+      "raw_text_hashes": [
+        "66ac41190621b9bb94d8253522daa47d7441bfeb61d714cdde32023d5b978d85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:14",
+      "sequence": 1569,
+      "chapter_label": "EXO 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “Who made you a prince and a judge over us? Do you plan to kill me, as you killed the Egyptian?” Moses was afraid, and said, “Surely this thing is known.”",
+      "ko": "그가 가로되 누가 너로 우리의 주재와 법관을 삼았느냐 네가 애굽 사람을 죽임 같이 나도 죽이려느냐 모세가 두려워하여 가로되 일이 탄로되었도다",
+      "source_text_hash": "4cf7769f4fd84d2f5ca1f1e0028d305c59e50e1903c20d0d4dee33a31a41b30d",
+      "translation_text_hash": "103178a20c180251bdb0b65b6bfba48559a14154cc96e714eb3e6f2ca59597b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 누가 너로 우리의 주재와 법관을 삼았느냐 네가 애굽 사람을 죽임 같이 나도 죽이려느냐 모세가 두려워하여 가로되 일이 탄로되었도다"
+      ],
+      "raw_text_hashes": [
+        "103178a20c180251bdb0b65b6bfba48559a14154cc96e714eb3e6f2ca59597b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:15",
+      "sequence": 1570,
+      "chapter_label": "EXO 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "Now when Pharaoh heard this thing, he sought to kill Moses. But Moses fled from the face of Pharaoh, and lived in the land of Midian, and he sat down by a well.",
+      "ko": "바로가 이 일을 듣고 모세를 죽이고자 하여 찾은지라 모세가 바로의 낯을 피하여 미디안 땅에 머물며 하루는 우물 곁에 앉았더라",
+      "source_text_hash": "d08bd396c1b8ad4a7e916f65e5a5dbbf717cba38740535dd41efd4c635114bf4",
+      "translation_text_hash": "03fe5461992e187a0cc31bfae1fb01e519c7048435391c4d2dd2ea0ce1b2383c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 이 일을 듣고 모세를 죽이고자 하여 찾은지라 모세가 바로의 낯을 피하여 미디안 땅에 머물며 하루는 우물 곁에 앉았더라"
+      ],
+      "raw_text_hashes": [
+        "03fe5461992e187a0cc31bfae1fb01e519c7048435391c4d2dd2ea0ce1b2383c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:16",
+      "sequence": 1571,
+      "chapter_label": "EXO 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "Now the priest of Midian had seven daughters. They came and drew water, and filled the troughs to water their father’s flock.",
+      "ko": "미디안 제사장에게 일곱 딸이 있더니 그들이 와서 물을 길어 구유에 채우고 그 아비의 양무리에게 먹이려 하는데",
+      "source_text_hash": "e7be573c0e6535f5bc52819ce1b1c7753f2e939484d109277f60801197fdc5ad",
+      "translation_text_hash": "e24a99cb55b4611a73cc5fd0dd871f96bd6fbc9295c65a8b9a5f510255ab508f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안 제사장에게 일곱 딸이 있더니 그들이 와서 물을 길어 구유에 채우고 그 아비의 양무리에게 먹이려 하는데"
+      ],
+      "raw_text_hashes": [
+        "e24a99cb55b4611a73cc5fd0dd871f96bd6fbc9295c65a8b9a5f510255ab508f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:17",
+      "sequence": 1572,
+      "chapter_label": "EXO 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "The shepherds came and drove them away; but Moses stood up and helped them, and watered their flock.",
+      "ko": "목자들이 와서 그들을 쫓는지라 모세가 일어나 그들을 도와 그 양무리에게 먹이니라",
+      "source_text_hash": "f9e99ddde270d721f2fad74220c31c76faaae2fc5eb49abfe509c6a4b59e8f28",
+      "translation_text_hash": "5941dc15a98eca35e15abafc6ed74c6ae5d83f5cdd0bc5ea6767654d17fb97ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "목자들이 와서 그들을 쫓는지라 모세가 일어나 그들을 도와 그 양무리에게 먹이니라"
+      ],
+      "raw_text_hashes": [
+        "5941dc15a98eca35e15abafc6ed74c6ae5d83f5cdd0bc5ea6767654d17fb97ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:18",
+      "sequence": 1573,
+      "chapter_label": "EXO 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "When they came to Reuel, their father, he said, “How is it that you have returned so early today?”",
+      "ko": "그들이 그 아비 르우엘에게 이를 때에 아비가 가로되 너희가 오늘은 어찌하여 이같이 속히 돌아오느냐",
+      "source_text_hash": "1980e4449914bb692ea44ae217e78925aa6da1188221289137de6e4138e86e93",
+      "translation_text_hash": "430d46eafadc11151240703fdc05547f64a2365144e79ce996e6e0fa6b6f82e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 아비 르우엘에게 이를 때에 아비가 가로되 너희가 오늘은 어찌하여 이같이 속히 돌아오느냐"
+      ],
+      "raw_text_hashes": [
+        "430d46eafadc11151240703fdc05547f64a2365144e79ce996e6e0fa6b6f82e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:19",
+      "sequence": 1574,
+      "chapter_label": "EXO 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "They said, “An Egyptian delivered us out of the hand of the shepherds, and moreover he drew water for us, and watered the flock.”",
+      "ko": "그들이 가로되 한 애굽 사람이 우리를 목자들의 손에서 건져내고 우리를 위하여 물을 길어 양무리에게 먹였나이다",
+      "source_text_hash": "39e28e715e3d459c794ad56a4addca31a8c6ffc486f4ff5a5a33be5a53406c1a",
+      "translation_text_hash": "1500fa0665cb4a7e606786a6d23d09e9156b7015c6dce9c8a77f5ddd2f0eefb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 한 애굽 사람이 우리를 목자들의 손에서 건져내고 우리를 위하여 물을 길어 양무리에게 먹였나이다"
+      ],
+      "raw_text_hashes": [
+        "1500fa0665cb4a7e606786a6d23d09e9156b7015c6dce9c8a77f5ddd2f0eefb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:20",
+      "sequence": 1575,
+      "chapter_label": "EXO 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "He said to his daughters, “Where is he? Why is it that you have left the man? Call him, that he may eat bread.”",
+      "ko": "아비가 딸들에게 이르되 그 사람이 어디 있느냐 너희가 어찌하여 그 사람을 버리고 왔느냐 그를 청하여 음식으로 대접하라 하였더라",
+      "source_text_hash": "406dc89fa955c0d624275b02e7c9a160b230a8f022fab797d526c337f0ea5f18",
+      "translation_text_hash": "1b30deb57354f8533adfbce7952ea01614ed2423ab7d67a29d0f720e9fd6541f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비가 딸들에게 이르되 그 사람이 어디 있느냐 너희가 어찌하여 그 사람을 버리고 왔느냐 그를 청하여 음식으로 대접하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "1b30deb57354f8533adfbce7952ea01614ed2423ab7d67a29d0f720e9fd6541f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:21",
+      "sequence": 1576,
+      "chapter_label": "EXO 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Moses was content to dwell with the man. He gave Moses Zipporah, his daughter.",
+      "ko": "모세가 그와 동거하기를 기뻐하매 그가 그 딸 십보라를 모세에게 주었더니",
+      "source_text_hash": "df38a190fd7fd69c87d04a7b86900c51ffe5f85090b61ee3c21bc5f34e203e27",
+      "translation_text_hash": "9f6b23ce3374fd9bdeb8b9e57989083a7f45cc958d89eb727afce8b4c8ddbc5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그와 동거하기를 기뻐하매 그가 그 딸 십보라를 모세에게 주었더니"
+      ],
+      "raw_text_hashes": [
+        "9f6b23ce3374fd9bdeb8b9e57989083a7f45cc958d89eb727afce8b4c8ddbc5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:22",
+      "sequence": 1577,
+      "chapter_label": "EXO 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "She bore a son, and he named him Gershom, for he said, “I have lived as a foreigner in a foreign land.”",
+      "ko": "그가 아들을 낳으매 모세가 그 이름을 게르솜이라 하여 가로되 내가 타국에서 객이 되었음이라 하였더라",
+      "source_text_hash": "0d8ed922f77f7ee9ad2ab3b76009f7f1963441cf28fbeaa34561e0d8d9f6f754",
+      "translation_text_hash": "d5df0bb34f2c183269a6c8bef902149e7eaaa92edbfd7d749aa6f481f0be3bb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 아들을 낳으매 모세가 그 이름을 게르솜이라 하여 가로되 내가 타국에서 객이 되었음이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d5df0bb34f2c183269a6c8bef902149e7eaaa92edbfd7d749aa6f481f0be3bb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:23",
+      "sequence": 1578,
+      "chapter_label": "EXO 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "In the course of those many days, the king of Egypt died, and the children of Israel sighed because of the bondage, and they cried, and their cry came up to God because of the bondage.",
+      "ko": "여러 해 후에 애굽 왕은 죽었고 이스라엘 자손은 고역으로 인하여 탄식하며 부르짖으니 그 고역으로 인하여 부르짖는 소리가 하나님께 상달한지라",
+      "source_text_hash": "5c39f85542a104a7279de84b4696f724b337e9bef0078408e4be624cd90e55a6",
+      "translation_text_hash": "cc230506b00c1f7e549b0a411328e4bba556ddc4a34fffa714e0e13ebf188b8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여러 해 후에 애굽 왕은 죽었고 이스라엘 자손은 고역으로 인하여 탄식하며 부르짖으니 그 고역으로 인하여 부르짖는 소리가 하나님께 상달한지라"
+      ],
+      "raw_text_hashes": [
+        "cc230506b00c1f7e549b0a411328e4bba556ddc4a34fffa714e0e13ebf188b8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:24",
+      "sequence": 1579,
+      "chapter_label": "EXO 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "God heard their groaning, and God remembered his covenant with Abraham, with Isaac, and with Jacob.",
+      "ko": "하나님이 그 고통 소리를 들으시고 아브라함과 이삭과 야곱에게 세운 그 언약을 기억하사",
+      "source_text_hash": "839ac1f629de4bbb8b52ac8cc25c6bde12dacf3c250aa5e7b71b92d31ca462d8",
+      "translation_text_hash": "d6ab6c8bd4dcd36eeef2cfe48bebd43b8dc9259e7a1aa932eb1541da6a620ace",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 고통 소리를 들으시고 아브라함과 이삭과 야곱에게 세운 그 언약을 기억하사"
+      ],
+      "raw_text_hashes": [
+        "d6ab6c8bd4dcd36eeef2cfe48bebd43b8dc9259e7a1aa932eb1541da6a620ace"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:2:25",
+      "sequence": 1580,
+      "chapter_label": "EXO 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "God saw the children of Israel, and God understood.",
+      "ko": "이스라엘 자손을 권념하셨더라",
+      "source_text_hash": "6859a42e73f8f1500cf6e0d3915ddd1b629574d8fd6233318d32c41e757f14a6",
+      "translation_text_hash": "8c1b28d01894a6b285ea38404d9c16f06b7c24e464102496d6eb715e0d686c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손을 권념하셨더라"
+      ],
+      "raw_text_hashes": [
+        "8c1b28d01894a6b285ea38404d9c16f06b7c24e464102496d6eb715e0d686c2f"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1229 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:021",
+  "unit_ordinal": 994,
+  "unit_label": "LUK 21",
+  "book_code": "LUK",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:21:1",
+      "sequence": 25827,
+      "chapter_label": "LUK 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "He looked up and saw the rich people who were putting their gifts into the treasury.",
+      "ko": "예수께서 눈을 들어 부자들이 연보궤에 헌금 넣는 것을 보시고",
+      "source_text_hash": "6b40b8a973ccb6d1c42086aa505b0dd54fb1a5b2c8e86e38ad2a0195143260f8",
+      "translation_text_hash": "67ee969327562b9595efaa6f8001da3ab8c0a7f212e3eaa4815d0927e1e8189f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 눈을 들어 부자들이 연보궤에 헌금 넣는 것을 보시고"
+      ],
+      "raw_text_hashes": [
+        "67ee969327562b9595efaa6f8001da3ab8c0a7f212e3eaa4815d0927e1e8189f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:2",
+      "sequence": 25828,
+      "chapter_label": "LUK 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "He saw a certain poor widow casting in two small brass coins.",
+      "ko": "또 어떤 가난한 과부의 두 렙돈 넣는 것을 보시고",
+      "source_text_hash": "ced0310bfb5ce0846dc2572043d5addb66d33a61d5923ea0df6fb9c10bbb2ca2",
+      "translation_text_hash": "3e549a3155756e605ad42f4e71330cad67778cdd2e5df1a27b8e0f8357c79da5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 어떤 가난한 과부의 두 렙돈 넣는 것을 보시고"
+      ],
+      "raw_text_hashes": [
+        "3e549a3155756e605ad42f4e71330cad67778cdd2e5df1a27b8e0f8357c79da5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:3",
+      "sequence": 25829,
+      "chapter_label": "LUK 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "He said, “Truly I tell you, this poor widow put in more than all of them,",
+      "ko": "가라사대 내가 참으로 너희에게 말하노니 이 가난한 과부가 모든 사람보다 많이 넣었도다",
+      "source_text_hash": "33411619d62f51dd79b2e69cb2aa00a3101d63a6377eb80340c8e8a29a194c14",
+      "translation_text_hash": "0c34e9fa516bb8eb44e186970fa2c4526786bbb2bc7e00784c2ab8dd7ca5d36e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내가 참으로 너희에게 말하노니 이 가난한 과부가 모든 사람보다 많이 넣었도다"
+      ],
+      "raw_text_hashes": [
+        "0c34e9fa516bb8eb44e186970fa2c4526786bbb2bc7e00784c2ab8dd7ca5d36e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:4",
+      "sequence": 25830,
+      "chapter_label": "LUK 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "for all these put in gifts for God from their abundance, but she, out of her poverty, put in all that she had to live on.”",
+      "ko": "저들은 그 풍족한 중에서 헌금을 넣었거니와 이 과부는 그 구차한 중에서 자기의 있는바 생활비 전부를 넣었느니라 하시니라",
+      "source_text_hash": "1bce813c658dd2fa22ee0e6c6d9201d87af798716c9d738ec1cbb334f21cf92c",
+      "translation_text_hash": "558812a6b7e3be474cb701567a05dc3b7ab932797718c34200fe7423f7c678f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저들은 그 풍족한 중에서 헌금을 넣었거니와 이 과부는 그 구차한 중에서 자기의 있는바 생활비 전부를 넣었느니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "558812a6b7e3be474cb701567a05dc3b7ab932797718c34200fe7423f7c678f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:5",
+      "sequence": 25831,
+      "chapter_label": "LUK 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "As some were talking about the temple and how it was decorated with beautiful stones and gifts, he said,",
+      "ko": "어떤 사람들이 성전을 가리켜 그 미석과 헌물로 꾸민 것을 말하매 예수께서 가라사대",
+      "source_text_hash": "0aedbab6a73f5addaf3895f40cc36f47060405cfc8daae41aa82c053a29d6f95",
+      "translation_text_hash": "18fdeea1e203d442c53e074578ea93254187dfe80eaabc4bc3da7c6a2a3c21fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람들이 성전을 가리켜 그 미석과 헌물로 꾸민 것을 말하매 예수께서 가라사대"
+      ],
+      "raw_text_hashes": [
+        "18fdeea1e203d442c53e074578ea93254187dfe80eaabc4bc3da7c6a2a3c21fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:6",
+      "sequence": 25832,
+      "chapter_label": "LUK 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "“As for these things which you see, the days will come in which there will not be left here one stone on another that will not be thrown down.”",
+      "ko": "너희 보는 이것들이 날이 이르면 돌 하나도 돌 위에 남지 않고 다 무너뜨리우리라",
+      "source_text_hash": "ab6b751a89822aee984a37d6236ce3abc167c297ef9b490eb1c29e5e05dabf5f",
+      "translation_text_hash": "a679852d5155cfa76e4ff548962a7635e5805ab4c18d783917958f37077f746d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 보는 이것들이 날이 이르면 돌 하나도 돌 위에 남지 않고 다 무너뜨리우리라"
+      ],
+      "raw_text_hashes": [
+        "a679852d5155cfa76e4ff548962a7635e5805ab4c18d783917958f37077f746d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:7",
+      "sequence": 25833,
+      "chapter_label": "LUK 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "They asked him, “Teacher, so when will these things be? What is the sign that these things are about to happen?”",
+      "ko": "저희가 물어 가로되 선생님이여 그러면 어느 때에 이런 일이 있겠사오며 이런 일이 이루려 할 때에 무슨 징조가 있사오리이까",
+      "source_text_hash": "547f571f74b6469a6f8761d4427be6a9e43a7ccf9d76d1601f8beb8ac4d9d22a",
+      "translation_text_hash": "7233fe498562c468dd816916094edf88495fb76faacd1903a6708d792cb4c2b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 물어 가로되 선생님이여 그러면 어느 때에 이런 일이 있겠사오며 이런 일이 이루려 할 때에 무슨 징조가 있사오리이까"
+      ],
+      "raw_text_hashes": [
+        "7233fe498562c468dd816916094edf88495fb76faacd1903a6708d792cb4c2b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:8",
+      "sequence": 25834,
+      "chapter_label": "LUK 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "He said, “Watch out that you don’t get led astray, for many will come in my name, saying, ‘I am he,’ and, ‘The time is at hand.’ Therefore don’t follow them.",
+      "ko": "가라사대 미혹을 받지 않도록 주의하라 많은 사람이 내 이름으로 와서 이르되 내가 그로라 하며 때가 가까왔다 하겠으나 저희를 좇지 말라",
+      "source_text_hash": "5e8e7d1ef2cdf09cb667cbc1ef382acead27802c005533256477ca2a58692ca2",
+      "translation_text_hash": "2792d8edffa3e2f1d839a1f7312285124eda2b41c538bc21e970f46f5ac63b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 미혹을 받지 않도록 주의하라 많은 사람이 내 이름으로 와서 이르되 내가 그로라 하며 때가 가까왔다 하겠으나 저희를 좇지 말라"
+      ],
+      "raw_text_hashes": [
+        "2792d8edffa3e2f1d839a1f7312285124eda2b41c538bc21e970f46f5ac63b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:9",
+      "sequence": 25835,
+      "chapter_label": "LUK 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "When you hear of wars and disturbances, don’t be terrified, for these things must happen first, but the end won’t come immediately.”",
+      "ko": "난리와 소란의 소문을 들을 때에 두려워 말라 이 일이 먼저 있어야 하되 끝은 곧 되지 아니하니라",
+      "source_text_hash": "9835a37c64de21db76fdf7cee12984dd082aa6a4f9e1c7053fcc8ec2cbf8fe4f",
+      "translation_text_hash": "0679d654b3a798225a44d148ae5249f4af60eae3b362f14e9c030b5901235398",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "난리와 소란의 소문을 들을 때에 두려워 말라 이 일이 먼저 있어야 하되 끝은 곧 되지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "0679d654b3a798225a44d148ae5249f4af60eae3b362f14e9c030b5901235398"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:10",
+      "sequence": 25836,
+      "chapter_label": "LUK 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "Then he said to them, “Nation will rise against nation, and kingdom against kingdom.",
+      "ko": "또 이르시되 민족이 민족을, 나라가 나라를 대적하여 일어나겠고",
+      "source_text_hash": "1dd7a6257c99206ad9e8e811e7d233341cb66114b24776e2930c5b6b87aadc21",
+      "translation_text_hash": "6877a334d850e8bb266280335f156593b9a38dbc62a41c03ecc0e369a8a8fb91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르시되 민족이 민족을, 나라가 나라를 대적하여 일어나겠고"
+      ],
+      "raw_text_hashes": [
+        "6877a334d850e8bb266280335f156593b9a38dbc62a41c03ecc0e369a8a8fb91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:11",
+      "sequence": 25837,
+      "chapter_label": "LUK 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "There will be great earthquakes, famines, and plagues in various places. There will be terrors and great signs from heaven.",
+      "ko": "처처에 큰 지진과 기근과 온역이 있겠고 또 무서운 일과 하늘로서 큰 징조들이 있으리라",
+      "source_text_hash": "56ea890e925e3c72eaebb2c8d28f2c56f26b368aefad8aaff5a39df781010a0d",
+      "translation_text_hash": "ad6d15835cfa960e90badac5394435c890320174d1f3e07e49aaf6890cba49c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처처에 큰 지진과 기근과 온역이 있겠고 또 무서운 일과 하늘로서 큰 징조들이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "ad6d15835cfa960e90badac5394435c890320174d1f3e07e49aaf6890cba49c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:12",
+      "sequence": 25838,
+      "chapter_label": "LUK 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "But before all these things, they will lay their hands on you and will persecute you, delivering you up to synagogues and prisons, bringing you before kings and governors for my name’s sake.",
+      "ko": "이 모든 일 전에 내 이름을 인하여 너희에게 손을 대어 핍박하며 회당과 옥에 넘겨주며 임금들과 관장들 앞에 끌어 가려니와",
+      "source_text_hash": "716384cad37094e171640d53d3693a6d78a28d5be2b8af678b82c45b4e53a49a",
+      "translation_text_hash": "aedbd64068108c4bbf0ff4c3c3d6e83703354fa32b765778399baed8982c58f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일 전에 내 이름을 인하여 너희에게 손을 대어 핍박하며 회당과 옥에 넘겨주며 임금들과 관장들 앞에 끌어 가려니와"
+      ],
+      "raw_text_hashes": [
+        "aedbd64068108c4bbf0ff4c3c3d6e83703354fa32b765778399baed8982c58f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:13",
+      "sequence": 25839,
+      "chapter_label": "LUK 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "It will turn out as a testimony for you.",
+      "ko": "이 일이 도리어 너희에게 증거가 되리라",
+      "source_text_hash": "3f3bed0dbe40568785f9e569794f11947d5bb22e94d1a6c6a6fe5c82ec80d47b",
+      "translation_text_hash": "0369dc9d79ef606f98925fdab5f7d22ea695b013f10215a5fef260583d17ce7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일이 도리어 너희에게 증거가 되리라"
+      ],
+      "raw_text_hashes": [
+        "0369dc9d79ef606f98925fdab5f7d22ea695b013f10215a5fef260583d17ce7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:14",
+      "sequence": 25840,
+      "chapter_label": "LUK 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Settle it therefore in your hearts not to meditate beforehand how to answer,",
+      "ko": "그러므로 너희는 변명할 것을 미리 연구치 않기로 결심하라",
+      "source_text_hash": "0f2423ebe2ed6784bf03c70b9166eba7cab5e717b97b6e17ac660f93d3c82233",
+      "translation_text_hash": "d5df0cb21369321d9ea753ffe59f82578965695c8d0e247775d9c7ff408a5147",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 변명할 것을 미리 연구치 않기로 결심하라"
+      ],
+      "raw_text_hashes": [
+        "d5df0cb21369321d9ea753ffe59f82578965695c8d0e247775d9c7ff408a5147"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:15",
+      "sequence": 25841,
+      "chapter_label": "LUK 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "for I will give you a mouth and wisdom which all your adversaries will not be able to withstand or to contradict.",
+      "ko": "내가 너희의 모든 대적이 능히 대항하거나 변박할 수 없는 구재와 지혜를 너희에게 주리라",
+      "source_text_hash": "483a76ac62b3e01e0aae627bbe34fc80229ab6d35e9364ee3a29e6ea7251221e",
+      "translation_text_hash": "f7d659f189e367278e9742c79551723dda971dd8f06183e95f1f048f57b30f35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희의 모든 대적이 능히 대항하거나 변박할 수 없는 구재와 지혜를 너희에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "f7d659f189e367278e9742c79551723dda971dd8f06183e95f1f048f57b30f35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:16",
+      "sequence": 25842,
+      "chapter_label": "LUK 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "You will be handed over even by parents, brothers, relatives, and friends. They will cause some of you to be put to death.",
+      "ko": "심지어 부모와 형제와 친척과 벗이 너희를 넘겨주어 너희 중에 몇을 죽이게 하겠고",
+      "source_text_hash": "2ba4e92eabbc4898f2e40f5bfbc3ccf9f86920a9dfbf2112b363ec060909f923",
+      "translation_text_hash": "d92f28d8a9cbd6cba2c0fb99d47ed3a718b0dee53013de16ecd1c18536c8e4d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심지어 부모와 형제와 친척과 벗이 너희를 넘겨주어 너희 중에 몇을 죽이게 하겠고"
+      ],
+      "raw_text_hashes": [
+        "d92f28d8a9cbd6cba2c0fb99d47ed3a718b0dee53013de16ecd1c18536c8e4d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:17",
+      "sequence": 25843,
+      "chapter_label": "LUK 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "You will be hated by all men for my name’s sake.",
+      "ko": "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나",
+      "source_text_hash": "1f323d7ff26bc8645fa12fb3fc162e58db2e90f7e364aae7924aa705969a0df5",
+      "translation_text_hash": "fd64f26dc8114d45cf15153bf99338ca232385d3ed10f33f699fc5fd8500d4e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 내 이름을 인하여 모든 사람에게 미움을 받을 것이나"
+      ],
+      "raw_text_hashes": [
+        "fd64f26dc8114d45cf15153bf99338ca232385d3ed10f33f699fc5fd8500d4e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:18",
+      "sequence": 25844,
+      "chapter_label": "LUK 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "And not a hair of your head will perish.",
+      "ko": "너희 머리털 하나도 상치 아니하리라",
+      "source_text_hash": "6dac18de9cea9c53de6a00964262e0cb6c7558dc8c1cf8cab887d641b0647a04",
+      "translation_text_hash": "7f4adeaf57e3ea5efa47c3e573d5e8a1664db92e09d51e1da4d81e65d0b6e073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 머리털 하나도 상치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "7f4adeaf57e3ea5efa47c3e573d5e8a1664db92e09d51e1da4d81e65d0b6e073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:19",
+      "sequence": 25845,
+      "chapter_label": "LUK 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "“By your endurance you will win your lives.",
+      "ko": "너희의 인내로 너희 영혼을 얻으리라",
+      "source_text_hash": "0cfa815202258bc745a62603ecf9033c7d1cbe8665fc1cd7ad103aab78307a9c",
+      "translation_text_hash": "cafa484615a571d052350263f7e5bcb49d0016eeb93d555d9f349470fa5374d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 인내로 너희 영혼을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "cafa484615a571d052350263f7e5bcb49d0016eeb93d555d9f349470fa5374d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:20",
+      "sequence": 25846,
+      "chapter_label": "LUK 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "“But when you see Jerusalem surrounded by armies, then know that its desolation is at hand.",
+      "ko": "너희가 예루살렘이 군대들에게 에워싸이는 것을 보거든 그 멸망이 가까운 줄을 알라",
+      "source_text_hash": "c1deb328251f3f912202201b11668f3998c445c4c3942f7bac0b3d10a2240a6c",
+      "translation_text_hash": "159481192bd6ff1dcb81c3de787db35866ec7e10399829084cd74bf49164c11c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 예루살렘이 군대들에게 에워싸이는 것을 보거든 그 멸망이 가까운 줄을 알라"
+      ],
+      "raw_text_hashes": [
+        "159481192bd6ff1dcb81c3de787db35866ec7e10399829084cd74bf49164c11c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:21",
+      "sequence": 25847,
+      "chapter_label": "LUK 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "Then let those who are in Judea flee to the mountains. Let those who are in the middle of her depart. Let those who are in the country not enter therein.",
+      "ko": "그 때에 유대에 있는 자들은 산으로 도망할찌며 성내에 있는 자들은 나갈찌며 촌에 있는 자들은 그리로 들어가지 말찌어다",
+      "source_text_hash": "dfb0a6961a1c41a0c1d9594abeb694dca233f7bb40a3195ec47183daf8cb8f92",
+      "translation_text_hash": "7e04999394202e95541c56fbf5f73925539541fd68021780fd088a572629b250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 유대에 있는 자들은 산으로 도망할찌며 성내에 있는 자들은 나갈찌며 촌에 있는 자들은 그리로 들어가지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "7e04999394202e95541c56fbf5f73925539541fd68021780fd088a572629b250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:22",
+      "sequence": 25848,
+      "chapter_label": "LUK 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "For these are days of vengeance, that all things which are written may be fulfilled.",
+      "ko": "이 날들은 기록된 모든 것을 이루는 형벌의 날이니라",
+      "source_text_hash": "0d12483bd1e8439fa0ab389966e9004f086d3caed3f210df59cd4c82585565d1",
+      "translation_text_hash": "3bedaf896470dc3464779d055e21a590d23c709ad0d705371d3f8a85c5edd9e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날들은 기록된 모든 것을 이루는 형벌의 날이니라"
+      ],
+      "raw_text_hashes": [
+        "3bedaf896470dc3464779d055e21a590d23c709ad0d705371d3f8a85c5edd9e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:23",
+      "sequence": 25849,
+      "chapter_label": "LUK 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Woe to those who are pregnant and to those who nurse infants in those days! For there will be great distress in the land and wrath to this people.",
+      "ko": "그 날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리니 이는 땅에 큰 환난과 이 백성에게 진노가 있겠음이로다",
+      "source_text_hash": "a4de602342c4e7af4d45e2105c2bb6dac0e1748ab04a9a04a960451fcc012fd4",
+      "translation_text_hash": "7b48898d4e8e6bed5ebbfcf14e590353d1d79f2ba6462b607dcbcf95dee138ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리니 이는 땅에 큰 환난과 이 백성에게 진노가 있겠음이로다"
+      ],
+      "raw_text_hashes": [
+        "7b48898d4e8e6bed5ebbfcf14e590353d1d79f2ba6462b607dcbcf95dee138ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:24",
+      "sequence": 25850,
+      "chapter_label": "LUK 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "They will fall by the edge of the sword, and will be led captive into all the nations. Jerusalem will be trampled down by the Gentiles until the times of the Gentiles are fulfilled.",
+      "ko": "저희가 칼날에 죽임을 당하며 모든 이방에 사로잡혀 가겠고 예루살렘은 이방인의 때가 차기까지 이방인들에게 밟히리라",
+      "source_text_hash": "e9623112ce8087753338b50717ce06707c168e2f768d097e5f8a351462d383e8",
+      "translation_text_hash": "633b01292c20fd60b977cb2c6c18529dcb4cd597b23f209d9f469bfbb8be50e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 칼날에 죽임을 당하며 모든 이방에 사로잡혀 가겠고 예루살렘은 이방인의 때가 차기까지 이방인들에게 밟히리라"
+      ],
+      "raw_text_hashes": [
+        "633b01292c20fd60b977cb2c6c18529dcb4cd597b23f209d9f469bfbb8be50e8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:25",
+      "sequence": 25851,
+      "chapter_label": "LUK 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "“There will be signs in the sun, moon, and stars; and on the earth anxiety of nations, in perplexity for the roaring of the sea and the waves;",
+      "ko": "일월 성신에는 징조가 있겠고 땅에서는 민족들이 바다와 파도의 우는 소리를 인하여 혼란한 중에 곤고하리라",
+      "source_text_hash": "cc6d4c8116537506ff1fb2ff270dae6a2043173710d6909f939f23214854d233",
+      "translation_text_hash": "edcbe4cefa38877f5befc3454d56cbce8c81b348c479ae3241f2edd0f510e000",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일월 성신에는 징조가 있겠고 땅에서는 민족들이 바다와 파도의 우는 소리를 인하여 혼란한 중에 곤고하리라"
+      ],
+      "raw_text_hashes": [
+        "edcbe4cefa38877f5befc3454d56cbce8c81b348c479ae3241f2edd0f510e000"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:26",
+      "sequence": 25852,
+      "chapter_label": "LUK 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "men fainting for fear and for expectation of the things which are coming on the world, for the powers of the heavens will be shaken.",
+      "ko": "사람들이 세상에 임할 일을 생각하고 무서워하므로 기절하리니 이는 하늘의 권능들이 흔들리겠음이라",
+      "source_text_hash": "f470efd54e7444a807dbff827b281e73ea5c926388f83491a529c37dcc63f6b2",
+      "translation_text_hash": "f5ed0360fea580b49fcbf6dca8c27dc712fcb3b1051be3d14bc0729a52257689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람들이 세상에 임할 일을 생각하고 무서워하므로 기절하리니 이는 하늘의 권능들이 흔들리겠음이라"
+      ],
+      "raw_text_hashes": [
+        "f5ed0360fea580b49fcbf6dca8c27dc712fcb3b1051be3d14bc0729a52257689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:27",
+      "sequence": 25853,
+      "chapter_label": "LUK 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "Then they will see the Son of Man coming in a cloud with power and great glory.",
+      "ko": "그 때에 사람들이 인자가 구름을 타고 능력과 큰 영광으로 오는 것을 보리라",
+      "source_text_hash": "91cf5a9a6f8c680c8d7b7a44604b1089e5a85f33bf66016e9cd7c27d1e769955",
+      "translation_text_hash": "9407aeedc7b7fd07439199bae09868e9b64d25ecf059e6ba130be2245c4a873e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람들이 인자가 구름을 타고 능력과 큰 영광으로 오는 것을 보리라"
+      ],
+      "raw_text_hashes": [
+        "9407aeedc7b7fd07439199bae09868e9b64d25ecf059e6ba130be2245c4a873e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:28",
+      "sequence": 25854,
+      "chapter_label": "LUK 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "But when these things begin to happen, look up and lift up your heads, because your redemption is near.”",
+      "ko": "이런 일이 되기를 시작하거든 일어나 머리를 들라 너희 구속이 가까왔느니라 하시더라",
+      "source_text_hash": "f98db0149e233121ae9805b29584cb744ed0b56d3af2df1848df2c6f668c63f5",
+      "translation_text_hash": "f78f2e0de70b747af1f2efa30e0a8007c53d18e768916f819daf6777628ac3ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일이 되기를 시작하거든 일어나 머리를 들라 너희 구속이 가까왔느니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "f78f2e0de70b747af1f2efa30e0a8007c53d18e768916f819daf6777628ac3ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:29",
+      "sequence": 25855,
+      "chapter_label": "LUK 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "He told them a parable. “See the fig tree and all the trees.",
+      "ko": "이에 비유로 이르시되 무화과나무와 모든 나무를 보라",
+      "source_text_hash": "435c50b01d9550ee80c7dac867c4b39bc44ef97f189e996467e09e5a3c405c35",
+      "translation_text_hash": "2d88c038572eadce2a9723d814e5412a74698fcc261fc123a4d10f878bbf7653",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 비유로 이르시되 무화과나무와 모든 나무를 보라"
+      ],
+      "raw_text_hashes": [
+        "2d88c038572eadce2a9723d814e5412a74698fcc261fc123a4d10f878bbf7653"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:30",
+      "sequence": 25856,
+      "chapter_label": "LUK 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "When they are already budding, you see it and know by your own selves that the summer is already near.",
+      "ko": "싹이 나면 너희가 보고 여름이 가까운 줄을 자연히 아나니",
+      "source_text_hash": "b12a45d564aba944219fe3a311bfecd4d2556cd71fc7d10bc2a59be0a98a77e5",
+      "translation_text_hash": "bda942e5d57f5095357d5a5cc219669dc619ab860b11655b736b7376a875d05d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "싹이 나면 너희가 보고 여름이 가까운 줄을 자연히 아나니"
+      ],
+      "raw_text_hashes": [
+        "bda942e5d57f5095357d5a5cc219669dc619ab860b11655b736b7376a875d05d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:31",
+      "sequence": 25857,
+      "chapter_label": "LUK 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Even so you also, when you see these things happening, know that God’s Kingdom is near.",
+      "ko": "이와 같이 너희가 이런 일이 나는 것을 보거든 하나님의 나라가 가까운 줄을 알라",
+      "source_text_hash": "f3125942e994ab8eba5142cdd19fe8c81faf3115216a2d9ca314da3de83a0ffc",
+      "translation_text_hash": "14234fa4152e6b0b26b27cce3aa2fe5b15bae36bd585efaf2d0b6499019103e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희가 이런 일이 나는 것을 보거든 하나님의 나라가 가까운 줄을 알라"
+      ],
+      "raw_text_hashes": [
+        "14234fa4152e6b0b26b27cce3aa2fe5b15bae36bd585efaf2d0b6499019103e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:32",
+      "sequence": 25858,
+      "chapter_label": "LUK 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "Most certainly I tell you, this generation will not pass away until all things are accomplished.",
+      "ko": "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 모든 일이 다 이루리라",
+      "source_text_hash": "eb50518fd0409a61b7d596f5a9b3fa6dbf488680d93ac1d0f2ebd456088599d9",
+      "translation_text_hash": "eb7a6ce8551f270b3d25c612e5af5f9bb7d720209d7e1af027f57a813df15dc2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 모든 일이 다 이루리라"
+      ],
+      "raw_text_hashes": [
+        "eb7a6ce8551f270b3d25c612e5af5f9bb7d720209d7e1af027f57a813df15dc2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:33",
+      "sequence": 25859,
+      "chapter_label": "LUK 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "Heaven and earth will pass away, but my words will by no means pass away.",
+      "ko": "천지는 없어지겠으나 내 말은 없어지지 아니하리라",
+      "source_text_hash": "3992d35f29ab4ee352efac2b1d623736439232127dd86e475691f98c67b982bb",
+      "translation_text_hash": "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지는 없어지겠으나 내 말은 없어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:34",
+      "sequence": 25860,
+      "chapter_label": "LUK 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "“So be careful, or your hearts will be loaded down with carousing, drunkenness, and cares of this life, and that day will come on you suddenly.",
+      "ko": "너희는 스스로 조심하라 그렇지 않으면 방탕함과 술취함과 생활의 염려로 마음이 둔하여지고 뜻밖에 그 날이 덫과 같이 너희에게 임하리라",
+      "source_text_hash": "df6222eb156c9b1e96ccba3911db8b1cd556b5c2304e3ca2a2d9fe11162ae611",
+      "translation_text_hash": "9a90867ea96f099cfa8f6ba48af04a2fcefd39af3ff30d3e60a1958bb84168b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 조심하라 그렇지 않으면 방탕함과 술취함과 생활의 염려로 마음이 둔하여지고 뜻밖에 그 날이 덫과 같이 너희에게 임하리라"
+      ],
+      "raw_text_hashes": [
+        "9a90867ea96f099cfa8f6ba48af04a2fcefd39af3ff30d3e60a1958bb84168b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:35",
+      "sequence": 25861,
+      "chapter_label": "LUK 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "For it will come like a snare on all those who dwell on the surface of all the earth.",
+      "ko": "이 날은 온 지구상에 거하는 모든 사람에게 임하리라",
+      "source_text_hash": "15752778915a5b46dbea06341af9974eb2d42849a3158919766167ad1fc4a06f",
+      "translation_text_hash": "c4c9bcfb80ea6a24a21ce1c7d9c29125aa882e76080b6d323e82e22b17dfff3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날은 온 지구상에 거하는 모든 사람에게 임하리라"
+      ],
+      "raw_text_hashes": [
+        "c4c9bcfb80ea6a24a21ce1c7d9c29125aa882e76080b6d323e82e22b17dfff3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:36",
+      "sequence": 25862,
+      "chapter_label": "LUK 21",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 36
+        }
+      ],
+      "en": "Therefore be watchful all the time, praying that you may be counted worthy to escape all these things that will happen, and to stand before the Son of Man.”",
+      "ko": "이러므로 너희는 장차 올 이 모든 일을 능히 피하고 인자 앞에 서도록 항상 기도하며 깨어 있으라 하시니라",
+      "source_text_hash": "68d33aba2df73cfc20eba9a4d3a4a1d99813f03f979e9623a892cf37170c1a2d",
+      "translation_text_hash": "e103f493a8dac59548de3d72b8328fefc19ab7412c2ba087a5e51b998d36e506",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희는 장차 올 이 모든 일을 능히 피하고 인자 앞에 서도록 항상 기도하며 깨어 있으라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "e103f493a8dac59548de3d72b8328fefc19ab7412c2ba087a5e51b998d36e506"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:37",
+      "sequence": 25863,
+      "chapter_label": "LUK 21",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 37
+        }
+      ],
+      "en": "Every day Jesus was teaching in the temple, and every night he would go out and spend the night on the mountain that is called Olivet.",
+      "ko": "예수께서 낮이면 성전에서 가르치시고 밤이면 나가 감람원이라 하는 산에서 쉬시니",
+      "source_text_hash": "af415d33461545c14f13a51c32f32ad6b4e03ba7092858515801e602966d8931",
+      "translation_text_hash": "c44d44641476f6e54796b108b4d12c39dd153b9c8fb21beaa67ab6ee02d1f7f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 낮이면 성전에서 가르치시고 밤이면 나가 감람원이라 하는 산에서 쉬시니"
+      ],
+      "raw_text_hashes": [
+        "c44d44641476f6e54796b108b4d12c39dd153b9c8fb21beaa67ab6ee02d1f7f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:21:38",
+      "sequence": 25864,
+      "chapter_label": "LUK 21",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 21,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 21,
+          "verse": 38
+        }
+      ],
+      "en": "All the people came early in the morning to him in the temple to hear him.",
+      "ko": "모든 백성이 그 말씀을 들으려고 이른 아침에 성전에 나아가더라",
+      "source_text_hash": "f0ab8b6fbd0b3755a995e61bc44678de260660b4954afbf0861698e3763b07d5",
+      "translation_text_hash": "d682b64679845e393eb31b4d5dca695701a97d8886a2af29947a3c1a7c6425a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성이 그 말씀을 들으려고 이른 아침에 성전에 나아가더라"
+      ],
+      "raw_text_hashes": [
+        "d682b64679845e393eb31b4d5dca695701a97d8886a2af29947a3c1a7c6425a1"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:026",
+  "unit_ordinal": 26,
+  "unit_label": "GEN 26",
+  "book_code": "GEN",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:26:1",
+      "sequence": 694,
+      "chapter_label": "GEN 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "There was a famine in the land, in addition to the first famine that was in the days of Abraham. Isaac went to Abimelech king of the Philistines, to Gerar.",
+      "ko": "아브라함 때에 첫 흉년이 들었더니 그 땅에 또 흉년이 들매 이삭이 그랄로 가서 블레셋왕 아비멜렉에게 이르렀더니",
+      "source_text_hash": "605e55a7c2a42959b13e249eaf5a403e180478ff18ad2af463739290d61516d9",
+      "translation_text_hash": "46432ba28c4f0a3b195e8a908f119a4a9c66360753f5c37a67a1f3373ee41925",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함 때에 첫 흉년이 들었더니 그 땅에 또 흉년이 들매 이삭이 그랄로 가서 블레셋왕 아비멜렉에게 이르렀더니"
+      ],
+      "raw_text_hashes": [
+        "46432ba28c4f0a3b195e8a908f119a4a9c66360753f5c37a67a1f3373ee41925"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:2",
+      "sequence": 695,
+      "chapter_label": "GEN 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD appeared to him, and said, “Don’t go down into Egypt. Live in the land I will tell you about.",
+      "ko": "여호와께서 이삭에게 나타나 가라사대 애굽으로 내려가지말고 내가 네게 지시하는 땅에 거하라",
+      "source_text_hash": "9a88bca92cab19decd74463e15a2fd4e8719c5f0ab6d18cfa453a331144b8d9a",
+      "translation_text_hash": "9e4f8f77a5fce2c88a1c94ac7f508edf999202f5262a563234e1a10f16612c32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이삭에게 나타나 가라사대 애굽으로 내려가지말고 내가 네게 지시하는 땅에 거하라"
+      ],
+      "raw_text_hashes": [
+        "9e4f8f77a5fce2c88a1c94ac7f508edf999202f5262a563234e1a10f16612c32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:3",
+      "sequence": 696,
+      "chapter_label": "GEN 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Live in this land, and I will be with you, and will bless you. For I will give to you, and to your offspring, all these lands, and I will establish the oath which I swore to Abraham your father.",
+      "ko": "이 땅에 유하면 내가 너와 함께 있어 네게 복을 주고 내가 이 모든 땅을 너와 네 자손에게 주리라 내가 네 아비 아브라함에게 맹세한 것을 이루어",
+      "source_text_hash": "02674f08280dbc3fcc633472ee0c166585ac21a2708b98d00f1eda68f11fca5e",
+      "translation_text_hash": "597573e960658cb178bb0c393fe0491a581b8fc5d88919c0aa3c7e0ddb545631",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅에 유하면 내가 너와 함께 있어 네게 복을 주고 내가 이 모든 땅을 너와 네 자손에게 주리라 내가 네 아비 아브라함에게 맹세한 것을 이루어"
+      ],
+      "raw_text_hashes": [
+        "597573e960658cb178bb0c393fe0491a581b8fc5d88919c0aa3c7e0ddb545631"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:4",
+      "sequence": 697,
+      "chapter_label": "GEN 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "I will multiply your offspring as the stars of the sky, and will give all these lands to your offspring. In your offspring all the nations of the earth will be blessed,",
+      "ko": "네 자손을 하늘의 별과 같이 번성케 하며 이 모든 땅을 네 자손에게 주리니 네 자손을 인하여 천하 만민이 복을 받으리라",
+      "source_text_hash": "49bce79ef932d72b21995e36f605d8cd870b18b8800dbce9560bd57da527ce7b",
+      "translation_text_hash": "dc2fb76712f1b0c2b8bf980cf3c44ccf72e5c24ce824bc52548fc213c9d70536",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자손을 하늘의 별과 같이 번성케 하며 이 모든 땅을 네 자손에게 주리니 네 자손을 인하여 천하 만민이 복을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "dc2fb76712f1b0c2b8bf980cf3c44ccf72e5c24ce824bc52548fc213c9d70536"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:5",
+      "sequence": 698,
+      "chapter_label": "GEN 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "because Abraham obeyed my voice, and kept my requirements, my commandments, my statutes, and my laws.”",
+      "ko": "이는 아브라함이 내 말을 순종하고 내 명령과 내 계명과 내 율례와 내 법도를 지켰음이니라 하시니라",
+      "source_text_hash": "7c8ec01c60ac8b2cbf71b2ea518d9159dd6e5d34cbae42e26910a58d55136033",
+      "translation_text_hash": "fe2c73af84704646eeb5e345e84986da21ba075d0454b8ee1f10ce7d23ed0b59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 아브라함이 내 말을 순종하고 내 명령과 내 계명과 내 율례와 내 법도를 지켰음이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "fe2c73af84704646eeb5e345e84986da21ba075d0454b8ee1f10ce7d23ed0b59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:6",
+      "sequence": 699,
+      "chapter_label": "GEN 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Isaac lived in Gerar.",
+      "ko": "이삭이 그랄에 거하였더니",
+      "source_text_hash": "c2fca381cf4c029abb8236af98e83453c535352d7b84d170da4d3dff34a1b27e",
+      "translation_text_hash": "25098c1bf3fa699452c5506b311d29adce8d8feadb81b016442ab307c79ff64f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그랄에 거하였더니"
+      ],
+      "raw_text_hashes": [
+        "25098c1bf3fa699452c5506b311d29adce8d8feadb81b016442ab307c79ff64f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:7",
+      "sequence": 700,
+      "chapter_label": "GEN 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "The men of the place asked him about his wife. He said, “She is my sister,” for he was afraid to say, “My wife”, lest, he thought, “the men of the place might kill me for Rebekah, because she is beautiful to look at.”",
+      "ko": "그곳 사람들이 그 아내를 물으매 그가 말하기를 그는 나의 누이라 하였으니 리브가는 보기에 아리따우므로 그곳 백성이 리브가로 인하여 자기를 죽일까 하여 그는 나의 아내라 하기를 두려워함이었더라",
+      "source_text_hash": "00fe60054cc49eed99e114b8b31d4002cd58243c22b088224b66231f4e7a1cf0",
+      "translation_text_hash": "1322e1c634234a71f791d41425ea3a069f6be510e5ffba556ba962668cda6780",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그곳 사람들이 그 아내를 물으매 그가 말하기를 그는 나의 누이라 하였으니 리브가는 보기에 아리따우므로 그곳 백성이 리브가로 인하여 자기를 죽일까 하여 그는 나의 아내라 하기를 두려워함이었더라"
+      ],
+      "raw_text_hashes": [
+        "1322e1c634234a71f791d41425ea3a069f6be510e5ffba556ba962668cda6780"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:8",
+      "sequence": 701,
+      "chapter_label": "GEN 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "When he had been there a long time, Abimelech king of the Philistines looked out at a window, and saw, and, behold, Isaac was caressing Rebekah, his wife.",
+      "ko": "이삭이 거기 오래 거하였더니 이삭이 그 아내 리브가를 껴안은 것을 블레셋 왕 아비멜렉이 창으로 내다본지라",
+      "source_text_hash": "63784d06893ee173dc91f17c143c2a3b1d3b9547474f94c77a5a1e645b0e8258",
+      "translation_text_hash": "690612fcd77180c52e66e591c75966b6029162f48bb2c06e5d3526b31a67e9df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 거기 오래 거하였더니 이삭이 그 아내 리브가를 껴안은 것을 블레셋 왕 아비멜렉이 창으로 내다본지라"
+      ],
+      "raw_text_hashes": [
+        "690612fcd77180c52e66e591c75966b6029162f48bb2c06e5d3526b31a67e9df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:9",
+      "sequence": 702,
+      "chapter_label": "GEN 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Abimelech called Isaac, and said, “Behold, surely she is your wife. Why did you say, ‘She is my sister’?” Isaac said to him, “Because I said, ‘Lest I die because of her.’”",
+      "ko": "이에 아비멜렉이 이삭을 불러 이르되 그가 정녕 네 아내여늘 어찌 네 누이라 하였느냐 이삭이 그에게 대답하되 내 생각에 그를 인하여 내가 죽게 될까 두려워하였음이로라",
+      "source_text_hash": "13de35973c16791b64219caf66078d07130dd2311674792eb8bb8cd09da89e80",
+      "translation_text_hash": "9f4cd01022d000ed9ffae1ac7e2cecb1ecedaf94c2c073daf1075dca349565e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 아비멜렉이 이삭을 불러 이르되 그가 정녕 네 아내여늘 어찌 네 누이라 하였느냐 이삭이 그에게 대답하되 내 생각에 그를 인하여 내가 죽게 될까 두려워하였음이로라"
+      ],
+      "raw_text_hashes": [
+        "9f4cd01022d000ed9ffae1ac7e2cecb1ecedaf94c2c073daf1075dca349565e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:10",
+      "sequence": 703,
+      "chapter_label": "GEN 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "Abimelech said, “What is this you have done to us? One of the people might easily have lain with your wife, and you would have brought guilt on us!”",
+      "ko": "아비멜렉이 가로되 네가 어찌 우리에게 이렇게 행하였느냐 백성 중 하나가 네 아내와 동침하기 쉬웠을뻔 하였은즉 네가 죄를 우리에게 입혔으리라",
+      "source_text_hash": "e316eba11120b0ffde77d2b2cbad5621a59691aae70b965de3fa772c4f486395",
+      "translation_text_hash": "94f21818e915699c6930e7a17684ad9b7d1f59367e7dd4159bf4474f475d8f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 가로되 네가 어찌 우리에게 이렇게 행하였느냐 백성 중 하나가 네 아내와 동침하기 쉬웠을뻔 하였은즉 네가 죄를 우리에게 입혔으리라"
+      ],
+      "raw_text_hashes": [
+        "94f21818e915699c6930e7a17684ad9b7d1f59367e7dd4159bf4474f475d8f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:11",
+      "sequence": 704,
+      "chapter_label": "GEN 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Abimelech commanded all the people, saying, “He who touches this man or his wife will surely be put to death.”",
+      "ko": "아비멜렉이 이에 모든 백성에게 명하여 가로되 이 사람이나 그 아내에게 범하는 자는 죽이리라 하였더라",
+      "source_text_hash": "363fa14783b4c7e06c0dd133c405181e79a60b4004ffe4a9c499cd86a433e721",
+      "translation_text_hash": "a039b94a62dd9efdac0a4017ee71d4b5f35369b2f5f8a66946609e9e4fa7fa6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 이에 모든 백성에게 명하여 가로되 이 사람이나 그 아내에게 범하는 자는 죽이리라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "a039b94a62dd9efdac0a4017ee71d4b5f35369b2f5f8a66946609e9e4fa7fa6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:12",
+      "sequence": 705,
+      "chapter_label": "GEN 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "Isaac sowed in that land, and reaped in the same year one hundred times what he planted. The LORD blessed him.",
+      "ko": "이삭이 그 땅에서 농사하여 그 해에 백배나 얻었고 여호와께서 복을 주시므로",
+      "source_text_hash": "2c4591e9d46477a871d47d9d876572f7d4670685e3a76ddce76a2ef930da624a",
+      "translation_text_hash": "4e8b439968d79adad345267397b72dfd00006ca0342fb7b47ff327351fcbd5a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그 땅에서 농사하여 그 해에 백배나 얻었고 여호와께서 복을 주시므로"
+      ],
+      "raw_text_hashes": [
+        "4e8b439968d79adad345267397b72dfd00006ca0342fb7b47ff327351fcbd5a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:13",
+      "sequence": 706,
+      "chapter_label": "GEN 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "The man grew great, and grew more and more until he became very great.",
+      "ko": "그 사람이 창대하고 왕성하여 마침내 거부가 되어",
+      "source_text_hash": "0dad25807fa23f41c7d51ed5a7ffc128b526f93715dd88337b4f9e41dce84068",
+      "translation_text_hash": "7cbf33ef716ecf1d7c2be3de9650fb98bbd691b29a781dece5b79dfe2dd28f89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 창대하고 왕성하여 마침내 거부가 되어"
+      ],
+      "raw_text_hashes": [
+        "7cbf33ef716ecf1d7c2be3de9650fb98bbd691b29a781dece5b79dfe2dd28f89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:14",
+      "sequence": 707,
+      "chapter_label": "GEN 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "He had possessions of flocks, possessions of herds, and a great household. The Philistines envied him.",
+      "ko": "양과 소가 떼를 이루고 노복이 심히 많으므로 블레셋 사람이 그를 시기하여",
+      "source_text_hash": "106b9cf6769569ffaa54676479809e60e4ac30baf65ba1877a23df2d677fdec7",
+      "translation_text_hash": "5e757508257149551d4d13c2830be2057e7672c073b51e020bf823c4400b0753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양과 소가 떼를 이루고 노복이 심히 많으므로 블레셋 사람이 그를 시기하여"
+      ],
+      "raw_text_hashes": [
+        "5e757508257149551d4d13c2830be2057e7672c073b51e020bf823c4400b0753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:15",
+      "sequence": 708,
+      "chapter_label": "GEN 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "Now all the wells which his father’s servants had dug in the days of Abraham his father, the Philistines had stopped, and filled with earth.",
+      "ko": "그 아비 아브라함 때에 그 아비의 종들이 판 모든 우물을 막고 흙으로 메웠더라",
+      "source_text_hash": "2c87b465f92e64531bee94c6c2afceb5c44b440fcacf715aa9404e5cde1a0e88",
+      "translation_text_hash": "069984c615f048c760433337ba83bd8c6fae92557b7fbfd802b5079ecca59901",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 아브라함 때에 그 아비의 종들이 판 모든 우물을 막고 흙으로 메웠더라"
+      ],
+      "raw_text_hashes": [
+        "069984c615f048c760433337ba83bd8c6fae92557b7fbfd802b5079ecca59901"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:16",
+      "sequence": 709,
+      "chapter_label": "GEN 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "Abimelech said to Isaac, “Go away from us, for you are much mightier than we.”",
+      "ko": "아비멜렉이 이삭에게 이르되 네가 우리보다 크게 강성한즉 우리를 떠나가라",
+      "source_text_hash": "973943ddb884a98a2d59f8ff9b8c3018f291162d6c98de65c2958d4f2dcbf5e4",
+      "translation_text_hash": "95deb5bfe25600abec871efc5cb11d2a7247544587b31c342fe06ad3b3674abb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 이삭에게 이르되 네가 우리보다 크게 강성한즉 우리를 떠나가라"
+      ],
+      "raw_text_hashes": [
+        "95deb5bfe25600abec871efc5cb11d2a7247544587b31c342fe06ad3b3674abb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:17",
+      "sequence": 710,
+      "chapter_label": "GEN 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Isaac departed from there, encamped in the valley of Gerar, and lived there.",
+      "ko": "이삭이 그곳을 떠나 그랄 골짜기에 장막을 치고 거기 우거하며",
+      "source_text_hash": "3369d8976339112b81e467d15e1c716e39b41e19ccada6d44dd748106c7714a1",
+      "translation_text_hash": "5951cb34c77708f90aa6b239e16f997ae6d7570daee699155912972cf96a3de2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그곳을 떠나 그랄 골짜기에 장막을 치고 거기 우거하며"
+      ],
+      "raw_text_hashes": [
+        "5951cb34c77708f90aa6b239e16f997ae6d7570daee699155912972cf96a3de2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:18",
+      "sequence": 711,
+      "chapter_label": "GEN 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "Isaac dug again the wells of water, which they had dug in the days of Abraham his father, for the Philistines had stopped them after the death of Abraham. He called their names after the names by which his father had called them.",
+      "ko": "그 아비 아브라함 때에 팠던 우물들을 다시 팠으니 이는 아브라함 죽은 후에 블레셋 사람이 그 우물들을 메웠음이라 이삭이 그 우물들의 이름을 그 아비의 부르던 이름으로 불렀더라",
+      "source_text_hash": "97b2657c6a21eac6c16bd6f0d3dc1601ad71151a4d133f2c6a66abee34e79951",
+      "translation_text_hash": "6910b8c2c586ab017a297331dad09a2fc1db45fd3e03625ff920e0d7771bea9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비 아브라함 때에 팠던 우물들을 다시 팠으니 이는 아브라함 죽은 후에 블레셋 사람이 그 우물들을 메웠음이라 이삭이 그 우물들의 이름을 그 아비의 부르던 이름으로 불렀더라"
+      ],
+      "raw_text_hashes": [
+        "6910b8c2c586ab017a297331dad09a2fc1db45fd3e03625ff920e0d7771bea9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:19",
+      "sequence": 712,
+      "chapter_label": "GEN 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "Isaac’s servants dug in the valley, and found there a well of flowing water.",
+      "ko": "이삭의 종들이 골짜기에 파서 샘 근원을 얻었더니",
+      "source_text_hash": "9a4366a696b603852e57a6f841400df71ea58cef237bc89d98ab814fbb33412a",
+      "translation_text_hash": "80fd94e70521f61c31cb7bf945553cecc8a2928a112ea1d0a8e00721aa8a0336",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭의 종들이 골짜기에 파서 샘 근원을 얻었더니"
+      ],
+      "raw_text_hashes": [
+        "80fd94e70521f61c31cb7bf945553cecc8a2928a112ea1d0a8e00721aa8a0336"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:20",
+      "sequence": 713,
+      "chapter_label": "GEN 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "The herdsmen of Gerar argued with Isaac’s herdsmen, saying, “The water is ours.” So he called the name of the well Esek, because they contended with him.",
+      "ko": "그랄 목자들이 이삭의 목자와 다투어 가로되 이 물은 우리의 것이라 하매 이삭이 그 다툼을 인하여 그 우물 이름을 에섹이라 하였으며",
+      "source_text_hash": "446eeb4c3cb3125a20acc043a6da5c881437ddfc2d42500885d520d50f0ff91e",
+      "translation_text_hash": "5d64f6df0e8858cd5ba464bd3ab260d7ad18f4ff8b110102e88a1571eb8f65e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그랄 목자들이 이삭의 목자와 다투어 가로되 이 물은 우리의 것이라 하매 이삭이 그 다툼을 인하여 그 우물 이름을 에섹이라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "5d64f6df0e8858cd5ba464bd3ab260d7ad18f4ff8b110102e88a1571eb8f65e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:21",
+      "sequence": 714,
+      "chapter_label": "GEN 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "They dug another well, and they argued over that, also. So he called its name Sitnah.",
+      "ko": "또 다른 우물을 팠더니 그들이 또 다투는고로 그 이름을 싯나라 하였으며",
+      "source_text_hash": "877f2eee87b0fb581717a7c99c68137e76bac97564d6ff462bbd9506cf7c8b80",
+      "translation_text_hash": "8809f7ff0ccde9a326fed72598f7176ae9df65583261e1d162359ef0f8e785bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 우물을 팠더니 그들이 또 다투는고로 그 이름을 싯나라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "8809f7ff0ccde9a326fed72598f7176ae9df65583261e1d162359ef0f8e785bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:22",
+      "sequence": 715,
+      "chapter_label": "GEN 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "He left that place, and dug another well. They didn’t argue over that one. So he called it Rehoboth. He said, “For now the LORD has made room for us, and we will be fruitful in the land.”",
+      "ko": "이삭이 거기서 옮겨 다른 우물을 팠더니 그들이 다투지 아니하였으므로 그 이름을 르호봇이라 하여 가로되 이제는 여호와께서 우리의 장소를 넓게 하셨으니 이 땅에서 우리가 번성하리로다 하였더라",
+      "source_text_hash": "2b36c34a0ef63fe2e3884e11942d4df81cd94be882f6e9910c89559dc54e9ce2",
+      "translation_text_hash": "637bdc8b587019af46cd8e8c0bd918f5169da2b985d1186f35118de35ac16eb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 거기서 옮겨 다른 우물을 팠더니 그들이 다투지 아니하였으므로 그 이름을 르호봇이라 하여 가로되 이제는 여호와께서 우리의 장소를 넓게 하셨으니 이 땅에서 우리가 번성하리로다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "637bdc8b587019af46cd8e8c0bd918f5169da2b985d1186f35118de35ac16eb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:23",
+      "sequence": 716,
+      "chapter_label": "GEN 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "He went up from there to Beersheba.",
+      "ko": "이삭이 거기서부터 브엘세바로 올라갔더니",
+      "source_text_hash": "3e55b6aeaf033810993524f1bfde6bfa910de3d5197a0d63c23c97e6296700ab",
+      "translation_text_hash": "61175288d6a3928353544307bb42162be5dc2031bf78323fdb8a87b5bcbb5c6d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 거기서부터 브엘세바로 올라갔더니"
+      ],
+      "raw_text_hashes": [
+        "61175288d6a3928353544307bb42162be5dc2031bf78323fdb8a87b5bcbb5c6d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:24",
+      "sequence": 717,
+      "chapter_label": "GEN 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "The LORD appeared to him the same night, and said, “I am the God of Abraham your father. Don’t be afraid, for I am with you, and will bless you, and multiply your offspring for my servant Abraham’s sake.”",
+      "ko": "그 밤에 여호와께서 그에게 나타나 가라사대 나는 네 아비 아브라함의 하나님이니 두려워 말라 내 종 아브라함을 위하여 내가 너와 함께 있어 네게 복을 주어 네 자손으로 번성케 하리라 하신지라",
+      "source_text_hash": "fbf9ef18678c74a68974c04e60ba81c83ec3f2fbeaea9e5b3e3e19111e547471",
+      "translation_text_hash": "fe4fbedb3736cd1b55eb092ec5c991a87f3a6e05a0425229083275c5c3753ae9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 밤에 여호와께서 그에게 나타나 가라사대 나는 네 아비 아브라함의 하나님이니 두려워 말라 내 종 아브라함을 위하여 내가 너와 함께 있어 네게 복을 주어 네 자손으로 번성케 하리라 하신지라"
+      ],
+      "raw_text_hashes": [
+        "fe4fbedb3736cd1b55eb092ec5c991a87f3a6e05a0425229083275c5c3753ae9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:25",
+      "sequence": 718,
+      "chapter_label": "GEN 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "He built an altar there, and called on the LORD’s name, and pitched his tent there. There Isaac’s servants dug a well.",
+      "ko": "이삭이 그곳에 단을 쌓아 여호와의 이름을 부르고 거기 장막을 쳤더니 그 종들이 거기서도 우물을 팠더라",
+      "source_text_hash": "86cee3e8a1495d74814ab33212662923990df2dc27e9dbcdb4994593a4844e28",
+      "translation_text_hash": "cd60537ef293b455e5f21c9122a8611468c63408a53343d2a1db7597fac74f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그곳에 단을 쌓아 여호와의 이름을 부르고 거기 장막을 쳤더니 그 종들이 거기서도 우물을 팠더라"
+      ],
+      "raw_text_hashes": [
+        "cd60537ef293b455e5f21c9122a8611468c63408a53343d2a1db7597fac74f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:26",
+      "sequence": 719,
+      "chapter_label": "GEN 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "Then Abimelech went to him from Gerar with Ahuzzath his friend, and Phicol the captain of his army.",
+      "ko": "아비멜렉이 그 친구 아훗삿과 군대장관 비골로 더불어 그랄에서부터 이삭에게로 온지라",
+      "source_text_hash": "1104a73f8db6ee2c6acd53e1cbbe8efd4006d64928c397410454da6b549cd76b",
+      "translation_text_hash": "cf2cfba083c7fe627e8f4c7020757922d85efb034537e5711371a9cca2d9c1d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비멜렉이 그 친구 아훗삿과 군대장관 비골로 더불어 그랄에서부터 이삭에게로 온지라"
+      ],
+      "raw_text_hashes": [
+        "cf2cfba083c7fe627e8f4c7020757922d85efb034537e5711371a9cca2d9c1d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:27",
+      "sequence": 720,
+      "chapter_label": "GEN 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "Isaac said to them, “Why have you come to me, since you hate me, and have sent me away from you?”",
+      "ko": "이삭이 그들에게 이르되 너희가 나를 미워하여 나로 너희를 떠나가게 하였거늘 어찌하여 내게 왔느냐",
+      "source_text_hash": "660a5232bb38a45ec42a212dd533b1468cce0671b4efa1a83926be8509e53fdb",
+      "translation_text_hash": "9fb7f2af072fe1d03932809cb93f30955b1109290e8e1156713c908990d6083c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그들에게 이르되 너희가 나를 미워하여 나로 너희를 떠나가게 하였거늘 어찌하여 내게 왔느냐"
+      ],
+      "raw_text_hashes": [
+        "9fb7f2af072fe1d03932809cb93f30955b1109290e8e1156713c908990d6083c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:28",
+      "sequence": 721,
+      "chapter_label": "GEN 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "They said, “We saw plainly that the LORD was with you. We said, ‘Let there now be an oath between us, even between us and you, and let’s make a covenant with you,",
+      "ko": "그들이 가로되 여호와께서 너와 함께 계심을 우리가 분명히 보았으므로 우리의 사이 곧 우리와 너의 사이에 맹세를 세워 너와 계약을 맺으리라 말하였노라",
+      "source_text_hash": "00cd157b42c8d9688ac99f16a7a91fba7dba1dc583e3df4b643e78efc11d59b2",
+      "translation_text_hash": "0644374c154199f7ce8eae1d224ceb20e5346d99a7c8798316d7e2c140dd128a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 여호와께서 너와 함께 계심을 우리가 분명히 보았으므로 우리의 사이 곧 우리와 너의 사이에 맹세를 세워 너와 계약을 맺으리라 말하였노라"
+      ],
+      "raw_text_hashes": [
+        "0644374c154199f7ce8eae1d224ceb20e5346d99a7c8798316d7e2c140dd128a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:29",
+      "sequence": 722,
+      "chapter_label": "GEN 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "that you will do us no harm, as we have not touched you, and as we have done to you nothing but good, and have sent you away in peace.’ You are now the blessed of the LORD.”",
+      "ko": "너는 우리를 해하지 말라 이는 우리가 너를 범하지 아니하고 선한 일만 네게 행하며 너로 평안히 가게 하였음이니라 이제 너는 여호와께 복을 받은 자니라",
+      "source_text_hash": "cdb4f32b163e824fbc4998b797010fc45de2a0de025ec97f72234006027f5bcc",
+      "translation_text_hash": "3aaa214a88cb850349c9175fd2b3ff8b5e9e3bb49ceedcb810ffcfae7ee4689f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 우리를 해하지 말라 이는 우리가 너를 범하지 아니하고 선한 일만 네게 행하며 너로 평안히 가게 하였음이니라 이제 너는 여호와께 복을 받은 자니라"
+      ],
+      "raw_text_hashes": [
+        "3aaa214a88cb850349c9175fd2b3ff8b5e9e3bb49ceedcb810ffcfae7ee4689f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:30",
+      "sequence": 723,
+      "chapter_label": "GEN 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "He made them a feast, and they ate and drank.",
+      "ko": "이삭이 그들을 위하여 잔치를 베풀매 그들이 먹고 마시고",
+      "source_text_hash": "18a5bfb47827a359e3d1bd56621b1b983fa144d91dab6f7f9146dca365d47344",
+      "translation_text_hash": "12a20d69a1d3948f392b2fa637d4811833b0dd133c562bc58f8395c8055be551",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭이 그들을 위하여 잔치를 베풀매 그들이 먹고 마시고"
+      ],
+      "raw_text_hashes": [
+        "12a20d69a1d3948f392b2fa637d4811833b0dd133c562bc58f8395c8055be551"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:31",
+      "sequence": 724,
+      "chapter_label": "GEN 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "They rose up some time in the morning, and swore an oath to one another. Isaac sent them away, and they departed from him in peace.",
+      "ko": "아침에 일찌기 일어나 서로 맹세한 후에 이삭이 그들을 보내매 그들이 평안히 갔더라",
+      "source_text_hash": "06bb9440bce81e2b38ec5583cd3f21b80e114b2fbec7f471b24c44761e70e903",
+      "translation_text_hash": "c7e09155470b7a1cd60afee874844ffcd31d2d4574bebc777f54662e9b149103",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 일찌기 일어나 서로 맹세한 후에 이삭이 그들을 보내매 그들이 평안히 갔더라"
+      ],
+      "raw_text_hashes": [
+        "c7e09155470b7a1cd60afee874844ffcd31d2d4574bebc777f54662e9b149103"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:32",
+      "sequence": 725,
+      "chapter_label": "GEN 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "The same day, Isaac’s servants came, and told him concerning the well which they had dug, and said to him, “We have found water.”",
+      "ko": "그 날에 이삭의 종들이 자기들의 판 우물에 대하여 이삭에게 와서 고하여 가로되 우리가 물을 얻었나이다 하매",
+      "source_text_hash": "24007c4ab04eb78d41a148314d6273fbe3d230e7261d0a318570621801614691",
+      "translation_text_hash": "c90b64b883799ca4556f0a488ed3b3e6881daad23939478301244dc09628022a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 이삭의 종들이 자기들의 판 우물에 대하여 이삭에게 와서 고하여 가로되 우리가 물을 얻었나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "c90b64b883799ca4556f0a488ed3b3e6881daad23939478301244dc09628022a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:33",
+      "sequence": 726,
+      "chapter_label": "GEN 26",
+      "verse_label": "33",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 33
+        }
+      ],
+      "en": "He called it “Shibah”. Therefore the name of the city is “Beersheba” to this day.",
+      "ko": "그가 그 이름을 세바라 한지라 그러므로 그 성읍 이름이 오늘까지 브엘세바더라",
+      "source_text_hash": "02678b827658732c26dd891062d02e6651894e73d001b7b6f1691ba22a96c3a1",
+      "translation_text_hash": "575ce731b0b6658a65e8ecb3483f3fea43b9cc6534a7b89ae18436c6df17acee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 그 이름을 세바라 한지라 그러므로 그 성읍 이름이 오늘까지 브엘세바더라"
+      ],
+      "raw_text_hashes": [
+        "575ce731b0b6658a65e8ecb3483f3fea43b9cc6534a7b89ae18436c6df17acee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:34",
+      "sequence": 727,
+      "chapter_label": "GEN 26",
+      "verse_label": "34",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 34
+        }
+      ],
+      "en": "When Esau was forty years old, he took as wife Judith, the daughter of Beeri the Hittite, and Basemath, the daughter of Elon the Hittite.",
+      "ko": "에서가 사십세에 헷 족속 브에리의 딸 유딧과 헷 족속 엘론의 딸 바스맛을 아내로 취하였더니",
+      "source_text_hash": "d491ab5ba0fec8bffd7ac7b385a87f2740c4ec3637f7f832996412d2238d94e1",
+      "translation_text_hash": "cdea9c69b230cee9b24c3727a7ccd97865f4d50d93c673777f16c780a5abfaad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "에서가 사십세에 헷 족속 브에리의 딸 유딧과 헷 족속 엘론의 딸 바스맛을 아내로 취하였더니"
+      ],
+      "raw_text_hashes": [
+        "cdea9c69b230cee9b24c3727a7ccd97865f4d50d93c673777f16c780a5abfaad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:26:35",
+      "sequence": 728,
+      "chapter_label": "GEN 26",
+      "verse_label": "35",
+      "locator": {
+        "book": "GEN",
+        "chapter": 26,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 26,
+          "verse": 35
+        }
+      ],
+      "en": "They grieved Isaac’s and Rebekah’s spirits.",
+      "ko": "그들이 이삭과 리브가의 마음의 근심이 되었더라",
+      "source_text_hash": "8eec624410ba34bbf95317db22f8569b33adaba084e6fd7ce974b0bf2bb0e09e",
+      "translation_text_hash": "cf1741b402845123aae43da29ede0489b06fcc96b1ecf2801bed051571ab2ccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 이삭과 리브가의 마음의 근심이 되었더라"
+      ],
+      "raw_text_hashes": [
+        "cf1741b402845123aae43da29ede0489b06fcc96b1ecf2801bed051571ab2ccb"
+      ]
+    }
+  ]
+}

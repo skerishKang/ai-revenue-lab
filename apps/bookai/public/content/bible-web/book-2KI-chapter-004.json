@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:004",
+  "unit_ordinal": 317,
+  "unit_label": "2KI 4",
+  "book_code": "2KI",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:4:1",
+      "sequence": 9605,
+      "chapter_label": "2KI 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "Now a certain woman of the wives of the sons of the prophets cried out to Elisha, saying, “Your servant my husband is dead. You know that your servant feared the LORD. Now the creditor has come to take for himself my two children to be slaves.”",
+      "ko": "선지자의 생도의 아내 중에 한 여인이 엘리사에게 부르짖어 가로되 당신의 종 나의 남편이 이미 죽었는데 당신의 종이 여호와를 경외한 줄은 당신이 아시는 바니이다 이제 채주가 이르러 나의 두 아이를 취하여 그 종을 삼고자 하나이다",
+      "source_text_hash": "5d7d14c9c028e24beb7a11e42665b297e69a61b368c57e0e73c5d6a44b06ade7",
+      "translation_text_hash": "7e5b356b495bc2a57064670f9be704da3265d2801547326319e4bcda86e8e9cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자의 생도의 아내 중에 한 여인이 엘리사에게 부르짖어 가로되 당신의 종 나의 남편이 이미 죽었는데 당신의 종이 여호와를 경외한 줄은 당신이 아시는 바니이다 이제 채주가 이르러 나의 두 아이를 취하여 그 종을 삼고자 하나이다"
+      ],
+      "raw_text_hashes": [
+        "7e5b356b495bc2a57064670f9be704da3265d2801547326319e4bcda86e8e9cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:2",
+      "sequence": 9606,
+      "chapter_label": "2KI 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "Elisha said to her, “What should I do for you? Tell me, what do you have in the house?” She said, “Your servant has nothing in the house, except a pot of oil.”",
+      "ko": "엘리사가 저에게 이르되 내가 너를 위하여 어떻게 하랴 네 집에 무엇이 있는지 내게 고하라 저가 가로되 계집종의 집에 한 병 기름 외에는 아무 것도 없나이다",
+      "source_text_hash": "622f60d1342b39123fdd814518a88f5e711173b2b64b4571655c614524a843ac",
+      "translation_text_hash": "0e2706aadd568a8a5ea61d81de4d7c80cdaf61f9efed13751f661ddb808b9dc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 저에게 이르되 내가 너를 위하여 어떻게 하랴 네 집에 무엇이 있는지 내게 고하라 저가 가로되 계집종의 집에 한 병 기름 외에는 아무 것도 없나이다"
+      ],
+      "raw_text_hashes": [
+        "0e2706aadd568a8a5ea61d81de4d7c80cdaf61f9efed13751f661ddb808b9dc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:3",
+      "sequence": 9607,
+      "chapter_label": "2KI 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "Then he said, “Go, borrow empty containers from all your neighbors. Don’t borrow just a few containers.",
+      "ko": "가로되 너는 밖에 나가서 모든 이웃에게 그릇을 빌라 빈 그릇을 빌되 조금 빌지 말고",
+      "source_text_hash": "c56dcec57934d6a845dee91cc90ed337ab64e563732e89b921e443126628171b",
+      "translation_text_hash": "af5ab87b6a0a64f415d06697d494828ba4abe7cda70ac72d8ea32ef0bd95c724",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 너는 밖에 나가서 모든 이웃에게 그릇을 빌라 빈 그릇을 빌되 조금 빌지 말고"
+      ],
+      "raw_text_hashes": [
+        "af5ab87b6a0a64f415d06697d494828ba4abe7cda70ac72d8ea32ef0bd95c724"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:4",
+      "sequence": 9608,
+      "chapter_label": "2KI 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "Go in and shut the door on you and on your sons, and pour oil into all those containers; and set aside those which are full.”",
+      "ko": "너는 네 두 아들과 함께 들어가서 문을 닫고 그 모든 그릇에 기름을 부어서 차는대로 옮겨 놓으라",
+      "source_text_hash": "9a958c9d53e4d0081234afaf66dcaae7fbae5ebb192301a1df967f81c38ffa5d",
+      "translation_text_hash": "efa01cc809a95c37f15f857f3b8940295ee63f52652d74ac9bb84125ceea16bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 두 아들과 함께 들어가서 문을 닫고 그 모든 그릇에 기름을 부어서 차는대로 옮겨 놓으라"
+      ],
+      "raw_text_hashes": [
+        "efa01cc809a95c37f15f857f3b8940295ee63f52652d74ac9bb84125ceea16bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:5",
+      "sequence": 9609,
+      "chapter_label": "2KI 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "So she went from him, and shut the door on herself and on her sons. They brought the containers to her, and she poured oil.",
+      "ko": "여인이 물러가서 그 두 아들과 함께 문을 닫은 후에 저희는 그릇을 그에게로 가져 오고 그는 부었더니",
+      "source_text_hash": "f0711333eb85e90ffc3bba74a98e826ad5be28bd5fee1268d203091bd498fb56",
+      "translation_text_hash": "011e78c0f483656f11384ab1edc37f827d83373c4718bc4e7e0318ee257d8954",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 물러가서 그 두 아들과 함께 문을 닫은 후에 저희는 그릇을 그에게로 가져 오고 그는 부었더니"
+      ],
+      "raw_text_hashes": [
+        "011e78c0f483656f11384ab1edc37f827d83373c4718bc4e7e0318ee257d8954"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:6",
+      "sequence": 9610,
+      "chapter_label": "2KI 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "When the containers were full, she said to her son, “Bring me another container.” He said to her, “There isn’t another container.” Then the oil stopped flowing.",
+      "ko": "그릇에 다 찬지라 여인이 아들에게 이르되 또 그릇을 내게로 가져 오라 아들이 가로되 다른 그릇이 없나이다 하니 기름이 곧 그쳤더라",
+      "source_text_hash": "d3d528e0c57ba2de7f587e6340cff254ee6e62687e96885affd9df2ed8942c9d",
+      "translation_text_hash": "67226727e7991655874c6033083fb29a3bcadfef7f516c0c6ef53449c6894e90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그릇에 다 찬지라 여인이 아들에게 이르되 또 그릇을 내게로 가져 오라 아들이 가로되 다른 그릇이 없나이다 하니 기름이 곧 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "67226727e7991655874c6033083fb29a3bcadfef7f516c0c6ef53449c6894e90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:7",
+      "sequence": 9611,
+      "chapter_label": "2KI 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "Then she came and told the man of God. He said, “Go, sell the oil, and pay your debt; and you and your sons live on the rest.”",
+      "ko": "그 여인이 하나님의 사람에게 나아가서 고한대 저가 가로되 너는 가서 기름을 팔아 빚을 갚고 남은 것으로 너와 네 두 아들이 생활하라 하였더라",
+      "source_text_hash": "1f413c0eb0cf1b57f1a966a14c3fbbf59ec32a7b874deec7f262a6756ac5b50f",
+      "translation_text_hash": "637a50ede94844dac0b7bb4768031cdd6c102fc9d15496bca8a36848334897fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여인이 하나님의 사람에게 나아가서 고한대 저가 가로되 너는 가서 기름을 팔아 빚을 갚고 남은 것으로 너와 네 두 아들이 생활하라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "637a50ede94844dac0b7bb4768031cdd6c102fc9d15496bca8a36848334897fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:8",
+      "sequence": 9612,
+      "chapter_label": "2KI 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "One day Elisha went to Shunem, where there was a prominent woman; and she persuaded him to eat bread. So it was, that as often as he passed by, he turned in there to eat bread.",
+      "ko": "하루는 엘리사가 수넴에 이르렀더니 거기 한 귀한 여인이 저를 간권하여 음식을 먹게 한고로 엘리사가 그곳을 지날 때마다 음식을 먹으러 그리로 들어갔더라",
+      "source_text_hash": "bdb34ee7985619b3bc3419fc4f9dc2da4d1872a98f4cd30c15a8310447331264",
+      "translation_text_hash": "c3145e54490264c59b408d0a9756d249f16b427562e8bd4b4dc71b5a2f7a3bd5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 엘리사가 수넴에 이르렀더니 거기 한 귀한 여인이 저를 간권하여 음식을 먹게 한고로 엘리사가 그곳을 지날 때마다 음식을 먹으러 그리로 들어갔더라"
+      ],
+      "raw_text_hashes": [
+        "c3145e54490264c59b408d0a9756d249f16b427562e8bd4b4dc71b5a2f7a3bd5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:9",
+      "sequence": 9613,
+      "chapter_label": "2KI 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "She said to her husband, “See now, I perceive that this is a holy man of God who passes by us continually.",
+      "ko": "여인이 그 남편에게 이르되 항상 우리에게로 지나는 이 사람은 하나님의 거룩한 사람인줄을 내가 아노니",
+      "source_text_hash": "3c9373e5ab26a36506f9b67e10992d2377da33eed6ade28e815884f58f783057",
+      "translation_text_hash": "844af906df133de5fb1da483d969c5aef0f7f1b1ca69b5f513c7b31bd27a45fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 그 남편에게 이르되 항상 우리에게로 지나는 이 사람은 하나님의 거룩한 사람인줄을 내가 아노니"
+      ],
+      "raw_text_hashes": [
+        "844af906df133de5fb1da483d969c5aef0f7f1b1ca69b5f513c7b31bd27a45fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:10",
+      "sequence": 9614,
+      "chapter_label": "2KI 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "Please, let’s make a little room on the roof. Let’s set a bed, a table, a chair, and a lamp stand for him there. When he comes to us, he can stay there.”",
+      "ko": "우리가 저를 위하여 작은 방을 담 위에 짓고 침상과 책상과 의자와 촛대를 진설하사이다 저가 우리에게 이르면 거기 유하리이다 하였더라",
+      "source_text_hash": "1bcc1aeedb16eb23a5f129f45ee774981b560304f320b39f65b2e0cfedceae2e",
+      "translation_text_hash": "2cec18997072ea9a6eafb562480939a0488bf5045dbd72ea4723bdfa1b52d13d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 저를 위하여 작은 방을 담 위에 짓고 침상과 책상과 의자와 촛대를 진설하사이다 저가 우리에게 이르면 거기 유하리이다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "2cec18997072ea9a6eafb562480939a0488bf5045dbd72ea4723bdfa1b52d13d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:11",
+      "sequence": 9615,
+      "chapter_label": "2KI 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "One day he came there, and he went to the room and lay there.",
+      "ko": "하루는 엘리사가 거기 이르러 그 방에 들어가서 누웠더니",
+      "source_text_hash": "24ac20dfd6e7f633a62d18a17bd3a63e2ee276071ca94db32fdead57faee23e8",
+      "translation_text_hash": "cc67195ceb697aca00c4385ee3e1f78db1df711d86a485f86ff6c11bb70978d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 엘리사가 거기 이르러 그 방에 들어가서 누웠더니"
+      ],
+      "raw_text_hashes": [
+        "cc67195ceb697aca00c4385ee3e1f78db1df711d86a485f86ff6c11bb70978d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:12",
+      "sequence": 9616,
+      "chapter_label": "2KI 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "He said to Gehazi his servant, “Call this Shunammite.” When he had called her, she stood before him.",
+      "ko": "자기 사환 게하시에게 이르되 이 수넴 여인을 불러오라 곧 부르매 여인이 그 앞에 선지라",
+      "source_text_hash": "c17697eb4625df5ec50956ce3bdfd311b33b727fcecf7349e4cab9006d3e5632",
+      "translation_text_hash": "70a715973c587fd5296eacc9e85e073df3a0677ffb2bafdd75c8b04d564556f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 사환 게하시에게 이르되 이 수넴 여인을 불러오라 곧 부르매 여인이 그 앞에 선지라"
+      ],
+      "raw_text_hashes": [
+        "70a715973c587fd5296eacc9e85e073df3a0677ffb2bafdd75c8b04d564556f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:13",
+      "sequence": 9617,
+      "chapter_label": "2KI 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "He said to him, “Say now to her, ‘Behold, you have cared for us with all this care. What is to be done for you? Would you like to be spoken for to the king, or to the captain of the army?’” She answered, “I dwell among my own people.”",
+      "ko": "엘리사가 자기 사환에게 이르되 너는 저에게 이르라 네가 이같이 우리를 위하여 생각이 주밀하도다 내가 너를 위하여 어떻게 하랴 왕에게나 군대장관에게 무슨 구할 것이 있느냐 여인이 가로되 나는 내 백성 중에 거하나이다 하니라",
+      "source_text_hash": "0bf2eef694174980e9474d62df7423b43ec55ab92824d03c7beda60500f035eb",
+      "translation_text_hash": "dce1d833ecc7fbaed16f9fdc298ea3f95dc5b89eb3cefb6fdc74d6c75f8796c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 자기 사환에게 이르되 너는 저에게 이르라 네가 이같이 우리를 위하여 생각이 주밀하도다 내가 너를 위하여 어떻게 하랴 왕에게나 군대장관에게 무슨 구할 것이 있느냐 여인이 가로되 나는 내 백성 중에 거하나이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "dce1d833ecc7fbaed16f9fdc298ea3f95dc5b89eb3cefb6fdc74d6c75f8796c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:14",
+      "sequence": 9618,
+      "chapter_label": "2KI 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "He said, “What then is to be done for her?” Gehazi answered, “Most certainly she has no son, and her husband is old.”",
+      "ko": "엘리사가 가로되 그러면 저를 위하여 무엇을 하여야 할꼬 게하시가 대답하되 참으로 이 여인은 아들이 없고 그 남편은 늙었나이다",
+      "source_text_hash": "634949b73b5cd823123a3c300d555fcc8f514860eb07013e45111215799ff17e",
+      "translation_text_hash": "fb6c3d40da9397ed6e9a9ff8d9a6a3f69a1cbac69d420e54e13ac37ea4b8dc00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 그러면 저를 위하여 무엇을 하여야 할꼬 게하시가 대답하되 참으로 이 여인은 아들이 없고 그 남편은 늙었나이다"
+      ],
+      "raw_text_hashes": [
+        "fb6c3d40da9397ed6e9a9ff8d9a6a3f69a1cbac69d420e54e13ac37ea4b8dc00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:15",
+      "sequence": 9619,
+      "chapter_label": "2KI 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "He said, “Call her.” When he had called her, she stood in the door.",
+      "ko": "가로되 다시 부르라 부르매 여인이 문에 서니라",
+      "source_text_hash": "5c6047d318285ec1f27428c2026a51fbfdde3ad8dc8f40bfa2b4dd8936df748e",
+      "translation_text_hash": "4a0803f741aae8abae53a4a23d745686632fd008ba60b14a93350cb30938b3f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 다시 부르라 부르매 여인이 문에 서니라"
+      ],
+      "raw_text_hashes": [
+        "4a0803f741aae8abae53a4a23d745686632fd008ba60b14a93350cb30938b3f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:16",
+      "sequence": 9620,
+      "chapter_label": "2KI 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "He said, “At this season next year, you will embrace a son.” She said, “No, my lord, you man of God, do not lie to your servant.”",
+      "ko": "엘리사가 가로되 돐이 되면 네가 아들을 안으리라 여인이 가로되 아니로소이다 내 주 하나님의 사람이여 당신의 계집종을 속이지 마옵소서 하니라",
+      "source_text_hash": "e49249b07601576446578905b96b2a3d6a4e16f4a8c9b425dcbd448b8a74db9d",
+      "translation_text_hash": "d951be47be934f3df5d7e51e84f8a8d4156d94107bda575531ecfbdff6d0072f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 돐이 되면 네가 아들을 안으리라 여인이 가로되 아니로소이다 내 주 하나님의 사람이여 당신의 계집종을 속이지 마옵소서 하니라"
+      ],
+      "raw_text_hashes": [
+        "d951be47be934f3df5d7e51e84f8a8d4156d94107bda575531ecfbdff6d0072f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:17",
+      "sequence": 9621,
+      "chapter_label": "2KI 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "The woman conceived, and bore a son at that season when the time came around, as Elisha had said to her.",
+      "ko": "여인이 과연 잉태하여 돐이 돌아오매 엘리사의 말한대로 아들을 낳았더라",
+      "source_text_hash": "1ad3e24beee684affccf859575865dae639ec729ecbcbf998fafd2a3f23d64e6",
+      "translation_text_hash": "0505e68cb22774f8872abd7df5ecb5f8bc67000cc49788a6143fb328d8990a01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 과연 잉태하여 돐이 돌아오매 엘리사의 말한대로 아들을 낳았더라"
+      ],
+      "raw_text_hashes": [
+        "0505e68cb22774f8872abd7df5ecb5f8bc67000cc49788a6143fb328d8990a01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:18",
+      "sequence": 9622,
+      "chapter_label": "2KI 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "When the child was grown, one day he went out to his father to the reapers.",
+      "ko": "그 아이가 저으기 자라매 하루는 곡식 베는 자에게 나가서 그 아비에게 이르렀더니",
+      "source_text_hash": "02c0fe0415665603c5246d26890d37fea4454c52bf0bd50217d24e7f052f4b18",
+      "translation_text_hash": "e2790a134cd209bd5830c4ce53c2d10cc9a326024c6502fb42b00e3ee18e69ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이가 저으기 자라매 하루는 곡식 베는 자에게 나가서 그 아비에게 이르렀더니"
+      ],
+      "raw_text_hashes": [
+        "e2790a134cd209bd5830c4ce53c2d10cc9a326024c6502fb42b00e3ee18e69ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:19",
+      "sequence": 9623,
+      "chapter_label": "2KI 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "He said to his father, “My head! My head!” He said to his servant, “Carry him to his mother.”",
+      "ko": "그 아비에게 이르되 내 머리야 내 머리야 하는지라 그 아비가 사환에게 명하여 그 어미에게로 데려가라 하매",
+      "source_text_hash": "8bcb32630f5c37d7f243ed83976b8b65ebb195a23457a29ac4eaf419e993b5ca",
+      "translation_text_hash": "a1e79e217b4c6ec90d9ed8435be3ba71aeeeb4ac58df06423a5dd2aaad9b32aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아비에게 이르되 내 머리야 내 머리야 하는지라 그 아비가 사환에게 명하여 그 어미에게로 데려가라 하매"
+      ],
+      "raw_text_hashes": [
+        "a1e79e217b4c6ec90d9ed8435be3ba71aeeeb4ac58df06423a5dd2aaad9b32aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:20",
+      "sequence": 9624,
+      "chapter_label": "2KI 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "When he had taken him and brought him to his mother, he sat on her knees until noon, and then died.",
+      "ko": "곧 어미에게로 데려갔더니 낮까지 어미의 무릎에 앉았다가 죽은지라",
+      "source_text_hash": "5ccb939c8a287025694f650d8c4db087e3593563bb4b6204cd40f14715f1b342",
+      "translation_text_hash": "2b6bf83eaf383a4207276e018df900fda3b784fef3a68ef01ba8859d2ff2e739",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 어미에게로 데려갔더니 낮까지 어미의 무릎에 앉았다가 죽은지라"
+      ],
+      "raw_text_hashes": [
+        "2b6bf83eaf383a4207276e018df900fda3b784fef3a68ef01ba8859d2ff2e739"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:21",
+      "sequence": 9625,
+      "chapter_label": "2KI 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "She went up and laid him on the man of God’s bed, and shut the door on him, and went out.",
+      "ko": "그 어미가 올라가서 아들을 하나님의 사람의 침상 위에 두고 문을 닫고 나와서",
+      "source_text_hash": "cb9a18a671a60b7489c36f7722c04b8a1ce689687b9c6a72c88a26b9dd57dd14",
+      "translation_text_hash": "f9491cd470914199a9b3756152b426785e648f884b4133a8a8e07030a6f1a4ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 어미가 올라가서 아들을 하나님의 사람의 침상 위에 두고 문을 닫고 나와서"
+      ],
+      "raw_text_hashes": [
+        "f9491cd470914199a9b3756152b426785e648f884b4133a8a8e07030a6f1a4ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:22",
+      "sequence": 9626,
+      "chapter_label": "2KI 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "She called to her husband and said, “Please send me one of the servants, and one of the donkeys, that I may run to the man of God and come again.”",
+      "ko": "그 남편을 불러 이르되 청컨대 한 사환과 한 나귀를 내게로 보내소서 내가 하나님의 사람에게 달려갔다가 돌아오리이다",
+      "source_text_hash": "2c8f26f5bd9a82742555221374ca646734399e98d1dcd78e283fd40fded21819",
+      "translation_text_hash": "596f3ceb2b30e7ec3ce954392eb5594b9d73f50ed3be98d6868ece109bb61167",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편을 불러 이르되 청컨대 한 사환과 한 나귀를 내게로 보내소서 내가 하나님의 사람에게 달려갔다가 돌아오리이다"
+      ],
+      "raw_text_hashes": [
+        "596f3ceb2b30e7ec3ce954392eb5594b9d73f50ed3be98d6868ece109bb61167"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:23",
+      "sequence": 9627,
+      "chapter_label": "2KI 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "He said, “Why would you want to go to him today? It is not a new moon or a Sabbath.” She said, “It’s all right.”",
+      "ko": "그 남편이 가로되 초하루도 아니요 안식일도 아니어늘 그대가 오늘날 어찌하여 저에게 나아가고자 하느뇨 여인이 가로되 평안이니이다",
+      "source_text_hash": "de55f196151eb154301fd4abb6789763483a450e35b46d85d09f23f8d0e5784f",
+      "translation_text_hash": "262fecfb655f92e9acbb972ecae54e43ae35f496735df9cbd31a6bf4b361b359",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 가로되 초하루도 아니요 안식일도 아니어늘 그대가 오늘날 어찌하여 저에게 나아가고자 하느뇨 여인이 가로되 평안이니이다"
+      ],
+      "raw_text_hashes": [
+        "262fecfb655f92e9acbb972ecae54e43ae35f496735df9cbd31a6bf4b361b359"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:24",
+      "sequence": 9628,
+      "chapter_label": "2KI 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "Then she saddled a donkey, and said to her servant, “Drive, and go forward! Don’t slow down for me, unless I ask you to.”",
+      "ko": "이에 나귀에 안장을 지우고 자기 사환에게 이르되 몰아 앞으로 나아가라 내가 말하지 아니하거든 나의 달려가기를 천천하게 하지 말라 하고",
+      "source_text_hash": "42ab2b9b30f905885b2f2f269344dda4182be26e0e0f9330521fae37081f3ae1",
+      "translation_text_hash": "b8e15e3f68ed705de7fa4787079932b88dd3a3d289471d1bdf784c4c82e02b58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 나귀에 안장을 지우고 자기 사환에게 이르되 몰아 앞으로 나아가라 내가 말하지 아니하거든 나의 달려가기를 천천하게 하지 말라 하고"
+      ],
+      "raw_text_hashes": [
+        "b8e15e3f68ed705de7fa4787079932b88dd3a3d289471d1bdf784c4c82e02b58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:25",
+      "sequence": 9629,
+      "chapter_label": "2KI 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "So she went, and came to the man of God to Mount Carmel. When the man of God saw her afar off, he said to Gehazi his servant, “Behold, there is the Shunammite.",
+      "ko": "드디어 갈멜산으로 가서 하나님의 사람에게로 나아가니라 하나님의 사람이 멀리서 저를 보고 자기 사환 게하시에게 이르되 저기 수넴 여인이 있도다",
+      "source_text_hash": "e017352a23dad53b43a01d141e066b79dfb85aad8cd35894632b3d089dd6ca7f",
+      "translation_text_hash": "a928dc64de75e54a623787335d8ff4b58e1958dfccb0f8780be6d8b13b3ca3a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드디어 갈멜산으로 가서 하나님의 사람에게로 나아가니라 하나님의 사람이 멀리서 저를 보고 자기 사환 게하시에게 이르되 저기 수넴 여인이 있도다"
+      ],
+      "raw_text_hashes": [
+        "a928dc64de75e54a623787335d8ff4b58e1958dfccb0f8780be6d8b13b3ca3a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:26",
+      "sequence": 9630,
+      "chapter_label": "2KI 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "Please run now to meet her, and ask her, ‘Is it well with you? Is it well with your husband? Is it well with your child?’” She answered, “It is well.”",
+      "ko": "너는 달려가서 저를 맞아 이르기를 너는 평안하냐 네 남편이 평안하냐 아이가 평안하냐 하라 하였더니 여인이 대답하되 평안하다 하고",
+      "source_text_hash": "d58905185f3f15886acb580e22f1bd77e910ade50977f6cec5bd7e798fb75bce",
+      "translation_text_hash": "73cdbb2991dd8cf85b33c79e7dcab7d8c91c75788be2d69f0b8246935edf6407",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 달려가서 저를 맞아 이르기를 너는 평안하냐 네 남편이 평안하냐 아이가 평안하냐 하라 하였더니 여인이 대답하되 평안하다 하고"
+      ],
+      "raw_text_hashes": [
+        "73cdbb2991dd8cf85b33c79e7dcab7d8c91c75788be2d69f0b8246935edf6407"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:27",
+      "sequence": 9631,
+      "chapter_label": "2KI 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "When she came to the man of God to the hill, she caught hold of his feet. Gehazi came near to thrust her away; but the man of God said, “Leave her alone, for her soul is troubled within her; and the LORD has hidden it from me, and has not told me.”",
+      "ko": "산에 이르러 하나님의 사람에게 나아가서 그 발을 안은지라 게하시가 가까이 와서 저를 물리치고자 하매 하나님의 사람이 가로되 가만 두라 그 중심에 괴로움이 있다마는 여호와께서 내게 숨기시고 이르지 아니하셨도다",
+      "source_text_hash": "926370d0ed605cabb609e52fff3ab1c857a00dee5e542c9c584a3c79ffcbc417",
+      "translation_text_hash": "50112d2368b64b1806e4995b5a8dfe82cd55bff406a72dc4f802399b7b04b2c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "산에 이르러 하나님의 사람에게 나아가서 그 발을 안은지라 게하시가 가까이 와서 저를 물리치고자 하매 하나님의 사람이 가로되 가만 두라 그 중심에 괴로움이 있다마는 여호와께서 내게 숨기시고 이르지 아니하셨도다"
+      ],
+      "raw_text_hashes": [
+        "50112d2368b64b1806e4995b5a8dfe82cd55bff406a72dc4f802399b7b04b2c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:28",
+      "sequence": 9632,
+      "chapter_label": "2KI 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "Then she said, “Did I ask you for a son, my lord? Didn’t I say, ‘Do not deceive me’?”",
+      "ko": "여인이 가로되 내가 내 주께 아들을 구하더이까 나를 속이지 말라고 내가 말하지 아니하더이까",
+      "source_text_hash": "3756f685df1ccba68571681ca2d8872033694a049ab075fa0b03f66c27fd1aef",
+      "translation_text_hash": "33a76bf7bb7f67c27dd376f362c845dd10a4dbbc24e37af6da7adcfaad4a2ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 가로되 내가 내 주께 아들을 구하더이까 나를 속이지 말라고 내가 말하지 아니하더이까"
+      ],
+      "raw_text_hashes": [
+        "33a76bf7bb7f67c27dd376f362c845dd10a4dbbc24e37af6da7adcfaad4a2ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:29",
+      "sequence": 9633,
+      "chapter_label": "2KI 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "Then he said to Gehazi, “Tuck your cloak into your belt, take my staff in your hand, and go your way. If you meet any man, don’t greet him; and if anyone greets you, don’t answer him again. Then lay my staff on the child’s face.”",
+      "ko": "엘리사가 게하시에게 이르되 네 허리를 묶고 내 지팡이를 손에 들고 가라 사람을 만나거든 인사하지 말며 사람이 네게 인사할찌라도 대답하지 말고 내 지팡이를 그 아이 얼굴에 놓으라",
+      "source_text_hash": "78f0bd7382c4820cac896d666dc1fae199ef14601e4077ef75da9d4020f7b898",
+      "translation_text_hash": "f1c04058e4ce490ef570671715073bb9e16f9f89d33927205a83593891a31933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 게하시에게 이르되 네 허리를 묶고 내 지팡이를 손에 들고 가라 사람을 만나거든 인사하지 말며 사람이 네게 인사할찌라도 대답하지 말고 내 지팡이를 그 아이 얼굴에 놓으라"
+      ],
+      "raw_text_hashes": [
+        "f1c04058e4ce490ef570671715073bb9e16f9f89d33927205a83593891a31933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:30",
+      "sequence": 9634,
+      "chapter_label": "2KI 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "The child’s mother said, “As the LORD lives, and as your soul lives, I will not leave you.” So he arose, and followed her.",
+      "ko": "아이의 어미가 가로되 여호와의 사심과 당신의 혼의 사심을 가리켜 맹세하노니 내가 당신을 떠나지 아니하리이다 엘리사가 이에 일어나 여인을 좇아가니라",
+      "source_text_hash": "4b60b30c41632a6e35c70dbe4936b0c1fa9387d0ccef287b8b6e755598209878",
+      "translation_text_hash": "f31e3618b2b8fe59f5adbe7c8b8fe3418a8026f9fd5772492e0bf1b5c4ea5bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이의 어미가 가로되 여호와의 사심과 당신의 혼의 사심을 가리켜 맹세하노니 내가 당신을 떠나지 아니하리이다 엘리사가 이에 일어나 여인을 좇아가니라"
+      ],
+      "raw_text_hashes": [
+        "f31e3618b2b8fe59f5adbe7c8b8fe3418a8026f9fd5772492e0bf1b5c4ea5bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:31",
+      "sequence": 9635,
+      "chapter_label": "2KI 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "Gehazi went ahead of them, and laid the staff on the child’s face; but there was no voice and no hearing. Therefore he returned to meet him, and told him, “The child has not awakened.”",
+      "ko": "게하시가 저희의 앞서 가서 지팡이를 그 아이의 얼굴에 놓았으나 소리도 없고 듣는 모양도 없는지라 돌아와서 엘리사를 맞아 가로되 아이가 깨지 아니하였나이다",
+      "source_text_hash": "f9ab28c139642bc593aa3dff51876a9bb1fe047853c5ef341fc3252f2ad2006c",
+      "translation_text_hash": "91255bdf5b420cda9e0abe4984d58f50729569264691a803bd183c4dd381d7a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게하시가 저희의 앞서 가서 지팡이를 그 아이의 얼굴에 놓았으나 소리도 없고 듣는 모양도 없는지라 돌아와서 엘리사를 맞아 가로되 아이가 깨지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "91255bdf5b420cda9e0abe4984d58f50729569264691a803bd183c4dd381d7a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:32",
+      "sequence": 9636,
+      "chapter_label": "2KI 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "When Elisha had come into the house, behold, the child was dead, and lying on his bed.",
+      "ko": "엘리사가 집에 들어가 보니 아이가 죽었는데 자기의 침상에 눕혔는지라",
+      "source_text_hash": "cfa4489f0d1763d93bb8906765eada4eb1da14279bac96ca7080f763e5f8c079",
+      "translation_text_hash": "a5a452d693e78d0ed598f4183b2c7a12ee81250952d00f80ad5a2675c9b634d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 집에 들어가 보니 아이가 죽었는데 자기의 침상에 눕혔는지라"
+      ],
+      "raw_text_hashes": [
+        "a5a452d693e78d0ed598f4183b2c7a12ee81250952d00f80ad5a2675c9b634d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:33",
+      "sequence": 9637,
+      "chapter_label": "2KI 4",
+      "verse_label": "33",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 33
+        }
+      ],
+      "en": "He went in therefore, and shut the door on them both, and prayed to the LORD.",
+      "ko": "들어가서는 문을 닫으니 두 사람 뿐이라 엘리사가 여호와께 기도하고",
+      "source_text_hash": "486ed3acc4fa22773e43672f4db6fac4388126c489de5d60f1731d63410cbd85",
+      "translation_text_hash": "87010241eec2cb4526c7575ae32b9d99b3727819c61895db41049cec327dc782",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가서는 문을 닫으니 두 사람 뿐이라 엘리사가 여호와께 기도하고"
+      ],
+      "raw_text_hashes": [
+        "87010241eec2cb4526c7575ae32b9d99b3727819c61895db41049cec327dc782"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:34",
+      "sequence": 9638,
+      "chapter_label": "2KI 4",
+      "verse_label": "34",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 34
+        }
+      ],
+      "en": "He went up and lay on the child, and put his mouth on his mouth, and his eyes on his eyes, and his hands on his hands. He stretched himself on him; and the child’s flesh grew warm.",
+      "ko": "아이의 위에 올라 엎드려 자기 입을 그 입에, 자기 눈을 그 눈에, 자기 손을 그 손에 대고 그 몸에 엎드리니 아이의 살이 차차 따뜻하더라",
+      "source_text_hash": "22a27e2297c9f356ee704c527b9972bcd05d010e98db5ffea25515dfa4960259",
+      "translation_text_hash": "b9e19fa26004d9e2c45d7032b037dc46f23cb199106d171263e51781f412254a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이의 위에 올라 엎드려 자기 입을 그 입에, 자기 눈을 그 눈에, 자기 손을 그 손에 대고 그 몸에 엎드리니 아이의 살이 차차 따뜻하더라"
+      ],
+      "raw_text_hashes": [
+        "b9e19fa26004d9e2c45d7032b037dc46f23cb199106d171263e51781f412254a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:35",
+      "sequence": 9639,
+      "chapter_label": "2KI 4",
+      "verse_label": "35",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 35
+        }
+      ],
+      "en": "Then he returned, and walked in the house once back and forth, then went up and stretched himself out on him. Then the child sneezed seven times, and the child opened his eyes.",
+      "ko": "엘리사가 내려서 집 안에서 한번 이리 저리 다니고 다시 아이 위에 올라 엎드리니 아이가 일곱번 재채기 하고 눈을 뜨는지라",
+      "source_text_hash": "e063dcf54cd2b1f1455f0f732124b1aad68cd7d616243267f5c3805776032482",
+      "translation_text_hash": "9f4299c725c307329b3048338e100bab7ad0de192e23f4890bcc21ee3c2ff717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 내려서 집 안에서 한번 이리 저리 다니고 다시 아이 위에 올라 엎드리니 아이가 일곱번 재채기 하고 눈을 뜨는지라"
+      ],
+      "raw_text_hashes": [
+        "9f4299c725c307329b3048338e100bab7ad0de192e23f4890bcc21ee3c2ff717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:36",
+      "sequence": 9640,
+      "chapter_label": "2KI 4",
+      "verse_label": "36",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 36
+        }
+      ],
+      "en": "He called Gehazi, and said, “Call this Shunammite!” So he called her. When she had come in to him, he said, “Take up your son.”",
+      "ko": "엘리사가 게하시를 불러서 저 수넴 여인을 불러오라 하니 곧 부르매 여인이 들어가니 엘리사가 가로되 네 아들을 취하라",
+      "source_text_hash": "fd76da97dfca670ae3b189b6fa0e8dd5c4387640a1cdaa6c26a35660c8413f5b",
+      "translation_text_hash": "e7b2c0e07bd3dde11e2fcd788ae383e07cf1c1a133cf6d51871155418e00396e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 게하시를 불러서 저 수넴 여인을 불러오라 하니 곧 부르매 여인이 들어가니 엘리사가 가로되 네 아들을 취하라"
+      ],
+      "raw_text_hashes": [
+        "e7b2c0e07bd3dde11e2fcd788ae383e07cf1c1a133cf6d51871155418e00396e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:37",
+      "sequence": 9641,
+      "chapter_label": "2KI 4",
+      "verse_label": "37",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 37
+        }
+      ],
+      "en": "Then she went in, fell at his feet, and bowed herself to the ground; then she picked up her son, and went out.",
+      "ko": "여인이 들어가서 엘리사의 발 앞에서 땅에 엎드려 절하고 아들을 안고 나가니라",
+      "source_text_hash": "94702f0ebe5aebac2a1291c6b39d92a31d051c6a5d19f6fdf98e211095efbca0",
+      "translation_text_hash": "b9d72a38ac90444ec4eecdbf82e065483d62ade352dddc719b4223d817dac4be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여인이 들어가서 엘리사의 발 앞에서 땅에 엎드려 절하고 아들을 안고 나가니라"
+      ],
+      "raw_text_hashes": [
+        "b9d72a38ac90444ec4eecdbf82e065483d62ade352dddc719b4223d817dac4be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:38",
+      "sequence": 9642,
+      "chapter_label": "2KI 4",
+      "verse_label": "38",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 38
+        }
+      ],
+      "en": "Elisha came again to Gilgal. There was a famine in the land; and the sons of the prophets were sitting before him; and he said to his servant, “Get the large pot, and boil stew for the sons of the prophets.”",
+      "ko": "엘리사가 다시 길갈에 이르니 그 땅에 흉년이 들었는데 선지자의 생도가 엘리사의 앞에 앉은지라 엘리사가 자기 사환에게 이르되 큰 솥을 걸고 선지자의 생도들을 위하여 국을 끓이라 하매",
+      "source_text_hash": "cf1ae00fbb718e6b0885fc6587027d8d12f4ef9cac8b9754015d4e3cd2d1c276",
+      "translation_text_hash": "65fd5df77bb9ca8327dab8186836e926e7642bf4820ec7a29bc88c5d629476bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 다시 길갈에 이르니 그 땅에 흉년이 들었는데 선지자의 생도가 엘리사의 앞에 앉은지라 엘리사가 자기 사환에게 이르되 큰 솥을 걸고 선지자의 생도들을 위하여 국을 끓이라 하매"
+      ],
+      "raw_text_hashes": [
+        "65fd5df77bb9ca8327dab8186836e926e7642bf4820ec7a29bc88c5d629476bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:39",
+      "sequence": 9643,
+      "chapter_label": "2KI 4",
+      "verse_label": "39",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 39
+        }
+      ],
+      "en": "One went out into the field to gather herbs, and found a wild vine, and gathered a lap full of wild gourds from it, and came and cut them up into the pot of stew; for they didn’t recognize them.",
+      "ko": "한 사람이 채소를 캐러 들에 나가서 야등덩굴을 만나 그것에서 들 외를 따서 옷자락에 채워가지고 돌아와서 썰어 국 끓이는 솥에 넣되 저희는 무엇인지 알지 못한지라",
+      "source_text_hash": "74be994480762c4b89664577112e9a98ae73eaf451ae6bf23b92be405fc07004",
+      "translation_text_hash": "99782b7cf5a12b186af2904df4e3a3cc2e6b60c59bc6d6511366cbb24bc5fcee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 채소를 캐러 들에 나가서 야등덩굴을 만나 그것에서 들 외를 따서 옷자락에 채워가지고 돌아와서 썰어 국 끓이는 솥에 넣되 저희는 무엇인지 알지 못한지라"
+      ],
+      "raw_text_hashes": [
+        "99782b7cf5a12b186af2904df4e3a3cc2e6b60c59bc6d6511366cbb24bc5fcee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:40",
+      "sequence": 9644,
+      "chapter_label": "2KI 4",
+      "verse_label": "40",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 40
+        }
+      ],
+      "en": "So they poured out for the men to eat. As they were eating some of the stew, they cried out and said, “Man of God, there is death in the pot!” And they could not eat it.",
+      "ko": "이에 퍼다가 무리에게 주어 먹게 하였더니 무리가 국을 먹다가 외쳐 가로되 하나님의 사람이여 솥에 사망의 독이 있나이다 하고 능히 먹지 못하는지라",
+      "source_text_hash": "1ddfe60963729971d1f62ee2abe57579f4c834ca5188a9652d55be54e9f0dffd",
+      "translation_text_hash": "86b95e92f4f73b7e8d1044d0a27edcf3f6a2e5e0e11f7b4bc2aa0e4887f96463",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 퍼다가 무리에게 주어 먹게 하였더니 무리가 국을 먹다가 외쳐 가로되 하나님의 사람이여 솥에 사망의 독이 있나이다 하고 능히 먹지 못하는지라"
+      ],
+      "raw_text_hashes": [
+        "86b95e92f4f73b7e8d1044d0a27edcf3f6a2e5e0e11f7b4bc2aa0e4887f96463"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:41",
+      "sequence": 9645,
+      "chapter_label": "2KI 4",
+      "verse_label": "41",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 41
+        }
+      ],
+      "en": "But he said, “Then bring meal.” He threw it into the pot; and he said, “Serve it to the people, that they may eat.” And there was nothing harmful in the pot.",
+      "ko": "엘리사가 가로되 그러면 가루를 가져오라 하여 솥에 던지고 가로되 퍼다가 무리에게 주어 먹게 하라 하매 이에 솥 가운데 해독이 없어지니라",
+      "source_text_hash": "10055483deab62a7e075ada228a95bd1cdca37501635b8e4f472a23637a58124",
+      "translation_text_hash": "c0a182232cba51959e300d9ae1f9eb3a269e5240f7a19dc3637b72f00f04ce06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리사가 가로되 그러면 가루를 가져오라 하여 솥에 던지고 가로되 퍼다가 무리에게 주어 먹게 하라 하매 이에 솥 가운데 해독이 없어지니라"
+      ],
+      "raw_text_hashes": [
+        "c0a182232cba51959e300d9ae1f9eb3a269e5240f7a19dc3637b72f00f04ce06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:42",
+      "sequence": 9646,
+      "chapter_label": "2KI 4",
+      "verse_label": "42",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 42
+        }
+      ],
+      "en": "A man from Baal Shalishah came, and brought the man of God some bread of the first fruits: twenty loaves of barley and fresh ears of grain in his sack. Elisha said, “Give to the people, that they may eat.”",
+      "ko": "한 사람이 바알살리사에서부터 와서 처음 익은 식물 곧 보리떡 이십과 또 자루에 담은 채소를 하나님의 사람에게 드린지라 저가 가로되 무리에게 주어 먹게 하라",
+      "source_text_hash": "f5c71c80e77ea3a80ad43e8919806635994f681431be8caafa2db83689c62fda",
+      "translation_text_hash": "eab2316ef91079558828fd97fe946012048aff169df0d5cef12a6e454ce492a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 바알살리사에서부터 와서 처음 익은 식물 곧 보리떡 이십과 또 자루에 담은 채소를 하나님의 사람에게 드린지라 저가 가로되 무리에게 주어 먹게 하라"
+      ],
+      "raw_text_hashes": [
+        "eab2316ef91079558828fd97fe946012048aff169df0d5cef12a6e454ce492a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:43",
+      "sequence": 9647,
+      "chapter_label": "2KI 4",
+      "verse_label": "43",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 43
+        }
+      ],
+      "en": "His servant said, “What, should I set this before a hundred men?” But he said, “Give it to the people, that they may eat; for the LORD says, ‘They will eat, and will have some left over.’”",
+      "ko": "그 사환이 가로되 어찜이니이까 이것을 일백명에게 베풀겠나이까 하나 엘리사는 또 가로되 무리에게 주어 먹게 하라 여호와의 말씀이 무리가 먹고 남으리라 하셨느니라",
+      "source_text_hash": "cb4decaab1759e8f951027ccef00d0b34e3312b294e8ca7ed81c5feea2949ab7",
+      "translation_text_hash": "f405b12944142a3bc14f347396b78f69526bbdabb322fad51c70017d7da1c37d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사환이 가로되 어찜이니이까 이것을 일백명에게 베풀겠나이까 하나 엘리사는 또 가로되 무리에게 주어 먹게 하라 여호와의 말씀이 무리가 먹고 남으리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "f405b12944142a3bc14f347396b78f69526bbdabb322fad51c70017d7da1c37d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:4:44",
+      "sequence": 9648,
+      "chapter_label": "2KI 4",
+      "verse_label": "44",
+      "locator": {
+        "book": "2KI",
+        "chapter": 4,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 4,
+          "verse": 44
+        }
+      ],
+      "en": "So he set it before them and they ate and had some left over, according to the LORD’s word.",
+      "ko": "저가 드디어 무리 앞에 베풀었더니 여호와의 말씀과 같이 다 먹고 남았더라",
+      "source_text_hash": "9000f605ef2594eced47bdd131b9a590f85a826de6ab655289db1d32902c058f",
+      "translation_text_hash": "af911f49f2bf5241ff9a56c88416a16b79d885ed0cbb3ac50dd382ed42769766",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 드디어 무리 앞에 베풀었더니 여호와의 말씀과 같이 다 먹고 남았더라"
+      ],
+      "raw_text_hashes": [
+        "af911f49f2bf5241ff9a56c88416a16b79d885ed0cbb3ac50dd382ed42769766"
+      ]
+    }
+  ]
+}

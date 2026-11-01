@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:007",
+  "unit_ordinal": 1174,
+  "unit_label": "REV 7",
+  "book_code": "REV",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:7:1",
+      "sequence": 30808,
+      "chapter_label": "REV 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "After this, I saw four angels standing at the four corners of the earth, holding the four winds of the earth, so that no wind would blow on the earth, or on the sea, or on any tree.",
+      "ko": "이 일 후에 내가 네 천사가 땅 네 모퉁이에 선 것을 보니 땅의 사방의 바람을 붙잡아 바람으로 하여금 땅에나 바다에나 각종 나무에 불지 못하게 하더라",
+      "source_text_hash": "06b7e0f82f8ea01f713c14d4923acc88213ca0ceb1f61c992adce02a804164fa",
+      "translation_text_hash": "613fb105c9c2499b3ccbb368b60e2831638bf722e3ecb83ccec91bc9b5baee82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 내가 네 천사가 땅 네 모퉁이에 선 것을 보니 땅의 사방의 바람을 붙잡아 바람으로 하여금 땅에나 바다에나 각종 나무에 불지 못하게 하더라"
+      ],
+      "raw_text_hashes": [
+        "613fb105c9c2499b3ccbb368b60e2831638bf722e3ecb83ccec91bc9b5baee82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:2",
+      "sequence": 30809,
+      "chapter_label": "REV 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "I saw another angel ascend from the sunrise, having the seal of the living God. He cried with a loud voice to the four angels to whom it was given to harm the earth and the sea,",
+      "ko": "또 보매 다른 천사가 살아계신 하나님의 인을 가지고 해 돋는 데로부터 올라와서 땅과 바다를 해롭게 할 권세를 얻은 네 천사를 향하여 큰 소리로 외쳐",
+      "source_text_hash": "9e5ef5822672cb634fc4bd5ff2f5e28631878dbcfcc79a5a16271cbc6f07118b",
+      "translation_text_hash": "16f54a815dd8662a137c3e500367557b55a7cb6e8e0838e8a60c655702da2322",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 보매 다른 천사가 살아계신 하나님의 인을 가지고 해 돋는 데로부터 올라와서 땅과 바다를 해롭게 할 권세를 얻은 네 천사를 향하여 큰 소리로 외쳐"
+      ],
+      "raw_text_hashes": [
+        "16f54a815dd8662a137c3e500367557b55a7cb6e8e0838e8a60c655702da2322"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:3",
+      "sequence": 30810,
+      "chapter_label": "REV 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "saying, “Don’t harm the earth, the sea, or the trees, until we have sealed the bondservants of our God on their foreheads!”",
+      "ko": "가로되 우리가 우리 하나님의 종들의 이마에 인치기까지 땅이나 바다나 나무나 해하지 말라 하더라",
+      "source_text_hash": "5916883f7a0ac07837fa303777beffad37cf36925c910f98b447725e7834bc69",
+      "translation_text_hash": "4c2e411c0aa7f83bff1c4c1dc3d9cadeda63ef2d02aec6bf3bf3355bceb2838e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 우리가 우리 하나님의 종들의 이마에 인치기까지 땅이나 바다나 나무나 해하지 말라 하더라"
+      ],
+      "raw_text_hashes": [
+        "4c2e411c0aa7f83bff1c4c1dc3d9cadeda63ef2d02aec6bf3bf3355bceb2838e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:4",
+      "sequence": 30811,
+      "chapter_label": "REV 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "I heard the number of those who were sealed, one hundred forty-four thousand, sealed out of every tribe of the children of Israel:",
+      "ko": "내가 인맞은 자의 수를 들으니 이스라엘 자손의 각 지파 중에서 인맞은 자들이 십 사만 사천이니",
+      "source_text_hash": "c1f28917ab119c7827783e11f80abc0c2703de9de10dd7b26a7b1b6176ca7879",
+      "translation_text_hash": "856e56306a8758be4b0f2d9882d5c351bfa35d1f7b728793120b6d3446530490",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 인맞은 자의 수를 들으니 이스라엘 자손의 각 지파 중에서 인맞은 자들이 십 사만 사천이니"
+      ],
+      "raw_text_hashes": [
+        "856e56306a8758be4b0f2d9882d5c351bfa35d1f7b728793120b6d3446530490"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:5",
+      "sequence": 30812,
+      "chapter_label": "REV 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "of the tribe of Judah twelve thousand were sealed, of the tribe of Reuben twelve thousand, of the tribe of Gad twelve thousand,",
+      "ko": "유다 지파 중에 인맞은 자가 일만 이천이요 르우벤 지파 중에 일만 이천이요 갓 지파 중에 일만 이천이요",
+      "source_text_hash": "41329ed5b56ac7023d5d2d4e71cbed28343a48d96d5d2d5d357bebbc8b7c424b",
+      "translation_text_hash": "5fd4b7532a05e02b557959f621cda2c575743f58bba4ee960edb1a004fbc07a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 지파 중에 인맞은 자가 일만 이천이요 르우벤 지파 중에 일만 이천이요 갓 지파 중에 일만 이천이요"
+      ],
+      "raw_text_hashes": [
+        "5fd4b7532a05e02b557959f621cda2c575743f58bba4ee960edb1a004fbc07a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:6",
+      "sequence": 30813,
+      "chapter_label": "REV 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "of the tribe of Asher twelve thousand, of the tribe of Naphtali twelve thousand, of the tribe of Manasseh twelve thousand,",
+      "ko": "아셀 지파 중에 일만 이천이요 납달리 지파 중에 일만 이천이요 므낫세 지파 중에 일만 이천이요",
+      "source_text_hash": "29ce05029e304ecb5ec219e5b8d1f1d83265321afac4c78e146d8304f99121f7",
+      "translation_text_hash": "6b95bb97f6576e5f51a5d90299ab72e5e14ca6265a5c7db92f341161a57bceaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지파 중에 일만 이천이요 납달리 지파 중에 일만 이천이요 므낫세 지파 중에 일만 이천이요"
+      ],
+      "raw_text_hashes": [
+        "6b95bb97f6576e5f51a5d90299ab72e5e14ca6265a5c7db92f341161a57bceaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:7",
+      "sequence": 30814,
+      "chapter_label": "REV 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "of the tribe of Simeon twelve thousand, of the tribe of Levi twelve thousand, of the tribe of Issachar twelve thousand,",
+      "ko": "시므온 지파 중에 일만 이천이요 레위 지파 중에 일만 이천이요 잇사갈 지파 중에 일만 이천이요",
+      "source_text_hash": "4e400fb2d04eb4dc407a9c513e2af373380304b0b786ff53891c248d86b6f9d0",
+      "translation_text_hash": "c6e8ca49a258a836f889e41f662d99bc69bd26ad6f2ecb89e2ff9acf3abf8714",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시므온 지파 중에 일만 이천이요 레위 지파 중에 일만 이천이요 잇사갈 지파 중에 일만 이천이요"
+      ],
+      "raw_text_hashes": [
+        "c6e8ca49a258a836f889e41f662d99bc69bd26ad6f2ecb89e2ff9acf3abf8714"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:8",
+      "sequence": 30815,
+      "chapter_label": "REV 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "of the tribe of Zebulun twelve thousand, of the tribe of Joseph twelve thousand, and of the tribe of Benjamin twelve thousand were sealed.",
+      "ko": "스불론 지파 중에 일만 이천이요 요셉 지파 중에 일만 이천이요 베냐민 지파 중에 인맞은 자가 일만 이천이라",
+      "source_text_hash": "83238c30b460d8e62542a8046c9c528b222495b205f1b78f804d4b73d7b01cc5",
+      "translation_text_hash": "92b33998f0af3193daf95c9900e5c92c82636f761b819e3fb9159c2865eb4254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스불론 지파 중에 일만 이천이요 요셉 지파 중에 일만 이천이요 베냐민 지파 중에 인맞은 자가 일만 이천이라"
+      ],
+      "raw_text_hashes": [
+        "92b33998f0af3193daf95c9900e5c92c82636f761b819e3fb9159c2865eb4254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:9",
+      "sequence": 30816,
+      "chapter_label": "REV 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "After these things I looked, and behold, a great multitude which no man could count, out of every nation and of all tribes, peoples, and languages, standing before the throne and before the Lamb, dressed in white robes, with palm branches in their hands.",
+      "ko": "이 일 후에 내가 보니 각 나라와 족속과 백성과 방언에서 아무라도 능히 셀 수 없는 큰 무리가 흰 옷을 입고 손에 종려 가지를 들고 보좌 앞과 어린 양 앞에 서서",
+      "source_text_hash": "49e47dfd514581291da00e5162c1d22bbf3ef244a7bf91999b8cf9d9d65d9614",
+      "translation_text_hash": "0718c61f06a6702170163350ed67670ad4a9b2444dc6d4109aa860e19ad16ab3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 내가 보니 각 나라와 족속과 백성과 방언에서 아무라도 능히 셀 수 없는 큰 무리가 흰 옷을 입고 손에 종려 가지를 들고 보좌 앞과 어린 양 앞에 서서"
+      ],
+      "raw_text_hashes": [
+        "0718c61f06a6702170163350ed67670ad4a9b2444dc6d4109aa860e19ad16ab3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:10",
+      "sequence": 30817,
+      "chapter_label": "REV 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "They cried with a loud voice, saying, “Salvation be to our God, who sits on the throne, and to the Lamb!”",
+      "ko": "큰 소리로 외쳐 가로되 구원하심이 보좌에 앉으신 우리 하나님과 어린 양에게 있도다 하니",
+      "source_text_hash": "f69c930ecbeda0ca968f1c6c1523da149b9a63c93076390c547ab03a99f00689",
+      "translation_text_hash": "feae84366fba7e1645f88cbd7ff7dc847ca994e6339379b415cf2a6d95ec9c5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리로 외쳐 가로되 구원하심이 보좌에 앉으신 우리 하나님과 어린 양에게 있도다 하니"
+      ],
+      "raw_text_hashes": [
+        "feae84366fba7e1645f88cbd7ff7dc847ca994e6339379b415cf2a6d95ec9c5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:11",
+      "sequence": 30818,
+      "chapter_label": "REV 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "All the angels were standing around the throne, the elders, and the four living creatures; and they fell on their faces before his throne, and worshiped God,",
+      "ko": "모든 천사가 보좌와 장로들과 네 생물의 주위에 섰다가 보좌 앞에 엎드려 얼굴을 대고 하나님께 경배하여",
+      "source_text_hash": "082bbe5db2c5afdc955c3c4bdf058025920cca7d77c08bab7de9346a8b24c1de",
+      "translation_text_hash": "66cce16c14ee54664b24314808bf5248205bc2b1181a188c95f8c62bf49b1095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 천사가 보좌와 장로들과 네 생물의 주위에 섰다가 보좌 앞에 엎드려 얼굴을 대고 하나님께 경배하여"
+      ],
+      "raw_text_hashes": [
+        "66cce16c14ee54664b24314808bf5248205bc2b1181a188c95f8c62bf49b1095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:12",
+      "sequence": 30819,
+      "chapter_label": "REV 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "saying, “Amen! Blessing, glory, wisdom, thanksgiving, honor, power, and might, be to our God forever and ever! Amen.”",
+      "ko": "가로되 아멘 찬송과 영광과 지혜와 감사와 존귀와 능력과 힘이 우리 하나님께 세세토록 있을찌로다 아멘 하더라",
+      "source_text_hash": "d492201d9ebb7f0bf617e3ccf882d70c4f373ead964a0b2939758c2d7839cb30",
+      "translation_text_hash": "61a1b23f44cc47816c7fe76c66c495f0460de501a740d8ac94f2ae32c36db8bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 아멘 찬송과 영광과 지혜와 감사와 존귀와 능력과 힘이 우리 하나님께 세세토록 있을찌로다 아멘 하더라"
+      ],
+      "raw_text_hashes": [
+        "61a1b23f44cc47816c7fe76c66c495f0460de501a740d8ac94f2ae32c36db8bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:13",
+      "sequence": 30820,
+      "chapter_label": "REV 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "One of the elders answered, saying to me, “These who are arrayed in the white robes, who are they, and where did they come from?”",
+      "ko": "장로 중에 하나가 응답하여 내게 이르되 이 흰옷 입은 자들이 누구며 또 어디서 왔느뇨",
+      "source_text_hash": "9f6f75c19f945ea7b24c9c32a7c59d073f4dfd458d016e927c91126257f975b6",
+      "translation_text_hash": "fa3e21be2b9544eb46cd7f30fcd5bd7fc7f95fc3555a6b00008470a906719b08",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "장로 중에 하나가 응답하여 내게 이르되 이 흰옷 입은 자들이 누구며 또 어디서 왔느뇨"
+      ],
+      "raw_text_hashes": [
+        "fa3e21be2b9544eb46cd7f30fcd5bd7fc7f95fc3555a6b00008470a906719b08"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:14",
+      "sequence": 30821,
+      "chapter_label": "REV 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "I told him, “My lord, you know.” He said to me, “These are those who came out of the great suffering. They washed their robes and made them white in the Lamb’s blood.",
+      "ko": "내가 가로되 내 주여 당신이 알리이다 하니 그가 나더러 이르되 이는 큰 환난에서 나오는 자들인데 어린양의 피에 그 옷을 씻어 희게 하였느니라",
+      "source_text_hash": "1c7231554364878f7bc672ebc553b928d04aaff675cfa35821bddb3ed623e69e",
+      "translation_text_hash": "a16915e6728cbca4a34f38ab52332185d8376767b44e4edbf5ec12a61d45cba2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 내 주여 당신이 알리이다 하니 그가 나더러 이르되 이는 큰 환난에서 나오는 자들인데 어린양의 피에 그 옷을 씻어 희게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a16915e6728cbca4a34f38ab52332185d8376767b44e4edbf5ec12a61d45cba2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:15",
+      "sequence": 30822,
+      "chapter_label": "REV 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore they are before the throne of God, and they serve him day and night in his temple. He who sits on the throne will spread his tabernacle over them.",
+      "ko": "그러므로 그들이 하나님의 보좌 앞에 있고 또 그의 성전에서 밤낮 하나님을 섬기매 보좌에 앉으신 이가 그들 위에 장막을 치시리니",
+      "source_text_hash": "dbdb4baba33a497d699917f596feb2ca3ab46d07d820a303e123d751a64438bc",
+      "translation_text_hash": "76cf31506c92dbb70f44edf8550d40b6e50a795bcb8cb30887d9c106a75ea21a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그들이 하나님의 보좌 앞에 있고 또 그의 성전에서 밤낮 하나님을 섬기매 보좌에 앉으신 이가 그들 위에 장막을 치시리니"
+      ],
+      "raw_text_hashes": [
+        "76cf31506c92dbb70f44edf8550d40b6e50a795bcb8cb30887d9c106a75ea21a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:16",
+      "sequence": 30823,
+      "chapter_label": "REV 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "They will never be hungry or thirsty any more. The sun won’t beat on them, nor any heat;",
+      "ko": "저희가 다시 주리지도 아니하며 목마르지도 아니하고 해나 아무 뜨거운 기운에 상하지 아니할찌니",
+      "source_text_hash": "3d83ecb529f116149126bb44f92adde7800042ef05b3b875d15741bb64788989",
+      "translation_text_hash": "38ce91fdb847e274feb68f7d5a5660a472fbe4c79b756ff45937645a8a2be1d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다시 주리지도 아니하며 목마르지도 아니하고 해나 아무 뜨거운 기운에 상하지 아니할찌니"
+      ],
+      "raw_text_hashes": [
+        "38ce91fdb847e274feb68f7d5a5660a472fbe4c79b756ff45937645a8a2be1d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:7:17",
+      "sequence": 30824,
+      "chapter_label": "REV 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "for the Lamb who is in the middle of the throne shepherds them and leads them to springs of life-giving waters. And God will wipe away every tear from their eyes.”",
+      "ko": "이는 보좌 가운데 계신 어린 양이 저희의 목자가 되사 생명수 샘으로 인도하시고 하나님께서 저희 눈에서 모든 눈물을 씻어 주실 것임이러라",
+      "source_text_hash": "cd91591d485076d6aaf14d54e378ce849adb2f625f5e2764a5290a27af0b223d",
+      "translation_text_hash": "79688518c48f96b27a1758db433c6a1b2b50ab608740e3601a4966894f26be37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 보좌 가운데 계신 어린 양이 저희의 목자가 되사 생명수 샘으로 인도하시고 하나님께서 저희 눈에서 모든 눈물을 씻어 주실 것임이러라"
+      ],
+      "raw_text_hashes": [
+        "79688518c48f96b27a1758db433c6a1b2b50ab608740e3601a4966894f26be37"
+      ]
+    }
+  ]
+}

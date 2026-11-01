@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:016",
+  "unit_ordinal": 989,
+  "unit_label": "LUK 16",
+  "book_code": "LUK",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:16:1",
+      "sequence": 25622,
+      "chapter_label": "LUK 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "He also said to his disciples, “There was a certain rich man who had a manager. An accusation was made to him that this man was wasting his possessions.",
+      "ko": "또한 제자들에게 이르시되 어떤 부자에게 청지기가 있는데 그가 주인의 소유를 허비한다는 말이 그 주인에게 들린지라",
+      "source_text_hash": "c510ca2ab52773b299ea89e05d535616a13f37a28fbde92a1888d738c164a2ec",
+      "translation_text_hash": "0442bdb7883669647c17857dafb19759374cfa983c2d1f3a34460fd0b9533a2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또한 제자들에게 이르시되 어떤 부자에게 청지기가 있는데 그가 주인의 소유를 허비한다는 말이 그 주인에게 들린지라"
+      ],
+      "raw_text_hashes": [
+        "0442bdb7883669647c17857dafb19759374cfa983c2d1f3a34460fd0b9533a2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:2",
+      "sequence": 25623,
+      "chapter_label": "LUK 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "He called him, and said to him, ‘What is this that I hear about you? Give an accounting of your management, for you can no longer be manager.’",
+      "ko": "주인이 저를 불러 가로되 내가 네게 대하여 들은 이 말이 어찜이뇨 네 보던 일을 셈하라 청지기 사무를 계속하지 못하리라 하니",
+      "source_text_hash": "19452a8f5dc770e6c1026e83bbc8cd2e6e5ec9d817b48e1d18d5554527b1a19c",
+      "translation_text_hash": "49fafd197dc7b127a6c3eb754742a0ef69cd61c586ea8c381575ed082abdd0db",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 저를 불러 가로되 내가 네게 대하여 들은 이 말이 어찜이뇨 네 보던 일을 셈하라 청지기 사무를 계속하지 못하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "49fafd197dc7b127a6c3eb754742a0ef69cd61c586ea8c381575ed082abdd0db"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:3",
+      "sequence": 25624,
+      "chapter_label": "LUK 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "“The manager said within himself, ‘What will I do, seeing that my lord is taking away the management position from me? I don’t have strength to dig. I am ashamed to beg.",
+      "ko": "청지기가 속으로 이르되 주인이 내 직분을 빼앗으니 내가 무엇을 할꼬 땅을 파자니 힘이 없고 빌어 먹자니 부끄럽구나",
+      "source_text_hash": "170f38ec7ef82f70be9f540720fdd2934a503ddb7f0f423d0b22c4cdbb3076e9",
+      "translation_text_hash": "8d7c93245e594d2d511996f5c43e201599c807f6fd008a9d78be63886f6a31c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청지기가 속으로 이르되 주인이 내 직분을 빼앗으니 내가 무엇을 할꼬 땅을 파자니 힘이 없고 빌어 먹자니 부끄럽구나"
+      ],
+      "raw_text_hashes": [
+        "8d7c93245e594d2d511996f5c43e201599c807f6fd008a9d78be63886f6a31c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:4",
+      "sequence": 25625,
+      "chapter_label": "LUK 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "I know what I will do, so that when I am removed from management, they may receive me into their houses.’",
+      "ko": "내가 할 일을 알았도다 이렇게 하면 직분을 빼앗긴 후에 저희가 나를 자기 집으로 영접하리라 하고",
+      "source_text_hash": "f1a61d4a5f0a378606fe6c9f5842eb8abc438dc4e341d5169cd0399e95b2966f",
+      "translation_text_hash": "2cf3f4b4a4d45f05f75978a59412d94ca48a338536947593b241612daa250449",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 할 일을 알았도다 이렇게 하면 직분을 빼앗긴 후에 저희가 나를 자기 집으로 영접하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "2cf3f4b4a4d45f05f75978a59412d94ca48a338536947593b241612daa250449"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:5",
+      "sequence": 25626,
+      "chapter_label": "LUK 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Calling each one of his lord’s debtors to him, he said to the first, ‘How much do you owe to my lord?’",
+      "ko": "주인에게 빚진 자를 낱낱이 불러다가 먼저 온 자에게 이르되 네가 내 주인에게 얼마나 졌느뇨",
+      "source_text_hash": "da67248dbe4aa4e97c6c9f3228f0a161750c7e78fa2af382917573d475035594",
+      "translation_text_hash": "7886efc2f86a4905b15cd7a6723a975c8e1c83cd6333721e645105fe0055cb2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인에게 빚진 자를 낱낱이 불러다가 먼저 온 자에게 이르되 네가 내 주인에게 얼마나 졌느뇨"
+      ],
+      "raw_text_hashes": [
+        "7886efc2f86a4905b15cd7a6723a975c8e1c83cd6333721e645105fe0055cb2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:6",
+      "sequence": 25627,
+      "chapter_label": "LUK 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "He said, ‘A hundred batosof oil.’ He said to him, ‘Take your bill, and sit down quickly and write fifty.’",
+      "ko": "말하되 기름 백 말이니이다 가로되 여기 네 증서를 가지고 빨리 앉아 오십이라 쓰라 하고",
+      "source_text_hash": "6e65cf09c8cb32a32d2de5dc2621d874fb54f4f7a9acd3d01e582926692958a6",
+      "translation_text_hash": "d0dfc23a9b3159bf9855dde3eaa0de951ffcefbd62a11198268dca324c27a4bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 기름 백 말이니이다 가로되 여기 네 증서를 가지고 빨리 앉아 오십이라 쓰라 하고"
+      ],
+      "raw_text_hashes": [
+        "d0dfc23a9b3159bf9855dde3eaa0de951ffcefbd62a11198268dca324c27a4bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:7",
+      "sequence": 25628,
+      "chapter_label": "LUK 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "Then he said to another, ‘How much do you owe?’ He said, ‘A hundred corsof wheat.’ He said to him, ‘Take your bill, and write eighty.’",
+      "ko": "또 다른이에게 이르되 너는 얼마나 졌느뇨 가로되 밀 백 석이니이다 이르되 여기 네 증서를 가지고 팔십이라 쓰라 하였는지라",
+      "source_text_hash": "09933fe15f0c2965827e5687905306f084d4fd3b960e96bb9a0006362489f080",
+      "translation_text_hash": "90e58fac5d4d07704d2927ba12628429179b264a3b0487f7be024e57a7da2eec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른이에게 이르되 너는 얼마나 졌느뇨 가로되 밀 백 석이니이다 이르되 여기 네 증서를 가지고 팔십이라 쓰라 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "90e58fac5d4d07704d2927ba12628429179b264a3b0487f7be024e57a7da2eec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:8",
+      "sequence": 25629,
+      "chapter_label": "LUK 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "“His lord commended the dishonest manager because he had done wisely, for the children of this world are, in their own generation, wiser than the children of the light.",
+      "ko": "주인이 이 옳지 않은 청지기가 일을 지혜 있게 하였으므로 칭찬하였으니 이 세대의 아들들이 자기 시대에 있어서는 빛의 아들들보다 더 지혜로움이니라",
+      "source_text_hash": "f78e370bcb7715ead0bdc00829500f4345826f2b1538649f231c53fb5212a19d",
+      "translation_text_hash": "3a0d43916fdb485cb65bf955527b2d729ffc6465810cfae593575c6d1374bcc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 이 옳지 않은 청지기가 일을 지혜 있게 하였으므로 칭찬하였으니 이 세대의 아들들이 자기 시대에 있어서는 빛의 아들들보다 더 지혜로움이니라"
+      ],
+      "raw_text_hashes": [
+        "3a0d43916fdb485cb65bf955527b2d729ffc6465810cfae593575c6d1374bcc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:9",
+      "sequence": 25630,
+      "chapter_label": "LUK 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "I tell you, make for yourselves friends by means of unrighteous mammon, so that when you fail, they may receive you into the eternal tents.",
+      "ko": "내가 너희에게 말하노니 불의의 재물로 친구를 사귀라 그리하면 없어질 때에 저희가 영원한 처소로 너희를 영접하리라",
+      "source_text_hash": "8b5aa82fe6b7c506f2fcec438e3d39185aa4c77fa8a678f39ef3b3e3705d60af",
+      "translation_text_hash": "3434f00f102c3863e53a2f545203f80a583c9f79b93e6361457d3ee947220823",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희에게 말하노니 불의의 재물로 친구를 사귀라 그리하면 없어질 때에 저희가 영원한 처소로 너희를 영접하리라"
+      ],
+      "raw_text_hashes": [
+        "3434f00f102c3863e53a2f545203f80a583c9f79b93e6361457d3ee947220823"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:10",
+      "sequence": 25631,
+      "chapter_label": "LUK 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "He who is faithful in a very little is faithful also in much. He who is dishonest in a very little is also dishonest in much.",
+      "ko": "지극히 작은 것에 충성된 자는 큰 것에도 충성되고 지극히 작은 것에 불의한 자는 큰 것에도 불의하니라",
+      "source_text_hash": "e141e90f3dadf61a73e8b771ede893ea564eee2a998766597eb9512a752b35e9",
+      "translation_text_hash": "ac74467609a1c506f94e9f25a8febd1507bad7c264cf2fe14cd77cce69951f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 작은 것에 충성된 자는 큰 것에도 충성되고 지극히 작은 것에 불의한 자는 큰 것에도 불의하니라"
+      ],
+      "raw_text_hashes": [
+        "ac74467609a1c506f94e9f25a8febd1507bad7c264cf2fe14cd77cce69951f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:11",
+      "sequence": 25632,
+      "chapter_label": "LUK 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "If therefore you have not been faithful in the unrighteous mammon, who will commit to your trust the true riches?",
+      "ko": "너희가 만일 불의한 재물에 충성치 아니하면 누가 참된 것으로 너희에게 맡기겠느냐",
+      "source_text_hash": "881ad6068340d0f1247241cd18e38800c179bc11d5c5bf7ac00fd0bb8af702a1",
+      "translation_text_hash": "3267a0dd83c29923e2e312d75b135d5ae0be6046640fc02ab29b8c27dd228b95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 불의한 재물에 충성치 아니하면 누가 참된 것으로 너희에게 맡기겠느냐"
+      ],
+      "raw_text_hashes": [
+        "3267a0dd83c29923e2e312d75b135d5ae0be6046640fc02ab29b8c27dd228b95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:12",
+      "sequence": 25633,
+      "chapter_label": "LUK 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "If you have not been faithful in that which is another’s, who will give you that which is your own?",
+      "ko": "너희가 만일 남의 것에 충성치 아니하면 누가 너희의 것을 너희에게 주겠느냐",
+      "source_text_hash": "f35cc17fe7eada684881a286afe9f7f1217d73aae6e22f4399c9412602c58f8c",
+      "translation_text_hash": "5ba02dbeceb81375e80614758473c39208f94b124572677c66c4f89e59cdc2f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 남의 것에 충성치 아니하면 누가 너희의 것을 너희에게 주겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5ba02dbeceb81375e80614758473c39208f94b124572677c66c4f89e59cdc2f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:13",
+      "sequence": 25634,
+      "chapter_label": "LUK 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "No servant can serve two masters, for either he will hate the one and love the other; or else he will hold to one and despise the other. You aren’t able to serve God and Mammon.”",
+      "ko": "집 하인이 두 주인을 섬길 수 없나니 혹 이를 미워하고 저를 사랑하거나 혹 이를 중히 여기고 저를 경히 여길 것임이니라 너희가 하나님과 재물을 겸하여 섬길 수 없느니라",
+      "source_text_hash": "0a75b2f6ac87ce382383701bd79ed777afb7b35a0c6b7ca7226e3c8b5e9d13c1",
+      "translation_text_hash": "19462a9985597e25a944579e5fd7bf43d6bc233701d3287b1fea01a43b7c7e62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집 하인이 두 주인을 섬길 수 없나니 혹 이를 미워하고 저를 사랑하거나 혹 이를 중히 여기고 저를 경히 여길 것임이니라 너희가 하나님과 재물을 겸하여 섬길 수 없느니라"
+      ],
+      "raw_text_hashes": [
+        "19462a9985597e25a944579e5fd7bf43d6bc233701d3287b1fea01a43b7c7e62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:14",
+      "sequence": 25635,
+      "chapter_label": "LUK 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "The Pharisees, who were lovers of money, also heard all these things, and they scoffed at him.",
+      "ko": "바리새인들은 돈을 좋아하는 자라 이 모든 것을 듣고 비웃거늘",
+      "source_text_hash": "82c48ba8fc2d6b1bde2d825e0655079ec011e2f3f2d9e9df9b5fc5ae7d2b341c",
+      "translation_text_hash": "9bd84ef2189f1c3db20ad7bedb1858e4a1accf76fd5d47855032416a8782adfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들은 돈을 좋아하는 자라 이 모든 것을 듣고 비웃거늘"
+      ],
+      "raw_text_hashes": [
+        "9bd84ef2189f1c3db20ad7bedb1858e4a1accf76fd5d47855032416a8782adfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:15",
+      "sequence": 25636,
+      "chapter_label": "LUK 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "He said to them, “You are those who justify yourselves in the sight of men, but God knows your hearts. For that which is exalted among men is an abomination in the sight of God.",
+      "ko": "예수께서 이르시되 너희는 사람 앞에서 스스로 옳다 하는 자이나 너희 마음을 하나님께서 아시나니 사람 중에 높임을 받는 그것은 하나님 앞에 미움을 받는 것이니라",
+      "source_text_hash": "a60c4fa4c9b5beec1339ca9c7a81c5327c6def7f49f2f614ab68efc2fad901af",
+      "translation_text_hash": "98d092cf605f347ea3451a092a418a7bfff3c4e8b22c7208e4e201cdb7b16bf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이르시되 너희는 사람 앞에서 스스로 옳다 하는 자이나 너희 마음을 하나님께서 아시나니 사람 중에 높임을 받는 그것은 하나님 앞에 미움을 받는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "98d092cf605f347ea3451a092a418a7bfff3c4e8b22c7208e4e201cdb7b16bf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:16",
+      "sequence": 25637,
+      "chapter_label": "LUK 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "“The law and the prophets were until John. From that time the Good News of God’s Kingdom is preached, and everyone is forcing his way into it.",
+      "ko": "율법과 선지자는 요한의 때까지요 그 후부터는 하나님 나라의 복음이 전파되어 사람마다 그리로 침입하느니라",
+      "source_text_hash": "fb885277223c173ee5387e653b291ae89ad9d78f0cd7fb9eecd3d2246b2011fb",
+      "translation_text_hash": "dec57f0779acfa7313081db8648c5771c0a543ceba896fd8134bf3cf2c8f0daa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법과 선지자는 요한의 때까지요 그 후부터는 하나님 나라의 복음이 전파되어 사람마다 그리로 침입하느니라"
+      ],
+      "raw_text_hashes": [
+        "dec57f0779acfa7313081db8648c5771c0a543ceba896fd8134bf3cf2c8f0daa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:17",
+      "sequence": 25638,
+      "chapter_label": "LUK 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "But it is easier for heaven and earth to pass away than for one tiny stroke of a pen in the law to fall.",
+      "ko": "그러나 율법의 한 획이 떨어짐보다 천지의 없어짐이 쉬우리라",
+      "source_text_hash": "3aca28862d37af848f9854c6878d3b2c66ca10e9ae29ac4b113cfd00e9211982",
+      "translation_text_hash": "3e3a486608720550884eaf8b76d1e5b08ceca529d433146cb44a6b88eeaf52d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 율법의 한 획이 떨어짐보다 천지의 없어짐이 쉬우리라"
+      ],
+      "raw_text_hashes": [
+        "3e3a486608720550884eaf8b76d1e5b08ceca529d433146cb44a6b88eeaf52d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:18",
+      "sequence": 25639,
+      "chapter_label": "LUK 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "“Everyone who divorces his wife and marries another commits adultery. He who marries one who is divorced from a husband commits adultery.",
+      "ko": "무릇 그 아내를 버리고 다른데 장가드는 자도 간음함이요 무릇 버리운이에게 장가드는 자도 간음함이니라",
+      "source_text_hash": "70b4fb47ba340c003c948c61565a256d25f33487d644c4c772945124829a3307",
+      "translation_text_hash": "578510a645b98e7b968ae4f198f3a0820526b8e68400cbb49b1d0218da679e09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 그 아내를 버리고 다른데 장가드는 자도 간음함이요 무릇 버리운이에게 장가드는 자도 간음함이니라"
+      ],
+      "raw_text_hashes": [
+        "578510a645b98e7b968ae4f198f3a0820526b8e68400cbb49b1d0218da679e09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:19",
+      "sequence": 25640,
+      "chapter_label": "LUK 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "“Now there was a certain rich man, and he was clothed in purple and fine linen, living in luxury every day.",
+      "ko": "한 부자가 있어 자색 옷과 고운 베옷을 입고 날마다 호화로이 연락하는데",
+      "source_text_hash": "562106f23edb052f5629d2af90fc4ad1551be4f8916493720cf07a128d5a92fe",
+      "translation_text_hash": "efe9211aaaf9d23769689c22048d93714c5f693c8eba9b6df9e34dbddc7c0205",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 부자가 있어 자색 옷과 고운 베옷을 입고 날마다 호화로이 연락하는데"
+      ],
+      "raw_text_hashes": [
+        "efe9211aaaf9d23769689c22048d93714c5f693c8eba9b6df9e34dbddc7c0205"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:20",
+      "sequence": 25641,
+      "chapter_label": "LUK 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "A certain beggar, named Lazarus, was taken to his gate, full of sores,",
+      "ko": "나사로라 이름한 한 거지가 헌데를 앓으며 그 부자의 대문에 누워",
+      "source_text_hash": "17e15ac2de035a5661be048a6995ddfda0216eaa8293a6b99ac5e133fd5ede59",
+      "translation_text_hash": "d65240e965578ca2f101cfbc969f77c438c4dbc7db97cccb0c0fa6f7394ea50b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나사로라 이름한 한 거지가 헌데를 앓으며 그 부자의 대문에 누워"
+      ],
+      "raw_text_hashes": [
+        "d65240e965578ca2f101cfbc969f77c438c4dbc7db97cccb0c0fa6f7394ea50b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:21",
+      "sequence": 25642,
+      "chapter_label": "LUK 16",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 21
+        }
+      ],
+      "en": "and desiring to be fed with the crumbs that fell from the rich man’s table. Yes, even the dogs came and licked his sores.",
+      "ko": "부자의 상에서 떨어지는 것으로 배불리려 하매 심지어 개들이 와서 그 헌데를 핥더라",
+      "source_text_hash": "c11e592d6005cb33081a16105fab71f7e11b0239cca1a25237c2dec5f1be4822",
+      "translation_text_hash": "bfe9a074f1a7701f5ab48a547b47027a0023c137c4b2786d465a1deaefd97523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부자의 상에서 떨어지는 것으로 배불리려 하매 심지어 개들이 와서 그 헌데를 핥더라"
+      ],
+      "raw_text_hashes": [
+        "bfe9a074f1a7701f5ab48a547b47027a0023c137c4b2786d465a1deaefd97523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:22",
+      "sequence": 25643,
+      "chapter_label": "LUK 16",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 22
+        }
+      ],
+      "en": "The beggar died, and he was carried away by the angels to Abraham’s bosom. The rich man also died and was buried.",
+      "ko": "이에 그 거지가 죽어 천사들에게 받들려 아브라함의 품에 들어가고 부자도 죽어 장사되매",
+      "source_text_hash": "a2ec553ce3c7bcc22ff3397ca96fe9f775510b6ca289d251d7ad07fca06ad2c6",
+      "translation_text_hash": "aba8d0fa9214bd29532c1cdf8331f57eec78a5a05b119922dc7ae848cdb0c878",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 거지가 죽어 천사들에게 받들려 아브라함의 품에 들어가고 부자도 죽어 장사되매"
+      ],
+      "raw_text_hashes": [
+        "aba8d0fa9214bd29532c1cdf8331f57eec78a5a05b119922dc7ae848cdb0c878"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:23",
+      "sequence": 25644,
+      "chapter_label": "LUK 16",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 23
+        }
+      ],
+      "en": "In Hades,he lifted up his eyes, being in torment, and saw Abraham far off, and Lazarus at his bosom.",
+      "ko": "저가 음부에서 고통 중에 눈을 들어 멀리 아브라함과 그의 품에 있는 나사로를 보고",
+      "source_text_hash": "1b78c8b41c7c492aad34f089e453c24df132847b500522fe7665e3b8d8e93084",
+      "translation_text_hash": "03aeb4581d3c2477eccbbd1b39b710bd9026667ba456b4762098271f633c2b70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 음부에서 고통 중에 눈을 들어 멀리 아브라함과 그의 품에 있는 나사로를 보고"
+      ],
+      "raw_text_hashes": [
+        "03aeb4581d3c2477eccbbd1b39b710bd9026667ba456b4762098271f633c2b70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:24",
+      "sequence": 25645,
+      "chapter_label": "LUK 16",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 24
+        }
+      ],
+      "en": "He cried and said, ‘Father Abraham, have mercy on me, and send Lazarus, that he may dip the tip of his finger in water and cool my tongue! For I am in anguish in this flame.’",
+      "ko": "불러 가로되 아버지 아브라함이여 나를 긍휼히 여기사 나사로를 보내어 그 손가락 끝에 물을 찍어 내 혀를 서늘하게 하소서 내가 이 불꽃 가운데서 고민하나이다",
+      "source_text_hash": "e06c301a3bf652eb4cb2e4a7d14180def5ef0c916f7f1efe77eb3ad75233b8e1",
+      "translation_text_hash": "a8b389b8db3208d5980cc74d6145331abafd59a0a678febc475316d09b4de6c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불러 가로되 아버지 아브라함이여 나를 긍휼히 여기사 나사로를 보내어 그 손가락 끝에 물을 찍어 내 혀를 서늘하게 하소서 내가 이 불꽃 가운데서 고민하나이다"
+      ],
+      "raw_text_hashes": [
+        "a8b389b8db3208d5980cc74d6145331abafd59a0a678febc475316d09b4de6c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:25",
+      "sequence": 25646,
+      "chapter_label": "LUK 16",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 25
+        }
+      ],
+      "en": "“But Abraham said, ‘Son, remember that you, in your lifetime, received your good things, and Lazarus, in the same way, bad things. But here he is now comforted and you are in anguish.",
+      "ko": "아브라함이 가로되 얘 너는 살았을 때에 네 좋은 것을 받았고 나사로는 고난을 받았으니 이것을 기억하라 이제 저는 여기서 위로를 받고 너는 고민을 받느니라",
+      "source_text_hash": "43949601872ad9191558147e82c70aaaa8081494c6d0cbcc7ce4cdaa291527ab",
+      "translation_text_hash": "7de50abab8cae85837a4a72524168f979515f4f6991e56f5dd1ef9fd6b9095c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 얘 너는 살았을 때에 네 좋은 것을 받았고 나사로는 고난을 받았으니 이것을 기억하라 이제 저는 여기서 위로를 받고 너는 고민을 받느니라"
+      ],
+      "raw_text_hashes": [
+        "7de50abab8cae85837a4a72524168f979515f4f6991e56f5dd1ef9fd6b9095c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:26",
+      "sequence": 25647,
+      "chapter_label": "LUK 16",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 26
+        }
+      ],
+      "en": "Besides all this, between us and you there is a great gulf fixed, that those who want to pass from here to you are not able, and that no one may cross over from there to us.’",
+      "ko": "이뿐 아니라 너희와 우리 사이에 큰 구렁이 끼어 있어 여기서 너희에게 건너가고자 하되 할 수 없고 거기서 우리에게 건너 올 수도 없게 하였느니라",
+      "source_text_hash": "0bf164fa1f5c6f312f5063dcdd18bd4fda7b2973c2bd52738a6fef282f65d0b5",
+      "translation_text_hash": "1e695e5125a69560d7220f901884799a0b65f001fe275ab927a7de849bb9c341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이뿐 아니라 너희와 우리 사이에 큰 구렁이 끼어 있어 여기서 너희에게 건너가고자 하되 할 수 없고 거기서 우리에게 건너 올 수도 없게 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "1e695e5125a69560d7220f901884799a0b65f001fe275ab927a7de849bb9c341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:27",
+      "sequence": 25648,
+      "chapter_label": "LUK 16",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 27
+        }
+      ],
+      "en": "“He said, ‘I ask you therefore, father, that you would send him to my father’s house—",
+      "ko": "가로되 그러면 구하노니 아버지여 나사로를 내 아버지의 집에 보내소서",
+      "source_text_hash": "277e02a6bf80ccc9844468f825aa91b6be1c4769ead5b30da008063ba40bd9d5",
+      "translation_text_hash": "947c6a5b7fd5c59317d843bca9129931b78d399d516eb2293a74eba6dadb87bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그러면 구하노니 아버지여 나사로를 내 아버지의 집에 보내소서"
+      ],
+      "raw_text_hashes": [
+        "947c6a5b7fd5c59317d843bca9129931b78d399d516eb2293a74eba6dadb87bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:28",
+      "sequence": 25649,
+      "chapter_label": "LUK 16",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 28
+        }
+      ],
+      "en": "for I have five brothers—that he may testify to them, so they won’t also come into this place of torment.’",
+      "ko": "내 형제 다섯이 있으니 저희에게 증거하게 하여 저희로 이 고통 받는 곳에 오지 않게 하소서",
+      "source_text_hash": "3f37dbbe47d2dabb7ab2d4cb15b446386bcdd38de45979b481687c3ce5b178c1",
+      "translation_text_hash": "8bba7c48da742acd8d1ac9c1b1e7d91bd5a92827539757977cc50c60d4b47bf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 형제 다섯이 있으니 저희에게 증거하게 하여 저희로 이 고통 받는 곳에 오지 않게 하소서"
+      ],
+      "raw_text_hashes": [
+        "8bba7c48da742acd8d1ac9c1b1e7d91bd5a92827539757977cc50c60d4b47bf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:29",
+      "sequence": 25650,
+      "chapter_label": "LUK 16",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 29
+        }
+      ],
+      "en": "“But Abraham said to him, ‘They have Moses and the prophets. Let them listen to them.’",
+      "ko": "아브라함이 가로되 저희에게 모세와 선지자들이 있으니 그들에게 들을찌니라",
+      "source_text_hash": "58e43987fc4ae4855ed9372c8053a794439395949070d8312ead9ef64ba8ec30",
+      "translation_text_hash": "3ff8130bbc7c96833be8c777172dccfb5811fd98bc4c95977a6aa12427c547bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 가로되 저희에게 모세와 선지자들이 있으니 그들에게 들을찌니라"
+      ],
+      "raw_text_hashes": [
+        "3ff8130bbc7c96833be8c777172dccfb5811fd98bc4c95977a6aa12427c547bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:30",
+      "sequence": 25651,
+      "chapter_label": "LUK 16",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 30
+        }
+      ],
+      "en": "“He said, ‘No, father Abraham, but if one goes to them from the dead, they will repent.’",
+      "ko": "가로되 그렇지 아니하니이다 아버지 아브라함이여 만일 죽은 자에게서 저희에게 가는 자가 있으면 회개하리이다",
+      "source_text_hash": "7d24ea39edf6710227ba9588ccd626d6ad5d5bdcc18038c1ac3bca8882715e30",
+      "translation_text_hash": "eecdb3a464a1efe4add3965399f3d29e7203b964a46d666805b7bc594362d44d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 그렇지 아니하니이다 아버지 아브라함이여 만일 죽은 자에게서 저희에게 가는 자가 있으면 회개하리이다"
+      ],
+      "raw_text_hashes": [
+        "eecdb3a464a1efe4add3965399f3d29e7203b964a46d666805b7bc594362d44d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:16:31",
+      "sequence": 25652,
+      "chapter_label": "LUK 16",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 16,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 16,
+          "verse": 31
+        }
+      ],
+      "en": "“He said to him, ‘If they don’t listen to Moses and the prophets, neither will they be persuaded if one rises from the dead.’”",
+      "ko": "가로되 모세와 선지자들에게 듣지 아니하면 비록 죽은 자 가운데서 살아나는 자가 있을찌라도 권함을 받지 아니하리라 하였다 하시니라",
+      "source_text_hash": "e4f7217738c8b60dc9b2c9baaf45c30b6fd6cf8aae08b9713f3036954524c113",
+      "translation_text_hash": "09b5786014d8a6b9875573f255d400c091c6acb0705d45eb6dd29df0948f1c28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 모세와 선지자들에게 듣지 아니하면 비록 죽은 자 가운데서 살아나는 자가 있을찌라도 권함을 받지 아니하리라 하였다 하시니라"
+      ],
+      "raw_text_hashes": [
+        "09b5786014d8a6b9875573f255d400c091c6acb0705d45eb6dd29df0948f1c28"
+      ]
+    }
+  ]
+}

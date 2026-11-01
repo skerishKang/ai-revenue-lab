@@ -1,0 +1,845 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:028",
+  "unit_ordinal": 830,
+  "unit_label": "EZK 28",
+  "book_code": "EZK",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:28:1",
+      "sequence": 21159,
+      "chapter_label": "EZK 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came again to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "53317430a9b7a9fdbe9156a35ae512112bae6b6f909738ce12aa74f8e4a71377",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:2",
+      "sequence": 21160,
+      "chapter_label": "EZK 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, tell the prince of Tyre, ‘The Lord GOD says: “Because your heart is lifted up, and you have said, ‘I am a god, I sit in the seat of God, in the middle of the seas;’ yet you are man, and no god, though you set your heart as the heart of a god—",
+      "ko": "인자야 너는 두로 왕에게 이르기를 주 여호와의 말씀에 네 마음이 교만하여 말하기를 나는 신이라 내가 하나님의 자리 곧 바다 중심에 앉았다 하도다 네 마음이 하나님의 마음 같은체 할찌라도 너는 사람이요 신이 아니어늘",
+      "source_text_hash": "437122f9add6f5b2ecc86e1f13e07cc2f5b8661bee1627200fab8650ea2cdceb",
+      "translation_text_hash": "ec1745479a6394779c333898d6b04e2ec52b8e533b6a3f2bf3cc893a08cfd2c0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 두로 왕에게 이르기를 주 여호와의 말씀에 네 마음이 교만하여 말하기를 나는 신이라 내가 하나님의 자리 곧 바다 중심에 앉았다 하도다 네 마음이 하나님의 마음 같은체 할찌라도 너는 사람이요 신이 아니어늘"
+      ],
+      "raw_text_hashes": [
+        "ec1745479a6394779c333898d6b04e2ec52b8e533b6a3f2bf3cc893a08cfd2c0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:3",
+      "sequence": 21161,
+      "chapter_label": "EZK 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "behold, you are wiser than Daniel. There is no secret that is hidden from you.",
+      "ko": "네가 다니엘보다 지혜로와서 은밀한 것을 깨닫지 못할 것이 없다 하고",
+      "source_text_hash": "2f4831ca3fdc303bbdd1296379ef4ca2b250a4ece864cec01eb43d031839810d",
+      "translation_text_hash": "045250c54380a718cd8cc8102e4c8c30f4ef68f91e373dcb8481b03d5a2bc3eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 다니엘보다 지혜로와서 은밀한 것을 깨닫지 못할 것이 없다 하고"
+      ],
+      "raw_text_hashes": [
+        "045250c54380a718cd8cc8102e4c8c30f4ef68f91e373dcb8481b03d5a2bc3eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:4",
+      "sequence": 21162,
+      "chapter_label": "EZK 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "By your wisdom and by your understanding you have gotten yourself riches, and have gotten gold and silver into your treasuries.",
+      "ko": "네 지혜와 총명으로 재물을 얻었으며 금, 은을 곳간에 저축하였으며",
+      "source_text_hash": "f61aba8c79242b79e6aef80c73b64b8ef6b978fa90d5eb857c8389f939109573",
+      "translation_text_hash": "c3df164f65cf086ba7c5222da8bdac9ee35e34d242c831d1bcfdd20c71687ef3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 지혜와 총명으로 재물을 얻었으며 금, 은을 곳간에 저축하였으며"
+      ],
+      "raw_text_hashes": [
+        "c3df164f65cf086ba7c5222da8bdac9ee35e34d242c831d1bcfdd20c71687ef3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:5",
+      "sequence": 21163,
+      "chapter_label": "EZK 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "By your great wisdom and by your trading you have increased your riches, and your heart is lifted up because of your riches—”",
+      "ko": "네 큰 지혜와 장사함으로 재물을 더하고 그 재물로 인하여 네 마음이 교만하였도다",
+      "source_text_hash": "a94e7b564298723f45788d32b37a107a9462bfe72d69d8657f19d9c55bc0200f",
+      "translation_text_hash": "567b9e3813c01315da60f4499d75734478bf0bab821c833172dc0bc33a65f0f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 큰 지혜와 장사함으로 재물을 더하고 그 재물로 인하여 네 마음이 교만하였도다"
+      ],
+      "raw_text_hashes": [
+        "567b9e3813c01315da60f4499d75734478bf0bab821c833172dc0bc33a65f0f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:6",
+      "sequence": 21164,
+      "chapter_label": "EZK 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "“‘therefore the Lord GOD says: “Because you have set your heart as the heart of God,",
+      "ko": "그러므로 나 주 여호와가 말하노라 네 마음이 하나님의 마음 같은체 하였으니",
+      "source_text_hash": "4d44f4e6ef0c481e91efab4df7087cf5f38825c93cea57b49346d7794d5913f8",
+      "translation_text_hash": "155d854d980e3b79b620847e6348af467362c0a234ea14e58834e4ce9a1ea9dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 주 여호와가 말하노라 네 마음이 하나님의 마음 같은체 하였으니"
+      ],
+      "raw_text_hashes": [
+        "155d854d980e3b79b620847e6348af467362c0a234ea14e58834e4ce9a1ea9dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:7",
+      "sequence": 21165,
+      "chapter_label": "EZK 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "therefore, behold, I will bring strangers on you, the terrible of the nations. They will draw their swords against the beauty of your wisdom. They will defile your brightness.",
+      "ko": "그런즉 내가 외인 곧 열국의 강포한 자를 거느리고 와서 너를 치리니 그들이 칼을 빼어 네 지혜의 아름다운 것을 치며 네 영화를 더럽히며",
+      "source_text_hash": "9486d558bafb3e4c81ff216e9e80c38a7168675abb0a6cf63f330e1c123f7115",
+      "translation_text_hash": "4daf13285a9cd17661566d3765b78088e8e0893e505790f4a5e19821035ea2ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 내가 외인 곧 열국의 강포한 자를 거느리고 와서 너를 치리니 그들이 칼을 빼어 네 지혜의 아름다운 것을 치며 네 영화를 더럽히며"
+      ],
+      "raw_text_hashes": [
+        "4daf13285a9cd17661566d3765b78088e8e0893e505790f4a5e19821035ea2ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:8",
+      "sequence": 21166,
+      "chapter_label": "EZK 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "They will bring you down to the pit. You will die the death of those who are slain in the heart of the seas.",
+      "ko": "또 너를 구덩이에 빠뜨려서 너로 바다 가운데서 살륙을 당한 자의 죽음 같이 바다 중심에서 죽게 할찌라",
+      "source_text_hash": "3a57ac123a8b74258640f1ea7b37498e3b5e8545ae57000dc8bdd241c3b68f46",
+      "translation_text_hash": "0c0e10de76963c6562a4aa7f3c26077ef720740519a95afb50b878674faaf5f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너를 구덩이에 빠뜨려서 너로 바다 가운데서 살륙을 당한 자의 죽음 같이 바다 중심에서 죽게 할찌라"
+      ],
+      "raw_text_hashes": [
+        "0c0e10de76963c6562a4aa7f3c26077ef720740519a95afb50b878674faaf5f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:9",
+      "sequence": 21167,
+      "chapter_label": "EZK 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "Will you yet say before him who kills you, ‘I am God’? But you are man, and not God, in the hand of him who wounds you.",
+      "ko": "너를 살륙하는 자 앞에서 네가 그래도 말하기를 내가 하나님이라 하겠느냐 너를 치는 자의 수중에서 사람뿐이요 신이 아니라",
+      "source_text_hash": "f12e28bbe643c5e8f3f840a123a3720a361f0fce6cc1f97bc1766fc62eb4f1b2",
+      "translation_text_hash": "81701c39ee096b8eb22ff6934f741cae2785207c6db356369995067d1d2e0146",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너를 살륙하는 자 앞에서 네가 그래도 말하기를 내가 하나님이라 하겠느냐 너를 치는 자의 수중에서 사람뿐이요 신이 아니라"
+      ],
+      "raw_text_hashes": [
+        "81701c39ee096b8eb22ff6934f741cae2785207c6db356369995067d1d2e0146"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:10",
+      "sequence": 21168,
+      "chapter_label": "EZK 28",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 10
+        }
+      ],
+      "en": "You will die the death of the uncircumcised by the hand of strangers; for I have spoken it,” says the Lord GOD.’”",
+      "ko": "네가 외인의 손에서 죽기를 할례 받지 않은 자의 죽음 같이 하리니 내가 말하였음이니라 나 주 여호와의 말이니라 하셨다 하라",
+      "source_text_hash": "a3a81b395a143bdb140c84bee6750bbb13b18e9bbfa78c463c1e1b70e04371df",
+      "translation_text_hash": "24856d9b16a40053e3025156d13b087492f3e6dc6a9a4a936e66a60a85d39db8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 외인의 손에서 죽기를 할례 받지 않은 자의 죽음 같이 하리니 내가 말하였음이니라 나 주 여호와의 말이니라 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "24856d9b16a40053e3025156d13b087492f3e6dc6a9a4a936e66a60a85d39db8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:11",
+      "sequence": 21169,
+      "chapter_label": "EZK 28",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover the LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "4fe6548be4bc036eef72ed1db86f9dcc8989355e4d608b71dd65965f07c53184",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:12",
+      "sequence": 21170,
+      "chapter_label": "EZK 28",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 12
+        }
+      ],
+      "en": "“Son of man, take up a lamentation over the king of Tyre, and tell him, ‘The Lord GOD says: “You were the seal of full measure, full of wisdom, and perfect in beauty.",
+      "ko": "인자야 두로 왕을 위하여 애가를 지어 그에게 이르기를 주 여호와의 말씀에 너는 완전한 인이었고 지혜가 충족하며 온전히 아름다왔도다",
+      "source_text_hash": "5b742d48b70831092693cf039214f61a5561871aae3675992b5425b4a9e8bbc1",
+      "translation_text_hash": "b582fba74c092b47ace944c49c902691c226e1452b928d8d996e50484f6690b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 두로 왕을 위하여 애가를 지어 그에게 이르기를 주 여호와의 말씀에 너는 완전한 인이었고 지혜가 충족하며 온전히 아름다왔도다"
+      ],
+      "raw_text_hashes": [
+        "b582fba74c092b47ace944c49c902691c226e1452b928d8d996e50484f6690b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:13",
+      "sequence": 21171,
+      "chapter_label": "EZK 28",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 13
+        }
+      ],
+      "en": "You were in Eden, the garden of God. Every precious stone adorned you: ruby, topaz, emerald, chrysolite, onyx, jasper, sapphire, turquoise, and beryl. Gold work of tambourines and of pipes was in you. They were prepared in the day that you were created.",
+      "ko": "네가 옛적에 하나님의 동산 에덴에 있어서 각종 보석 곧 홍보석과 황보석과 금강석과 황옥과 홍마노와 창옥과 청보석과 남보석과 홍옥과 황금으로 단장하였었음이여 네가 지음을 받던 날에 너를 위하여 소고와 비파가 예비되었었도다",
+      "source_text_hash": "f81301d49939a1e1e2e137c5d1b5b0ba94f39424dd7033084e75f556fb73866c",
+      "translation_text_hash": "17a2d76cc60de1357c196b39181aef877eb56c933b912698b47e457e85da49e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 옛적에 하나님의 동산 에덴에 있어서 각종 보석 곧 홍보석과 황보석과 금강석과 황옥과 홍마노와 창옥과 청보석과 남보석과 홍옥과 황금으로 단장하였었음이여 네가 지음을 받던 날에 너를 위하여 소고와 비파가 예비되었었도다"
+      ],
+      "raw_text_hashes": [
+        "17a2d76cc60de1357c196b39181aef877eb56c933b912698b47e457e85da49e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:14",
+      "sequence": 21172,
+      "chapter_label": "EZK 28",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 14
+        }
+      ],
+      "en": "You were the anointed cherub who covers. Then I set you up on the holy mountain of God. You have walked up and down in the middle of the stones of fire.",
+      "ko": "너는 기름 부음을 받은 덮는 그룹임이여 내가 너를 세우매 네가 하나님의 성산에 있어서 화광석 사이에 왕래하였었도다",
+      "source_text_hash": "b54dbec12c78eeb4c0f839a04bc09e4c184be150f09da71eecae5b74991032c2",
+      "translation_text_hash": "f143637a528aabeec400aee1b9f2b7d118e1dd4ac8b1b9eb074d2a99cbf532ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 기름 부음을 받은 덮는 그룹임이여 내가 너를 세우매 네가 하나님의 성산에 있어서 화광석 사이에 왕래하였었도다"
+      ],
+      "raw_text_hashes": [
+        "f143637a528aabeec400aee1b9f2b7d118e1dd4ac8b1b9eb074d2a99cbf532ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:15",
+      "sequence": 21173,
+      "chapter_label": "EZK 28",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 15
+        }
+      ],
+      "en": "You were perfect in your ways from the day that you were created, until unrighteousness was found in you.",
+      "ko": "네가 지음을 받던 날로부터 네 모든 길에 완전하더니 마침내 불의가 드러났도다",
+      "source_text_hash": "e539c32a95bffe14ce58916577276e06e3924528a834b7509ba1f82cbdc42b7a",
+      "translation_text_hash": "528a2ed99e69e87bdc5a61a9a2eb57baa7bf4c66c9ce95c1003152fa5e78c988",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 지음을 받던 날로부터 네 모든 길에 완전하더니 마침내 불의가 드러났도다"
+      ],
+      "raw_text_hashes": [
+        "528a2ed99e69e87bdc5a61a9a2eb57baa7bf4c66c9ce95c1003152fa5e78c988"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:16",
+      "sequence": 21174,
+      "chapter_label": "EZK 28",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 16
+        }
+      ],
+      "en": "By the abundance of your commerce, your insides were filled with violence, and you have sinned. Therefore I have cast you as profane out of God’s mountain. I have destroyed you, covering cherub, from the middle of the stones of fire.",
+      "ko": "네 무역이 풍성하므로 네 가운데 강포가 가득하여 네가 범죄하였도다 너 덮는 그룹아 그러므로 내가 너를 더럽게 여겨 하나님의 산에서 쫓아 내었고 화광석 사이에서 멸하였도다",
+      "source_text_hash": "adc3ca6ca032c36c93c5d200ba746fa0fc779c808abb9d52439dc6a372bc457c",
+      "translation_text_hash": "3f69ea57f0b60533fd9a656293db0d2887fdd3db958f3af510dbf46fb561690d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 무역이 풍성하므로 네 가운데 강포가 가득하여 네가 범죄하였도다 너 덮는 그룹아 그러므로 내가 너를 더럽게 여겨 하나님의 산에서 쫓아 내었고 화광석 사이에서 멸하였도다"
+      ],
+      "raw_text_hashes": [
+        "3f69ea57f0b60533fd9a656293db0d2887fdd3db958f3af510dbf46fb561690d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:17",
+      "sequence": 21175,
+      "chapter_label": "EZK 28",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 17
+        }
+      ],
+      "en": "Your heart was lifted up because of your beauty. You have corrupted your wisdom by reason of your splendor. I have cast you to the ground. I have laid you before kings, that they may see you.",
+      "ko": "네가 아름다우므로 마음이 교만하였으며 네가 영화로우므로 네 지혜를 더럽혔음이여 내가 너를 땅에 던져 열왕 앞에 두어 그들의 구경거리가 되게 하였도다",
+      "source_text_hash": "a635e02b5a7088a81b212f514f79563f55777a4e21476cce0f570785130e6e7f",
+      "translation_text_hash": "ab54c89addd857dcf5f565af32e07940e22d365143bcccaa161615e226145f84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 아름다우므로 마음이 교만하였으며 네가 영화로우므로 네 지혜를 더럽혔음이여 내가 너를 땅에 던져 열왕 앞에 두어 그들의 구경거리가 되게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "ab54c89addd857dcf5f565af32e07940e22d365143bcccaa161615e226145f84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:18",
+      "sequence": 21176,
+      "chapter_label": "EZK 28",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 18
+        }
+      ],
+      "en": "By the multitude of your iniquities, in the unrighteousness of your commerce, you have profaned your sanctuaries. Therefore I have brought out a fire from the middle of you. It has devoured you. I have turned you to ashes on the earth in the sight of all those who see you.",
+      "ko": "네가 죄악이 많고 무역이 불의하므로 네 모든 성소를 더럽혔음이여 내가 네 가운데서 불을 내어 너를 사르게 하고 너를 목도하는 모든 자 앞에서 너로 땅 위에 재가 되게 하였도다",
+      "source_text_hash": "d92db54a70008bd1781ff6d8c06a09b1122a3623e0af24da4537bb90960c3927",
+      "translation_text_hash": "325c015275f15757d61506300c9fc1e45395fa996f12d1138315f69597d78e5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 죄악이 많고 무역이 불의하므로 네 모든 성소를 더럽혔음이여 내가 네 가운데서 불을 내어 너를 사르게 하고 너를 목도하는 모든 자 앞에서 너로 땅 위에 재가 되게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "325c015275f15757d61506300c9fc1e45395fa996f12d1138315f69597d78e5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:19",
+      "sequence": 21177,
+      "chapter_label": "EZK 28",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 19
+        }
+      ],
+      "en": "All those who know you among the peoples will be astonished at you. You have become a terror, and you will exist no more.”’”",
+      "ko": "만민 중에 너를 아는 자가 너로 인하여 다 놀랄 것임이여 네가 경계거리가 되고 네가 영원히 다시 있지 못하리로다 하셨다 하라",
+      "source_text_hash": "241bc02b29d4eae054ad8556f2fb06f656033229fea482db88f05ca3e01cb206",
+      "translation_text_hash": "3d48517f4275abbb0a8aa569041129d0ea48696b78af93b917257b27b778446d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만민 중에 너를 아는 자가 너로 인하여 다 놀랄 것임이여 네가 경계거리가 되고 네가 영원히 다시 있지 못하리로다 하셨다 하라"
+      ],
+      "raw_text_hashes": [
+        "3d48517f4275abbb0a8aa569041129d0ea48696b78af93b917257b27b778446d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:20",
+      "sequence": 21178,
+      "chapter_label": "EZK 28",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 또 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 또 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "d80f64c74466735890f0e38292da375b0a0ec48e42ba77cef849f80e52a6bc56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:21",
+      "sequence": 21179,
+      "chapter_label": "EZK 28",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 21
+        }
+      ],
+      "en": "“Son of man, set your face toward Sidon, and prophesy against it,",
+      "ko": "인자야 너는 낯을 시돈으로 향하고 그를 쳐서 예언하라",
+      "source_text_hash": "49b4f43b53260a380543886cb0dd4d5eacd89b1517b7248864739b91e2a26cc7",
+      "translation_text_hash": "fee299b7f513ca9365bff9ec91047b9d434ba184baa309633de5fd4056692e75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 낯을 시돈으로 향하고 그를 쳐서 예언하라"
+      ],
+      "raw_text_hashes": [
+        "fee299b7f513ca9365bff9ec91047b9d434ba184baa309633de5fd4056692e75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:22",
+      "sequence": 21180,
+      "chapter_label": "EZK 28",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 22
+        }
+      ],
+      "en": "and say, ‘The Lord GOD says: “Behold, I am against you, Sidon. I will be glorified among you. Then they will know that I am the LORD, when I have executed judgments in her, and am sanctified in her.",
+      "ko": "너는 이르기를 주 여호와의 말씀에 시돈아 내가 너를 대적하나니 네 가운데서 내 영광이 나타나리라 하셨다 하라 내가 그 가운데서 국문을 행하여 내 거룩함을 나타낼 때에 무리가 나를 여호와인줄 알찌라",
+      "source_text_hash": "ce81bb27fc9168fdae7321f3e55005f40dc00276178999a96c4c10eee930d42b",
+      "translation_text_hash": "bf1224fef9fbcff5f1da4de96661a154c611fcd597630f63872afdec39a3158a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이르기를 주 여호와의 말씀에 시돈아 내가 너를 대적하나니 네 가운데서 내 영광이 나타나리라 하셨다 하라 내가 그 가운데서 국문을 행하여 내 거룩함을 나타낼 때에 무리가 나를 여호와인줄 알찌라"
+      ],
+      "raw_text_hashes": [
+        "bf1224fef9fbcff5f1da4de96661a154c611fcd597630f63872afdec39a3158a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:23",
+      "sequence": 21181,
+      "chapter_label": "EZK 28",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 23
+        }
+      ],
+      "en": "For I will send pestilence into her, and blood into her streets. The wounded will fall within her, with the sword on her on every side. Then they will know that I am the LORD.",
+      "ko": "내가 그에게 염병을 보내며 그의 거리에 피가 흐르게 하리니 사방에서 오는 칼에 상한 자가 그 가운데 엎드러질 것인즉 무리가 나를 여호와인줄 알겠고",
+      "source_text_hash": "000ed95d9983cdf859d668a8a45bed24567572620b889250420b5bd290990d4f",
+      "translation_text_hash": "de10ded3f69d0396793e2fbe124bcd93c63fbf587941ea0c308815a7e8c01647",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그에게 염병을 보내며 그의 거리에 피가 흐르게 하리니 사방에서 오는 칼에 상한 자가 그 가운데 엎드러질 것인즉 무리가 나를 여호와인줄 알겠고"
+      ],
+      "raw_text_hashes": [
+        "de10ded3f69d0396793e2fbe124bcd93c63fbf587941ea0c308815a7e8c01647"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:24",
+      "sequence": 21182,
+      "chapter_label": "EZK 28",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 24
+        }
+      ],
+      "en": "“‘“There will no longer be a pricking brier to the house of Israel, nor a hurting thorn of any that are around them that scorned them. Then they will know that I am the Lord GOD.”",
+      "ko": "이스라엘 족속에게는 그 사면에서 그들을 멸시하는 자 중에 찌르는 가시와 아프게 하는 가시가 다시는 없으리니 그들이 나를 주 여호와인줄 알리라",
+      "source_text_hash": "2f7b07a2485685dfd8ea54228b08d5c78b50df4ef0f031920fb189b2c97fdc4e",
+      "translation_text_hash": "0c96aaf2fcfb51b9cb0542cc3816539de38de152eaf359637f9aafa7bc576cb4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 족속에게는 그 사면에서 그들을 멸시하는 자 중에 찌르는 가시와 아프게 하는 가시가 다시는 없으리니 그들이 나를 주 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "0c96aaf2fcfb51b9cb0542cc3816539de38de152eaf359637f9aafa7bc576cb4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:25",
+      "sequence": 21183,
+      "chapter_label": "EZK 28",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 25
+        }
+      ],
+      "en": "“‘The Lord GOD says: “When I have gathered the house of Israel from the peoples among whom they are scattered, and am shown as holy among them in the sight of the nations, then they will dwell in their own land which I gave to my servant Jacob.",
+      "ko": "나 주 여호와가 말하노라 내가 열방에 흩어 있는 이스라엘 족속을 모으고 그들로 인하여 열국의 목전에서 내 거룩함을 나타낼 때에 그들이 고토 곧 내 종 야곱에게 준 땅에 거할찌라",
+      "source_text_hash": "fc3a3f96add22aadef2b637abd2677093eccff37ad79105b5590d0fe768ff141",
+      "translation_text_hash": "e50cee128e711b97172050fb4bbe3caa0812d6c450e0552ce24b93284b4a2272",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말하노라 내가 열방에 흩어 있는 이스라엘 족속을 모으고 그들로 인하여 열국의 목전에서 내 거룩함을 나타낼 때에 그들이 고토 곧 내 종 야곱에게 준 땅에 거할찌라"
+      ],
+      "raw_text_hashes": [
+        "e50cee128e711b97172050fb4bbe3caa0812d6c450e0552ce24b93284b4a2272"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:28:26",
+      "sequence": 21184,
+      "chapter_label": "EZK 28",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 28,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 28,
+          "verse": 26
+        }
+      ],
+      "en": "They will dwell in it securely. Yes, they will build houses, plant vineyards, and will dwell securely when I have executed judgments on all those around them who have treated them with contempt. Then they will know that I am the LORD their God.”’”",
+      "ko": "그들이 그 가운데 평안히 거하여 집을 건축하며 포도원을 심고 그들의 사면에서 멸시하던 모든 자를 내가 국문할 때에 그들이 평안히 살며 나를 그 하나님 여호와인줄 알리라",
+      "source_text_hash": "1e235c3274842f951380c84880cf136acd6c7de1db7af0d42bd8c2c441b5decb",
+      "translation_text_hash": "4c4cddcf871a27c0d41afb2cbd8366287dd92955c78fd10a202ace4f2b096294",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 그 가운데 평안히 거하여 집을 건축하며 포도원을 심고 그들의 사면에서 멸시하던 모든 자를 내가 국문할 때에 그들이 평안히 살며 나를 그 하나님 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "4c4cddcf871a27c0d41afb2cbd8366287dd92955c78fd10a202ace4f2b096294"
+      ]
+    }
+  ]
+}

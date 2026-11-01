@@ -1,0 +1,461 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EST:chapter:006",
+  "unit_ordinal": 432,
+  "unit_label": "EST 6",
+  "book_code": "EST",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EST:6:1",
+      "sequence": 12795,
+      "chapter_label": "EST 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "On that night, the king couldn’t sleep. He commanded the book of records of the chronicles to be brought, and they were read to the king.",
+      "ko": "이 밤에 왕이 잠이 오지 아니하므로 명하여 역대 일기를 가져다가 자기 앞에서 읽히더니",
+      "source_text_hash": "668399e5427ae316464d769c03fc6184e559a3f1d2e853dde787b6b672b94f20",
+      "translation_text_hash": "7f6c39b122f096a3559f27a407920bcf2689fd6c6be892106da3dc4900ce0229",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 밤에 왕이 잠이 오지 아니하므로 명하여 역대 일기를 가져다가 자기 앞에서 읽히더니"
+      ],
+      "raw_text_hashes": [
+        "7f6c39b122f096a3559f27a407920bcf2689fd6c6be892106da3dc4900ce0229"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:2",
+      "sequence": 12796,
+      "chapter_label": "EST 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "It was found written that Mordecai had told of Bigthana and Teresh, two of the king’s eunuchs, who were doorkeepers, who had tried to lay hands on the King Ahasuerus.",
+      "ko": "그 속에 기록하기를 문 지킨 왕의 두 내시 빅다나와 데레스가 아하수에로왕을 모살하려 하는 것을 모르드개가 고발하였다 하였는지라",
+      "source_text_hash": "47c46b4bc84e89a598dfdbce2a9c850dddcff620279cebb85e438d7dab42ad8a",
+      "translation_text_hash": "77b734e869a5cd6c7bae5cc14d25fe82114fbd5ab78c659964510d5a198fec68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 속에 기록하기를 문 지킨 왕의 두 내시 빅다나와 데레스가 아하수에로왕을 모살하려 하는 것을 모르드개가 고발하였다 하였는지라"
+      ],
+      "raw_text_hashes": [
+        "77b734e869a5cd6c7bae5cc14d25fe82114fbd5ab78c659964510d5a198fec68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:3",
+      "sequence": 12797,
+      "chapter_label": "EST 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "The king said, “What honor and dignity has been given to Mordecai for this?” Then the king’s servants who attended him said, “Nothing has been done for him.”",
+      "ko": "왕이 가로되 이 일을 인하여 무슨 존귀와 관작을 모르드개에게 베풀었느냐 시신이 대답하되 아무 것도 베풀지 아니 하였나이다",
+      "source_text_hash": "a52b14bd44e358b53c514426d6bc18c0d8df27228f62d1580199372d1ba60816",
+      "translation_text_hash": "47ab342311db669ae6e3a4b08429546aeb1c212ef630b1942dc87699f003ebe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 이 일을 인하여 무슨 존귀와 관작을 모르드개에게 베풀었느냐 시신이 대답하되 아무 것도 베풀지 아니 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "47ab342311db669ae6e3a4b08429546aeb1c212ef630b1942dc87699f003ebe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:4",
+      "sequence": 12798,
+      "chapter_label": "EST 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "The king said, “Who is in the court?” Now Haman had come into the outer court of the king’s house, to speak to the king about hanging Mordecai on the gallows that he had prepared for him.",
+      "ko": "왕이 가로되 누가 뜰에 있느냐 마침 하만이 자기가 세운 나무에 모르드개 달기를 왕께 구하고자 하여 왕궁 바깥 뜰에 이른지라",
+      "source_text_hash": "24fb09a37ea65058e5c3a615d62f635dc5aeed3a22a8b1c9bb86bda306d81124",
+      "translation_text_hash": "416c60db664505108042b10e6e44f41b63cf6d789ff78d0fad0f847a03a6ed75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 가로되 누가 뜰에 있느냐 마침 하만이 자기가 세운 나무에 모르드개 달기를 왕께 구하고자 하여 왕궁 바깥 뜰에 이른지라"
+      ],
+      "raw_text_hashes": [
+        "416c60db664505108042b10e6e44f41b63cf6d789ff78d0fad0f847a03a6ed75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:5",
+      "sequence": 12799,
+      "chapter_label": "EST 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "The king’s servants said to him, “Behold, Haman stands in the court.” The king said, “Let him come in.”",
+      "ko": "시신이 고하되 하만이 뜰에 섰나이다 왕이 가로되 들어 오게 하라 하니",
+      "source_text_hash": "84d9dab96be938e179c32cce293c4ff6a7c5b8ce112112cfb6b461968feff706",
+      "translation_text_hash": "a1db96e5242cfba631a2681e11c5fdfd0ba012e9146990de4f08a2bef8be2722",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시신이 고하되 하만이 뜰에 섰나이다 왕이 가로되 들어 오게 하라 하니"
+      ],
+      "raw_text_hashes": [
+        "a1db96e5242cfba631a2681e11c5fdfd0ba012e9146990de4f08a2bef8be2722"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:6",
+      "sequence": 12800,
+      "chapter_label": "EST 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "So Haman came in. The king said to him, “What shall be done to the man whom the king delights to honor?” Now Haman said in his heart, “Who would the king delight to honor more than myself?”",
+      "ko": "하만이 들어오거늘 왕이 묻되 왕이 존귀케 하기를 기뻐하는 사람에게 어떻게 하여야 하겠느뇨 하만이 심중에 이르되 왕이 존귀케 하기를 기뻐하시는 자는 나 외에 누구리요 하고",
+      "source_text_hash": "50fcec1812133c1e1632aff7f8744436b8b56561a93bf08f8d19458f134b8b90",
+      "translation_text_hash": "72344b6652e91f2b3d274ff7124f0dbfdd4ca7fba2fadf407cba6386e0d93ff9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하만이 들어오거늘 왕이 묻되 왕이 존귀케 하기를 기뻐하는 사람에게 어떻게 하여야 하겠느뇨 하만이 심중에 이르되 왕이 존귀케 하기를 기뻐하시는 자는 나 외에 누구리요 하고"
+      ],
+      "raw_text_hashes": [
+        "72344b6652e91f2b3d274ff7124f0dbfdd4ca7fba2fadf407cba6386e0d93ff9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:7",
+      "sequence": 12801,
+      "chapter_label": "EST 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "Haman said to the king, “For the man whom the king delights to honor,",
+      "ko": "왕께 아뢰되 왕께서 사람을 존귀케 하시려면",
+      "source_text_hash": "feb79165111a9e9bffc1f6e3a53ef1b859690780ca278e3d19eb1036ef668ef4",
+      "translation_text_hash": "2814e9ba0ae52617396d15e8ecf6d82ac9e22ce497cee750aca05dcc1354df09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕께 아뢰되 왕께서 사람을 존귀케 하시려면"
+      ],
+      "raw_text_hashes": [
+        "2814e9ba0ae52617396d15e8ecf6d82ac9e22ce497cee750aca05dcc1354df09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:8",
+      "sequence": 12802,
+      "chapter_label": "EST 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "let royal clothing be brought which the king uses to wear, and the horse that the king rides on, and on the head of which a royal crown is set.",
+      "ko": "왕의 입으시는 왕복과 왕의 타시는 말과 머리에 쓰시는 왕관을 취하고",
+      "source_text_hash": "04a8d95de12cc7ef5b48e88771791431343321e65a2fc7df076285f7dcda6abc",
+      "translation_text_hash": "d1d566e2e9142efedfa28a7daa0f78cdc46335e702da6cc48b7039afc31aff44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 입으시는 왕복과 왕의 타시는 말과 머리에 쓰시는 왕관을 취하고"
+      ],
+      "raw_text_hashes": [
+        "d1d566e2e9142efedfa28a7daa0f78cdc46335e702da6cc48b7039afc31aff44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:9",
+      "sequence": 12803,
+      "chapter_label": "EST 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Let the clothing and the horse be delivered to the hand of one of the king’s most noble princes, that they may array the man whom the king delights to honor with them, and have him ride on horseback through the city square, and proclaim before him, ‘Thus it shall be done to the man whom the king delights to honor!’”",
+      "ko": "그 왕복과 말을 왕의 방백 중 가장 존귀한 자의 손에 붙여서 왕이 존귀케 하시기를 기뻐하시는 사람에게 옷을 입히고 말을 태워서 성중 거리로 다니며 그 앞에서 반포하여 이르기를 왕이 존귀케 하기를 기뻐하시는 사람에게는 이같이 할것이라 하게 하소서",
+      "source_text_hash": "4beb1ec4cbb2699458bc4225ca185c7091d9f887454b1e60d559353aa199cea9",
+      "translation_text_hash": "06709c4df9fe2a54ab5a9f2d080003cf699d76c9c2435e48d938db732892c108",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 왕복과 말을 왕의 방백 중 가장 존귀한 자의 손에 붙여서 왕이 존귀케 하시기를 기뻐하시는 사람에게 옷을 입히고 말을 태워서 성중 거리로 다니며 그 앞에서 반포하여 이르기를 왕이 존귀케 하기를 기뻐하시는 사람에게는 이같이 할것이라 하게 하소서"
+      ],
+      "raw_text_hashes": [
+        "06709c4df9fe2a54ab5a9f2d080003cf699d76c9c2435e48d938db732892c108"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:10",
+      "sequence": 12804,
+      "chapter_label": "EST 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Then the king said to Haman, “Hurry and take the clothing and the horse, as you have said, and do this for Mordecai the Jew, who sits at the king’s gate. Let nothing fail of all that you have spoken.”",
+      "ko": "이에 왕이 하만에게 이르되 너는 네 말대로 속히 왕복과 말을 취하여 대궐 문에 앉은 유다 사람 모르드개에게 행하되 무릇 네가 말한 것에서 조금도 빠짐이 없이 하라",
+      "source_text_hash": "fe88e3965a81d429fa43925af69138ff48f2acf6b7b386593aa4729a82e60d4c",
+      "translation_text_hash": "c264addfaa4165a063978245ba9bc3695a10f62104befeb9cb0d85ae72b91a35",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕이 하만에게 이르되 너는 네 말대로 속히 왕복과 말을 취하여 대궐 문에 앉은 유다 사람 모르드개에게 행하되 무릇 네가 말한 것에서 조금도 빠짐이 없이 하라"
+      ],
+      "raw_text_hashes": [
+        "c264addfaa4165a063978245ba9bc3695a10f62104befeb9cb0d85ae72b91a35"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:11",
+      "sequence": 12805,
+      "chapter_label": "EST 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Then Haman took the clothing and the horse, and arrayed Mordecai, and had him ride through the city square, and proclaimed before him, “Thus it shall be done to the man whom the king delights to honor!”",
+      "ko": "하만이 왕복과 말을 취하여 모르드개에게 옷을 입히고 말을 태워 성중 거리로 다니며 그 앞에서 반포하되 왕이 존귀케 하시기를 기뻐하시는 사람에게는 이같이 할 것이라 하니라",
+      "source_text_hash": "57c1a0cd2c08548816638e17b4153521899065dab9aaf89b5b61baba7f351438",
+      "translation_text_hash": "38a8606de39d2812cae4d5f8c4b03401d5166439d7afc12e26b5c3926d449e70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하만이 왕복과 말을 취하여 모르드개에게 옷을 입히고 말을 태워 성중 거리로 다니며 그 앞에서 반포하되 왕이 존귀케 하시기를 기뻐하시는 사람에게는 이같이 할 것이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "38a8606de39d2812cae4d5f8c4b03401d5166439d7afc12e26b5c3926d449e70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:12",
+      "sequence": 12806,
+      "chapter_label": "EST 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Mordecai came back to the king’s gate, but Haman hurried to his house, mourning and having his head covered.",
+      "ko": "모르드개는 다시 대궐 문으로 돌아오고 하만은 번뇌하여 머리를 싸고 급히 집으로 돌아와서",
+      "source_text_hash": "55f8710f8206fe71c265d48edb9eed7c6e4bd9a6c495f55423bb4ef12ca325e6",
+      "translation_text_hash": "472a5916e4123f38463dc23515e37952a13cdd0836f70e6378b1dafb40401939",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모르드개는 다시 대궐 문으로 돌아오고 하만은 번뇌하여 머리를 싸고 급히 집으로 돌아와서"
+      ],
+      "raw_text_hashes": [
+        "472a5916e4123f38463dc23515e37952a13cdd0836f70e6378b1dafb40401939"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:13",
+      "sequence": 12807,
+      "chapter_label": "EST 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Haman recounted to Zeresh his wife and all his friends everything that had happened to him. Then his wise men and Zeresh his wife said to him, “If Mordecai, before whom you have begun to fall, is of Jewish descent, you will not prevail against him, but you will surely fall before him.”",
+      "ko": "자기의 당한 모든 일을 그 아내 세레스와 모든 친구에게 고하매 그 중 지혜로운 자와 그 아내 세레스가 가로되 모르드개가 과연 유다 족속이면 당신이 그 앞에서 굴욕을 당하기 시작하였으니 능히 저를 이기지 못하고 분명히 그 앞에 엎드러지리이다",
+      "source_text_hash": "a81170d2b4200ef91353abe263876335caaed0d80292e8a5890f0e7c26271cb1",
+      "translation_text_hash": "29d6dc7e6323474b220cc2cf56869af6d969cd6591bea4f125a720672fe4a3bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 당한 모든 일을 그 아내 세레스와 모든 친구에게 고하매 그 중 지혜로운 자와 그 아내 세레스가 가로되 모르드개가 과연 유다 족속이면 당신이 그 앞에서 굴욕을 당하기 시작하였으니 능히 저를 이기지 못하고 분명히 그 앞에 엎드러지리이다"
+      ],
+      "raw_text_hashes": [
+        "29d6dc7e6323474b220cc2cf56869af6d969cd6591bea4f125a720672fe4a3bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EST:6:14",
+      "sequence": 12808,
+      "chapter_label": "EST 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "EST",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EST",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "While they were yet talking with him, the king’s eunuchs came, and hurried to bring Haman to the banquet that Esther had prepared.",
+      "ko": "아직 말이 그치지 아니하여서 왕의 내시들이 이르러 하만을 데리고 에스더의 베푼 잔치에 빨리 나아가니라",
+      "source_text_hash": "cdfc9a96498e5eedba4837310f71ec8e572f03c78dfe155d5798194d1ece2d63",
+      "translation_text_hash": "343d9669e34321a0a973030a92423198ab1c369d7d968e50f0afac21e2e0cd2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아직 말이 그치지 아니하여서 왕의 내시들이 이르러 하만을 데리고 에스더의 베푼 잔치에 빨리 나아가니라"
+      ],
+      "raw_text_hashes": [
+        "343d9669e34321a0a973030a92423198ab1c369d7d968e50f0afac21e2e0cd2e"
+      ]
+    }
+  ]
+}

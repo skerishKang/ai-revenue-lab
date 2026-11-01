@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:015",
+  "unit_ordinal": 817,
+  "unit_label": "EZK 15",
+  "book_code": "EZK",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:15:1",
+      "sequence": 20756,
+      "chapter_label": "EZK 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "2fcb54244475e91bef0fbc3c3374d04d74406d7f7556cf1f7a2dd6aaa6668237"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:2",
+      "sequence": 20757,
+      "chapter_label": "EZK 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, what is the vine tree more than any tree, the vine branch which is among the trees of the forest?",
+      "ko": "인자야 포도나무가 모든 나무보다 나은 것이 무엇이랴 삼림 중 여러 나무 가운데 있는 그 포도나무 가지가 나은 것이 무엇이랴",
+      "source_text_hash": "d4492c0b2b451e295620b1f0b39849a152b2f57ed7c8416304fa73d792c346d1",
+      "translation_text_hash": "787e76d3e851bba7ceba2d36591e81333ca052e0e0bdc77badde6aca8177f267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 포도나무가 모든 나무보다 나은 것이 무엇이랴 삼림 중 여러 나무 가운데 있는 그 포도나무 가지가 나은 것이 무엇이랴"
+      ],
+      "raw_text_hashes": [
+        "787e76d3e851bba7ceba2d36591e81333ca052e0e0bdc77badde6aca8177f267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:3",
+      "sequence": 20758,
+      "chapter_label": "EZK 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Will wood be taken of it to make anything? Will men take a pin of it to hang any vessel on it?",
+      "ko": "그 나무를 가지고 무엇을 제조할 수 있겠느냐 그것으로 무슨 그릇을 걸 못을 만들 수 있겠느냐",
+      "source_text_hash": "27ecc82c66e3fd012ea6228fab69cc38b5eb739d848795a276c55dcbf4dab5f9",
+      "translation_text_hash": "b14d80114c975ed80092269a4e7dc0bf40f4a9f9649cfe1468a06c09a708f3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무를 가지고 무엇을 제조할 수 있겠느냐 그것으로 무슨 그릇을 걸 못을 만들 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "b14d80114c975ed80092269a4e7dc0bf40f4a9f9649cfe1468a06c09a708f3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:4",
+      "sequence": 20759,
+      "chapter_label": "EZK 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, it is cast into the fire for fuel; the fire has devoured both its ends, and the middle of it is burned. Is it profitable for any work?",
+      "ko": "불에 던질 화목이 될 뿐이라 불이 그 두 끝을 사르고 그 가운데도 태웠으면 제조에 무슨 소용이 있겠느냐",
+      "source_text_hash": "04c43d09c89c5561b66de43106f6b07be105ef78ec370f10832dc54607bb1fd9",
+      "translation_text_hash": "52389a3884c6b5045810bb750d847d4e37c3de06cf84071e6bf833d3e8af0e94",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불에 던질 화목이 될 뿐이라 불이 그 두 끝을 사르고 그 가운데도 태웠으면 제조에 무슨 소용이 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "52389a3884c6b5045810bb750d847d4e37c3de06cf84071e6bf833d3e8af0e94"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:5",
+      "sequence": 20760,
+      "chapter_label": "EZK 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "Behold, when it was whole, it was suitable for no work. How much less, when the fire has devoured it, and it has been burned, will it yet be suitable for any work?”",
+      "ko": "그것이 온전할 때에도 아무 제조에 합당치 않았거든 하물며 불에 살라지고 탄 후에 어찌 제조에 합당하겠느냐",
+      "source_text_hash": "1e0b6eaa050634c82b81f862370cfa92038d3922543834c346de288e18093ace",
+      "translation_text_hash": "a39e1bc39f2a99aa409f4c742119b1f2aeae2884b1947780ff557f1204a00a7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 온전할 때에도 아무 제조에 합당치 않았거든 하물며 불에 살라지고 탄 후에 어찌 제조에 합당하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "a39e1bc39f2a99aa409f4c742119b1f2aeae2884b1947780ff557f1204a00a7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:6",
+      "sequence": 20761,
+      "chapter_label": "EZK 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore the Lord GOD says: “As the vine wood among the trees of the forest, which I have given to the fire for fuel, so I will give the inhabitants of Jerusalem.",
+      "ko": "그러므로 주 여호와 내가 말하노라 내가 수풀 가운데 포도나무를 불에 던질 화목이 되게 한 것 같이 내가 예루살렘 거민도 그같이 할찌라",
+      "source_text_hash": "bb1ac2ad1f87f7fb6f4936447809959325851f4642c9dac6ae25a1b5c24f6118",
+      "translation_text_hash": "1bda0da4762419b8bbdc5e8c7637fdd7f49fe1e8fa5c156151247660b66e3595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와 내가 말하노라 내가 수풀 가운데 포도나무를 불에 던질 화목이 되게 한 것 같이 내가 예루살렘 거민도 그같이 할찌라"
+      ],
+      "raw_text_hashes": [
+        "1bda0da4762419b8bbdc5e8c7637fdd7f49fe1e8fa5c156151247660b66e3595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:7",
+      "sequence": 20762,
+      "chapter_label": "EZK 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "I will set my face against them. They will go out from the fire, but the fire will still devour them. Then you will know that I am the LORD, when I set my face against them.",
+      "ko": "내가 그들을 대적한즉 그들이 그 불에서 나와도 불이 그들을 사르리니 내가 그들을 대적할 때에 너희가 나를 여호와인줄 알리라",
+      "source_text_hash": "e76506079863f03e1053dfb8507d9cdf90fe89945b3ec0bb21b1d4e011b29656",
+      "translation_text_hash": "f79844721ae8d3857a9bf62b98a8fd8d950e4013355fde194a88a348e8e8a296",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그들을 대적한즉 그들이 그 불에서 나와도 불이 그들을 사르리니 내가 그들을 대적할 때에 너희가 나를 여호와인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "f79844721ae8d3857a9bf62b98a8fd8d950e4013355fde194a88a348e8e8a296"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:15:8",
+      "sequence": 20763,
+      "chapter_label": "EZK 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "I will make the land desolate, because they have acted unfaithfully,” says the Lord GOD.",
+      "ko": "내가 그 땅을 황무케 하리니 이는 그들이 범법함이니라 나 주 여호와의 말이니라 하시니라",
+      "source_text_hash": "ff5c66ba856a59570abf017c1611c0cb8e6b6a391accb13fa05e38c0cc2cfcdd",
+      "translation_text_hash": "ab0a4981f1acff260eae22ebe89e99edffd191443576f3e57a9dee9eb6ed4fe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 땅을 황무케 하리니 이는 그들이 범법함이니라 나 주 여호와의 말이니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "ab0a4981f1acff260eae22ebe89e99edffd191443576f3e57a9dee9eb6ed4fe7"
+      ]
+    }
+  ]
+}

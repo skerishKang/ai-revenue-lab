@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:006",
+  "unit_ordinal": 242,
+  "unit_label": "1SA 6",
+  "book_code": "1SA",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:6:1",
+      "sequence": 7333,
+      "chapter_label": "1SA 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s ark was in the country of the Philistines seven months.",
+      "ko": "여호와의 궤가 블레셋 사람의 지방에 있은지 일곱 달이라",
+      "source_text_hash": "ab9e97628ec05313fc4049c7de011dd21e1fec9786e97b395f5175f3b6ad6c26",
+      "translation_text_hash": "382dd20ad785d79eb63868742f87ffdc4bc99d4b9149703fb55f65530670fe63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤가 블레셋 사람의 지방에 있은지 일곱 달이라"
+      ],
+      "raw_text_hashes": [
+        "382dd20ad785d79eb63868742f87ffdc4bc99d4b9149703fb55f65530670fe63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:2",
+      "sequence": 7334,
+      "chapter_label": "1SA 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "The Philistines called for the priests and the diviners, saying, “What shall we do with the LORD’s ark? Show us how we should send it to its place.”",
+      "ko": "블레셋 사람이 제사장들과 복술자들을 불러서 이르되 우리가 여호와의 궤를 어떻게 할꼬 그것을 어떻게 본처로 보낼 것을 우리에게 가르치라",
+      "source_text_hash": "55ed089dea972f9cdc36b2f1c46940f9de9a1ad5653291cf9b6e9d64f2624463",
+      "translation_text_hash": "a5c10773c917c58aaa60a81ae01ba3579e65e1ed3eee8b64fd90bee49ac5a120",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 제사장들과 복술자들을 불러서 이르되 우리가 여호와의 궤를 어떻게 할꼬 그것을 어떻게 본처로 보낼 것을 우리에게 가르치라"
+      ],
+      "raw_text_hashes": [
+        "a5c10773c917c58aaa60a81ae01ba3579e65e1ed3eee8b64fd90bee49ac5a120"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:3",
+      "sequence": 7335,
+      "chapter_label": "1SA 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "They said, “If you send away the ark of the God of Israel, don’t send it empty; but by all means return a trespass offering to him. Then you will be healed, and it will be known to you why his hand is not removed from you.”",
+      "ko": "그들이 가로되 이스라엘 신의 궤를 보내려거든 거저 보내지 말고 그에게 속건제를 드려야 할찌니라 그리하면 병도 낫고 그 손을 너희에게서 옮기지 아니하는 연고도 알리라",
+      "source_text_hash": "b53663b0446e56da604271f6a1a33fb5244d108f2cb687a20c9508a5cdb9f493",
+      "translation_text_hash": "e9bcc20bca88175454dfc9f96ede2c543ea84956457e0092c56f0eba3f2ed13f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 이스라엘 신의 궤를 보내려거든 거저 보내지 말고 그에게 속건제를 드려야 할찌니라 그리하면 병도 낫고 그 손을 너희에게서 옮기지 아니하는 연고도 알리라"
+      ],
+      "raw_text_hashes": [
+        "e9bcc20bca88175454dfc9f96ede2c543ea84956457e0092c56f0eba3f2ed13f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:4",
+      "sequence": 7336,
+      "chapter_label": "1SA 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Then they said, “What should the trespass offering be which we shall return to him?” They said, “Five golden tumors and five golden mice, for the number of the lords of the Philistines; for one plague was on you all, and on your lords.",
+      "ko": "그들이 가로되 무엇으로 그에게 드릴 속건제를 삼을꼬 가로되 블레셋 사람의 방백의 수효대로 금독종 다섯과 금쥐 다섯이라야 하리니 너희와 너희 방백에게 내린 재앙이 일반임이니라",
+      "source_text_hash": "4af6b1c1b9871eea82cb13847a36430761968ab15991b9cf9d00455487c645ee",
+      "translation_text_hash": "6c47cb223f7a0beca146b7512824a97238f3e707b94f284c3a486ae6ec8da101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 가로되 무엇으로 그에게 드릴 속건제를 삼을꼬 가로되 블레셋 사람의 방백의 수효대로 금독종 다섯과 금쥐 다섯이라야 하리니 너희와 너희 방백에게 내린 재앙이 일반임이니라"
+      ],
+      "raw_text_hashes": [
+        "6c47cb223f7a0beca146b7512824a97238f3e707b94f284c3a486ae6ec8da101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:5",
+      "sequence": 7337,
+      "chapter_label": "1SA 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore you shall make images of your tumors and images of your mice that mar the land; and you shall give glory to the God of Israel. Perhaps he will release his hand from you, from your gods, and from your land.",
+      "ko": "그러므로 너희는 너희 독종의 형상과 땅을 해롭게 하는 쥐의 형상을 만들어 이스라엘 신께 영화를 돌리라 그가 혹 그 손을 너희와 너희 신들과 너희 땅에서 경하게 하실까 하노라",
+      "source_text_hash": "c51f6acf5f946de214f42db5d3f84c66d17990ddac0676af1ac2d327c7462d18",
+      "translation_text_hash": "d3334d28cba6be7a3be8fb5577fef755c1145e50abc61e107eb0bb7615e50be0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 너희 독종의 형상과 땅을 해롭게 하는 쥐의 형상을 만들어 이스라엘 신께 영화를 돌리라 그가 혹 그 손을 너희와 너희 신들과 너희 땅에서 경하게 하실까 하노라"
+      ],
+      "raw_text_hashes": [
+        "d3334d28cba6be7a3be8fb5577fef755c1145e50abc61e107eb0bb7615e50be0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:6",
+      "sequence": 7338,
+      "chapter_label": "1SA 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Why then do you harden your hearts as the Egyptians and Pharaoh hardened their hearts? When he had worked wonderfully among them, didn’t they let the people go, and they departed?",
+      "ko": "애굽인과 바로가 그 마음을 강퍅케 한것 같이 어찌하여 너희가 너희 마음을 강퍅케 하겠느냐 그가 그들 중에서 기이하게 행한 후에 그들이 백성을 가게 하므로 백성이 떠나지 아니하였느냐",
+      "source_text_hash": "52159589b2ae8bcdecf4a7b7b21477e594fc101b2508ba1b8d8d2dadf566d5bc",
+      "translation_text_hash": "3fafa1a1bf07e7bafb2e1199d25b91e01e22eeb51529ff402c894d73145f31e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽인과 바로가 그 마음을 강퍅케 한것 같이 어찌하여 너희가 너희 마음을 강퍅케 하겠느냐 그가 그들 중에서 기이하게 행한 후에 그들이 백성을 가게 하므로 백성이 떠나지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "3fafa1a1bf07e7bafb2e1199d25b91e01e22eeb51529ff402c894d73145f31e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:7",
+      "sequence": 7339,
+      "chapter_label": "1SA 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "“Now therefore take and prepare yourselves a new cart and two milk cows on which there has come no yoke; and tie the cows to the cart, and bring their calves home from them;",
+      "ko": "그러므로 새 수레를 만들고 멍에 메어 보지 아니한 젖 나는 소 둘을 끌어다가 수레를 소에 메우고 그 송아지들은 떼어 집으로 돌려 보내고",
+      "source_text_hash": "90cf489ac5be13c61981ce871fb5c1a615d9c4b9fae3597783e283370303a8ff",
+      "translation_text_hash": "77d81b86cdaf1e632d2b3f1db49cdc65b8f0c610f708d3433ef7eeff461348c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 새 수레를 만들고 멍에 메어 보지 아니한 젖 나는 소 둘을 끌어다가 수레를 소에 메우고 그 송아지들은 떼어 집으로 돌려 보내고"
+      ],
+      "raw_text_hashes": [
+        "77d81b86cdaf1e632d2b3f1db49cdc65b8f0c610f708d3433ef7eeff461348c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:8",
+      "sequence": 7340,
+      "chapter_label": "1SA 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "and take the LORD’s ark and lay it on the cart. Put the jewels of gold, which you return him for a trespass offering, in a box by its side; and send it away, that it may go.",
+      "ko": "여호와의 궤를 가져다가 수레에 싣고 속건제 드릴 금 보물은 상자에 담아 궤 곁에 두고 그것을 보내어 가게하고",
+      "source_text_hash": "1c01c8ad557c193e634832aca7ec18606fa80725947ad675e4b6d96d0b2b89bc",
+      "translation_text_hash": "aeb04316ba278c0d9ce82b82b7f566b6c8afdba2690081ed6c271642a2bbb28f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤를 가져다가 수레에 싣고 속건제 드릴 금 보물은 상자에 담아 궤 곁에 두고 그것을 보내어 가게하고"
+      ],
+      "raw_text_hashes": [
+        "aeb04316ba278c0d9ce82b82b7f566b6c8afdba2690081ed6c271642a2bbb28f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:9",
+      "sequence": 7341,
+      "chapter_label": "1SA 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Behold, if it goes up by the way of its own border to Beth Shemesh, then he has done us this great evil; but if not, then we shall know that it is not his hand that struck us. It was a chance that happened to us.”",
+      "ko": "보아서 궤가 그 본 지경길로 올라가서 벧세메스로 가면 이 큰 재앙은 그가 우리에게 내린 것이요 그렇지 아니하면 우리를 친 것이 그 손이 아니요 우연히 만난 것인줄 알리라",
+      "source_text_hash": "2bd3c33c7df9178e167627b9a0258f10ea19c28ed42949961d848fac92dd3493",
+      "translation_text_hash": "e11a6dd1d86714806d37a9963372007d817477efe199a73c334128fd5a3825bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보아서 궤가 그 본 지경길로 올라가서 벧세메스로 가면 이 큰 재앙은 그가 우리에게 내린 것이요 그렇지 아니하면 우리를 친 것이 그 손이 아니요 우연히 만난 것인줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "e11a6dd1d86714806d37a9963372007d817477efe199a73c334128fd5a3825bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:10",
+      "sequence": 7342,
+      "chapter_label": "1SA 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "The men did so, and took two milk cows and tied them to the cart, and shut up their calves at home.",
+      "ko": "그 사람들이 그 같이 하여 젖나는 소 둘을 끌어다가 수레를 메우고 송아지들은 집에 가두고",
+      "source_text_hash": "8005a4dfb4022fbba476b20bb4e5a86f0695faf7c26d7219f7ac8d0e9c0096ca",
+      "translation_text_hash": "3f18f4207c9d25da96918b427f238742deceb6b80d73c406b76de28103565702",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 그 같이 하여 젖나는 소 둘을 끌어다가 수레를 메우고 송아지들은 집에 가두고"
+      ],
+      "raw_text_hashes": [
+        "3f18f4207c9d25da96918b427f238742deceb6b80d73c406b76de28103565702"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:11",
+      "sequence": 7343,
+      "chapter_label": "1SA 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "They put the LORD’s ark on the cart, and the box with the golden mice and the images of their tumors.",
+      "ko": "여호와의 궤와 및 금쥐와 그들의 독종의 형상을 담은 상자를 수레 위에 실으니",
+      "source_text_hash": "1884b800480c57c1c562b7367dc98ba8f7ebc392a899e26a96598538bc586dda",
+      "translation_text_hash": "401a355012c4e2590c8b864b569e278b97e6090c629b5522aa5f7e7d0ca53da6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 궤와 및 금쥐와 그들의 독종의 형상을 담은 상자를 수레 위에 실으니"
+      ],
+      "raw_text_hashes": [
+        "401a355012c4e2590c8b864b569e278b97e6090c629b5522aa5f7e7d0ca53da6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:12",
+      "sequence": 7344,
+      "chapter_label": "1SA 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "The cows took the straight way by the way to Beth Shemesh. They went along the highway, lowing as they went, and didn’t turn away to the right hand or to the left; and the lords of the Philistines went after them to the border of Beth Shemesh.",
+      "ko": "암소가 벧세메스 길로 바로 행하여 대로로 가며 갈 때에 울고 좌우로 치우치지 아니하였고 블레셋 방백들은 벧세메스 경계까지 따라 가니라",
+      "source_text_hash": "9e815c787c5cc19f669e7b287defa704d07406c4e45972f4f53f4f21cbd4d256",
+      "translation_text_hash": "b3a0a562258f2bb4a28cebf8914545b53d5e74635140e57387efe57f02e326c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암소가 벧세메스 길로 바로 행하여 대로로 가며 갈 때에 울고 좌우로 치우치지 아니하였고 블레셋 방백들은 벧세메스 경계까지 따라 가니라"
+      ],
+      "raw_text_hashes": [
+        "b3a0a562258f2bb4a28cebf8914545b53d5e74635140e57387efe57f02e326c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:13",
+      "sequence": 7345,
+      "chapter_label": "1SA 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "The people of Beth Shemesh were reaping their wheat harvest in the valley; and they lifted up their eyes and saw the ark, and rejoiced to see it.",
+      "ko": "벧세메스 사람들이 골짜기에서 밀을 베다가 눈을 들어 궤를 보고 그것의 보임을 기뻐하더니",
+      "source_text_hash": "a57aa103604038ed978d4ed47785997176691edaa70319c7cf9221585b7db26a",
+      "translation_text_hash": "325711a3081e0db31fccd472fe1bdff3e1a10201b9c318159fa6c4fc121f446e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧세메스 사람들이 골짜기에서 밀을 베다가 눈을 들어 궤를 보고 그것의 보임을 기뻐하더니"
+      ],
+      "raw_text_hashes": [
+        "325711a3081e0db31fccd472fe1bdff3e1a10201b9c318159fa6c4fc121f446e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:14",
+      "sequence": 7346,
+      "chapter_label": "1SA 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "The cart came into the field of Joshua of Beth Shemesh, and stood there, where there was a great stone. Then they split the wood of the cart and offered up the cows for a burnt offering to the LORD.",
+      "ko": "수레가 벧세메스 사람 여호수아의 밭 큰 돌 있는 곳에 이르러 선지라 무리가 수레의 나무를 패고 그 소를 번제로 여호와께 드리고",
+      "source_text_hash": "a9a74019683a97666b46231a660642c8b61ce034ea7597a40ef8e38ecbc94b05",
+      "translation_text_hash": "9bf9ffb1c3c82553d1f3ee7f245e489614cf6ccd27ed29da986b66a854df56fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수레가 벧세메스 사람 여호수아의 밭 큰 돌 있는 곳에 이르러 선지라 무리가 수레의 나무를 패고 그 소를 번제로 여호와께 드리고"
+      ],
+      "raw_text_hashes": [
+        "9bf9ffb1c3c82553d1f3ee7f245e489614cf6ccd27ed29da986b66a854df56fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:15",
+      "sequence": 7347,
+      "chapter_label": "1SA 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "The Levites took down the LORD’s ark and the box that was with it, in which the jewels of gold were, and put them on the great stone; and the men of Beth Shemesh offered burnt offerings and sacrificed sacrifices the same day to the LORD.",
+      "ko": "레위인은 여호와의 궤와 그 궤와 함께 있는 금 보물 담긴 상자를 내려다가 큰 돌 위에 두매 그 날에 벧세메스 사람들이 여호와께 번제와 다른 제를 드리니라",
+      "source_text_hash": "4ca7b4d3c760e5a2847509ced1e0a34ee6ba75d445fb142f23b8cb1e6ad0dd29",
+      "translation_text_hash": "a443fe0e0ba7477224737c9d5e962c7863ff0c7df8f86df6ebb938e1aaef7c8a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위인은 여호와의 궤와 그 궤와 함께 있는 금 보물 담긴 상자를 내려다가 큰 돌 위에 두매 그 날에 벧세메스 사람들이 여호와께 번제와 다른 제를 드리니라"
+      ],
+      "raw_text_hashes": [
+        "a443fe0e0ba7477224737c9d5e962c7863ff0c7df8f86df6ebb938e1aaef7c8a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:16",
+      "sequence": 7348,
+      "chapter_label": "1SA 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "When the five lords of the Philistines had seen it, they returned to Ekron the same day.",
+      "ko": "블레셋 다섯 방백이 이것을 보고 그 날에 에그론으로 돌아갔더라",
+      "source_text_hash": "583eaf6e93ca048af72f50308adce49a56ac0c1dcc474dfd39dcbb84ef76df61",
+      "translation_text_hash": "0ef1369ce9f9454ce870312895f1ac2478730ab2be8b772190b8bd795c1d3e47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 다섯 방백이 이것을 보고 그 날에 에그론으로 돌아갔더라"
+      ],
+      "raw_text_hashes": [
+        "0ef1369ce9f9454ce870312895f1ac2478730ab2be8b772190b8bd795c1d3e47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:17",
+      "sequence": 7349,
+      "chapter_label": "1SA 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "These are the golden tumors which the Philistines returned for a trespass offering to the LORD: for Ashdod one, for Gaza one, for Ashkelon one, for Gath one, for Ekron one;",
+      "ko": "블레셋 사람이 여호와께 속건제로 드린 금독종은 이러하니 아스돗을 위하여 하나요 가사를 위하여 하나요 아스글론을 위하여 하나요 가드를 위하여 하나요 에그론을 위하여 하나이며",
+      "source_text_hash": "f57c404e3e2951887b0269da12b2d1fe70a22c7fb07897f4ce8c4ca15bdfb031",
+      "translation_text_hash": "92831ae0d40bd3cc7a2d963502b8fa1b728da90dc2aa6ef501b1b569f4879d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 여호와께 속건제로 드린 금독종은 이러하니 아스돗을 위하여 하나요 가사를 위하여 하나요 아스글론을 위하여 하나요 가드를 위하여 하나요 에그론을 위하여 하나이며"
+      ],
+      "raw_text_hashes": [
+        "92831ae0d40bd3cc7a2d963502b8fa1b728da90dc2aa6ef501b1b569f4879d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:18",
+      "sequence": 7350,
+      "chapter_label": "1SA 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "and the golden mice, according to the number of all the cities of the Philistines belonging to the five lords, both of fortified cities and of country villages, even to the great stone on which they set down the LORD’s ark. That stone remains to this day in the field of Joshua of Beth Shemesh.",
+      "ko": "드린바 금쥐는 여호와의 궤를 놓은 큰 돌에 이르기까지의 모든 견고한 성읍과 시골 동리 곧 다섯 방백에게 속한 사람의 모든 성읍의 수효대로였더라 그 돌은 벧세메스 사람 여호수아의 밭에 오늘까지 있더라",
+      "source_text_hash": "3cda7d0a9d154fdfc26c0a94266cf9a42a73dd5ad63295b924833ff10ff36761",
+      "translation_text_hash": "34164763b971d373ebadc6926760077dd91128f06d382343177a8131929ab45f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드린바 금쥐는 여호와의 궤를 놓은 큰 돌에 이르기까지의 모든 견고한 성읍과 시골 동리 곧 다섯 방백에게 속한 사람의 모든 성읍의 수효대로였더라 그 돌은 벧세메스 사람 여호수아의 밭에 오늘까지 있더라"
+      ],
+      "raw_text_hashes": [
+        "34164763b971d373ebadc6926760077dd91128f06d382343177a8131929ab45f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:19",
+      "sequence": 7351,
+      "chapter_label": "1SA 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "He struck of the men of Beth Shemesh, because they had looked into the LORD’s ark, he struck fifty thousand seventy of the men. Then the people mourned, because the LORD had struck the people with a great slaughter.",
+      "ko": "벧세메스 사람들이 여호와의 궤를 들여다 본고로 그들을 치사 (오만)칠십인을 죽이신지라 여호와께서 백성을 쳐서 크게 살륙하셨으므로 백성이 애곡하였더라",
+      "source_text_hash": "1331637b709c4c3fa2c1be9b734e6815641174fa9501621fd7eba8343b38ba92",
+      "translation_text_hash": "a3e90895c1d310105caaf998edeae4d65fd9a01d70ba19aa34b643ae23c746f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧세메스 사람들이 여호와의 궤를 들여다 본고로 그들을 치사 (오만)칠십인을 죽이신지라 여호와께서 백성을 쳐서 크게 살륙하셨으므로 백성이 애곡하였더라"
+      ],
+      "raw_text_hashes": [
+        "a3e90895c1d310105caaf998edeae4d65fd9a01d70ba19aa34b643ae23c746f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:20",
+      "sequence": 7352,
+      "chapter_label": "1SA 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "The men of Beth Shemesh said, “Who is able to stand before the LORD, this holy God? To whom shall he go up from us?”",
+      "ko": "벧세메스 사람들이 가로되 이 거룩하신 하나님 여호와 앞에 누가 능히 서리요 그를 우리에게서 뉘게로 가시게 할꼬 하고",
+      "source_text_hash": "edeb4b7d0fef062bfd0ab84aace53ea764d9cc01457bb165325ecab7bfe57fa4",
+      "translation_text_hash": "73c97da282043ff7a93368413d651210531d1cd64604b08fb07b9c6b90bab95c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧세메스 사람들이 가로되 이 거룩하신 하나님 여호와 앞에 누가 능히 서리요 그를 우리에게서 뉘게로 가시게 할꼬 하고"
+      ],
+      "raw_text_hashes": [
+        "73c97da282043ff7a93368413d651210531d1cd64604b08fb07b9c6b90bab95c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:6:21",
+      "sequence": 7353,
+      "chapter_label": "1SA 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "They sent messengers to the inhabitants of Kiriath Jearim, saying, “The Philistines have brought back the LORD’s ark. Come down and bring it up to yourselves.”",
+      "ko": "사자들을 기럇여아림 거민에게 보내어 가로되 블레셋 사람이 여호와의 궤를 도로 가져왔으니 너희는 내려와서 그것을 너희에게로 옮겨가라",
+      "source_text_hash": "0f57c9e3943a3c828dc5c2325dbeab1d56329263def29d6a92d1d7f547ee32c9",
+      "translation_text_hash": "e742428c407635f143074f3cd46232f584322b5ae1e18f9e43d12c8b74f8f06c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들을 기럇여아림 거민에게 보내어 가로되 블레셋 사람이 여호와의 궤를 도로 가져왔으니 너희는 내려와서 그것을 너희에게로 옮겨가라"
+      ],
+      "raw_text_hashes": [
+        "e742428c407635f143074f3cd46232f584322b5ae1e18f9e43d12c8b74f8f06c"
+      ]
+    }
+  ]
+}

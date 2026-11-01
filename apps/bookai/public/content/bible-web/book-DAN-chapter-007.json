@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:007",
+  "unit_ordinal": 857,
+  "unit_label": "DAN 7",
+  "book_code": "DAN",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:7:1",
+      "sequence": 21935,
+      "chapter_label": "DAN 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "In the first year of Belshazzar king of Babylon, Daniel had a dream and visions of his head while on his bed. Then he wrote the dream and told the sum of the matters.",
+      "ko": "바벨론 왕 벨사살 원년에 다니엘이 그 침상에서 꿈을 꾸며 뇌 속으로 이상을 받고 그 꿈을 기록하며 그 일의 대략을 진술하니라",
+      "source_text_hash": "e5476749dfdf6ffdf156ddf1909df22c869d1d9ddafe19f6b5e45976d5b16d86",
+      "translation_text_hash": "9f887bcf00c83d60a09dd75e26138dd26ecd066bd9150793a51cad81b3186f40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕 벨사살 원년에 다니엘이 그 침상에서 꿈을 꾸며 뇌 속으로 이상을 받고 그 꿈을 기록하며 그 일의 대략을 진술하니라"
+      ],
+      "raw_text_hashes": [
+        "9f887bcf00c83d60a09dd75e26138dd26ecd066bd9150793a51cad81b3186f40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:2",
+      "sequence": 21936,
+      "chapter_label": "DAN 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "Daniel spoke and said, “I saw in my vision by night, and, behold, the four winds of the sky broke out on the great sea.",
+      "ko": "다니엘이 진술하여 가로되 내가 밤에 이상을 보았는데 하늘의 네 바람이 큰 바다로 몰려 불더니",
+      "source_text_hash": "4f754e1b245dc47112bd80b31cc9eec914b64e4d62cd1edee7a45a22c0185d5f",
+      "translation_text_hash": "b7512755d1c3a6f1d0fa3a7aef0a69e312cfa11a1f247006de6e0b5ff759b8e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 진술하여 가로되 내가 밤에 이상을 보았는데 하늘의 네 바람이 큰 바다로 몰려 불더니"
+      ],
+      "raw_text_hashes": [
+        "b7512755d1c3a6f1d0fa3a7aef0a69e312cfa11a1f247006de6e0b5ff759b8e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:3",
+      "sequence": 21937,
+      "chapter_label": "DAN 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "Four great animals came up from the sea, different from one another.",
+      "ko": "큰 짐승 넷이 바다에서 나왔는데 그 모양이 각각 다르니",
+      "source_text_hash": "878fa3cb3a03a6b55a38ae961f8690d56601528bf6d067c859fcdf8c5209e221",
+      "translation_text_hash": "c8fc7f94af93e4fdbbd15cdfaf57682b582d33fcb50b08017f20ff273768666b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 짐승 넷이 바다에서 나왔는데 그 모양이 각각 다르니"
+      ],
+      "raw_text_hashes": [
+        "c8fc7f94af93e4fdbbd15cdfaf57682b582d33fcb50b08017f20ff273768666b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:4",
+      "sequence": 21938,
+      "chapter_label": "DAN 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "“The first was like a lion, and had eagle’s wings. I watched until its wings were plucked, and it was lifted up from the earth and made to stand on two feet as a man. A man’s heart was given to it.",
+      "ko": "첫째는 사자와 같은데 독수리의 날개가 있더니 내가 볼 사이에 그 날개가 뽑혔고 또 땅에서 들려서 사람처럼 두 발로 서게 함을 입었으며 또 사람의 마음을 받았으며",
+      "source_text_hash": "15dec0201f6cd776d54fe00a9c9cbfda9fef32be7108c26e53af666274caaf6a",
+      "translation_text_hash": "e42373279dd9042f247909ec9b408140444bd4d6aad9df445b6974dcf8468e6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫째는 사자와 같은데 독수리의 날개가 있더니 내가 볼 사이에 그 날개가 뽑혔고 또 땅에서 들려서 사람처럼 두 발로 서게 함을 입었으며 또 사람의 마음을 받았으며"
+      ],
+      "raw_text_hashes": [
+        "e42373279dd9042f247909ec9b408140444bd4d6aad9df445b6974dcf8468e6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:5",
+      "sequence": 21939,
+      "chapter_label": "DAN 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "“Behold, there was another animal, a second, like a bear. It was raised up on one side, and three ribs were in its mouth between its teeth. They said this to it: ‘Arise! Devour much flesh!’",
+      "ko": "다른 짐승 곧 둘째는 곰과 같은데 그것이 몸 한편을 들었고 그 입의 잇사이에는 세 갈빗대가 물렸는데 그에게 말하는 자가 있어 이르기를 일어나서 많은 고기를 먹으라 하였으며",
+      "source_text_hash": "11157e3cd0364feb443ef04f33300d4ae09e6e0ee6ea21d2990037c6f6f292cc",
+      "translation_text_hash": "8c77cc0b937aafcb1eeef56ad5051c46bf078ad80e9984035664c0ebfb5eb8a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다른 짐승 곧 둘째는 곰과 같은데 그것이 몸 한편을 들었고 그 입의 잇사이에는 세 갈빗대가 물렸는데 그에게 말하는 자가 있어 이르기를 일어나서 많은 고기를 먹으라 하였으며"
+      ],
+      "raw_text_hashes": [
+        "8c77cc0b937aafcb1eeef56ad5051c46bf078ad80e9984035664c0ebfb5eb8a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:6",
+      "sequence": 21940,
+      "chapter_label": "DAN 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "“After this I saw, and behold, another, like a leopard, which had on its back four wings of a bird. The animal also had four heads; and dominion was given to it.",
+      "ko": "그 후에 내가 또 본즉 다른 짐승 곧 표범과 같은 것이 있는데 그 등에는 새의 날개 넷이 있고 그 짐승에게 또 머리 넷이 있으며 또 권세를 받았으며",
+      "source_text_hash": "ba479ceefda672eb8481bc60649e80548ebac64459ff151b451d33334193d0da",
+      "translation_text_hash": "265556c5f306139357cddba8385fc82df16a221ab8a30d23389d0d9e2e475076",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 내가 또 본즉 다른 짐승 곧 표범과 같은 것이 있는데 그 등에는 새의 날개 넷이 있고 그 짐승에게 또 머리 넷이 있으며 또 권세를 받았으며"
+      ],
+      "raw_text_hashes": [
+        "265556c5f306139357cddba8385fc82df16a221ab8a30d23389d0d9e2e475076"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:7",
+      "sequence": 21941,
+      "chapter_label": "DAN 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "“After this I saw in the night visions, and, behold, there was a fourth animal, awesome, powerful, and exceedingly strong. It had great iron teeth. It devoured and broke in pieces, and stamped the residue with its feet. It was different from all the animals that were before it. It had ten horns.",
+      "ko": "내가 밤 이상 가운데 그 다음에 본 네째 짐승은 무섭고 놀라우며 또 극히 강하며 또 큰 철 이가 있어서 먹고 부숴뜨리고 그 나머지를 발로 밟았으며 이 짐승은 전의 모든 짐승과 다르고 또 열 뿔이 있으므로",
+      "source_text_hash": "30a8fa6bf09bb84589b16fe71e223aa74b3e65417fc078285df2d8fa6ad6c17e",
+      "translation_text_hash": "7ba29be8805838b21e0f3bd2ea730728532caac25f74e3060f964ebd8806928c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 밤 이상 가운데 그 다음에 본 네째 짐승은 무섭고 놀라우며 또 극히 강하며 또 큰 철 이가 있어서 먹고 부숴뜨리고 그 나머지를 발로 밟았으며 이 짐승은 전의 모든 짐승과 다르고 또 열 뿔이 있으므로"
+      ],
+      "raw_text_hashes": [
+        "7ba29be8805838b21e0f3bd2ea730728532caac25f74e3060f964ebd8806928c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:8",
+      "sequence": 21942,
+      "chapter_label": "DAN 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "“I considered the horns, and behold, there came up among them another horn, a little one, before which three of the first horns were plucked up by the roots; and behold, in this horn were eyes like the eyes of a man, and a mouth speaking arrogantly.",
+      "ko": "내가 그 뿔을 유심히 보는 중 다른 작은 뿔이 그 사이에서 나더니 먼저 뿔 중에 셋이 그 앞에 뿌리까지 뽑혔으며 이 작은 뿔에는 사람의 눈 같은 눈이 있고 또 입이 있어 큰 말을 하였느니라",
+      "source_text_hash": "33bc72eb0507431f4fd544947c702fbc256ac2c548c4cc1658dd6b20139c86db",
+      "translation_text_hash": "9cba3ee653b8f9057541e1efa5d423b70b8c77ce62f5a91fed93a59c82b5e157",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 뿔을 유심히 보는 중 다른 작은 뿔이 그 사이에서 나더니 먼저 뿔 중에 셋이 그 앞에 뿌리까지 뽑혔으며 이 작은 뿔에는 사람의 눈 같은 눈이 있고 또 입이 있어 큰 말을 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9cba3ee653b8f9057541e1efa5d423b70b8c77ce62f5a91fed93a59c82b5e157"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:9",
+      "sequence": 21943,
+      "chapter_label": "DAN 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "“I watched until thrones were placed, and one who was Ancient of Days sat. His clothing was white as snow, and the hair of his head like pure wool. His throne was fiery flames, and its wheels burning fire.",
+      "ko": "내가 보았는데 왕좌가 놓이고 옛적부터 항상 계신이가 좌정하셨는데 그 옷은 희기가 눈 같고 그 머리털은 깨끗한 양의 털 같고 그 보좌는 불꽃이요 그 바퀴는 붙는 불이며",
+      "source_text_hash": "6bea340ab08259a192b2b093ca028d8f89b6aba263727a17e7a5b0bde91b8a94",
+      "translation_text_hash": "caa70356f9d750503db56ad267604f361e4b32c8ee9b3d9b45da59500d78247a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보았는데 왕좌가 놓이고 옛적부터 항상 계신이가 좌정하셨는데 그 옷은 희기가 눈 같고 그 머리털은 깨끗한 양의 털 같고 그 보좌는 불꽃이요 그 바퀴는 붙는 불이며"
+      ],
+      "raw_text_hashes": [
+        "caa70356f9d750503db56ad267604f361e4b32c8ee9b3d9b45da59500d78247a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:10",
+      "sequence": 21944,
+      "chapter_label": "DAN 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "A fiery stream issued and came out from before him. Thousands of thousands ministered to him. Ten thousand times ten thousand stood before him. The judgment was set. The books were opened.",
+      "ko": "불이 강처럼 흘러 그 앞에서 나오며 그에게 수종하는 자는 천천이요 그 앞에 시위한 자는 만만이며 심판을 베푸는데 책들이 펴 놓였더라",
+      "source_text_hash": "4ebb38550cfce740161e60b81a3890b5fda0dc62c8f5cb8903003c2e43d89a99",
+      "translation_text_hash": "f1bcad226c1b510c20a684d578337cd0113e7433f8893d2e50d57daa526fe4fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불이 강처럼 흘러 그 앞에서 나오며 그에게 수종하는 자는 천천이요 그 앞에 시위한 자는 만만이며 심판을 베푸는데 책들이 펴 놓였더라"
+      ],
+      "raw_text_hashes": [
+        "f1bcad226c1b510c20a684d578337cd0113e7433f8893d2e50d57daa526fe4fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:11",
+      "sequence": 21945,
+      "chapter_label": "DAN 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "“I watched at that time because of the voice of the arrogant words which the horn spoke. I watched even until the animal was slain, and its body destroyed, and it was given to be burned with fire.",
+      "ko": "그 때에 내가 그 큰 말하는 작은 뿔의 목소리로 인하여 주목하여 보는 사이에 짐승이 죽임을 당하고 그 시체가 상한바 되어 붙는 불에 던진바 되었으며",
+      "source_text_hash": "a7089650206019a551c31ac0d683e64f3f19861f4d40e1f1f397a9c05bd40465",
+      "translation_text_hash": "683c68fe21b85d5efd45dd3b99557ea2b4d710b8dd184fe62b23534fa1a5b26c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 그 큰 말하는 작은 뿔의 목소리로 인하여 주목하여 보는 사이에 짐승이 죽임을 당하고 그 시체가 상한바 되어 붙는 불에 던진바 되었으며"
+      ],
+      "raw_text_hashes": [
+        "683c68fe21b85d5efd45dd3b99557ea2b4d710b8dd184fe62b23534fa1a5b26c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:12",
+      "sequence": 21946,
+      "chapter_label": "DAN 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "As for the rest of the animals, their dominion was taken away; yet their lives were prolonged for a season and a time.",
+      "ko": "그 남은 모든 짐승은 그 권세를 빼았겼으나 그 생명은 보존되어 정한 시기가 이르기를 기다리게 되었더라",
+      "source_text_hash": "abdff77bd6a20b0b565cd95a121cbdb1532c2fa59fab0991d0f74fb0f1861c61",
+      "translation_text_hash": "df7676e56d7ca88457aaabf2a4a7f317b57e1a6637ce383f0ecd18f5d81649fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 모든 짐승은 그 권세를 빼았겼으나 그 생명은 보존되어 정한 시기가 이르기를 기다리게 되었더라"
+      ],
+      "raw_text_hashes": [
+        "df7676e56d7ca88457aaabf2a4a7f317b57e1a6637ce383f0ecd18f5d81649fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:13",
+      "sequence": 21947,
+      "chapter_label": "DAN 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "“I saw in the night visions, and behold, there came with the clouds of the sky one like a son of man, and he came even to the Ancient of Days, and they brought him near before him.",
+      "ko": "내가 또 밤 이상 중에 보았는데 인자 같은이가 하늘 구름을 타고 와서 옛적부터 항상 계신 자에게 나아와 그 앞에 인도되매",
+      "source_text_hash": "49e3471c4870475c2d4d3aa7ff068b87c9b208fbbfc28d00e3de361356eba258",
+      "translation_text_hash": "6c4ab8b5323f3a7d3ad353946519d9ea861e570fa401b9983768f7a7beb65bd9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 밤 이상 중에 보았는데 인자 같은이가 하늘 구름을 타고 와서 옛적부터 항상 계신 자에게 나아와 그 앞에 인도되매"
+      ],
+      "raw_text_hashes": [
+        "6c4ab8b5323f3a7d3ad353946519d9ea861e570fa401b9983768f7a7beb65bd9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:14",
+      "sequence": 21948,
+      "chapter_label": "DAN 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Dominion was given him, and glory, and a kingdom, that all the peoples, nations, and languages should serve him. His dominion is an everlasting dominion, which will not pass away, and his kingdom one that will not be destroyed.",
+      "ko": "그에게 권세와 영광과 나라를 주고 모든 백성과 나라들과 각 방언하는 자로 그를 섬기게 하였으니 그 권세는 영원한 권세라 옮기지 아니할 것이요 그 나라는 폐하지 아니할 것이니라",
+      "source_text_hash": "dfe96f66eed4de77aa11d28192fc73c7e2e2e8e57b1a8ecb6854a877714ffb29",
+      "translation_text_hash": "75bd49a491f6ea6de5dc1026bc3984541150af3e6a161a502b74069ab7df2d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게 권세와 영광과 나라를 주고 모든 백성과 나라들과 각 방언하는 자로 그를 섬기게 하였으니 그 권세는 영원한 권세라 옮기지 아니할 것이요 그 나라는 폐하지 아니할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "75bd49a491f6ea6de5dc1026bc3984541150af3e6a161a502b74069ab7df2d70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:15",
+      "sequence": 21949,
+      "chapter_label": "DAN 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "“As for me, Daniel, my spirit was grieved within my body, and the visions of my head troubled me.",
+      "ko": "나 다니엘이 중심에 근심하며 내 뇌 속에 이상이 나로 번민케 한지라",
+      "source_text_hash": "9996eea464b7fb8361ecf85edd978c90b8ea9ac680435078e5f8c53e9213b1f8",
+      "translation_text_hash": "0d4cd7bea12121ed8084cf5e8322213d072f212d0bcbf02c62b15af7cb2dea73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 다니엘이 중심에 근심하며 내 뇌 속에 이상이 나로 번민케 한지라"
+      ],
+      "raw_text_hashes": [
+        "0d4cd7bea12121ed8084cf5e8322213d072f212d0bcbf02c62b15af7cb2dea73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:16",
+      "sequence": 21950,
+      "chapter_label": "DAN 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "I came near to one of those who stood by, and asked him the truth concerning all this. “So he told me, and made me know the interpretation of the things.",
+      "ko": "내가 그 곁에 모신 자 중 하나에게 나아가서 이 모든 일의 진상을 물으매 그가 내게 고하여 그 일의 해석을 알게 하여 가로되",
+      "source_text_hash": "4de4788fb9f9c70ea73b5103b46e204c49b2164543dd23a18daff689a7673884",
+      "translation_text_hash": "4ea4b360fab99cfaf65cd516d688a83697bedf71242924a55d5f833b929f3bd0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 곁에 모신 자 중 하나에게 나아가서 이 모든 일의 진상을 물으매 그가 내게 고하여 그 일의 해석을 알게 하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "4ea4b360fab99cfaf65cd516d688a83697bedf71242924a55d5f833b929f3bd0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:17",
+      "sequence": 21951,
+      "chapter_label": "DAN 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "‘These great animals, which are four, are four kings, who will arise out of the earth.",
+      "ko": "그 네 큰 짐승은 네 왕이라 세상에 일어날 것이로되",
+      "source_text_hash": "03e1581d02360b1ff88c271e845626e7d0b823e2f776f0b6231a0286daf7acc1",
+      "translation_text_hash": "828fa462f58ee49691a09ae68ea4f7816a3324373a4d4328aa8f4df7c8753717",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 네 큰 짐승은 네 왕이라 세상에 일어날 것이로되"
+      ],
+      "raw_text_hashes": [
+        "828fa462f58ee49691a09ae68ea4f7816a3324373a4d4328aa8f4df7c8753717"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:18",
+      "sequence": 21952,
+      "chapter_label": "DAN 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "But the saints of the Most High will receive the kingdom, and possess the kingdom forever, even forever and ever.’",
+      "ko": "지극히 높으신 자의 성도들이 나라를 얻으리니 그 누림이 영원하고 영원하고 영원하리라",
+      "source_text_hash": "82e1015bb2bc0cb77075f9b5265056c73096f9bdfffccb87ee2bf63fb4866a37",
+      "translation_text_hash": "417ff8b797ee6517cc90fcd42e8b4a9e39d57240c6e9c51d45b1211f21e43684",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지극히 높으신 자의 성도들이 나라를 얻으리니 그 누림이 영원하고 영원하고 영원하리라"
+      ],
+      "raw_text_hashes": [
+        "417ff8b797ee6517cc90fcd42e8b4a9e39d57240c6e9c51d45b1211f21e43684"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:19",
+      "sequence": 21953,
+      "chapter_label": "DAN 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "“Then I desired to know the truth concerning the fourth animal, which was different from all of them, exceedingly terrible, whose teeth were of iron, and its nails of bronze; which devoured, broke in pieces, and stamped the residue with its feet;",
+      "ko": "이에 내가 네째 짐승의 진상을 알고자 하였으니 곧 그것은 모든 짐승과 달라서 심히 무섭고 그 이는 철이요 그 발톱은 놋이며 먹고 부숴뜨리고 나머지는 발로 밟았으며",
+      "source_text_hash": "bba4df757a6a207b372887a23826c5842fdc6d48242506fb182f5544f428903d",
+      "translation_text_hash": "455c1ee88d2476b2ea9b830e56abda08b93713a93b8ea844a08152dba2077cff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 네째 짐승의 진상을 알고자 하였으니 곧 그것은 모든 짐승과 달라서 심히 무섭고 그 이는 철이요 그 발톱은 놋이며 먹고 부숴뜨리고 나머지는 발로 밟았으며"
+      ],
+      "raw_text_hashes": [
+        "455c1ee88d2476b2ea9b830e56abda08b93713a93b8ea844a08152dba2077cff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:20",
+      "sequence": 21954,
+      "chapter_label": "DAN 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "and concerning the ten horns that were on its head and the other horn which came up, and before which three fell, even that horn that had eyes and a mouth that spoke arrogantly, whose look was more stout than its fellows.",
+      "ko": "또 그것의 머리에는 열 뿔이 있고 그 외에 또 다른 뿔이 나오매 세 뿔이 그 앞에 빠졌으며 그 뿔에는 눈도 있고 큰 말하는 입도 있고 그 모양이 동류보다 강하여 보인 것이라",
+      "source_text_hash": "3bdad3ef2f36b3c50f1c98a8cc293e6141b2b5b4aeec69321351cd8ca235b29a",
+      "translation_text_hash": "a8e6adcb1d81329fcb2835835f67dbc014afe9a220b686eea453cbb95c9b9caa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그것의 머리에는 열 뿔이 있고 그 외에 또 다른 뿔이 나오매 세 뿔이 그 앞에 빠졌으며 그 뿔에는 눈도 있고 큰 말하는 입도 있고 그 모양이 동류보다 강하여 보인 것이라"
+      ],
+      "raw_text_hashes": [
+        "a8e6adcb1d81329fcb2835835f67dbc014afe9a220b686eea453cbb95c9b9caa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:21",
+      "sequence": 21955,
+      "chapter_label": "DAN 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "I saw, and the same horn made war with the saints, and prevailed against them,",
+      "ko": "내가 본즉 이 뿔이 성도들로 더불어 싸워 이기었더니",
+      "source_text_hash": "583fb18df763544c3ffd46a485f4ff688aa60a43a59066fc28a027ae04663af9",
+      "translation_text_hash": "bdbfcae0d843aa2e2021f1727739aa0a65819b780ecba343061ef5b7dfabcf8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 본즉 이 뿔이 성도들로 더불어 싸워 이기었더니"
+      ],
+      "raw_text_hashes": [
+        "bdbfcae0d843aa2e2021f1727739aa0a65819b780ecba343061ef5b7dfabcf8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:22",
+      "sequence": 21956,
+      "chapter_label": "DAN 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "until the Ancient of Days came, and judgment was given to the saints of the Most High, and the time came that the saints possessed the kingdom.",
+      "ko": "옛적부터 항상 계신 자가 와서 지극히 높으신 자의 성도를 위하여 신원하셨고 때가 이르매 성도가 나라를 얻었더라",
+      "source_text_hash": "707dc9aa04ef609a5e3684ab93189a03bfbcc6c480374909d98f4cffac743ae7",
+      "translation_text_hash": "852a7dfcb201bccfcc31612fb8169116cfb5aac235a737f6db6de6d0b4304d0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛적부터 항상 계신 자가 와서 지극히 높으신 자의 성도를 위하여 신원하셨고 때가 이르매 성도가 나라를 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "852a7dfcb201bccfcc31612fb8169116cfb5aac235a737f6db6de6d0b4304d0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:23",
+      "sequence": 21957,
+      "chapter_label": "DAN 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "“So he said, ‘The fourth animal will be a fourth kingdom on earth, which will be different from all the kingdoms, and will devour the whole earth, and will tread it down and break it in pieces.",
+      "ko": "모신 자가 이처럼 이르되 네째 짐승은 곧 땅의 네째 나라인데 이는 모든 나라보다 달라서 천하를 삼키고 밟아 부숴뜨릴 것이며",
+      "source_text_hash": "b9dedc5ae104914cbc6cdeadf7a098971bd6b7e145cff5a80ed3676b7572c32e",
+      "translation_text_hash": "e7c829e6440bd56bdb786b3371cc5cede06819399d484adc23a41b92a5bc811a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모신 자가 이처럼 이르되 네째 짐승은 곧 땅의 네째 나라인데 이는 모든 나라보다 달라서 천하를 삼키고 밟아 부숴뜨릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "e7c829e6440bd56bdb786b3371cc5cede06819399d484adc23a41b92a5bc811a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:24",
+      "sequence": 21958,
+      "chapter_label": "DAN 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "As for the ten horns, ten kings will arise out of this kingdom. Another will arise after them; and he will be different from the former, and he will put down three kings.",
+      "ko": "그 열 뿔은 이 나라에서 일어날 열 왕이요 그 후에 또 하나가 일어나리니 그는 먼저 있던 자들과 다르고 또 세 왕을 복종시킬 것이며",
+      "source_text_hash": "b59971ee928643226e0deb8045f710faa25550494be6a4791aea393741d66ba6",
+      "translation_text_hash": "c250583a9ede432ba3c19e5593f603479f285871b08610160b692dc6628b7fa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 열 뿔은 이 나라에서 일어날 열 왕이요 그 후에 또 하나가 일어나리니 그는 먼저 있던 자들과 다르고 또 세 왕을 복종시킬 것이며"
+      ],
+      "raw_text_hashes": [
+        "c250583a9ede432ba3c19e5593f603479f285871b08610160b692dc6628b7fa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:25",
+      "sequence": 21959,
+      "chapter_label": "DAN 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "He will speak words against the Most High, and will wear out the saints of the Most High. He will plan to change the times and the law; and they will be given into his hand until a time and times and half a time.",
+      "ko": "그가 장차 말로 지극히 높으신 자를 대적하며 또 지극히 높으신 자의 성도를 괴롭게 할 것이며 그가 또 때와 법을 변개코자 할 것이며 성도는 그의 손에 붙인바 되어 한 때와 두 때와 반 때를 지내리라",
+      "source_text_hash": "1dd6de5c96c7f9d9fd559ae24a9beebe7b8de8509757f53b18e2c90437972f74",
+      "translation_text_hash": "3632be9901f73e768791b604f7cbad92ac04d7b9d98c905486d57d06a8117696",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 장차 말로 지극히 높으신 자를 대적하며 또 지극히 높으신 자의 성도를 괴롭게 할 것이며 그가 또 때와 법을 변개코자 할 것이며 성도는 그의 손에 붙인바 되어 한 때와 두 때와 반 때를 지내리라"
+      ],
+      "raw_text_hashes": [
+        "3632be9901f73e768791b604f7cbad92ac04d7b9d98c905486d57d06a8117696"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:26",
+      "sequence": 21960,
+      "chapter_label": "DAN 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "“‘But the judgment will be set, and they will take away his dominion, to consume and to destroy it to the end.",
+      "ko": "그러나 심판이 시작된즉 그는 권세를 빼앗기고 끝까지 멸망할 것이요",
+      "source_text_hash": "71e8697012f72d81ff7c6fbd09b0b702d83bd1f3d68777a7444c82046d774ad2",
+      "translation_text_hash": "137ec2195c4f5c3e4df71d4953a073a8aac1458c72b99c3babff83206a94ff22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 심판이 시작된즉 그는 권세를 빼앗기고 끝까지 멸망할 것이요"
+      ],
+      "raw_text_hashes": [
+        "137ec2195c4f5c3e4df71d4953a073a8aac1458c72b99c3babff83206a94ff22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:27",
+      "sequence": 21961,
+      "chapter_label": "DAN 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "The kingdom and the dominion, and the greatness of the kingdoms under the whole sky, will be given to the people of the saints of the Most High. His kingdom is an everlasting kingdom, and all dominions will serve and obey him.’",
+      "ko": "나라와 권세와 온 천하 열국의 위세가 지극히 높으신 자의 성민에게 붙인바 되리니 그의 나라는 영원한 나라이라 모든 권세 있는 자가 다 그를 섬겨 복종하리라 하여",
+      "source_text_hash": "030cd75823812a6ff472d697a5c236b4306e6a7cd5da538ce8a6559fefef41b4",
+      "translation_text_hash": "4093d4134f992a1c477277bcaf82eabbb769f7cd3bef4a5ffaae3f9ce523cf12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라와 권세와 온 천하 열국의 위세가 지극히 높으신 자의 성민에게 붙인바 되리니 그의 나라는 영원한 나라이라 모든 권세 있는 자가 다 그를 섬겨 복종하리라 하여"
+      ],
+      "raw_text_hashes": [
+        "4093d4134f992a1c477277bcaf82eabbb769f7cd3bef4a5ffaae3f9ce523cf12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:7:28",
+      "sequence": 21962,
+      "chapter_label": "DAN 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "“Here is the end of the matter. As for me, Daniel, my thoughts troubled me greatly, and my face was changed in me; but I kept the matter in my heart.”",
+      "ko": "그 말이 이에 그친지라 나 다니엘은 중심이 번민하였으며 내 낯빛이 변하였으나 내가 이 일을 마음에 감추었느니라",
+      "source_text_hash": "3183f54a929bfbdc4c7e2b59c4a829c17c971dc949344d8eb0d5463f977e0ffb",
+      "translation_text_hash": "c0ec8cf4be214287072b30a75767acc431ec6052d603c82c1361b2dde31c7e7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 말이 이에 그친지라 나 다니엘은 중심이 번민하였으며 내 낯빛이 변하였으나 내가 이 일을 마음에 감추었느니라"
+      ],
+      "raw_text_hashes": [
+        "c0ec8cf4be214287072b30a75767acc431ec6052d603c82c1361b2dde31c7e7a"
+      ]
+    }
+  ]
+}

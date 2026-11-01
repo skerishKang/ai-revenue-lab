@@ -1,0 +1,55 @@
+{
+  "schema": "storymemory-precision-pack-1.0",
+  "id": "pack:odyssey:precision-demo:v1",
+  "name": "Odyssey Korean Alias + Gold Demo Pack",
+  "kind": "companion",
+  "version": "1.0.0",
+  "priority": 20,
+  "creator": "padiem/storymemory",
+  "trustTier": "curated",
+  "verificationScope": "Selected Odyssey alias/disambiguation facts with exact Static Corpus locators; SM-084 QA demo only",
+  "compatibility": {
+    "mode": "exact-fingerprint",
+    "sourceFingerprint": "268cf938678308dbebbea0aee320567f2d9aac31087e557f43a70708676efc7a",
+    "sourceRevision": "storymemory-static-content-1.0",
+    "language": "ko",
+    "locatorScheme": "book"
+  },
+  "rights": {
+    "declaration": "QA demo metadata/derived annotations only; no full Source text included",
+    "sourceTextIncluded": false,
+    "visibility": "private-qa"
+  },
+  "payload": {
+    "aliases": [
+      {"from": "헬렌", "to": ["헬레네", "Helen"]},
+      {"from": "이로스", "to": ["아르나이오스", "Irus"]}
+    ],
+    "knowledge": [
+      {
+        "id": "helen",
+        "type": "entity",
+        "key": "helen",
+        "label": "헬레네",
+        "aliases": ["헬렌", "Helen"],
+        "summary": "헬레네의 오디세이 본문 최초 언급 위치를 연결한다.",
+        "sourceRefs": ["odyssey:book:04:s1:row:002"]
+      },
+      {
+        "id": "philoetius",
+        "type": "entity",
+        "key": "philoetius",
+        "label": "필로이티오스",
+        "summary": "필로이티오스는 오디세우스에게 충성하는 소몰이꾼으로 소개된다.",
+        "sourceRefs": ["odyssey:book:20:s3:row:008"]
+      }
+    ],
+    "searchHints": [
+      {"when": "헬렌", "hints": ["헬레네", "Helen"]}
+    ]
+  },
+  "metadata": {
+    "purpose": "SM-084 attach/detach and provenance QA fixture",
+    "marketplaceEligible": false
+  }
+}

@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:019",
+  "unit_ordinal": 255,
+  "unit_label": "1SA 19",
+  "book_code": "1SA",
+  "chapter_number": 19,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:19:1",
+      "sequence": 7708,
+      "chapter_label": "1SA 19",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 1
+        }
+      ],
+      "en": "Saul spoke to Jonathan his son and to all his servants, that they should kill David. But Jonathan, Saul’s son, greatly delighted in David.",
+      "ko": "사울이 그 아들 요나단과 그 모든 신하에게 다윗을 죽이라 말하였더니 사울의 아들 요나단이 다윗을 심히 기뻐하므로",
+      "source_text_hash": "369bba631db83e2dedce2ec7703a8a81a87f5a6552ff7b52b91dba65ae0c68b2",
+      "translation_text_hash": "afdb57cc68ca9ab92861bd562e573d32e0133d821da0a5803828f868de095aa6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 그 아들 요나단과 그 모든 신하에게 다윗을 죽이라 말하였더니 사울의 아들 요나단이 다윗을 심히 기뻐하므로"
+      ],
+      "raw_text_hashes": [
+        "afdb57cc68ca9ab92861bd562e573d32e0133d821da0a5803828f868de095aa6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:2",
+      "sequence": 7709,
+      "chapter_label": "1SA 19",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 2
+        }
+      ],
+      "en": "Jonathan told David, saying, “Saul my father seeks to kill you. Now therefore, please take care of yourself in the morning, live in a secret place, and hide yourself.",
+      "ko": "그가 다윗에게 고하여 가로되 내 부친 사울이 너를 죽이기를 꾀하시느니라 그러므로 이제 청하노니 아침에 조심하여 은밀한 곳에 숨어 있으라",
+      "source_text_hash": "699f0061ffccdbaf2bd4abb2d32975ea89df6b7db0969b9bd6972fadd28769cb",
+      "translation_text_hash": "b5a27f20aba1423addb539af9c9f0d4ecce5620c25b904ca770b3e8236f2b8c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 다윗에게 고하여 가로되 내 부친 사울이 너를 죽이기를 꾀하시느니라 그러므로 이제 청하노니 아침에 조심하여 은밀한 곳에 숨어 있으라"
+      ],
+      "raw_text_hashes": [
+        "b5a27f20aba1423addb539af9c9f0d4ecce5620c25b904ca770b3e8236f2b8c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:3",
+      "sequence": 7710,
+      "chapter_label": "1SA 19",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 3
+        }
+      ],
+      "en": "I will go out and stand beside my father in the field where you are, and I will talk with my father about you; and if I see anything, I will tell you.”",
+      "ko": "내가 나가서 너 있는 들에서 내 부친 곁에 서서 네 일을 내 부친과 말하다가 무엇을 보거든 네게 알게 하리라 하고",
+      "source_text_hash": "1692e1926d077bbcc2043a157f62915e74c87cd8cf7824612e0b05a2ce4b651f",
+      "translation_text_hash": "995433421a99809b8244765bf0f46d81c2defd220d250fdfd8c15b2a3f01ebcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나가서 너 있는 들에서 내 부친 곁에 서서 네 일을 내 부친과 말하다가 무엇을 보거든 네게 알게 하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "995433421a99809b8244765bf0f46d81c2defd220d250fdfd8c15b2a3f01ebcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:4",
+      "sequence": 7711,
+      "chapter_label": "1SA 19",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 4
+        }
+      ],
+      "en": "Jonathan spoke good of David to Saul his father, and said to him, “Don’t let the king sin against his servant, against David; because he has not sinned against you, and because his works have been very good toward you;",
+      "ko": "요나단이 그 아비 사울에게 다윗을 포장하여 가로되 원컨대 왕은 신하 다윗에게 범죄치 마옵소서 그는 왕께 득죄하지 아니하였고 그가 왕께 행한 일은 심히 선함이니이다",
+      "source_text_hash": "7758f7942ea38bb892732bde4fb2161b21a8470829830aab86c67872036305cf",
+      "translation_text_hash": "f4265aa38fbaab04786e73040d6578601071f687dedf9f32408de62f1a3ab58e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 그 아비 사울에게 다윗을 포장하여 가로되 원컨대 왕은 신하 다윗에게 범죄치 마옵소서 그는 왕께 득죄하지 아니하였고 그가 왕께 행한 일은 심히 선함이니이다"
+      ],
+      "raw_text_hashes": [
+        "f4265aa38fbaab04786e73040d6578601071f687dedf9f32408de62f1a3ab58e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:5",
+      "sequence": 7712,
+      "chapter_label": "1SA 19",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 5
+        }
+      ],
+      "en": "for he put his life in his hand and struck the Philistine, and the LORD worked a great victory for all Israel. You saw it and rejoiced. Why then will you sin against innocent blood, to kill David without a cause?”",
+      "ko": "그가 자기 생명을 아끼지 아니하고 블레셋 사람을 죽였고 여호와께서는 온 이스라엘을 위하여 큰 구원을 이루셨으므로 왕이 이를 보고 기뻐하셨거늘 어찌 무고히 다윗을 죽여 무죄한 피를 흘려 범죄하려 하시나이까",
+      "source_text_hash": "2a6f05afb5adf6c13179c1f45d96ad014c5f99f4479c929ac8684d00fa2a4060",
+      "translation_text_hash": "3ba52ba601328b3f7d5bb75ac6a6e5f6a5a28c2a7b9a422dbaf3cab6713b2b8e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 자기 생명을 아끼지 아니하고 블레셋 사람을 죽였고 여호와께서는 온 이스라엘을 위하여 큰 구원을 이루셨으므로 왕이 이를 보고 기뻐하셨거늘 어찌 무고히 다윗을 죽여 무죄한 피를 흘려 범죄하려 하시나이까"
+      ],
+      "raw_text_hashes": [
+        "3ba52ba601328b3f7d5bb75ac6a6e5f6a5a28c2a7b9a422dbaf3cab6713b2b8e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:6",
+      "sequence": 7713,
+      "chapter_label": "1SA 19",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 6
+        }
+      ],
+      "en": "Saul listened to the voice of Jonathan; and Saul swore, “As the LORD lives, he shall not be put to death.”",
+      "ko": "사울이 요나단의 말을 듣고 맹세하되 여호와께서 사시거니와 그가 죽임을 당치 아니하리라",
+      "source_text_hash": "e55cb5b194cfc0ee518b5767e166aca261c0f856b1b22d8fd22741b5aa759ba6",
+      "translation_text_hash": "14bf6b226840bd66d8bc0a67f28083a17057a25f05c5160865df7a23018f438b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 요나단의 말을 듣고 맹세하되 여호와께서 사시거니와 그가 죽임을 당치 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "14bf6b226840bd66d8bc0a67f28083a17057a25f05c5160865df7a23018f438b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:7",
+      "sequence": 7714,
+      "chapter_label": "1SA 19",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 7
+        }
+      ],
+      "en": "Jonathan called David, and Jonathan showed him all those things. Then Jonathan brought David to Saul, and he was in his presence as before.",
+      "ko": "요나단이 다윗을 불러 그 모든 일을 알게 하고 그를 사울에게로 인도하니 그가 사울 앞에 여전히 있으니라",
+      "source_text_hash": "ba0be5034fbdfc27353a3dc05cba5ecf304bc51aeba6e81a56e30e214aa4a943",
+      "translation_text_hash": "4340df774dff3af3ff2fce60e436b860b1124c41d7c8986d843f73b6a8e1d944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요나단이 다윗을 불러 그 모든 일을 알게 하고 그를 사울에게로 인도하니 그가 사울 앞에 여전히 있으니라"
+      ],
+      "raw_text_hashes": [
+        "4340df774dff3af3ff2fce60e436b860b1124c41d7c8986d843f73b6a8e1d944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:8",
+      "sequence": 7715,
+      "chapter_label": "1SA 19",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 8
+        }
+      ],
+      "en": "There was war again. David went out and fought with the Philistines, and killed them with a great slaughter; and they fled before him.",
+      "ko": "전쟁이 다시 있으므로 다윗이 나가서 블레셋 사람들과 싸워 그들을 크게 도륙하매 그들이 그 앞에서 도망하니라",
+      "source_text_hash": "54b2647a6e6ff5a0a6872720060e2eeba80f1e85562ec9068af912e13ca6ff82",
+      "translation_text_hash": "aaf9564aa8e55fd0365aa6b2210ae6ea2e954e0473c3886ed5ecf03fd5291e2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전쟁이 다시 있으므로 다윗이 나가서 블레셋 사람들과 싸워 그들을 크게 도륙하매 그들이 그 앞에서 도망하니라"
+      ],
+      "raw_text_hashes": [
+        "aaf9564aa8e55fd0365aa6b2210ae6ea2e954e0473c3886ed5ecf03fd5291e2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:9",
+      "sequence": 7716,
+      "chapter_label": "1SA 19",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 9
+        }
+      ],
+      "en": "An evil spirit from the LORD was on Saul as he sat in his house with his spear in his hand; and David was playing music with his hand.",
+      "ko": "사울이 손에 단창을 가지고 그 집에 앉았을 때에 여호와의 부리신 악신이 사울에게 접하였으므로 다윗이 손으로 수금을 탈 때에",
+      "source_text_hash": "63ef5b9c2ff48ee5ace3f9ad2812b57d331848909fceb2eacf54184dfd08e8fb",
+      "translation_text_hash": "fd67f1bd464027550f335fca82a3a24b62917a8e84ca678984ae695bc530c650",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 손에 단창을 가지고 그 집에 앉았을 때에 여호와의 부리신 악신이 사울에게 접하였으므로 다윗이 손으로 수금을 탈 때에"
+      ],
+      "raw_text_hashes": [
+        "fd67f1bd464027550f335fca82a3a24b62917a8e84ca678984ae695bc530c650"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:10",
+      "sequence": 7717,
+      "chapter_label": "1SA 19",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 10
+        }
+      ],
+      "en": "Saul sought to pin David to the wall with the spear, but he slipped away out of Saul’s presence; and he stuck the spear into the wall. David fled and escaped that night.",
+      "ko": "사울이 단창으로 다윗을 벽에 박으려 하였으나 그는 사울의 앞을 피하고 사울의 창은 벽에 박힌지라 다윗이 그 밤에 도피하매",
+      "source_text_hash": "d733331a40dbe61e6840dda8542d7abad996d59fc8ae7d81c168b98f2ff76f17",
+      "translation_text_hash": "80584085e282cb1ee8fff1c473c798d823270f1a386b55516567187627576501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 단창으로 다윗을 벽에 박으려 하였으나 그는 사울의 앞을 피하고 사울의 창은 벽에 박힌지라 다윗이 그 밤에 도피하매"
+      ],
+      "raw_text_hashes": [
+        "80584085e282cb1ee8fff1c473c798d823270f1a386b55516567187627576501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:11",
+      "sequence": 7718,
+      "chapter_label": "1SA 19",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 11
+        }
+      ],
+      "en": "Saul sent messengers to David’s house to watch him and to kill him in the morning. Michal, David’s wife, told him, saying, “If you don’t save your life tonight, tomorrow you will be killed.”",
+      "ko": "사울이 사자들을 다윗의 집에 보내어 그를 지키다가 아침에 그를 죽이게 하려 한지라 다윗의 아내 미갈이 다윗에게 일러 가로되 당신이 이 밤에 당신의 생명을 구하지 아니하면 내일에는 죽임을 당하리라 하고",
+      "source_text_hash": "ade2e9543d06a9e2b4a92ca83d07800c70b8b9656355b878df76647e8225363a",
+      "translation_text_hash": "a4dd17b412319ebb87ebb7693933e67c84c1d803400f2e3a01c909a40d6f12c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 사자들을 다윗의 집에 보내어 그를 지키다가 아침에 그를 죽이게 하려 한지라 다윗의 아내 미갈이 다윗에게 일러 가로되 당신이 이 밤에 당신의 생명을 구하지 아니하면 내일에는 죽임을 당하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "a4dd17b412319ebb87ebb7693933e67c84c1d803400f2e3a01c909a40d6f12c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:12",
+      "sequence": 7719,
+      "chapter_label": "1SA 19",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 12
+        }
+      ],
+      "en": "So Michal let David down through the window. He went away, fled, and escaped.",
+      "ko": "미갈이 다윗을 창에서 달아내리우매 그가 도망하여 피하니라",
+      "source_text_hash": "f378ab5b016efcca2c64705fec490599f00acf87ab338993ebaf62b1f4be9a46",
+      "translation_text_hash": "24ae19b23ea53c98cbeb1744a1eacd7e074e0737625b14e450c487f95c0625af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미갈이 다윗을 창에서 달아내리우매 그가 도망하여 피하니라"
+      ],
+      "raw_text_hashes": [
+        "24ae19b23ea53c98cbeb1744a1eacd7e074e0737625b14e450c487f95c0625af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:13",
+      "sequence": 7720,
+      "chapter_label": "1SA 19",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 13
+        }
+      ],
+      "en": "Michal took the teraphim and laid it in the bed, and put a pillow of goats’ hair at its head and covered it with clothes.",
+      "ko": "미갈이 우상을 취하여 침상에 뉘고 염소털로 엮은것을 그 머리에 씌우고 의복으로 그것을 덮었더니",
+      "source_text_hash": "e73704bcee97d3db02bf52e73390ed65aa8a8b7767cf8664b65a4a158a3a7c5a",
+      "translation_text_hash": "913a3e789a6c3744497c925e1dfd1ebc9d17770393e967d15d7d6a18b71f73ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미갈이 우상을 취하여 침상에 뉘고 염소털로 엮은것을 그 머리에 씌우고 의복으로 그것을 덮었더니"
+      ],
+      "raw_text_hashes": [
+        "913a3e789a6c3744497c925e1dfd1ebc9d17770393e967d15d7d6a18b71f73ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:14",
+      "sequence": 7721,
+      "chapter_label": "1SA 19",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 14
+        }
+      ],
+      "en": "When Saul sent messengers to take David, she said, “He is sick.”",
+      "ko": "사울이 사자들을 보내어 다윗을 잡으려 하매 미갈이 가로되 그가 병들었느니라",
+      "source_text_hash": "0fec5b85289c5c2f24c876533f6b265267ef81dc3f2e2a7124a2fc534837cde7",
+      "translation_text_hash": "04c778e78c02ce46f4833179ece92101cfd3ef18b619e0c9deeaf81b33b7b682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 사자들을 보내어 다윗을 잡으려 하매 미갈이 가로되 그가 병들었느니라"
+      ],
+      "raw_text_hashes": [
+        "04c778e78c02ce46f4833179ece92101cfd3ef18b619e0c9deeaf81b33b7b682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:15",
+      "sequence": 7722,
+      "chapter_label": "1SA 19",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 15
+        }
+      ],
+      "en": "Saul sent the messengers to see David, saying, “Bring him up to me in the bed, that I may kill him.”",
+      "ko": "사울이 또 사자들을 보내어 다윗을 보라 하며 이르되 그를 침상채 내게로 가져오라 내가 그를 죽이리라",
+      "source_text_hash": "0ab013a63a0a823b568409f656b977fc4fd94a2d7ffe5161dd449dd3a02b3f37",
+      "translation_text_hash": "82953a2ebddab93bd33fabe572d5579b1a9cc086b0c333d97ebeafe02835b112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 또 사자들을 보내어 다윗을 보라 하며 이르되 그를 침상채 내게로 가져오라 내가 그를 죽이리라"
+      ],
+      "raw_text_hashes": [
+        "82953a2ebddab93bd33fabe572d5579b1a9cc086b0c333d97ebeafe02835b112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:16",
+      "sequence": 7723,
+      "chapter_label": "1SA 19",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 16
+        }
+      ],
+      "en": "When the messengers came in, behold, the teraphim was in the bed, with the pillow of goats’ hair at its head.",
+      "ko": "사자들이 들어가 본즉 침상에 우상이 있고 염소털로 엮은 것이 그 머리에 있었더라",
+      "source_text_hash": "a269ae598720b8cdfb20ab984a4e898cd08575d98bcb3efbb40aa8934a6ee112",
+      "translation_text_hash": "1479001300fcdd8dc0cb99587e94616062dad2eaa9d01c989569657165cdc356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들이 들어가 본즉 침상에 우상이 있고 염소털로 엮은 것이 그 머리에 있었더라"
+      ],
+      "raw_text_hashes": [
+        "1479001300fcdd8dc0cb99587e94616062dad2eaa9d01c989569657165cdc356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:17",
+      "sequence": 7724,
+      "chapter_label": "1SA 19",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 17
+        }
+      ],
+      "en": "Saul said to Michal, “Why have you deceived me like this and let my enemy go, so that he has escaped?” Michal answered Saul, “He said to me, ‘Let me go! Why should I kill you?’”",
+      "ko": "사울이 미갈에게 이르되 너는 어찌하여 이처럼 나를 속여 내 대적을 놓아 피하게 하였느냐 미갈이 사울에게 대답하되 그가 내게 이르기를 나를 놓아 가게 하라 어찌하여 나로 너를 죽이게 하겠느냐 하더이다 하니라",
+      "source_text_hash": "924b060cca581ae130a4a1703ef8b625a37422940e11fb8feb6a667f55a97988",
+      "translation_text_hash": "278dc3b64c0b4bb9481eab8f1b490c05595a555f66486c8b1bdd7daf825f1703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 미갈에게 이르되 너는 어찌하여 이처럼 나를 속여 내 대적을 놓아 피하게 하였느냐 미갈이 사울에게 대답하되 그가 내게 이르기를 나를 놓아 가게 하라 어찌하여 나로 너를 죽이게 하겠느냐 하더이다 하니라"
+      ],
+      "raw_text_hashes": [
+        "278dc3b64c0b4bb9481eab8f1b490c05595a555f66486c8b1bdd7daf825f1703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:18",
+      "sequence": 7725,
+      "chapter_label": "1SA 19",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 18
+        }
+      ],
+      "en": "Now David fled and escaped, and came to Samuel at Ramah, and told him all that Saul had done to him. He and Samuel went and lived in Naioth.",
+      "ko": "다윗이 도피하여 라마로 가서 사무엘에게로 나아가서 사울이 자기에게 행한 일을 다 고하였고 다윗과 사무엘이 나욧으로 가서 거하였더라",
+      "source_text_hash": "839fca457744a74dc1fb17cbfb8b4fb0c4fab4de2a7d02dcab7215dddc6b070b",
+      "translation_text_hash": "a4c9f5a1d6a318f46aed45ce7b272d3b006d82cf3275ae034ebf542977767f90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 도피하여 라마로 가서 사무엘에게로 나아가서 사울이 자기에게 행한 일을 다 고하였고 다윗과 사무엘이 나욧으로 가서 거하였더라"
+      ],
+      "raw_text_hashes": [
+        "a4c9f5a1d6a318f46aed45ce7b272d3b006d82cf3275ae034ebf542977767f90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:19",
+      "sequence": 7726,
+      "chapter_label": "1SA 19",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 19
+        }
+      ],
+      "en": "Saul was told, saying, “Behold, David is at Naioth in Ramah.”",
+      "ko": "혹이 사울에게 고하여 가로되 다윗이 라마 나욧에 있더이다 하매",
+      "source_text_hash": "2ec5cda6d72f818eba7b80caa688a5fa3604fe7a1b822722811378110198438f",
+      "translation_text_hash": "86041c8dc860a316b85734192916e051eb8fc58fbb973be7c8bd9c0d6b8dd6aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 사울에게 고하여 가로되 다윗이 라마 나욧에 있더이다 하매"
+      ],
+      "raw_text_hashes": [
+        "86041c8dc860a316b85734192916e051eb8fc58fbb973be7c8bd9c0d6b8dd6aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:20",
+      "sequence": 7727,
+      "chapter_label": "1SA 19",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 20
+        }
+      ],
+      "en": "Saul sent messengers to seize David; and when they saw the company of the prophets prophesying, and Samuel standing as head over them, God’s Spirit came on Saul’s messengers, and they also prophesied.",
+      "ko": "사울이 다윗을 잡으려 사자들을 보내었더니 그들이 선지자 무리의 예언하는 것과 사무엘이 그들의 수령으로 선 것을 볼 때에 하나님의 신이 사울의 사자들에게 임하매 그들도 예언을 한지라",
+      "source_text_hash": "bf3b34d5fc522bfbd426764d62d849770539507a864ba72b136a5a70892e7a0a",
+      "translation_text_hash": "c97b1674622007ec94620235f85da0baff99735c23e35885a4eaa2b875254efb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 다윗을 잡으려 사자들을 보내었더니 그들이 선지자 무리의 예언하는 것과 사무엘이 그들의 수령으로 선 것을 볼 때에 하나님의 신이 사울의 사자들에게 임하매 그들도 예언을 한지라"
+      ],
+      "raw_text_hashes": [
+        "c97b1674622007ec94620235f85da0baff99735c23e35885a4eaa2b875254efb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:21",
+      "sequence": 7728,
+      "chapter_label": "1SA 19",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 21
+        }
+      ],
+      "en": "When Saul was told, he sent other messengers, and they also prophesied. Saul sent messengers again the third time, and they also prophesied.",
+      "ko": "혹이 그것을 사울에게 고하매 사울이 다른 사자들을 보내었더니 그들도 예언을 한고로 사울이 세번째 다시 사자들을 보내었더니 그들도 예언을 한지라",
+      "source_text_hash": "81fae2cac17cf39bfae67532327ba131940ada60bf2aff638c9b60afc0ad348b",
+      "translation_text_hash": "2c4540ab7f74c1bb81b3c1029726204734be8bf00d7e6435abbd8eeb5490ca91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹이 그것을 사울에게 고하매 사울이 다른 사자들을 보내었더니 그들도 예언을 한고로 사울이 세번째 다시 사자들을 보내었더니 그들도 예언을 한지라"
+      ],
+      "raw_text_hashes": [
+        "2c4540ab7f74c1bb81b3c1029726204734be8bf00d7e6435abbd8eeb5490ca91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:22",
+      "sequence": 7729,
+      "chapter_label": "1SA 19",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 22
+        }
+      ],
+      "en": "Then he also went to Ramah, and came to the great well that is in Secu: and he asked, “Where are Samuel and David?” One said, “Behold, they are at Naioth in Ramah.”",
+      "ko": "이에 사울도 라마로 가서 세구에 있는 큰 우물에 이르러 물어 가로되 사무엘과 다윗이 어디 있느냐 혹이 가로되 라마 나욧에 있나이다",
+      "source_text_hash": "64792a684e0636e398cb32ded6452fce7210cf9bdc42b2a9cd7e4eff9bfb0a59",
+      "translation_text_hash": "05a70aa8b28ce4089ba04c0a36af4e261451291a076a3d20c4570db964d80ff2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사울도 라마로 가서 세구에 있는 큰 우물에 이르러 물어 가로되 사무엘과 다윗이 어디 있느냐 혹이 가로되 라마 나욧에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "05a70aa8b28ce4089ba04c0a36af4e261451291a076a3d20c4570db964d80ff2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:23",
+      "sequence": 7730,
+      "chapter_label": "1SA 19",
+      "verse_label": "23",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 23
+        }
+      ],
+      "en": "He went there to Naioth in Ramah. Then God’s Spirit came on him also, and he went on, and prophesied, until he came to Naioth in Ramah.",
+      "ko": "사울이 라마 나욧으로 가니라 하나님의 신이 그에게도 임하시니 그가 라마 나욧에 이르기까지 행하며 예언을 하였으며",
+      "source_text_hash": "8a99025dad18ae1912a47c74498bf15bd0fababec6f7ed9285d889ecf3647f14",
+      "translation_text_hash": "4d6654c3fdf998602935e9071c1e0ab852c3ae92c1fded8ac3182b126392ab8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 라마 나욧으로 가니라 하나님의 신이 그에게도 임하시니 그가 라마 나욧에 이르기까지 행하며 예언을 하였으며"
+      ],
+      "raw_text_hashes": [
+        "4d6654c3fdf998602935e9071c1e0ab852c3ae92c1fded8ac3182b126392ab8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:19:24",
+      "sequence": 7731,
+      "chapter_label": "1SA 19",
+      "verse_label": "24",
+      "locator": {
+        "book": "1SA",
+        "chapter": 19,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 19,
+          "verse": 24
+        }
+      ],
+      "en": "He also stripped off his clothes. He also prophesied before Samuel and lay down naked all that day and all that night. Therefore they say, “Is Saul also among the prophets?”",
+      "ko": "그가 또 그 옷을 벗고 사무엘 앞에서 예언을 하며 종일 종야에 벌거벗은 몸으로 누웠었더라 그러므로 속담에 이르기를 사울도 선지자 중에 있느냐 하니라",
+      "source_text_hash": "c06a2c60c93254b23b7385157fdcabb7e64438a79ab43154ae5b5924d5191499",
+      "translation_text_hash": "7d37f347c140379d97b0e7970ad3d02d4b53b56b1d765fac5ab31dfec2850607",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 그 옷을 벗고 사무엘 앞에서 예언을 하며 종일 종야에 벌거벗은 몸으로 누웠었더라 그러므로 속담에 이르기를 사울도 선지자 중에 있느냐 하니라"
+      ],
+      "raw_text_hashes": [
+        "7d37f347c140379d97b0e7970ad3d02d4b53b56b1d765fac5ab31dfec2850607"
+      ]
+    }
+  ]
+}

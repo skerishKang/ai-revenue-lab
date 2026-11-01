@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:003",
+  "unit_ordinal": 914,
+  "unit_label": "ZEC 3",
+  "book_code": "ZEC",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:3:1",
+      "sequence": 22914,
+      "chapter_label": "ZEC 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "He showed me Joshua the high priest standing before the LORD’s angel, and Satan standing at his right hand to be his adversary.",
+      "ko": "대제사장 여호수아는 여호와의 사자 앞에 섰고 사단은 그의 우편에 서서 그를 대적하는 것을 여호와께서 내게 보이시니라",
+      "source_text_hash": "bb23a6aab1ca04fdfb16560aeb55464fb3feceb48f00c6fb5cc8722065a1199e",
+      "translation_text_hash": "a74b7cd5fe2de1ffc6f7230c720bb5a3345b62e55b227501f5279deea8fd9a95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 여호수아는 여호와의 사자 앞에 섰고 사단은 그의 우편에 서서 그를 대적하는 것을 여호와께서 내게 보이시니라"
+      ],
+      "raw_text_hashes": [
+        "a74b7cd5fe2de1ffc6f7230c720bb5a3345b62e55b227501f5279deea8fd9a95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:2",
+      "sequence": 22915,
+      "chapter_label": "ZEC 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "The LORD said to Satan, “The LORD rebuke you, Satan! Yes, the LORD who has chosen Jerusalem rebuke you! Isn’t this a burning stick plucked out of the fire?”",
+      "ko": "여호와께서 사단에게 이르시되 사단아 여호와가 너를 책망하노라 예루살렘을 택한 여호와가 너를 책망하노라 이는 불에서 꺼낸 그슬린 나무가 아니냐 하실 때에",
+      "source_text_hash": "ceed43db46578bc1f2f4f13da66c50e53da4add9e9c9b88a31453608f5e41a8d",
+      "translation_text_hash": "66a029f0b9d04e0000f941e80ad5503463c490efba719da13ead9290d130c974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사단에게 이르시되 사단아 여호와가 너를 책망하노라 예루살렘을 택한 여호와가 너를 책망하노라 이는 불에서 꺼낸 그슬린 나무가 아니냐 하실 때에"
+      ],
+      "raw_text_hashes": [
+        "66a029f0b9d04e0000f941e80ad5503463c490efba719da13ead9290d130c974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:3",
+      "sequence": 22916,
+      "chapter_label": "ZEC 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "Now Joshua was clothed with filthy garments, and was standing before the angel.",
+      "ko": "여호수아가 더러운 옷을 입고 천사 앞에 섰는지라",
+      "source_text_hash": "627ae652e83897ea93565a369f2ef2cf895ad1e4a8b5a90e991039398d61518d",
+      "translation_text_hash": "b130a3196ddf6aa6d1d3b5a856640b5267221937499c5c9491a12c61d46b46ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호수아가 더러운 옷을 입고 천사 앞에 섰는지라"
+      ],
+      "raw_text_hashes": [
+        "b130a3196ddf6aa6d1d3b5a856640b5267221937499c5c9491a12c61d46b46ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:4",
+      "sequence": 22917,
+      "chapter_label": "ZEC 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "He answered and spoke to those who stood before him, saying, “Take the filthy garments off him.” To him he said, “Behold, I have caused your iniquity to pass from you, and I will clothe you with rich clothing.”",
+      "ko": "여호와께서 자기 앞에 선 자들에게 명하사 그 더러운 옷을 벗기라 하시고 또 여호수아에게 이르시되 내가 네 죄과를 제하여 버렸으니 네게 아름다운 옷을 입히리라 하시기로",
+      "source_text_hash": "5601390e6a5924a371c2c120e606e03703dc7bbaffccea5e84cdc78eb72be169",
+      "translation_text_hash": "7b2b4938d63899e6655a8776a9416e23106c1f5f9f4b79203ea1578437bdf586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기 앞에 선 자들에게 명하사 그 더러운 옷을 벗기라 하시고 또 여호수아에게 이르시되 내가 네 죄과를 제하여 버렸으니 네게 아름다운 옷을 입히리라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "7b2b4938d63899e6655a8776a9416e23106c1f5f9f4b79203ea1578437bdf586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:5",
+      "sequence": 22918,
+      "chapter_label": "ZEC 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "I said, “Let them set a clean turban on his head.” So they set a clean turban on his head, and clothed him; and the LORD’s angel was standing by.",
+      "ko": "내가 말하되 정한 관을 그 머리에 씌우소서 하매 곧 정한 관을 그 머리에 씌우며 옷을 입히고 여호와의 사자는 곁에 섰더라",
+      "source_text_hash": "a46686a09520de69b5b8d501f15827a27a3522734703de7328557bbbbb40a3d5",
+      "translation_text_hash": "c1f1e4e41da3c43144e5dc28b8fd33956aeb4714864e569cd3f94e03873e51d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하되 정한 관을 그 머리에 씌우소서 하매 곧 정한 관을 그 머리에 씌우며 옷을 입히고 여호와의 사자는 곁에 섰더라"
+      ],
+      "raw_text_hashes": [
+        "c1f1e4e41da3c43144e5dc28b8fd33956aeb4714864e569cd3f94e03873e51d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:6",
+      "sequence": 22919,
+      "chapter_label": "ZEC 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD’s angel solemnly assured Joshua, saying,",
+      "ko": "여호와의 사자가 여호수아에게 증거하여 가로되",
+      "source_text_hash": "980f9de495d49242f162c8d0b46587b2a5ec8d8ec36b8203aa58c8141de7cb28",
+      "translation_text_hash": "cb2c4c7f09f83fb6f1a3a64a1f095364a99caadf8077d92c143e277317377ead",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 사자가 여호수아에게 증거하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "cb2c4c7f09f83fb6f1a3a64a1f095364a99caadf8077d92c143e277317377ead"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:7",
+      "sequence": 22920,
+      "chapter_label": "ZEC 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "“The LORD of Armies says: ‘If you will walk in my ways, and if you will follow my instructions, then you also shall judge my house, and shall also keep my courts, and I will give you a place of access among these who stand by.",
+      "ko": "만군의 여호와의 말씀에 네가 만일 내 도를 준행하며 내 율례를 지키면 네가 내 집을 다스릴 것이요 내 뜰을 지킬 것이며 내가 또 너로 여기 섰는 자들 중에 왕래케 하리라",
+      "source_text_hash": "0010635df3883dbc06124985c89be36c9ebe1077fe52448d934f697690ebcc36",
+      "translation_text_hash": "a35f601316c6951a01540b0592f5df2c4ee9ee8ccc57e05ce419c7bc9f480b36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와의 말씀에 네가 만일 내 도를 준행하며 내 율례를 지키면 네가 내 집을 다스릴 것이요 내 뜰을 지킬 것이며 내가 또 너로 여기 섰는 자들 중에 왕래케 하리라"
+      ],
+      "raw_text_hashes": [
+        "a35f601316c6951a01540b0592f5df2c4ee9ee8ccc57e05ce419c7bc9f480b36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:8",
+      "sequence": 22921,
+      "chapter_label": "ZEC 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Hear now, Joshua the high priest, you and your fellows who sit before you, for they are men who are a sign; for, behold, I will bring out my servant, the Branch.",
+      "ko": "대제사장 여호수아야 너와 네 앞에 앉은 네 동료들은 내 말을 들을 것이니라 이들은 예표의 사람이라 내가 내 종 순을 나게 하리라",
+      "source_text_hash": "3aaecdb55857c9656bea0509e6bbc054a6fffa411163f4724e2ba54ff8c99ce4",
+      "translation_text_hash": "2cae42a8ee3ded3d14b715e1dd508d1aff4623685077467c4d9273e7264f971b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장 여호수아야 너와 네 앞에 앉은 네 동료들은 내 말을 들을 것이니라 이들은 예표의 사람이라 내가 내 종 순을 나게 하리라"
+      ],
+      "raw_text_hashes": [
+        "2cae42a8ee3ded3d14b715e1dd508d1aff4623685077467c4d9273e7264f971b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:9",
+      "sequence": 22922,
+      "chapter_label": "ZEC 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "For, behold, the stone that I have set before Joshua: on one stone are seven eyes; behold, I will engrave its inscription,’ says the LORD of Armies, ‘and I will remove the iniquity of that land in one day.",
+      "ko": "만군의 여호와가 말하노라 내가 너 여호수아 앞에 세운 돌을 보라 한 돌에 일곱 눈이 있느니라 내가 새길 것을 새기며 이 땅의 죄악을 하루에 제하리라",
+      "source_text_hash": "652fd0d8c9ef9fed6cfe9c8b0c7c22060dcdfdc6a94b865c9b222ffdcf8a4573",
+      "translation_text_hash": "b8c607f644c432a8eec3b24781a7d7d21237099d762716c7afd225eb261a8fae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하노라 내가 너 여호수아 앞에 세운 돌을 보라 한 돌에 일곱 눈이 있느니라 내가 새길 것을 새기며 이 땅의 죄악을 하루에 제하리라"
+      ],
+      "raw_text_hashes": [
+        "b8c607f644c432a8eec3b24781a7d7d21237099d762716c7afd225eb261a8fae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:3:10",
+      "sequence": 22923,
+      "chapter_label": "ZEC 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "In that day,’ says the LORD of Armies, ‘you will invite every man his neighbor under the vine and under the fig tree.’”",
+      "ko": "만군의 여호와가 말하노라 그 날에 너희가 각각 포도나무와 무화과나무 아래로 서로 초대하리라 하셨느니라",
+      "source_text_hash": "d19cfaee3d4346258f6b71d28b3f1fc769b98bab287b31e2aa13ee493a685c1f",
+      "translation_text_hash": "1a5062ed87ec318eac6306d9281171e837f45a9dd8bb38cfe3e7ac8b409be715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 말하노라 그 날에 너희가 각각 포도나무와 무화과나무 아래로 서로 초대하리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1a5062ed87ec318eac6306d9281171e837f45a9dd8bb38cfe3e7ac8b409be715"
+      ]
+    }
+  ]
+}

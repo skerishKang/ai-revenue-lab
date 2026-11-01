@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:004",
+  "unit_ordinal": 240,
+  "unit_label": "1SA 4",
+  "book_code": "1SA",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:4:1",
+      "sequence": 7299,
+      "chapter_label": "1SA 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "The word of Samuel came to all Israel. Now Israel went out against the Philistines to battle, and encamped beside Ebenezer; and the Philistines encamped in Aphek.",
+      "ko": "사무엘의 말이 온 이스라엘에 전파되니라 이스라엘은 나가서 블레셋 사람과 싸우려고 에벤에셀 곁에 진 치고 블레셋 사람은 아벡에 진 쳤더니",
+      "source_text_hash": "cb0bd822c66bdb6d25c366959eb174770067c72f4d68980cabffc416c5208161",
+      "translation_text_hash": "07aea2968e570d9ce7ebee898d922fcf43374dadd2caa12fc71954d179a19ca7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘의 말이 온 이스라엘에 전파되니라 이스라엘은 나가서 블레셋 사람과 싸우려고 에벤에셀 곁에 진 치고 블레셋 사람은 아벡에 진 쳤더니"
+      ],
+      "raw_text_hashes": [
+        "07aea2968e570d9ce7ebee898d922fcf43374dadd2caa12fc71954d179a19ca7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:2",
+      "sequence": 7300,
+      "chapter_label": "1SA 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "The Philistines put themselves in array against Israel. When they joined battle, Israel was defeated by the Philistines, who killed about four thousand men of the army in the field.",
+      "ko": "이스라엘을 대하여 항오를 벌이니라 그 둘이 싸우다가 이스라엘이 블레셋 사람 앞에서 패하여 그들에게 전쟁에서 죽임을 당한 군사가 사천명 가량이라",
+      "source_text_hash": "ff6136adf575048603429805285b3bd583770c7beffd7b592270676c6212b4d5",
+      "translation_text_hash": "2ea49edd66c2e604d2cbc8ac56a3f7731af6b68f7345fe0f71cd81e9321b788d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘을 대하여 항오를 벌이니라 그 둘이 싸우다가 이스라엘이 블레셋 사람 앞에서 패하여 그들에게 전쟁에서 죽임을 당한 군사가 사천명 가량이라"
+      ],
+      "raw_text_hashes": [
+        "2ea49edd66c2e604d2cbc8ac56a3f7731af6b68f7345fe0f71cd81e9321b788d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:3",
+      "sequence": 7301,
+      "chapter_label": "1SA 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "When the people had come into the camp, the elders of Israel said, “Why has the LORD defeated us today before the Philistines? Let’s get the ark of the LORD’s covenant out of Shiloh and bring it to us, that it may come among us and save us out of the hand of our enemies.”",
+      "ko": "백성이 진으로 돌아오매 이스라엘 장로들이 가로되 여호와께서 어찌하여 우리로 오늘 블레셋 사람 앞에 패하게 하셨는고 여호와의 언약궤를 실로에서 우리에게로 가져다가 우리 중에 있게 하여 그것으로 우리를 우리 원수들의 손에서 구원하게 하자 하니",
+      "source_text_hash": "e09ff327a4a3b55b98ae04659895dd9824479b10ea51b4cdcc2e71301c88c290",
+      "translation_text_hash": "fc8730c1e6d5c67abd6f3679d4b731321f3a6e23916ff00c02bebfaa2b01f5af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성이 진으로 돌아오매 이스라엘 장로들이 가로되 여호와께서 어찌하여 우리로 오늘 블레셋 사람 앞에 패하게 하셨는고 여호와의 언약궤를 실로에서 우리에게로 가져다가 우리 중에 있게 하여 그것으로 우리를 우리 원수들의 손에서 구원하게 하자 하니"
+      ],
+      "raw_text_hashes": [
+        "fc8730c1e6d5c67abd6f3679d4b731321f3a6e23916ff00c02bebfaa2b01f5af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:4",
+      "sequence": 7302,
+      "chapter_label": "1SA 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "So the people sent to Shiloh, and they brought from there the ark of the covenant of the LORD of Armies, who sits above the cherubim; and the two sons of Eli, Hophni and Phinehas, were there with the ark of the covenant of God.",
+      "ko": "이에 백성이 실로에 보내어 그룹 사이에 계신 만군의 여호와의 언약궤를 거기서 가져왔고 엘리의 두 아들 홉니와 비느하스는 하나님의 언약궤와 함께 거기 있었더라",
+      "source_text_hash": "e1f541405933595208661bfcd244c2b0ee8587af1c21a3d1c2789ca00ed17f9f",
+      "translation_text_hash": "e55b40130650fd11f4104cd5307047c6d1ac149c13153b970508d4561d386b20",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 백성이 실로에 보내어 그룹 사이에 계신 만군의 여호와의 언약궤를 거기서 가져왔고 엘리의 두 아들 홉니와 비느하스는 하나님의 언약궤와 함께 거기 있었더라"
+      ],
+      "raw_text_hashes": [
+        "e55b40130650fd11f4104cd5307047c6d1ac149c13153b970508d4561d386b20"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:5",
+      "sequence": 7303,
+      "chapter_label": "1SA 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "When the ark of the LORD’s covenant came into the camp, all Israel shouted with a great shout, so that the earth resounded.",
+      "ko": "여호와의 언약궤가 진에 들어올 때에 온 이스라엘이 큰 소리로 외치매 땅이 울린지라",
+      "source_text_hash": "9f4435639554dfd1c44ab364c696b37f6d72a50c42f21971c5d145cbecbdfabe",
+      "translation_text_hash": "fda82a145b76de08cdc067c05866aec3461382348b553b061a72618cf6e79bc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 언약궤가 진에 들어올 때에 온 이스라엘이 큰 소리로 외치매 땅이 울린지라"
+      ],
+      "raw_text_hashes": [
+        "fda82a145b76de08cdc067c05866aec3461382348b553b061a72618cf6e79bc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:6",
+      "sequence": 7304,
+      "chapter_label": "1SA 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "When the Philistines heard the noise of the shout, they said, “What does the noise of this great shout in the camp of the Hebrews mean?” They understood that the LORD’s ark had come into the camp.",
+      "ko": "블레셋 사람이 그 외치는 소리를 듣고 가로되 히브리 진에서 큰 소리로 외침은 어찜이뇨 하다가 여호와의 궤가 진에 들어온 줄을 깨달은지라",
+      "source_text_hash": "971fc94e7b23dd72589d95b8974a3e5ace097083bc217aeb28d1915e44c45657",
+      "translation_text_hash": "a474d8ce57ac3843efbc77aa53b23dd9671e88486b09e876ac535963c22e84f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 그 외치는 소리를 듣고 가로되 히브리 진에서 큰 소리로 외침은 어찜이뇨 하다가 여호와의 궤가 진에 들어온 줄을 깨달은지라"
+      ],
+      "raw_text_hashes": [
+        "a474d8ce57ac3843efbc77aa53b23dd9671e88486b09e876ac535963c22e84f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:7",
+      "sequence": 7305,
+      "chapter_label": "1SA 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "The Philistines were afraid, for they said, “God has come into the camp.” They said, “Woe to us! For there has not been such a thing before.",
+      "ko": "블레셋 사람이 두려워하여 가로되 신이 진에 이르렀도다 하고 또 가로되 우리에게 화로다 전일에는 이런 일이 없었도다",
+      "source_text_hash": "bc60d0d9e77ecca62612088a5b262b3a5676731c128eb361d464b734b81ad05d",
+      "translation_text_hash": "98f6d5794615616509623fc8d54b356197e999dbefa5124f5602a023b1c042ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 두려워하여 가로되 신이 진에 이르렀도다 하고 또 가로되 우리에게 화로다 전일에는 이런 일이 없었도다"
+      ],
+      "raw_text_hashes": [
+        "98f6d5794615616509623fc8d54b356197e999dbefa5124f5602a023b1c042ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:8",
+      "sequence": 7306,
+      "chapter_label": "1SA 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Woe to us! Who shall deliver us out of the hand of these mighty gods? These are the gods that struck the Egyptians with all kinds of plagues in the wilderness.",
+      "ko": "우리에게 화로다 누가 우리를 이 능한 신들의 손에서 건지리요 그들은 광야에서 여러가지 재앙으로 애굽인을 친 신들이니라",
+      "source_text_hash": "8e2b12aaac0b732d43e3c82ba481ceafe313fcb41b7392b082afe81edf8f8748",
+      "translation_text_hash": "96e12e37511dfc12f3820dd020f84e80f8fc9aad83099ada89e1097a055c3456",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리에게 화로다 누가 우리를 이 능한 신들의 손에서 건지리요 그들은 광야에서 여러가지 재앙으로 애굽인을 친 신들이니라"
+      ],
+      "raw_text_hashes": [
+        "96e12e37511dfc12f3820dd020f84e80f8fc9aad83099ada89e1097a055c3456"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:9",
+      "sequence": 7307,
+      "chapter_label": "1SA 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Be strong and behave like men, O you Philistines, that you not be servants to the Hebrews, as they have been to you. Strengthen yourselves like men, and fight!”",
+      "ko": "너희 블레셋 사람들아 강하게 되며 대장부가 되어라 너희가 히브리 사람의 종이 되기를 그들이 너희의 종이 되었던것 같이 말고 대장부 같이 되어 싸우라 하고",
+      "source_text_hash": "618eb82cb8c9770679ffccf320a74fd41152e921b9c585211417a9741fc42877",
+      "translation_text_hash": "8af8ddcb6fb7d88fa5fc17c0f7245ca8669f6a943291bd5f9c56fb7ca746008f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 블레셋 사람들아 강하게 되며 대장부가 되어라 너희가 히브리 사람의 종이 되기를 그들이 너희의 종이 되었던것 같이 말고 대장부 같이 되어 싸우라 하고"
+      ],
+      "raw_text_hashes": [
+        "8af8ddcb6fb7d88fa5fc17c0f7245ca8669f6a943291bd5f9c56fb7ca746008f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:10",
+      "sequence": 7308,
+      "chapter_label": "1SA 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "The Philistines fought, and Israel was defeated, and each man fled to his tent. There was a very great slaughter; for thirty thousand footmen of Israel fell.",
+      "ko": "블레셋 사람이 쳤더니 이스라엘이 패하여 각기 장막으로 도망하였고 살륙이 심히 커서 이스라엘 보병의 엎드러진 자가 삼만이었으며",
+      "source_text_hash": "48fe9f4cb6704b02d03479ca35d66b3ba15138fb1222c23ca91028ac19e4d4a9",
+      "translation_text_hash": "cf82378819ad326e385a5bc994d97b07a4359ba80104a24c91e658d2028b74b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "블레셋 사람이 쳤더니 이스라엘이 패하여 각기 장막으로 도망하였고 살륙이 심히 커서 이스라엘 보병의 엎드러진 자가 삼만이었으며"
+      ],
+      "raw_text_hashes": [
+        "cf82378819ad326e385a5bc994d97b07a4359ba80104a24c91e658d2028b74b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:11",
+      "sequence": 7309,
+      "chapter_label": "1SA 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "God’s ark was taken; and the two sons of Eli, Hophni and Phinehas, were slain.",
+      "ko": "하나님의 궤는 빼앗겼고 엘리의 두 아들 홉니와 비느하스는 죽임을 당하였더라",
+      "source_text_hash": "6c1d76a5ca8524731c47704626c152c3d47134f86e6fdccfd60ed2a9018ae330",
+      "translation_text_hash": "d57e51bfaee2960956960db1d80ad9e89f1bf9344e1462f6579c67b755fd3a13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 궤는 빼앗겼고 엘리의 두 아들 홉니와 비느하스는 죽임을 당하였더라"
+      ],
+      "raw_text_hashes": [
+        "d57e51bfaee2960956960db1d80ad9e89f1bf9344e1462f6579c67b755fd3a13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:12",
+      "sequence": 7310,
+      "chapter_label": "1SA 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "A man of Benjamin ran out of the army and came to Shiloh the same day, with his clothes torn and with dirt on his head.",
+      "ko": "당일에 어떤 베냐민 사람이 진에서 달려나와 그 옷을 찢고 그 머리에 티끌을 무릅쓰고 실로에 이르니라",
+      "source_text_hash": "b5b0b1d765788b3461dbd0599afbf25a3f590c01721cad56ff69f8dcd9397f35",
+      "translation_text_hash": "5e4449b9397228856578cb97089edee67aac856ee60921d3367987f96d425d6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "당일에 어떤 베냐민 사람이 진에서 달려나와 그 옷을 찢고 그 머리에 티끌을 무릅쓰고 실로에 이르니라"
+      ],
+      "raw_text_hashes": [
+        "5e4449b9397228856578cb97089edee67aac856ee60921d3367987f96d425d6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:13",
+      "sequence": 7311,
+      "chapter_label": "1SA 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "When he came, behold, Eli was sitting on his seat by the road watching, for his heart trembled for God’s ark. When the man came into the city and told about it, all the city cried out.",
+      "ko": "그가 이를 때는 엘리가 길 곁 자기 의자에 앉아 기다리며 그 마음이 여호와의 궤로 인하여 떨릴 즈음이라 그 사람이 성에 들어오며 고하매 온 성이 부르짖는지라",
+      "source_text_hash": "1d3da9daf8c6995a69cff4f6b322afd7cfc5753b76f68627f46b5804c300a8e8",
+      "translation_text_hash": "877445ac41cb6c0149836d249d9e3bb0c0d26c95e200fcd9f32e82d5ffe1d451",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이를 때는 엘리가 길 곁 자기 의자에 앉아 기다리며 그 마음이 여호와의 궤로 인하여 떨릴 즈음이라 그 사람이 성에 들어오며 고하매 온 성이 부르짖는지라"
+      ],
+      "raw_text_hashes": [
+        "877445ac41cb6c0149836d249d9e3bb0c0d26c95e200fcd9f32e82d5ffe1d451"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:14",
+      "sequence": 7312,
+      "chapter_label": "1SA 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "When Eli heard the noise of the crying, he said, “What does the noise of this tumult mean?” The man hurried, and came and told Eli.",
+      "ko": "엘리가 그 부르짖는 소리를 듣고 가로되 이 훤화하는 소리는 어찜이뇨 그 사람이 빨리 와서 엘리에게 고하니",
+      "source_text_hash": "1abc6f58caf1880b6ad178db5e9857e6cdd3cf43105392102d42fa9b60cca052",
+      "translation_text_hash": "e2a8163641860225b55dd547fa87b4702c79f6f402243772225bd27e8e8efb50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 그 부르짖는 소리를 듣고 가로되 이 훤화하는 소리는 어찜이뇨 그 사람이 빨리 와서 엘리에게 고하니"
+      ],
+      "raw_text_hashes": [
+        "e2a8163641860225b55dd547fa87b4702c79f6f402243772225bd27e8e8efb50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:15",
+      "sequence": 7313,
+      "chapter_label": "1SA 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "Now Eli was ninety-eight years old. His eyes were set, so that he could not see.",
+      "ko": "때에 엘리의 나이 구십 팔이라 그 눈이 어두워서 보지 못하더라",
+      "source_text_hash": "255df276b34e461da36222238149076e6f80d69007749bef75a4c8665c694ab3",
+      "translation_text_hash": "05b1035af2676208cf5cfec2f0cd71716391c1195b6fb1cfea2090bd1ecb3ab6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 엘리의 나이 구십 팔이라 그 눈이 어두워서 보지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "05b1035af2676208cf5cfec2f0cd71716391c1195b6fb1cfea2090bd1ecb3ab6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:16",
+      "sequence": 7314,
+      "chapter_label": "1SA 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "The man said to Eli, “I am he who came out of the army, and I fled today out of the army.” He said, “How did the matter go, my son?”",
+      "ko": "그 사람이 엘리에게 고하되 나는 진중에서 나온 자라 내가 오늘 진중에서 도망하여 왔나이다 엘리가 가로되 내 아들아 일이 어찌 되었느냐",
+      "source_text_hash": "faa459e968fc3a3f8c94f05e64650db1e45c4b6d22a775346b0f2f647962a206",
+      "translation_text_hash": "e952bad6fb1511f5c1c0583bf7ebbbde595ff2f2853f3d1b3bae756ebef33703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 엘리에게 고하되 나는 진중에서 나온 자라 내가 오늘 진중에서 도망하여 왔나이다 엘리가 가로되 내 아들아 일이 어찌 되었느냐"
+      ],
+      "raw_text_hashes": [
+        "e952bad6fb1511f5c1c0583bf7ebbbde595ff2f2853f3d1b3bae756ebef33703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:17",
+      "sequence": 7315,
+      "chapter_label": "1SA 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "He who brought the news answered, “Israel has fled before the Philistines, and there has been also a great slaughter among the people. Your two sons also, Hophni and Phinehas, are dead, and God’s ark has been captured.”",
+      "ko": "소식을 전하는 자가 대답하여 가로되 이스라엘이 블레셋 사람 앞에서 도망하였고 백성 중에는 큰 살륙이 있었고 당신의 두 아들 홉니와 비느하스도 죽임을 당하였고 하나님의 궤는 빼앗겼나이다",
+      "source_text_hash": "4fb95c798254144166844b77f328c607ea7dccee677f6325c346962326785785",
+      "translation_text_hash": "e75d424651c8588fefde008e27e469239197398aea0b6c98f5246000abda9690",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소식을 전하는 자가 대답하여 가로되 이스라엘이 블레셋 사람 앞에서 도망하였고 백성 중에는 큰 살륙이 있었고 당신의 두 아들 홉니와 비느하스도 죽임을 당하였고 하나님의 궤는 빼앗겼나이다"
+      ],
+      "raw_text_hashes": [
+        "e75d424651c8588fefde008e27e469239197398aea0b6c98f5246000abda9690"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:18",
+      "sequence": 7316,
+      "chapter_label": "1SA 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "When he made mention of God’s ark, Eli fell from off his seat backward by the side of the gate; and his neck broke, and he died, for he was an old man and heavy. He had judged Israel forty years.",
+      "ko": "하나님의 궤를 말할 때에 엘리가 자기 의자에서 자빠져 문 곁에서 목이 부러져 죽었으니 나이 많고 비둔한 연고라 그가 이스라엘 사사가 된지 사십년이었더라",
+      "source_text_hash": "3437fb488b00ccf142fd162fd4fa6a68b66a1935ff19eba7406bbcc6c68766cf",
+      "translation_text_hash": "4e48f13bb802ab6417f2b6f9222d6387c1aac241208d0b8fac680ea4c89eb420",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 궤를 말할 때에 엘리가 자기 의자에서 자빠져 문 곁에서 목이 부러져 죽었으니 나이 많고 비둔한 연고라 그가 이스라엘 사사가 된지 사십년이었더라"
+      ],
+      "raw_text_hashes": [
+        "4e48f13bb802ab6417f2b6f9222d6387c1aac241208d0b8fac680ea4c89eb420"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:19",
+      "sequence": 7317,
+      "chapter_label": "1SA 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "His daughter-in-law, Phinehas’ wife, was with child, near to giving birth. When she heard the news that God’s ark was taken and that her father-in-law and her husband were dead, she bowed herself and gave birth; for her pains came on her.",
+      "ko": "그의 며느리 비느하스의 아내가 잉태하여 산기가 가까왔더니 하나님의 궤 빼앗긴 것과 그 시부와 남편의 죽은 소문을 듣고 갑자기 아파서 몸을 구푸려 해산하고",
+      "source_text_hash": "336056fc0b55007b6c9e588730399fda698cd24b2ac14404e8a50dcbe9725d8c",
+      "translation_text_hash": "51417e908a16bcece3303c137db0149b9face47a3577852879e03da74edc6f42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 며느리 비느하스의 아내가 잉태하여 산기가 가까왔더니 하나님의 궤 빼앗긴 것과 그 시부와 남편의 죽은 소문을 듣고 갑자기 아파서 몸을 구푸려 해산하고"
+      ],
+      "raw_text_hashes": [
+        "51417e908a16bcece3303c137db0149b9face47a3577852879e03da74edc6f42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:20",
+      "sequence": 7318,
+      "chapter_label": "1SA 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "About the time of her death the women who stood by her said to her, “Don’t be afraid, for you have given birth to a son.” But she didn’t answer, neither did she regard it.",
+      "ko": "죽어갈 때에 곁에 섰던 여인들이 그에게 이르되 두려워 말라 네가 아들을 낳았다 하되 그가 대답지도 아니하며 관념치도 아니하고",
+      "source_text_hash": "2cbd1ed96945335c0f94ac1d5912eeba7b0704c547434c7f4e0ec0f595aeaa91",
+      "translation_text_hash": "86f3823b35f1d288d305813f44aaeba7251b6f7bb5d8b9eab87f923e13f5a279",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽어갈 때에 곁에 섰던 여인들이 그에게 이르되 두려워 말라 네가 아들을 낳았다 하되 그가 대답지도 아니하며 관념치도 아니하고"
+      ],
+      "raw_text_hashes": [
+        "86f3823b35f1d288d305813f44aaeba7251b6f7bb5d8b9eab87f923e13f5a279"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:21",
+      "sequence": 7319,
+      "chapter_label": "1SA 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "She named the child Ichabod, saying, “The glory has departed from Israel!” because God’s ark was taken, and because of her father-in-law and her husband.",
+      "ko": "이르기를 영광이 이스라엘에서 떠났다 하고 아이 이름을 이가봇이라 하였으니 하나님의 궤가 빼앗겼고 그 시부와 남편이 죽었음을 인함이며",
+      "source_text_hash": "6a76a1fa4c2b0f0cae9d0b675536f3acceb6be1ee4d2fd10ecc774b46e546bee",
+      "translation_text_hash": "a028af540ebcea5141d22c33e9b6f6b01feab2102b209710307167d0bff92964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르기를 영광이 이스라엘에서 떠났다 하고 아이 이름을 이가봇이라 하였으니 하나님의 궤가 빼앗겼고 그 시부와 남편이 죽었음을 인함이며"
+      ],
+      "raw_text_hashes": [
+        "a028af540ebcea5141d22c33e9b6f6b01feab2102b209710307167d0bff92964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:4:22",
+      "sequence": 7320,
+      "chapter_label": "1SA 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "She said, “The glory has departed from Israel; for God’s ark has been taken.”",
+      "ko": "또 이르기를 하나님의 궤를 빼앗겼으므로 영광이 이스라엘에서 떠났다 하였더라",
+      "source_text_hash": "f692e926ed94d0db466c2e30b8380108c58899faa8ef7e5010d06bfe3121966f",
+      "translation_text_hash": "22480d44cf83e20df980f0162906f6c93b598655539079a4745f8accc35f9316",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이르기를 하나님의 궤를 빼앗겼으므로 영광이 이스라엘에서 떠났다 하였더라"
+      ],
+      "raw_text_hashes": [
+        "22480d44cf83e20df980f0162906f6c93b598655539079a4745f8accc35f9316"
+      ]
+    }
+  ]
+}
