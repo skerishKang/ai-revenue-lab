@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:032",
+  "unit_ordinal": 32,
+  "unit_label": "GEN 32",
+  "book_code": "GEN",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:32:1",
+      "sequence": 930,
+      "chapter_label": "GEN 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "Jacob went on his way, and the angels of God met him.",
+      "ko": "야곱이 그 길을 진행하더니 하나님의 사자들이 그를 만난지라",
+      "source_text_hash": "497d883899408be0b86b4799147c47961c42cef0a847831dc6fe367ffc6953d1",
+      "translation_text_hash": "62d2968410367769ecb27baaa83e18becde9b298e57b8efa176d6c8572485879",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그 길을 진행하더니 하나님의 사자들이 그를 만난지라"
+      ],
+      "raw_text_hashes": [
+        "62d2968410367769ecb27baaa83e18becde9b298e57b8efa176d6c8572485879"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:2",
+      "sequence": 931,
+      "chapter_label": "GEN 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "When he saw them, Jacob said, “This is God’s army.” He called the name of that place Mahanaim.",
+      "ko": "야곱이 그들을 볼 때에 이르기를 이는 하나님의 군대라 하고 그 땅 이름을 마하나임이라 하였더라",
+      "source_text_hash": "840f462c28d79fecd14aedb5d7d97e012c4b2da8c340d6eb5fb8b03cfae340cd",
+      "translation_text_hash": "99086fa0cfee51352975b249bfd80634ce7182a490c1216f2c1371c90f6cce59",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 그들을 볼 때에 이르기를 이는 하나님의 군대라 하고 그 땅 이름을 마하나임이라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "99086fa0cfee51352975b249bfd80634ce7182a490c1216f2c1371c90f6cce59"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:3",
+      "sequence": 932,
+      "chapter_label": "GEN 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "Jacob sent messengers in front of him to Esau, his brother, to the land of Seir, the field of Edom.",
+      "ko": "야곱이 세일땅 에돔 들에 있는 형 에서에게로 사자들을 자기보다 앞서 보내며",
+      "source_text_hash": "176b021b6ff253da84dcf7f3199594e3aecd99974a8afad8ee9fca6768404628",
+      "translation_text_hash": "73a3764342ea5a7a6b14c3434c60dfc67a4637e0d2fc05b09dff543b7c46d643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 세일땅 에돔 들에 있는 형 에서에게로 사자들을 자기보다 앞서 보내며"
+      ],
+      "raw_text_hashes": [
+        "73a3764342ea5a7a6b14c3434c60dfc67a4637e0d2fc05b09dff543b7c46d643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:4",
+      "sequence": 933,
+      "chapter_label": "GEN 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "He commanded them, saying, “This is what you shall tell my lord, Esau: ‘This is what your servant, Jacob, says. I have lived as a foreigner with Laban, and stayed until now.",
+      "ko": "그들에게 부탁하여 가로되 너희는 이같이 내 주 에서에게 고하라 주의 종 야곱이 말하기를 내가 라반에게 붙여서 지금까지 있었사오며",
+      "source_text_hash": "6158e5fa2a226b0ef191f958e9e86f355ebc7c2c6cf9251bc9eb17426d8cbc62",
+      "translation_text_hash": "16e059abc1294ab1e70b0a9946d70326a94825b246b5a225f6c0a6ca6ed6fbb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들에게 부탁하여 가로되 너희는 이같이 내 주 에서에게 고하라 주의 종 야곱이 말하기를 내가 라반에게 붙여서 지금까지 있었사오며"
+      ],
+      "raw_text_hashes": [
+        "16e059abc1294ab1e70b0a9946d70326a94825b246b5a225f6c0a6ca6ed6fbb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:5",
+      "sequence": 934,
+      "chapter_label": "GEN 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "I have cattle, donkeys, flocks, male servants, and female servants. I have sent to tell my lord, that I may find favor in your sight.’”",
+      "ko": "내게 소와 나귀와 양떼와 노비가 있사오므로 사람을 보내어 내 주께 고하고 내 주께 은혜 받기를 원하나이다 하더라 하라 하였더니",
+      "source_text_hash": "302d4655f692d3bd3fca0a8d6c581cfbabd79a38ea6ba876c8fbf9615b196f66",
+      "translation_text_hash": "ae6656f37a4e987da7734608a27e398874348755b88834e9c9181437fc03d7b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 소와 나귀와 양떼와 노비가 있사오므로 사람을 보내어 내 주께 고하고 내 주께 은혜 받기를 원하나이다 하더라 하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "ae6656f37a4e987da7734608a27e398874348755b88834e9c9181437fc03d7b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:6",
+      "sequence": 935,
+      "chapter_label": "GEN 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "The messengers returned to Jacob, saying, “We came to your brother Esau. He is coming to meet you, and four hundred men are with him.”",
+      "ko": "사자들이 야곱에게 돌아와 가로되 우리가 주인의 형 에서에게 이른즉 그가 사백인을 거느리고 주인을 만나려고 오더이다",
+      "source_text_hash": "6e5ce3da7037d4629dd721c7830101f94c38bc623ef8894757eb6c7df790f3e0",
+      "translation_text_hash": "2b18db3aea9eaacfd740d112515405821be593eed5ed73a3c48b60519f7ce1ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사자들이 야곱에게 돌아와 가로되 우리가 주인의 형 에서에게 이른즉 그가 사백인을 거느리고 주인을 만나려고 오더이다"
+      ],
+      "raw_text_hashes": [
+        "2b18db3aea9eaacfd740d112515405821be593eed5ed73a3c48b60519f7ce1ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:7",
+      "sequence": 936,
+      "chapter_label": "GEN 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "Then Jacob was greatly afraid and was distressed. He divided the people who were with him, along with the flocks, the herds, and the camels, into two companies.",
+      "ko": "야곱이 심히 두렵고 답답하여 자기와 함께한 종자와 양과 소와 약대를 두 떼로 나누고",
+      "source_text_hash": "53768d34a306a247d946e39f850d1946b5949fa180fbc139921c71664e9633be",
+      "translation_text_hash": "12f2d2d6dc560c44013c45d4a0e521054ec0d90ab783d9a2281863a6bb3f2b92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 심히 두렵고 답답하여 자기와 함께한 종자와 양과 소와 약대를 두 떼로 나누고"
+      ],
+      "raw_text_hashes": [
+        "12f2d2d6dc560c44013c45d4a0e521054ec0d90ab783d9a2281863a6bb3f2b92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:8",
+      "sequence": 937,
+      "chapter_label": "GEN 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "He said, “If Esau comes to the one company, and strikes it, then the company which is left will escape.”",
+      "ko": "가로되 에서가 와서 한 떼를 치면 남은 한 떼는 피하리라 하고",
+      "source_text_hash": "c7d0d5d31e3c83230c6c691e45a154222dcb2310c2cc692d6591d266a23daf48",
+      "translation_text_hash": "aa3f110dd49a874070906b79cb654aa5d0dd3dcbe9eae3f44d0e13252b085c2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 에서가 와서 한 떼를 치면 남은 한 떼는 피하리라 하고"
+      ],
+      "raw_text_hashes": [
+        "aa3f110dd49a874070906b79cb654aa5d0dd3dcbe9eae3f44d0e13252b085c2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:9",
+      "sequence": 938,
+      "chapter_label": "GEN 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "Jacob said, “God of my father Abraham, and God of my father Isaac, the LORD, who said to me, ‘Return to your country, and to your relatives, and I will do you good,’",
+      "ko": "야곱이 또 가로되 나의 조부 아브라함의 하나님, 나의 아버지 이삭의 하나님 여호와여 주께서 전에 내게 명하시기를 네 고향, 네 족속에게로 돌아가라 내가 네게 은혜를 베풀리라 하셨나이다",
+      "source_text_hash": "1e52e3c84cdf49ad3f8d0776375d9d5b5e09d42fb9fee6772ac52462f1f3bd9d",
+      "translation_text_hash": "aaef4296d735bb94b14970afee5ce0e228fd524841c4ce6e6142a388875b1b7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 또 가로되 나의 조부 아브라함의 하나님, 나의 아버지 이삭의 하나님 여호와여 주께서 전에 내게 명하시기를 네 고향, 네 족속에게로 돌아가라 내가 네게 은혜를 베풀리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "aaef4296d735bb94b14970afee5ce0e228fd524841c4ce6e6142a388875b1b7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:10",
+      "sequence": 939,
+      "chapter_label": "GEN 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "I am not worthy of the least of all the loving kindnesses, and of all the truth, which you have shown to your servant; for with just my staff I crossed over this Jordan; and now I have become two companies.",
+      "ko": "나는 주께서 주의 종에게 베푸신 모든 은총과 모든 진리를 조금이라도 감당할 수 없사오나 내가 내 지팡이만 가지고 이 요단을 건넜더니 지금은 두 떼나 이루었나이다",
+      "source_text_hash": "66e80ae12c4b45a12635abb982fc608cfb3c2c5c2159cd4a615fe02d335a3ac7",
+      "translation_text_hash": "2577760b115c7cc13445a956eed4dbee1051ca27d75ad4d6483bd4385a9a4126",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 주께서 주의 종에게 베푸신 모든 은총과 모든 진리를 조금이라도 감당할 수 없사오나 내가 내 지팡이만 가지고 이 요단을 건넜더니 지금은 두 떼나 이루었나이다"
+      ],
+      "raw_text_hashes": [
+        "2577760b115c7cc13445a956eed4dbee1051ca27d75ad4d6483bd4385a9a4126"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:11",
+      "sequence": 940,
+      "chapter_label": "GEN 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "Please deliver me from the hand of my brother, from the hand of Esau; for I fear him, lest he come and strike me and the mothers with the children.",
+      "ko": "내가 주께 간구하오니 내 형의 손에서 에서의 손에서 나를 건져내시옵소서 내가 그를 두려워하옴은 그가 와서 나와 내 처자들을 칠까 겁냄이니이다",
+      "source_text_hash": "c1ced6dfbc12262489f645bcba9b2becd189a6e49e60741ed79c4e0930e75e43",
+      "translation_text_hash": "78d5050fb1c90fcfdf72cbd42416f9b3097dfc51cfeb1a8d14e3afc6c3af9797",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주께 간구하오니 내 형의 손에서 에서의 손에서 나를 건져내시옵소서 내가 그를 두려워하옴은 그가 와서 나와 내 처자들을 칠까 겁냄이니이다"
+      ],
+      "raw_text_hashes": [
+        "78d5050fb1c90fcfdf72cbd42416f9b3097dfc51cfeb1a8d14e3afc6c3af9797"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:12",
+      "sequence": 941,
+      "chapter_label": "GEN 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "You said, ‘I will surely do you good, and make your offspring as the sand of the sea, which can’t be counted because there are so many.’”",
+      "ko": "주께서 말씀하시기를 내가 정녕 네게 은혜를 베풀어 네 씨로 바다의 셀 수 없는 모래와 같이 많게 하리라 하셨나이다",
+      "source_text_hash": "2684cf0dcbbfa66b0c2f775b116bb622e4a48026f47f236b614e44fca3845af6",
+      "translation_text_hash": "cebe462ac8f794cfb6ed7b105d2374be4c8052949f2e5fb4a225c4816d6768d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 말씀하시기를 내가 정녕 네게 은혜를 베풀어 네 씨로 바다의 셀 수 없는 모래와 같이 많게 하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "cebe462ac8f794cfb6ed7b105d2374be4c8052949f2e5fb4a225c4816d6768d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:13",
+      "sequence": 942,
+      "chapter_label": "GEN 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "He stayed there that night, and took from that which he had with him a present for Esau, his brother:",
+      "ko": "야곱이 거기서 경야하고 그 소유 중에서 형 에서를 위하여 예물을 택하니",
+      "source_text_hash": "bfa723e8381dfaedbeb4494b79e8cf1a16eccae858dd71a31c8138dbdf7c6344",
+      "translation_text_hash": "757532ebbb2a8f48852366c02b7620f24f62ceb73779daea6243a36db72826b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 거기서 경야하고 그 소유 중에서 형 에서를 위하여 예물을 택하니"
+      ],
+      "raw_text_hashes": [
+        "757532ebbb2a8f48852366c02b7620f24f62ceb73779daea6243a36db72826b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:14",
+      "sequence": 943,
+      "chapter_label": "GEN 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "two hundred female goats and twenty male goats, two hundred ewes and twenty rams,",
+      "ko": "암염소가 이백이요 수염소가 이십이요 암양이 이백이요 수양이 이십이요",
+      "source_text_hash": "7677b1ea13ea67317bb957abc50d344812eb1fc2e536bb3d60e0a1067e4813ec",
+      "translation_text_hash": "6580250bb3610f375c1e6a1b567e0aa9ec0982a1781388397f82c790d6edf792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "암염소가 이백이요 수염소가 이십이요 암양이 이백이요 수양이 이십이요"
+      ],
+      "raw_text_hashes": [
+        "6580250bb3610f375c1e6a1b567e0aa9ec0982a1781388397f82c790d6edf792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:15",
+      "sequence": 944,
+      "chapter_label": "GEN 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "thirty milk camels and their colts, forty cows, ten bulls, twenty female donkeys and ten foals.",
+      "ko": "젖 나는 약대 삼십과 그 새끼요 암소가 사십이요 황소가 열이요 암나귀가 이십이요 그 새끼나귀가 열이라",
+      "source_text_hash": "9544d45a2fbf625deb344fe23fdd70f74c09822b065b0e4e71171e82c61f6230",
+      "translation_text_hash": "93afe3faeac4d9f8f04620a1d39fe7088e610ece380894ee085652b1109f793a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젖 나는 약대 삼십과 그 새끼요 암소가 사십이요 황소가 열이요 암나귀가 이십이요 그 새끼나귀가 열이라"
+      ],
+      "raw_text_hashes": [
+        "93afe3faeac4d9f8f04620a1d39fe7088e610ece380894ee085652b1109f793a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:16",
+      "sequence": 945,
+      "chapter_label": "GEN 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "He delivered them into the hands of his servants, every herd by itself, and said to his servants, “Pass over before me, and put a space between herd and herd.”",
+      "ko": "그것을 각각 떼로 나눠 종들의 손에 맡기고 그 종들에게 이르되 나보다 앞서 건너가서 각 떼로 상거가 뜨게 하라 하고",
+      "source_text_hash": "0881652e8be8735c23ce7d110e08bf21761f19dc9249fcd76dc54c3935458ba3",
+      "translation_text_hash": "71553f0e1d7fa4049b372da109588063525be0d22f9a5c633e684b752693f679",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 각각 떼로 나눠 종들의 손에 맡기고 그 종들에게 이르되 나보다 앞서 건너가서 각 떼로 상거가 뜨게 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "71553f0e1d7fa4049b372da109588063525be0d22f9a5c633e684b752693f679"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:17",
+      "sequence": 946,
+      "chapter_label": "GEN 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "He commanded the foremost, saying, “When Esau, my brother, meets you, and asks you, saying, ‘Whose are you? Where are you going? Whose are these before you?’",
+      "ko": "그가 또 앞선 자에게 부탁하여 가로되 내 형 에서가 너를 만나 묻기를 네가 뉘 사람이며 어디로 가느냐 네 앞엣것은 뉘 것이냐 하거든",
+      "source_text_hash": "65c3aec79ea2d63b9fdd80dbafae27a9ce55312cb11295456cf56cf441efcb09",
+      "translation_text_hash": "148d043b591ba9ed6e3eb2eba8c6ebbb262c5e21b7979595db93905a47fa0ac5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 앞선 자에게 부탁하여 가로되 내 형 에서가 너를 만나 묻기를 네가 뉘 사람이며 어디로 가느냐 네 앞엣것은 뉘 것이냐 하거든"
+      ],
+      "raw_text_hashes": [
+        "148d043b591ba9ed6e3eb2eba8c6ebbb262c5e21b7979595db93905a47fa0ac5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:18",
+      "sequence": 947,
+      "chapter_label": "GEN 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "Then you shall say, ‘They are your servant, Jacob’s. It is a present sent to my lord, Esau. Behold, he also is behind us.’”",
+      "ko": "대답하기를 주의 종 야곱의 것이요 자기 주 에서에게로 보내는 예물이오며 야곱도 우리 뒤에 있나이다 하라 하고",
+      "source_text_hash": "27ca35afb5e56c97c42cb4c98af2346d5f747e77bb512ec9a5b15bca7f2ce3c8",
+      "translation_text_hash": "62f10f7ad63979e59ffdadfea4c18276a846a32f068410f4a36f0852e9913aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하기를 주의 종 야곱의 것이요 자기 주 에서에게로 보내는 예물이오며 야곱도 우리 뒤에 있나이다 하라 하고"
+      ],
+      "raw_text_hashes": [
+        "62f10f7ad63979e59ffdadfea4c18276a846a32f068410f4a36f0852e9913aac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:19",
+      "sequence": 948,
+      "chapter_label": "GEN 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "He commanded also the second, and the third, and all that followed the herds, saying, “This is how you shall speak to Esau, when you find him.",
+      "ko": "그 둘째와 세째와 각 떼를 따라가는 자에게 부탁하여 가로되 너희도 에서를 만나거든 곧 이같이 그에게 고하고",
+      "source_text_hash": "633c5e0161ce011ba6ded8663bce3ea3f8989f66567417f2fccc94ec1f6feaeb",
+      "translation_text_hash": "d96612949bb917c78954294ea4be8c1d40e4240d89d8813de473366236f8037d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 둘째와 세째와 각 떼를 따라가는 자에게 부탁하여 가로되 너희도 에서를 만나거든 곧 이같이 그에게 고하고"
+      ],
+      "raw_text_hashes": [
+        "d96612949bb917c78954294ea4be8c1d40e4240d89d8813de473366236f8037d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:20",
+      "sequence": 949,
+      "chapter_label": "GEN 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "You shall say, ‘Not only that, but behold, your servant, Jacob, is behind us.’” For, he said, “I will appease him with the present that goes before me, and afterward I will see his face. Perhaps he will accept me.”",
+      "ko": "또 너희는 말하기를 주의 종 야곱이 우리 뒤에 있다 하라 하니 이는 야곱의 생각에 내가 내 앞에 보내는 예물로 형의 감정을 푼 후에 대면하면 형이 혹시 나를 받으리라 함이었더라",
+      "source_text_hash": "9d2909ca96accab58fda5da3dd084d9a99eb2b1ca48d06fef5afb2fbef6fb64d",
+      "translation_text_hash": "0ce4fc47ebd5943c5f6771f642a2d51d73a894962769b7ff5082bf979ca2baa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희는 말하기를 주의 종 야곱이 우리 뒤에 있다 하라 하니 이는 야곱의 생각에 내가 내 앞에 보내는 예물로 형의 감정을 푼 후에 대면하면 형이 혹시 나를 받으리라 함이었더라"
+      ],
+      "raw_text_hashes": [
+        "0ce4fc47ebd5943c5f6771f642a2d51d73a894962769b7ff5082bf979ca2baa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:21",
+      "sequence": 950,
+      "chapter_label": "GEN 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "So the present passed over before him, and he himself stayed that night in the camp.",
+      "ko": "그 예물은 그의 앞서 행하고 그는 무리 가운데서 경야하다가",
+      "source_text_hash": "47abdaf8cf5e1d7ec0ed8dbc5abaa4a910810e8de584186000c11622d4aa2d9a",
+      "translation_text_hash": "7ea7c4651c374a92499554a8090aba44fe7624e265fbb7010d94fdd1f0736be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물은 그의 앞서 행하고 그는 무리 가운데서 경야하다가"
+      ],
+      "raw_text_hashes": [
+        "7ea7c4651c374a92499554a8090aba44fe7624e265fbb7010d94fdd1f0736be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:22",
+      "sequence": 951,
+      "chapter_label": "GEN 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "He rose up that night, and took his two wives, and his two servants, and his eleven sons, and crossed over the ford of the Jabbok.",
+      "ko": "밤에 일어나 두 아내와 두 여종과 열 한 아들을 인도하여 얍복 나루를 건널쌔",
+      "source_text_hash": "3a87a5edc3aa77beed5de3b93ca2433c8ada74c7462d6dae2442c3807823ad00",
+      "translation_text_hash": "47b180f4e966ad98b9e84ea33c69aa899b3c637aa10f65b2c4b25d3823392d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤에 일어나 두 아내와 두 여종과 열 한 아들을 인도하여 얍복 나루를 건널쌔"
+      ],
+      "raw_text_hashes": [
+        "47b180f4e966ad98b9e84ea33c69aa899b3c637aa10f65b2c4b25d3823392d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:23",
+      "sequence": 952,
+      "chapter_label": "GEN 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "He took them, and sent them over the stream, and sent over that which he had.",
+      "ko": "그들을 인도하여 시내를 건네며 그 소유도 건네고",
+      "source_text_hash": "c2589cff54d319c518148209cea8e5f05c5494a88e7ac730c7bb9adc1224ded4",
+      "translation_text_hash": "cb2186cf838f11e45fcdab305279fd33983ebc1991fa64751f0ff31318f6d29d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 인도하여 시내를 건네며 그 소유도 건네고"
+      ],
+      "raw_text_hashes": [
+        "cb2186cf838f11e45fcdab305279fd33983ebc1991fa64751f0ff31318f6d29d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:24",
+      "sequence": 953,
+      "chapter_label": "GEN 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "Jacob was left alone, and wrestled with a man there until the breaking of the day.",
+      "ko": "야곱은 홀로 남았더니 어떤 사람이 날이 새도록 야곱과 씨름하다가",
+      "source_text_hash": "343373e700b7f8d41c17fefb4b6a18e3c788d143ebeb60dc9d28511321e274b5",
+      "translation_text_hash": "9d82c1867a00242131a03e3ec379a8802db8fc251b538563f319d53d58f0050e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱은 홀로 남았더니 어떤 사람이 날이 새도록 야곱과 씨름하다가"
+      ],
+      "raw_text_hashes": [
+        "9d82c1867a00242131a03e3ec379a8802db8fc251b538563f319d53d58f0050e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:25",
+      "sequence": 954,
+      "chapter_label": "GEN 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "When he saw that he didn’t prevail against him, the man touched the hollow of his thigh, and the hollow of Jacob’s thigh was strained as he wrestled.",
+      "ko": "그 사람이 자기가 야곱을 이기지 못함을 보고 야곱의 환도뼈를 치매 야곱의 환도뼈가 그 사람과 씨름할 때에 위골되었더라",
+      "source_text_hash": "b17b5c08f75814d6e7316de29292e64054c66573bbd281435aa04c39fc6671ef",
+      "translation_text_hash": "904cede67476b9c1eac322beab8b1d8fb9753f41de0ceb66b063358247758e26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 자기가 야곱을 이기지 못함을 보고 야곱의 환도뼈를 치매 야곱의 환도뼈가 그 사람과 씨름할 때에 위골되었더라"
+      ],
+      "raw_text_hashes": [
+        "904cede67476b9c1eac322beab8b1d8fb9753f41de0ceb66b063358247758e26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:26",
+      "sequence": 955,
+      "chapter_label": "GEN 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "The man said, “Let me go, for the day breaks.” Jacob said, “I won’t let you go unless you bless me.”",
+      "ko": "그 사람이 가로되 날이 새려하니 나로 가게 하라 야곱이 가로되 당신이 내게 축복하지 아니하면 가게 하지 아니하겠나이다",
+      "source_text_hash": "8acc57226d90288947c67c6b3ee5c363e84293c9d196b9de1f303f4b0c5905b4",
+      "translation_text_hash": "20d49b6d7c77beed6ae9766998bcf3db81b17c114d304401227e17e624554247",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 가로되 날이 새려하니 나로 가게 하라 야곱이 가로되 당신이 내게 축복하지 아니하면 가게 하지 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "20d49b6d7c77beed6ae9766998bcf3db81b17c114d304401227e17e624554247"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:27",
+      "sequence": 956,
+      "chapter_label": "GEN 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "He said to him, “What is your name?” He said, “Jacob”.",
+      "ko": "그 사람이 그에게 이르되 네 이름이 무엇이냐 그가 가로되 야곱이니이다",
+      "source_text_hash": "58dcd1bbb6958a6555233174184d6021666611209cc10773708aa2069506f51a",
+      "translation_text_hash": "d0d449769f5827a30fc034253b08f006d54a5d5de92327ea33014e39536dcbcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 그에게 이르되 네 이름이 무엇이냐 그가 가로되 야곱이니이다"
+      ],
+      "raw_text_hashes": [
+        "d0d449769f5827a30fc034253b08f006d54a5d5de92327ea33014e39536dcbcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:28",
+      "sequence": 957,
+      "chapter_label": "GEN 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "He said, “Your name will no longer be called Jacob, but Israel; for you have fought with God and with men, and have prevailed.”",
+      "ko": "그 사람이 가로되 네 이름을 다시는 야곱이라 부를 것이 아니요 이스라엘이라 부를 것이니 이는 네가 하나님과 사람으로 더불어 겨루어 이기었음이니라",
+      "source_text_hash": "c8219905b78ad2ca5a3d1e7f442b8395efc431dd50d4d34f9dc0b295dae02f89",
+      "translation_text_hash": "f58728a92b47a0bfcf862681b60a6790ebdf91213146079fd1793707d2faed70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 가로되 네 이름을 다시는 야곱이라 부를 것이 아니요 이스라엘이라 부를 것이니 이는 네가 하나님과 사람으로 더불어 겨루어 이기었음이니라"
+      ],
+      "raw_text_hashes": [
+        "f58728a92b47a0bfcf862681b60a6790ebdf91213146079fd1793707d2faed70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:29",
+      "sequence": 958,
+      "chapter_label": "GEN 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "Jacob asked him, “Please tell me your name.” He said, “Why is it that you ask what my name is?” So he blessed him there.",
+      "ko": "야곱이 청하여 가로되 당신의 이름을 고하소서 그 사람이 가로되 어찌 내 이름을 묻느냐 하고 거기서 야곱에게 축복한지라",
+      "source_text_hash": "634b15b7ec9abf79e4fc51c87af7c86dbc7eaa822f89762701d9dfd474b2bd3b",
+      "translation_text_hash": "6e91a0de75f0305f67261b6083b0adb8978272e5bb65613d69a735f9e7f88cc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱이 청하여 가로되 당신의 이름을 고하소서 그 사람이 가로되 어찌 내 이름을 묻느냐 하고 거기서 야곱에게 축복한지라"
+      ],
+      "raw_text_hashes": [
+        "6e91a0de75f0305f67261b6083b0adb8978272e5bb65613d69a735f9e7f88cc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:30",
+      "sequence": 959,
+      "chapter_label": "GEN 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "Jacob called the name of the place Peniel; for he said, “I have seen God face to face, and my life is preserved.”",
+      "ko": "그러므로 야곱이 그곳 이름을 브니엘이라 하였으니 그가 이르기를 내가 하나님과 대면하여 보았으나 내 생명이 보전되었다 함이더라",
+      "source_text_hash": "2e8309420609c264002a0519e6d02102f599b85e4477fa8dab5ed217248b0658",
+      "translation_text_hash": "9da7aaeb66f164a00cc4cfe3ade5baf31a888ecd8c44ad2f4c1f2fe58bed816f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 야곱이 그곳 이름을 브니엘이라 하였으니 그가 이르기를 내가 하나님과 대면하여 보았으나 내 생명이 보전되었다 함이더라"
+      ],
+      "raw_text_hashes": [
+        "9da7aaeb66f164a00cc4cfe3ade5baf31a888ecd8c44ad2f4c1f2fe58bed816f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:31",
+      "sequence": 960,
+      "chapter_label": "GEN 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "The sun rose on him as he passed over Peniel, and he limped because of his thigh.",
+      "ko": "그가 브니엘을 지날 때에 해가 돋았고 그 환도뼈로 인하여 절었더라",
+      "source_text_hash": "75d6d921ba0ceeb0848514877d582380027a08a9b30025d3850d832c5efde762",
+      "translation_text_hash": "a07a0bd02044bc53c5faa06b0546e5c586d2aa88b5279bea1a4e4c8a47059865",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 브니엘을 지날 때에 해가 돋았고 그 환도뼈로 인하여 절었더라"
+      ],
+      "raw_text_hashes": [
+        "a07a0bd02044bc53c5faa06b0546e5c586d2aa88b5279bea1a4e4c8a47059865"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:32:32",
+      "sequence": 961,
+      "chapter_label": "GEN 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "GEN",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "Therefore the children of Israel don’t eat the sinew of the hip, which is on the hollow of the thigh, to this day, because he touched the hollow of Jacob’s thigh in the sinew of the hip.",
+      "ko": "그 사람이 야곱의 환도뼈 큰 힘줄을 친고로 이스라엘 사람들이 지금까지 환도뼈 큰 힘줄을 먹지 아니하더라",
+      "source_text_hash": "17273aff268aac83a0ba94261167652b98976aead90cccbc4c63299b815c7116",
+      "translation_text_hash": "3cbd2a21a63843c39020e9b60d9b3c59fe0bc50a48c613d5addaef7714437e1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람이 야곱의 환도뼈 큰 힘줄을 친고로 이스라엘 사람들이 지금까지 환도뼈 큰 힘줄을 먹지 아니하더라"
+      ],
+      "raw_text_hashes": [
+        "3cbd2a21a63843c39020e9b60d9b3c59fe0bc50a48c613d5addaef7714437e1d"
+      ]
+    }
+  ]
+}

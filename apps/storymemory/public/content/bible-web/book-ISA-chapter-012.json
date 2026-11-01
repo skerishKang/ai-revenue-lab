@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:012",
+  "unit_ordinal": 691,
+  "unit_label": "ISA 12",
+  "book_code": "ISA",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:12:1",
+      "sequence": 17902,
+      "chapter_label": "ISA 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "In that day you will say, “I will give thanks to you, the LORD; for though you were angry with me, your anger has turned away and you comfort me.",
+      "ko": "그 날에 네가 말하기를 여호와여 주께서 전에는 내게 노하셨사오나 이제는 그 노가 쉬었고 또 나를 안위하시오니 내가 주께 감사하겠나이다 할 것이니라",
+      "source_text_hash": "e0be1bc73b53453f3e99c2afabffe8e36eeed67b8cf4aaa019d7fe629777603c",
+      "translation_text_hash": "43d33364df2e8e69ee30a925f6606385707f4008d270a99034389d0b9298ad8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 네가 말하기를 여호와여 주께서 전에는 내게 노하셨사오나 이제는 그 노가 쉬었고 또 나를 안위하시오니 내가 주께 감사하겠나이다 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "43d33364df2e8e69ee30a925f6606385707f4008d270a99034389d0b9298ad8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:12:2",
+      "sequence": 17903,
+      "chapter_label": "ISA 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Behold, God is my salvation. I will trust, and will not be afraid; for the LORD, the LORD, is my strength and song; and he has become my salvation.”",
+      "ko": "보라 하나님은 나의 구원이시라 내가 의뢰하고 두려움이 없으리니 주 여호와는 나의 힘이시며 나의 노래시며 나의 구원이심이라",
+      "source_text_hash": "f5132cc45d5121b8dd78a43cf490f6249e995c3cdb217357285dc646ea1ab31f",
+      "translation_text_hash": "6d1deb972ee088d60144a985576cd49d29556313239a0d10b5d905815ad23a34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 하나님은 나의 구원이시라 내가 의뢰하고 두려움이 없으리니 주 여호와는 나의 힘이시며 나의 노래시며 나의 구원이심이라"
+      ],
+      "raw_text_hashes": [
+        "6d1deb972ee088d60144a985576cd49d29556313239a0d10b5d905815ad23a34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:12:3",
+      "sequence": 17904,
+      "chapter_label": "ISA 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "Therefore with joy you will draw water out of the wells of salvation.",
+      "ko": "그러므로 너희가 기쁨으로 구원의 우물들에서 물을 길으리로다",
+      "source_text_hash": "26e1dc95d782a29c47c92091e536481c54ca9187d2f06ef75d135b6a8abcf423",
+      "translation_text_hash": "765e38ae00ff166aa8770a5562cb31b057d09f4bdbc573a90a25c370b83421f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 기쁨으로 구원의 우물들에서 물을 길으리로다"
+      ],
+      "raw_text_hashes": [
+        "765e38ae00ff166aa8770a5562cb31b057d09f4bdbc573a90a25c370b83421f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:12:4",
+      "sequence": 17905,
+      "chapter_label": "ISA 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "In that day you will say, “Give thanks to the LORD! Call on his name! Declare his doings among the peoples! Proclaim that his name is exalted!",
+      "ko": "그 날에 너희가 또 말하기를 여호와께 감사하라 그 이름을 부르며 그 행하심을 만국 중에 선포하며 그 이름이 높다 하라",
+      "source_text_hash": "fb469cf3c0f092ed3122483e1e53077e513a7117841e9f6333d83466b0afff1b",
+      "translation_text_hash": "ed4cb5b336bf080db7e1ee8402894883983f6deaf60ca33516a2d59bc8755200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 너희가 또 말하기를 여호와께 감사하라 그 이름을 부르며 그 행하심을 만국 중에 선포하며 그 이름이 높다 하라"
+      ],
+      "raw_text_hashes": [
+        "ed4cb5b336bf080db7e1ee8402894883983f6deaf60ca33516a2d59bc8755200"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:12:5",
+      "sequence": 17906,
+      "chapter_label": "ISA 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "Sing to the LORD, for he has done excellent things! Let this be known in all the earth!",
+      "ko": "여호와를 찬송할 것은 극히 아름다운 일을 하셨음이니 온 세계에 알게 할찌어다",
+      "source_text_hash": "196423858827df18ff5d3715bfb2def4243f0f262601d413b2fb02811880cbb9",
+      "translation_text_hash": "653b04c74f5f60ae546b4efbc181231f70ac0c9697b9394bdef8a9d7b38a5e1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 찬송할 것은 극히 아름다운 일을 하셨음이니 온 세계에 알게 할찌어다"
+      ],
+      "raw_text_hashes": [
+        "653b04c74f5f60ae546b4efbc181231f70ac0c9697b9394bdef8a9d7b38a5e1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:12:6",
+      "sequence": 17907,
+      "chapter_label": "ISA 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "Cry aloud and shout, you inhabitant of Zion, for the Holy One of Israel is great among you!”",
+      "ko": "시온의 거민아 소리를 높여 부르라 이스라엘의 거룩하신 자가 너희 중에서 크심이니라 할 것이니라",
+      "source_text_hash": "5a5ea1df18adaf0330ce71de8504ccb656376a8334878597d139cc626bd34844",
+      "translation_text_hash": "73b43dca84e4b8692c10c380aac12ff9bdba8615cabee04c8bf841f6ed6e00e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온의 거민아 소리를 높여 부르라 이스라엘의 거룩하신 자가 너희 중에서 크심이니라 할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "73b43dca84e4b8692c10c380aac12ff9bdba8615cabee04c8bf841f6ed6e00e8"
+      ]
+    }
+  ]
+}

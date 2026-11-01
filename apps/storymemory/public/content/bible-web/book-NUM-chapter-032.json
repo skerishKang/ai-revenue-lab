@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:032",
+  "unit_ordinal": 149,
+  "unit_label": "NUM 32",
+  "book_code": "NUM",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:32:1",
+      "sequence": 4720,
+      "chapter_label": "NUM 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "Now the children of Reuben and the children of Gad had a very great multitude of livestock. They saw the land of Jazer, and the land of Gilead. Behold, the place was a place for livestock.",
+      "ko": "르우벤 자손과 갓 자손은 심히 많은 가축의 떼가 있었더라 그들이 야셀 땅과 길르앗 땅을 본즉 그곳은 가축에 적당한 곳인지라",
+      "source_text_hash": "9f16634c2f39a82b290e643be880739c0421de2b627b5cc697fabc0e9c58448b",
+      "translation_text_hash": "620d75777a5a188835d49428289f707beb918a112d4922e3239b2e331e2cc9a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손과 갓 자손은 심히 많은 가축의 떼가 있었더라 그들이 야셀 땅과 길르앗 땅을 본즉 그곳은 가축에 적당한 곳인지라"
+      ],
+      "raw_text_hashes": [
+        "620d75777a5a188835d49428289f707beb918a112d4922e3239b2e331e2cc9a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:2",
+      "sequence": 4721,
+      "chapter_label": "NUM 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "Then the children of Gad and the children of Reuben came and spoke to Moses, and to Eleazar the priest, and to the princes of the congregation, saying,",
+      "ko": "갓 자손과 르우벤 자손이 와서 모세와 제사장 엘르아살과 회중 족장들에게 말하여 가로되",
+      "source_text_hash": "77cf4f2c0a0fbbc1d38922bb13570d3883dccb86d23900f692e93fa419b533e1",
+      "translation_text_hash": "263190e4984a7d76e8d5e78012f7d64d33e6dd3183881f6a403c3f170846d01a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손과 르우벤 자손이 와서 모세와 제사장 엘르아살과 회중 족장들에게 말하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "263190e4984a7d76e8d5e78012f7d64d33e6dd3183881f6a403c3f170846d01a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:3",
+      "sequence": 4722,
+      "chapter_label": "NUM 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "“Ataroth, Dibon, Jazer, Nimrah, Heshbon, Elealeh, Sebam, Nebo, and Beon,",
+      "ko": "아다롯과 디본과 야셀과 니므라와 헤스본과 엘르알레와 스밤과 느보와 브온",
+      "source_text_hash": "d274cb90d03bd6186bc5d6415e62d35a22d7e61362f8d883e12c9c5bc3534e48",
+      "translation_text_hash": "4604f8acab13b14fc68ebbbe2b197d2cb402a90bb6c0bdd97c804710559e73f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다롯과 디본과 야셀과 니므라와 헤스본과 엘르알레와 스밤과 느보와 브온"
+      ],
+      "raw_text_hashes": [
+        "4604f8acab13b14fc68ebbbe2b197d2cb402a90bb6c0bdd97c804710559e73f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:4",
+      "sequence": 4723,
+      "chapter_label": "NUM 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "the land which the LORD struck before the congregation of Israel, is a land for livestock; and your servants have livestock.”",
+      "ko": "곧 여호와께서 이스라엘 회중 앞에서 쳐서 멸하신 땅은 가축에 적당한 곳이요 당신의 종들에게는 가축이 있나이다",
+      "source_text_hash": "9bc74b118e4208df826b5cf3bbae33827ada28159c5878aa327b44531c03df5d",
+      "translation_text_hash": "2533aac36e0146bf102b32d5a61c5fae434618293cd61bac1792390fbbe25d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와께서 이스라엘 회중 앞에서 쳐서 멸하신 땅은 가축에 적당한 곳이요 당신의 종들에게는 가축이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "2533aac36e0146bf102b32d5a61c5fae434618293cd61bac1792390fbbe25d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:5",
+      "sequence": 4724,
+      "chapter_label": "NUM 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "They said, “If we have found favor in your sight, let this land be given to your servants for a possession. Don’t bring us over the Jordan.”",
+      "ko": "또 가로되 우리가 만일 당신에게 은혜를 입었으면 이 땅을 당신의 종들에게 산업으로 주시고 우리로 요단을 건너지 않게 하소서",
+      "source_text_hash": "9f6de6f6f12ab27e47ff88c6c2bb23be637ab113ca72c1ea103a64bf109662f0",
+      "translation_text_hash": "99712d2fd494a35f89ad347cbe01c4b938858bdfe288e1c5c5434ecd25904c67",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가로되 우리가 만일 당신에게 은혜를 입었으면 이 땅을 당신의 종들에게 산업으로 주시고 우리로 요단을 건너지 않게 하소서"
+      ],
+      "raw_text_hashes": [
+        "99712d2fd494a35f89ad347cbe01c4b938858bdfe288e1c5c5434ecd25904c67"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:6",
+      "sequence": 4725,
+      "chapter_label": "NUM 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "Moses said to the children of Gad, and to the children of Reuben, “Shall your brothers go to war while you sit here?",
+      "ko": "모세가 갓 자손과 르우벤 자손에게 이르되 너희 형제들은 싸우러 가거늘 너희는 여기 앉았고자 하느냐",
+      "source_text_hash": "25a772fc7bd92d1695c3d76e519fce52848a3f8a906f0033f91a2f2590cbfa2b",
+      "translation_text_hash": "392bc6b3d70ea4986df14e9a7bac3ff4650fb530bea2957b78413bea46821aba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 갓 자손과 르우벤 자손에게 이르되 너희 형제들은 싸우러 가거늘 너희는 여기 앉았고자 하느냐"
+      ],
+      "raw_text_hashes": [
+        "392bc6b3d70ea4986df14e9a7bac3ff4650fb530bea2957b78413bea46821aba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:7",
+      "sequence": 4726,
+      "chapter_label": "NUM 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "Why do you discourage the heart of the children of Israel from going over into the land which the LORD has given them?",
+      "ko": "너희가 어찌하여 이스라엘 자손으로 낙심케 하여서 여호와께서 그들에게 주신 땅으로 건너갈 수 없게 하려느냐",
+      "source_text_hash": "018077640d061b27f52370d9bed8818fd7020796966b2d300df13e5f6243c446",
+      "translation_text_hash": "750473cf81f8d8ff592bd85a7445e854cc075023a4a08fd65b2b418475bc6b39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 이스라엘 자손으로 낙심케 하여서 여호와께서 그들에게 주신 땅으로 건너갈 수 없게 하려느냐"
+      ],
+      "raw_text_hashes": [
+        "750473cf81f8d8ff592bd85a7445e854cc075023a4a08fd65b2b418475bc6b39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:8",
+      "sequence": 4727,
+      "chapter_label": "NUM 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "Your fathers did so when I sent them from Kadesh Barnea to see the land.",
+      "ko": "너희 열조도 내가 가데스바네아에서 그 땅을 보라고 보내었을 때에 그리 하였었나니",
+      "source_text_hash": "1c025078668c1cd8368f6aaa7de4ae86636e770860cc4314c07a5157f569a21b",
+      "translation_text_hash": "489531301fdacf90149e27ada7fa3e32b8f8635e0b539bdaa5b3509cafcf526b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조도 내가 가데스바네아에서 그 땅을 보라고 보내었을 때에 그리 하였었나니"
+      ],
+      "raw_text_hashes": [
+        "489531301fdacf90149e27ada7fa3e32b8f8635e0b539bdaa5b3509cafcf526b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:9",
+      "sequence": 4728,
+      "chapter_label": "NUM 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "For when they went up to the valley of Eshcol, and saw the land, they discouraged the heart of the children of Israel, that they should not go into the land which the LORD had given them.",
+      "ko": "그들이 에스골 골짜기에 올라가서 그 땅을 보고 이스라엘 자손으로 낙심케 하여서 여호와께서 그들에게 주신 땅으로 갈 수 없게 하였었느니라",
+      "source_text_hash": "26e754780006ee8c5ebda068d235edc501bb8120f90de6e90e98caa5b5e6b231",
+      "translation_text_hash": "30c3bdd5612c1311503a55116073c03fd4b62211f421eb1ed1d1e8ef2c92cd17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 에스골 골짜기에 올라가서 그 땅을 보고 이스라엘 자손으로 낙심케 하여서 여호와께서 그들에게 주신 땅으로 갈 수 없게 하였었느니라"
+      ],
+      "raw_text_hashes": [
+        "30c3bdd5612c1311503a55116073c03fd4b62211f421eb1ed1d1e8ef2c92cd17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:10",
+      "sequence": 4729,
+      "chapter_label": "NUM 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD’s anger burned in that day, and he swore, saying,",
+      "ko": "그때에 여호와께서 진노하사 맹세하여 가라사대",
+      "source_text_hash": "f4506664c39a8964dce33b31564b496fcba51380cf7c6f2537e85337a492a90e",
+      "translation_text_hash": "c188a5850b39997986e8d2941b8f609b750447c1d4d7ff6d0beef328cf2cfa62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 여호와께서 진노하사 맹세하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "c188a5850b39997986e8d2941b8f609b750447c1d4d7ff6d0beef328cf2cfa62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:11",
+      "sequence": 4730,
+      "chapter_label": "NUM 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "‘Surely none of the men who came up out of Egypt, from twenty years old and upward, shall see the land which I swore to Abraham, to Isaac, and to Jacob; because they have not wholly followed me,",
+      "ko": "애굽에서 나온 자들의 이십세 이상으로는 한 사람도 내가 아브라함과 이삭과 야곱에게 맹세한 땅을 정녕히 보지 못하리니 이는 그들이 나를 온전히 순종치 아니하였음이니라",
+      "source_text_hash": "dbbcb21c8566d28a6599fd408b64648fbaa1a5b205f4845952665e7589a4c3b2",
+      "translation_text_hash": "a34b4decae919c4cfb34d5e130a3f34461c8abbcc2b58f25b1ee46cff873f738",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "애굽에서 나온 자들의 이십세 이상으로는 한 사람도 내가 아브라함과 이삭과 야곱에게 맹세한 땅을 정녕히 보지 못하리니 이는 그들이 나를 온전히 순종치 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "a34b4decae919c4cfb34d5e130a3f34461c8abbcc2b58f25b1ee46cff873f738"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:12",
+      "sequence": 4731,
+      "chapter_label": "NUM 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "except Caleb the son of Jephunneh the Kenizzite, and Joshua the son of Nun, because they have followed the LORD completely.’",
+      "ko": "다만 그나스 사람 여분네의 아들 갈렙과 눈의 아들 여호수아는 볼 것은 여호와를 온전히 순종하였음이니라 하시고",
+      "source_text_hash": "3c5eaa97a58c4f0edf89d29cffd44d3b961d7bd087c6b745fe2ac2d414c2f02a",
+      "translation_text_hash": "33ed6acdabc93799073fdbd9e24f9e43efc9353350833648203b0114148d584c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다만 그나스 사람 여분네의 아들 갈렙과 눈의 아들 여호수아는 볼 것은 여호와를 온전히 순종하였음이니라 하시고"
+      ],
+      "raw_text_hashes": [
+        "33ed6acdabc93799073fdbd9e24f9e43efc9353350833648203b0114148d584c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:13",
+      "sequence": 4732,
+      "chapter_label": "NUM 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "The LORD’s anger burned against Israel, and he made them wander back and forth in the wilderness forty years, until all the generation who had done evil in the LORD’s sight was consumed.",
+      "ko": "여호와께서 이스라엘에게 진노하사 그들로 사십년 동안 광야에 유리하게 하심으로 여호와의 목전에 악을 행한 그 세대가 필경은 다 소멸하였느니라",
+      "source_text_hash": "0a6eb9ddcd8725ff8a9cb403a9820257768d280e5c825b9eafcfd0f81a904778",
+      "translation_text_hash": "288b140b56386a62ac14a5dedd84240f4f7e8c8eced2707891a990eb18a6b4fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘에게 진노하사 그들로 사십년 동안 광야에 유리하게 하심으로 여호와의 목전에 악을 행한 그 세대가 필경은 다 소멸하였느니라"
+      ],
+      "raw_text_hashes": [
+        "288b140b56386a62ac14a5dedd84240f4f7e8c8eced2707891a990eb18a6b4fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:14",
+      "sequence": 4733,
+      "chapter_label": "NUM 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "“Behold, you have risen up in your fathers’ place, an increase of sinful men, to increase the fierce anger of the LORD toward Israel.",
+      "ko": "보라 너희는 너희의 열조를 계대하여 일어난 죄인의 종류로서 이스라엘을 향하신 여호와의 노를 더욱 심하게 하는도다",
+      "source_text_hash": "62135c598dc27820576b5c9b9176a66a470b356bd7995d26444ce5b1cbc357e6",
+      "translation_text_hash": "a892536c01f699f4dede2730fdd4a40d4425597fa1ad12874c0a17be9f8047ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 너희는 너희의 열조를 계대하여 일어난 죄인의 종류로서 이스라엘을 향하신 여호와의 노를 더욱 심하게 하는도다"
+      ],
+      "raw_text_hashes": [
+        "a892536c01f699f4dede2730fdd4a40d4425597fa1ad12874c0a17be9f8047ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:15",
+      "sequence": 4734,
+      "chapter_label": "NUM 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "For if you turn away from after him, he will yet again leave them in the wilderness; and you will destroy all these people.”",
+      "ko": "너희가 만일 돌이켜 여호와를 떠나면 여호와께서 또 이 백성을 광야에 버리시리니 그리하면 너희가 이 모든 백성을 멸망시키리라",
+      "source_text_hash": "132af1c9629c92b382011609967790d38ce086ef5c43dbe22df99daeec136377",
+      "translation_text_hash": "15a46f5f0a4b305e2043f4ccabddc1a0a827001f4ba145311188151ca4d2e043",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 돌이켜 여호와를 떠나면 여호와께서 또 이 백성을 광야에 버리시리니 그리하면 너희가 이 모든 백성을 멸망시키리라"
+      ],
+      "raw_text_hashes": [
+        "15a46f5f0a4b305e2043f4ccabddc1a0a827001f4ba145311188151ca4d2e043"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:16",
+      "sequence": 4735,
+      "chapter_label": "NUM 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "They came near to him, and said, “We will build sheepfolds here for our livestock, and cities for our little ones;",
+      "ko": "그들이 모세에게 가까이 나아와 가로되 우리가 이곳에 우리 가축을 위하여 우리를 짓고 우리 유아들을 위하여 성읍을 건축하고",
+      "source_text_hash": "6608c5a668eb48a5bf76c4b7e143cf25b00977be7df7a6009b627f46d826a766",
+      "translation_text_hash": "d10724b4be6fa4b4a242fd0252e5bfafd62d04e46c3a95b5c39221332efeeadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 모세에게 가까이 나아와 가로되 우리가 이곳에 우리 가축을 위하여 우리를 짓고 우리 유아들을 위하여 성읍을 건축하고"
+      ],
+      "raw_text_hashes": [
+        "d10724b4be6fa4b4a242fd0252e5bfafd62d04e46c3a95b5c39221332efeeadf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:17",
+      "sequence": 4736,
+      "chapter_label": "NUM 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "but we ourselves will be ready armed to go before the children of Israel, until we have brought them to their place. Our little ones shall dwell in the fortified cities because of the inhabitants of the land.",
+      "ko": "이 땅 거민의 연고로 우리 유아들로 그 견고한 성읍에 거하게 한 후에 우리는 무장하고 이스라엘 자손을 그곳으로 인도하기까지 그들의 앞에 행하고",
+      "source_text_hash": "65fa076bc7039ca8280eb554b8890defc065639fdc8c33421c47bb3bfa4ea320",
+      "translation_text_hash": "4efd947fa70fa8ac7a8d09ad9c5e1a11e01a4f5c4417ee491140df75dd11aa1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 땅 거민의 연고로 우리 유아들로 그 견고한 성읍에 거하게 한 후에 우리는 무장하고 이스라엘 자손을 그곳으로 인도하기까지 그들의 앞에 행하고"
+      ],
+      "raw_text_hashes": [
+        "4efd947fa70fa8ac7a8d09ad9c5e1a11e01a4f5c4417ee491140df75dd11aa1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:18",
+      "sequence": 4737,
+      "chapter_label": "NUM 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "We will not return to our houses until the children of Israel have all received their inheritance.",
+      "ko": "이스라엘 자손이 각기 기업을 얻기까지 우리 집으로 돌아오지 아니하겠사오며",
+      "source_text_hash": "0f2eb879a3c17638a0488455cd1aa517e1a5cfad5960a79c320b6e3ee561a43e",
+      "translation_text_hash": "cb2bf901e36b7d6c4a539205a22bba42aa158a9a4cb7eac7246d6613eb1cf03b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 각기 기업을 얻기까지 우리 집으로 돌아오지 아니하겠사오며"
+      ],
+      "raw_text_hashes": [
+        "cb2bf901e36b7d6c4a539205a22bba42aa158a9a4cb7eac7246d6613eb1cf03b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:19",
+      "sequence": 4738,
+      "chapter_label": "NUM 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "For we will not inherit with them on the other side of the Jordan and beyond, because our inheritance has come to us on this side of the Jordan eastward.”",
+      "ko": "우리는 요단 이편 곧 동편에서 산업을 얻었사오니 그들과 함께 요단 저편에서는 기업을 얻지 아니하겠나이다",
+      "source_text_hash": "6f8ad442842e9fdb1f3587e265fc1b344599aec8f3526897f689c2b515c35662",
+      "translation_text_hash": "8c82322bd47886fbd087640d763d6c196a592ba75ce22b0317fb7d4cdfa2cb5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 요단 이편 곧 동편에서 산업을 얻었사오니 그들과 함께 요단 저편에서는 기업을 얻지 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "8c82322bd47886fbd087640d763d6c196a592ba75ce22b0317fb7d4cdfa2cb5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:20",
+      "sequence": 4739,
+      "chapter_label": "NUM 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "Moses said to them: “If you will do this thing, if you will arm yourselves to go before the LORD to the war,",
+      "ko": "모세가 그들에게 이르되 너희가 만일 이 일을 행하여 무장하고 여호와 앞에서 가서 싸우되",
+      "source_text_hash": "849418fd17067d74981cd061b57585a05bb06f5598bc8090b6291374d6c044a4",
+      "translation_text_hash": "cf846c5bcb7919c2d806b0e36b5f3555c254167c5c7f1089fc60206efaf25d24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 너희가 만일 이 일을 행하여 무장하고 여호와 앞에서 가서 싸우되"
+      ],
+      "raw_text_hashes": [
+        "cf846c5bcb7919c2d806b0e36b5f3555c254167c5c7f1089fc60206efaf25d24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:21",
+      "sequence": 4740,
+      "chapter_label": "NUM 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "and every one of your armed men will pass over the Jordan before the LORD until he has driven out his enemies from before him,",
+      "ko": "너희가 다 무장하고 여호와 앞에서 요단을 건너가서 여호와께서 그 원수를 자기 앞에서 쫓아내시고",
+      "source_text_hash": "26b71db94824dc18c17dce4dcbf0c15c131bf58b569a6c93c13582d3406da380",
+      "translation_text_hash": "363a391f8f4bc665fb3180bb2a50334a711e37cf80cc042244aaaf349c4db034",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 다 무장하고 여호와 앞에서 요단을 건너가서 여호와께서 그 원수를 자기 앞에서 쫓아내시고"
+      ],
+      "raw_text_hashes": [
+        "363a391f8f4bc665fb3180bb2a50334a711e37cf80cc042244aaaf349c4db034"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:22",
+      "sequence": 4741,
+      "chapter_label": "NUM 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "and the land is subdued before the LORD; then afterward you shall return, and be clear of obligation to the LORD and to Israel. Then this land shall be your possession before the LORD.",
+      "ko": "그 땅으로 여호와 앞에 복종케 하시기까지 싸우면 여호와의 앞에서나 이스라엘의 앞에서나 무죄히 돌아 오겠고 이 땅은 여호와 앞에서 너희의 산업이 되리라마는",
+      "source_text_hash": "74536abd58a78d3c9fd8a53b42412913f14c86c0d266930ea626e939707c7627",
+      "translation_text_hash": "e9f177a623bdaba61c1d5b52702fd5cb02736fd96c3156ff304a54627a576d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅으로 여호와 앞에 복종케 하시기까지 싸우면 여호와의 앞에서나 이스라엘의 앞에서나 무죄히 돌아 오겠고 이 땅은 여호와 앞에서 너희의 산업이 되리라마는"
+      ],
+      "raw_text_hashes": [
+        "e9f177a623bdaba61c1d5b52702fd5cb02736fd96c3156ff304a54627a576d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:23",
+      "sequence": 4742,
+      "chapter_label": "NUM 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "“But if you will not do so, behold, you have sinned against the LORD; and be sure your sin will find you out.",
+      "ko": "너희가 만일 그 같이 아니하면 여호와께 범죄함이니 너희 죄가 정녕 너희를 찾아낼줄 알라",
+      "source_text_hash": "88a731654a178c0dcefcc85c6cde32904ddcd6e91210613a66f3665317a8e44c",
+      "translation_text_hash": "0f9cd6f62986ad7057c858fa4ccea8fd7a78de058b7d6eaedc0ef12481409992",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 그 같이 아니하면 여호와께 범죄함이니 너희 죄가 정녕 너희를 찾아낼줄 알라"
+      ],
+      "raw_text_hashes": [
+        "0f9cd6f62986ad7057c858fa4ccea8fd7a78de058b7d6eaedc0ef12481409992"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:24",
+      "sequence": 4743,
+      "chapter_label": "NUM 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "Build cities for your little ones, and folds for your sheep; and do that which has proceeded out of your mouth.”",
+      "ko": "너희는 유아들을 위하여 성읍을 건축하고 양을 위하여 우리를 지으라 그리하고 너희 입에서 낸대로 행하라",
+      "source_text_hash": "87490450abace7b50501b59fd594f72c7a7166e350da468666deec5509c6c988",
+      "translation_text_hash": "790f07c909fefa373d9ca6f5106139b5d554733f32cd2c449735f1d6f468bba0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유아들을 위하여 성읍을 건축하고 양을 위하여 우리를 지으라 그리하고 너희 입에서 낸대로 행하라"
+      ],
+      "raw_text_hashes": [
+        "790f07c909fefa373d9ca6f5106139b5d554733f32cd2c449735f1d6f468bba0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:25",
+      "sequence": 4744,
+      "chapter_label": "NUM 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "The children of Gad and the children of Reuben spoke to Moses, saying, “Your servants will do as my lord commands.",
+      "ko": "갓 자손과 르우벤 자손이 모세에게 대답하여 가로되 우리 주의 명대로 종들이 행할 것이라",
+      "source_text_hash": "2572628d23a72a9f16ecaa19dc7238657ad1a602a80f5e97a244940253a1e423",
+      "translation_text_hash": "9a739ce67f23f4a86103b7dfddb71083ecb5055a5d270270e164ee825b3c3bee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손과 르우벤 자손이 모세에게 대답하여 가로되 우리 주의 명대로 종들이 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "9a739ce67f23f4a86103b7dfddb71083ecb5055a5d270270e164ee825b3c3bee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:26",
+      "sequence": 4745,
+      "chapter_label": "NUM 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "Our little ones, our wives, our flocks, and all our livestock shall be there in the cities of Gilead;",
+      "ko": "우리의 어린 자와 아내와 양떼와 모든 가축은 이곳 길르앗 성읍들에 두고",
+      "source_text_hash": "24e4bd18eb1f4777b398fe73215969238a11540b418c745ee47513ff29751810",
+      "translation_text_hash": "9f033d4a7ebda9abf6bd9f2c2edaa9cc594f375b1800e962abb9faad741c2112",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리의 어린 자와 아내와 양떼와 모든 가축은 이곳 길르앗 성읍들에 두고"
+      ],
+      "raw_text_hashes": [
+        "9f033d4a7ebda9abf6bd9f2c2edaa9cc594f375b1800e962abb9faad741c2112"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:27",
+      "sequence": 4746,
+      "chapter_label": "NUM 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "but your servants will pass over, every man who is armed for war, before the LORD to battle, as my lord says.”",
+      "ko": "우리 주의 말씀대로 종들은 무장하고 여호와 앞에서 다 건너가서 싸우리이다",
+      "source_text_hash": "64d216f0c658110a084e9111d57adcea10d99a8d86d2838a7d1cbc072bda47d9",
+      "translation_text_hash": "965777752b85e4d38796e4f4e03724720e4945c278eb410fcaf86a90fbff8c6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 주의 말씀대로 종들은 무장하고 여호와 앞에서 다 건너가서 싸우리이다"
+      ],
+      "raw_text_hashes": [
+        "965777752b85e4d38796e4f4e03724720e4945c278eb410fcaf86a90fbff8c6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:28",
+      "sequence": 4747,
+      "chapter_label": "NUM 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "So Moses commanded concerning them to Eleazar the priest, and to Joshua the son of Nun, and to the heads of the fathers’ households of the tribes of the children of Israel.",
+      "ko": "이에 모세가 그들에게 대하여 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 두령들에게 명하니라",
+      "source_text_hash": "de31d6e3da3cb09433d686b459f7a09482c48570d87cbaa252236d9a97647ee2",
+      "translation_text_hash": "ac7e23eb63b0070e36bbebaa3a52e0e1dfa65403c3caab584c6456ec1ca8619a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 모세가 그들에게 대하여 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손 지파의 두령들에게 명하니라"
+      ],
+      "raw_text_hashes": [
+        "ac7e23eb63b0070e36bbebaa3a52e0e1dfa65403c3caab584c6456ec1ca8619a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:29",
+      "sequence": 4748,
+      "chapter_label": "NUM 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "Moses said to them, “If the children of Gad and the children of Reuben will pass with you over the Jordan, every man who is armed to battle before the LORD, and the land is subdued before you, then you shall give them the land of Gilead for a possession;",
+      "ko": "모세가 그들에게 이르되 갓 자손과 르우벤 자손이 만일 각기 무장하고 너희와 함께 요단을 건너가서 여호와 앞에서 싸워서 그 땅이 너희 앞에 항복하기에 이르거든 길르앗 땅을 그들에게 산업으로 줄 것이니라",
+      "source_text_hash": "9e42e37b5a2a5e5d867e5c2bbabb6cad6b82d7de96fc55e087c9a253e0baf424",
+      "translation_text_hash": "1cb40e3dceee3d51917c96bf012f8723f83a55af68bea57fe94adfcd7ba7abe9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 그들에게 이르되 갓 자손과 르우벤 자손이 만일 각기 무장하고 너희와 함께 요단을 건너가서 여호와 앞에서 싸워서 그 땅이 너희 앞에 항복하기에 이르거든 길르앗 땅을 그들에게 산업으로 줄 것이니라"
+      ],
+      "raw_text_hashes": [
+        "1cb40e3dceee3d51917c96bf012f8723f83a55af68bea57fe94adfcd7ba7abe9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:30",
+      "sequence": 4749,
+      "chapter_label": "NUM 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "but if they will not pass over with you armed, they shall have possessions among you in the land of Canaan.”",
+      "ko": "그러나 그들이 만일 너희와 함께 무장하고 건너지 아니하거든 가나안 땅에서 너희 중에 산업을 줄 것이니라",
+      "source_text_hash": "a2fc519f6efcaddb607c39cbbf7419de1a4a95c4931cc21cb8aaab68cf5ff196",
+      "translation_text_hash": "ae9abedde80def52661d13c96d2f975d41e446dc2e7d5b72ce8f884914643be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그들이 만일 너희와 함께 무장하고 건너지 아니하거든 가나안 땅에서 너희 중에 산업을 줄 것이니라"
+      ],
+      "raw_text_hashes": [
+        "ae9abedde80def52661d13c96d2f975d41e446dc2e7d5b72ce8f884914643be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:31",
+      "sequence": 4750,
+      "chapter_label": "NUM 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "The children of Gad and the children of Reuben answered, saying, “As the LORD has said to your servants, so will we do.",
+      "ko": "갓 자손과 르우벤 자손이 대답하여 가로되 여호와께서 당신의 종들에게 명하신대로 우리가 행할 것이라",
+      "source_text_hash": "59e7b9eeed87ac37895761a82f73353f5e0fa01fa3f25f7b32de163d7b526184",
+      "translation_text_hash": "700ad3f3dd4acde958ff2b7e466a674fbf3a5d87db9d133a83da485aa1e928d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손과 르우벤 자손이 대답하여 가로되 여호와께서 당신의 종들에게 명하신대로 우리가 행할 것이라"
+      ],
+      "raw_text_hashes": [
+        "700ad3f3dd4acde958ff2b7e466a674fbf3a5d87db9d133a83da485aa1e928d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:32",
+      "sequence": 4751,
+      "chapter_label": "NUM 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "We will pass over armed before the LORD into the land of Canaan, and the possession of our inheritance shall remain with us beyond the Jordan.”",
+      "ko": "우리가 무장하고 여호와 앞에서 가나안 땅에 건너가서 요단 이편으로 우리의 산업이 되게 하리이다",
+      "source_text_hash": "39e30ccd6d25cfdebf20a1c031a79c2efdb7fe2bd524c9c88e8b2236d7d35c5a",
+      "translation_text_hash": "f3e31c3c29ba97050f78c280798cc7872e6fc6d2e5b207721117d5e947997479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 무장하고 여호와 앞에서 가나안 땅에 건너가서 요단 이편으로 우리의 산업이 되게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "f3e31c3c29ba97050f78c280798cc7872e6fc6d2e5b207721117d5e947997479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:33",
+      "sequence": 4752,
+      "chapter_label": "NUM 32",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 33
+        }
+      ],
+      "en": "Moses gave to them, even to the children of Gad, and to the children of Reuben, and to the half-tribe of Manasseh the son of Joseph, the kingdom of Sihon king of the Amorites, and the kingdom of Og king of Bashan; the land, according to its cities and borders, even the cities of the surrounding land.",
+      "ko": "모세가 갓 자손과 르우벤 자손과 요셉의 아들 므낫세 반 지파에게 아모리인의 왕 시혼의 국토와 바산 왕 옥의 국토를 주되 곧 그 나라와 그 경내 성읍들과 그 성읍들의 사면 땅을 그들에게 주매",
+      "source_text_hash": "462d107b7229e1b9b3f207e84a1505905fc7b00f9bdc127c25d4c55ba62aeba2",
+      "translation_text_hash": "577f87c4a5646f91ad0ccd3829ee25d373da8cde99764c2f5f24b33699d0a101",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 갓 자손과 르우벤 자손과 요셉의 아들 므낫세 반 지파에게 아모리인의 왕 시혼의 국토와 바산 왕 옥의 국토를 주되 곧 그 나라와 그 경내 성읍들과 그 성읍들의 사면 땅을 그들에게 주매"
+      ],
+      "raw_text_hashes": [
+        "577f87c4a5646f91ad0ccd3829ee25d373da8cde99764c2f5f24b33699d0a101"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:34",
+      "sequence": 4753,
+      "chapter_label": "NUM 32",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 34
+        }
+      ],
+      "en": "The children of Gad built Dibon, Ataroth, Aroer,",
+      "ko": "갓 자손은 디본과 아다롯과 아로엘과",
+      "source_text_hash": "b7d3f7f6bc9746bd62aa28ba3ca266836b0af29b27dd9a3ec0648e46718a751f",
+      "translation_text_hash": "3eaf499f0a7972d31e2c6439329df3f58416f19da7c7a688bcd8d6e6b840e971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 자손은 디본과 아다롯과 아로엘과"
+      ],
+      "raw_text_hashes": [
+        "3eaf499f0a7972d31e2c6439329df3f58416f19da7c7a688bcd8d6e6b840e971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:35",
+      "sequence": 4754,
+      "chapter_label": "NUM 32",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 35
+        }
+      ],
+      "en": "Atroth-shophan, Jazer, Jogbehah,",
+      "ko": "아다롯소반과 야셀과 욕브하와",
+      "source_text_hash": "5c342f03e242276dc319bfc4bf0f62dfa01c70419e2f138d20ecfad05a66a008",
+      "translation_text_hash": "5cbd408cba6366ae457996cd6476d8f07dd7407ba4f6925248c670f46c9c1df1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아다롯소반과 야셀과 욕브하와"
+      ],
+      "raw_text_hashes": [
+        "5cbd408cba6366ae457996cd6476d8f07dd7407ba4f6925248c670f46c9c1df1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:36",
+      "sequence": 4755,
+      "chapter_label": "NUM 32",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 36
+        }
+      ],
+      "en": "Beth Nimrah, and Beth Haran: fortified cities and folds for sheep.",
+      "ko": "벧니므라와 벧하란들의 견고한 성읍을 건축하였고 또 양을 위하여 우리를 지었으며",
+      "source_text_hash": "277d795a56656609c41013a1e731af0dad5d8669bb5d2f5327199d09628c0991",
+      "translation_text_hash": "a444f0723200c502334ba914ee59e87544b4ffc9f7fc2bffd350a478aca46aca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "벧니므라와 벧하란들의 견고한 성읍을 건축하였고 또 양을 위하여 우리를 지었으며"
+      ],
+      "raw_text_hashes": [
+        "a444f0723200c502334ba914ee59e87544b4ffc9f7fc2bffd350a478aca46aca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:37",
+      "sequence": 4756,
+      "chapter_label": "NUM 32",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 37
+        }
+      ],
+      "en": "The children of Reuben built Heshbon, Elealeh, Kiriathaim,",
+      "ko": "르우벤 자손은 헤스본과 엘르알레와 기랴다임과",
+      "source_text_hash": "5f165e3668f07417c3247367f4155f309527438613a1366d9a5146f862f434c5",
+      "translation_text_hash": "a15ef26df2d7330c39bcdd0b2cc3844be2b8e1c3b80dd99889903d3b2f74622f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 자손은 헤스본과 엘르알레와 기랴다임과"
+      ],
+      "raw_text_hashes": [
+        "a15ef26df2d7330c39bcdd0b2cc3844be2b8e1c3b80dd99889903d3b2f74622f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:38",
+      "sequence": 4757,
+      "chapter_label": "NUM 32",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 38
+        }
+      ],
+      "en": "Nebo, and Baal Meon, (their names being changed), and Sibmah. They gave other names to the cities which they built.",
+      "ko": "느보와 바알므온들을 건축하고 그 이름을 고쳤고 또 십마를 건축하고 건축한 성읍들에 새 이름을 주었고",
+      "source_text_hash": "626f9fc5198784349031b5b2d74cbbeb915ce590aaea45ba5e72a3b2e3b6f361",
+      "translation_text_hash": "57c1f6e0ea89d7d63858fd1b36fc061590360df1cf1ab97d87c4aeb525caed40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느보와 바알므온들을 건축하고 그 이름을 고쳤고 또 십마를 건축하고 건축한 성읍들에 새 이름을 주었고"
+      ],
+      "raw_text_hashes": [
+        "57c1f6e0ea89d7d63858fd1b36fc061590360df1cf1ab97d87c4aeb525caed40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:39",
+      "sequence": 4758,
+      "chapter_label": "NUM 32",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 39
+        }
+      ],
+      "en": "The children of Machir the son of Manasseh went to Gilead, took it, and dispossessed the Amorites who were therein.",
+      "ko": "므낫세의 아들 마길의 자손은 가서 길르앗을 쳐서 취하고 거기 있는 아모리인을 쫓아내매",
+      "source_text_hash": "37227dc5b18f6ce601ee11f4f6d1549fcbf089888704034235b63d74af0cde68",
+      "translation_text_hash": "5776ff1362420c1febaf842516f59f65534264ad58ce1716da15b473ef6cb77f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 아들 마길의 자손은 가서 길르앗을 쳐서 취하고 거기 있는 아모리인을 쫓아내매"
+      ],
+      "raw_text_hashes": [
+        "5776ff1362420c1febaf842516f59f65534264ad58ce1716da15b473ef6cb77f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:40",
+      "sequence": 4759,
+      "chapter_label": "NUM 32",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 40
+        }
+      ],
+      "en": "Moses gave Gilead to Machir the son of Manasseh; and he lived therein.",
+      "ko": "모세가 길르앗을 므낫세의 아들 마길에게 주매 그가 거기 거하였고",
+      "source_text_hash": "0e47de8d56c9b13d687f34a4d0d36eba400502a1941b40c07d4dfa4dc4b89e22",
+      "translation_text_hash": "5a0ba3f07f53b4808e4c1b9744adc2d58dc152bb01ebe3594b92b120584d3b90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 길르앗을 므낫세의 아들 마길에게 주매 그가 거기 거하였고"
+      ],
+      "raw_text_hashes": [
+        "5a0ba3f07f53b4808e4c1b9744adc2d58dc152bb01ebe3594b92b120584d3b90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:41",
+      "sequence": 4760,
+      "chapter_label": "NUM 32",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 41
+        }
+      ],
+      "en": "Jair the son of Manasseh went and took its villages, and called them Havvoth Jair.",
+      "ko": "므낫세의 아들 야일은 가서 그 촌락들을 취하고 하봇야일이라 칭하였으며",
+      "source_text_hash": "75312b2c1f177603e43ce51e558c58101d09c795f6eab97eadcf1a4fd15f4c0e",
+      "translation_text_hash": "73f906b01c08ad6d316fef545acd5fac411d3f0593fde4a5e15c1e2e50b88662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므낫세의 아들 야일은 가서 그 촌락들을 취하고 하봇야일이라 칭하였으며"
+      ],
+      "raw_text_hashes": [
+        "73f906b01c08ad6d316fef545acd5fac411d3f0593fde4a5e15c1e2e50b88662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:32:42",
+      "sequence": 4761,
+      "chapter_label": "NUM 32",
+      "verse_label": "42",
+      "locator": {
+        "book": "NUM",
+        "chapter": 32,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 32,
+          "verse": 42
+        }
+      ],
+      "en": "Nobah went and took Kenath and its villages, and called it Nobah, after his own name.",
+      "ko": "노바는 가서 그낫과 그 향촌을 취하고 자기 이름을 따라서 노바라 칭하였더라",
+      "source_text_hash": "86fc885039c982e0b97a46a28a0e318fd451b1e1872cf8ca95cbe808bdd0cf4c",
+      "translation_text_hash": "1b664206a82f404707253e657f423dbc16f62f4466b41e5db25aa0433a8e53a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노바는 가서 그낫과 그 향촌을 취하고 자기 이름을 따라서 노바라 칭하였더라"
+      ],
+      "raw_text_hashes": [
+        "1b664206a82f404707253e657f423dbc16f62f4466b41e5db25aa0433a8e53a8"
+      ]
+    }
+  ]
+}

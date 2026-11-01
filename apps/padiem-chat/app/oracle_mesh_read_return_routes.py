@@ -2709,6 +2709,11 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         # concurrent second submit of the same result loses the atomic update
         # here and is refused, rather than looking like the accepted request.
         return _error(409, "oracle_mesh_dispatch_rejected")
+    from .pc_correlation import run_hash as _result_run_hash, dispatch_id as _result_dispatch_id
+    result_run_hash = _result_run_hash(dispatch.get("run_id")) or "none"
+    result_dispatch_id = _result_dispatch_id(wire.get("dispatch_id")) or "none"
+    result_log = logging.getLogger(__name__)
+    result_log.info("pc_result stage=received run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
     claim = dispatch.get("claim")
     if claim not in ("first", "retry"):
         return _error(503, "oracle_mesh_dispatch_unavailable")
@@ -3255,12 +3260,17 @@ async def oracle_mesh_read_result(request: Request) -> JSONResponse:
         except Exception:
             pass
         return _error(503, "oracle_mesh_append_unavailable")
+    store_stage = "stored" if appended else "not_appended"
+    result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", store_stage, result_run_hash, result_dispatch_id)
     try:
-        await history_store.finish_oracle_mesh_dispatch(
+        finished = await history_store.finish_oracle_mesh_dispatch(
             dispatch_id=wire["dispatch_id"], outcome=outcome,
         )
     except Exception:
-        pass
+        result_log.info("pc_result stage=queue_finish_error run_hash=%s dispatch_id=%s", result_run_hash, result_dispatch_id)
+    else:
+        stage = "queue_finished" if finished else "queue_not_finished"
+        result_log.info("pc_result stage=%s run_hash=%s dispatch_id=%s", stage, result_run_hash, result_dispatch_id)
     return _response({
         "ok": True,
         "runId": dispatch["run_id"],

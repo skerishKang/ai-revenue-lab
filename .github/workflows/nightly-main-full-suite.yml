@@ -18,6 +18,9 @@
 name: Nightly Main Full Suite
 
 on:
+  pull_request:
+    paths:
+      - '.github/actions/shared-python-install/**'
   schedule:
     # 19:30 UTC == 04:30 KST (KST 새벽)
     - cron: "30 19 * * *"
@@ -103,9 +106,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install test dependencies
-        working-directory: apps/claw-connect
-        run: python -m pip install --disable-pip-version-check 'pytest>=8,<10' 'cryptography' -r requirements-wss-review.txt
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
+        with:
+          lane: claw-connect
+
       - name: Run contract tests
         working-directory: apps/claw-connect
         run: python -m pytest -q tests
@@ -198,15 +203,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
         with:
-          version: '0.13.5'
-      - name: uv sync
-        working-directory: packages/padiem-control-plane
-        run: uv sync --extra dev
+          lane: control-plane
+
       - name: pytest
         working-directory: packages/padiem-control-plane
-        run: uv run pytest -q tests
+        run: python -m pytest -q tests
 
   app-korean-ai-code-agent:
     name: tests — korean-ai-code-agent
@@ -217,15 +221,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - name: Install shared Python dependencies
+        uses: ./.github/actions/shared-python-install
         with:
-          version: '0.13.5'
-      - name: uv sync
-        working-directory: apps/korean-ai-code-agent
-        run: uv sync
+          lane: kagent
+          kagent_pytest: 'true'
+
       - name: pytest
         working-directory: apps/korean-ai-code-agent
-        run: uv run --with 'pytest>=8,<10' pytest -q tests
+        env:
+          PYTHONPATH: src
+        run: python -m pytest -q tests
 
   app-living-fiction:
     name: tests — living-fiction (b03 contract)
@@ -261,7 +267,7 @@ jobs:
       - app-padiem-control-plane
       - app-korean-ai-code-agent
       - app-living-fiction
-    if: always() && contains(needs.*.result, 'failure')
+    if: always() && github.event_name != 'pull_request' && contains(needs.*.result, 'failure')
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

@@ -1,0 +1,205 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:001",
+  "unit_ordinal": 479,
+  "unit_label": "PSA 1",
+  "book_code": "PSA",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:1:1",
+      "sequence": 13941,
+      "chapter_label": "PSA 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "Blessed is the man who doesn’t walk in the counsel of the wicked, nor stand on the path of sinners, nor sit in the seat of scoffers;",
+      "ko": "복 있는 사람은 악인의 꾀를 좇지 아니하며 죄인의 길에 서지 아니하며 오만한 자의 자리에 앉지 아니하고",
+      "source_text_hash": "73ee1af6dd200a86ad942c65481ebc50a2f3aad22e3a5d0a0415a3f4c9176d18",
+      "translation_text_hash": "db12f8a760cd08dfc1604de36aad2d488685056ab4d048c31fb4a988d28efbd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "복 있는 사람은 악인의 꾀를 좇지 아니하며 죄인의 길에 서지 아니하며 오만한 자의 자리에 앉지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "db12f8a760cd08dfc1604de36aad2d488685056ab4d048c31fb4a988d28efbd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:1:2",
+      "sequence": 13942,
+      "chapter_label": "PSA 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "but his delight is in the LORD’s law. On his law he meditates day and night.",
+      "ko": "오직 여호와의 율법을 즐거워하여 그 율법을 주야로 묵상하는 자로다",
+      "source_text_hash": "b00512b66edbd93ee565683b11b348881ea1695c6e7bc29b9096c5a9576fbc2c",
+      "translation_text_hash": "b412876c94d1b85f303d4d1938244c70b1d05ba81d787214dac88f2fafe1b91e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 여호와의 율법을 즐거워하여 그 율법을 주야로 묵상하는 자로다"
+      ],
+      "raw_text_hashes": [
+        "b412876c94d1b85f303d4d1938244c70b1d05ba81d787214dac88f2fafe1b91e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:1:3",
+      "sequence": 13943,
+      "chapter_label": "PSA 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "He will be like a tree planted by the streams of water, that produces its fruit in its season, whose leaf also does not wither. Whatever he does shall prosper.",
+      "ko": "저는 시냇가에 심은 나무가 시절을 좇아 과실을 맺으며 그 잎사귀가 마르지 아니함 같으니 그 행사가 다 형통하리로다",
+      "source_text_hash": "54b7c764a69763e38a2d050fb68cd0c00fe092e097504b24496064f29072b77a",
+      "translation_text_hash": "e7e6777dc078cdac27bacaede9920ad9b8cec5a5dfa56357fcaa368996d0bde0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 시냇가에 심은 나무가 시절을 좇아 과실을 맺으며 그 잎사귀가 마르지 아니함 같으니 그 행사가 다 형통하리로다"
+      ],
+      "raw_text_hashes": [
+        "e7e6777dc078cdac27bacaede9920ad9b8cec5a5dfa56357fcaa368996d0bde0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:1:4",
+      "sequence": 13944,
+      "chapter_label": "PSA 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "The wicked are not so, but are like the chaff which the wind drives away.",
+      "ko": "악인은 그렇지 않음이여 오직 바람에 나는 겨와 같도다",
+      "source_text_hash": "5a3ef6578e6e19d93dd5c88fc4a6889fd1a19992be2a47450c12ebcb22916713",
+      "translation_text_hash": "583ac2963437fe7ced482449970febd45900198ad56af00363adaf22d9ab6d09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인은 그렇지 않음이여 오직 바람에 나는 겨와 같도다"
+      ],
+      "raw_text_hashes": [
+        "583ac2963437fe7ced482449970febd45900198ad56af00363adaf22d9ab6d09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:1:5",
+      "sequence": 13945,
+      "chapter_label": "PSA 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Therefore the wicked shall not stand in the judgment, nor sinners in the congregation of the righteous.",
+      "ko": "그러므로 악인이 심판을 견디지 못하며 죄인이 의인의 회중에 들지 못하리로다",
+      "source_text_hash": "eca38eac10aa8d3c61ecf0e59f28cfd3be856e4ebfeff45ad049faa2ede0a6ea",
+      "translation_text_hash": "6291e83926c7ca1fc9adc3c56334a776cbf8e098a71518fa6661eaf88e03226e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 악인이 심판을 견디지 못하며 죄인이 의인의 회중에 들지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "6291e83926c7ca1fc9adc3c56334a776cbf8e098a71518fa6661eaf88e03226e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:1:6",
+      "sequence": 13946,
+      "chapter_label": "PSA 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "For the LORD knows the way of the righteous, but the way of the wicked shall perish.",
+      "ko": "대저 의인의 길은 여호와께서 인정하시나 악인의 길은 망하리로다",
+      "source_text_hash": "2ce80493eecd9b53249c3e2d9ee002030d128794e02cf20e5aff1d53e8fd22ca",
+      "translation_text_hash": "c65ead772c83f157b960b94b070857c53f199221f1997eb91536aa2218d4d9ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 의인의 길은 여호와께서 인정하시나 악인의 길은 망하리로다"
+      ],
+      "raw_text_hashes": [
+        "c65ead772c83f157b960b94b070857c53f199221f1997eb91536aa2218d4d9ac"
+      ]
+    }
+  ]
+}

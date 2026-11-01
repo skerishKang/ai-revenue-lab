@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:037",
+  "unit_ordinal": 782,
+  "unit_label": "JER 37",
+  "book_code": "JER",
+  "chapter_number": 37,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:37:1",
+      "sequence": 19876,
+      "chapter_label": "JER 37",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 1
+        }
+      ],
+      "en": "Zedekiah the son of Josiah reigned as king instead of Coniah the son of Jehoiakim, whom Nebuchadnezzar king of Babylon made king in the land of Judah.",
+      "ko": "요시야의 아들 시드기야가 여호야김의 아들 고니야를 대신하여 왕이 되었으니 이는 바벨론 왕 느부갓네살이 그로 유다 땅의 왕을 삼음이었더라",
+      "source_text_hash": "2b136c8ed74a6b89d6facaa92076ddfedc016deea4c91517636a5647f71f809d",
+      "translation_text_hash": "ed027ec542a3f66552697e212ed539e9b35d60ab1b81065fc9202886593a796e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 아들 시드기야가 여호야김의 아들 고니야를 대신하여 왕이 되었으니 이는 바벨론 왕 느부갓네살이 그로 유다 땅의 왕을 삼음이었더라"
+      ],
+      "raw_text_hashes": [
+        "ed027ec542a3f66552697e212ed539e9b35d60ab1b81065fc9202886593a796e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:2",
+      "sequence": 19877,
+      "chapter_label": "JER 37",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 2
+        }
+      ],
+      "en": "But neither he, nor his servants, nor the people of the land, listened to the LORD’s words, which he spoke by the prophet Jeremiah.",
+      "ko": "그와 그 신하와 그 땅 백성이 여호와께서 선지자 예레미야로 하신 말씀을 듣지 아니하니라",
+      "source_text_hash": "e0a6b27d744608a0b0e07ffd9699eccf50847f452f43da912ae3c481dfcf3a20",
+      "translation_text_hash": "cc7677672a24bdc25b26c7a6dca011a85257ed4c9a2de7beb08873ac519e57c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 그 신하와 그 땅 백성이 여호와께서 선지자 예레미야로 하신 말씀을 듣지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "cc7677672a24bdc25b26c7a6dca011a85257ed4c9a2de7beb08873ac519e57c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:3",
+      "sequence": 19878,
+      "chapter_label": "JER 37",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 3
+        }
+      ],
+      "en": "Zedekiah the king sent Jehucal the son of Shelemiah and Zephaniah the son of Maaseiah, the priest, to the prophet Jeremiah, saying, “Pray now to the LORD our God for us.”",
+      "ko": "시드기야왕이 셀레먀의 아들 여후갈과 마아세야의 아들 제사장 스바냐를 선지자 예레미야에게 보내어 청하되 너는 우리를 위하여 우리 하나님 여호와께 기도하라 하였으니",
+      "source_text_hash": "01b008bf650a6dfaba92e77eee1cdbd2fec6e2032cb21864b6393fab2c4a9168",
+      "translation_text_hash": "a282f312788e5673f2af1d9f1461e490f853c7228798c39e76322e3c441bed70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 셀레먀의 아들 여후갈과 마아세야의 아들 제사장 스바냐를 선지자 예레미야에게 보내어 청하되 너는 우리를 위하여 우리 하나님 여호와께 기도하라 하였으니"
+      ],
+      "raw_text_hashes": [
+        "a282f312788e5673f2af1d9f1461e490f853c7228798c39e76322e3c441bed70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:4",
+      "sequence": 19879,
+      "chapter_label": "JER 37",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 4
+        }
+      ],
+      "en": "Now Jeremiah came in and went out among the people, for they had not put him into prison.",
+      "ko": "때에 예레미야가 갇히지 아니하였으므로 백성 가운데 출입하는 중이었더라",
+      "source_text_hash": "3f03e6395df5bdfd0eac38752d03be46568b7353799ba6143bccae6ecc448076",
+      "translation_text_hash": "750185a15658be42c5e8cf4ee8808806611accb56747644a6d50b823efb9da84",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 예레미야가 갇히지 아니하였으므로 백성 가운데 출입하는 중이었더라"
+      ],
+      "raw_text_hashes": [
+        "750185a15658be42c5e8cf4ee8808806611accb56747644a6d50b823efb9da84"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:5",
+      "sequence": 19880,
+      "chapter_label": "JER 37",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 5
+        }
+      ],
+      "en": "Pharaoh’s army had come out of Egypt; and when the Chaldeans who were besieging Jerusalem heard news of them, they withdrew from Jerusalem.",
+      "ko": "바로의 군대가 애굽에서 나오매 예루살렘을 에워쌌던 갈대아인이 그 소문을 듣고 예루살렘에서 떠났더라",
+      "source_text_hash": "836ae2c91c9326268c48d9671c1960662da381fa6d646d893cab2606a8b7e20b",
+      "translation_text_hash": "2b42801edf1fe61c8fd6f97d1ed8d2b7ed2e120a868dd0a401f7e5247c3d2cec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로의 군대가 애굽에서 나오매 예루살렘을 에워쌌던 갈대아인이 그 소문을 듣고 예루살렘에서 떠났더라"
+      ],
+      "raw_text_hashes": [
+        "2b42801edf1fe61c8fd6f97d1ed8d2b7ed2e120a868dd0a401f7e5247c3d2cec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:6",
+      "sequence": 19881,
+      "chapter_label": "JER 37",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 6
+        }
+      ],
+      "en": "Then the LORD’s word came to the prophet Jeremiah, saying,",
+      "ko": "여호와의 말씀이 선지자 예레미야에게 임하여 가라사대",
+      "source_text_hash": "58b08a2160b4242f6d71218974ff3980c9e0f473a1220f979e7ccf0903c47cf4",
+      "translation_text_hash": "854e2bbef246d90c746cabbda8e9936e2ec7fb8681ac6384f2cf79fb3446293f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 선지자 예레미야에게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "854e2bbef246d90c746cabbda8e9936e2ec7fb8681ac6384f2cf79fb3446293f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:7",
+      "sequence": 19882,
+      "chapter_label": "JER 37",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 7
+        }
+      ],
+      "en": "“The LORD, the God of Israel, says, ‘You shall tell the king of Judah, who sent you to me to inquire of me: “Behold, Pharaoh’s army, which has come out to help you, will return to Egypt into their own land.",
+      "ko": "이스라엘의 하나님 나 여호와가 이같이 말하노라 너희를 보내어 내게 구하게 한 유다 왕에게 이르라 너희를 도우려고 나왔던 바로의 군대는 자기 땅 애굽으로 돌아가겠고",
+      "source_text_hash": "e0a7c4ae7ef9f6348a11fb67f6f3ea61131afe53b540e2071eeba4ab65de604e",
+      "translation_text_hash": "382ce5c3ff93a0af10ee82590ee8758e418c0219c2e34adc8e337cb86c26cc16",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘의 하나님 나 여호와가 이같이 말하노라 너희를 보내어 내게 구하게 한 유다 왕에게 이르라 너희를 도우려고 나왔던 바로의 군대는 자기 땅 애굽으로 돌아가겠고"
+      ],
+      "raw_text_hashes": [
+        "382ce5c3ff93a0af10ee82590ee8758e418c0219c2e34adc8e337cb86c26cc16"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:8",
+      "sequence": 19883,
+      "chapter_label": "JER 37",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 8
+        }
+      ],
+      "en": "The Chaldeans will come again, and fight against this city. They will take it and burn it with fire.”’",
+      "ko": "갈대아인이 다시 와서 이 성을 쳐서 취하여 불사르리라",
+      "source_text_hash": "ab5e8dd5f5255a026d2dfff9612635313ffe552420a9eb0c8646571cf0a78a77",
+      "translation_text_hash": "8c3becd149bdd0d8ae5d5641a59562b56fa88736c97dba2974a579b0602d5bbb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아인이 다시 와서 이 성을 쳐서 취하여 불사르리라"
+      ],
+      "raw_text_hashes": [
+        "8c3becd149bdd0d8ae5d5641a59562b56fa88736c97dba2974a579b0602d5bbb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:9",
+      "sequence": 19884,
+      "chapter_label": "JER 37",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 9
+        }
+      ],
+      "en": "“The LORD says, ‘Don’t deceive yourselves, saying, “The Chaldeans will surely depart from us;” for they will not depart.",
+      "ko": "나 여호와가 이같이 말하노라 너희는 스스로 속여 말하기를 갈대아인이 반드시 우리를 떠나리라 하지 말라 그들이 떠나지 아니하리라",
+      "source_text_hash": "7c828a5cbb86b162d6513706b5e64a57e576176f75b553324da7d96e0f192715",
+      "translation_text_hash": "a1d3cd3ac28741bb72d9087fa321c9186498770879bfb411042a50e5a5de5721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희는 스스로 속여 말하기를 갈대아인이 반드시 우리를 떠나리라 하지 말라 그들이 떠나지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "a1d3cd3ac28741bb72d9087fa321c9186498770879bfb411042a50e5a5de5721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:10",
+      "sequence": 19885,
+      "chapter_label": "JER 37",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 10
+        }
+      ],
+      "en": "For though you had struck the whole army of the Chaldeans who fight against you, and only wounded men remained among them, they would each rise up in his tent and burn this city with fire.’”",
+      "ko": "가령 너희가 너희를 치는 갈대아인의 온 군대를 쳐서 그 중에 부상자만 남긴다 할찌라도 그들이 각기 장막에서 일어나 이 성을 불사르리라",
+      "source_text_hash": "04e54db02e67414ec7789dacca3820cc20a9a5bdf4140dfeae90a6ec1261b09d",
+      "translation_text_hash": "09d01d7a05197191f160bffbabaf014feb847d326bd8c96cf1d4da3ce153dcf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가령 너희가 너희를 치는 갈대아인의 온 군대를 쳐서 그 중에 부상자만 남긴다 할찌라도 그들이 각기 장막에서 일어나 이 성을 불사르리라"
+      ],
+      "raw_text_hashes": [
+        "09d01d7a05197191f160bffbabaf014feb847d326bd8c96cf1d4da3ce153dcf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:11",
+      "sequence": 19886,
+      "chapter_label": "JER 37",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 11
+        }
+      ],
+      "en": "When the army of the Chaldeans had withdrawn from Jerusalem for fear of Pharaoh’s army,",
+      "ko": "갈대아인의 군대가 바로의 군대를 두려워하여 예루살렘에서 떠나매",
+      "source_text_hash": "a035036db0c57fcd32c9d06fdc61fbf4c920d2c7ac7b4a738d35201d920b0d58",
+      "translation_text_hash": "a2e1614418d1235c185395f6e7ece7f211dac275e28b296134eb5c9654f769c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갈대아인의 군대가 바로의 군대를 두려워하여 예루살렘에서 떠나매"
+      ],
+      "raw_text_hashes": [
+        "a2e1614418d1235c185395f6e7ece7f211dac275e28b296134eb5c9654f769c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:12",
+      "sequence": 19887,
+      "chapter_label": "JER 37",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 12
+        }
+      ],
+      "en": "then Jeremiah went out of Jerusalem to go into the land of Benjamin, to receive his portion there, in the middle of the people.",
+      "ko": "예레미야가 베냐민 땅에서 백성 중 분깃을 받으려고 예루살렘을 떠나 그리로 가려하여",
+      "source_text_hash": "fa1ec8739958687065a6b794f56fb6adc02c7d6c3ce009ee46f8f6f0cfcfb81f",
+      "translation_text_hash": "7d83ef2f300cc6fb6d75b2cd6de51025dd3c4d3c1e207d734fa76781b492ef55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 베냐민 땅에서 백성 중 분깃을 받으려고 예루살렘을 떠나 그리로 가려하여"
+      ],
+      "raw_text_hashes": [
+        "7d83ef2f300cc6fb6d75b2cd6de51025dd3c4d3c1e207d734fa76781b492ef55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:13",
+      "sequence": 19888,
+      "chapter_label": "JER 37",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 13
+        }
+      ],
+      "en": "When he was in Benjamin’s gate, a captain of the guard was there, whose name was Irijah, the son of Shelemiah, the son of Hananiah; and he seized Jeremiah the prophet, saying, “You are defecting to the Chaldeans!”",
+      "ko": "베냐민 문에 이른즉 하나냐의 손자요 셀레먀의 아들인 이리야라 이름하는 문지기의 두목이 선지자 예레미야를 붙잡아 가로되 네가 갈대아인에게 항복하려 하는도다",
+      "source_text_hash": "de6fe1ddf058f0e49356f71b496d8b9645a8171f28d191e65c983b47a4467484",
+      "translation_text_hash": "f831b9a051ca5f833de3d6d37582931b2b1693163f286f93c46deca80c86300e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베냐민 문에 이른즉 하나냐의 손자요 셀레먀의 아들인 이리야라 이름하는 문지기의 두목이 선지자 예레미야를 붙잡아 가로되 네가 갈대아인에게 항복하려 하는도다"
+      ],
+      "raw_text_hashes": [
+        "f831b9a051ca5f833de3d6d37582931b2b1693163f286f93c46deca80c86300e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:14",
+      "sequence": 19889,
+      "chapter_label": "JER 37",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 14
+        }
+      ],
+      "en": "Then Jeremiah said, “That is false! I am not defecting to the Chaldeans.” But he didn’t listen to him; so Irijah seized Jeremiah, and brought him to the princes.",
+      "ko": "예레미야가 가로되 망령되다 나는 갈대아인에게 항복하려 하지 아니하노라 이리야가 듣지 아니하고 예레미야를 잡아 방백들에게로 끌어가매",
+      "source_text_hash": "d6d418b642e6923464c4808f52086d55b3025305926547dbc6980a8955e21724",
+      "translation_text_hash": "c9a3a864bff2ce8bfd64f6e1794ea75ff0c8503fc2545fd51c618ece9cff97ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 가로되 망령되다 나는 갈대아인에게 항복하려 하지 아니하노라 이리야가 듣지 아니하고 예레미야를 잡아 방백들에게로 끌어가매"
+      ],
+      "raw_text_hashes": [
+        "c9a3a864bff2ce8bfd64f6e1794ea75ff0c8503fc2545fd51c618ece9cff97ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:15",
+      "sequence": 19890,
+      "chapter_label": "JER 37",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 15
+        }
+      ],
+      "en": "The princes were angry with Jeremiah, and struck him, and put him in prison in the house of Jonathan the scribe; for they had made that the prison.",
+      "ko": "방백들이 노하여 예레미야를 때려서 서기관 요나단의 집에 가두었으니 이는 그들이 이 집으로 옥을 삼았음이더라",
+      "source_text_hash": "88cb34d0411feb2593530b55a60b350cc788280a64b1a89e4fd70ab3d3205843",
+      "translation_text_hash": "2e8787e454c4285ec27b3b711f173f919ed59e383de065a19c383278eb7027e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들이 노하여 예레미야를 때려서 서기관 요나단의 집에 가두었으니 이는 그들이 이 집으로 옥을 삼았음이더라"
+      ],
+      "raw_text_hashes": [
+        "2e8787e454c4285ec27b3b711f173f919ed59e383de065a19c383278eb7027e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:16",
+      "sequence": 19891,
+      "chapter_label": "JER 37",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 16
+        }
+      ],
+      "en": "When Jeremiah had come into the dungeon house and into the cells, and Jeremiah had remained there many days,",
+      "ko": "예레미야가 토굴 옥 음실에 들어간지 여러날만에",
+      "source_text_hash": "47b49ebbbb14afb462822d11a2f960de85e5947af00fc7165fad6584afdcf421",
+      "translation_text_hash": "099b80f2ea777ae38873c921c17fd58ff63fd1c59c7b3e9e0c7d1d5af8978fe4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 토굴 옥 음실에 들어간지 여러날만에"
+      ],
+      "raw_text_hashes": [
+        "099b80f2ea777ae38873c921c17fd58ff63fd1c59c7b3e9e0c7d1d5af8978fe4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:17",
+      "sequence": 19892,
+      "chapter_label": "JER 37",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 17
+        }
+      ],
+      "en": "then Zedekiah the king sent and had him brought out. The king asked him secretly in his house, “Is there any word from the LORD?” Jeremiah said, “There is.” He also said, “You will be delivered into the hand of the king of Babylon.”",
+      "ko": "시드기야왕이 보내어 그를 이끌어 내고 왕궁에서 그에게 비밀히 물어 가로되 여호와께로서 받은 말씀이 있느뇨 예레미야가 대답하되 있나이다 또 가로되 왕이 바벨론 왕의 손에 붙임을 입으리이다",
+      "source_text_hash": "34588be1a2a1706cb4308e9c3cf69ab9c89d9f37f96522b19f98391de2c1ff6b",
+      "translation_text_hash": "a664f87d9a3e80fab436d4d3fce1c1eadeb68a4e94bf90760aed5076d39f8ecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시드기야왕이 보내어 그를 이끌어 내고 왕궁에서 그에게 비밀히 물어 가로되 여호와께로서 받은 말씀이 있느뇨 예레미야가 대답하되 있나이다 또 가로되 왕이 바벨론 왕의 손에 붙임을 입으리이다"
+      ],
+      "raw_text_hashes": [
+        "a664f87d9a3e80fab436d4d3fce1c1eadeb68a4e94bf90760aed5076d39f8ecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:18",
+      "sequence": 19893,
+      "chapter_label": "JER 37",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 18
+        }
+      ],
+      "en": "Moreover Jeremiah said to King Zedekiah, “How have I sinned against you, against your servants, or against this people, that you have put me in prison?",
+      "ko": "예레미야가 다시 시드기야왕에게 이르되 내가 왕에게나 왕의 신하에게나 이 백성에게 무슨 죄를 범하였관대 나를 옥에 가두었나이까",
+      "source_text_hash": "4bd0bc7c477e190d27de585f83f9860b1e5347e4c7d816fec0f9ca7fcfbe8310",
+      "translation_text_hash": "585c8497adf5c27b054e69f145fb4c23317a4166b87006cf5b5c69a5ad8cf501",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야가 다시 시드기야왕에게 이르되 내가 왕에게나 왕의 신하에게나 이 백성에게 무슨 죄를 범하였관대 나를 옥에 가두었나이까"
+      ],
+      "raw_text_hashes": [
+        "585c8497adf5c27b054e69f145fb4c23317a4166b87006cf5b5c69a5ad8cf501"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:19",
+      "sequence": 19894,
+      "chapter_label": "JER 37",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 19
+        }
+      ],
+      "en": "Now where are your prophets who prophesied to you, saying, ‘The king of Babylon will not come against you, nor against this land’?",
+      "ko": "바벨론 왕이 와서 왕과 이 땅을 치지 아니하리라고 예언한 왕의 선지자들이 이제 어디 있나이까",
+      "source_text_hash": "149f174cd0eb43aade4d3720ed71a7d08edbd4a86d705f52069d00685bc08f50",
+      "translation_text_hash": "6f3bf26569e118dde1f93895457e739b97a9cd602e44e7e203bf3d0213239ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 왕이 와서 왕과 이 땅을 치지 아니하리라고 예언한 왕의 선지자들이 이제 어디 있나이까"
+      ],
+      "raw_text_hashes": [
+        "6f3bf26569e118dde1f93895457e739b97a9cd602e44e7e203bf3d0213239ab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:20",
+      "sequence": 19895,
+      "chapter_label": "JER 37",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 20
+        }
+      ],
+      "en": "Now please hear, my lord the king: please let my supplication be presented before you, that you not cause me to return to the house of Jonathan the scribe, lest I die there.”",
+      "ko": "내 주 왕이여 이제 청컨대 나를 들으시며 나의 탄원을 받으사 나를 서기관 요나단의 집으로 돌려보내지 마옵소서 내가 거기서 죽을까 두려워하나이다",
+      "source_text_hash": "55c16eab7d1582ddd2fb272911d7fb6c4c685a9566313e5f0e3a23b1d2a92672",
+      "translation_text_hash": "142b0425f7ee3de2a7ddc6c6cafeff0990960438d747109890b6ecc6bd9f27a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 주 왕이여 이제 청컨대 나를 들으시며 나의 탄원을 받으사 나를 서기관 요나단의 집으로 돌려보내지 마옵소서 내가 거기서 죽을까 두려워하나이다"
+      ],
+      "raw_text_hashes": [
+        "142b0425f7ee3de2a7ddc6c6cafeff0990960438d747109890b6ecc6bd9f27a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:37:21",
+      "sequence": 19896,
+      "chapter_label": "JER 37",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 37,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 37,
+          "verse": 21
+        }
+      ],
+      "en": "Then Zedekiah the king commanded, and they committed Jeremiah into the court of the guard. They gave him daily a loaf of bread out of the bakers’ street, until all the bread in the city was gone. Thus Jeremiah remained in the court of the guard.",
+      "ko": "이에 시드기야왕이 명하여 예레미야를 시위대 뜰에 두고 떡 만드는 자의 거리에서 매일 떡 한덩이씩 그에게 주게 하매 성중에 떡이 다할 때까지 이르니라 예레미야가 시위대 뜰에 머무니라",
+      "source_text_hash": "a3b7b9d786abd0d480055af8f94d9d96dbe27d6db0f13d8ac5822de91c3db879",
+      "translation_text_hash": "98e131697e0c7561579ce6630a7d08713cb361d8f69c0ce0baef48413a8164a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 시드기야왕이 명하여 예레미야를 시위대 뜰에 두고 떡 만드는 자의 거리에서 매일 떡 한덩이씩 그에게 주게 하매 성중에 떡이 다할 때까지 이르니라 예레미야가 시위대 뜰에 머무니라"
+      ],
+      "raw_text_hashes": [
+        "98e131697e0c7561579ce6630a7d08713cb361d8f69c0ce0baef48413a8164a1"
+      ]
+    }
+  ]
+}

@@ -25,6 +25,9 @@ concurrency:
 
 jobs:
   deploy-preview:
+    # Preview is advisory: account-level Pages quotas must not block PRs.
+    # The deploy verification and browser QA still run and retain their results.
+    continue-on-error: true
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 15

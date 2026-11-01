@@ -130,3 +130,14 @@ def test_the_form_is_built_with_the_save_status_above_its_buttons(meeting: dict)
     assert build["built"] is True, build
     assert build["loaded"] == "1", build
     assert build["statusAboveActions"] is True, build
+
+
+def test_activity_book_period_selects_dates_and_preserves_manual_changes() -> None:
+    result = run("meeting_period")
+    assert result["initial"] == ["mp1", "mp2"]
+    assert result["manual"] == ["mp1"]
+    assert result["order"] == ["mp2", "mp1", "mp3"]
+    assert result["emptySelected"] == []
+    assert result["empty"] == "해당 기간의 회의 기록이 없습니다."
+    assert result["quickLabels"] == ["이번 달", "지난달", "이번 분기", "올해"]
+    assert result["pageErrors"] == []

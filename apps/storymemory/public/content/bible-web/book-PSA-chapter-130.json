@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:130",
+  "unit_ordinal": 608,
+  "unit_label": "PSA 130",
+  "book_code": "PSA",
+  "chapter_number": 130,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:130:1",
+      "sequence": 16142,
+      "chapter_label": "PSA 130",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 1
+        }
+      ],
+      "en": "Out of the depths I have cried to you, LORD.",
+      "ko": "여호와여 내가 깊은데서 주께 부르짖었나이다",
+      "source_text_hash": "5728f0a7328935a6c470b3c101679bd6e33c8d09b837eb43f32dff4143d955c7",
+      "translation_text_hash": "33a2676bb9192c8647b0f5424feb624f2d2b5119173f1d43fc434708d70595d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 깊은데서 주께 부르짖었나이다"
+      ],
+      "raw_text_hashes": [
+        "33a2676bb9192c8647b0f5424feb624f2d2b5119173f1d43fc434708d70595d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:2",
+      "sequence": 16143,
+      "chapter_label": "PSA 130",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 2
+        }
+      ],
+      "en": "Lord, hear my voice. Let your ears be attentive to the voice of my petitions.",
+      "ko": "주여 내 소리를 들으시며 나의 간구하는 소리에 귀를 기울이소서",
+      "source_text_hash": "fd12f72e636c9b08276cc5e44b9504fb2d934d18f28ba569691b7b2e8babd169",
+      "translation_text_hash": "7778415ffdee990feee9158c804b9e3dac0c99779bccbbf5243a72ea5812e602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 내 소리를 들으시며 나의 간구하는 소리에 귀를 기울이소서"
+      ],
+      "raw_text_hashes": [
+        "7778415ffdee990feee9158c804b9e3dac0c99779bccbbf5243a72ea5812e602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:3",
+      "sequence": 16144,
+      "chapter_label": "PSA 130",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 3
+        }
+      ],
+      "en": "If you, LORD, kept a record of sins, Lord, who could stand?",
+      "ko": "여호와여 주께서 죄악을 감찰하실찐대 주여 누가 서리이까",
+      "source_text_hash": "2217a1525a7e4d4f39fe2edf86ea485e56a692c81dd1da524529ab42852b7b55",
+      "translation_text_hash": "b11a578878efec750661849bd3e6af16fcbc0bca84483d2d9a8fe1ceeed12bbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 죄악을 감찰하실찐대 주여 누가 서리이까"
+      ],
+      "raw_text_hashes": [
+        "b11a578878efec750661849bd3e6af16fcbc0bca84483d2d9a8fe1ceeed12bbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:4",
+      "sequence": 16145,
+      "chapter_label": "PSA 130",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 4
+        }
+      ],
+      "en": "But there is forgiveness with you, therefore you are feared.",
+      "ko": "그러나 사유하심이 주께 있음은 주를 경외케 하심이니이다",
+      "source_text_hash": "2acb434551b4289d7c53b4f689851b77ee76ec5123ba04fa6d619d68a981d11f",
+      "translation_text_hash": "5fa578e95d2ed83ba2ffeca0d35d06cccd121554da4719dab338f5a1693d8dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 사유하심이 주께 있음은 주를 경외케 하심이니이다"
+      ],
+      "raw_text_hashes": [
+        "5fa578e95d2ed83ba2ffeca0d35d06cccd121554da4719dab338f5a1693d8dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:5",
+      "sequence": 16146,
+      "chapter_label": "PSA 130",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 5
+        }
+      ],
+      "en": "I wait for the LORD. My soul waits. I hope in his word.",
+      "ko": "나 곧 내 영혼이 여호와를 기다리며 내가 그 말씀을 바라는도다",
+      "source_text_hash": "d9e660201830e9c42f98c8ff61127cfe90586511ddb6f7bd027793cddeea540b",
+      "translation_text_hash": "4a40c7c8965c920729ddcb02e6758f5861e4290aae503b97158e4ce51c8574e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 곧 내 영혼이 여호와를 기다리며 내가 그 말씀을 바라는도다"
+      ],
+      "raw_text_hashes": [
+        "4a40c7c8965c920729ddcb02e6758f5861e4290aae503b97158e4ce51c8574e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:6",
+      "sequence": 16147,
+      "chapter_label": "PSA 130",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 6
+        }
+      ],
+      "en": "My soul longs for the Lord more than watchmen long for the morning, more than watchmen for the morning.",
+      "ko": "파숫군이 아침을 기다림보다 내 영혼이 주를 더 기다리나니 참으로 파숫군의 아침을 기다림보다 더하도다",
+      "source_text_hash": "b46e85b92706cc0cd9ef06328c21d328681da706a72c93402f1253cf95ee2752",
+      "translation_text_hash": "a8e806c3da709d5eb27e9b009a3e82d3816441e7b24d0792164a00606ef8af64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파숫군이 아침을 기다림보다 내 영혼이 주를 더 기다리나니 참으로 파숫군의 아침을 기다림보다 더하도다"
+      ],
+      "raw_text_hashes": [
+        "a8e806c3da709d5eb27e9b009a3e82d3816441e7b24d0792164a00606ef8af64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:7",
+      "sequence": 16148,
+      "chapter_label": "PSA 130",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 7
+        }
+      ],
+      "en": "Israel, hope in the LORD, for there is loving kindness with the LORD. Abundant redemption is with him.",
+      "ko": "이스라엘아 여호와를 바랄찌어다 여호와께는 인자하심과 풍성한 구속이 있음이라",
+      "source_text_hash": "8c618c37639d8e072b04183d50ee300c063339fe77864f6825b024a7ae8fe2d4",
+      "translation_text_hash": "4019affecdba37ce74952421d92d8340c41eaccc18bf1d41306b9bb2770556fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘아 여호와를 바랄찌어다 여호와께는 인자하심과 풍성한 구속이 있음이라"
+      ],
+      "raw_text_hashes": [
+        "4019affecdba37ce74952421d92d8340c41eaccc18bf1d41306b9bb2770556fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:130:8",
+      "sequence": 16149,
+      "chapter_label": "PSA 130",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 130,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 130,
+          "verse": 8
+        }
+      ],
+      "en": "He will redeem Israel from all their sins.",
+      "ko": "저가 이스라엘을 그 모든 죄악에서 구속하시리로다",
+      "source_text_hash": "6e87a12e53a71321cb7343b6e464da5cedf7c072981664e714fd44793205c306",
+      "translation_text_hash": "8cba98ffebb208af20e74fd4d63fe7bf004c8ceae4498fc6a63dee8cf82fcf39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 이스라엘을 그 모든 죄악에서 구속하시리로다"
+      ],
+      "raw_text_hashes": [
+        "8cba98ffebb208af20e74fd4d63fe7bf004c8ceae4498fc6a63dee8cf82fcf39"
+      ]
+    }
+  ]
+}

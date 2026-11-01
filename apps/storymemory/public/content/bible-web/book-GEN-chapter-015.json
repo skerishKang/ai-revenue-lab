@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:GEN:chapter:015",
+  "unit_ordinal": 15,
+  "unit_label": "GEN 15",
+  "book_code": "GEN",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:GEN:15:1",
+      "sequence": 362,
+      "chapter_label": "GEN 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "After these things the LORD’s word came to Abram in a vision, saying, “Don’t be afraid, Abram. I am your shield, your exceedingly great reward.”",
+      "ko": "이 후에 여호와의 말씀이 이상 중에 아브람에게 임하여 가라사대 아브람아 두려워 말라 나는 너의 방패요 너의 지극히 큰 상급이니라",
+      "source_text_hash": "b5bcbdbe2f7356ab7b4be3b5d6bd462ceecd1ff86f9decf0a015f02996b66bf4",
+      "translation_text_hash": "618460a4212dcee12c01327087d6eda2354d317b41f7ac4599cdd073d566d6a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 후에 여호와의 말씀이 이상 중에 아브람에게 임하여 가라사대 아브람아 두려워 말라 나는 너의 방패요 너의 지극히 큰 상급이니라"
+      ],
+      "raw_text_hashes": [
+        "618460a4212dcee12c01327087d6eda2354d317b41f7ac4599cdd073d566d6a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:2",
+      "sequence": 363,
+      "chapter_label": "GEN 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "Abram said, “Lord GOD, what will you give me, since I go childless, and he who will inherit my estate is Eliezer of Damascus?”",
+      "ko": "아브람이 가로되 주 여호와여 무엇을 내게 주시려나이까 나는 무자하오니 나의 상속자는 이 다메섹 엘리에셀이니이다",
+      "source_text_hash": "c62352854a89fe923a3d0e85553570166d408651ecf7bbb9b18d35639f443cc3",
+      "translation_text_hash": "4bba025f8671f6e26dbe3b0a0308b10ea8a17580032d95e365c1509b2af9b795",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 가로되 주 여호와여 무엇을 내게 주시려나이까 나는 무자하오니 나의 상속자는 이 다메섹 엘리에셀이니이다"
+      ],
+      "raw_text_hashes": [
+        "4bba025f8671f6e26dbe3b0a0308b10ea8a17580032d95e365c1509b2af9b795"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:3",
+      "sequence": 364,
+      "chapter_label": "GEN 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "Abram said, “Behold, you have given no children to me: and, behold, one born in my house is my heir.”",
+      "ko": "아브람이 또 가로되 주께서 내게 씨를 아니주셨으니 내 집에서 길리운 자가 나의 후사가 될것이니이다",
+      "source_text_hash": "ba042c93a121acec05d9745c47d73a667ee7edf75eccbda5382374ba07e25025",
+      "translation_text_hash": "8484392f979c627df54e332dd096adcccb7b9b7cc47ba88b9dff776714f439b0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 또 가로되 주께서 내게 씨를 아니주셨으니 내 집에서 길리운 자가 나의 후사가 될것이니이다"
+      ],
+      "raw_text_hashes": [
+        "8484392f979c627df54e332dd096adcccb7b9b7cc47ba88b9dff776714f439b0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:4",
+      "sequence": 365,
+      "chapter_label": "GEN 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "Behold, the LORD’s word came to him, saying, “This man will not be your heir, but he who will come out of your own body will be your heir.”",
+      "ko": "여호와의 말씀이 그에게 임하여 가라사대 그 사람은 너의 후사가 아니라 네 몸에서 날 자가 네 후사가 되리라 하시고",
+      "source_text_hash": "4a00dedbfe5a4964dbb0842261604f7636ff6ea363dd157337fd98dee5d146e4",
+      "translation_text_hash": "57f252c6fc5bcd90ee8619ef45b3b3cfa57807893a423ccf26f55c8c9ac0cbc7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 그에게 임하여 가라사대 그 사람은 너의 후사가 아니라 네 몸에서 날 자가 네 후사가 되리라 하시고"
+      ],
+      "raw_text_hashes": [
+        "57f252c6fc5bcd90ee8619ef45b3b3cfa57807893a423ccf26f55c8c9ac0cbc7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:5",
+      "sequence": 366,
+      "chapter_label": "GEN 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD brought him outside, and said, “Look now toward the sky, and count the stars, if you are able to count them.” He said to Abram, “So your offspring will be.”",
+      "ko": "그를 이끌고 밖으로 나가 가라사대 하늘을 우러러 뭇별을 셀 수 있나 보라 또 그에게 이르시되 네 자손이 이와 같으리라",
+      "source_text_hash": "a2ba38052757edbf845c65f4a8f20644054f482877f257d2cc87065110191692",
+      "translation_text_hash": "41843cceaa6d9ae7c4491f913b055950ecf4f2d54b05f5fc0c75b98ad3972104",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 이끌고 밖으로 나가 가라사대 하늘을 우러러 뭇별을 셀 수 있나 보라 또 그에게 이르시되 네 자손이 이와 같으리라"
+      ],
+      "raw_text_hashes": [
+        "41843cceaa6d9ae7c4491f913b055950ecf4f2d54b05f5fc0c75b98ad3972104"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:6",
+      "sequence": 367,
+      "chapter_label": "GEN 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "He believed in the LORD, who credited it to him for righteousness.",
+      "ko": "아브람이 여호와를 믿으니 여호와께서 이를 그의 의로 여기시고",
+      "source_text_hash": "5ecb5eb29d8d11bbfe036e902e5b0f1044634e6971188488a322900500a65611",
+      "translation_text_hash": "cce2a4d2593e208146ce163ccff3600f698027514d7b2e0608eff273cb607c4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 여호와를 믿으니 여호와께서 이를 그의 의로 여기시고"
+      ],
+      "raw_text_hashes": [
+        "cce2a4d2593e208146ce163ccff3600f698027514d7b2e0608eff273cb607c4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:7",
+      "sequence": 368,
+      "chapter_label": "GEN 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "He said to Abram, “I am the LORD who brought you out of Ur of the Chaldees, to give you this land to inherit it.”",
+      "ko": "또 그에게 이르시되 나는 이 땅을 네게 주어 업을 삼게 하려고 너를 갈대아 우르에서 이끌어낸 여호와로라",
+      "source_text_hash": "926efc7490ab8ce4a9bebcfe14410569fc278ed76bc40edd727638aac57819ee",
+      "translation_text_hash": "a4c6afa933623bb9eae1c523224df2def7f9029de8f7f2a13798fd47184c6129",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그에게 이르시되 나는 이 땅을 네게 주어 업을 삼게 하려고 너를 갈대아 우르에서 이끌어낸 여호와로라"
+      ],
+      "raw_text_hashes": [
+        "a4c6afa933623bb9eae1c523224df2def7f9029de8f7f2a13798fd47184c6129"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:8",
+      "sequence": 369,
+      "chapter_label": "GEN 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "He said, “Lord GOD, how will I know that I will inherit it?”",
+      "ko": "그가 가로되 주 여호와여 내가 이 땅으로 업을 삼을 줄을 무엇으로 알리이까",
+      "source_text_hash": "39535f3b64d4b3039d14e173376a11616af84fa8192d4c66ccdb93068fa4ad00",
+      "translation_text_hash": "edad0a1e22f0730ff8b9eca440e22f73c14513401e77ab2fb282127561528b0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가로되 주 여호와여 내가 이 땅으로 업을 삼을 줄을 무엇으로 알리이까"
+      ],
+      "raw_text_hashes": [
+        "edad0a1e22f0730ff8b9eca440e22f73c14513401e77ab2fb282127561528b0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:9",
+      "sequence": 370,
+      "chapter_label": "GEN 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "He said to him, “Bring me a heifer three years old, a female goat three years old, a ram three years old, a turtledove, and a young pigeon.”",
+      "ko": "여호와께서 그에게 이르시되 나를 위하여 삼년 된 암소와 삼년 된 암염소와 삼년 된 수양과 산비둘기와 집비둘기 새끼를 취할찌니라",
+      "source_text_hash": "12a3631a5cf9774cb3bd956b82977d037d14c83fe0b91725e1fb66608b5980cb",
+      "translation_text_hash": "0dc3063ab23c103c3b4ed8625203c20991641589c8dcf32b2e70a26af7178589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그에게 이르시되 나를 위하여 삼년 된 암소와 삼년 된 암염소와 삼년 된 수양과 산비둘기와 집비둘기 새끼를 취할찌니라"
+      ],
+      "raw_text_hashes": [
+        "0dc3063ab23c103c3b4ed8625203c20991641589c8dcf32b2e70a26af7178589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:10",
+      "sequence": 371,
+      "chapter_label": "GEN 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "He brought him all these, and divided them in the middle, and laid each half opposite the other; but he didn’t divide the birds.",
+      "ko": "아브람이 그 모든 것을 취하여 그 중간을 쪼개고 그 쪼갠 것을 마주 대하여 놓고 그 새는 쪼개지 아니하였으며",
+      "source_text_hash": "4d83570f99cb1c0206e14d83316209125f4abe0819944370313167df37be68c4",
+      "translation_text_hash": "e9e372e050fcf15a8d3e80d40a6e05ba5f2f81998d3bcd9cbf35e4f10a334513",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브람이 그 모든 것을 취하여 그 중간을 쪼개고 그 쪼갠 것을 마주 대하여 놓고 그 새는 쪼개지 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "e9e372e050fcf15a8d3e80d40a6e05ba5f2f81998d3bcd9cbf35e4f10a334513"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:11",
+      "sequence": 372,
+      "chapter_label": "GEN 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "The birds of prey came down on the carcasses, and Abram drove them away.",
+      "ko": "솔개가 그 사체 위에 내릴 때에는 아브람이 쫓았더라",
+      "source_text_hash": "916ec81ecbb669c65fb1c8559fd05075681e47b1b1178720ced42ee66e3e0268",
+      "translation_text_hash": "177e25b1f7e5ae7b724df0e8a154149b14ae32465373888913dcf3e1d265448d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔개가 그 사체 위에 내릴 때에는 아브람이 쫓았더라"
+      ],
+      "raw_text_hashes": [
+        "177e25b1f7e5ae7b724df0e8a154149b14ae32465373888913dcf3e1d265448d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:12",
+      "sequence": 373,
+      "chapter_label": "GEN 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "When the sun was going down, a deep sleep fell on Abram. Now terror and great darkness fell on him.",
+      "ko": "해질 때에 아브람이 깊이 잠든 중에 캄캄함이 임하므로 심히 두려워하더니",
+      "source_text_hash": "099d7eb125173a19b8a9543c3fbe01bfa60f699a85107d0d1217a6b095e45faf",
+      "translation_text_hash": "b05622e9f00bde3e74ae2f239661c94ff1e88de67fd9409948a81ac8d3a8097b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해질 때에 아브람이 깊이 잠든 중에 캄캄함이 임하므로 심히 두려워하더니"
+      ],
+      "raw_text_hashes": [
+        "b05622e9f00bde3e74ae2f239661c94ff1e88de67fd9409948a81ac8d3a8097b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:13",
+      "sequence": 374,
+      "chapter_label": "GEN 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "He said to Abram, “Know for sure that your offspring will live as foreigners in a land that is not theirs, and will serve them. They will afflict them four hundred years.",
+      "ko": "여호와께서 아브람에게 이르시되 너는 정녕히 알라 네 자손이 이방에서 객이 되어 그들을 섬기겠고 그들은 사백년 동안 네 자손을 괴롭게 하리니",
+      "source_text_hash": "3cff2a4c872ea36ce8e1b215173cfe565a44656c0354c29b378d4bb899d9cda6",
+      "translation_text_hash": "6447e0f5fdcbcc27c52615bd11bdc5d88f0dbe0616cde566d373612cf8cebeb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 아브람에게 이르시되 너는 정녕히 알라 네 자손이 이방에서 객이 되어 그들을 섬기겠고 그들은 사백년 동안 네 자손을 괴롭게 하리니"
+      ],
+      "raw_text_hashes": [
+        "6447e0f5fdcbcc27c52615bd11bdc5d88f0dbe0616cde566d373612cf8cebeb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:14",
+      "sequence": 375,
+      "chapter_label": "GEN 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "I will also judge that nation, whom they will serve. Afterward they will come out with great wealth;",
+      "ko": "그 섬기는 나라를 내가 징치할찌며 그 후에 네 자손이 큰 재물을 이끌고 나오리라",
+      "source_text_hash": "eeb59f384259360ed713321285921468e71960aaf2cd8f30badcea7be3e77d01",
+      "translation_text_hash": "05efa1e357a188529df79e146c6c72d8e6515851eaa7dbeeec9894c159fd2ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 섬기는 나라를 내가 징치할찌며 그 후에 네 자손이 큰 재물을 이끌고 나오리라"
+      ],
+      "raw_text_hashes": [
+        "05efa1e357a188529df79e146c6c72d8e6515851eaa7dbeeec9894c159fd2ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:15",
+      "sequence": 376,
+      "chapter_label": "GEN 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "but you will go to your fathers in peace. You will be buried at a good old age.",
+      "ko": "너는 장수하다가 평안히 조상에게로 돌아가 장사될 것이요",
+      "source_text_hash": "08f445bdb188bd39b948eafceb9ecb19e4be58a149c10f5d366a8b8cc61d2bc9",
+      "translation_text_hash": "d8b90262bdb3e5a9fffe73012466edf663a94a47f4d98c9076bdb1e248832d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 장수하다가 평안히 조상에게로 돌아가 장사될 것이요"
+      ],
+      "raw_text_hashes": [
+        "d8b90262bdb3e5a9fffe73012466edf663a94a47f4d98c9076bdb1e248832d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:16",
+      "sequence": 377,
+      "chapter_label": "GEN 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "In the fourth generation they will come here again, for the iniquity of the Amorite is not yet full.”",
+      "ko": "네 자손은 사대만에 이 땅으로 돌아 오리니 이는 아모리 족속의 죄악이 아직 관영치 아니함이니라 하시더니",
+      "source_text_hash": "d80c0eda70e4f8c6563d2be64d071d86b0c298ac415d410861c3b230cbab079b",
+      "translation_text_hash": "85604130c2d1fb89eba7b4326848550e4e4ef1fdebea8057d34d7350b5d81cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 자손은 사대만에 이 땅으로 돌아 오리니 이는 아모리 족속의 죄악이 아직 관영치 아니함이니라 하시더니"
+      ],
+      "raw_text_hashes": [
+        "85604130c2d1fb89eba7b4326848550e4e4ef1fdebea8057d34d7350b5d81cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:17",
+      "sequence": 378,
+      "chapter_label": "GEN 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "It came to pass that, when the sun went down, and it was dark, behold, a smoking furnace and a flaming torch passed between these pieces.",
+      "ko": "해가 져서 어둘 때에 연기 나는 풀무가 보이며 타는 횃불이 쪼갠 고기 사이로 지나더라",
+      "source_text_hash": "fc6b3b6d61d0f49192d5b567cedf75023f1266204b136ec5e5a8c4f12336355a",
+      "translation_text_hash": "1cdf4a7073d770e589b1d77579f87cf2e9f3379a7463aca528a5661df63c9315",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해가 져서 어둘 때에 연기 나는 풀무가 보이며 타는 횃불이 쪼갠 고기 사이로 지나더라"
+      ],
+      "raw_text_hashes": [
+        "1cdf4a7073d770e589b1d77579f87cf2e9f3379a7463aca528a5661df63c9315"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:18",
+      "sequence": 379,
+      "chapter_label": "GEN 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "In that day the LORD made a covenant with Abram, saying, “I have given this land to your offspring, from the river of Egypt to the great river, the river Euphrates:",
+      "ko": "그 날에 여호와께서 아브람으로 더불어 언약을 세워 가라사대 내가 이 땅을 애굽강에서부터 그 큰 강 유브라데까지 네 자손에게 주노니",
+      "source_text_hash": "f5a0145b332a9fd099e2e7cb2f3b92375741a449abc3f07553a2db89cb99e3ad",
+      "translation_text_hash": "9c6d87b1fef31e7fe6fcb0c8afaf5ed6db1cdb5a7ab3627b44e4db44efbf24dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와께서 아브람으로 더불어 언약을 세워 가라사대 내가 이 땅을 애굽강에서부터 그 큰 강 유브라데까지 네 자손에게 주노니"
+      ],
+      "raw_text_hashes": [
+        "9c6d87b1fef31e7fe6fcb0c8afaf5ed6db1cdb5a7ab3627b44e4db44efbf24dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:19",
+      "sequence": 380,
+      "chapter_label": "GEN 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "the land of the Kenites, the Kenizzites, the Kadmonites,",
+      "ko": "곧 겐 족속과 그니스 족속과 갓몬 족속과",
+      "source_text_hash": "b70aafcb63c4096246b1603cadb844dc35ab3d658985bde527d9ee65271095df",
+      "translation_text_hash": "f4d60f416b3a2c318185e915cedd345f1a0f8e3702942f0e8f9ede0915396cd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 겐 족속과 그니스 족속과 갓몬 족속과"
+      ],
+      "raw_text_hashes": [
+        "f4d60f416b3a2c318185e915cedd345f1a0f8e3702942f0e8f9ede0915396cd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:20",
+      "sequence": 381,
+      "chapter_label": "GEN 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "the Hittites, the Perizzites, the Rephaim,",
+      "ko": "헷 족속과 브리스 족속과 르바 족속과",
+      "source_text_hash": "bdb3a8b4b5a7787cc8ab1a0480dc62db388f48bcd16c004374430c4b142ed98e",
+      "translation_text_hash": "0e37605605b54371b86bc9753ddae26312fe543b8c65d4291a9b72e59e01d09e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헷 족속과 브리스 족속과 르바 족속과"
+      ],
+      "raw_text_hashes": [
+        "0e37605605b54371b86bc9753ddae26312fe543b8c65d4291a9b72e59e01d09e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:GEN:15:21",
+      "sequence": 382,
+      "chapter_label": "GEN 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "GEN",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "GEN",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "the Amorites, the Canaanites, the Girgashites, and the Jebusites.”",
+      "ko": "아모리 족속과 가나안 족속과 기르가스 족속과 여부스 족속의 땅이니라 하셨더라",
+      "source_text_hash": "312f3317a9328e6fa5b05398c60874c1d7af08251333c6596905def5df773c52",
+      "translation_text_hash": "3150bd7587e29d5272dc4aa7ee35325aecb7e64fc77028ec0ce89e6cfca1b3a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모리 족속과 가나안 족속과 기르가스 족속과 여부스 족속의 땅이니라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "3150bd7587e29d5272dc4aa7ee35325aecb7e64fc77028ec0ce89e6cfca1b3a4"
+      ]
+    }
+  ]
+}

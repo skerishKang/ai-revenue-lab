@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:021",
+  "unit_ordinal": 499,
+  "unit_label": "PSA 21",
+  "book_code": "PSA",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:21:1",
+      "sequence": 14193,
+      "chapter_label": "PSA 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "The king rejoices in your strength, LORD! How greatly he rejoices in your salvation!",
+      "ko": "여호와여 왕이 주의 힘을 인하여 기뻐하며 주의 구원을 인하여 크게 즐거워하리이다",
+      "source_text_hash": "005926cb8bab9eb61fb0b437f897374e56e0d74dff35e6f8f9af03045fb899e1",
+      "translation_text_hash": "25a07931204e5d8c1f7b855af0a7516954514b433ad4198af16ab33313a5c19f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 왕이 주의 힘을 인하여 기뻐하며 주의 구원을 인하여 크게 즐거워하리이다"
+      ],
+      "raw_text_hashes": [
+        "25a07931204e5d8c1f7b855af0a7516954514b433ad4198af16ab33313a5c19f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:2",
+      "sequence": 14194,
+      "chapter_label": "PSA 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "You have given him his heart’s desire, and have not withheld the request of his lips. Selah.",
+      "ko": "그 마음의 소원을 주셨으며 그 입술의 구함을 거절치 아니하셨나이다(셀라)",
+      "source_text_hash": "33fb256eb87246a9a140ea113b38690367a7210bb138dc82beed4c479c2ec62a",
+      "translation_text_hash": "521780fc7f7c159db05b82412bfd04978a8037d8312e44e56ad6edd7b2f05c23",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음의 소원을 주셨으며 그 입술의 구함을 거절치 아니하셨나이다(셀라)"
+      ],
+      "raw_text_hashes": [
+        "521780fc7f7c159db05b82412bfd04978a8037d8312e44e56ad6edd7b2f05c23"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:3",
+      "sequence": 14195,
+      "chapter_label": "PSA 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "For you meet him with the blessings of goodness. You set a crown of fine gold on his head.",
+      "ko": "주의 아름다운 복으로 저를 영접하시고 정금 면류관을 그 머리에 씌우셨나이다",
+      "source_text_hash": "483a91c6ca354da78224e71f6831500bcf08fc585bf588512fa4f3be5b57564c",
+      "translation_text_hash": "0a923db9ab2a4077b5567aa40e54bda962e772a31721fdc71ca54359f579a523",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 아름다운 복으로 저를 영접하시고 정금 면류관을 그 머리에 씌우셨나이다"
+      ],
+      "raw_text_hashes": [
+        "0a923db9ab2a4077b5567aa40e54bda962e772a31721fdc71ca54359f579a523"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:4",
+      "sequence": 14196,
+      "chapter_label": "PSA 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "He asked life of you and you gave it to him, even length of days forever and ever.",
+      "ko": "저가 생명을 구하매 주께서 주셨으니 곧 영영한 장수로소이다",
+      "source_text_hash": "903a14fb34696357133ed452ef452a56976a8fef575452d5fd6c63cf516ec254",
+      "translation_text_hash": "0906c3f2be2691c5d80e380604a6fece56305097a157c7eb8042f6c5acaa714b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 생명을 구하매 주께서 주셨으니 곧 영영한 장수로소이다"
+      ],
+      "raw_text_hashes": [
+        "0906c3f2be2691c5d80e380604a6fece56305097a157c7eb8042f6c5acaa714b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:5",
+      "sequence": 14197,
+      "chapter_label": "PSA 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "His glory is great in your salvation. You lay honor and majesty on him.",
+      "ko": "주의 구원으로 그 영광을 크게 하시고 존귀와 위엄으로 저에게 입히시나이다",
+      "source_text_hash": "1bfa8d176bcaab130bfcecb6ebed46e6cedb06d34402d7f8c9f016d865fd6942",
+      "translation_text_hash": "a96a9bd5ad15018bacbed3241e3524a956feea9146e09c3e919d85e800ae76a1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 구원으로 그 영광을 크게 하시고 존귀와 위엄으로 저에게 입히시나이다"
+      ],
+      "raw_text_hashes": [
+        "a96a9bd5ad15018bacbed3241e3524a956feea9146e09c3e919d85e800ae76a1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:6",
+      "sequence": 14198,
+      "chapter_label": "PSA 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "For you make him most blessed forever. You make him glad with joy in your presence.",
+      "ko": "저로 영영토록 지극한 복을 받게 하시며 주의 앞에서 기쁘고 즐겁게 하시나이다",
+      "source_text_hash": "85b4a9e2fad30a56d240dbc4228b3e583b0341c5bef994b5b1fe272916607960",
+      "translation_text_hash": "b6bb839811f72f9dcf5b738f20248915745f146e768a7594cf58b8437ea50c2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저로 영영토록 지극한 복을 받게 하시며 주의 앞에서 기쁘고 즐겁게 하시나이다"
+      ],
+      "raw_text_hashes": [
+        "b6bb839811f72f9dcf5b738f20248915745f146e768a7594cf58b8437ea50c2b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:7",
+      "sequence": 14199,
+      "chapter_label": "PSA 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "For the king trusts in the LORD. Through the loving kindness of the Most High, he shall not be moved.",
+      "ko": "왕이 여호와를 의지하오니 지극히 높으신 자의 인자함으로 요동치 아니하리이다",
+      "source_text_hash": "c6d0f24edf0a31bcf30aac2ad9e5969d0e41b4d69dc6e0ddfb9f388d6e93a3d8",
+      "translation_text_hash": "e1c7260572a653a56763d24eb54d51fb9692ef49df60313ec994e093f59b5c72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 여호와를 의지하오니 지극히 높으신 자의 인자함으로 요동치 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "e1c7260572a653a56763d24eb54d51fb9692ef49df60313ec994e093f59b5c72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:8",
+      "sequence": 14200,
+      "chapter_label": "PSA 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "Your hand will find out all of your enemies. Your right hand will find out those who hate you.",
+      "ko": "네 손이 네 모든 원수를 발견함이여 네 오른손이 너를 미워하는 자를 발견하리로다",
+      "source_text_hash": "b97711513ccf8822c7029e1f744017c1290ec620201ee4fbf976c4d36887bc2d",
+      "translation_text_hash": "6349a11124eabb75e6579aeec2468967f3fb70fd7f36698953956764986f31ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 손이 네 모든 원수를 발견함이여 네 오른손이 너를 미워하는 자를 발견하리로다"
+      ],
+      "raw_text_hashes": [
+        "6349a11124eabb75e6579aeec2468967f3fb70fd7f36698953956764986f31ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:9",
+      "sequence": 14201,
+      "chapter_label": "PSA 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "You will make them as a fiery furnace in the time of your anger. The LORD will swallow them up in his wrath. The fire shall devour them.",
+      "ko": "네가 노할 때에 저희로 풀무 같게 할 것이라 여호와께서 진노로 저희를 삼키시리니 불이 저희를 소멸하리로다",
+      "source_text_hash": "6b5ec8145272333d42e18130f7415a13bf302443d2d86ef47392f88198a2d1e8",
+      "translation_text_hash": "834160b6d9917b0cb93d57ec79b25e1c33d9071157436d6cd7b9f1031c0f59ba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 노할 때에 저희로 풀무 같게 할 것이라 여호와께서 진노로 저희를 삼키시리니 불이 저희를 소멸하리로다"
+      ],
+      "raw_text_hashes": [
+        "834160b6d9917b0cb93d57ec79b25e1c33d9071157436d6cd7b9f1031c0f59ba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:10",
+      "sequence": 14202,
+      "chapter_label": "PSA 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "You will destroy their descendants from the earth, their posterity from among the children of men.",
+      "ko": "네가 저희 후손을 땅에서 멸함이여 저희 자손을 인생 중에서 끊으리로다",
+      "source_text_hash": "667168e666a6a3ad97e2bea2fd4886f38f3d1fd72681558c305bd85ec740c4fa",
+      "translation_text_hash": "e12f1534fd1e3940d7ea3db9ba30c5081c9d234b41d2d4dc66f504b4bccf2ff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 저희 후손을 땅에서 멸함이여 저희 자손을 인생 중에서 끊으리로다"
+      ],
+      "raw_text_hashes": [
+        "e12f1534fd1e3940d7ea3db9ba30c5081c9d234b41d2d4dc66f504b4bccf2ff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:11",
+      "sequence": 14203,
+      "chapter_label": "PSA 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "For they intended evil against you. They plotted evil against you which cannot succeed.",
+      "ko": "대저 저희는 너를 해하려 하여 계교를 품었으나 이루지 못하도다",
+      "source_text_hash": "b916563164f90b65c8896c2504cedb52d0bbc20c5d8e8b88c57d096bf9f4377c",
+      "translation_text_hash": "6295973b4dea07e4f15d9143ed8cf001841a0e0d95b38ef67cee3e81f7e981f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 저희는 너를 해하려 하여 계교를 품었으나 이루지 못하도다"
+      ],
+      "raw_text_hashes": [
+        "6295973b4dea07e4f15d9143ed8cf001841a0e0d95b38ef67cee3e81f7e981f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:12",
+      "sequence": 14204,
+      "chapter_label": "PSA 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "For you will make them turn their back, when you aim drawn bows at their face.",
+      "ko": "네가 저희로 돌아서게 함이여 그 얼굴을 향하여 활시위를 당기리로다",
+      "source_text_hash": "aa6dd76dc20893b16b2db1dc98a548148cf49b83b1dd4f87b674142048deb524",
+      "translation_text_hash": "51b55b28d35fe562725a4a164d76f3c33c861ee5a89fa76678b0fc7bca501602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 저희로 돌아서게 함이여 그 얼굴을 향하여 활시위를 당기리로다"
+      ],
+      "raw_text_hashes": [
+        "51b55b28d35fe562725a4a164d76f3c33c861ee5a89fa76678b0fc7bca501602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:21:13",
+      "sequence": 14205,
+      "chapter_label": "PSA 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "Be exalted, LORD, in your strength, so we will sing and praise your power.",
+      "ko": "여호와여 주의 능력으로 높임을 받으소서 우리가 주의 권능을 노래하고 칭송하겠나이다",
+      "source_text_hash": "175c4d7f14187b3c6d776a367c24b4cada3ec549bf122c900d9d0ad28b84212d",
+      "translation_text_hash": "458f9bf05f0222bb6c56ac1599f9bd6175d62bc712e0d4f82887a3fc11d51f80",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주의 능력으로 높임을 받으소서 우리가 주의 권능을 노래하고 칭송하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "458f9bf05f0222bb6c56ac1599f9bd6175d62bc712e0d4f82887a3fc11d51f80"
+      ]
+    }
+  ]
+}

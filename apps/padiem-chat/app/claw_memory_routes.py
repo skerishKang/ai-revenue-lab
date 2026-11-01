@@ -77,8 +77,21 @@ async def _resolve_memory_workspace(request: Request, user_id: str) -> str | Non
             store=shadow_store,
             product_user_id=user_id,
         )
-    except Exception:
-        return None
+    except Exception as exc:
+        # Shared-login users have a current canonical session but may not have
+        # the legacy product shadow row. Reuse the PC lane's independently
+        # validated b62/B54 session bridge; never fall back for other failures.
+        shared_uid = getattr(request.state, "padiem_shared_user_id", None)
+        from .control_plane_identity import IdentityBridgeError
+        if (shared_uid != user_id or not isinstance(exc, IdentityBridgeError)
+                or exc.code != "control_plane_identity_not_linked"):
+            return None
+        try:
+            from .chat_pc_drive import _resolve_chat_owner
+            _session, _subject, workspace = await _resolve_chat_owner(request, user_id)
+        except Exception:
+            return None
+        return workspace if isinstance(workspace, str) and workspace.strip() else None
     candidate = getattr(session, "tenant_id", None)
     if not isinstance(candidate, str) or not candidate.strip():
         return None

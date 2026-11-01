@@ -8,7 +8,7 @@ import { handleIngress, MAX_ENGINE_ATTEMPTS } from "../worker.mjs";
 
 const EXECUTE_URL = "https://ingress.example/internal/v1/execute";
 const INGRESS_SECRET = "s".repeat(64);
-const ENGINE_CALLER_ID = "storymemory-b61";
+const ENGINE_CALLER_ID = "storymemory-b61-20261031";
 const ENGINE_CALLER_SECRET = "e".repeat(64);
 const ENGINE_CALLER_SECRET_NEXT = "n".repeat(64);
 const ENGINE_CREDENTIAL_HEADER = "x-padiem-engine-credential";
@@ -109,7 +109,7 @@ test("E. caller-supplied X-Padiem-Engine-Caller cannot override server identity"
 
 test("F. Engine request receives only env-owned caller id and credential", async () => {
   const { calls, env } = fakeEnv({
-    engineCallerId: "storymemory-b61",
+    engineCallerId: "storymemory-b61-20261031",
     engineCallerSecret: ENGINE_CALLER_SECRET,
   });
 
@@ -127,7 +127,7 @@ test("F. Engine request receives only env-owned caller id and credential", async
 
   const response = await handleIngress(request, env);
   assert.equal(response.status, 200);
-  assert.equal(calls[0].headers.get(ENGINE_CALLER_HEADER), "storymemory-b61");
+  assert.equal(calls[0].headers.get(ENGINE_CALLER_HEADER), "storymemory-b61-20261031");
   assert.equal(calls[0].headers.get(ENGINE_CREDENTIAL_HEADER), ENGINE_CALLER_SECRET);
 
   // No additional engine-related headers leak through.
@@ -250,7 +250,7 @@ test("L. ingress binding is only the canonical Engine (no B14/Provider binding)"
   assert.doesNotMatch(ingressConfig, /PADIEM_ENGINE_CALLER_SECRET\s*=/i);
   assert.doesNotMatch(ingressConfig, /PADIEM_INGRESS_CLIENT_SECRET\s*=/i);
   // Canonical Engine identity is declared as a non-secret var.
-  assert.match(ingressConfig, /PADIEM_ENGINE_CALLER_ID\s*=\s*"storymemory-b61"/);
+  assert.match(ingressConfig, /PADIEM_ENGINE_CALLER_ID\s*=\s*"storymemory-b61-20261031"/);
 });
 
 test("M. ingress source carries no StoryMemory locator/provider routing semantics", () => {

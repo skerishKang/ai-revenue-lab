@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JDG:chapter:014",
+  "unit_ordinal": 225,
+  "unit_label": "JDG 14",
+  "book_code": "JDG",
+  "chapter_number": 14,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JDG:14:1",
+      "sequence": 6911,
+      "chapter_label": "JDG 14",
+      "verse_label": "1",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 1
+        }
+      ],
+      "en": "Samson went down to Timnah, and saw a woman in Timnah of the daughters of the Philistines.",
+      "ko": "삼손이 딤나에 내려가서 거기서 블레셋 딸 중 한 여자를 보고",
+      "source_text_hash": "bfe3941f936fa22600ba74c56c063844bf0d7e54fb7fd0e1c30bf64b7fc1ac65",
+      "translation_text_hash": "9a0dc99d54a13aec109a57b9f7ca1318a241f006ae9196c40917dedc70e85ad3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 딤나에 내려가서 거기서 블레셋 딸 중 한 여자를 보고"
+      ],
+      "raw_text_hashes": [
+        "9a0dc99d54a13aec109a57b9f7ca1318a241f006ae9196c40917dedc70e85ad3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:2",
+      "sequence": 6912,
+      "chapter_label": "JDG 14",
+      "verse_label": "2",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 2
+        }
+      ],
+      "en": "He came up, and told his father and his mother, saying, “I have seen a woman in Timnah of the daughters of the Philistines. Now therefore get her for me as my wife.”",
+      "ko": "도로 올라와서 자기 부모에게 말하여 가로되 내가 딤나에서 블레셋 사람의 딸 중 한 여자를 보았사오니 이제 그를 취하여 내 아내를 삼게 하소서",
+      "source_text_hash": "a8b4e2fd8caaa0ba2e053dd929d3757d5c1df644917031545e93fab110abdde5",
+      "translation_text_hash": "a8053d38dc8222bcae71c9d9595545c9325224c0d90058f2ca21cae8a8ab637e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도로 올라와서 자기 부모에게 말하여 가로되 내가 딤나에서 블레셋 사람의 딸 중 한 여자를 보았사오니 이제 그를 취하여 내 아내를 삼게 하소서"
+      ],
+      "raw_text_hashes": [
+        "a8053d38dc8222bcae71c9d9595545c9325224c0d90058f2ca21cae8a8ab637e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:3",
+      "sequence": 6913,
+      "chapter_label": "JDG 14",
+      "verse_label": "3",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 3
+        }
+      ],
+      "en": "Then his father and his mother said to him, “Isn’t there a woman among your brothers’ daughters, or among all my people, that you go to take a wife of the uncircumcised Philistines?” Samson said to his father, “Get her for me, for she pleases me well.”",
+      "ko": "부모가 그에게 이르되 네 형제들의 딸 중에나 내 백성 중에 어찌 여자가 없어서 네가 할례 받지 아니한 블레셋 사람에게 가서 아내를 취하려 하느냐 삼손이 아비에게 이르되 내가 그 여자를 좋아하오니 나를 위하여 그를 데려오소서 하니",
+      "source_text_hash": "d95e9186331b7cf9b79716aee6e5224e6a8979964c11bce18eee9c0f1b6ec52b",
+      "translation_text_hash": "71146c97b416faa1158c612cf03a8515dbb13ef92ddb82272ca5e7c4bdb50afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부모가 그에게 이르되 네 형제들의 딸 중에나 내 백성 중에 어찌 여자가 없어서 네가 할례 받지 아니한 블레셋 사람에게 가서 아내를 취하려 하느냐 삼손이 아비에게 이르되 내가 그 여자를 좋아하오니 나를 위하여 그를 데려오소서 하니"
+      ],
+      "raw_text_hashes": [
+        "71146c97b416faa1158c612cf03a8515dbb13ef92ddb82272ca5e7c4bdb50afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:4",
+      "sequence": 6914,
+      "chapter_label": "JDG 14",
+      "verse_label": "4",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 4
+        }
+      ],
+      "en": "But his father and his mother didn’t know that it was of the LORD; for he sought an occasion against the Philistines. Now at that time the Philistines ruled over Israel.",
+      "ko": "이 때에 블레셋 사람이 이스라엘을 관할한고로 삼손이 틈을 타서 블레셋 사람을 치려 함이었으나 그 부모는 이 일이 여호와께로서 나온 것인줄은 알지 못하였더라",
+      "source_text_hash": "dfa46f01969461cc4fa844df7b29bb1d50d62a112a36ba70cf36b89c615f75d4",
+      "translation_text_hash": "5eb45cb1ac4168ebb70034dd2517e9e87b70c86c83232266b15e322abeffdf0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 블레셋 사람이 이스라엘을 관할한고로 삼손이 틈을 타서 블레셋 사람을 치려 함이었으나 그 부모는 이 일이 여호와께로서 나온 것인줄은 알지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "5eb45cb1ac4168ebb70034dd2517e9e87b70c86c83232266b15e322abeffdf0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:5",
+      "sequence": 6915,
+      "chapter_label": "JDG 14",
+      "verse_label": "5",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 5
+        }
+      ],
+      "en": "Then Samson went down to Timnah with his father and his mother, and came to the vineyards of Timnah; and behold, a young lion roared at him.",
+      "ko": "삼손이 그 부모와 함께 딤나에 내려가서 딤나의 포도원에 이른즉 어린 사자가 그를 맞아 소리 지르는지라",
+      "source_text_hash": "ed50916b36d247ce54238b67c59f37263fcf50c30651c10878fb63f337f04c16",
+      "translation_text_hash": "0ee3462fa812c0c6e3711fb1fedc32c0fc5f5088afadef2d1cb4bb3ba464319f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그 부모와 함께 딤나에 내려가서 딤나의 포도원에 이른즉 어린 사자가 그를 맞아 소리 지르는지라"
+      ],
+      "raw_text_hashes": [
+        "0ee3462fa812c0c6e3711fb1fedc32c0fc5f5088afadef2d1cb4bb3ba464319f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:6",
+      "sequence": 6916,
+      "chapter_label": "JDG 14",
+      "verse_label": "6",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD’s Spirit came mightily on him, and he tore him as he would have torn a young goat with his bare hands, but he didn’t tell his father or his mother what he had done.",
+      "ko": "삼손이 여호와의 신에게 크게 감동되어 손에 아무 것도 없어도 그 사자를 염소 새끼를 찢음 같이 찢었으나 그는 그 행한 일을 부모에게도 고하지 아니하였고",
+      "source_text_hash": "d3ba3394cd3bc43b6df6471e17fe681155dbbbeb89e638deef1bd9bb183acfa2",
+      "translation_text_hash": "e1d366e3fc38587160f90cf01489140cd31a3bd0b26178c8fa3d5104797c05eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 여호와의 신에게 크게 감동되어 손에 아무 것도 없어도 그 사자를 염소 새끼를 찢음 같이 찢었으나 그는 그 행한 일을 부모에게도 고하지 아니하였고"
+      ],
+      "raw_text_hashes": [
+        "e1d366e3fc38587160f90cf01489140cd31a3bd0b26178c8fa3d5104797c05eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:7",
+      "sequence": 6917,
+      "chapter_label": "JDG 14",
+      "verse_label": "7",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 7
+        }
+      ],
+      "en": "He went down and talked with the woman, and she pleased Samson well.",
+      "ko": "그가 내려가서 그 여자와 말하며 그를 기뻐하였더라",
+      "source_text_hash": "2dde0e516bc99f296d8c5822c6a214cc2f84f8fd5582e408d1d2614153cd7552",
+      "translation_text_hash": "0fc41fa3e6aa7e03302ad7559a2d6a00b516dbcf4e1ffccc1a30488f846be03e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내려가서 그 여자와 말하며 그를 기뻐하였더라"
+      ],
+      "raw_text_hashes": [
+        "0fc41fa3e6aa7e03302ad7559a2d6a00b516dbcf4e1ffccc1a30488f846be03e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:8",
+      "sequence": 6918,
+      "chapter_label": "JDG 14",
+      "verse_label": "8",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 8
+        }
+      ],
+      "en": "After a while he returned to take her, and he went over to see the carcass of the lion; and behold, there was a swarm of bees in the body of the lion, and honey.",
+      "ko": "얼마 후에 삼손이 그 여자를 취하려고 다시 가더니 돌이켜 그 사자의 주검을 본즉 사자의 몸에 벌떼와 꿀이 있는지라",
+      "source_text_hash": "764fcec034a47de66d9b57282faf5f9471d1034d2a62ac7f9e339b919458af73",
+      "translation_text_hash": "4a31f1e53c886c1aa394a3046aeea23a9921e513da896fb2a68a288cbba96ed3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얼마 후에 삼손이 그 여자를 취하려고 다시 가더니 돌이켜 그 사자의 주검을 본즉 사자의 몸에 벌떼와 꿀이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "4a31f1e53c886c1aa394a3046aeea23a9921e513da896fb2a68a288cbba96ed3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:9",
+      "sequence": 6919,
+      "chapter_label": "JDG 14",
+      "verse_label": "9",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 9
+        }
+      ],
+      "en": "He took it into his hands, and went on, eating as he went. He came to his father and mother and gave to them, and they ate, but he didn’t tell them that he had taken the honey out of the lion’s body.",
+      "ko": "손으로 그 꿀을 취하여 행하며 먹고 그 부모에게 이르러 그들에게 그것을 드려서 먹게 하였으나 그 꿀을 사자의 몸에서 취하였다고는 고하지 아니하였더라",
+      "source_text_hash": "2ea6958d36aab9d090379c04654e3ceef639a3d053b2f1a3ed0b8d7cbbc51b47",
+      "translation_text_hash": "e2228fd1672715e3726ad6c420ae5f075d4cc6d43ecc61e2a5d9e793ece0c0e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손으로 그 꿀을 취하여 행하며 먹고 그 부모에게 이르러 그들에게 그것을 드려서 먹게 하였으나 그 꿀을 사자의 몸에서 취하였다고는 고하지 아니하였더라"
+      ],
+      "raw_text_hashes": [
+        "e2228fd1672715e3726ad6c420ae5f075d4cc6d43ecc61e2a5d9e793ece0c0e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:10",
+      "sequence": 6920,
+      "chapter_label": "JDG 14",
+      "verse_label": "10",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 10
+        }
+      ],
+      "en": "His father went down to the woman; and Samson made a feast there, for the young men used to do so.",
+      "ko": "삼손의 아비가 여자에게로 내려가매 삼손이 거기서 잔치를 배설하였으니 소년은 이렇게 행하는 풍속이 있음이더라",
+      "source_text_hash": "b5c8065bcceb3a25be26c027a7c7bc02720bd796c57e057c63448eb1b7fbdf75",
+      "translation_text_hash": "be73ac28e856ab09600f40313cadfaa47d046b22a493fad752064c2d8e61237a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손의 아비가 여자에게로 내려가매 삼손이 거기서 잔치를 배설하였으니 소년은 이렇게 행하는 풍속이 있음이더라"
+      ],
+      "raw_text_hashes": [
+        "be73ac28e856ab09600f40313cadfaa47d046b22a493fad752064c2d8e61237a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:11",
+      "sequence": 6921,
+      "chapter_label": "JDG 14",
+      "verse_label": "11",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 11
+        }
+      ],
+      "en": "When they saw him, they brought thirty companions to be with him.",
+      "ko": "무리가 삼손을 보고 삼십명을 데려다가 동무를 삼아 그와 함께하게 한지라",
+      "source_text_hash": "95187cc6bb89763aeb76a200988ffef848868a68eca1e7ddfdc919a1a359a5c6",
+      "translation_text_hash": "46a6f8b8c543e8781b854adc52a348c965c697beae0528911b6e99ee3fc36dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 삼손을 보고 삼십명을 데려다가 동무를 삼아 그와 함께하게 한지라"
+      ],
+      "raw_text_hashes": [
+        "46a6f8b8c543e8781b854adc52a348c965c697beae0528911b6e99ee3fc36dd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:12",
+      "sequence": 6922,
+      "chapter_label": "JDG 14",
+      "verse_label": "12",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 12
+        }
+      ],
+      "en": "Samson said to them, “Let me tell you a riddle now. If you can tell me the answer within the seven days of the feast, and find it out, then I will give you thirty linen garments and thirty changes of clothing;",
+      "ko": "삼손이 그들에게 이르되 이제 내가 너희에게 수수께끼를 하리니 잔치하는 칠일 동안에 너희가 능히 그것을 풀어서 내게 고하면 내가 베옷 삼십 벌과 겉옷 삼십 벌을 너희에게 주리라",
+      "source_text_hash": "5daf2ae120dba8aafe31632a5fd03df78d85888f92a4a876328082373318de43",
+      "translation_text_hash": "25dd6ca0ce2c8897e9fb0edf5b2f389499cb18e7c62956e16e89f754c1ab3c45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그들에게 이르되 이제 내가 너희에게 수수께끼를 하리니 잔치하는 칠일 동안에 너희가 능히 그것을 풀어서 내게 고하면 내가 베옷 삼십 벌과 겉옷 삼십 벌을 너희에게 주리라"
+      ],
+      "raw_text_hashes": [
+        "25dd6ca0ce2c8897e9fb0edf5b2f389499cb18e7c62956e16e89f754c1ab3c45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:13",
+      "sequence": 6923,
+      "chapter_label": "JDG 14",
+      "verse_label": "13",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 13
+        }
+      ],
+      "en": "but if you can’t tell me the answer, then you shall give me thirty linen garments and thirty changes of clothing.” They said to him, “Tell us your riddle, that we may hear it.”",
+      "ko": "그러나 그것을 능히 내게 고하지 못하면 너희가 내게 베옷 삼십 벌과 겉옷 삼십 벌을 줄찌니라 그들이 이르되 너는 수수께끼를 하여 우리로 듣게 하라",
+      "source_text_hash": "139f9b9b02d20c0cf8b52f0cba989df9e894d7714e278a22d6ecf0c4f1ce8b44",
+      "translation_text_hash": "74ab35977e031871535bdac0bbec27a114bb8fc33e3f0d397e2ff967213e161e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그것을 능히 내게 고하지 못하면 너희가 내게 베옷 삼십 벌과 겉옷 삼십 벌을 줄찌니라 그들이 이르되 너는 수수께끼를 하여 우리로 듣게 하라"
+      ],
+      "raw_text_hashes": [
+        "74ab35977e031871535bdac0bbec27a114bb8fc33e3f0d397e2ff967213e161e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:14",
+      "sequence": 6924,
+      "chapter_label": "JDG 14",
+      "verse_label": "14",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 14
+        }
+      ],
+      "en": "He said to them, “Out of the eater came out food. Out of the strong came out sweetness.” They couldn’t in three days declare the riddle.",
+      "ko": "삼손이 그들에게 이르되 먹는 자에게서 먹는 것이 나오고 강한 자에게서 단 것이 나왔느니라 그들이 삼일이 되도록 수수께끼를 풀지 못하였더라",
+      "source_text_hash": "64fa3fc6f47d8b452c1d9d488d8e23bde7eec16de44473ef5166b55da8be56fb",
+      "translation_text_hash": "5da04ea7629d61272070cc0a119b14cd9b468f937ab9c64cac7e487506b0cf3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손이 그들에게 이르되 먹는 자에게서 먹는 것이 나오고 강한 자에게서 단 것이 나왔느니라 그들이 삼일이 되도록 수수께끼를 풀지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "5da04ea7629d61272070cc0a119b14cd9b468f937ab9c64cac7e487506b0cf3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:15",
+      "sequence": 6925,
+      "chapter_label": "JDG 14",
+      "verse_label": "15",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 15
+        }
+      ],
+      "en": "On the seventh day, they said to Samson’s wife, “Entice your husband, that he may declare to us the riddle, lest we burn you and your father’s house with fire. Have you called us to impoverish us? Isn’t that so?”",
+      "ko": "제 칠일에 이르러 그들이 삼손의 아내에게 이르되 너는 네 남편을 꾀어 그 수수께끼를 우리에게 알리게 하라 그렇지 아니하면 너와 네 아비의 집을 불사르리라 너희가 우리의 소유를 취하고자 하여 우리를 청하였느냐 그렇지 아니하냐",
+      "source_text_hash": "3616ec9e49fde29e4afcad036ed59718bd492cc1d7ca5f8e599049f2c8a69545",
+      "translation_text_hash": "29163b5860d7d995cd7ba7a77148c6e22358375f152787ff57609e0b775f0fe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일에 이르러 그들이 삼손의 아내에게 이르되 너는 네 남편을 꾀어 그 수수께끼를 우리에게 알리게 하라 그렇지 아니하면 너와 네 아비의 집을 불사르리라 너희가 우리의 소유를 취하고자 하여 우리를 청하였느냐 그렇지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "29163b5860d7d995cd7ba7a77148c6e22358375f152787ff57609e0b775f0fe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:16",
+      "sequence": 6926,
+      "chapter_label": "JDG 14",
+      "verse_label": "16",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 16
+        }
+      ],
+      "en": "Samson’s wife wept before him, and said, “You just hate me, and don’t love me. You’ve told a riddle to the children of my people, and haven’t told it to me.” He said to her, “Behold, I haven’t told my father or my mother, so why should I tell you?”",
+      "ko": "삼손의 아내가 그의 앞에서 울며 가로되 당신이 나를 미워할 뿐이요 사랑치 아니하는도다 우리 민족에게 수수께끼를 말하고 그 뜻을 내게 풀어 이르지 아니하도다 삼손이 그에게 대답하되 보라 내가 그것을 나의 부모에게도 풀어 고하지 아니하였거든 어찌 그대에게 풀어 이르리요 하였으나",
+      "source_text_hash": "73d86b81bf0f779002d74c15f73797ace2ae5c81e1504327120d6dfae1e4e4ed",
+      "translation_text_hash": "d44307141b75c06ba368f8f36a1d25e2e2bd296eb4033b50b36ed120f8716541",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손의 아내가 그의 앞에서 울며 가로되 당신이 나를 미워할 뿐이요 사랑치 아니하는도다 우리 민족에게 수수께끼를 말하고 그 뜻을 내게 풀어 이르지 아니하도다 삼손이 그에게 대답하되 보라 내가 그것을 나의 부모에게도 풀어 고하지 아니하였거든 어찌 그대에게 풀어 이르리요 하였으나"
+      ],
+      "raw_text_hashes": [
+        "d44307141b75c06ba368f8f36a1d25e2e2bd296eb4033b50b36ed120f8716541"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:17",
+      "sequence": 6927,
+      "chapter_label": "JDG 14",
+      "verse_label": "17",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 17
+        }
+      ],
+      "en": "She wept before him the seven days, while their feast lasted; and on the seventh day, he told her, because she pressed him severely; and she told the riddle to the children of her people.",
+      "ko": "칠일 잔치할 동안에 그 아내가 앞에서 울며 강박함을 인하여 제 칠일에는 그가 그 아내에게 수수께끼를 풀어 이르매 그 아내가 그것을 그 민족에게 고하였더라",
+      "source_text_hash": "b26c8ffe050c25bf6c5cc0004fb916c8a6f2f4bb7f47f2b0fea70114c996b444",
+      "translation_text_hash": "1c7e13b107db855604fb6c2b2114fe01300f9cacf9c49dc338c798d7ce3f1956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 잔치할 동안에 그 아내가 앞에서 울며 강박함을 인하여 제 칠일에는 그가 그 아내에게 수수께끼를 풀어 이르매 그 아내가 그것을 그 민족에게 고하였더라"
+      ],
+      "raw_text_hashes": [
+        "1c7e13b107db855604fb6c2b2114fe01300f9cacf9c49dc338c798d7ce3f1956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:18",
+      "sequence": 6928,
+      "chapter_label": "JDG 14",
+      "verse_label": "18",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 18
+        }
+      ],
+      "en": "The men of the city said to him on the seventh day before the sun went down, “What is sweeter than honey? What is stronger than a lion?” He said to them, “If you hadn’t plowed with my heifer, you wouldn’t have found out my riddle.”",
+      "ko": "제 칠일 해 지기 전에 성읍 사람들이 삼손에게 이르되 무엇이 꿀보다 달겠으며 무엇이 사자보다 강하겠느냐 한지라 삼손이 그들에게 대답하되 너희가 내 암송아지로 밭갈지 아니하였더면 나의 수수께끼를 능히 풀지 못하였으리라 하니라",
+      "source_text_hash": "0e6ec82ef3768cd6fe81007e642d22287d0c98c672bb13afb5dd6e8d8e15b9da",
+      "translation_text_hash": "b002154407ffc88020c7e03cadcd43d9c46f09d7d4b1a99069389b5818151753",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠일 해 지기 전에 성읍 사람들이 삼손에게 이르되 무엇이 꿀보다 달겠으며 무엇이 사자보다 강하겠느냐 한지라 삼손이 그들에게 대답하되 너희가 내 암송아지로 밭갈지 아니하였더면 나의 수수께끼를 능히 풀지 못하였으리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "b002154407ffc88020c7e03cadcd43d9c46f09d7d4b1a99069389b5818151753"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:19",
+      "sequence": 6929,
+      "chapter_label": "JDG 14",
+      "verse_label": "19",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 19
+        }
+      ],
+      "en": "The LORD’s Spirit came mightily on him, and he went down to Ashkelon and struck thirty men of them. He took their plunder, then gave the changes of clothing to those who declared the riddle. His anger burned, and he went up to his father’s house.",
+      "ko": "여호와의 신이 삼손에게 크게 임하시매 삼손이 아스글론에 내려가서 그곳 사람 삼십명을 쳐 죽이고 노략하여 수수께끼 푼 자들에게 옷을 주고 심히 노하여 아비 집으로 올라갔고",
+      "source_text_hash": "86346ed338a88712da3de56fa9ad7e3edecaf37b294ce9cde3a06687796bd5f1",
+      "translation_text_hash": "a172f237b1c10c677b2e3b792ed408ec5b980b53f1996caf8b2586a76ed5eec4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 신이 삼손에게 크게 임하시매 삼손이 아스글론에 내려가서 그곳 사람 삼십명을 쳐 죽이고 노략하여 수수께끼 푼 자들에게 옷을 주고 심히 노하여 아비 집으로 올라갔고"
+      ],
+      "raw_text_hashes": [
+        "a172f237b1c10c677b2e3b792ed408ec5b980b53f1996caf8b2586a76ed5eec4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JDG:14:20",
+      "sequence": 6930,
+      "chapter_label": "JDG 14",
+      "verse_label": "20",
+      "locator": {
+        "book": "JDG",
+        "chapter": 14,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JDG",
+          "chapter": 14,
+          "verse": 20
+        }
+      ],
+      "en": "But Samson’s wife was given to his companion, who had been his friend.",
+      "ko": "삼손의 아내는 삼손의 친구 되었던 그 동무에게 준바 되었더라",
+      "source_text_hash": "1c6f294faa4fc40b70258e4d92a20594c6455de29d44ccc1ebdc832fb939cb37",
+      "translation_text_hash": "77a54fb9fe7cf530039eafaa34ceba432e52532c37db4ce170391012332e902c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "삼손의 아내는 삼손의 친구 되었던 그 동무에게 준바 되었더라"
+      ],
+      "raw_text_hashes": [
+        "77a54fb9fe7cf530039eafaa34ceba432e52532c37db4ce170391012332e902c"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:007",
+  "unit_ordinal": 752,
+  "unit_label": "JER 7",
+  "book_code": "JER",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:7:1",
+      "sequence": 19121,
+      "chapter_label": "JER 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "The word that came to Jeremiah from the LORD, saying,",
+      "ko": "여호와께로서 예레미야에게 말씀이 임하니라 가라사대",
+      "source_text_hash": "0b7aecf94589262a25f4a6d51a5896c92a0223223f69004e738ca7dc8c0970f6",
+      "translation_text_hash": "acb360a282f45ed2ef4499ffcfca1bc80fc5b9588d830f1f5d564a7c85ee197e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께로서 예레미야에게 말씀이 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "acb360a282f45ed2ef4499ffcfca1bc80fc5b9588d830f1f5d564a7c85ee197e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:2",
+      "sequence": 19122,
+      "chapter_label": "JER 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "“Stand in the gate of the LORD’s house, and proclaim this word there, and say, ‘Hear the LORD’s word, all you of Judah, who enter in at these gates to worship the LORD.’”",
+      "ko": "너는 여호와의 집 문에 서서 이 말을 선포하여 이르기를 여호와께 경배하러 이 문으로 들어가는 유다인아 다 여호와의 말씀을 들으라",
+      "source_text_hash": "a6af61fe3d0e04a8089e4304f994aea4689c9f9f9e27773740f66acc8f3747e3",
+      "translation_text_hash": "9fbcb140021ef547d6d07e1520ac9b3b8ed5a4361268f881ea2b86e624cdbd56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 여호와의 집 문에 서서 이 말을 선포하여 이르기를 여호와께 경배하러 이 문으로 들어가는 유다인아 다 여호와의 말씀을 들으라"
+      ],
+      "raw_text_hashes": [
+        "9fbcb140021ef547d6d07e1520ac9b3b8ed5a4361268f881ea2b86e624cdbd56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:3",
+      "sequence": 19123,
+      "chapter_label": "JER 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel says, “Amend your ways and your doings, and I will cause you to dwell in this place.",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희 길과 행위를 바르게 하라 그리하면 내가 너희로 이곳에 거하게 하리라",
+      "source_text_hash": "11e027297412b546687f8e198a371a3a3aed021ba70b5f95e43fc116efcedbf2",
+      "translation_text_hash": "f5a17d89f5a888d3a63fdc159f7c61cbf835419d3c25d3879a7d59cc83886dae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희 길과 행위를 바르게 하라 그리하면 내가 너희로 이곳에 거하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "f5a17d89f5a888d3a63fdc159f7c61cbf835419d3c25d3879a7d59cc83886dae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:4",
+      "sequence": 19124,
+      "chapter_label": "JER 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Don’t trust in lying words, saying, ‘The LORD’s temple, the LORD’s temple, the LORD’s temple, are these.’",
+      "ko": "너희는 이것이 여호와의 전이라, 여호와의 전이라, 여호와의 전이라 하는 거짓말을 믿지 말라",
+      "source_text_hash": "5ff39635273079bab9f270d162258d34ead91b5b271935ef73afa4b04644662b",
+      "translation_text_hash": "7ea1c468e66db25fd6bbc5c783e21dc81bfab5d6ecc7616f0253c1be0a97bbcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이것이 여호와의 전이라, 여호와의 전이라, 여호와의 전이라 하는 거짓말을 믿지 말라"
+      ],
+      "raw_text_hashes": [
+        "7ea1c468e66db25fd6bbc5c783e21dc81bfab5d6ecc7616f0253c1be0a97bbcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:5",
+      "sequence": 19125,
+      "chapter_label": "JER 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "For if you thoroughly amend your ways and your doings, if you thoroughly execute justice between a man and his neighbor;",
+      "ko": "너희가 만일 길과 행위를 참으로 바르게 하여 이웃들 사이에 공의를 행하며",
+      "source_text_hash": "8f761dc672019cbbb4838c0643af88fcec3c627a9af99b79b60031c6cac7659c",
+      "translation_text_hash": "11345767217d381c85210e905af32b38554057008a4ce872368d657d54b194e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 길과 행위를 참으로 바르게 하여 이웃들 사이에 공의를 행하며"
+      ],
+      "raw_text_hashes": [
+        "11345767217d381c85210e905af32b38554057008a4ce872368d657d54b194e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:6",
+      "sequence": 19126,
+      "chapter_label": "JER 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "if you don’t oppress the foreigner, the fatherless, and the widow, and don’t shed innocent blood in this place, and don’t walk after other gods to your own hurt,",
+      "ko": "이방인과 고아와 과부를 압제하지 말며 무죄한 자의 피를 이곳에서 흘리지 아니하며 다른 신들을 좇아 스스로 해하지 아니하면",
+      "source_text_hash": "905cfea8f788a5417787bd14a3d3a68fee2320b994a91a80c3cbc85bd5e2be88",
+      "translation_text_hash": "c20c207100051f4377cb3abc30b8a82088796c9cd1899026fbe1fcb62d7afcc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이방인과 고아와 과부를 압제하지 말며 무죄한 자의 피를 이곳에서 흘리지 아니하며 다른 신들을 좇아 스스로 해하지 아니하면"
+      ],
+      "raw_text_hashes": [
+        "c20c207100051f4377cb3abc30b8a82088796c9cd1899026fbe1fcb62d7afcc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:7",
+      "sequence": 19127,
+      "chapter_label": "JER 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "then I will cause you to dwell in this place, in the land that I gave to your fathers, from of old even forever more.",
+      "ko": "내가 너희를 이곳에 거하게 하리니 곧 너희 조상에게 영원 무궁히 준 이 땅에니라",
+      "source_text_hash": "7831a451dab05a02da3b810a21e2868b5db3e61c5e5beb2084e6b2c336118af0",
+      "translation_text_hash": "c5d110dc43a6a34e00d364db7d340492969a885e68d3d162e93c1dea0c773ba6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 이곳에 거하게 하리니 곧 너희 조상에게 영원 무궁히 준 이 땅에니라"
+      ],
+      "raw_text_hashes": [
+        "c5d110dc43a6a34e00d364db7d340492969a885e68d3d162e93c1dea0c773ba6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:8",
+      "sequence": 19128,
+      "chapter_label": "JER 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, you trust in lying words that can’t profit.",
+      "ko": "너희가 무익한 거짓말을 의뢰하는도다",
+      "source_text_hash": "68f5fe61f6bc9488d2e43f53d60957d80bde3cd1731dba05739941b68c7292e7",
+      "translation_text_hash": "a340af72ccce105d118f9651748996b813359ce40ba032792377a04fd5fd327e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 무익한 거짓말을 의뢰하는도다"
+      ],
+      "raw_text_hashes": [
+        "a340af72ccce105d118f9651748996b813359ce40ba032792377a04fd5fd327e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:9",
+      "sequence": 19129,
+      "chapter_label": "JER 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "Will you steal, murder, commit adultery, swear falsely, burn incense to Baal, and walk after other gods that you have not known,",
+      "ko": "너희가 도적질하며 살인하며 간음하며 거짓맹세하며 바알에게 분향하며 너희의 알지 못하는 다른 신들을 좇으면서",
+      "source_text_hash": "cbba208852747b1675383c61adc2dfc6594a90ba803e55bcbfeb2c18cee66e97",
+      "translation_text_hash": "53410737e7dc9d87580b104a0dd860463982aac3e34f67e178a2321f2cc07212",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 도적질하며 살인하며 간음하며 거짓맹세하며 바알에게 분향하며 너희의 알지 못하는 다른 신들을 좇으면서"
+      ],
+      "raw_text_hashes": [
+        "53410737e7dc9d87580b104a0dd860463982aac3e34f67e178a2321f2cc07212"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:10",
+      "sequence": 19130,
+      "chapter_label": "JER 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "then come and stand before me in this house, which is called by my name, and say, ‘We are delivered,’ that you may do all these abominations?",
+      "ko": "내 이름으로 일컬음을 받는 이 집에 들어와서 내 앞에 서서 말하기를 우리가 구원을 얻었나이다 하느냐 이는 이 모든 가증한 일을 행하려 함이로다",
+      "source_text_hash": "8f1ab5e442b8f3ab539ebc7bf109095bf2d6425223ec86b850eab60fc8175839",
+      "translation_text_hash": "911fa0981cefd4fbe592b5545c60b48e25453b475ecb2875b20e4c4d2d964190",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름으로 일컬음을 받는 이 집에 들어와서 내 앞에 서서 말하기를 우리가 구원을 얻었나이다 하느냐 이는 이 모든 가증한 일을 행하려 함이로다"
+      ],
+      "raw_text_hashes": [
+        "911fa0981cefd4fbe592b5545c60b48e25453b475ecb2875b20e4c4d2d964190"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:11",
+      "sequence": 19131,
+      "chapter_label": "JER 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "Has this house, which is called by my name, become a den of robbers in your eyes? Behold, I myself have seen it,” says the LORD.",
+      "ko": "내 이름으로 일컬음을 받는 이 집이 너희 눈에는 도적의 굴혈로 보이느냐 보라 나 곧 내가 그것을 보았노라 여호와의 말이니라",
+      "source_text_hash": "618e6616567d5b05a5b13a6963776ceb16dbc5e3fbc402a663c02c7c6e6e460f",
+      "translation_text_hash": "7737d65cc63cde8caed261d25409111b2df77ff273fe0c1df3ccb467e937146a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 이름으로 일컬음을 받는 이 집이 너희 눈에는 도적의 굴혈로 보이느냐 보라 나 곧 내가 그것을 보았노라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "7737d65cc63cde8caed261d25409111b2df77ff273fe0c1df3ccb467e937146a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:12",
+      "sequence": 19132,
+      "chapter_label": "JER 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "“But go now to my place which was in Shiloh, where I caused my name to dwell at the first, and see what I did to it for the wickedness of my people Israel.",
+      "ko": "너희는 내가 처음으로 내 이름을 둔 처소 실로에 가서 내 백성 이스라엘의 악을 인하여 내가 어떻게 행한 것을 보라",
+      "source_text_hash": "4b5a12e5792f670e69ed1c1c9773c5da2ba487188eb64802394256d4675cfa12",
+      "translation_text_hash": "b92e4f5cf53ff76b94fdef5e57dedec7bcb15dde6599883212fe12805d4668e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 내가 처음으로 내 이름을 둔 처소 실로에 가서 내 백성 이스라엘의 악을 인하여 내가 어떻게 행한 것을 보라"
+      ],
+      "raw_text_hashes": [
+        "b92e4f5cf53ff76b94fdef5e57dedec7bcb15dde6599883212fe12805d4668e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:13",
+      "sequence": 19133,
+      "chapter_label": "JER 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "Now, because you have done all these works,” says the LORD, “and I spoke to you, rising up early and speaking, but you didn’t hear; and I called you, but you didn’t answer;",
+      "ko": "나 여호와가 말하노라 이제 너희가 그 모든 일을 행하였으며 내가 너희에게 말하되 새벽부터 부지런히 말하여도 듣지 아니하였고 너희를 불러도 대답지 아니하였느니라",
+      "source_text_hash": "b0bbca506a9dd2246300086b60a3247f00a74565c551bafed605065081fbdf48",
+      "translation_text_hash": "24c82ac5823caab02d30f162c920e6a1be90dd9224088a282a205b9353fe1e27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 이제 너희가 그 모든 일을 행하였으며 내가 너희에게 말하되 새벽부터 부지런히 말하여도 듣지 아니하였고 너희를 불러도 대답지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "24c82ac5823caab02d30f162c920e6a1be90dd9224088a282a205b9353fe1e27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:14",
+      "sequence": 19134,
+      "chapter_label": "JER 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "therefore I will do to the house which is called by my name, in which you trust, and to the place which I gave to you and to your fathers, as I did to Shiloh.",
+      "ko": "그러므로 내가 실로에 행함 같이 너희가 의뢰하는바 내 이름으로 일컬음을 받는 이 집 곧 너희와 너희 열조에게 준 이곳에 행하겠고",
+      "source_text_hash": "1067fb45ab852340f4f2634e6b4955cb1e9120cc4304aa7389a0a57632fccfd2",
+      "translation_text_hash": "506475dfbc4e23be2b9f75cc21fae38862dc07268ff542144e0f54a6085baf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 실로에 행함 같이 너희가 의뢰하는바 내 이름으로 일컬음을 받는 이 집 곧 너희와 너희 열조에게 준 이곳에 행하겠고"
+      ],
+      "raw_text_hashes": [
+        "506475dfbc4e23be2b9f75cc21fae38862dc07268ff542144e0f54a6085baf5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:15",
+      "sequence": 19135,
+      "chapter_label": "JER 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "I will cast you out of my sight, as I have cast out all your brothers, even the whole offspring of Ephraim.",
+      "ko": "내가 너희 모든 형제 곧 에브라임 온 자손을 쫓아냄 같이 내 앞에서 너희를 쫓아내리라 하셨다 할찌니라",
+      "source_text_hash": "f37637943f4b09975257b54d2d9d72c36bb9e689c57d9d2f94e609792a1cddb4",
+      "translation_text_hash": "065f3c5c7a036a025c33f5dcdd8169bc0b466c1eaa9c33357518ec999b9be435",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 모든 형제 곧 에브라임 온 자손을 쫓아냄 같이 내 앞에서 너희를 쫓아내리라 하셨다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "065f3c5c7a036a025c33f5dcdd8169bc0b466c1eaa9c33357518ec999b9be435"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:16",
+      "sequence": 19136,
+      "chapter_label": "JER 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "“Therefore don’t pray for this people. Don’t lift up a cry or prayer for them or make intercession to me; for I will not hear you.",
+      "ko": "그런즉 너는 이 백성을 위하여 기도하지 말라 그들을 위하여 부르짖어 구하지 말라 내게 간구하지 말라 내가 너를 듣지 아니하리라",
+      "source_text_hash": "80a7fc6f81f064b5d463e641d5eed2fed42896357a7e168bc1ee0edae87efcba",
+      "translation_text_hash": "aecfa66ea154528c52aa1aa379203db4e8374bd9e461a977e6e7ae299ee76aab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 이 백성을 위하여 기도하지 말라 그들을 위하여 부르짖어 구하지 말라 내게 간구하지 말라 내가 너를 듣지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "aecfa66ea154528c52aa1aa379203db4e8374bd9e461a977e6e7ae299ee76aab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:17",
+      "sequence": 19137,
+      "chapter_label": "JER 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Don’t you see what they do in the cities of Judah and in the streets of Jerusalem?",
+      "ko": "너는 그들이 유다 성읍들과 예루살렘 거리에서 행하는 일을 보지 못하느냐",
+      "source_text_hash": "9e16a6b9b31e69fac6d85ab10bda95e24a747746b026be5cdf670f917a292d87",
+      "translation_text_hash": "99b26f6772899251661360de0b0ed194fbf25fbfada5d6c33d4f71d9db1e98ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들이 유다 성읍들과 예루살렘 거리에서 행하는 일을 보지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "99b26f6772899251661360de0b0ed194fbf25fbfada5d6c33d4f71d9db1e98ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:18",
+      "sequence": 19138,
+      "chapter_label": "JER 7",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 18
+        }
+      ],
+      "en": "The children gather wood, and the fathers kindle the fire, and the women knead the dough, to make cakes to the queen of the sky, and to pour out drink offerings to other gods, that they may provoke me to anger.",
+      "ko": "자식들은 나무를 줍고 아비들은 불을 피우며 부녀들은 가루를 반죽하여 하늘 황후를 위하여 과자를 만들며 그들이 또 다른 신들에게 전제를 부음으로 나의 노를 격동하느니라",
+      "source_text_hash": "8975f6ae3d426191c1ecdd59c454ff09161abb81f018f16024f483d53ff2f994",
+      "translation_text_hash": "cc4a3c1307eec6f383db58f9ed211e84ce16ebd3b755c96c6a2757ad3774e3c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자식들은 나무를 줍고 아비들은 불을 피우며 부녀들은 가루를 반죽하여 하늘 황후를 위하여 과자를 만들며 그들이 또 다른 신들에게 전제를 부음으로 나의 노를 격동하느니라"
+      ],
+      "raw_text_hashes": [
+        "cc4a3c1307eec6f383db58f9ed211e84ce16ebd3b755c96c6a2757ad3774e3c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:19",
+      "sequence": 19139,
+      "chapter_label": "JER 7",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 19
+        }
+      ],
+      "en": "Do they provoke me to anger?” says the LORD. “Don’t they provoke themselves, to the confusion of their own faces?”",
+      "ko": "나 여호와가 말하노라 그들이 나를 격노케 함이냐 어찌 자기 얼굴에 수욕을 자취함이 아니냐",
+      "source_text_hash": "01c3c17e98b464fa6c4f85dd477353733ea2c0ebb401a7f773a47d000a490a0d",
+      "translation_text_hash": "b213c200d95be796c6760d42f7d062615017d4241a305625974049a43358146f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 그들이 나를 격노케 함이냐 어찌 자기 얼굴에 수욕을 자취함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "b213c200d95be796c6760d42f7d062615017d4241a305625974049a43358146f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:20",
+      "sequence": 19140,
+      "chapter_label": "JER 7",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 20
+        }
+      ],
+      "en": "Therefore the Lord GOD says: “Behold, my anger and my wrath will be poured out on this place, on man, on animal, on the trees of the field, and on the fruit of the ground; and it will burn and will not be quenched.”",
+      "ko": "그러므로 주 여호와 내가 이같이 말하노라 보라 나의 진노와 분한을 이곳에 붓되 사람과 짐승과 들나무와 땅의 소산에 부으리니 불 같이 살라지고 꺼지지 아니하리라 하시니라",
+      "source_text_hash": "4569e2cea6abcb59779423c4365e07a48ceffc0f21d11559f0e236efad049fcc",
+      "translation_text_hash": "17cf40f9d6c1ef3cc20290298844def2ec1ccf006aff7ecdb18d7cf3535a7152",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 여호와 내가 이같이 말하노라 보라 나의 진노와 분한을 이곳에 붓되 사람과 짐승과 들나무와 땅의 소산에 부으리니 불 같이 살라지고 꺼지지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "17cf40f9d6c1ef3cc20290298844def2ec1ccf006aff7ecdb18d7cf3535a7152"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:21",
+      "sequence": 19141,
+      "chapter_label": "JER 7",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD of Armies, the God of Israel says: “Add your burnt offerings to your sacrifices and eat meat.",
+      "ko": "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희 희생에 번제물을 아울러 그 고기를 먹으라",
+      "source_text_hash": "567b190e3cd19f1b5d6f039b83d21c1ace8226be8bd8fcb101b8f80049216ac6",
+      "translation_text_hash": "c2396806751e854d24d9d063804582948cc1b6ec84cc49d8aa8f800e494ff1de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와 이스라엘의 하나님이 이같이 말씀하시되 너희 희생에 번제물을 아울러 그 고기를 먹으라"
+      ],
+      "raw_text_hashes": [
+        "c2396806751e854d24d9d063804582948cc1b6ec84cc49d8aa8f800e494ff1de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:22",
+      "sequence": 19142,
+      "chapter_label": "JER 7",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 22
+        }
+      ],
+      "en": "For I didn’t speak to your fathers or command them in the day that I brought them out of the land of Egypt concerning burnt offerings or sacrifices;",
+      "ko": "대저 내가 너희 열조를 애굽 땅에서 인도하여 낸 날에 번제나 희생에 대하여 말하지 아니하며 명하지 아니하고",
+      "source_text_hash": "6b6476c6afe52ee1a63d6084afbadd03a96df6764b9a656df48acf137decf718",
+      "translation_text_hash": "ba9d8b5cac4e9a9caf1ca8ae80085414267b6f3fe6aa8dab7b58a49bd0e22ca3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 내가 너희 열조를 애굽 땅에서 인도하여 낸 날에 번제나 희생에 대하여 말하지 아니하며 명하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "ba9d8b5cac4e9a9caf1ca8ae80085414267b6f3fe6aa8dab7b58a49bd0e22ca3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:23",
+      "sequence": 19143,
+      "chapter_label": "JER 7",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 23
+        }
+      ],
+      "en": "but this thing I commanded them, saying, ‘Listen to my voice, and I will be your God, and you shall be my people. Walk in all the way that I command you, that it may be well with you.’",
+      "ko": "오직 내가 이것으로 그들에게 명하여 이르기를 너희는 내 목소리를 들으라 그리하면 나는 너희 하나님이 되겠고 너희는 내 백성이 되리라 너희는 나의 명한 모든 길로 행하라 그리하면 복을 받으리라 하였으나",
+      "source_text_hash": "5beb885d06bb0f0d49dbedae5910cdba6c9b349a4381bee03c6011282c203cff",
+      "translation_text_hash": "af1d896108914a3eec431fbec1754aee5f149c3ba84d0ecae8593868e78fc900",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 내가 이것으로 그들에게 명하여 이르기를 너희는 내 목소리를 들으라 그리하면 나는 너희 하나님이 되겠고 너희는 내 백성이 되리라 너희는 나의 명한 모든 길로 행하라 그리하면 복을 받으리라 하였으나"
+      ],
+      "raw_text_hashes": [
+        "af1d896108914a3eec431fbec1754aee5f149c3ba84d0ecae8593868e78fc900"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:24",
+      "sequence": 19144,
+      "chapter_label": "JER 7",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 24
+        }
+      ],
+      "en": "But they didn’t listen or turn their ear, but walked in their own counsels and in the stubbornness of their evil heart, and went backward, and not forward.",
+      "ko": "그들이 청종치 아니하며 귀를 기울이지도 아니하고 자기의 악한 마음의 꾀와 강퍅한 대로 행하여 그 등을 내게로 향하고 그 얼굴을 향치 아니하였으며",
+      "source_text_hash": "b8f10b7ae32095b74b80dbca8f2fa99447b571174de41530b0c8dc9f0678a84a",
+      "translation_text_hash": "70d35e433d8dec9909ccf008aa1ec8252bb2b5d7ecd2c83c268acb00a398b592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 청종치 아니하며 귀를 기울이지도 아니하고 자기의 악한 마음의 꾀와 강퍅한 대로 행하여 그 등을 내게로 향하고 그 얼굴을 향치 아니하였으며"
+      ],
+      "raw_text_hashes": [
+        "70d35e433d8dec9909ccf008aa1ec8252bb2b5d7ecd2c83c268acb00a398b592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:25",
+      "sequence": 19145,
+      "chapter_label": "JER 7",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 25
+        }
+      ],
+      "en": "Since the day that your fathers came out of the land of Egypt to this day, I have sent to you all my servants the prophets, daily rising up early and sending them.",
+      "ko": "너희 열조가 애굽 땅에서 나온 날부터 오늘까지 내가 내 종 선지자들을 너희에게 보내었으되 부지런히 보내었으나",
+      "source_text_hash": "0a0182b3f7f4d3e1dce524de438627350967bef6515a20f8e8f2c79236835624",
+      "translation_text_hash": "fed260c0a42a1c3aa4bb5f84963c348413c1cc682de819bbbc1a692b7c18b749",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 열조가 애굽 땅에서 나온 날부터 오늘까지 내가 내 종 선지자들을 너희에게 보내었으되 부지런히 보내었으나"
+      ],
+      "raw_text_hashes": [
+        "fed260c0a42a1c3aa4bb5f84963c348413c1cc682de819bbbc1a692b7c18b749"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:26",
+      "sequence": 19146,
+      "chapter_label": "JER 7",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 26
+        }
+      ],
+      "en": "Yet they didn’t listen to me or incline their ear, but made their neck stiff. They did worse than their fathers.",
+      "ko": "너희가 나를 청종치 아니하며 귀를 기울이지 아니하고 목을 굳게 하여 너희 열조보다 악을 더 행하였느니라",
+      "source_text_hash": "904da7fb6450ee7b9f81285adf122ea13ed491824c47a19caf14c14d6cd1d830",
+      "translation_text_hash": "fdd4ef5131e8252f728f257ce81b5017c9d4c2e1e9fde97c76ae329af47a21e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나를 청종치 아니하며 귀를 기울이지 아니하고 목을 굳게 하여 너희 열조보다 악을 더 행하였느니라"
+      ],
+      "raw_text_hashes": [
+        "fdd4ef5131e8252f728f257ce81b5017c9d4c2e1e9fde97c76ae329af47a21e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:27",
+      "sequence": 19147,
+      "chapter_label": "JER 7",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 27
+        }
+      ],
+      "en": "“You shall speak all these words to them, but they will not listen to you. You shall also call to them, but they will not answer you.",
+      "ko": "네가 그들에게 이 모든 말을 할찌라도 그들이 너를 청종치 아니할 것이요 네가 그들을 불러도 그들이 네게 대답지 아니하리니",
+      "source_text_hash": "dcbce4545c818b632719c18dd35e4cff0b1967e9fcfbad8892fc7aefd818575b",
+      "translation_text_hash": "eacf9b5bb9481cca7cc826d207d1e8f1b485d3b94d79222889803dc23209cd4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그들에게 이 모든 말을 할찌라도 그들이 너를 청종치 아니할 것이요 네가 그들을 불러도 그들이 네게 대답지 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "eacf9b5bb9481cca7cc826d207d1e8f1b485d3b94d79222889803dc23209cd4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:28",
+      "sequence": 19148,
+      "chapter_label": "JER 7",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 28
+        }
+      ],
+      "en": "You shall tell them, ‘This is the nation that has not listened to the LORD their God’s voice, nor received instruction. Truth has perished, and is cut off from their mouth.’",
+      "ko": "너는 그들에게 말하기를 너희는 너희 하나님 여호와의 목소리를 청종치 아니하며 교훈을 받지 아니하는 국민이라 진실이 없어져 너희 입에서 끊어졌다 할찌니라",
+      "source_text_hash": "6ea4a75662d72d79057b63a3f6a4304d6b1a9354854eda2eec5d535432e39e78",
+      "translation_text_hash": "1b16f887381e59859f7f39ea751def06df5404f53be10bcf1c59047587822936",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그들에게 말하기를 너희는 너희 하나님 여호와의 목소리를 청종치 아니하며 교훈을 받지 아니하는 국민이라 진실이 없어져 너희 입에서 끊어졌다 할찌니라"
+      ],
+      "raw_text_hashes": [
+        "1b16f887381e59859f7f39ea751def06df5404f53be10bcf1c59047587822936"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:29",
+      "sequence": 19149,
+      "chapter_label": "JER 7",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 29
+        }
+      ],
+      "en": "Cut off your hair, and throw it away, and take up a lamentation on the bare heights; for the LORD has rejected and forsaken the generation of his wrath.",
+      "ko": "예루살렘아 너의 머리털을 베어 버리고 자산 위에서 호곡할찌어다 여호와께서 그 노하신바 이 세대를 끊어버리셨음이니라",
+      "source_text_hash": "cd06b041167dedad3a195754754286ffb7b17befeef33ee4d64306634b67fbc2",
+      "translation_text_hash": "5b6c4c02d6c873d21cfa98a120e6ec9fbc40f56014e72c599b440d0077dcb142",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘아 너의 머리털을 베어 버리고 자산 위에서 호곡할찌어다 여호와께서 그 노하신바 이 세대를 끊어버리셨음이니라"
+      ],
+      "raw_text_hashes": [
+        "5b6c4c02d6c873d21cfa98a120e6ec9fbc40f56014e72c599b440d0077dcb142"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:30",
+      "sequence": 19150,
+      "chapter_label": "JER 7",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 30
+        }
+      ],
+      "en": "“For the children of Judah have done that which is evil in my sight,” says the LORD. “They have set their abominations in the house which is called by my name, to defile it.",
+      "ko": "여호와께서 말씀하시되 유다 자손이 나의 목전에 악을 행하여 내 이름으로 일컬음을 받는 집에 그들의 가증한 것을 두어 집을 더럽혔으며",
+      "source_text_hash": "ae33581b3e8d4a6cc0d97e863d90e0f34dc6fad171aa918173ea20bdbd1d84b3",
+      "translation_text_hash": "e2a9af43d49e3f00161280d306c8670fa1a363527f2ee843f55ae374cefcdef5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 유다 자손이 나의 목전에 악을 행하여 내 이름으로 일컬음을 받는 집에 그들의 가증한 것을 두어 집을 더럽혔으며"
+      ],
+      "raw_text_hashes": [
+        "e2a9af43d49e3f00161280d306c8670fa1a363527f2ee843f55ae374cefcdef5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:31",
+      "sequence": 19151,
+      "chapter_label": "JER 7",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 31
+        }
+      ],
+      "en": "They have built the high places of Topheth, which is in the valley of the son of Hinnom, to burn their sons and their daughters in the fire, which I didn’t command, nor did it come into my mind.",
+      "ko": "힌놈의 아들 골짜기에 도벳 사당을 건축하고 그 자녀를 불에 살랐나니 내가 명하지 아니하였고 내 마음에 생각지도 아니한 일이니라",
+      "source_text_hash": "df17a122625bcf97b80b8265a57329da661c639205a778ce6d5e581fae161c94",
+      "translation_text_hash": "94f0edf3c05acc6b154fc7c2e544d2d1b819abeef87bcfb4f6fb3c14b0401250",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힌놈의 아들 골짜기에 도벳 사당을 건축하고 그 자녀를 불에 살랐나니 내가 명하지 아니하였고 내 마음에 생각지도 아니한 일이니라"
+      ],
+      "raw_text_hashes": [
+        "94f0edf3c05acc6b154fc7c2e544d2d1b819abeef87bcfb4f6fb3c14b0401250"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:32",
+      "sequence": 19152,
+      "chapter_label": "JER 7",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 32
+        }
+      ],
+      "en": "Therefore behold, the days come”, says the LORD, “that it will no more be called ‘Topheth’ or ‘The valley of the son of Hinnom’, but ‘The valley of Slaughter’; for they will bury in Topheth until there is no place to bury.",
+      "ko": "그러므로 나 여호와가 말하노라 날이 이르면 이곳을 도벳이라 하거나 힌놈의 아들의 골짜기라 칭하지 아니하고 살륙의 골짜기라 칭하리니 매장할 자리가 없도록 도벳에 장사함을 인함이니라",
+      "source_text_hash": "04753e98d878a9f3722b9acaf0f8164d1ab7e2183fb1b2880a57d9864a46c473",
+      "translation_text_hash": "fdf9745d9b730d78fc2df54c663ec5fa133aecfab3fc872b3f10a502f1ba8231",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 나 여호와가 말하노라 날이 이르면 이곳을 도벳이라 하거나 힌놈의 아들의 골짜기라 칭하지 아니하고 살륙의 골짜기라 칭하리니 매장할 자리가 없도록 도벳에 장사함을 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "fdf9745d9b730d78fc2df54c663ec5fa133aecfab3fc872b3f10a502f1ba8231"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:33",
+      "sequence": 19153,
+      "chapter_label": "JER 7",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 33
+        }
+      ],
+      "en": "The dead bodies of this people will be food for the birds of the sky, and for the animals of the earth. No one will frighten them away.",
+      "ko": "이 백성의 시체가 공중의 새와 땅 짐승의 밥이 될 것이나 그것을 쫓을 자가 없을 것이라",
+      "source_text_hash": "786e4bfeb18efe9432061eb241c44dd409ef27c08719867fe109c9211cffae03",
+      "translation_text_hash": "a1e1098721b84283dbc8eeaff81145b3d645304ec534270980f6eff546ecedd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 백성의 시체가 공중의 새와 땅 짐승의 밥이 될 것이나 그것을 쫓을 자가 없을 것이라"
+      ],
+      "raw_text_hashes": [
+        "a1e1098721b84283dbc8eeaff81145b3d645304ec534270980f6eff546ecedd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:7:34",
+      "sequence": 19154,
+      "chapter_label": "JER 7",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 7,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 7,
+          "verse": 34
+        }
+      ],
+      "en": "Then I will cause to cease from the cities of Judah and from the streets of Jerusalem the voice of mirth and the voice of gladness, the voice of the bridegroom and the voice of the bride; for the land will become a waste.”",
+      "ko": "그 때에 내가 유다 성읍들과 예루살렘 거리에 기뻐하는 소리, 즐기는 소리, 신랑의 소리, 신부의 소리가 끊쳐지게 하리니 땅이 황폐하리라",
+      "source_text_hash": "ded6b291a6677d81953116b742f6fade270e6da2ad3b18ff724821ff04b98b30",
+      "translation_text_hash": "4a6e12719389ca4a8ca6e96e14d5683e047f946e65a522f5972a726a1f99c153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 유다 성읍들과 예루살렘 거리에 기뻐하는 소리, 즐기는 소리, 신랑의 소리, 신부의 소리가 끊쳐지게 하리니 땅이 황폐하리라"
+      ],
+      "raw_text_hashes": [
+        "4a6e12719389ca4a8ca6e96e14d5683e047f946e65a522f5972a726a1f99c153"
+      ]
+    }
+  ]
+}

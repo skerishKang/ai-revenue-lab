@@ -1,0 +1,1389 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:005",
+  "unit_ordinal": 962,
+  "unit_label": "MRK 5",
+  "book_code": "MRK",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:5:1",
+      "sequence": 24366,
+      "chapter_label": "MRK 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "They came to the other side of the sea, into the country of the Gadarenes.",
+      "ko": "예수께서 바다 건너편 거라사인의 지방에 이르러",
+      "source_text_hash": "e82f6304bb4fecdf3f809355c2deee221c304d9c48e354b7363b74336d0176ae",
+      "translation_text_hash": "d2f138cec36d25e5da93357fe30e026e8b6e0a199e9fe064e03b85f69c4038ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 바다 건너편 거라사인의 지방에 이르러"
+      ],
+      "raw_text_hashes": [
+        "d2f138cec36d25e5da93357fe30e026e8b6e0a199e9fe064e03b85f69c4038ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:2",
+      "sequence": 24367,
+      "chapter_label": "MRK 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "When he had come out of the boat, immediately a man with an unclean spirit met him out of the tombs.",
+      "ko": "배에서 나오시매 곧 더러운 귀신 들린 사람이 무덤 사이에서 나와 예수를 만나다",
+      "source_text_hash": "35ffae96efefbb15db5267d880a8010bf198f7a74d08439df347401744a23e34",
+      "translation_text_hash": "af0f80380e98304ac51abd73606639117e912e7ca5a44e6fb3099b10c4ae24b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "배에서 나오시매 곧 더러운 귀신 들린 사람이 무덤 사이에서 나와 예수를 만나다"
+      ],
+      "raw_text_hashes": [
+        "af0f80380e98304ac51abd73606639117e912e7ca5a44e6fb3099b10c4ae24b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:3",
+      "sequence": 24368,
+      "chapter_label": "MRK 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "He lived in the tombs. Nobody could bind him any more, not even with chains,",
+      "ko": "그 사람은 무덤 사이에 거처하는데 이제는 아무나 쇠사슬로도 맬 수 없게 되었으니",
+      "source_text_hash": "5adb245eb84c94734e631861df5a4eba236883a08d0626153029674f9726c7a9",
+      "translation_text_hash": "661a05bbb5559cf1057320a9cc61675c20e6a5eeeb19269355b03c101148deb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람은 무덤 사이에 거처하는데 이제는 아무나 쇠사슬로도 맬 수 없게 되었으니"
+      ],
+      "raw_text_hashes": [
+        "661a05bbb5559cf1057320a9cc61675c20e6a5eeeb19269355b03c101148deb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:4",
+      "sequence": 24369,
+      "chapter_label": "MRK 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "because he had been often bound with fetters and chains, and the chains had been torn apart by him, and the fetters broken in pieces. Nobody had the strength to tame him.",
+      "ko": "이는 여러번 고랑과 쇠사슬에 매였어도 쇠사슬을 끊고 고랑을 깨뜨렸음이러라 그리하여 아무도 저를 제어할 힘이 없는지라",
+      "source_text_hash": "8be19451ba636a203000029537a0db5892d2ab54f1265aa986dcde29aba2ac7f",
+      "translation_text_hash": "df6034d002cd53ee5d50dbe434b439e292ee1d663f83fc594f672d68fc92e5d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여러번 고랑과 쇠사슬에 매였어도 쇠사슬을 끊고 고랑을 깨뜨렸음이러라 그리하여 아무도 저를 제어할 힘이 없는지라"
+      ],
+      "raw_text_hashes": [
+        "df6034d002cd53ee5d50dbe434b439e292ee1d663f83fc594f672d68fc92e5d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:5",
+      "sequence": 24370,
+      "chapter_label": "MRK 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Always, night and day, in the tombs and in the mountains, he was crying out, and cutting himself with stones.",
+      "ko": "밤낮 무덤 사이에서나 산에서나 늘 소리지르며 돌로 제 몸을 상하고 있었더라",
+      "source_text_hash": "3dc6998afba97a652f6fe25aab54883aee4d4392887da3df24dbd6b470305492",
+      "translation_text_hash": "60b9ddd08c05a6566f94ad6a41751458e6fd63c72d298efaeb2258c5bb9f2066",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밤낮 무덤 사이에서나 산에서나 늘 소리지르며 돌로 제 몸을 상하고 있었더라"
+      ],
+      "raw_text_hashes": [
+        "60b9ddd08c05a6566f94ad6a41751458e6fd63c72d298efaeb2258c5bb9f2066"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:6",
+      "sequence": 24371,
+      "chapter_label": "MRK 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "When he saw Jesus from afar, he ran and bowed down to him,",
+      "ko": "그가 멀리서 예수를 보고 달려와 절하며",
+      "source_text_hash": "5e8d2edc6c96d5b9e54f6bef8249341f66cf8960cb7a7c78a7c0243d7e2a9543",
+      "translation_text_hash": "69bf88f521f863a8b832f70b9a51f34a7cf13cc2d3f64d68abf42b855f1f984c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 멀리서 예수를 보고 달려와 절하며"
+      ],
+      "raw_text_hashes": [
+        "69bf88f521f863a8b832f70b9a51f34a7cf13cc2d3f64d68abf42b855f1f984c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:7",
+      "sequence": 24372,
+      "chapter_label": "MRK 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "and crying out with a loud voice, he said, “What have I to do with you, Jesus, you Son of the Most High God? I adjure you by God, don’t torment me.”",
+      "ko": "큰 소리로 부르짖어 가로되 지극히 높으신 하나님의 아들 예수여 나와 당신과 무슨 상관이 있나이까 원컨대 하나님 앞에 맹세하고 나를 괴롭게 마옵소서 하니",
+      "source_text_hash": "55d5a88d3648b99da58d183c546cb5b2f3362608cd0b196b9c56f8ad922e5e42",
+      "translation_text_hash": "15365393d9d4f128bccf322401117e99d9f1184cb99f1a352a0cf48076234e6f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "큰 소리로 부르짖어 가로되 지극히 높으신 하나님의 아들 예수여 나와 당신과 무슨 상관이 있나이까 원컨대 하나님 앞에 맹세하고 나를 괴롭게 마옵소서 하니"
+      ],
+      "raw_text_hashes": [
+        "15365393d9d4f128bccf322401117e99d9f1184cb99f1a352a0cf48076234e6f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:8",
+      "sequence": 24373,
+      "chapter_label": "MRK 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "For he said to him, “Come out of the man, you unclean spirit!”",
+      "ko": "이는 예수께서 이미 저에게 이르시기를 더러운 귀신아 그 사람에게서 나오라 하셨음이라",
+      "source_text_hash": "f23f9db192f9d195cdb8b9d805def2f8c148007b8ab5a04712f2169755b8504b",
+      "translation_text_hash": "0ec4e187caec31b4e7b98684288dc2e9072874b0baddb95a0a82aeb11b36210d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 예수께서 이미 저에게 이르시기를 더러운 귀신아 그 사람에게서 나오라 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "0ec4e187caec31b4e7b98684288dc2e9072874b0baddb95a0a82aeb11b36210d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:9",
+      "sequence": 24374,
+      "chapter_label": "MRK 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "He asked him, “What is your name?”He said to him, “My name is Legion, for we are many.”",
+      "ko": "이에 물으시되 네 이름이 무엇이냐 가로되 내 이름은 군대니 우리가 많음이니이다 하고",
+      "source_text_hash": "2966e009f73d4ed9fe25df93a5e511afba09678b09eb836e70a3b36bc3769d86",
+      "translation_text_hash": "36e1c230822a41dbca8fecf47fc9c4677f1b579cb86171a87bcf0885e58feaaa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 물으시되 네 이름이 무엇이냐 가로되 내 이름은 군대니 우리가 많음이니이다 하고"
+      ],
+      "raw_text_hashes": [
+        "36e1c230822a41dbca8fecf47fc9c4677f1b579cb86171a87bcf0885e58feaaa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:10",
+      "sequence": 24375,
+      "chapter_label": "MRK 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "He begged him much that he would not send them away out of the country.",
+      "ko": "자기를 이 지방에서 내어 보내지 마시기를 간절히 구하더니",
+      "source_text_hash": "5ec06d5db7ed62efefd2d3ab7e6240dc827d61455822828ee340458f488a970f",
+      "translation_text_hash": "5e9b0481320251e4972210e060e358571fe9ffaffc5483ff4d2e4d69bb33062a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기를 이 지방에서 내어 보내지 마시기를 간절히 구하더니"
+      ],
+      "raw_text_hashes": [
+        "5e9b0481320251e4972210e060e358571fe9ffaffc5483ff4d2e4d69bb33062a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:11",
+      "sequence": 24376,
+      "chapter_label": "MRK 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Now on the mountainside there was a great herd of pigs feeding.",
+      "ko": "마침 거기 돼지의 큰 떼가 산 곁에서 먹고 있는지라",
+      "source_text_hash": "f20c325a4f19a7f2d8823490b14f4f4ef71a7270fe63134dd6fb0fd14775641f",
+      "translation_text_hash": "3f87f901a27503c9c1e028c79130a7b62b61e6871f8720b1133afd075640d0d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 거기 돼지의 큰 떼가 산 곁에서 먹고 있는지라"
+      ],
+      "raw_text_hashes": [
+        "3f87f901a27503c9c1e028c79130a7b62b61e6871f8720b1133afd075640d0d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:12",
+      "sequence": 24377,
+      "chapter_label": "MRK 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "All the demons begged him, saying, “Send us into the pigs, that we may enter into them.”",
+      "ko": "이에 간구하여 가로되 우리를 돼지에게로 보내어 들어가게 하소서 하니",
+      "source_text_hash": "88499f3b5cfafe9b68a61b746f67439457a79086a7a06f8203a4b4c633e8f7d7",
+      "translation_text_hash": "527d4b02176068d58a5b2a4d52bb02afbeb54a0ddf66a9da525f86545cc9ddc6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 간구하여 가로되 우리를 돼지에게로 보내어 들어가게 하소서 하니"
+      ],
+      "raw_text_hashes": [
+        "527d4b02176068d58a5b2a4d52bb02afbeb54a0ddf66a9da525f86545cc9ddc6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:13",
+      "sequence": 24378,
+      "chapter_label": "MRK 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "At once Jesus gave them permission. The unclean spirits came out and entered into the pigs. The herd of about two thousand rushed down the steep bank into the sea, and they were drowned in the sea.",
+      "ko": "허락하신대 더러운 귀신들이 나와서 돼지에게로 들어가니 거의 이천 마리 되는 떼가 바다를 향하여 비탈로 내리달아 바다에서 몰사하거늘",
+      "source_text_hash": "0438f9652c1c41c4a2dcfff2a1c2b9aed1a889285d52071b572a77aab9800fb3",
+      "translation_text_hash": "1ffe7c211e00aa455251c24d62b32ff038a7d34033b96a5e4e9b70a5641dd9d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허락하신대 더러운 귀신들이 나와서 돼지에게로 들어가니 거의 이천 마리 되는 떼가 바다를 향하여 비탈로 내리달아 바다에서 몰사하거늘"
+      ],
+      "raw_text_hashes": [
+        "1ffe7c211e00aa455251c24d62b32ff038a7d34033b96a5e4e9b70a5641dd9d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:14",
+      "sequence": 24379,
+      "chapter_label": "MRK 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "Those who fed the pigs fled, and told it in the city and in the country. The people came to see what it was that had happened.",
+      "ko": "치던 자들이 도망하여 읍내와 촌에 고하니 사람들이 그 어떻게 된것을 보러 와서",
+      "source_text_hash": "238686431b20ae2c67195690b30e2f06c9514fec82f3138e870864014c3eee0e",
+      "translation_text_hash": "375da2f576ec678f49a14f73daf10e64d5ef836ee092d8452aeddeae0ddb371d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "치던 자들이 도망하여 읍내와 촌에 고하니 사람들이 그 어떻게 된것을 보러 와서"
+      ],
+      "raw_text_hashes": [
+        "375da2f576ec678f49a14f73daf10e64d5ef836ee092d8452aeddeae0ddb371d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:15",
+      "sequence": 24380,
+      "chapter_label": "MRK 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "They came to Jesus, and saw him who had been possessed by demons sitting, clothed, and in his right mind, even him who had the legion; and they were afraid.",
+      "ko": "예수께 이르러 그 귀신 들렸던 자 곧 군대 지폈던 자가 옷을 입고 정신이 온전하여 앉은 것을 보고 두려워하더라",
+      "source_text_hash": "c695939f4a174d5ee516672fad65a35a9ea9b4367732b859a7f8ca9a7eebb5d4",
+      "translation_text_hash": "8edda9893e734d71e10c2d36efd3ec5e3c2b29626c7151e6fdfcf619ba758bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 이르러 그 귀신 들렸던 자 곧 군대 지폈던 자가 옷을 입고 정신이 온전하여 앉은 것을 보고 두려워하더라"
+      ],
+      "raw_text_hashes": [
+        "8edda9893e734d71e10c2d36efd3ec5e3c2b29626c7151e6fdfcf619ba758bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:16",
+      "sequence": 24381,
+      "chapter_label": "MRK 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "Those who saw it declared to them what happened to him who was possessed by demons, and about the pigs.",
+      "ko": "이에 귀신 들렸던 자의 당한 것과 돼지의 일을 본 자들이 저에게 고하매",
+      "source_text_hash": "4d88a91ad246eed4038e7e04bdf75b9a826a77a6ef3484d9b473ab92e97e1541",
+      "translation_text_hash": "7c32268820f18541c6d3476d7e2294ff7b5e40d109d5fb62e312eeb479df6bf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 귀신 들렸던 자의 당한 것과 돼지의 일을 본 자들이 저에게 고하매"
+      ],
+      "raw_text_hashes": [
+        "7c32268820f18541c6d3476d7e2294ff7b5e40d109d5fb62e312eeb479df6bf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:17",
+      "sequence": 24382,
+      "chapter_label": "MRK 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "They began to beg him to depart from their region.",
+      "ko": "저희가 예수께 그 지경에서 떠나시기를 간구하더라",
+      "source_text_hash": "063e805d347b8406333b98d3c9af968fd2d161227293d3c3ca556b38eb18141c",
+      "translation_text_hash": "2a8501571d57d6ba89eb83d32c92a3d810e17acc3b119f15a9b7941f46ffecd6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예수께 그 지경에서 떠나시기를 간구하더라"
+      ],
+      "raw_text_hashes": [
+        "2a8501571d57d6ba89eb83d32c92a3d810e17acc3b119f15a9b7941f46ffecd6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:18",
+      "sequence": 24383,
+      "chapter_label": "MRK 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "As he was entering into the boat, he who had been possessed by demons begged him that he might be with him.",
+      "ko": "예수께서 배에 오르실 때에 귀신 들렸던 사람이 함께 있기를 간구하였으나",
+      "source_text_hash": "5d643835117dac5cff4bd549f264a49ba64884b2cb305c7b51faf0b2baee119d",
+      "translation_text_hash": "e7bcf4347cc99cf906b59311f0dbcd0aa23e2ed7a760984cdb1c36fbb5cab0b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 배에 오르실 때에 귀신 들렸던 사람이 함께 있기를 간구하였으나"
+      ],
+      "raw_text_hashes": [
+        "e7bcf4347cc99cf906b59311f0dbcd0aa23e2ed7a760984cdb1c36fbb5cab0b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:19",
+      "sequence": 24384,
+      "chapter_label": "MRK 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "He didn’t allow him, but said to him, “Go to your house, to your friends, and tell them what great things the Lord has done for you and how he had mercy on you.”",
+      "ko": "허락지 아니하시고 저에게 이르시되 집으로 돌아가 주께서 네게 어떻게 큰 일을 행하사 너를 불쌍히 여기신 것을 네 친속에게 고하라 하신대",
+      "source_text_hash": "2afb58fd4f6ae0ae9994e3aeb0ca305a3544d43a56140657631cd26ae28e080e",
+      "translation_text_hash": "072310b154024783270136cc8927e2dc1f676d399b6688ec53dfd47d6c1cdb58",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "허락지 아니하시고 저에게 이르시되 집으로 돌아가 주께서 네게 어떻게 큰 일을 행하사 너를 불쌍히 여기신 것을 네 친속에게 고하라 하신대"
+      ],
+      "raw_text_hashes": [
+        "072310b154024783270136cc8927e2dc1f676d399b6688ec53dfd47d6c1cdb58"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:20",
+      "sequence": 24385,
+      "chapter_label": "MRK 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "He went his way, and began to proclaim in Decapolis how Jesus had done great things for him, and everyone marveled.",
+      "ko": "그가 가서 예수께서 자기에게 어떻게 큰 일 행하신 것을 데가볼리에 전파하니 모든 사람이 기이히 여기더라",
+      "source_text_hash": "e8c51bd2d4378547ed56b57ceca74f1199bd32d1d7f290d75ddf7438a4eb89d0",
+      "translation_text_hash": "71e88c4aeef903b212a9451f2fb5e1cbf887d2273f504aa38241c7fd586c55ed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 가서 예수께서 자기에게 어떻게 큰 일 행하신 것을 데가볼리에 전파하니 모든 사람이 기이히 여기더라"
+      ],
+      "raw_text_hashes": [
+        "71e88c4aeef903b212a9451f2fb5e1cbf887d2273f504aa38241c7fd586c55ed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:21",
+      "sequence": 24386,
+      "chapter_label": "MRK 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "When Jesus had crossed back over in the boat to the other side, a great multitude was gathered to him; and he was by the sea.",
+      "ko": "예수께서 배를 타시고 다시 저편으로 건너 가시매 큰 무리가 그에게로 모이거늘 이에 바닷가에 계시더니",
+      "source_text_hash": "c35324f1ab8bfd994af2f4076c8a616c168561f7be97b81d250d7fc1b360d796",
+      "translation_text_hash": "0d1f2ed50c184f3903c3af8265da47995645355228610c4897a6cdebed5c25d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 배를 타시고 다시 저편으로 건너 가시매 큰 무리가 그에게로 모이거늘 이에 바닷가에 계시더니"
+      ],
+      "raw_text_hashes": [
+        "0d1f2ed50c184f3903c3af8265da47995645355228610c4897a6cdebed5c25d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:22",
+      "sequence": 24387,
+      "chapter_label": "MRK 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "Behold, one of the rulers of the synagogue, Jairus by name, came; and seeing him, he fell at his feet",
+      "ko": "회당장 중 하나인 야이로라 하는 이가 와서 예수를 보고 발 아래 엎드리어",
+      "source_text_hash": "bce162d2fc59b90a94a14717c421913675325195ed424d635d8c3f87bd13813d",
+      "translation_text_hash": "8cfca3bf24fb100d9d3cb3150bdbbde55e55dcca706b2baccccc399e8ab1ed72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당장 중 하나인 야이로라 하는 이가 와서 예수를 보고 발 아래 엎드리어"
+      ],
+      "raw_text_hashes": [
+        "8cfca3bf24fb100d9d3cb3150bdbbde55e55dcca706b2baccccc399e8ab1ed72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:23",
+      "sequence": 24388,
+      "chapter_label": "MRK 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "and begged him much, saying, “My little daughter is at the point of death. Please come and lay your hands on her, that she may be made healthy, and live.”",
+      "ko": "많이 간구하여 가로되 내 어린 딸이 죽게 되었사오니 오셔서 그 위에 손을 얹으사 그로 구원을 얻어 살게 하소서 하거늘",
+      "source_text_hash": "6ac31ee4c0d7c47af058941cbd9abab923ab4c635e551ce46a435cde0ebbe12c",
+      "translation_text_hash": "1bdf5b952afbf2d34e8ca501f86fcc8a007d915b23680a05da0d5678cec1d960",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많이 간구하여 가로되 내 어린 딸이 죽게 되었사오니 오셔서 그 위에 손을 얹으사 그로 구원을 얻어 살게 하소서 하거늘"
+      ],
+      "raw_text_hashes": [
+        "1bdf5b952afbf2d34e8ca501f86fcc8a007d915b23680a05da0d5678cec1d960"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:24",
+      "sequence": 24389,
+      "chapter_label": "MRK 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "He went with him, and a great multitude followed him, and they pressed upon him on all sides.",
+      "ko": "이에 그와 함께 가실쌔 큰 무리가 따라가며 에워싸 밀더라",
+      "source_text_hash": "caea076a27a46c13e2b81baa88c255d8f7746e252d73f606e4a566160c647106",
+      "translation_text_hash": "a03622043c76d6de6a7d00ee8b073a2ec501733a738781f248ae27a3a51307b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그와 함께 가실쌔 큰 무리가 따라가며 에워싸 밀더라"
+      ],
+      "raw_text_hashes": [
+        "a03622043c76d6de6a7d00ee8b073a2ec501733a738781f248ae27a3a51307b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:25",
+      "sequence": 24390,
+      "chapter_label": "MRK 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "A certain woman who had a discharge of blood for twelve years,",
+      "ko": "열 두 해를 혈루증으로 앓는 한 여자가 있어",
+      "source_text_hash": "80159a942cd1f1cc9f3fe283844764931efbf3c7adc08b650f8d5e1e688a86b0",
+      "translation_text_hash": "30ca32755abb4e0eef1dcb4c4f9f1879d8f1f0f398beacf4c3d329e044363d87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "열 두 해를 혈루증으로 앓는 한 여자가 있어"
+      ],
+      "raw_text_hashes": [
+        "30ca32755abb4e0eef1dcb4c4f9f1879d8f1f0f398beacf4c3d329e044363d87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:26",
+      "sequence": 24391,
+      "chapter_label": "MRK 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "and had suffered many things by many physicians, and had spent all that she had, and was no better, but rather grew worse,",
+      "ko": "많은 의원에게 많은 괴로움을 받았고 있던 것도 다 허비하였으되 아무 효험이 없고 도리어 더 중하여졌던 차에",
+      "source_text_hash": "5290ba7403181cc99dfbd4a600871de84e86ffa360a70ca29bc5bc5bbc0acd6a",
+      "translation_text_hash": "ca2336485132fc7af79cf2081a0061d6b76b1bff9f1200bc786a25f08d81aec9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 의원에게 많은 괴로움을 받았고 있던 것도 다 허비하였으되 아무 효험이 없고 도리어 더 중하여졌던 차에"
+      ],
+      "raw_text_hashes": [
+        "ca2336485132fc7af79cf2081a0061d6b76b1bff9f1200bc786a25f08d81aec9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:27",
+      "sequence": 24392,
+      "chapter_label": "MRK 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "having heard the things concerning Jesus, came up behind him in the crowd and touched his clothes.",
+      "ko": "예수의 소문을 듣고 무리 가운데 섞여 뒤로 와서 그의 옷에 손을 대니",
+      "source_text_hash": "4c0102c59d02733d0181174c9d9ee04ac1778f771f5dda3b5b6a64353ed49ed4",
+      "translation_text_hash": "6f3783eab81eb4770b9b5c69ea18fb843264a0dfc1e37cd46028bda1a7c6aa9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 소문을 듣고 무리 가운데 섞여 뒤로 와서 그의 옷에 손을 대니"
+      ],
+      "raw_text_hashes": [
+        "6f3783eab81eb4770b9b5c69ea18fb843264a0dfc1e37cd46028bda1a7c6aa9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:28",
+      "sequence": 24393,
+      "chapter_label": "MRK 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "For she said, “If I just touch his clothes, I will be made well.”",
+      "ko": "이는 내가 그의 옷에만 손을 대어도 구원을 얻으리라 함일러라",
+      "source_text_hash": "707903c9f1d98baf12c9973774aba477a587d23878a139947f424f94fe7323c5",
+      "translation_text_hash": "534da10ab80dc829b54f78ea8b28607f6d92c52b53ec644b363cb04a30046bfd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 그의 옷에만 손을 대어도 구원을 얻으리라 함일러라"
+      ],
+      "raw_text_hashes": [
+        "534da10ab80dc829b54f78ea8b28607f6d92c52b53ec644b363cb04a30046bfd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:29",
+      "sequence": 24394,
+      "chapter_label": "MRK 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "Immediately the flow of her blood was dried up, and she felt in her body that she was healed of her affliction.",
+      "ko": "이에 그의 혈루 근원이 곧 마르매 병이 나은 줄을 몸에 깨달으니라",
+      "source_text_hash": "240de18551cd2ad95b1dcc2a617737275ac6a0dbea639373f366aeccb681e97c",
+      "translation_text_hash": "18413bf1235864ec7bceeaa26620f905c8e9a753d1023030a51ba59a6d532832",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그의 혈루 근원이 곧 마르매 병이 나은 줄을 몸에 깨달으니라"
+      ],
+      "raw_text_hashes": [
+        "18413bf1235864ec7bceeaa26620f905c8e9a753d1023030a51ba59a6d532832"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:30",
+      "sequence": 24395,
+      "chapter_label": "MRK 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "Immediately Jesus, perceiving in himself that the power had gone out from him, turned around in the crowd and asked, “Who touched my clothes?”",
+      "ko": "예수께서 그 능력이 자기에게서 나간 줄을 곧 스스로 아시고 무리 가운데서 돌이켜 말씀하시되 누가 내 옷에 손을 대었느냐 하시니",
+      "source_text_hash": "4182a29fb1a3b6f9c56bd141d152ee9e0f40fbdb6ec3afc44401595dfae2d836",
+      "translation_text_hash": "21cef7d056e7135a0f73f995ef61549edded274405577de9c4896e2268b5382c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 능력이 자기에게서 나간 줄을 곧 스스로 아시고 무리 가운데서 돌이켜 말씀하시되 누가 내 옷에 손을 대었느냐 하시니"
+      ],
+      "raw_text_hashes": [
+        "21cef7d056e7135a0f73f995ef61549edded274405577de9c4896e2268b5382c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:31",
+      "sequence": 24396,
+      "chapter_label": "MRK 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "His disciples said to him, “You see the multitude pressing against you, and you say, ‘Who touched me?’”",
+      "ko": "제자들이 여짜오되 무리가 에워싸 미는 것을 보시며 누가 내게 손을 대었느냐 물으시나이까 하되",
+      "source_text_hash": "2595bd51e55641c92820c7db96b3fd58988bd4beffa8f6a3e21a8abc45ff6986",
+      "translation_text_hash": "ead25525fcab124b7ba87a1d33ced74b49ce770700289696573e9082ead24595",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 여짜오되 무리가 에워싸 미는 것을 보시며 누가 내게 손을 대었느냐 물으시나이까 하되"
+      ],
+      "raw_text_hashes": [
+        "ead25525fcab124b7ba87a1d33ced74b49ce770700289696573e9082ead24595"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:32",
+      "sequence": 24397,
+      "chapter_label": "MRK 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "He looked around to see her who had done this thing.",
+      "ko": "예수께서 이 일 행한 여자를 보려고 둘러 보시니",
+      "source_text_hash": "48da7445e0df55eac6afed5d542cacfcbbff85842e19e344e7a086e694f297b3",
+      "translation_text_hash": "2b108e608b0a219a67f046f81e889488be3697e9543a2b152e7989295b240a97",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 일 행한 여자를 보려고 둘러 보시니"
+      ],
+      "raw_text_hashes": [
+        "2b108e608b0a219a67f046f81e889488be3697e9543a2b152e7989295b240a97"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:33",
+      "sequence": 24398,
+      "chapter_label": "MRK 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "But the woman, fearing and trembling, knowing what had been done to her, came and fell down before him, and told him all the truth.",
+      "ko": "여자가 제게 이루어진 일을 알고 두려워하여 떨며 와서 그 앞에 엎드려 모든 사실을 여짜온대",
+      "source_text_hash": "e3b1575e2226261bcbb98c27549525b9e251bb64107431db1e4e1d32c7a40db4",
+      "translation_text_hash": "f734fbf3dbde92e259467ab19df7e38e41d5585bdfbaa9dbaddbd12ef188dd48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자가 제게 이루어진 일을 알고 두려워하여 떨며 와서 그 앞에 엎드려 모든 사실을 여짜온대"
+      ],
+      "raw_text_hashes": [
+        "f734fbf3dbde92e259467ab19df7e38e41d5585bdfbaa9dbaddbd12ef188dd48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:34",
+      "sequence": 24399,
+      "chapter_label": "MRK 5",
+      "verse_label": "34",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 34
+        }
+      ],
+      "en": "He said to her, “Daughter, your faith has made you well. Go in peace, and be cured of your disease.”",
+      "ko": "예수께서 가라사대 딸아 네 믿음이 너를 구원하였으니 평안히 가라 네 병에서 놓여 건강할찌어다",
+      "source_text_hash": "24c149bdd9770f6d4a7b1393f9d9f59def914f1ec28102399ca512c6729665df",
+      "translation_text_hash": "023173125aee7148caafb534a886fbbe9dcc8f84f114225a3a02d92838c6507d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 딸아 네 믿음이 너를 구원하였으니 평안히 가라 네 병에서 놓여 건강할찌어다"
+      ],
+      "raw_text_hashes": [
+        "023173125aee7148caafb534a886fbbe9dcc8f84f114225a3a02d92838c6507d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:35",
+      "sequence": 24400,
+      "chapter_label": "MRK 5",
+      "verse_label": "35",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 35
+        }
+      ],
+      "en": "While he was still speaking, people came from the synagogue ruler’s house, saying, “Your daughter is dead. Why bother the Teacher any more?”",
+      "ko": "아직 말씀하실 때에 회당장의 집에서 사람들이 와서 가로되 당신의 딸이 죽었나이다 어찌하여 선생을 더 괴롭게 하나이까",
+      "source_text_hash": "2cdaed8e1121cc60c5b6cafe5a1a5f924192c752857079dcb76d0ca1fa2e731f",
+      "translation_text_hash": "5bb42201efbc2c7b14a4c86fa11a707d4e5c1bdd558c5fd1b83f43efcf955e3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아직 말씀하실 때에 회당장의 집에서 사람들이 와서 가로되 당신의 딸이 죽었나이다 어찌하여 선생을 더 괴롭게 하나이까"
+      ],
+      "raw_text_hashes": [
+        "5bb42201efbc2c7b14a4c86fa11a707d4e5c1bdd558c5fd1b83f43efcf955e3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:36",
+      "sequence": 24401,
+      "chapter_label": "MRK 5",
+      "verse_label": "36",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 36
+        }
+      ],
+      "en": "But Jesus, when he heard the message spoken, immediately said to the ruler of the synagogue, “Don’t be afraid, only believe.”",
+      "ko": "예수께서 그 하는 말을 곁에서 들으시고 회당장에게 이르시되 두려워 말고 믿기만 하라 하시고",
+      "source_text_hash": "f9c046587c1c5bb23c1085b03ed2e58bf7b39f30155221ff6cc23f3d4926ea9b",
+      "translation_text_hash": "832976dc12853066e60de5a8606642fead44e7d079bbcf89a890ce004d1d387b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 그 하는 말을 곁에서 들으시고 회당장에게 이르시되 두려워 말고 믿기만 하라 하시고"
+      ],
+      "raw_text_hashes": [
+        "832976dc12853066e60de5a8606642fead44e7d079bbcf89a890ce004d1d387b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:37",
+      "sequence": 24402,
+      "chapter_label": "MRK 5",
+      "verse_label": "37",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 37
+        }
+      ],
+      "en": "He allowed no one to follow him except Peter, James, and John the brother of James.",
+      "ko": "베드로와 야고보와 야고보의 형제 요한 외에 아무도 따라옴을 허치 아니하시고",
+      "source_text_hash": "5895c10aba4655798e7ff77b2c6752c422a4d8e84d66cae64caa1704eb543189",
+      "translation_text_hash": "a99a0967ceb021f0e20602b1a2720827ac9513fbd2e66767156304134026ca2a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 야고보와 야고보의 형제 요한 외에 아무도 따라옴을 허치 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "a99a0967ceb021f0e20602b1a2720827ac9513fbd2e66767156304134026ca2a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:38",
+      "sequence": 24403,
+      "chapter_label": "MRK 5",
+      "verse_label": "38",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 38
+        }
+      ],
+      "en": "He came to the synagogue ruler’s house, and he saw an uproar, weeping, and great wailing.",
+      "ko": "회당장의 집에 함께 가사 훤화함과 사람들의 울며 심히 통곡함을 보시고",
+      "source_text_hash": "7f57df649fb6b2e7539fedbeaed7dec90f049ce9fd359292b29f066d506413e3",
+      "translation_text_hash": "c3df5395b068ce0a792d4fda84624985b222e37524d0b99426e96ca05ecc1916",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회당장의 집에 함께 가사 훤화함과 사람들의 울며 심히 통곡함을 보시고"
+      ],
+      "raw_text_hashes": [
+        "c3df5395b068ce0a792d4fda84624985b222e37524d0b99426e96ca05ecc1916"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:39",
+      "sequence": 24404,
+      "chapter_label": "MRK 5",
+      "verse_label": "39",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 39
+        }
+      ],
+      "en": "When he had entered in, he said to them, “Why do you make an uproar and weep? The child is not dead, but is asleep.”",
+      "ko": "들어가서 저희에게 이르시되 너희가 어찌하여 훤화하며 우느냐 이 아이가 죽은 것이 아니라 잔다 하시니",
+      "source_text_hash": "192b382fdddd2bf4f48c4dd24d8bdf053412a0e5aeb50aa02b69e49d94e46a02",
+      "translation_text_hash": "a68e0dc6c64c91e04cce0dda50f713d91e7db15a721e1629340bc58842bc2363",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들어가서 저희에게 이르시되 너희가 어찌하여 훤화하며 우느냐 이 아이가 죽은 것이 아니라 잔다 하시니"
+      ],
+      "raw_text_hashes": [
+        "a68e0dc6c64c91e04cce0dda50f713d91e7db15a721e1629340bc58842bc2363"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:40",
+      "sequence": 24405,
+      "chapter_label": "MRK 5",
+      "verse_label": "40",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 40
+        }
+      ],
+      "en": "They ridiculed him. But he, having put them all out, took the father of the child, her mother, and those who were with him, and went in where the child was lying.",
+      "ko": "저희가 비웃더라 예수께서 저희를 다 내어보내신 후에 아이의 부모와 또 자기와 함께한 자들을 데리시고 아이 있는 곳에 들어가사",
+      "source_text_hash": "b32ae8ab3a59bec415edc62388bbc71a7bcd44f8d1d0f3e8cf539b6ac1451a8e",
+      "translation_text_hash": "ed9cead264a73b6b46c218f7389d925dc07d1a1d871bf0a14c5a88bfef5add30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 비웃더라 예수께서 저희를 다 내어보내신 후에 아이의 부모와 또 자기와 함께한 자들을 데리시고 아이 있는 곳에 들어가사"
+      ],
+      "raw_text_hashes": [
+        "ed9cead264a73b6b46c218f7389d925dc07d1a1d871bf0a14c5a88bfef5add30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:41",
+      "sequence": 24406,
+      "chapter_label": "MRK 5",
+      "verse_label": "41",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 41
+        }
+      ],
+      "en": "Taking the child by the hand, he said to her, “Talitha cumi!” which means, being interpreted, “Girl, I tell you, get up!”",
+      "ko": "그 아이의 손을 잡고 가라사대 달리다굼 하시니 번역하면 곧 소녀야 내가 네게 말하노니 일어나라 하심이라",
+      "source_text_hash": "9d4a3a3540065102c700ecde622fb81e6199ca12c2aacb7a8784fe6d782b6ded",
+      "translation_text_hash": "0de54523a06b63937fa953e1f0728f23e38e2e19fb2fbcb52343de0b899edfe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아이의 손을 잡고 가라사대 달리다굼 하시니 번역하면 곧 소녀야 내가 네게 말하노니 일어나라 하심이라"
+      ],
+      "raw_text_hashes": [
+        "0de54523a06b63937fa953e1f0728f23e38e2e19fb2fbcb52343de0b899edfe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:42",
+      "sequence": 24407,
+      "chapter_label": "MRK 5",
+      "verse_label": "42",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 42
+        }
+      ],
+      "en": "Immediately the girl rose up and walked, for she was twelve years old. They were amazed with great amazement.",
+      "ko": "소녀가 곧 일어나서 걸으니 나이 열 두살이라 사람들이 곧 크게 놀라고 놀라거늘",
+      "source_text_hash": "31ffd08399442bfdce6dd69d6771959121f8849981541317b41d000fca40fe41",
+      "translation_text_hash": "07b8471bb924511bc9ad4896cd32b773889a07f1be4a7c44cecad7a04f6d019b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소녀가 곧 일어나서 걸으니 나이 열 두살이라 사람들이 곧 크게 놀라고 놀라거늘"
+      ],
+      "raw_text_hashes": [
+        "07b8471bb924511bc9ad4896cd32b773889a07f1be4a7c44cecad7a04f6d019b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:5:43",
+      "sequence": 24408,
+      "chapter_label": "MRK 5",
+      "verse_label": "43",
+      "locator": {
+        "book": "MRK",
+        "chapter": 5,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 5,
+          "verse": 43
+        }
+      ],
+      "en": "He strictly ordered them that no one should know this, and commanded that something should be given to her to eat.",
+      "ko": "예수께서 이 일을 아무도 알지 못하게 하라고 저희를 많이 경계하시고 이에 소녀에게 먹을 것을 주라 하시니라",
+      "source_text_hash": "c11955fff55d6552616cdab1d046558063905dbba7f6198e2b19339ede6ac57f",
+      "translation_text_hash": "097ae8a238918e0ef33b8a56a1389c7263f0ecfcb052c5a8d5c903032b39af41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 이 일을 아무도 알지 못하게 하라고 저희를 많이 경계하시고 이에 소녀에게 먹을 것을 주라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "097ae8a238918e0ef33b8a56a1389c7263f0ecfcb052c5a8d5c903032b39af41"
+      ]
+    }
+  ]
+}

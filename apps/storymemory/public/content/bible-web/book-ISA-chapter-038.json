@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:038",
+  "unit_ordinal": 717,
+  "unit_label": "ISA 38",
+  "book_code": "ISA",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:38:1",
+      "sequence": 18392,
+      "chapter_label": "ISA 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "In those days Hezekiah was sick and near death. Isaiah the prophet, the son of Amoz, came to him, and said to him, “The LORD says, ‘Set your house in order, for you will die, and not live.’”",
+      "ko": "그 즈음에 히스기야가 병들어 죽게 되니 아모스의 아들 선지자 이사야가 나아와 그에게 이르되 여호와께서 이같이 말씀하시기를 너는 네 집에 유언하라 네가 죽고 살지 못하리라 하셨나이다",
+      "source_text_hash": "784fc702afdefc908cac2207014363ed145b40519d85f827005e88ff5ced0883",
+      "translation_text_hash": "65d200da516981533519b4ee70578a6e5bc365e3cdde658cca48a8802d3b4687",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 즈음에 히스기야가 병들어 죽게 되니 아모스의 아들 선지자 이사야가 나아와 그에게 이르되 여호와께서 이같이 말씀하시기를 너는 네 집에 유언하라 네가 죽고 살지 못하리라 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "65d200da516981533519b4ee70578a6e5bc365e3cdde658cca48a8802d3b4687"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:2",
+      "sequence": 18393,
+      "chapter_label": "ISA 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "Then Hezekiah turned his face to the wall and prayed to the LORD,",
+      "ko": "히스기야가 얼굴을 벽으로 향하고 여호와께 기도하여",
+      "source_text_hash": "39d6120db55dbe8e088d1f0774b6a414549ca0f6dd8a94ec1d04d744320e90dd",
+      "translation_text_hash": "04a1d55f79618b9de9f0b25651864b88f24961387e48c0e7e2fb6e8bbdf38584",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야가 얼굴을 벽으로 향하고 여호와께 기도하여"
+      ],
+      "raw_text_hashes": [
+        "04a1d55f79618b9de9f0b25651864b88f24961387e48c0e7e2fb6e8bbdf38584"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:3",
+      "sequence": 18394,
+      "chapter_label": "ISA 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "and said, “Remember now, LORD, I beg you, how I have walked before you in truth and with a perfect heart, and have done that which is good in your sight.” Then Hezekiah wept bitterly.",
+      "ko": "가로되 여호와여 구하오니 내가 주의 앞에서 진실과 전심으로 행하며 주의 목전에서 선하게 행한 것을 추억하옵소서 하고 심히 통곡하니",
+      "source_text_hash": "369ad21b8b02f1d1524dc2739a32c65b6ff3bf2ba583d53c4450671170b39c58",
+      "translation_text_hash": "1e9ca82d1837855df3ad113b8c4db88f5c99521f89ba9d9a0377742f59ea0d70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 여호와여 구하오니 내가 주의 앞에서 진실과 전심으로 행하며 주의 목전에서 선하게 행한 것을 추억하옵소서 하고 심히 통곡하니"
+      ],
+      "raw_text_hashes": [
+        "1e9ca82d1837855df3ad113b8c4db88f5c99521f89ba9d9a0377742f59ea0d70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:4",
+      "sequence": 18395,
+      "chapter_label": "ISA 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "Then the LORD’s word came to Isaiah, saying,",
+      "ko": "이에 여호와의 말씀이 이사야에게 임하니라 가라사대",
+      "source_text_hash": "c218998a234a0cbe7799144de301192f5487c040de6f46e04d3a719dc1602c5a",
+      "translation_text_hash": "bb11ee4da3375110f22dd20b77b57cb5e368ffbabfe5730be7341c19b0d67a3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 여호와의 말씀이 이사야에게 임하니라 가라사대"
+      ],
+      "raw_text_hashes": [
+        "bb11ee4da3375110f22dd20b77b57cb5e368ffbabfe5730be7341c19b0d67a3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:5",
+      "sequence": 18396,
+      "chapter_label": "ISA 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "“Go, and tell Hezekiah, ‘The LORD, the God of David your father, says, “I have heard your prayer. I have seen your tears. Behold, I will add fifteen years to your life.",
+      "ko": "너는 가서 히스기야에게 이르기를 네 조상 다윗의 하나님 여호와께서 이같이 말씀하시기를 내가 네 기도를 들었고 네 눈물을 보았노라 내가 네 수한에 십 오년을 더하고",
+      "source_text_hash": "2cd441becd054a7569734dccf93496e6827dc537610de62f9f723c1d5939d6bc",
+      "translation_text_hash": "5af660c0352b28e5961801e56e760fad2d6f80e9a1bb8a2ece2c570bee08e0b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 가서 히스기야에게 이르기를 네 조상 다윗의 하나님 여호와께서 이같이 말씀하시기를 내가 네 기도를 들었고 네 눈물을 보았노라 내가 네 수한에 십 오년을 더하고"
+      ],
+      "raw_text_hashes": [
+        "5af660c0352b28e5961801e56e760fad2d6f80e9a1bb8a2ece2c570bee08e0b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:6",
+      "sequence": 18397,
+      "chapter_label": "ISA 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "I will deliver you and this city out of the hand of the king of Assyria, and I will defend this city.",
+      "ko": "너와 이 성을 앗수르 왕의 손에서 건져내겠고 내가 또 이 성을 보호하리라",
+      "source_text_hash": "f40a25799bbc9cf255a6a23b4111e178ba0783d1b9e1a259125dae483ac9405b",
+      "translation_text_hash": "80a53e4196fc3bca4326105801b7764f2ef482edb5af6c2330840067efeb93e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너와 이 성을 앗수르 왕의 손에서 건져내겠고 내가 또 이 성을 보호하리라"
+      ],
+      "raw_text_hashes": [
+        "80a53e4196fc3bca4326105801b7764f2ef482edb5af6c2330840067efeb93e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:7",
+      "sequence": 18398,
+      "chapter_label": "ISA 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "This shall be the sign to you from the LORD, that the LORD will do this thing that he has spoken.",
+      "ko": "나 여호와가 말한 것을 네게 이룰 증거로 이 징조를 네게 주리라",
+      "source_text_hash": "8d72401a4f4cb102e9cc761144d11c71cb34438794578a738ab5f29939c5019a",
+      "translation_text_hash": "a4511008e4f62607ac383b7551b96a7175d851913869230f1843f437e462fb2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말한 것을 네게 이룰 증거로 이 징조를 네게 주리라"
+      ],
+      "raw_text_hashes": [
+        "a4511008e4f62607ac383b7551b96a7175d851913869230f1843f437e462fb2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:8",
+      "sequence": 18399,
+      "chapter_label": "ISA 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "Behold, I will cause the shadow on the sundial, which has gone down on the sundial of Ahaz with the sun, to return backward ten steps.”’” So the sun returned ten steps on the sundial on which it had gone down.",
+      "ko": "보라 아하스의 일영표에 나아갔던 해 그림자를 뒤로 십도를 물러가게 하리라 하셨다 하라 하시더니 이에 일영표에 나아갔던 해의 그림자가 십도를 물러가니라",
+      "source_text_hash": "05ada4c3684cf54923c5f1d6d6455a19daa1ec2bf573eab1b105919845202840",
+      "translation_text_hash": "a62a5b01559ae6b78f18d245c35da570ed9ddaba09d3cba75a9c1ec153156d1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 아하스의 일영표에 나아갔던 해 그림자를 뒤로 십도를 물러가게 하리라 하셨다 하라 하시더니 이에 일영표에 나아갔던 해의 그림자가 십도를 물러가니라"
+      ],
+      "raw_text_hashes": [
+        "a62a5b01559ae6b78f18d245c35da570ed9ddaba09d3cba75a9c1ec153156d1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:9",
+      "sequence": 18400,
+      "chapter_label": "ISA 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "The writing of Hezekiah king of Judah, when he had been sick, and had recovered of his sickness:",
+      "ko": "유다 왕 히스기야가 병들었다가 그 병이 나을 때에 기록한 글이 이러하니라",
+      "source_text_hash": "a235b34ce08eafd776ada8570ab4ff15eb43f2dd4b06ac251791dbf060e58dda",
+      "translation_text_hash": "868887445a4f244b5c7b110fc95dc654bdd010ddafb5509a9d163b5be09ef5f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 히스기야가 병들었다가 그 병이 나을 때에 기록한 글이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "868887445a4f244b5c7b110fc95dc654bdd010ddafb5509a9d163b5be09ef5f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:10",
+      "sequence": 18401,
+      "chapter_label": "ISA 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "I said, “In the middle of my life I go into the gates of Sheol. I am deprived of the residue of my years.”",
+      "ko": "내가 말하기를 내가 중년에 음부의 문에 들어가고 여년을 빼앗기게 되리라 하였도다",
+      "source_text_hash": "3a4778b1da3adf2252e11cf29c7a062716da8f18a147df854d9cc2935291ee21",
+      "translation_text_hash": "50e393fb8eed28b55e01cdd05a03fd6b64f1069ae94618c957d6d70c63cd4e4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 내가 중년에 음부의 문에 들어가고 여년을 빼앗기게 되리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "50e393fb8eed28b55e01cdd05a03fd6b64f1069ae94618c957d6d70c63cd4e4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:11",
+      "sequence": 18402,
+      "chapter_label": "ISA 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "I said, “I won’t see the LORD, the LORD in the land of the living. I will see man no more with the inhabitants of the world.",
+      "ko": "내가 또 말하기를 내가 다시는 여호와를 뵈옵지 못하리니 생존세계에서 다시는 여호와를 뵈옵지 못하겠고 내가 세상 거민 중에서 한 사람도 다시는 보지 못하리라 하였도다",
+      "source_text_hash": "fdb88ec06e50f77f1fdc16846501d1705c31eaa65339198bfe70102d0a58abee",
+      "translation_text_hash": "e1dc5a2d6107c72b6a9e6e42e71d54e82a8023163343331721a3d95fcd604cf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 말하기를 내가 다시는 여호와를 뵈옵지 못하리니 생존세계에서 다시는 여호와를 뵈옵지 못하겠고 내가 세상 거민 중에서 한 사람도 다시는 보지 못하리라 하였도다"
+      ],
+      "raw_text_hashes": [
+        "e1dc5a2d6107c72b6a9e6e42e71d54e82a8023163343331721a3d95fcd604cf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:12",
+      "sequence": 18403,
+      "chapter_label": "ISA 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "My dwelling is removed, and is carried away from me like a shepherd’s tent. I have rolled up my life like a weaver. He will cut me off from the loom. From day even to night you will make an end of me.",
+      "ko": "나의 거처는 목자의 장막을 걷음 같이 나를 떠나 옮겼고 내가 내 생명을 말기를 직공이 베를 걷어 말음 같이 하였도다 주께서 나를 틀에서 끊으시리니 나의 명이 조석간에 마치리이다",
+      "source_text_hash": "1c08ae9421f41b1bddcbff248f17ca1dda37faba3af11eb5a9c35017ed66b637",
+      "translation_text_hash": "97ed6d9728acecd4c4ea7059d44a881df34517a7bd031e82c5c1fdd336fcfbf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 거처는 목자의 장막을 걷음 같이 나를 떠나 옮겼고 내가 내 생명을 말기를 직공이 베를 걷어 말음 같이 하였도다 주께서 나를 틀에서 끊으시리니 나의 명이 조석간에 마치리이다"
+      ],
+      "raw_text_hashes": [
+        "97ed6d9728acecd4c4ea7059d44a881df34517a7bd031e82c5c1fdd336fcfbf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:13",
+      "sequence": 18404,
+      "chapter_label": "ISA 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "I waited patiently until morning. He breaks all my bones like a lion. From day even to night you will make an end of me.",
+      "ko": "내가 아침까지 견디었사오나 주께서 사자 같이 나의 모든 뼈를 꺾으시오니 나의 명이 조석간에 마치리이다",
+      "source_text_hash": "4290b79006f5d03db8215e263059fce4f980770bf6daa7d6a5693a9a8eaf5690",
+      "translation_text_hash": "45e8d4dc463877d1df7c285f232f53d3bed2061fefd599b5214621a469d85886",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 아침까지 견디었사오나 주께서 사자 같이 나의 모든 뼈를 꺾으시오니 나의 명이 조석간에 마치리이다"
+      ],
+      "raw_text_hashes": [
+        "45e8d4dc463877d1df7c285f232f53d3bed2061fefd599b5214621a469d85886"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:14",
+      "sequence": 18405,
+      "chapter_label": "ISA 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "I chattered like a swallow or a crane. I moaned like a dove. My eyes weaken looking upward. Lord, I am oppressed. Be my security.”",
+      "ko": "나는 제비 같이, 학 같이 지저귀며 비둘기 같이 슬피 울며 나의 눈이 쇠하도록 앙망하나이다 여호와여 내가 압제를 받사오니 나의 중보가 되옵소서",
+      "source_text_hash": "d10bc6016a37dca2ca14dcf99cce19638e84cde636be035fa2f59f21e74d0b76",
+      "translation_text_hash": "3afb65337d41a71c760e8a07adfaef7d56aab449cfd144d1fe134acd1fbf5a75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 제비 같이, 학 같이 지저귀며 비둘기 같이 슬피 울며 나의 눈이 쇠하도록 앙망하나이다 여호와여 내가 압제를 받사오니 나의 중보가 되옵소서"
+      ],
+      "raw_text_hashes": [
+        "3afb65337d41a71c760e8a07adfaef7d56aab449cfd144d1fe134acd1fbf5a75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:15",
+      "sequence": 18406,
+      "chapter_label": "ISA 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "What will I say? He has both spoken to me, and himself has done it. I will walk carefully all my years because of the anguish of my soul.",
+      "ko": "주께서 내게 말씀하시고 또 친히 이루셨사오니 내가 무슨 말씀을 하오리이까 내 영혼의 고통을 인하여 내가 종신토록 각근히 행하리이다",
+      "source_text_hash": "4d28761fbeacc73949aba8b1c1f41bf8603924f195b379339a98e7a232a1d7b8",
+      "translation_text_hash": "b57914ce8a2d1a094e9568975ef06aee6fefecdec9b4a7fbf49bb5ca55d3edbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주께서 내게 말씀하시고 또 친히 이루셨사오니 내가 무슨 말씀을 하오리이까 내 영혼의 고통을 인하여 내가 종신토록 각근히 행하리이다"
+      ],
+      "raw_text_hashes": [
+        "b57914ce8a2d1a094e9568975ef06aee6fefecdec9b4a7fbf49bb5ca55d3edbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:16",
+      "sequence": 18407,
+      "chapter_label": "ISA 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "Lord, men live by these things; and my spirit finds life in all of them. You restore me, and cause me to live.",
+      "ko": "주여 사람의 사는 것이 이에 있고 내 심령의 생명도 온전히 거기 있사오니 원컨대 나를 치료하시며 나를 살려주옵소서",
+      "source_text_hash": "2ef6ee319005ea51e036b1bb43a6157808cdee0de732f9bae59492edf24dee9d",
+      "translation_text_hash": "842ff99573019863dad22a19a4e4aa82816d250b3b077b82ae11ba0fa602f450",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주여 사람의 사는 것이 이에 있고 내 심령의 생명도 온전히 거기 있사오니 원컨대 나를 치료하시며 나를 살려주옵소서"
+      ],
+      "raw_text_hashes": [
+        "842ff99573019863dad22a19a4e4aa82816d250b3b077b82ae11ba0fa602f450"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:17",
+      "sequence": 18408,
+      "chapter_label": "ISA 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "Behold, for peace I had great anguish, but you have in love for my soul delivered it from the pit of corruption; for you have cast all my sins behind your back.",
+      "ko": "보옵소서 내게 큰 고통을 더하신 것은 내게 평안을 주려 하심이라 주께서 나의 영혼을 사랑하사 멸망의 구덩이에서 건지셨고 나의 모든 죄는 주의 등 뒤에 던지셨나이다",
+      "source_text_hash": "9878a0e9ad46ef0347ffc63d316ef9387773b8af8e7e2bce98819e8ebb53389c",
+      "translation_text_hash": "fc43f5ea64179b8f6480c9fd701d1f647cdbaa21b25485b1b4c44a17f11bfbf7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보옵소서 내게 큰 고통을 더하신 것은 내게 평안을 주려 하심이라 주께서 나의 영혼을 사랑하사 멸망의 구덩이에서 건지셨고 나의 모든 죄는 주의 등 뒤에 던지셨나이다"
+      ],
+      "raw_text_hashes": [
+        "fc43f5ea64179b8f6480c9fd701d1f647cdbaa21b25485b1b4c44a17f11bfbf7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:18",
+      "sequence": 18409,
+      "chapter_label": "ISA 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "For Sheol can’t praise you. Death can’t celebrate you. Those who go down into the pit can’t hope for your truth.",
+      "ko": "음부가 주께 사례하지 못하며 사망이 주를 찬양하지 못하며 구덩이에 들어간 자가 주의 신실을 바라지 못하되",
+      "source_text_hash": "533235d150da89b0152167a31a939fd447712d08151c52895d54a28d62af126f",
+      "translation_text_hash": "04fff5d945ad6f0641b4b6a95b450b109c153f01d064b2121ad19e46ac16c8d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음부가 주께 사례하지 못하며 사망이 주를 찬양하지 못하며 구덩이에 들어간 자가 주의 신실을 바라지 못하되"
+      ],
+      "raw_text_hashes": [
+        "04fff5d945ad6f0641b4b6a95b450b109c153f01d064b2121ad19e46ac16c8d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:19",
+      "sequence": 18410,
+      "chapter_label": "ISA 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "The living, the living, he shall praise you, as I do today. The father shall make known your truth to the children.",
+      "ko": "오직 산 자 곧 산 자는 오늘날 내가 하는 것과 같이 주께 감사하며 주의 신실을 아비가 그 자녀에게 알게 하리이다",
+      "source_text_hash": "c2a5659fd28f7f2babc9e0d33fb7234b34f6ac157f6ab0bcce74151e6fa495e5",
+      "translation_text_hash": "0cba221fdefdc409dc08c1e02a3b253baf4c404b44650398abfe016b4bdb4fe7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 산 자 곧 산 자는 오늘날 내가 하는 것과 같이 주께 감사하며 주의 신실을 아비가 그 자녀에게 알게 하리이다"
+      ],
+      "raw_text_hashes": [
+        "0cba221fdefdc409dc08c1e02a3b253baf4c404b44650398abfe016b4bdb4fe7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:20",
+      "sequence": 18411,
+      "chapter_label": "ISA 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "The LORD will save me. Therefore we will sing my songs with stringed instruments all the days of our life in the LORD’s house.",
+      "ko": "여호와께서 나를 구원하시리니 우리가 종신토록 여호와의 전에서 수금으로 나의 노래를 노래하리로다",
+      "source_text_hash": "316e2496e2fc21c0756aa4a316cc30c432a93bbb3f85a3347c434fe061e93b27",
+      "translation_text_hash": "357e526edbbef77c2b6a979b908aa6ded683cf61e21e98c25d2d0f56b2a48cbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 나를 구원하시리니 우리가 종신토록 여호와의 전에서 수금으로 나의 노래를 노래하리로다"
+      ],
+      "raw_text_hashes": [
+        "357e526edbbef77c2b6a979b908aa6ded683cf61e21e98c25d2d0f56b2a48cbc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:21",
+      "sequence": 18412,
+      "chapter_label": "ISA 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "Now Isaiah had said, “Let them take a cake of figs, and lay it for a poultice on the boil, and he shall recover.”",
+      "ko": "이사야는 이르기를 한 뭉치 무화과를 취하여 종처에 붙이면 왕이 나으리라 하였었고",
+      "source_text_hash": "8435bbcd8781a961bdbece7500fee413a4500626e321139351a70ce89b2a63e1",
+      "translation_text_hash": "74e1f8249fb8cbf2348fa526d8a04b1b852e676cdd437bc19f877130418b5152",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이사야는 이르기를 한 뭉치 무화과를 취하여 종처에 붙이면 왕이 나으리라 하였었고"
+      ],
+      "raw_text_hashes": [
+        "74e1f8249fb8cbf2348fa526d8a04b1b852e676cdd437bc19f877130418b5152"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:38:22",
+      "sequence": 18413,
+      "chapter_label": "ISA 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "Hezekiah also had said, “What is the sign that I will go up to the LORD’s house?”",
+      "ko": "히스기야도 말하기를 내가 여호와의 전에 올라갈 징조가 무엇이뇨 하였었더라",
+      "source_text_hash": "399092dc5ed740fa7e0fe9e002bad2657c88cd8e82b57f227f7266552011d128",
+      "translation_text_hash": "05e8b3fa7fd93f083b8f81105968043a68992d4ed2f196fd9b0149cfff857412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야도 말하기를 내가 여호와의 전에 올라갈 징조가 무엇이뇨 하였었더라"
+      ],
+      "raw_text_hashes": [
+        "05e8b3fa7fd93f083b8f81105968043a68992d4ed2f196fd9b0149cfff857412"
+      ]
+    }
+  ]
+}

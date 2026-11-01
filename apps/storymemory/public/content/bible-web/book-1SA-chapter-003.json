@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:003",
+  "unit_ordinal": 239,
+  "unit_label": "1SA 3",
+  "book_code": "1SA",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:3:1",
+      "sequence": 7278,
+      "chapter_label": "1SA 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "The child Samuel ministered to the LORD before Eli. The LORD’s word was rare in those days. There were not many visions, then.",
+      "ko": "아이 사무엘이 엘리 앞에서 여호와를 섬길 때에는 여호와의 말씀이 희귀하여 이상이 흔히 보이지 않았더라",
+      "source_text_hash": "c6ddbb203d5ff4ac956ee1bba2bd4176583f8d9a14f7704506f803a6e3ebf853",
+      "translation_text_hash": "860f70b5595c4f5699cbf1b5ccdb2a3f4ffd4cd07f0627a7afb6b17947d6ef37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아이 사무엘이 엘리 앞에서 여호와를 섬길 때에는 여호와의 말씀이 희귀하여 이상이 흔히 보이지 않았더라"
+      ],
+      "raw_text_hashes": [
+        "860f70b5595c4f5699cbf1b5ccdb2a3f4ffd4cd07f0627a7afb6b17947d6ef37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:2",
+      "sequence": 7279,
+      "chapter_label": "1SA 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "At that time, when Eli was laid down in his place (now his eyes had begun to grow dim, so that he could not see),",
+      "ko": "엘리의 눈이 점점 어두워가서 잘 보지 못하는 그 때에 그가 자기 처소에 누웠고",
+      "source_text_hash": "7e4b3ac16760a01a9c3d323dd04289ed29760efcb4b9f98ccda398c380d8e097",
+      "translation_text_hash": "9224d3550bb16c72df83414cd2ce36e7b548e6c156e95e2e3b7d6749ca602712",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리의 눈이 점점 어두워가서 잘 보지 못하는 그 때에 그가 자기 처소에 누웠고"
+      ],
+      "raw_text_hashes": [
+        "9224d3550bb16c72df83414cd2ce36e7b548e6c156e95e2e3b7d6749ca602712"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:3",
+      "sequence": 7280,
+      "chapter_label": "1SA 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "and God’s lamp hadn’t yet gone out, and Samuel had laid down in the LORD’s temple where God’s ark was,",
+      "ko": "하나님의 등불은 아직 꺼지지 아니하였으며 사무엘은 하나님의 궤 있는 여호와의 전 안에 누웠더니",
+      "source_text_hash": "0209235ae239220dfcedcbdd4986c1e16a8f2a00eb0c5de5eaefd21c4a8a7522",
+      "translation_text_hash": "7b21b7df27ec511e0ff354f78a03ff38d65528b851654f8287c30f3264582d06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 등불은 아직 꺼지지 아니하였으며 사무엘은 하나님의 궤 있는 여호와의 전 안에 누웠더니"
+      ],
+      "raw_text_hashes": [
+        "7b21b7df27ec511e0ff354f78a03ff38d65528b851654f8287c30f3264582d06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:4",
+      "sequence": 7281,
+      "chapter_label": "1SA 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD called Samuel. He said, “Here I am.”",
+      "ko": "여호와께서 사무엘을 부르시는지라 그가 대답하되 내가 여기 있나이다 하고",
+      "source_text_hash": "1d6bcf26dd1f2f83d5e6fda2b78334912f398793037863ca1d11e08cfba304c5",
+      "translation_text_hash": "73e09585c6ad4bea57828dd0df16fa8b0510b94bb08360de1b3c446bc6f70f3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사무엘을 부르시는지라 그가 대답하되 내가 여기 있나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "73e09585c6ad4bea57828dd0df16fa8b0510b94bb08360de1b3c446bc6f70f3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:5",
+      "sequence": 7282,
+      "chapter_label": "1SA 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "He ran to Eli and said, “Here I am; for you called me.” He said, “I didn’t call. Lie down again.” He went and lay down.",
+      "ko": "엘리에게로 달려가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 가로되 나는 부르지 아니하였으니 다시 누우라 그가 가서 누웠더니",
+      "source_text_hash": "5036c9de23d782a9e2a8e7ebf8ffbda8f5f3874ae0a74ae4439b897b0c608d83",
+      "translation_text_hash": "85f25bb4e09e4f2a7a67013e23aa3420023ed278c2c834239b5813580b850f06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리에게로 달려가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 가로되 나는 부르지 아니하였으니 다시 누우라 그가 가서 누웠더니"
+      ],
+      "raw_text_hashes": [
+        "85f25bb4e09e4f2a7a67013e23aa3420023ed278c2c834239b5813580b850f06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:6",
+      "sequence": 7283,
+      "chapter_label": "1SA 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD called yet again, “Samuel!” Samuel arose and went to Eli and said, “Here I am; for you called me.” He answered, “I didn’t call, my son. Lie down again.”",
+      "ko": "여호와께서 다시 사무엘을 부르시는지라 사무엘이 일어나서 엘리에게로 가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 대답하되 내 아들아 내가 부르지 아니하였으니 다시 누우라 하니라",
+      "source_text_hash": "2653eea6dfb46e807aa994b5a058260b5ed3b598063903bd54f9ef14fd7e1320",
+      "translation_text_hash": "a030a36084723de51c07de2760d2d6eabccbb1a6d060045737ac3638a34ff914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 다시 사무엘을 부르시는지라 사무엘이 일어나서 엘리에게로 가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 대답하되 내 아들아 내가 부르지 아니하였으니 다시 누우라 하니라"
+      ],
+      "raw_text_hashes": [
+        "a030a36084723de51c07de2760d2d6eabccbb1a6d060045737ac3638a34ff914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:7",
+      "sequence": 7284,
+      "chapter_label": "1SA 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "Now Samuel didn’t yet know the LORD, neither was the LORD’s word yet revealed to him.",
+      "ko": "사무엘이 아직 여호와를 알지 못하고 여호와의 말씀도 아직 그에게 나타나지 아니한 때라",
+      "source_text_hash": "6db24c858bf1ceb9a3f23024212a2a8a306529fac9c3f1c126ca7cc137a4bd88",
+      "translation_text_hash": "165b53a671e86a561ad4847a4c7894ebe98f16f67d17d3979d0f1cbb72919085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 아직 여호와를 알지 못하고 여호와의 말씀도 아직 그에게 나타나지 아니한 때라"
+      ],
+      "raw_text_hashes": [
+        "165b53a671e86a561ad4847a4c7894ebe98f16f67d17d3979d0f1cbb72919085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:8",
+      "sequence": 7285,
+      "chapter_label": "1SA 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD called Samuel again the third time. He arose and went to Eli and said, “Here I am; for you called me.” Eli perceived that the LORD had called the child.",
+      "ko": "여호와께서 세번째 사무엘을 부르시는지라 그가 일어나서 엘리에게로 가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 엘리가 여호와께서 이 아이를 부르신 줄을 깨닫고",
+      "source_text_hash": "a3965d1b0c1f63df77839c4a9be7ec66652c10ed22c11104131268483800e094",
+      "translation_text_hash": "6095ac38f94aaeb78c5a59278595d7a8b434527a7006d6a04239cbfe46135bda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 세번째 사무엘을 부르시는지라 그가 일어나서 엘리에게로 가서 가로되 당신이 나를 부르셨기로 내가 여기 있나이다 엘리가 여호와께서 이 아이를 부르신 줄을 깨닫고"
+      ],
+      "raw_text_hashes": [
+        "6095ac38f94aaeb78c5a59278595d7a8b434527a7006d6a04239cbfe46135bda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:9",
+      "sequence": 7286,
+      "chapter_label": "1SA 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore Eli said to Samuel, “Go, lie down. It shall be, if he calls you, that you shall say, ‘Speak, LORD; for your servant hears.’” So Samuel went and lay down in his place.",
+      "ko": "이에 사무엘에게 이르되 가서 누웠다가 그가 너를 부르시거든 네가 말하기를 여호와여 말씀하옵소서 주의 종이 듣겠나이다 하라 이에 사무엘이 가서 자기 처소에 누우니라",
+      "source_text_hash": "aed835416f12f7f79528f1da3cda0ddde26235efcc5f033dfdf0ab4a84ee6693",
+      "translation_text_hash": "70f05993866b363ee8859f8c767461de6e7b6cbc78f0cd234c058b12d95c6427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 사무엘에게 이르되 가서 누웠다가 그가 너를 부르시거든 네가 말하기를 여호와여 말씀하옵소서 주의 종이 듣겠나이다 하라 이에 사무엘이 가서 자기 처소에 누우니라"
+      ],
+      "raw_text_hashes": [
+        "70f05993866b363ee8859f8c767461de6e7b6cbc78f0cd234c058b12d95c6427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:10",
+      "sequence": 7287,
+      "chapter_label": "1SA 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD came, and stood, and called as at other times, “Samuel! Samuel!” Then Samuel said, “Speak; for your servant hears.”",
+      "ko": "여호와께서 임하여 서서 전과 같이 사무엘아 사무엘아 부르시는지라 사무엘이 가로되 말씀하옵소서 주의 종이 듣겠나이다",
+      "source_text_hash": "da695562d460a7b9439f0156dd8a53ba71af234fce72ff55c1d8c2e1b2166998",
+      "translation_text_hash": "de178fe6a4b7bd09d7f2f9b35ae061549ce1d774f95ef02b59c7d8244481d754",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 임하여 서서 전과 같이 사무엘아 사무엘아 부르시는지라 사무엘이 가로되 말씀하옵소서 주의 종이 듣겠나이다"
+      ],
+      "raw_text_hashes": [
+        "de178fe6a4b7bd09d7f2f9b35ae061549ce1d774f95ef02b59c7d8244481d754"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:11",
+      "sequence": 7288,
+      "chapter_label": "1SA 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "The LORD said to Samuel, “Behold, I will do a thing in Israel at which both the ears of everyone who hears it will tingle.",
+      "ko": "여호와께서 사무엘에게 이르시되 보라 내가 이스라엘 중에 한 일을 행하리니 그것을 듣는 자마다 두 귀가 울리리라",
+      "source_text_hash": "69d77bf12b081d47c8de237f340913311e1942d9ee52c6c6c4012b732ef890c4",
+      "translation_text_hash": "63c66cd1d4a726310cc26000cdc9f288f990428e72f01d4bbd3538fd63e826f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 사무엘에게 이르시되 보라 내가 이스라엘 중에 한 일을 행하리니 그것을 듣는 자마다 두 귀가 울리리라"
+      ],
+      "raw_text_hashes": [
+        "63c66cd1d4a726310cc26000cdc9f288f990428e72f01d4bbd3538fd63e826f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:12",
+      "sequence": 7289,
+      "chapter_label": "1SA 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "In that day I will perform against Eli all that I have spoken concerning his house, from the beginning even to the end.",
+      "ko": "내가 엘리의 집에 대하여 말한 것을 처음부터 끝까지 그 날에 그에게 다 이루리라",
+      "source_text_hash": "a4fd34a6084ef71b11223dd09d2f62bae41ba5d15863764395dab55e683459ca",
+      "translation_text_hash": "de9a765ace9d054310a3f796fc6d7ad2b49136b4980ce10bc75bac7fd560adf0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 엘리의 집에 대하여 말한 것을 처음부터 끝까지 그 날에 그에게 다 이루리라"
+      ],
+      "raw_text_hashes": [
+        "de9a765ace9d054310a3f796fc6d7ad2b49136b4980ce10bc75bac7fd560adf0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:13",
+      "sequence": 7290,
+      "chapter_label": "1SA 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "For I have told him that I will judge his house forever for the iniquity which he knew, because his sons brought a curse on themselves, and he didn’t restrain them.",
+      "ko": "내가 그 집을 영영토록 심판하겠다고 그에게 이른 것은 그의 아는 죄악을 인함이니 이는 그가 자기 아들들이 저주를 자청하되 금하지 아니하였음이니라",
+      "source_text_hash": "1a7b305bbd29f13050efb057a9f6411d7363eb57dbf78697a6ab4d96fac7a44b",
+      "translation_text_hash": "d4a463224c62787ebc218ead441be23f8d5c69c21fa585a1611d8fc2cf09a6b6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 집을 영영토록 심판하겠다고 그에게 이른 것은 그의 아는 죄악을 인함이니 이는 그가 자기 아들들이 저주를 자청하되 금하지 아니하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "d4a463224c62787ebc218ead441be23f8d5c69c21fa585a1611d8fc2cf09a6b6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:14",
+      "sequence": 7291,
+      "chapter_label": "1SA 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "Therefore I have sworn to the house of Eli that the iniquity of Eli’s house shall not be removed with sacrifice or offering forever.”",
+      "ko": "그러므로 내가 엘리의 집에 대하여 맹세하기를 엘리 집의 죄악은 제물이나 예물로나 영영히 속함을 얻지 못하리라 하였노라",
+      "source_text_hash": "a212fe28cbbab73e440972064bc4013ac62990a914fec23a693131e73c88ea63",
+      "translation_text_hash": "119c356546ca148a274eeb47c5e1beb09d138b658bd054a00fcd65bb7a537721",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 엘리의 집에 대하여 맹세하기를 엘리 집의 죄악은 제물이나 예물로나 영영히 속함을 얻지 못하리라 하였노라"
+      ],
+      "raw_text_hashes": [
+        "119c356546ca148a274eeb47c5e1beb09d138b658bd054a00fcd65bb7a537721"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:15",
+      "sequence": 7292,
+      "chapter_label": "1SA 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Samuel lay until the morning, and opened the doors of the LORD’s house. Samuel was afraid to show Eli the vision.",
+      "ko": "사무엘이 아침까지 누웠다가 여호와의 집 문을 열었으나 그 이상을 엘리에게 알게 하기를 두려워하더니",
+      "source_text_hash": "ee0128a3e4a20faaf2ff1ff08e2892aeec1ac0043f33d7cc138d3d021606db2c",
+      "translation_text_hash": "be0eab12cbfdbde56b7501146f7d4d4e3b03955ee01c38955947f50e0112567e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 아침까지 누웠다가 여호와의 집 문을 열었으나 그 이상을 엘리에게 알게 하기를 두려워하더니"
+      ],
+      "raw_text_hashes": [
+        "be0eab12cbfdbde56b7501146f7d4d4e3b03955ee01c38955947f50e0112567e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:16",
+      "sequence": 7293,
+      "chapter_label": "1SA 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Then Eli called Samuel and said, “Samuel, my son!” He said, “Here I am.”",
+      "ko": "엘리가 사무엘을 불러 가로되 내 아들 사무엘아 하니 대답하되 내가 여기 있나이다",
+      "source_text_hash": "227d9e11cc0bff454a9193793153d0a77737972f79dba31c857e3a91f03bcd76",
+      "translation_text_hash": "f08b8c2a16e5a485a5948779b164b00e42285f6c7ad6afda62883c91665e6740",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리가 사무엘을 불러 가로되 내 아들 사무엘아 하니 대답하되 내가 여기 있나이다"
+      ],
+      "raw_text_hashes": [
+        "f08b8c2a16e5a485a5948779b164b00e42285f6c7ad6afda62883c91665e6740"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:17",
+      "sequence": 7294,
+      "chapter_label": "1SA 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "He said, “What is the thing that he has spoken to you? Please don’t hide it from me. God do so to you, and more also, if you hide anything from me of all the things that he spoke to you.”",
+      "ko": "가로되 네게 무엇을 말씀하셨느냐 청하노니 내게 숨기지 말라 네게 말씀하신 모든 것을 하나라도 숨기면 하나님이 네게 벌을 내리시고 또 내리시기를 원하노라",
+      "source_text_hash": "f79a407fac30e78ccb5ff92c3a0ece32463d21a2514155fa10a31e1e9c823bbe",
+      "translation_text_hash": "9753d8aa13a25437f6fbc72eb45b5f3a1bda0ec5bed4f9c666ded60ade258feb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 네게 무엇을 말씀하셨느냐 청하노니 내게 숨기지 말라 네게 말씀하신 모든 것을 하나라도 숨기면 하나님이 네게 벌을 내리시고 또 내리시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "9753d8aa13a25437f6fbc72eb45b5f3a1bda0ec5bed4f9c666ded60ade258feb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:18",
+      "sequence": 7295,
+      "chapter_label": "1SA 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Samuel told him every bit, and hid nothing from him. He said, “It is the LORD. Let him do what seems good to him.”",
+      "ko": "사무엘이 세세히 말하고 조금도 숨기지 아니하니 그가 가로되 이는 여호와시니 선하신 소견대로 하실것이니라 하니라",
+      "source_text_hash": "858a27db7d14e889db65809ca6f18a5322872edb8a9a582104d54d0200d2dbf2",
+      "translation_text_hash": "2387355b5b3e69725f0f339901537aaa5c832c8121cca1e16ab658132cf0e286",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 세세히 말하고 조금도 숨기지 아니하니 그가 가로되 이는 여호와시니 선하신 소견대로 하실것이니라 하니라"
+      ],
+      "raw_text_hashes": [
+        "2387355b5b3e69725f0f339901537aaa5c832c8121cca1e16ab658132cf0e286"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:19",
+      "sequence": 7296,
+      "chapter_label": "1SA 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Samuel grew, and the LORD was with him and let none of his words fall to the ground.",
+      "ko": "사무엘이 자라매 여호와께서 그와 함께 계셔서 그 말로 하나도 땅에 떨어지지 않게 하시니",
+      "source_text_hash": "ea182b6494a0f48b0cfd2b426c91b01f764f2401445b2e732b0d7666289e99f9",
+      "translation_text_hash": "1e94e776d096485aa0642f3a1a9f105d21daea656f0795abe9fc62fe4a6895e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사무엘이 자라매 여호와께서 그와 함께 계셔서 그 말로 하나도 땅에 떨어지지 않게 하시니"
+      ],
+      "raw_text_hashes": [
+        "1e94e776d096485aa0642f3a1a9f105d21daea656f0795abe9fc62fe4a6895e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:20",
+      "sequence": 7297,
+      "chapter_label": "1SA 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "All Israel from Dan even to Beersheba knew that Samuel was established to be a prophet of the LORD.",
+      "ko": "단에서부터 브엘세바까지의 온 이스라엘이 사무엘은 여호와의 선지자로 세우심을 입은 줄을 알았더라",
+      "source_text_hash": "e7019cbdcc8e2fda0531a249b2ec3b48a1628bbe8d0e3879b5307de4653c2b59",
+      "translation_text_hash": "ff19a6633f2f37d4288eec44ef1bee8f1716fba633116fab507d305a19340a55",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단에서부터 브엘세바까지의 온 이스라엘이 사무엘은 여호와의 선지자로 세우심을 입은 줄을 알았더라"
+      ],
+      "raw_text_hashes": [
+        "ff19a6633f2f37d4288eec44ef1bee8f1716fba633116fab507d305a19340a55"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:3:21",
+      "sequence": 7298,
+      "chapter_label": "1SA 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "The LORD appeared again in Shiloh; for the LORD revealed himself to Samuel in Shiloh by the LORD’s word.",
+      "ko": "여호와께서 실로에서 다시 나타나시되 여호와께서 실로에서 여호와의 말씀으로 사무엘에게 자기를 나타내시니",
+      "source_text_hash": "9f5703ee2993e324e2cda9e6c15431fd6bada479aa195cd7ff9d1e066fa4c8bb",
+      "translation_text_hash": "594fa0ec1cfdc15ba2942993ca0498bcc11b68bc5c2fd7e90364e7bf0cbe8e52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 실로에서 다시 나타나시되 여호와께서 실로에서 여호와의 말씀으로 사무엘에게 자기를 나타내시니"
+      ],
+      "raw_text_hashes": [
+        "594fa0ec1cfdc15ba2942993ca0498bcc11b68bc5c2fd7e90364e7bf0cbe8e52"
+      ]
+    }
+  ]
+}

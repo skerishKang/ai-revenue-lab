@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:016",
+  "unit_ordinal": 973,
+  "unit_label": "MRK 16",
+  "book_code": "MRK",
+  "chapter_number": 16,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:16:1",
+      "sequence": 24875,
+      "chapter_label": "MRK 16",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 1
+        }
+      ],
+      "en": "When the Sabbath was past, Mary Magdalene, and Mary the mother of James, and Salome bought spices, that they might come and anoint him.",
+      "ko": "안식일이 지나매 막달라 마리아와 야고보의 어머니 마리아와 또 살로메가 가서 예수께 바르기 위하여 향품을 사다 두었다가",
+      "source_text_hash": "79c81995bb9d14c7dfd1144d8b595ac08b83c7d5cde1c238d014e6f09869374c",
+      "translation_text_hash": "2caa1b135df3d050e495b8f6bda7609850155a5c2f4d9f601b6037b4dc9f7ae2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일이 지나매 막달라 마리아와 야고보의 어머니 마리아와 또 살로메가 가서 예수께 바르기 위하여 향품을 사다 두었다가"
+      ],
+      "raw_text_hashes": [
+        "2caa1b135df3d050e495b8f6bda7609850155a5c2f4d9f601b6037b4dc9f7ae2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:2",
+      "sequence": 24876,
+      "chapter_label": "MRK 16",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 2
+        }
+      ],
+      "en": "Very early on the first day of the week, they came to the tomb when the sun had risen.",
+      "ko": "안식 후 첫날 매우 일찌기 해 돋은 때에 그 무덤으로 가며",
+      "source_text_hash": "ed70f8b2683abb31436da64e90cd2bf13b7ca80eb698feff70028b242e2bf537",
+      "translation_text_hash": "f8db96b824604b0c6fb7368a108af5a9147bfc4646efc314b666847e2672f63f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식 후 첫날 매우 일찌기 해 돋은 때에 그 무덤으로 가며"
+      ],
+      "raw_text_hashes": [
+        "f8db96b824604b0c6fb7368a108af5a9147bfc4646efc314b666847e2672f63f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:3",
+      "sequence": 24877,
+      "chapter_label": "MRK 16",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 3
+        }
+      ],
+      "en": "They were saying among themselves, “Who will roll away the stone from the door of the tomb for us?”",
+      "ko": "서로 말하되 누가 우리를 위하여 무덤 문에서 돌을 굴려 주리요 하더니",
+      "source_text_hash": "d23fadccd2c6847c53aadd6300bdce5ea03128aa13748aaa6399b61f8aee5807",
+      "translation_text_hash": "426e1d7cb5068c4c7afc40a3231675624ddc8b8c9ea3181dcad0ee9cf31ac0b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 말하되 누가 우리를 위하여 무덤 문에서 돌을 굴려 주리요 하더니"
+      ],
+      "raw_text_hashes": [
+        "426e1d7cb5068c4c7afc40a3231675624ddc8b8c9ea3181dcad0ee9cf31ac0b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:4",
+      "sequence": 24878,
+      "chapter_label": "MRK 16",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 4
+        }
+      ],
+      "en": "for it was very big. Looking up, they saw that the stone was rolled back.",
+      "ko": "눈을 들어본즉 돌이 벌써 굴려졌으니 그 돌이 심히 크더라",
+      "source_text_hash": "c4ec2b9459e5bba2cb0dc713ba1e45b84401f3ca40e0b6779cd1feff947f9cc4",
+      "translation_text_hash": "b8b08b35c39be6d991b7edd09e208b561d1b286dd46ec33b9501f6b5cb0c6710",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈을 들어본즉 돌이 벌써 굴려졌으니 그 돌이 심히 크더라"
+      ],
+      "raw_text_hashes": [
+        "b8b08b35c39be6d991b7edd09e208b561d1b286dd46ec33b9501f6b5cb0c6710"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:5",
+      "sequence": 24879,
+      "chapter_label": "MRK 16",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 5
+        }
+      ],
+      "en": "Entering into the tomb, they saw a young man sitting on the right side, dressed in a white robe; and they were amazed.",
+      "ko": "무덤에 들어가서 흰 옷을 입은 한 청년이 우편에 앉은 것을 보고 놀라매",
+      "source_text_hash": "f55c96350f2ad0ae2a5f18b63960c099101b28609636079a271783315c0cbae7",
+      "translation_text_hash": "75867e6931e6883ccf2213c28d5964365162800cc9adc2d47cc5caea47579844",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무덤에 들어가서 흰 옷을 입은 한 청년이 우편에 앉은 것을 보고 놀라매"
+      ],
+      "raw_text_hashes": [
+        "75867e6931e6883ccf2213c28d5964365162800cc9adc2d47cc5caea47579844"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:6",
+      "sequence": 24880,
+      "chapter_label": "MRK 16",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 6
+        }
+      ],
+      "en": "He said to them, “Don’t be amazed. You seek Jesus, the Nazarene, who has been crucified. He has risen! He is not here. See the place where they laid him!",
+      "ko": "청년이 이르되 놀라지 말라 너희가 십자가에 못 박히신 나사렛 예수를 찾는구나 그가 살아나셨고 여기 계시지 아니하니라 보라 그를 두었던 곳이니라",
+      "source_text_hash": "454c94c572ca04d5ad954a8be3309bf02e2ca597d73301e0c4343b7ec961eec8",
+      "translation_text_hash": "c42aa17342338edbee53157eca485fd240fe8cba35d924eeea469b9a73e70f96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "청년이 이르되 놀라지 말라 너희가 십자가에 못 박히신 나사렛 예수를 찾는구나 그가 살아나셨고 여기 계시지 아니하니라 보라 그를 두었던 곳이니라"
+      ],
+      "raw_text_hashes": [
+        "c42aa17342338edbee53157eca485fd240fe8cba35d924eeea469b9a73e70f96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:7",
+      "sequence": 24881,
+      "chapter_label": "MRK 16",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 7
+        }
+      ],
+      "en": "But go, tell his disciples and Peter, ‘He goes before you into Galilee. There you will see him, as he said to you.’”",
+      "ko": "가서 그의 제자들과 베드로에게 이르기를 예수께서 너희보다 먼저 갈릴리로 가시나니 전에 너희에게 말씀하신대로 너희가 거기서 뵈오리라 하라 하는지라",
+      "source_text_hash": "9e08da47f612db765e2cb776b9598b55ab868d02885fd817b6cfc0c8e615779b",
+      "translation_text_hash": "550e8a85524d0060232c7dfe45857c5ce25f6f63ffabd28dacf2d989ec69663a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 그의 제자들과 베드로에게 이르기를 예수께서 너희보다 먼저 갈릴리로 가시나니 전에 너희에게 말씀하신대로 너희가 거기서 뵈오리라 하라 하는지라"
+      ],
+      "raw_text_hashes": [
+        "550e8a85524d0060232c7dfe45857c5ce25f6f63ffabd28dacf2d989ec69663a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:8",
+      "sequence": 24882,
+      "chapter_label": "MRK 16",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 8
+        }
+      ],
+      "en": "They went out, and fled from the tomb, for trembling and astonishment had come on them. They said nothing to anyone; for they were afraid.",
+      "ko": "여자들이 심히 놀라 떨며 나와 무덤에서 도망하고 무서워하여 아무에게 아무 말도 하지 못하더라",
+      "source_text_hash": "128805ab2e3c364dd683c60bcc24e624f285683ddc429fdd6394d25c2df4cd57",
+      "translation_text_hash": "03e19aaf38f2447fcb615e8fd1a8be3bfa7f4e915bb521d46e259116b39c11e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여자들이 심히 놀라 떨며 나와 무덤에서 도망하고 무서워하여 아무에게 아무 말도 하지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "03e19aaf38f2447fcb615e8fd1a8be3bfa7f4e915bb521d46e259116b39c11e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:9",
+      "sequence": 24883,
+      "chapter_label": "MRK 16",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 9
+        }
+      ],
+      "en": "Now when he had risen early on the first day of the week, he appeared first to Mary Magdalene, from whom he had cast out seven demons.",
+      "ko": "[예수께서 안식후 첫날 이른 아침에 살아나신 후 전에 일곱 귀신을 쫓아내어 주신 막달라 마리아에게 먼저 보이시니",
+      "source_text_hash": "b2ec71ede3deb8cc4a22d7975c965e6238ee90da465e543a9b89c6b1f16e3899",
+      "translation_text_hash": "2cb1d43080f358287002193a8f0bcf5633fe5805e9cc43b520f0adee09e7bfe2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "[예수께서 안식후 첫날 이른 아침에 살아나신 후 전에 일곱 귀신을 쫓아내어 주신 막달라 마리아에게 먼저 보이시니"
+      ],
+      "raw_text_hashes": [
+        "2cb1d43080f358287002193a8f0bcf5633fe5805e9cc43b520f0adee09e7bfe2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:10",
+      "sequence": 24884,
+      "chapter_label": "MRK 16",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 10
+        }
+      ],
+      "en": "She went and told those who had been with him, as they mourned and wept.",
+      "ko": "마리아가 가서 예수와 함께하던 사람들의 슬퍼하며 울고 있는 중에 이 일을 고하매",
+      "source_text_hash": "3c84d72625fbd009c6b350a42cadedd64ebca8db6878c33aeb162fc9d3c61626",
+      "translation_text_hash": "83489acf5e4e57860a7d59dc57137cdaf3d8540b690021e1526b5c67d95b5ba5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마리아가 가서 예수와 함께하던 사람들의 슬퍼하며 울고 있는 중에 이 일을 고하매"
+      ],
+      "raw_text_hashes": [
+        "83489acf5e4e57860a7d59dc57137cdaf3d8540b690021e1526b5c67d95b5ba5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:11",
+      "sequence": 24885,
+      "chapter_label": "MRK 16",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 11
+        }
+      ],
+      "en": "When they heard that he was alive and had been seen by her, they disbelieved.",
+      "ko": "그들은 예수의 살으셨다는 것과 마리아에게 보이셨다는 것을 듣고도 믿지 아니하니라",
+      "source_text_hash": "e7d2bbd6f29053bad5461d3b4e12aa79c63a7edec00f510540e9871ccde033a3",
+      "translation_text_hash": "eb09cd5b304505e662ef78d063bea85a3c87b04f8d15cd6ba3aadb6a04614ae8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들은 예수의 살으셨다는 것과 마리아에게 보이셨다는 것을 듣고도 믿지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "eb09cd5b304505e662ef78d063bea85a3c87b04f8d15cd6ba3aadb6a04614ae8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:12",
+      "sequence": 24886,
+      "chapter_label": "MRK 16",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 12
+        }
+      ],
+      "en": "After these things he was revealed in another form to two of them as they walked, on their way into the country.",
+      "ko": "그 후에 저희 중 두 사람이 걸어서 시골로 갈때에 예수께서 다른 모양으로 저희에게 나타나시니",
+      "source_text_hash": "3abc4cc983e9f64c9115532c06c3da77bb2bdb48aa44aa16c9b818b916c15607",
+      "translation_text_hash": "560b9b95118943a2d2f7dbb6b88bb6e8a7f5275f3ed6f6844ee501727bbe3e88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 저희 중 두 사람이 걸어서 시골로 갈때에 예수께서 다른 모양으로 저희에게 나타나시니"
+      ],
+      "raw_text_hashes": [
+        "560b9b95118943a2d2f7dbb6b88bb6e8a7f5275f3ed6f6844ee501727bbe3e88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:13",
+      "sequence": 24887,
+      "chapter_label": "MRK 16",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 13
+        }
+      ],
+      "en": "They went away and told it to the rest. They didn’t believe them, either.",
+      "ko": "두 사람이 가서 남은 제자들에게 고하였으되 역시 믿지 아니하니라",
+      "source_text_hash": "9036562e157c031cddcb2bbec18cbdee59249b4da112e73ed29d4e416740308b",
+      "translation_text_hash": "409aeb57eab1f06d4940a2f16da66c0c9bf25e7fa273d7b1f5317a725f1ea3e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 사람이 가서 남은 제자들에게 고하였으되 역시 믿지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "409aeb57eab1f06d4940a2f16da66c0c9bf25e7fa273d7b1f5317a725f1ea3e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:14",
+      "sequence": 24888,
+      "chapter_label": "MRK 16",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 14
+        }
+      ],
+      "en": "Afterward he was revealed to the eleven themselves as they sat at the table; and he rebuked them for their unbelief and hardness of heart, because they didn’t believe those who had seen him after he had risen.",
+      "ko": "그 후에 열 한 제자가 음식 먹을 때에 예수께서 저희에게 나타나사 저희의 믿음 없는 것과 마음이 완악한 것을 꾸짖으시니 이는 자기의 살아난 것을 본 자들의 말을 믿지 아니함일러라",
+      "source_text_hash": "614217e5380c4d07c00c5e8d5d0622b0a8a1138294d44df2c58f2579bed95af0",
+      "translation_text_hash": "443e8f0e801f3f134f13f2a71970a46d795de17d67bf12771b0f8a8bbd50d897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 열 한 제자가 음식 먹을 때에 예수께서 저희에게 나타나사 저희의 믿음 없는 것과 마음이 완악한 것을 꾸짖으시니 이는 자기의 살아난 것을 본 자들의 말을 믿지 아니함일러라"
+      ],
+      "raw_text_hashes": [
+        "443e8f0e801f3f134f13f2a71970a46d795de17d67bf12771b0f8a8bbd50d897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:15",
+      "sequence": 24889,
+      "chapter_label": "MRK 16",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 15
+        }
+      ],
+      "en": "He said to them, “Go into all the world and preach the Good News to the whole creation.",
+      "ko": "또 가라사대 너희는 온 천하에 다니며 만민에게 복음을 전파하라",
+      "source_text_hash": "a03a4dbe855b1d8f4e6937d56dac6ae8a70034bb6eb93dd200fed36aa3cdb98a",
+      "translation_text_hash": "fd0e6f7e2b6676346cb17cb5d4812db20239acfe650f0e0b5f89bab40008d622",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 너희는 온 천하에 다니며 만민에게 복음을 전파하라"
+      ],
+      "raw_text_hashes": [
+        "fd0e6f7e2b6676346cb17cb5d4812db20239acfe650f0e0b5f89bab40008d622"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:16",
+      "sequence": 24890,
+      "chapter_label": "MRK 16",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 16
+        }
+      ],
+      "en": "He who believes and is baptized will be saved; but he who disbelieves will be condemned.",
+      "ko": "믿고 세례를 받는 사람은 구원을 얻을 것이요 믿지 않는 사람은 정죄를 받으리라",
+      "source_text_hash": "c0c47bdaf1f6fbebd7fa0131bafc84fbca2ace94c0b26284b258ad94a85f0dbf",
+      "translation_text_hash": "789a13a2d3f356f866a2e280d49c72f275c3121aa5afe3614d3d19a3ad75a944",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿고 세례를 받는 사람은 구원을 얻을 것이요 믿지 않는 사람은 정죄를 받으리라"
+      ],
+      "raw_text_hashes": [
+        "789a13a2d3f356f866a2e280d49c72f275c3121aa5afe3614d3d19a3ad75a944"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:17",
+      "sequence": 24891,
+      "chapter_label": "MRK 16",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 17
+        }
+      ],
+      "en": "These signs will accompany those who believe: in my name they will cast out demons; they will speak with new languages;",
+      "ko": "믿는 자들에게는 이런 표적이 따르리니 곧 저희가 내 이름으로 귀신을 쫓아내며 새 방언을 말하며",
+      "source_text_hash": "8111cbc178653a73daee2ed1bc1fce36cc5e154073dae864abe81a19cd308553",
+      "translation_text_hash": "d27674451d735c50de2160987d01a7ce1e3696587725a421e6241c5ab357291e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿는 자들에게는 이런 표적이 따르리니 곧 저희가 내 이름으로 귀신을 쫓아내며 새 방언을 말하며"
+      ],
+      "raw_text_hashes": [
+        "d27674451d735c50de2160987d01a7ce1e3696587725a421e6241c5ab357291e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:18",
+      "sequence": 24892,
+      "chapter_label": "MRK 16",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 18
+        }
+      ],
+      "en": "they will take up serpents; and if they drink any deadly thing, it will in no way hurt them; they will lay hands on the sick, and they will recover.”",
+      "ko": "뱀을 집으며 무슨 독을 마실찌라도 해를 받지 아니하며 병든 사람에게 손을 얹은즉 나으리라 하시더라",
+      "source_text_hash": "5a481b3e2bac7e75f6f7d28094ebb7ce2f613adb42207f6e9c27ac3e00eaac20",
+      "translation_text_hash": "a963e00812dbcd1174ce10df1f704df692baa1537cd4a88797dc2a5c4ebbed3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뱀을 집으며 무슨 독을 마실찌라도 해를 받지 아니하며 병든 사람에게 손을 얹은즉 나으리라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "a963e00812dbcd1174ce10df1f704df692baa1537cd4a88797dc2a5c4ebbed3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:19",
+      "sequence": 24893,
+      "chapter_label": "MRK 16",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 19
+        }
+      ],
+      "en": "So then the Lord, after he had spoken to them, was received up into heaven and sat down at the right hand of God.",
+      "ko": "주 예수께서 말씀을 마치신 후에 하늘로 올리우사 하나님 우편에 앉으시니라",
+      "source_text_hash": "997af3f6cb0afed6c2153db9c9b8b82f761d1b1641eb0b647fb62471a3d28cef",
+      "translation_text_hash": "97bf9f2cae5bf5144a6dd556c3826df8f403ba37eea0d8d21a6fa741da1d923c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 예수께서 말씀을 마치신 후에 하늘로 올리우사 하나님 우편에 앉으시니라"
+      ],
+      "raw_text_hashes": [
+        "97bf9f2cae5bf5144a6dd556c3826df8f403ba37eea0d8d21a6fa741da1d923c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:16:20",
+      "sequence": 24894,
+      "chapter_label": "MRK 16",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 16,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 16,
+          "verse": 20
+        }
+      ],
+      "en": "They went out and preached everywhere, the Lord working with them and confirming the word by the signs that followed. Amen.",
+      "ko": "제자들이 나가 두루 전파할쌔 주께서 함께 역사하사 그 따르는 표적으로 말씀을 확실히 증거하시니라]",
+      "source_text_hash": "4b16e6bae19bdefc24ba1beb48611d2380dc56e260f2d04d53f6fc717225e078",
+      "translation_text_hash": "6cb25844bb82ad6735c79ea602a6e1da8e8896fa9c5a95e1b3cb190c540f4eae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 나가 두루 전파할쌔 주께서 함께 역사하사 그 따르는 표적으로 말씀을 확실히 증거하시니라]"
+      ],
+      "raw_text_hashes": [
+        "6cb25844bb82ad6735c79ea602a6e1da8e8896fa9c5a95e1b3cb190c540f4eae"
+      ]
+    }
+  ]
+}

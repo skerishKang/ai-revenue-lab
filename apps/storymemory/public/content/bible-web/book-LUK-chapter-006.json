@@ -1,0 +1,1581 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LUK:chapter:006",
+  "unit_ordinal": 979,
+  "unit_label": "LUK 6",
+  "book_code": "LUK",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LUK:6:1",
+      "sequence": 25148,
+      "chapter_label": "LUK 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Now on the second Sabbath after the first, he was going through the grain fields. His disciples plucked the heads of grain and ate, rubbing them in their hands.",
+      "ko": "안식일에 예수께서 밀밭 사이로 지나가실쌔 제자들이 이삭을 잘라 손으로 비비어 먹으니",
+      "source_text_hash": "6043c051b05c629284c367ce1b2c5a2644e395df21ebcd302481c1ca5228390f",
+      "translation_text_hash": "7688cbbee4610c23df45dbce1d628205ef56ef0b5c47100892c9faf52e53bc5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일에 예수께서 밀밭 사이로 지나가실쌔 제자들이 이삭을 잘라 손으로 비비어 먹으니"
+      ],
+      "raw_text_hashes": [
+        "7688cbbee4610c23df45dbce1d628205ef56ef0b5c47100892c9faf52e53bc5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:2",
+      "sequence": 25149,
+      "chapter_label": "LUK 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "But some of the Pharisees said to them, “Why do you do that which is not lawful to do on the Sabbath day?”",
+      "ko": "어떤 바리새인들이 말하되 어찌하여 안식일에 하지 못할 일을 하느뇨",
+      "source_text_hash": "8bc6f81b050f6ce99387ff7a0c83c8c313f1283d5bc6dcc368bf5353f9d3388d",
+      "translation_text_hash": "70d8509a2949fddb37857b5d3d62bba74c9a72173601266082641c654bbb2646",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 바리새인들이 말하되 어찌하여 안식일에 하지 못할 일을 하느뇨"
+      ],
+      "raw_text_hashes": [
+        "70d8509a2949fddb37857b5d3d62bba74c9a72173601266082641c654bbb2646"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:3",
+      "sequence": 25150,
+      "chapter_label": "LUK 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Jesus, answering them, said, “Haven’t you read what David did when he was hungry, he and those who were with him,",
+      "ko": "예수께서 대답하여 가라사대 다윗이 자기와 및 함께한 자들이 시장할 때에 한 일을 읽지 못하였느냐",
+      "source_text_hash": "c4114b6f62f2c5ab3df433e515c579f5c1543037d4d82fec9c7b3aefe4dd61f6",
+      "translation_text_hash": "550dee8b9378819ef8c8bbaf18fc68f470cc36ecdbb98b4c05de478c1baa37cb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 다윗이 자기와 및 함께한 자들이 시장할 때에 한 일을 읽지 못하였느냐"
+      ],
+      "raw_text_hashes": [
+        "550dee8b9378819ef8c8bbaf18fc68f470cc36ecdbb98b4c05de478c1baa37cb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:4",
+      "sequence": 25151,
+      "chapter_label": "LUK 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "how he entered into God’s house, and took and ate the show bread, and gave also to those who were with him, which is not lawful to eat except for the priests alone?”",
+      "ko": "그가 하나님의 전에 들어가서 다만 제사장 외에는 먹지 못하는 진설병을 집어 먹고 함께한 자들에게도 주지 아니하였느냐",
+      "source_text_hash": "65ed78d76d584ce5596215441cdadc3c3f99c0fa2a173c42fa7bf08ca62524cc",
+      "translation_text_hash": "345ce7b6279b5191c88dadcfe80eabeba77c36243bdd98ea2cd711493673930b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 하나님의 전에 들어가서 다만 제사장 외에는 먹지 못하는 진설병을 집어 먹고 함께한 자들에게도 주지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "345ce7b6279b5191c88dadcfe80eabeba77c36243bdd98ea2cd711493673930b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:5",
+      "sequence": 25152,
+      "chapter_label": "LUK 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "He said to them, “The Son of Man is lord of the Sabbath.”",
+      "ko": "또 가라사대 인자는 안식일의 주인이니라 하시더라",
+      "source_text_hash": "3838e9cb076fcc71584eb61d2c969a720e5ccaf072a0fed52d99a68d09fbacbd",
+      "translation_text_hash": "0a00da33a1cba36af056dce8a6d0b4cb785aea71d6aaf0438eb3a67711f9274f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 인자는 안식일의 주인이니라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "0a00da33a1cba36af056dce8a6d0b4cb785aea71d6aaf0438eb3a67711f9274f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:6",
+      "sequence": 25153,
+      "chapter_label": "LUK 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "It also happened on another Sabbath that he entered into the synagogue and taught. There was a man there, and his right hand was withered.",
+      "ko": "또 다른 안식일에 예수께서 회당에 들어가사 가르치실쌔 거기 오른손 마른 사람이 있는지라",
+      "source_text_hash": "a774bc6ef415a72069d8b5ec62e351e4951b73eeb94506a73d47c7d827e2f7e9",
+      "translation_text_hash": "a68b7ca02c4a32a891f5f0798a6509aab4a38ae59284a30769d449c62116f548",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 다른 안식일에 예수께서 회당에 들어가사 가르치실쌔 거기 오른손 마른 사람이 있는지라"
+      ],
+      "raw_text_hashes": [
+        "a68b7ca02c4a32a891f5f0798a6509aab4a38ae59284a30769d449c62116f548"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:7",
+      "sequence": 25154,
+      "chapter_label": "LUK 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "The scribes and the Pharisees watched him, to see whether he would heal on the Sabbath, that they might find an accusation against him.",
+      "ko": "서기관과 바리새인들이 예수를 송사할 빙거를 찾으려 하여 안식일에 병 고치시는가 엿보니",
+      "source_text_hash": "1a9389f403d2438a556397fa772d61226561ce8bd115647bd700661e6b7c05cb",
+      "translation_text_hash": "7fe4d487cf2b659f556364942ad3a2e58a4c0cf53714765c74095224b1bf8895",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관과 바리새인들이 예수를 송사할 빙거를 찾으려 하여 안식일에 병 고치시는가 엿보니"
+      ],
+      "raw_text_hashes": [
+        "7fe4d487cf2b659f556364942ad3a2e58a4c0cf53714765c74095224b1bf8895"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:8",
+      "sequence": 25155,
+      "chapter_label": "LUK 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "But he knew their thoughts; and he said to the man who had the withered hand, “Rise up and stand in the middle.”He arose and stood.",
+      "ko": "예수께서 저희 생각을 아시고 손 마른 사람에게 이르시되 일어나 한가운데 서라 하시니 저가 일어나 서거늘",
+      "source_text_hash": "a32a826bfbea48ff793a6a735d012baf23910618ae7c4d2ba1bdb8dcde4e232f",
+      "translation_text_hash": "8935da22aec0886e554b72f332dd48d616dd4965ee03ebb99f4636904686c01f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희 생각을 아시고 손 마른 사람에게 이르시되 일어나 한가운데 서라 하시니 저가 일어나 서거늘"
+      ],
+      "raw_text_hashes": [
+        "8935da22aec0886e554b72f332dd48d616dd4965ee03ebb99f4636904686c01f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:9",
+      "sequence": 25156,
+      "chapter_label": "LUK 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Then Jesus said to them, “I will ask you something: Is it lawful on the Sabbath to do good, or to do harm? To save a life, or to kill?”",
+      "ko": "예수께서 저희에게 이르시되 내가 너희에게 묻노니 안식일에 선을 행하는 것과 악을 행하는 것 생명을 구하는 것과 멸하는 것 어느 것이 옳으냐 하시며",
+      "source_text_hash": "78e6015008f948cb2000bdf31adf564a3fb41c22b0bcfae1e20a31aa4ab2f95f",
+      "translation_text_hash": "31d8fc4fd843375f5441db2423c3a3916fd0c42ac87378e100039c1b1d3e4433",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희에게 이르시되 내가 너희에게 묻노니 안식일에 선을 행하는 것과 악을 행하는 것 생명을 구하는 것과 멸하는 것 어느 것이 옳으냐 하시며"
+      ],
+      "raw_text_hashes": [
+        "31d8fc4fd843375f5441db2423c3a3916fd0c42ac87378e100039c1b1d3e4433"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:10",
+      "sequence": 25157,
+      "chapter_label": "LUK 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "He looked around at them all, and said to the man, “Stretch out your hand.”He did, and his hand was restored as sound as the other.",
+      "ko": "무리를 둘러 보시고 그 사람에게 이르시되 네 손을 내밀라 하시니 저가 그리하매 그 손이 회복된지라",
+      "source_text_hash": "ac08360cdcb8bfc809ca919358963c260460d9d9a116ad167c7f1c74d0f926d3",
+      "translation_text_hash": "d6e7c843f9cd74df05fedc368452eb4dac0b3f4834845994f94e2727ac73a953",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리를 둘러 보시고 그 사람에게 이르시되 네 손을 내밀라 하시니 저가 그리하매 그 손이 회복된지라"
+      ],
+      "raw_text_hashes": [
+        "d6e7c843f9cd74df05fedc368452eb4dac0b3f4834845994f94e2727ac73a953"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:11",
+      "sequence": 25158,
+      "chapter_label": "LUK 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "But they were filled with rage, and talked with one another about what they might do to Jesus.",
+      "ko": "저희는 분기가 가득하여 예수를 어떻게 처치할 것을 서로 의논하니라",
+      "source_text_hash": "42142d5af76563f6c7ddccda5b56e6f3f0ebd16638e73de2afe55857a3dc05a5",
+      "translation_text_hash": "5fcd46b5841c08bc068cacd21046ca5e2b9fc958b245601e1194ddd07c2aa4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 분기가 가득하여 예수를 어떻게 처치할 것을 서로 의논하니라"
+      ],
+      "raw_text_hashes": [
+        "5fcd46b5841c08bc068cacd21046ca5e2b9fc958b245601e1194ddd07c2aa4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:12",
+      "sequence": 25159,
+      "chapter_label": "LUK 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "In these days, he went out to the mountain to pray, and he continued all night in prayer to God.",
+      "ko": "이 때에 예수께서 기도하시러 산으로 가사 밤이 맟도록 하나님께 기도하시고",
+      "source_text_hash": "299b27d14bf342d904020e3c6594b2a0502b9857654c1afd975d116acb54a955",
+      "translation_text_hash": "9326ac82eff7908bb9a4a398226195c1795c7e93ea08541d7c489588163eb811",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 때에 예수께서 기도하시러 산으로 가사 밤이 맟도록 하나님께 기도하시고"
+      ],
+      "raw_text_hashes": [
+        "9326ac82eff7908bb9a4a398226195c1795c7e93ea08541d7c489588163eb811"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:13",
+      "sequence": 25160,
+      "chapter_label": "LUK 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "When it was day, he called his disciples, and from them he chose twelve, whom he also named apostles:",
+      "ko": "밝으매 그 제자들을 부르사 그 중에서 열 둘을 택하여 사도라 칭하셨으니",
+      "source_text_hash": "48cc2a1b626f9060c6bdc432d6cf0c581ebe0417f9ba92cc1ad28843877cd61c",
+      "translation_text_hash": "b54363bfdc52f8ad8a0c03a53ff094442737756259c0fe40968288c2b2648e99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밝으매 그 제자들을 부르사 그 중에서 열 둘을 택하여 사도라 칭하셨으니"
+      ],
+      "raw_text_hashes": [
+        "b54363bfdc52f8ad8a0c03a53ff094442737756259c0fe40968288c2b2648e99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:14",
+      "sequence": 25161,
+      "chapter_label": "LUK 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Simon, whom he also named Peter; Andrew, his brother; James; John; Philip; Bartholomew;",
+      "ko": "곧 베드로라고도 이름 주신 시몬과 및 그 형제 안드레와 및 야고보와 요한과 빌립과 바돌로매와",
+      "source_text_hash": "4587cf1917cc6ab1c0e8226730d1ffd548b3256f4e6a1a352442b2e9b1cebf1b",
+      "translation_text_hash": "8ebedbbf15fdddfc5a11b1f3e48ca1e9a34b56335d42d04d63d3aea2a6f1ee8f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 베드로라고도 이름 주신 시몬과 및 그 형제 안드레와 및 야고보와 요한과 빌립과 바돌로매와"
+      ],
+      "raw_text_hashes": [
+        "8ebedbbf15fdddfc5a11b1f3e48ca1e9a34b56335d42d04d63d3aea2a6f1ee8f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:15",
+      "sequence": 25162,
+      "chapter_label": "LUK 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Matthew; Thomas; James the son of Alphaeus; Simon who was called the Zealot;",
+      "ko": "마태와 도마와 및 알패오의 아들 야고보와 및 셀롯이라 하는 시몬과",
+      "source_text_hash": "47e29aac82fb74aadce46aada53158878b2b54c2c850ff2b4df1d23430429617",
+      "translation_text_hash": "e8d7f019ba7ab706427041a7670fd7ac952a124969baa1e56aca8aa08d2e635e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마태와 도마와 및 알패오의 아들 야고보와 및 셀롯이라 하는 시몬과"
+      ],
+      "raw_text_hashes": [
+        "e8d7f019ba7ab706427041a7670fd7ac952a124969baa1e56aca8aa08d2e635e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:16",
+      "sequence": 25163,
+      "chapter_label": "LUK 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "Judas the son of James; and Judas Iscariot, who also became a traitor.",
+      "ko": "및 야고보의 아들 유다와 및 예수를 파는 자 될 가룟 유다라",
+      "source_text_hash": "2c0e390c8072f823ecc5c16788460d2e2edc4a66efcbe7dd197cb351dc8d6ea6",
+      "translation_text_hash": "60ba6f2456166dea62ea434c70d52339193506b7f948a4613113b1dcbd748d6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "및 야고보의 아들 유다와 및 예수를 파는 자 될 가룟 유다라"
+      ],
+      "raw_text_hashes": [
+        "60ba6f2456166dea62ea434c70d52339193506b7f948a4613113b1dcbd748d6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:17",
+      "sequence": 25164,
+      "chapter_label": "LUK 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "He came down with them and stood on a level place, with a crowd of his disciples and a great number of the people from all Judea and Jerusalem and the sea coast of Tyre and Sidon, who came to hear him and to be healed of their diseases,",
+      "ko": "예수께서 저희와 함께 내려오사 평지에 서시니 그 제자의 허다한 무리와 또 예수의 말씀도 듣고 병 고침을 얻으려고 유대 사방과 예루살렘과 및 두로와 시돈의 해안으로부터 온 많은 백성도 있더라",
+      "source_text_hash": "7abee8b15cd07efcf2e0e524f7cd95780b62545bd1c3b2e11005d8cb45b38732",
+      "translation_text_hash": "5baaf2b89649e1a6fc650c0e335c4e24ebbcfffe883ede00c1a9e880f17ea887",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 저희와 함께 내려오사 평지에 서시니 그 제자의 허다한 무리와 또 예수의 말씀도 듣고 병 고침을 얻으려고 유대 사방과 예루살렘과 및 두로와 시돈의 해안으로부터 온 많은 백성도 있더라"
+      ],
+      "raw_text_hashes": [
+        "5baaf2b89649e1a6fc650c0e335c4e24ebbcfffe883ede00c1a9e880f17ea887"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:18",
+      "sequence": 25165,
+      "chapter_label": "LUK 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "as well as those who were troubled by unclean spirits; and they were being healed.",
+      "ko": "더러운 귀신에게 고난 받는 자들도 고침을 얻은지라",
+      "source_text_hash": "9c0060cc1dfc485b27ca960eb97a3c3e404abed076556cbbb3ea3cfa8f245fda",
+      "translation_text_hash": "e9b79d8e903ad4df5bfafffe742d6a28f5e3268d8556fa440d406c6c3ea128ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더러운 귀신에게 고난 받는 자들도 고침을 얻은지라"
+      ],
+      "raw_text_hashes": [
+        "e9b79d8e903ad4df5bfafffe742d6a28f5e3268d8556fa440d406c6c3ea128ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:19",
+      "sequence": 25166,
+      "chapter_label": "LUK 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "All the multitude sought to touch him, for power came out of him and healed them all.",
+      "ko": "온 무리가 예수를 만지려고 힘쓰니 이는 능력이 예수께로 나서 모든 사람을 낫게 함이러라",
+      "source_text_hash": "e7c00cac900aa9bcdf6537529a495146851a78d0ddd88881f45af09d7d4c4824",
+      "translation_text_hash": "be91929d62c7baa15de099bcf3afcecbbdf2857d23ec2b5cf11ca46664443be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 무리가 예수를 만지려고 힘쓰니 이는 능력이 예수께로 나서 모든 사람을 낫게 함이러라"
+      ],
+      "raw_text_hashes": [
+        "be91929d62c7baa15de099bcf3afcecbbdf2857d23ec2b5cf11ca46664443be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:20",
+      "sequence": 25167,
+      "chapter_label": "LUK 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "He lifted up his eyes to his disciples, and said: “Blessed are you who are poor, for God’s Kingdom is yours.",
+      "ko": "예수께서 눈을 들어 제자들을 보시고 가라사대 가난한 자는 복이 있나니 하나님의 나라가 너희 것임이요",
+      "source_text_hash": "5bdda3faa336fd1059855ff59a253617c43c38365afc94317ef01e27ffb4061c",
+      "translation_text_hash": "700bff3a48ee02d8cb2119142c7473169aa5ba35910e4951dfd874c9c17660f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 눈을 들어 제자들을 보시고 가라사대 가난한 자는 복이 있나니 하나님의 나라가 너희 것임이요"
+      ],
+      "raw_text_hashes": [
+        "700bff3a48ee02d8cb2119142c7473169aa5ba35910e4951dfd874c9c17660f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:21",
+      "sequence": 25168,
+      "chapter_label": "LUK 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Blessed are you who hunger now,for you will be filled. Blessed are you who weep now, for you will laugh.",
+      "ko": "이제 주린 자는 복이 있나니 너희가 배부름을 얻을 것임이요 이제 우는 자는 복이 있나니 너희가 웃을 것임이요",
+      "source_text_hash": "f82e64afde0ee32b158ca5aa2e318f358e89ca00eec1623310849e3c8dc1b278",
+      "translation_text_hash": "8f088ade227153a506e991536f4898a2ba7a7ef121d8e391781226a2b2ee356f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 주린 자는 복이 있나니 너희가 배부름을 얻을 것임이요 이제 우는 자는 복이 있나니 너희가 웃을 것임이요"
+      ],
+      "raw_text_hashes": [
+        "8f088ade227153a506e991536f4898a2ba7a7ef121d8e391781226a2b2ee356f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:22",
+      "sequence": 25169,
+      "chapter_label": "LUK 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "Blessed are you when men hate you, and when they exclude and mock you, and throw out your name as evil, for the Son of Man’s sake.",
+      "ko": "인자를 인하여 사람들이 너희를 미워하며 멀리하고 욕하고 너희 이름을 악하다 하여 버릴 때에는 너희에게 복이 있도다",
+      "source_text_hash": "b90810d756986e1b3f78dfeb5afb85f5ab67bb7d8a2b969db61e5ebb198d47be",
+      "translation_text_hash": "a1720dc69a0132c7bf83f97dc7e8241aa725d50dd56152fafdaaab091dfcc213",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자를 인하여 사람들이 너희를 미워하며 멀리하고 욕하고 너희 이름을 악하다 하여 버릴 때에는 너희에게 복이 있도다"
+      ],
+      "raw_text_hashes": [
+        "a1720dc69a0132c7bf83f97dc7e8241aa725d50dd56152fafdaaab091dfcc213"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:23",
+      "sequence": 25170,
+      "chapter_label": "LUK 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Rejoice in that day and leap for joy, for behold, your reward is great in heaven, for their fathers did the same thing to the prophets.",
+      "ko": "그날에 기뻐하고 뛰놀라 하늘에서 너희 상이 큼이라 저희 조상들이 선지자들에게 이와 같이 하였느니라",
+      "source_text_hash": "ba56b9e7b64fecd161033aa26c24cd794e118c8d42d07f78db7f53169cd70b99",
+      "translation_text_hash": "623d9a7b680ee94a628e7124d3a6d0ffb9e3a3ee705a866a877179942cb53eb3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그날에 기뻐하고 뛰놀라 하늘에서 너희 상이 큼이라 저희 조상들이 선지자들에게 이와 같이 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "623d9a7b680ee94a628e7124d3a6d0ffb9e3a3ee705a866a877179942cb53eb3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:24",
+      "sequence": 25171,
+      "chapter_label": "LUK 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "“But woe to you who are rich!For you have received your consolation.",
+      "ko": "그러나 화 있을찐저 너희 부요한 자여 너희는 너희의 위로를 이미 받았도다",
+      "source_text_hash": "2c4e15f3511811fa7cd0abcaa79be54591f51438878de17bc85a9c7d09eff0b6",
+      "translation_text_hash": "c4e93b921673a25797707e1432d159c783be6c97c047e90c083dcfc3b0fe06d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 화 있을찐저 너희 부요한 자여 너희는 너희의 위로를 이미 받았도다"
+      ],
+      "raw_text_hashes": [
+        "c4e93b921673a25797707e1432d159c783be6c97c047e90c083dcfc3b0fe06d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:25",
+      "sequence": 25172,
+      "chapter_label": "LUK 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "Woe to you, you who are full now,for you will be hungry. Woe to you who laugh now, for you will mourn and weep.",
+      "ko": "화 있을찐저 너희 이제 배부른 자여 너희는 주리리로다 화 있을찐저 너희 이제 웃는 자여 너희가 애통하며 울리로다",
+      "source_text_hash": "ee028a23c36d8c560b425d92a14f0e0bffff4336e5e8345f020011f561249f7a",
+      "translation_text_hash": "859dd1566c00c1d0b0b131697d352cd873dba938ceb19141166abc9aaf7c6c4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "화 있을찐저 너희 이제 배부른 자여 너희는 주리리로다 화 있을찐저 너희 이제 웃는 자여 너희가 애통하며 울리로다"
+      ],
+      "raw_text_hashes": [
+        "859dd1566c00c1d0b0b131697d352cd873dba938ceb19141166abc9aaf7c6c4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:26",
+      "sequence": 25173,
+      "chapter_label": "LUK 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "Woe,whenmen speak well of you,for their fathers did the same thing to the false prophets.",
+      "ko": "모든 사람이 너희를 칭찬하면 화가 있도다 저희 조상들이 거짓 선지자들에게 이와 같이 하였느니라",
+      "source_text_hash": "6066646acd0e55552f0057e6f82b8bfa3f199670c2f87bf77ce6cc10d824a69d",
+      "translation_text_hash": "26590763c7fc45a1848cb6b807a1a183871fed91afb393ab2a1e0e91854d8b05",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 너희를 칭찬하면 화가 있도다 저희 조상들이 거짓 선지자들에게 이와 같이 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "26590763c7fc45a1848cb6b807a1a183871fed91afb393ab2a1e0e91854d8b05"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:27",
+      "sequence": 25174,
+      "chapter_label": "LUK 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "“But I tell you who hear: love your enemies, do good to those who hate you,",
+      "ko": "그러나 너희 듣는 자에게 내가 이르노니 너희 원수를 사랑하며 너희를 미워하는 자를 선대하며",
+      "source_text_hash": "356845a97d4459cc3b363bd5eb8d3a19f3fd03fb22dbf054d2afae6769c471f2",
+      "translation_text_hash": "73811a154e439be2bc6e9259b2030f118bd6d300ef5ea1ef226f5f8ec3525728",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너희 듣는 자에게 내가 이르노니 너희 원수를 사랑하며 너희를 미워하는 자를 선대하며"
+      ],
+      "raw_text_hashes": [
+        "73811a154e439be2bc6e9259b2030f118bd6d300ef5ea1ef226f5f8ec3525728"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:28",
+      "sequence": 25175,
+      "chapter_label": "LUK 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "bless those who curse you, and pray for those who mistreat you.",
+      "ko": "너희를 저주하는 자를 위하여 축복하며 너희를 모욕하는 자를 위하여 기도하라",
+      "source_text_hash": "5baac48302a89a24b4b535b0985d115e4a75bc5e124fcb4a693fa562d0060073",
+      "translation_text_hash": "a556f7a522db54b2984b3bd5d27a4096b89fbc75860202a1bcfbc9f4b9c4d914",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 저주하는 자를 위하여 축복하며 너희를 모욕하는 자를 위하여 기도하라"
+      ],
+      "raw_text_hashes": [
+        "a556f7a522db54b2984b3bd5d27a4096b89fbc75860202a1bcfbc9f4b9c4d914"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:29",
+      "sequence": 25176,
+      "chapter_label": "LUK 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "To him who strikes you on the cheek, offer also the other; and from him who takes away your cloak, don’t withhold your coat also.",
+      "ko": "네 이 뺨을 치는 자에게 저 뺨도 돌려 대며 네 겉옷을 빼앗는 자에게 속옷도 금하지 말라",
+      "source_text_hash": "7c46d8c09683a64e6b31723e07bb319085cefa10b14700eb72778665a504d58d",
+      "translation_text_hash": "54d932cd8d17003ac267a209cb81bcc58add43972fb69fa30e9f248f095b7667",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 이 뺨을 치는 자에게 저 뺨도 돌려 대며 네 겉옷을 빼앗는 자에게 속옷도 금하지 말라"
+      ],
+      "raw_text_hashes": [
+        "54d932cd8d17003ac267a209cb81bcc58add43972fb69fa30e9f248f095b7667"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:30",
+      "sequence": 25177,
+      "chapter_label": "LUK 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "Give to everyone who asks you, and don’t ask him who takes away your goods to give them back again.",
+      "ko": "무릇 네게 구하는 자에게 주며 네 것을 가져가는 자에게 다시 달라지 말며",
+      "source_text_hash": "419f2a4a92d1bea61c5e1a0de4ed6d81cc1160f6d2acbbc16009d494f44a33df",
+      "translation_text_hash": "1336b577ab5fb1d082f988e3dd13125ecb50d9fddab633906166b283637c7a33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 네게 구하는 자에게 주며 네 것을 가져가는 자에게 다시 달라지 말며"
+      ],
+      "raw_text_hashes": [
+        "1336b577ab5fb1d082f988e3dd13125ecb50d9fddab633906166b283637c7a33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:31",
+      "sequence": 25178,
+      "chapter_label": "LUK 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "“As you would like people to do to you, do exactly so to them.",
+      "ko": "남에게 대접을 받고자 하는대로 너희도 남을 대접하라",
+      "source_text_hash": "1f2eb662288bbd22cbdc58f9147c50413ad03d4f83d175437805907914def29b",
+      "translation_text_hash": "71633c786246db2b94f471873842f50780d4068eb723cd9ccc362aa81d7c0cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남에게 대접을 받고자 하는대로 너희도 남을 대접하라"
+      ],
+      "raw_text_hashes": [
+        "71633c786246db2b94f471873842f50780d4068eb723cd9ccc362aa81d7c0cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:32",
+      "sequence": 25179,
+      "chapter_label": "LUK 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "“If you love those who love you, what credit is that to you? For even sinners love those who love them.",
+      "ko": "너희가 만일 너희를 사랑하는 자를 사랑하면 칭찬 받을 것이 무엇이뇨 죄인들도 사랑하는 자를 사랑하느니라",
+      "source_text_hash": "e4aa4707dada9937edf967afabb4aebaa414cf01132dce57570240ab6e399c05",
+      "translation_text_hash": "ecd9e7bdd8eed27a71fcaba8f5926aa32d8512dd858820673d2b6c06844ffa06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 너희를 사랑하는 자를 사랑하면 칭찬 받을 것이 무엇이뇨 죄인들도 사랑하는 자를 사랑하느니라"
+      ],
+      "raw_text_hashes": [
+        "ecd9e7bdd8eed27a71fcaba8f5926aa32d8512dd858820673d2b6c06844ffa06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:33",
+      "sequence": 25180,
+      "chapter_label": "LUK 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "If you do good to those who do good to you, what credit is that to you? For even sinners do the same.",
+      "ko": "너희가 만일 선대하는 자를 선대하면 칭찬 받을 것이 무엇이뇨 죄인들도 이렇게 하느니라",
+      "source_text_hash": "277385a1008b7a341caeadec149ce4856ac85c38f10755748e50a391a3457c3c",
+      "translation_text_hash": "81ddc3dcd1443c05884acd1f46abee05be230541c7155929db54f0d1c2b31bab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 만일 선대하는 자를 선대하면 칭찬 받을 것이 무엇이뇨 죄인들도 이렇게 하느니라"
+      ],
+      "raw_text_hashes": [
+        "81ddc3dcd1443c05884acd1f46abee05be230541c7155929db54f0d1c2b31bab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:34",
+      "sequence": 25181,
+      "chapter_label": "LUK 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "If you lend to those from whom you hope to receive, what credit is that to you? Even sinners lend to sinners, to receive back as much.",
+      "ko": "너희가 받기를 바라고 사람들에게 빌리면 칭찬 받을 것이 무엇이뇨 죄인들도 의수히 받고자 하여 죄인에게 빌리느니라",
+      "source_text_hash": "1909f68315a9dadc45e6099064c4d19c3c8f23a0385399dbcb5ad76ec607725b",
+      "translation_text_hash": "e163b570178707c0be345b6a23f164a94b7c3e827a9590c68a8fe69158556c28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 받기를 바라고 사람들에게 빌리면 칭찬 받을 것이 무엇이뇨 죄인들도 의수히 받고자 하여 죄인에게 빌리느니라"
+      ],
+      "raw_text_hashes": [
+        "e163b570178707c0be345b6a23f164a94b7c3e827a9590c68a8fe69158556c28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:35",
+      "sequence": 25182,
+      "chapter_label": "LUK 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "But love your enemies, and do good, and lend, expecting nothing back; and your reward will be great, and you will be children of the Most High; for he is kind toward the unthankful and evil.",
+      "ko": "오직 너희는 원수를 사랑하고 선대하며 아무 것도 바라지 말고 빌리라 그리하면 너희 상이 클 것이요 또 지극히 높으신 이의 아들이 되리니 그는 은혜를 모르는 자와 악한 자에게도 인자로우시니라",
+      "source_text_hash": "09d1c9c0acb3a6622256cb3b78491aa861b670436866fc0eb82fa3102223e07e",
+      "translation_text_hash": "4a8d2295046000b367c6a8ffddc53c491956e25fea6d221b5a2670785c098cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희는 원수를 사랑하고 선대하며 아무 것도 바라지 말고 빌리라 그리하면 너희 상이 클 것이요 또 지극히 높으신 이의 아들이 되리니 그는 은혜를 모르는 자와 악한 자에게도 인자로우시니라"
+      ],
+      "raw_text_hashes": [
+        "4a8d2295046000b367c6a8ffddc53c491956e25fea6d221b5a2670785c098cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:36",
+      "sequence": 25183,
+      "chapter_label": "LUK 6",
+      "verse_label": "36",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 36
+        }
+      ],
+      "en": "“Therefore be merciful,even as your Father is also merciful.",
+      "ko": "너희 아버지의 자비하심 같이 너희도 자비하라",
+      "source_text_hash": "fc1133c705ce7f29a4be1acd801730f062b7c073de029a8f2021acc15f581ab4",
+      "translation_text_hash": "b2e4b86b8d9de831f8ba616bbb75470c5048238857686fe7ac890226bef06343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 아버지의 자비하심 같이 너희도 자비하라"
+      ],
+      "raw_text_hashes": [
+        "b2e4b86b8d9de831f8ba616bbb75470c5048238857686fe7ac890226bef06343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:37",
+      "sequence": 25184,
+      "chapter_label": "LUK 6",
+      "verse_label": "37",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 37
+        }
+      ],
+      "en": "Don’t judge,and you won’t be judged. Don’t condemn, and you won’t be condemned. Set free, and you will be set free.",
+      "ko": "비판치 말라 그리하면 너희가 비판을 받지 않을 것이요 정죄하지 말라 그리하면 너희가 정죄를 받지 않을 것이요 용서하라 그리하면 너희가 용서를 받을 것이요",
+      "source_text_hash": "b9000d7f60406e124e515eebd60def4482db499a288b4a268866c49a07a772e0",
+      "translation_text_hash": "fd631d85c2fff3c04c7448e6874ebaaea01c422094a59a451fc08b9aa06f2abe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비판치 말라 그리하면 너희가 비판을 받지 않을 것이요 정죄하지 말라 그리하면 너희가 정죄를 받지 않을 것이요 용서하라 그리하면 너희가 용서를 받을 것이요"
+      ],
+      "raw_text_hashes": [
+        "fd631d85c2fff3c04c7448e6874ebaaea01c422094a59a451fc08b9aa06f2abe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:38",
+      "sequence": 25185,
+      "chapter_label": "LUK 6",
+      "verse_label": "38",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 38
+        }
+      ],
+      "en": "“Give, and it will be given to you: good measure, pressed down, shaken together, and running over, will be given to you.For with the same measure you measure it will be measured back to you.”",
+      "ko": "주라 그리하면 너희에게 줄 것이니 곧 후히 되어 누르고 흔들어 넘치도록 하여 너희에게 안겨 주리라 너희의 헤아리는 그 헤아림으로 너희도 헤아림을 도로 받을 것이니라",
+      "source_text_hash": "6bde7668b382061bb82ae4ee7aab54985b34c1fd27e4b3dac9a8da3418a90e47",
+      "translation_text_hash": "0b76cb5be398158185886654bdd637b7c2d9f48e432209bfd9a958101cc0d559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주라 그리하면 너희에게 줄 것이니 곧 후히 되어 누르고 흔들어 넘치도록 하여 너희에게 안겨 주리라 너희의 헤아리는 그 헤아림으로 너희도 헤아림을 도로 받을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "0b76cb5be398158185886654bdd637b7c2d9f48e432209bfd9a958101cc0d559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:39",
+      "sequence": 25186,
+      "chapter_label": "LUK 6",
+      "verse_label": "39",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 39
+        }
+      ],
+      "en": "He spoke a parable to them. “Can the blind guide the blind? Won’t they both fall into a pit?",
+      "ko": "또 비유로 말씀하시되 소경이 소경을 인도할 수 있느냐 둘이 다 구덩이에 빠지지 아니하겠느냐",
+      "source_text_hash": "2d03d7e273e0aef87205feae02c4b8e13e8b636201b9a3e04f9d8c4001cf38dc",
+      "translation_text_hash": "5c764f3ada8ec93938a6da5c4b0a0dfd2b38a9b4cb95024eed2c523380841772",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 비유로 말씀하시되 소경이 소경을 인도할 수 있느냐 둘이 다 구덩이에 빠지지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "5c764f3ada8ec93938a6da5c4b0a0dfd2b38a9b4cb95024eed2c523380841772"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:40",
+      "sequence": 25187,
+      "chapter_label": "LUK 6",
+      "verse_label": "40",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 40
+        }
+      ],
+      "en": "A disciple is not above his teacher, but everyone when he is fully trained will be like his teacher.",
+      "ko": "제자가 그 선생보다 높지 못하나 무릇 온전케 된 자는 그 선생과 같으리라",
+      "source_text_hash": "a4041af44deed5f97103a9374e924ddcf88bc52ddbe42fae214f834aae451c22",
+      "translation_text_hash": "73239fa00be88d7986208249c27dd653787d4337e517ab5ba2a16a2de3fd5880",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자가 그 선생보다 높지 못하나 무릇 온전케 된 자는 그 선생과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "73239fa00be88d7986208249c27dd653787d4337e517ab5ba2a16a2de3fd5880"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:41",
+      "sequence": 25188,
+      "chapter_label": "LUK 6",
+      "verse_label": "41",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 41
+        }
+      ],
+      "en": "Why do you see the speck of chaff that is in your brother’s eye, but don’t consider the beam that is in your own eye?",
+      "ko": "어찌하여 형제의 눈 속에 있는 티는 보고 네 눈 속에 있는 들보는 깨닫지 못하느냐",
+      "source_text_hash": "d10d45d5d5ccdd475a1675774e8ee4df40ec582fb084b8e5f24d3c0e6f74c546",
+      "translation_text_hash": "d45219c597d920ab20b0880d8c6abc6148d98748be30e16dfd374caf4615b029",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 형제의 눈 속에 있는 티는 보고 네 눈 속에 있는 들보는 깨닫지 못하느냐"
+      ],
+      "raw_text_hashes": [
+        "d45219c597d920ab20b0880d8c6abc6148d98748be30e16dfd374caf4615b029"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:42",
+      "sequence": 25189,
+      "chapter_label": "LUK 6",
+      "verse_label": "42",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 42
+        }
+      ],
+      "en": "Or how can you tell your brother, ‘Brother, let me remove the speck of chaff that is in your eye,’ when you yourself don’t see the beam that is in your own eye? You hypocrite! First remove the beam from your own eye, and then you can see clearly to remove the speck of chaff that is in your brother’s eye.",
+      "ko": "너는 네 눈 속에 있는 들보를 보지 못하면서 어찌하여 형제에게 말하기를 형제여 나로 네 눈 속에 있는 티를 빼게 하라 할 수 있느냐 외식하는 자여 먼저 네 눈 속에서 들보를 빼어라 그 후에야 네가 밝히 보고 형제의 눈 속에 있는 티를 빼리라",
+      "source_text_hash": "85022b891a0ef4df1e296ff9edb60dcab46a0121a481ac6cb127c2f96553b7ca",
+      "translation_text_hash": "a17d6c815d42610790921ae84b810255a3db35fc25827bc20a57a89bbb7f127e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 네 눈 속에 있는 들보를 보지 못하면서 어찌하여 형제에게 말하기를 형제여 나로 네 눈 속에 있는 티를 빼게 하라 할 수 있느냐 외식하는 자여 먼저 네 눈 속에서 들보를 빼어라 그 후에야 네가 밝히 보고 형제의 눈 속에 있는 티를 빼리라"
+      ],
+      "raw_text_hashes": [
+        "a17d6c815d42610790921ae84b810255a3db35fc25827bc20a57a89bbb7f127e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:43",
+      "sequence": 25190,
+      "chapter_label": "LUK 6",
+      "verse_label": "43",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 43
+        }
+      ],
+      "en": "“For there is no good tree that produces rotten fruit, nor again a rotten tree that produces good fruit.",
+      "ko": "못된 열매 맺는 좋은 나무가 없고 또 좋은 열매 맺는 못된 나무가 없느니라",
+      "source_text_hash": "91dfb9bcd86af189d5d5c41fb4b2ce171077a0e31b3192e03ebbcf6173c20759",
+      "translation_text_hash": "8d0ad157ac1838abfea304bad241548979031df5cc9e95d6048397a47334f37b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "못된 열매 맺는 좋은 나무가 없고 또 좋은 열매 맺는 못된 나무가 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8d0ad157ac1838abfea304bad241548979031df5cc9e95d6048397a47334f37b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:44",
+      "sequence": 25191,
+      "chapter_label": "LUK 6",
+      "verse_label": "44",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 44
+        }
+      ],
+      "en": "For each tree is known by its own fruit. For people don’t gather figs from thorns, nor do they gather grapes from a bramble bush.",
+      "ko": "나무는 각각 그 열매로 아나니 가시나무에서 무화과를, 또는 찔레에서 포도를 따지 못하느니라",
+      "source_text_hash": "9d4b7716916b881d5194d6b1739d0ede06bce0b7bd8f84621f7668e3a9af6551",
+      "translation_text_hash": "3c1fd059f8835e382be81e2eb48c26fd064df2611cbf2e349d2fcd29d433b701",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나무는 각각 그 열매로 아나니 가시나무에서 무화과를, 또는 찔레에서 포도를 따지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "3c1fd059f8835e382be81e2eb48c26fd064df2611cbf2e349d2fcd29d433b701"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:45",
+      "sequence": 25192,
+      "chapter_label": "LUK 6",
+      "verse_label": "45",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 45
+        }
+      ],
+      "en": "The good man out of the good treasure of his heart brings out that which is good, and the evil man out of the evil treasure of his heart brings out that which is evil, for out of the abundance of the heart, his mouth speaks.",
+      "ko": "선한 사람은 마음의 쌓은 선에서 선을 내고 악한 자는 그 쌓은 악에서 악을 내나니 이는 마음의 가득한 것을 입으로 말함이니라",
+      "source_text_hash": "78ac0c6fda41a544111e00079cb55ee040dca053a1f53cfe78fbc3d5abfe0a31",
+      "translation_text_hash": "cd160c99015b2b7319140ac6b01d349c6c0e92e9a5fe819bf5494ab33cd12233",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선한 사람은 마음의 쌓은 선에서 선을 내고 악한 자는 그 쌓은 악에서 악을 내나니 이는 마음의 가득한 것을 입으로 말함이니라"
+      ],
+      "raw_text_hashes": [
+        "cd160c99015b2b7319140ac6b01d349c6c0e92e9a5fe819bf5494ab33cd12233"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:46",
+      "sequence": 25193,
+      "chapter_label": "LUK 6",
+      "verse_label": "46",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 46
+        }
+      ],
+      "en": "“Why do you call me, ‘Lord, Lord,’ and don’t do the things which I say?",
+      "ko": "너희는 나를 불러 주여 주여 하면서도 어찌하여 나의 말하는 것을 행치 아니하느냐",
+      "source_text_hash": "90f4e9d5ec355be0554815a33f195a0bcf4a597e24bb8cec30bdd4fe167eda4f",
+      "translation_text_hash": "ba54c17eb012c3abd4b0fc86160d802038da74ed211830615cd65e2a3b999a6a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 나를 불러 주여 주여 하면서도 어찌하여 나의 말하는 것을 행치 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "ba54c17eb012c3abd4b0fc86160d802038da74ed211830615cd65e2a3b999a6a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:47",
+      "sequence": 25194,
+      "chapter_label": "LUK 6",
+      "verse_label": "47",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 47
+        }
+      ],
+      "en": "Everyone who comes to me, and hears my words and does them, I will show you who he is like.",
+      "ko": "내게 나아와 내 말을 듣고 행하는 자마다 누구와 같은 것을 너희에게 보이리라",
+      "source_text_hash": "899900c4453c22f562db84f114317860510dce08306500144ef7882e864f67c3",
+      "translation_text_hash": "1fcfef14c010882ac7e405cc07c259c1ad97584e53361eccf48d1dd86d56adce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 나아와 내 말을 듣고 행하는 자마다 누구와 같은 것을 너희에게 보이리라"
+      ],
+      "raw_text_hashes": [
+        "1fcfef14c010882ac7e405cc07c259c1ad97584e53361eccf48d1dd86d56adce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:48",
+      "sequence": 25195,
+      "chapter_label": "LUK 6",
+      "verse_label": "48",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 48
+        }
+      ],
+      "en": "He is like a man building a house, who dug and went deep and laid a foundation on the rock. When a flood arose, the stream broke against that house, and could not shake it, because it was founded on the rock.",
+      "ko": "집을 짓되 깊이 파고 주초를 반석 위에 놓은 사람과 같으니 큰 물이 나서 탁류가 그 집에 부딪히되 잘 지은 연고로 능히 요동케 못하였거니와",
+      "source_text_hash": "7301c6d22eeda10e41c9d78a345cbbbce0d32102b8a772c9d245caf8d3fa9613",
+      "translation_text_hash": "f717d269f0450b8886ad86293a2fb8371516db153c12e44e54310f15af196df3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "집을 짓되 깊이 파고 주초를 반석 위에 놓은 사람과 같으니 큰 물이 나서 탁류가 그 집에 부딪히되 잘 지은 연고로 능히 요동케 못하였거니와"
+      ],
+      "raw_text_hashes": [
+        "f717d269f0450b8886ad86293a2fb8371516db153c12e44e54310f15af196df3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LUK:6:49",
+      "sequence": 25196,
+      "chapter_label": "LUK 6",
+      "verse_label": "49",
+      "locator": {
+        "book": "LUK",
+        "chapter": 6,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "LUK",
+          "chapter": 6,
+          "verse": 49
+        }
+      ],
+      "en": "But he who hears and doesn’t do, is like a man who built a house on the earth without a foundation, against which the stream broke, and immediately it fell; and the ruin of that house was great.”",
+      "ko": "듣고 행치 아니하는 자는 주초 없이 흙 위에 집 지은 사람과 같으니 탁류가 부딪히매 집이 곧 무너져 파괴됨이 심하니라 하시니라",
+      "source_text_hash": "de00b98de68cf75a96c00b7fb6927034477aecf3537e3ee65d634e97bf6af053",
+      "translation_text_hash": "06bbedef3b0aa9ba04e8f95d223610f917b951a892bd967f410519ef0be3cb6c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "듣고 행치 아니하는 자는 주초 없이 흙 위에 집 지은 사람과 같으니 탁류가 부딪히매 집이 곧 무너져 파괴됨이 심하니라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "06bbedef3b0aa9ba04e8f95d223610f917b951a892bd967f410519ef0be3cb6c"
+      ]
+    }
+  ]
+}

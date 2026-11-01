@@ -1,0 +1,1325 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:015",
+  "unit_ordinal": 132,
+  "unit_label": "NUM 15",
+  "book_code": "NUM",
+  "chapter_number": 15,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:15:1",
+      "sequence": 4155,
+      "chapter_label": "NUM 15",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:2",
+      "sequence": 4156,
+      "chapter_label": "NUM 15",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When you have come into the land of your habitations, which I give to you,",
+      "ko": "이스라엘 자손에게 고하여 그들에게 이르라 너희가 내가 주어 거하게 할 땅에 들어가서",
+      "source_text_hash": "8c7942a1c4d0038d582724774ae86f86587d0480cccc37c3db36a2f37faae6ba",
+      "translation_text_hash": "5e2963843966a9ab245f4bd2c1402325053ed30ee5a32271c9bfa19c74552300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 그들에게 이르라 너희가 내가 주어 거하게 할 땅에 들어가서"
+      ],
+      "raw_text_hashes": [
+        "5e2963843966a9ab245f4bd2c1402325053ed30ee5a32271c9bfa19c74552300"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:3",
+      "sequence": 4157,
+      "chapter_label": "NUM 15",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 3
+        }
+      ],
+      "en": "and will make an offering by fire to the LORD—a burnt offering, or a sacrifice, to accomplish a vow, or as a free will offering, or in your set feasts, to make a pleasant aroma to the LORD, of the herd, or of the flock—",
+      "ko": "여호와께 화제나 번제나 서원을 갚는 제나 낙헌제나 정한 절기제에 소나 양으로 여호와께 향기롭게 드릴 때에는",
+      "source_text_hash": "4f24ee42202d5069e4d60f6b86f9dcd726d3b3964a76b0e9ddc0f5f2d376a423",
+      "translation_text_hash": "6effe9600d0f484d826ea7a46285e9bc387b6ad742b0957ab033857b0a78ab62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께 화제나 번제나 서원을 갚는 제나 낙헌제나 정한 절기제에 소나 양으로 여호와께 향기롭게 드릴 때에는"
+      ],
+      "raw_text_hashes": [
+        "6effe9600d0f484d826ea7a46285e9bc387b6ad742b0957ab033857b0a78ab62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:4",
+      "sequence": 4158,
+      "chapter_label": "NUM 15",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 4
+        }
+      ],
+      "en": "then he who offers his offering shall offer to the LORD a meal offering of one tenth of an ephah of fine flour mixed with one fourth of a hin of oil.",
+      "ko": "그 예물을 드리는 자는 고운 가루 에바 십분지 일에 기름 한 힌의 사분지 일을 섞어 여호와께 소제로 드릴 것이며",
+      "source_text_hash": "f09f15c25911425564a5a5d0adf4d2cb9236a0f12434d6ce907483932bc2f09e",
+      "translation_text_hash": "494dc9e03235d78cbf3461fe7d55c8a94c31740f8e258a1aa0ff5b5bf59608f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 예물을 드리는 자는 고운 가루 에바 십분지 일에 기름 한 힌의 사분지 일을 섞어 여호와께 소제로 드릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "494dc9e03235d78cbf3461fe7d55c8a94c31740f8e258a1aa0ff5b5bf59608f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:5",
+      "sequence": 4159,
+      "chapter_label": "NUM 15",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 5
+        }
+      ],
+      "en": "You shall prepare wine for the drink offering, one fourth of a hin, with the burnt offering or for the sacrifice, for each lamb.",
+      "ko": "번제나 다른 제사로 드리는 제물이 어린 양이면 전제로 포도주 한 힌의 사분 일을 예비할 것이요",
+      "source_text_hash": "4d15df0f2c6d14b4299dc8d26fed486eb52df8556beb1e15972c411e5abdf267",
+      "translation_text_hash": "72f955a6c2354c908b42fbf8fa1305a99a512c9cea0642ff9b66350805ec4d37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제나 다른 제사로 드리는 제물이 어린 양이면 전제로 포도주 한 힌의 사분 일을 예비할 것이요"
+      ],
+      "raw_text_hashes": [
+        "72f955a6c2354c908b42fbf8fa1305a99a512c9cea0642ff9b66350805ec4d37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:6",
+      "sequence": 4160,
+      "chapter_label": "NUM 15",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 6
+        }
+      ],
+      "en": "“‘For a ram, you shall prepare for a meal offering two tenths of an ephah of fine flour mixed with the third part of a hin of oil;",
+      "ko": "수양이면 소제로 고운 가루 한 에바 십분지 이에 기름 한 힌의 삼분지 일을 섞어 예비하고",
+      "source_text_hash": "433e597db6dbea459a794454bcf0ada79865c14a1c0d270cac6e0387851a4d30",
+      "translation_text_hash": "bb9c9eaf5b4822676fc53a948c1300632cd890369b21365383b200529a53ac77",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수양이면 소제로 고운 가루 한 에바 십분지 이에 기름 한 힌의 삼분지 일을 섞어 예비하고"
+      ],
+      "raw_text_hashes": [
+        "bb9c9eaf5b4822676fc53a948c1300632cd890369b21365383b200529a53ac77"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:7",
+      "sequence": 4161,
+      "chapter_label": "NUM 15",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 7
+        }
+      ],
+      "en": "and for the drink offering you shall offer the third part of a hin of wine, of a pleasant aroma to the LORD.",
+      "ko": "전제로 포도주 한 힌의 삼분지 일을 드려 여호와 앞에 향기롭게 할 것이요",
+      "source_text_hash": "7e56e48db30d535af34c17cb0495a7712f81532b793be9c64a382dd00e8b904d",
+      "translation_text_hash": "4a190923cc17d63127f75968b19b95e2534ff75a5ed101a19ecdadee5a6b9365",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전제로 포도주 한 힌의 삼분지 일을 드려 여호와 앞에 향기롭게 할 것이요"
+      ],
+      "raw_text_hashes": [
+        "4a190923cc17d63127f75968b19b95e2534ff75a5ed101a19ecdadee5a6b9365"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:8",
+      "sequence": 4162,
+      "chapter_label": "NUM 15",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 8
+        }
+      ],
+      "en": "When you prepare a bull for a burnt offering or for a sacrifice, to accomplish a vow, or for peace offerings to the LORD,",
+      "ko": "번제로나 서원을 갚는 제로나 화목제로 수송아지를 예비하여 여호와께 드릴 때에는",
+      "source_text_hash": "2c1e14836e4f0710b846d6446f10fc4ddb68f40b9ff976fd3c64520be1b62cf3",
+      "translation_text_hash": "1fdcd7273ff249e62510e519f1342335656a9624d071b8d6c5a3f52f020a7078",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번제로나 서원을 갚는 제로나 화목제로 수송아지를 예비하여 여호와께 드릴 때에는"
+      ],
+      "raw_text_hashes": [
+        "1fdcd7273ff249e62510e519f1342335656a9624d071b8d6c5a3f52f020a7078"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:9",
+      "sequence": 4163,
+      "chapter_label": "NUM 15",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 9
+        }
+      ],
+      "en": "then he shall offer with the bull a meal offering of three tenths of an ephah of fine flour mixed with half a hin of oil;",
+      "ko": "소제로 고운 가루 한 에바 십분지 삼에 기름 반 힌을 섞어 그 수송아지와 함께 드리고",
+      "source_text_hash": "a27aa78984c3a4310333bee14a7461f1db45e2e1bd305af00b1ebbe23cc41cfc",
+      "translation_text_hash": "5b86d8e93902aa53268dca923e77aa0ae89ffd07ed1cd0bcf7a0830b9f86d629",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소제로 고운 가루 한 에바 십분지 삼에 기름 반 힌을 섞어 그 수송아지와 함께 드리고"
+      ],
+      "raw_text_hashes": [
+        "5b86d8e93902aa53268dca923e77aa0ae89ffd07ed1cd0bcf7a0830b9f86d629"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:10",
+      "sequence": 4164,
+      "chapter_label": "NUM 15",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 10
+        }
+      ],
+      "en": "and you shall offer for the drink offering half a hin of wine, for an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "전제로 포도주 반 힌을 드려 여호와 앞에 향기로운 화제를 삼을찌니라",
+      "source_text_hash": "5e0ee47386603b7fa37521ae63496df00b8f71030da57a80e8960cee28f561d6",
+      "translation_text_hash": "db4df8d933453c9a99bf603b2af0c048f1d8fb66a95a75fa7fa164d2ac31ea3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "전제로 포도주 반 힌을 드려 여호와 앞에 향기로운 화제를 삼을찌니라"
+      ],
+      "raw_text_hashes": [
+        "db4df8d933453c9a99bf603b2af0c048f1d8fb66a95a75fa7fa164d2ac31ea3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:11",
+      "sequence": 4165,
+      "chapter_label": "NUM 15",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 11
+        }
+      ],
+      "en": "Thus it shall be done for each bull, for each ram, for each of the male lambs, or of the young goats.",
+      "ko": "수송아지나 수양이나 어린 수양이나 어린 염소에는 그 마리 수마다 이 위와 같이 행하되",
+      "source_text_hash": "1f44381c593e85a37595d2f746b3a5ddd2d09f11ca6133083d258042b4aed20f",
+      "translation_text_hash": "ac5dfc453aa89904857e32421bca48ca041b47c1eb4f53a3e97dbd0c1c5cef76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수송아지나 수양이나 어린 수양이나 어린 염소에는 그 마리 수마다 이 위와 같이 행하되"
+      ],
+      "raw_text_hashes": [
+        "ac5dfc453aa89904857e32421bca48ca041b47c1eb4f53a3e97dbd0c1c5cef76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:12",
+      "sequence": 4166,
+      "chapter_label": "NUM 15",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 12
+        }
+      ],
+      "en": "According to the number that you shall prepare, so you shall do to everyone according to their number.",
+      "ko": "너희 예비하는 수효를 따라 각기 수효에 맞게 하라",
+      "source_text_hash": "c50984589d08d1f34bd90c821fb53f38da9a97740aa79c822b318da7a162a7fe",
+      "translation_text_hash": "0c6283d5590393cf51af8dee90ff693abcbbab256e64089a23c4f370624b34f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 예비하는 수효를 따라 각기 수효에 맞게 하라"
+      ],
+      "raw_text_hashes": [
+        "0c6283d5590393cf51af8dee90ff693abcbbab256e64089a23c4f370624b34f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:13",
+      "sequence": 4167,
+      "chapter_label": "NUM 15",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 13
+        }
+      ],
+      "en": "“‘All who are native-born shall do these things in this way, in offering an offering made by fire, of a pleasant aroma to the LORD.",
+      "ko": "무릇 본토 소생이 여호와께 향기로운 화제를 드릴 때에는 이 법대로 할것이요",
+      "source_text_hash": "98492bb8331e184bf3d5a89dad02d8f1fed2b5747036bbbd514dd3e2ffe5e21e",
+      "translation_text_hash": "423f364e10a10181ef2464832884fec52cadceb9beb5b20db2ddee80822979fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 본토 소생이 여호와께 향기로운 화제를 드릴 때에는 이 법대로 할것이요"
+      ],
+      "raw_text_hashes": [
+        "423f364e10a10181ef2464832884fec52cadceb9beb5b20db2ddee80822979fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:14",
+      "sequence": 4168,
+      "chapter_label": "NUM 15",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 14
+        }
+      ],
+      "en": "If a stranger lives as a foreigner with you, or whoever may be among you throughout your generations, and will offer an offering made by fire, of a pleasant aroma to the LORD, as you do, so he shall do.",
+      "ko": "너희 중에 우거하는 타국인이나 너희 중에 대대로 있는 자가 누구든지 여호와께 향기로운 화제를 드릴 때에는 너희 하는대로 그도 그리할 것이라",
+      "source_text_hash": "16eb84d64b9648c4da7b4ee3e96ba4eb76a0d469e0ce434efae27a2e1117c43f",
+      "translation_text_hash": "0207c661a17c75db984b6763cb704cbc0b3a60a8b702dfbe97a0240b589f71b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 우거하는 타국인이나 너희 중에 대대로 있는 자가 누구든지 여호와께 향기로운 화제를 드릴 때에는 너희 하는대로 그도 그리할 것이라"
+      ],
+      "raw_text_hashes": [
+        "0207c661a17c75db984b6763cb704cbc0b3a60a8b702dfbe97a0240b589f71b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:15",
+      "sequence": 4169,
+      "chapter_label": "NUM 15",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 15
+        }
+      ],
+      "en": "For the assembly, there shall be one statute for you and for the stranger who lives as a foreigner, a statute forever throughout your generations. As you are, so the foreigner shall be before the LORD.",
+      "ko": "회중 곧 너희나 우거하는 타국인이나 한 율례니 너희의 대대로 영원한 율례라 너희의 어떠한대로 타국인도 여호와 앞에 그러하리라",
+      "source_text_hash": "145dccc0f10817d49cc5a27708224f1de53177a77dbadf90b78a2cba2e6e881e",
+      "translation_text_hash": "5d2c1afb486f696dd37a01403aa144a60995e1c42ac6751971682de47604aae4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중 곧 너희나 우거하는 타국인이나 한 율례니 너희의 대대로 영원한 율례라 너희의 어떠한대로 타국인도 여호와 앞에 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "5d2c1afb486f696dd37a01403aa144a60995e1c42ac6751971682de47604aae4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:16",
+      "sequence": 4170,
+      "chapter_label": "NUM 15",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 16
+        }
+      ],
+      "en": "One law and one ordinance shall be for you and for the stranger who lives as a foreigner with you.’”",
+      "ko": "너희나 너희 중에 우거하는 타국인이나 한 법도, 한 규례니라",
+      "source_text_hash": "c010396886d5182b4275845257b73e72df68eabae4d5594b2886d4563e3c36d1",
+      "translation_text_hash": "7e06ebb28f32dd56097778dbc662035029bf6369199fbcc37b66fbb2251369ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희나 너희 중에 우거하는 타국인이나 한 법도, 한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "7e06ebb28f32dd56097778dbc662035029bf6369199fbcc37b66fbb2251369ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:17",
+      "sequence": 4171,
+      "chapter_label": "NUM 15",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 17
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:18",
+      "sequence": 4172,
+      "chapter_label": "NUM 15",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 18
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When you come into the land where I bring you,",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희가 나의 인도하는 땅에 들어가거든",
+      "source_text_hash": "f604bd749620c4d87a196384011f0a097d608532bce289e1e62f7132da25332b",
+      "translation_text_hash": "7a85e380a9e7ce9a4aa6e8cde135025bcb9350dc99072f864b836d7eac58e232",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희가 나의 인도하는 땅에 들어가거든"
+      ],
+      "raw_text_hashes": [
+        "7a85e380a9e7ce9a4aa6e8cde135025bcb9350dc99072f864b836d7eac58e232"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:19",
+      "sequence": 4173,
+      "chapter_label": "NUM 15",
+      "verse_label": "19",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 19
+        }
+      ],
+      "en": "then it shall be that when you eat of the bread of the land, you shall offer up a wave offering to the LORD.",
+      "ko": "그 땅의 양식을 먹을 때에 여호와께 거제를 드리되",
+      "source_text_hash": "3d3221d37cea116a9977fd55577f52d3f9ccd0588901360fd421d764bcd0f999",
+      "translation_text_hash": "7fe17d524058bc01ef370d1a626246f4d4cb932e0aeb969d1c382deca7ddbf1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 땅의 양식을 먹을 때에 여호와께 거제를 드리되"
+      ],
+      "raw_text_hashes": [
+        "7fe17d524058bc01ef370d1a626246f4d4cb932e0aeb969d1c382deca7ddbf1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:20",
+      "sequence": 4174,
+      "chapter_label": "NUM 15",
+      "verse_label": "20",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 20
+        }
+      ],
+      "en": "Of the first of your dough you shall offer up a cake for a wave offering. As the wave offering of the threshing floor, so you shall heave it.",
+      "ko": "너희의 처음 익은 곡식 가루 떡을 거제로 타작 마당의 거제 같이 들어 드리라",
+      "source_text_hash": "5f56c4b3879af9c2274608e59211ecc8babc8c0e7a926af0765abef418f21c13",
+      "translation_text_hash": "237542abc09e91da5994149047b9eaeac332e01e0e97b3aa71cef0845afdfd3f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 처음 익은 곡식 가루 떡을 거제로 타작 마당의 거제 같이 들어 드리라"
+      ],
+      "raw_text_hashes": [
+        "237542abc09e91da5994149047b9eaeac332e01e0e97b3aa71cef0845afdfd3f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:21",
+      "sequence": 4175,
+      "chapter_label": "NUM 15",
+      "verse_label": "21",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 21
+        }
+      ],
+      "en": "Of the first of your dough, you shall give to the LORD a wave offering throughout your generations.",
+      "ko": "너희의 처음 익은 곡식 가루 떡을 대대에 여호와께 거제로 드릴찌니라",
+      "source_text_hash": "6e927302a39e0f2da6c7113fc589aa0119080e08fbc81f14a94545a10bbf9250",
+      "translation_text_hash": "258be1204d88766b60e21df9788afc87d1fd051d18ea71957b57933e83718124",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 처음 익은 곡식 가루 떡을 대대에 여호와께 거제로 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "258be1204d88766b60e21df9788afc87d1fd051d18ea71957b57933e83718124"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:22",
+      "sequence": 4176,
+      "chapter_label": "NUM 15",
+      "verse_label": "22",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 22
+        }
+      ],
+      "en": "“‘When you err, and don’t observe all these commandments which the LORD has spoken to Moses—",
+      "ko": "너희가 그릇 범죄하여 여호와가 모세에게 말한 이 모든 명령을 지키지 못하되",
+      "source_text_hash": "994f482e0d21bca93a3e230402784f1e050a4d0abb34de40fb12f67ca62a1930",
+      "translation_text_hash": "559f2716c6720d5074784b80b748566c10320d5fc781d34538ca2329ce385267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그릇 범죄하여 여호와가 모세에게 말한 이 모든 명령을 지키지 못하되"
+      ],
+      "raw_text_hashes": [
+        "559f2716c6720d5074784b80b748566c10320d5fc781d34538ca2329ce385267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:23",
+      "sequence": 4177,
+      "chapter_label": "NUM 15",
+      "verse_label": "23",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 23
+        }
+      ],
+      "en": "even all that the LORD has commanded you by Moses, from the day that the LORD gave commandment and onward throughout your generations—",
+      "ko": "곧 여호와가 모세로 너희에게 명한 모든 것을 여호와가 명한 날부터 이후 너희의 대대에 지키지 못하여",
+      "source_text_hash": "6d2f1751d81d04c5f83c79a8063cebfa924636945c6341664ac79f59237a21fb",
+      "translation_text_hash": "1e20cd932fdf3d8c3865f7ca47c325a81ee0b192235e37b9b654dd488f1ed8ad",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 여호와가 모세로 너희에게 명한 모든 것을 여호와가 명한 날부터 이후 너희의 대대에 지키지 못하여"
+      ],
+      "raw_text_hashes": [
+        "1e20cd932fdf3d8c3865f7ca47c325a81ee0b192235e37b9b654dd488f1ed8ad"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:24",
+      "sequence": 4178,
+      "chapter_label": "NUM 15",
+      "verse_label": "24",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 24
+        }
+      ],
+      "en": "then it shall be, if it was done unwittingly, without the knowledge of the congregation, that all the congregation shall offer one young bull for a burnt offering, for a pleasant aroma to the LORD, with its meal offering and its drink offering, according to the ordinance, and one male goat for a sin offering.",
+      "ko": "회중이 부지중에 그릇 범죄하였거든 온 회중은 수송아지 하나를 여호와께 향기로운 화제로 드리고 규례대로 그 소제와 전제를 드리고 수염소 하나를 속죄제로 드릴 것이라",
+      "source_text_hash": "a7e0e6bb69a74a23b11c40d9dda4fed2f5294c65be470dc4001dcec765913d44",
+      "translation_text_hash": "255433024f1d86852644d09b6a97ff3dc3d02e5abcc7bbdae29521b152533579",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "회중이 부지중에 그릇 범죄하였거든 온 회중은 수송아지 하나를 여호와께 향기로운 화제로 드리고 규례대로 그 소제와 전제를 드리고 수염소 하나를 속죄제로 드릴 것이라"
+      ],
+      "raw_text_hashes": [
+        "255433024f1d86852644d09b6a97ff3dc3d02e5abcc7bbdae29521b152533579"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:25",
+      "sequence": 4179,
+      "chapter_label": "NUM 15",
+      "verse_label": "25",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 25
+        }
+      ],
+      "en": "The priest shall make atonement for all the congregation of the children of Israel, and they shall be forgiven; for it was an error, and they have brought their offering, an offering made by fire to the LORD, and their sin offering before the LORD, for their error.",
+      "ko": "제사장이 이스라엘 자손의 온 회중을 위하여 속죄하면 그들이 사함을 얻으리니 이는 그릇 범죄함이며 또 그 그릇 범죄함을 인하여 예물 곧 화제와 속죄제를 여호와께 드렸음이라",
+      "source_text_hash": "9c02ccbbb7fcdcd21e934b88f671d254c4416b155dce1cd1e9a7651b1573cfb1",
+      "translation_text_hash": "5a738339742663c0ca88d9ecc313ad090096aacb67c28195275abd79b91dee30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장이 이스라엘 자손의 온 회중을 위하여 속죄하면 그들이 사함을 얻으리니 이는 그릇 범죄함이며 또 그 그릇 범죄함을 인하여 예물 곧 화제와 속죄제를 여호와께 드렸음이라"
+      ],
+      "raw_text_hashes": [
+        "5a738339742663c0ca88d9ecc313ad090096aacb67c28195275abd79b91dee30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:26",
+      "sequence": 4180,
+      "chapter_label": "NUM 15",
+      "verse_label": "26",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 26
+        }
+      ],
+      "en": "All the congregation of the children of Israel shall be forgiven, as well as the stranger who lives as a foreigner among them; for with regard to all the people, it was done unwittingly.",
+      "ko": "이스라엘 자손의 온 회중과 그들 중에 우거하는 타국인도 사함을 얻을 것은 온 백성이 그릇 범죄하였음이니라",
+      "source_text_hash": "300648b94e10b06b63bb35c5b970cec249b42356caa6f961f58b0d91353c317f",
+      "translation_text_hash": "406aa07cbfd54a99fb9d7606b0ea9d055f5bf0ba1e663885be46aead4c5aba4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중과 그들 중에 우거하는 타국인도 사함을 얻을 것은 온 백성이 그릇 범죄하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "406aa07cbfd54a99fb9d7606b0ea9d055f5bf0ba1e663885be46aead4c5aba4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:27",
+      "sequence": 4181,
+      "chapter_label": "NUM 15",
+      "verse_label": "27",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 27
+        }
+      ],
+      "en": "“‘If a person sins unwittingly, then he shall offer a female goat a year old for a sin offering.",
+      "ko": "만일 한 사람이 그릇 범죄하거든 일년 된 암염소로 속죄제를 드릴 것이요",
+      "source_text_hash": "0c098b6182db50a3341e9ad1072a4bb83d33546d508e5e5c33220d11bebad79c",
+      "translation_text_hash": "3ff81a8ccdc8e172167f019d70bbe2b824a799b42db8a3f6a19c878878840039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 한 사람이 그릇 범죄하거든 일년 된 암염소로 속죄제를 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "3ff81a8ccdc8e172167f019d70bbe2b824a799b42db8a3f6a19c878878840039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:28",
+      "sequence": 4182,
+      "chapter_label": "NUM 15",
+      "verse_label": "28",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 28
+        }
+      ],
+      "en": "The priest shall make atonement for the soul who errs when he sins unwittingly before the LORD. He shall make atonement for him; and he shall be forgiven.",
+      "ko": "제사장은 그 그릇 범죄한 사람이 그릇하여 여호와 앞에 얻은 죄를 위하여 속죄하여 그 죄를 속할찌니 그리하면 사함을 얻으리라",
+      "source_text_hash": "2579464ca4927ea7c5c2482398377a55dcfd54409652dffed92561b5327671c8",
+      "translation_text_hash": "e861d50d09a6560ed7cdd2d3448c2c53fae47f1085abaa485a630d818c4cd4f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 그릇 범죄한 사람이 그릇하여 여호와 앞에 얻은 죄를 위하여 속죄하여 그 죄를 속할찌니 그리하면 사함을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "e861d50d09a6560ed7cdd2d3448c2c53fae47f1085abaa485a630d818c4cd4f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:29",
+      "sequence": 4183,
+      "chapter_label": "NUM 15",
+      "verse_label": "29",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 29
+        }
+      ],
+      "en": "You shall have one law for him who does anything unwittingly, for him who is native-born among the children of Israel, and for the stranger who lives as a foreigner among them.",
+      "ko": "이스라엘 자손 중 본토 소생이든지 그들 중에 우거하는 타국인이든지 무릇 그릇 범죄한 자에게 대한 법이 동일하거니와",
+      "source_text_hash": "c65a9eef4957744c420ecf2831173d0e98ff1ec5980e386db69e3872d4ed499d",
+      "translation_text_hash": "26e12d526c6052206b8bace067e8a5ad162c16e00207dc575fb982a284373dbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손 중 본토 소생이든지 그들 중에 우거하는 타국인이든지 무릇 그릇 범죄한 자에게 대한 법이 동일하거니와"
+      ],
+      "raw_text_hashes": [
+        "26e12d526c6052206b8bace067e8a5ad162c16e00207dc575fb982a284373dbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:30",
+      "sequence": 4184,
+      "chapter_label": "NUM 15",
+      "verse_label": "30",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 30
+        }
+      ],
+      "en": "“‘But the soul who does anything with a high hand, whether he is native-born or a foreigner, blasphemes the LORD. That soul shall be cut off from among his people.",
+      "ko": "본토 소생이든지 타국인이든지 무릇 짐짓 무엇을 행하면 여호와를 훼방하는 자니 그 백성 중에서 끊쳐질 것이라",
+      "source_text_hash": "89817ffa7cd5fc7989d6eab452c8d637954c78e9b81d2637fc4b8c84cec6baaf",
+      "translation_text_hash": "65b256e949f20c26ec52ae33571bc57ec8c20dc0498497af564fb513611bd6c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "본토 소생이든지 타국인이든지 무릇 짐짓 무엇을 행하면 여호와를 훼방하는 자니 그 백성 중에서 끊쳐질 것이라"
+      ],
+      "raw_text_hashes": [
+        "65b256e949f20c26ec52ae33571bc57ec8c20dc0498497af564fb513611bd6c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:31",
+      "sequence": 4185,
+      "chapter_label": "NUM 15",
+      "verse_label": "31",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 31
+        }
+      ],
+      "en": "Because he has despised the LORD’s word, and has broken his commandment, that soul shall be utterly cut off. His iniquity shall be on him.’”",
+      "ko": "그런 사람은 여호와의 말씀을 멸시하고 그 명령을 파괴하였은즉 그 죄악이 자기에게로 돌아가서 온전히 끊쳐지리라",
+      "source_text_hash": "544fdebbdf16d4f75878c37af4ee0892521694bb77caba640155427df4298615",
+      "translation_text_hash": "c6c67029390d89478c0af35a6d055ccdcfe6014714ab75b89abb2df71778ce76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런 사람은 여호와의 말씀을 멸시하고 그 명령을 파괴하였은즉 그 죄악이 자기에게로 돌아가서 온전히 끊쳐지리라"
+      ],
+      "raw_text_hashes": [
+        "c6c67029390d89478c0af35a6d055ccdcfe6014714ab75b89abb2df71778ce76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:32",
+      "sequence": 4186,
+      "chapter_label": "NUM 15",
+      "verse_label": "32",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 32
+        }
+      ],
+      "en": "While the children of Israel were in the wilderness, they found a man gathering sticks on the Sabbath day.",
+      "ko": "이스라엘 자손이 광야에 거할 때에 안식일에 어떤 사람이 나무하는 것을 발견한지라",
+      "source_text_hash": "b1939bca29d97e0e7baad67c27feda5eaf7cc6323aba8a4224e01fb1896fd2b3",
+      "translation_text_hash": "bff172c802c41d0f7265507f3f19a15d30a4adba0b49113f5381dbdb95ae4aac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 광야에 거할 때에 안식일에 어떤 사람이 나무하는 것을 발견한지라"
+      ],
+      "raw_text_hashes": [
+        "bff172c802c41d0f7265507f3f19a15d30a4adba0b49113f5381dbdb95ae4aac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:33",
+      "sequence": 4187,
+      "chapter_label": "NUM 15",
+      "verse_label": "33",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 33
+        }
+      ],
+      "en": "Those who found him gathering sticks brought him to Moses and Aaron, and to all the congregation.",
+      "ko": "그 나무하는 자를 발견한 자들이 그를 모세와 아론과 온 회중의 앞으로 끌어 왔으나",
+      "source_text_hash": "0d541c181cb0fe0cffdc081221214d287a37be1efbb9f7c93496531fd6328ae1",
+      "translation_text_hash": "4dd3ad9f5270377408ec0c0cfb70510e9762a6ba897263a5d0b729c34d91aef2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나무하는 자를 발견한 자들이 그를 모세와 아론과 온 회중의 앞으로 끌어 왔으나"
+      ],
+      "raw_text_hashes": [
+        "4dd3ad9f5270377408ec0c0cfb70510e9762a6ba897263a5d0b729c34d91aef2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:34",
+      "sequence": 4188,
+      "chapter_label": "NUM 15",
+      "verse_label": "34",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 34
+        }
+      ],
+      "en": "They put him in custody, because it had not been declared what should be done to him.",
+      "ko": "어떻게 처치할는지 지시하심을 받지 못한 고로 가두었더니",
+      "source_text_hash": "53a6d1ed2a47c160dc360773e1acc2601b383d14ab7c4177d37dd2c988d07079",
+      "translation_text_hash": "4d9e1fe601b9d0745ba795b2237a6bee3d36d9bd40d4a0056078dd51c096402d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떻게 처치할는지 지시하심을 받지 못한 고로 가두었더니"
+      ],
+      "raw_text_hashes": [
+        "4d9e1fe601b9d0745ba795b2237a6bee3d36d9bd40d4a0056078dd51c096402d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:35",
+      "sequence": 4189,
+      "chapter_label": "NUM 15",
+      "verse_label": "35",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 35
+        }
+      ],
+      "en": "The LORD said to Moses, “The man shall surely be put to death. All the congregation shall stone him with stones outside of the camp.”",
+      "ko": "여호와께서 모세에게 이르시되 그 사람을 반드시 죽일찌니 온 회중이 진 밖에서 돌로 그를 칠찌니라",
+      "source_text_hash": "7435dbe4ebca0c12381758dc9cbe1ec2919848e78710afa641594855bd1715c1",
+      "translation_text_hash": "0bd305177daabd109e6a6cca232dc13e14f222dddd0636b61f6820199a097d0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 그 사람을 반드시 죽일찌니 온 회중이 진 밖에서 돌로 그를 칠찌니라"
+      ],
+      "raw_text_hashes": [
+        "0bd305177daabd109e6a6cca232dc13e14f222dddd0636b61f6820199a097d0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:36",
+      "sequence": 4190,
+      "chapter_label": "NUM 15",
+      "verse_label": "36",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 36
+        }
+      ],
+      "en": "All the congregation brought him outside of the camp, and stoned him to death with stones, as the LORD commanded Moses.",
+      "ko": "온 회중이 곧 그를 진 밖으로 끌어내고 돌로 그를 쳐 죽여서 여호와께서 모세에게 명하신대로 하니라",
+      "source_text_hash": "ae770008892219c080cc4eeccadecd102d8e781d04b37680dcd3719ab44c856d",
+      "translation_text_hash": "784ecbfc869901054fc8a4cd793a73824c516f2343188c31d5e8c10b8d898e65",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 회중이 곧 그를 진 밖으로 끌어내고 돌로 그를 쳐 죽여서 여호와께서 모세에게 명하신대로 하니라"
+      ],
+      "raw_text_hashes": [
+        "784ecbfc869901054fc8a4cd793a73824c516f2343188c31d5e8c10b8d898e65"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:37",
+      "sequence": 4191,
+      "chapter_label": "NUM 15",
+      "verse_label": "37",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 37
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:38",
+      "sequence": 4192,
+      "chapter_label": "NUM 15",
+      "verse_label": "38",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 38
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them that they should make themselves fringes on the borders of their garments throughout their generations, and that they put on the fringe of each border a cord of blue.",
+      "ko": "이스라엘 자손에게 명하여 그들의 대대로 그 옷단 귀에 술을 만들고 청색 끈을 그 귀의 술에 더하라",
+      "source_text_hash": "26d50dfb80ec1ba70dd2964a7a1f82f31b382fce3b705fe2f7c807e369cf3bee",
+      "translation_text_hash": "2425455f3bfe79240eb3dc384d51df5d41f3820aeaa9ba61b3954452a54ff8c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 명하여 그들의 대대로 그 옷단 귀에 술을 만들고 청색 끈을 그 귀의 술에 더하라"
+      ],
+      "raw_text_hashes": [
+        "2425455f3bfe79240eb3dc384d51df5d41f3820aeaa9ba61b3954452a54ff8c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:39",
+      "sequence": 4193,
+      "chapter_label": "NUM 15",
+      "verse_label": "39",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 39
+        }
+      ],
+      "en": "It shall be to you for a fringe, that you may see it, and remember all the LORD’s commandments, and do them; and that you don’t follow your own heart and your own eyes, after which you used to play the prostitute;",
+      "ko": "이 술은 너희로 보고 여호와의 모든 계명을 기억하여 준행하고 너희로 방종케 하는 자기의 마음과 눈의 욕심을 좇지 않게 하기 위함이라",
+      "source_text_hash": "ea97260c1223f4d4b71e9172aa8e36f612294cdab9c70cfb8d6956e92b19113c",
+      "translation_text_hash": "5d0ff09da50bb470c4c9ee52002606e35b34b19a18482a848f8fff89ea767a46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 술은 너희로 보고 여호와의 모든 계명을 기억하여 준행하고 너희로 방종케 하는 자기의 마음과 눈의 욕심을 좇지 않게 하기 위함이라"
+      ],
+      "raw_text_hashes": [
+        "5d0ff09da50bb470c4c9ee52002606e35b34b19a18482a848f8fff89ea767a46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:40",
+      "sequence": 4194,
+      "chapter_label": "NUM 15",
+      "verse_label": "40",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 40
+        }
+      ],
+      "en": "so that you may remember and do all my commandments, and be holy to your God.",
+      "ko": "그리하면 너희가 나의 모든 계명을 기억하고 준행하여 너희의 하나님 앞에 거룩하리라",
+      "source_text_hash": "7f9a1cebdfa2046f5e1e548768970a9624d3155fa30a0050b737a3f9ad135a72",
+      "translation_text_hash": "207c332635f89c26659ac9c98c6be07fe55daf4a100b284f6d17d3408f50d325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 너희가 나의 모든 계명을 기억하고 준행하여 너희의 하나님 앞에 거룩하리라"
+      ],
+      "raw_text_hashes": [
+        "207c332635f89c26659ac9c98c6be07fe55daf4a100b284f6d17d3408f50d325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:15:41",
+      "sequence": 4195,
+      "chapter_label": "NUM 15",
+      "verse_label": "41",
+      "locator": {
+        "book": "NUM",
+        "chapter": 15,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 15,
+          "verse": 41
+        }
+      ],
+      "en": "I am the LORD your God, who brought you out of the land of Egypt, to be your God: I am the LORD your God.”",
+      "ko": "나는 너희의 하나님이 되려하여 너희를 애굽 땅에서 인도하여 낸 여호와 너희 하나님이니라 나는 여호와 너희 하나님이니라",
+      "source_text_hash": "f69f08d7f8c219696ce7ddd391766e2a04c15f9431c12bfbe10455cad4800327",
+      "translation_text_hash": "0354b4e533321f8dbbca735ab5594ceac5010af53fa511ed39d108de43c6b812",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 너희의 하나님이 되려하여 너희를 애굽 땅에서 인도하여 낸 여호와 너희 하나님이니라 나는 여호와 너희 하나님이니라"
+      ],
+      "raw_text_hashes": [
+        "0354b4e533321f8dbbca735ab5594ceac5010af53fa511ed39d108de43c6b812"
+      ]
+    }
+  ]
+}

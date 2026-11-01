@@ -6,11 +6,12 @@ synthetic B14 below answers in B14's own wire format — ``chat.completion.chunk
 frames carrying ``business14`` route metadata and a terminating ``[DONE]`` — so a
 successful run produces a real answer instead of a provider-shape guess.
 
-Current observed state (2026-10-31): with the origin bound, a turn still ends at
-``run_failed``/``upstream_unavailable`` and the synthetic B14 records zero calls.
-The answer test therefore carries ``xfail(strict=False)``: the intent is recorded
-and CI stays honest about what is not yet proven. The state test below asserts the
-bounded failure so a regression into a hang or an unhelpful error is still caught.
+Replay is deliberately *not* expected: Chat's bridge sends no Engine idempotency
+key — the Worker composition and this host share one ``build_engine_request``,
+which fills only ``trace_id`` — so a second turn is a new run and B14 is called
+again. The cutover keeps host behaviour identical to Production, and the second
+turn below records that fact instead of inventing a key the deployed Chat does not
+send.
 """
 
 from __future__ import annotations
@@ -28,6 +29,8 @@ from pathlib import Path
 import pytest
 import uvicorn
 
+from _host_b14_proof import TEST_SECRET, reject_invalid_proof
+
 REPO = Path(__file__).resolve().parents[3]
 ENGINE_DIR = REPO / "apps" / "padiem-ai-engine"
 CALLER_ID = "b62-chat"
@@ -36,7 +39,7 @@ ANSWER = "합성 답변"
 
 
 def _child_path() -> str:
-    return ";".join(
+    return os.pathsep.join(
         str(path)
         for path in (
             ENGINE_DIR,
@@ -93,6 +96,8 @@ class _B14:
             body += message.get("body", b"")
             if not message.get("more_body"):
                 break
+        if await reject_invalid_proof(scope, body, send):
+            return
         self.calls.append(scope["path"])
         streaming = scope["path"].endswith("stream-preview")
         if streaming:
@@ -195,8 +200,10 @@ def engine_host(tmp_path_factory):
     _serve(b14, b14_port)
     engine_port = _free_port()
     env = dict(os.environ)
+    env.pop("B14_SECRET_DIR", None)
     env.update(
         {
+            "PADIEM_B14_SERVICE_PROOF_SECRET": TEST_SECRET,
             "PADIEM_ENGINE_CPYTHON_HOST": "1",
             "P01_HOST": "127.0.0.1",
             "P01_PORT": str(engine_port),
@@ -303,17 +310,10 @@ def _kinds(records: list[dict]) -> list[str]:
     return [str(record["event"]["kind"]) for record in records if "event" in record]
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "engine host B14 lane still ends the run at run_failed/upstream_unavailable "
-        "with zero B14 calls and the origin bound; see the PR evidence"
-    ),
-)
-async def test_a_turn_reaches_an_answer_and_replays_from_the_engine_store(
+async def test_a_turn_reaches_the_answer_and_a_second_turn_runs_again(
     engine_host,
 ) -> None:
-    """Chat → Engine → B14 answer, then the same key replays without a new call."""
+    """Chat → Engine → B14 answer, then the next turn is a new run (no key sent)."""
 
     b14 = engine_host["b14"]
     bridge = _bridge(engine_host["origin"])
@@ -334,7 +334,9 @@ async def test_a_turn_reaches_an_answer_and_replays_from_the_engine_store(
         record["result"].answer for record in second if "result" in record
     ]
     assert replay_answers and replay_answers[-1] == ANSWER
-    assert len(b14.calls) == calls_after_first
+    # No idempotency key travels, so the Engine starts a new run and B14 answers
+    # a second time — the same thing the deployed Worker path does.
+    assert len(b14.calls) == calls_after_first + 1
 
 
 async def test_a_turn_always_ends_in_a_bounded_state(engine_host) -> None:

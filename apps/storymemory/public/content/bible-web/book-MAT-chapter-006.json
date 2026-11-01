@@ -1,0 +1,1101 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:006",
+  "unit_ordinal": 935,
+  "unit_label": "MAT 6",
+  "book_code": "MAT",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:6:1",
+      "sequence": 23284,
+      "chapter_label": "MAT 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "“Be careful that you don’t do your charitable givingbefore men, to be seen by them, or else you have no reward from your Father who is in heaven.",
+      "ko": "사람에게 보이려고 그들 앞에서 너희 의를 행치 않도록 주의하라 그렇지 아니하면 하늘에 계신 너희 아버지께 상을 얻지 못하느니라",
+      "source_text_hash": "d4f34858248a26d546350c561c1857a43be640a4ba2d132420582af82cab04e5",
+      "translation_text_hash": "27af406ccb9f8ab1dcd7018279421f2d2404252bd17bfd5990f45761e809ff0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람에게 보이려고 그들 앞에서 너희 의를 행치 않도록 주의하라 그렇지 아니하면 하늘에 계신 너희 아버지께 상을 얻지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "27af406ccb9f8ab1dcd7018279421f2d2404252bd17bfd5990f45761e809ff0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:2",
+      "sequence": 23285,
+      "chapter_label": "MAT 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "Therefore, when you do merciful deeds, don’t sound a trumpet before yourself, as the hypocrites do in the synagogues and in the streets, that they may get glory from men. Most certainly I tell you, they have received their reward.",
+      "ko": "그러므로 구제할 때에 외식하는 자가 사람에게 영광을 얻으려고 회당과 거리에서 하는 것 같이 너희 앞에 나팔을 불지 말라 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라",
+      "source_text_hash": "e64ef353b089119e4626ae39dfc7504b93ec88ded77b0d66a178a7e51eb1041f",
+      "translation_text_hash": "04048b0eee3da47ea66772cfdfa31c34f938001789b96de9d86ff0ffa6cd32e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 구제할 때에 외식하는 자가 사람에게 영광을 얻으려고 회당과 거리에서 하는 것 같이 너희 앞에 나팔을 불지 말라 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "04048b0eee3da47ea66772cfdfa31c34f938001789b96de9d86ff0ffa6cd32e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:3",
+      "sequence": 23286,
+      "chapter_label": "MAT 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "But when you do merciful deeds, don’t let your left hand know what your right hand does,",
+      "ko": "너는 구제할 때에 오른손의 하는 것을 왼손이 모르게 하여",
+      "source_text_hash": "fa87c17a1c1aaef22eb426eeaa53ccc603c2f64de521110842047d716eba7276",
+      "translation_text_hash": "b6de3de779c75461d864271db3fcd56beb86e32cb93319bfaf107fb62464b4aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 구제할 때에 오른손의 하는 것을 왼손이 모르게 하여"
+      ],
+      "raw_text_hashes": [
+        "b6de3de779c75461d864271db3fcd56beb86e32cb93319bfaf107fb62464b4aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:4",
+      "sequence": 23287,
+      "chapter_label": "MAT 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "so that your merciful deeds may be in secret, then your Father who sees in secret will reward you openly.",
+      "ko": "네 구제함이 은밀하게 하라 은밀한 중에 보시는 너의 아버지가 갚으시리라",
+      "source_text_hash": "adfdc5d31051368662d3609c125950ce0574f92aedf4d6db843b47605167f435",
+      "translation_text_hash": "9bd2c60b78ac96a4187f434eb8c5e7b1ed620b1076d3269f14ba1a1ed0cda2bd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 구제함이 은밀하게 하라 은밀한 중에 보시는 너의 아버지가 갚으시리라"
+      ],
+      "raw_text_hashes": [
+        "9bd2c60b78ac96a4187f434eb8c5e7b1ed620b1076d3269f14ba1a1ed0cda2bd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:5",
+      "sequence": 23288,
+      "chapter_label": "MAT 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "“When you pray, you shall not be as the hypocrites, for they love to stand and pray in the synagogues and in the corners of the streets, that they may be seen by men. Most certainly, I tell you, they have received their reward.",
+      "ko": "또 너희가 기도할 때에 외식하는 자와 같이 되지 말라 저희는 사람에게 보이려고 회당과 큰 거리 어귀에 서서 기도하기를 좋아하느니라 내가 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라",
+      "source_text_hash": "34ae873042d4097322074790db3405907b17d6639d75b7a7be5712531dfcaf84",
+      "translation_text_hash": "fb27a1d345622d573d36e10762ddfc188f803e7d76ac31976633c67f66bf08ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 기도할 때에 외식하는 자와 같이 되지 말라 저희는 사람에게 보이려고 회당과 큰 거리 어귀에 서서 기도하기를 좋아하느니라 내가 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "fb27a1d345622d573d36e10762ddfc188f803e7d76ac31976633c67f66bf08ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:6",
+      "sequence": 23289,
+      "chapter_label": "MAT 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "But you, when you pray, enter into your inner room, and having shut your door, pray to your Father who is in secret; and your Father who sees in secret will reward you openly.",
+      "ko": "너는 기도할 때에 네 골방에 들어가 문을 닫고 은밀한 중에 계신 네 아버지께 기도하라 은밀한 중에 보시는 네 아버지께서 갚으시리라",
+      "source_text_hash": "e4a1870a6802ee5f48471366352e8da291bd931be43eb64550eb20e2e9fc0b56",
+      "translation_text_hash": "cc0c433e3d13f7dbc09547284145ccd8f9ac9abb61552a178189f4b32d5e3168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 기도할 때에 네 골방에 들어가 문을 닫고 은밀한 중에 계신 네 아버지께 기도하라 은밀한 중에 보시는 네 아버지께서 갚으시리라"
+      ],
+      "raw_text_hashes": [
+        "cc0c433e3d13f7dbc09547284145ccd8f9ac9abb61552a178189f4b32d5e3168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:7",
+      "sequence": 23290,
+      "chapter_label": "MAT 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "In praying, don’t use vain repetitions as the Gentiles do; for they think that they will be heard for their much speaking.",
+      "ko": "또 기도할 때에 이방인과 같이 중언부언하지 말라 저희는 말을 많이 하여야 들으실줄 생각하느니라",
+      "source_text_hash": "bb27e1c8cf7c8f0e6a0e94174a241f0c9f404701d59525f199ac433edc4b3cef",
+      "translation_text_hash": "35743f4ee828c87702eac98043bb8cd74470c30ddb409df17294061346afad86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 기도할 때에 이방인과 같이 중언부언하지 말라 저희는 말을 많이 하여야 들으실줄 생각하느니라"
+      ],
+      "raw_text_hashes": [
+        "35743f4ee828c87702eac98043bb8cd74470c30ddb409df17294061346afad86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:8",
+      "sequence": 23291,
+      "chapter_label": "MAT 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore don’t be like them, for your Father knows what things you need before you ask him.",
+      "ko": "그러므로 저희를 본받지 말라 구하기 전에 너희에게 있어야 할 것을 하나님 너희 아버지께서 아시느니라",
+      "source_text_hash": "5886e7e6bace20eac03e43bf9620fca4a08f737b53b2a0f2e6a9598fa81e836b",
+      "translation_text_hash": "6c8027fae210adcc36b1059ab86ae925ff8348e42047efecbcbf5789bc88d689",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저희를 본받지 말라 구하기 전에 너희에게 있어야 할 것을 하나님 너희 아버지께서 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "6c8027fae210adcc36b1059ab86ae925ff8348e42047efecbcbf5789bc88d689"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:9",
+      "sequence": 23292,
+      "chapter_label": "MAT 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Pray like this: “‘Our Father in heaven, may your name be kept holy.",
+      "ko": "그러므로 너희는 이렇게 기도하라 하늘에 계신 우리 아버지여 이름이 거룩히 여김을 받으시오며",
+      "source_text_hash": "70122b0482fd1ac6e87aa8076f219cdb23bdf1ad1b8a07c2254ad0d4721da60c",
+      "translation_text_hash": "4ac9f9d288ab2dc51de8b9a9b4c94b1bcec031f0af890e46269f2fad0b19db46",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희는 이렇게 기도하라 하늘에 계신 우리 아버지여 이름이 거룩히 여김을 받으시오며"
+      ],
+      "raw_text_hashes": [
+        "4ac9f9d288ab2dc51de8b9a9b4c94b1bcec031f0af890e46269f2fad0b19db46"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:10",
+      "sequence": 23293,
+      "chapter_label": "MAT 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "Let your Kingdom come. Let your will be done on earth as it is in heaven.",
+      "ko": "나라이 임하옵시며 뜻이 하늘에서 이룬 것 같이 땅에서도 이루어지이다",
+      "source_text_hash": "a1b7969c2cff805e582f36cd64dc8049703375947acf668c99ec9d5da8de21fc",
+      "translation_text_hash": "d191a6bb8eafa2f5eed4f49e4dc66559a88ea636c878670f84f77001b54c4de9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라이 임하옵시며 뜻이 하늘에서 이룬 것 같이 땅에서도 이루어지이다"
+      ],
+      "raw_text_hashes": [
+        "d191a6bb8eafa2f5eed4f49e4dc66559a88ea636c878670f84f77001b54c4de9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:11",
+      "sequence": 23294,
+      "chapter_label": "MAT 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Give us today our daily bread.",
+      "ko": "오늘날 우리에게 일용할 양식을 주옵시고",
+      "source_text_hash": "d3b28d01b4ca215e0eb270ac3f64088c9d35ce6f3a747c6bee3d0f492d539731",
+      "translation_text_hash": "9ea139b3178bd76d980ced93194c6a7c855e0e7d8554d817fcd0b3d84e18557c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘날 우리에게 일용할 양식을 주옵시고"
+      ],
+      "raw_text_hashes": [
+        "9ea139b3178bd76d980ced93194c6a7c855e0e7d8554d817fcd0b3d84e18557c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:12",
+      "sequence": 23295,
+      "chapter_label": "MAT 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Forgive us our debts,as we also forgive our debtors.",
+      "ko": "우리가 우리에게 죄 지은 자를 사하여 준것 같이 우리 죄를 사하여 주옵시고",
+      "source_text_hash": "e96f32c31ca36bf7475103b53ce15e6b9dd9979e5cd80a15c755a921bfdf0739",
+      "translation_text_hash": "98426b30393b4f6753c5e945d8705c4ee11f0ed0578b99496e73c7ca2f09443b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 우리에게 죄 지은 자를 사하여 준것 같이 우리 죄를 사하여 주옵시고"
+      ],
+      "raw_text_hashes": [
+        "98426b30393b4f6753c5e945d8705c4ee11f0ed0578b99496e73c7ca2f09443b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:13",
+      "sequence": 23296,
+      "chapter_label": "MAT 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Bring us not into temptation,but deliver us from the evil one. For yours is the Kingdom, the power, and the glory forever. Amen.’",
+      "ko": "우리를 시험에 들게 하지 마옵시고 다만 악에서 구하옵소서 (나라와 권세와 영광이 아버지께 영원히 있사옵나이다 아멘)",
+      "source_text_hash": "b216c6ca6f2b13240736ed2efa4b248a958e920dc2ccd855a65d4e6bcebf630b",
+      "translation_text_hash": "ce19babf3aa4d3a99342e300d80b7b4a3a4df20daabc9ab5b1188e5bf5de9c3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 시험에 들게 하지 마옵시고 다만 악에서 구하옵소서 (나라와 권세와 영광이 아버지께 영원히 있사옵나이다 아멘)"
+      ],
+      "raw_text_hashes": [
+        "ce19babf3aa4d3a99342e300d80b7b4a3a4df20daabc9ab5b1188e5bf5de9c3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:14",
+      "sequence": 23297,
+      "chapter_label": "MAT 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "“For if you forgive men their trespasses, your heavenly Father will also forgive you.",
+      "ko": "너희가 사람의 과실을 용서하면 너희 천부께서도 너희 과실을 용서하시려니와",
+      "source_text_hash": "9ac6f1bbab9c133d57228f26043680b443332bec92a03968b9643956bc964f5e",
+      "translation_text_hash": "af661d8d53496d646c8b4ab466a4ad70e6f18f15f34c12aa74317ab2c6a9f2ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 사람의 과실을 용서하면 너희 천부께서도 너희 과실을 용서하시려니와"
+      ],
+      "raw_text_hashes": [
+        "af661d8d53496d646c8b4ab466a4ad70e6f18f15f34c12aa74317ab2c6a9f2ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:15",
+      "sequence": 23298,
+      "chapter_label": "MAT 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "But if you don’t forgive men their trespasses, neither will your Father forgive your trespasses.",
+      "ko": "너희가 사람의 과실을 용서하지 아니하면 너희 아버지께서도 너희 과실을 용서하지 아니하시리라",
+      "source_text_hash": "769890a43e7edc4b180a5ccf90e24499815b0416cd4184f32376b25023a599c0",
+      "translation_text_hash": "0b22d72fc8ac31303e98bcbc8581bfe1989826d0d65067f825426a421e882787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 사람의 과실을 용서하지 아니하면 너희 아버지께서도 너희 과실을 용서하지 아니하시리라"
+      ],
+      "raw_text_hashes": [
+        "0b22d72fc8ac31303e98bcbc8581bfe1989826d0d65067f825426a421e882787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:16",
+      "sequence": 23299,
+      "chapter_label": "MAT 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "“Moreover when you fast, don’t be like the hypocrites, with sad faces. For they disfigure their faces that they may be seen by men to be fasting. Most certainly I tell you, they have received their reward.",
+      "ko": "금식할 때에 너희는 외식하는 자들과 같이 슬픈 기색을 내지 말라 저희는 금식하는 것을 사람에게 보이려고 얼굴을 흉하게 하느니라 내가 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라",
+      "source_text_hash": "d65c7b7d95180f928fcb30ef6cf419d9fb31d5c800084c19663348f3c6bd7c9d",
+      "translation_text_hash": "21acade9e6917e89c0ae981d8bea83074f8468b2cbbff2b22d82da588cca7723",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "금식할 때에 너희는 외식하는 자들과 같이 슬픈 기색을 내지 말라 저희는 금식하는 것을 사람에게 보이려고 얼굴을 흉하게 하느니라 내가 진실로 너희에게 이르노니 저희는 자기 상을 이미 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "21acade9e6917e89c0ae981d8bea83074f8468b2cbbff2b22d82da588cca7723"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:17",
+      "sequence": 23300,
+      "chapter_label": "MAT 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "But you, when you fast, anoint your head and wash your face,",
+      "ko": "너는 금식할 때에 머리에 기름을 바르고 얼굴을 씻으라",
+      "source_text_hash": "6c9d94a7322f8e80d44831e73d68782e512ba7e56408f508eea1e6a9fd742418",
+      "translation_text_hash": "f29bef9238cbaff31d76ab4fab39206f36f4512f420620def056d87993ee661e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 금식할 때에 머리에 기름을 바르고 얼굴을 씻으라"
+      ],
+      "raw_text_hashes": [
+        "f29bef9238cbaff31d76ab4fab39206f36f4512f420620def056d87993ee661e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:18",
+      "sequence": 23301,
+      "chapter_label": "MAT 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "so that you are not seen by men to be fasting, but by your Father who is in secret; and your Father, who sees in secret, will reward you.",
+      "ko": "이는 금식하는 자로 사람에게 보이지 않고 오직 은밀한 중에 계신 네 아버지께 보이게 하려 함이라 은밀한 중에 보시는 네 아버지께서 갚으시리라",
+      "source_text_hash": "f9658087fe586f1bca6cf72b5126ae238cf8c35710c9b217b732aee909e56cdd",
+      "translation_text_hash": "227ab430fc626018c49f4da36b1b1b5d55e57d01da0a80df5b9433cb5b8a4e93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 금식하는 자로 사람에게 보이지 않고 오직 은밀한 중에 계신 네 아버지께 보이게 하려 함이라 은밀한 중에 보시는 네 아버지께서 갚으시리라"
+      ],
+      "raw_text_hashes": [
+        "227ab430fc626018c49f4da36b1b1b5d55e57d01da0a80df5b9433cb5b8a4e93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:19",
+      "sequence": 23302,
+      "chapter_label": "MAT 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "“Don’t lay up treasures for yourselves on the earth, where moth and rust consume, and where thieves break through and steal;",
+      "ko": "너희를 위하여 보물을 땅에 쌓아 두지 말라 거기는 좀과 동록이 해하며 도적이 구멍을 뚫고 도적질하느니라",
+      "source_text_hash": "02dc854c4433c2995ed76d415c655513217e79c0602826c4c995b7bed4e1b53a",
+      "translation_text_hash": "fb1d5aad02578345dd8aac7a99c97a0671816b2d1f52a6d886aeda3b350bd307",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희를 위하여 보물을 땅에 쌓아 두지 말라 거기는 좀과 동록이 해하며 도적이 구멍을 뚫고 도적질하느니라"
+      ],
+      "raw_text_hashes": [
+        "fb1d5aad02578345dd8aac7a99c97a0671816b2d1f52a6d886aeda3b350bd307"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:20",
+      "sequence": 23303,
+      "chapter_label": "MAT 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "but lay up for yourselves treasures in heaven, where neither moth nor rust consume, and where thieves don’t break through and steal;",
+      "ko": "오직 너희를 위하여 보물을 하늘에 쌓아 두라 거기는 좀이나 동록이 해하지 못하며 도적이 구멍을 뚫지도 못하고 도적질도 못하느니라",
+      "source_text_hash": "683d45e2a19ae19452807656054c611e633367144a972aa2f5909fcdca391e60",
+      "translation_text_hash": "4a8d31da4a2f90a02aa61baad3718143adeb26d822603e2756e2d0180151f472",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희를 위하여 보물을 하늘에 쌓아 두라 거기는 좀이나 동록이 해하지 못하며 도적이 구멍을 뚫지도 못하고 도적질도 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "4a8d31da4a2f90a02aa61baad3718143adeb26d822603e2756e2d0180151f472"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:21",
+      "sequence": 23304,
+      "chapter_label": "MAT 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "for where your treasure is, there your heart will be also.",
+      "ko": "네 보물 있는 그 곳에는 네 마음도 있느니라",
+      "source_text_hash": "5c8769a72c3722a4ec7a95c8bb1308f34ba391e4387b60b56732646119b3a541",
+      "translation_text_hash": "9a7ed56ec254246bc6f020d62572de00865272508684585c7c5ce542d3ba8a29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 보물 있는 그 곳에는 네 마음도 있느니라"
+      ],
+      "raw_text_hashes": [
+        "9a7ed56ec254246bc6f020d62572de00865272508684585c7c5ce542d3ba8a29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:22",
+      "sequence": 23305,
+      "chapter_label": "MAT 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "“The lamp of the body is the eye. If therefore your eye is sound, your whole body will be full of light.",
+      "ko": "눈은 몸의 등불이니 그러므로 네 눈이 성하면 온 몸이 밝을 것이요",
+      "source_text_hash": "0e78990a004d6dab18c3378f82e805945d6740ad6a70df65a923f5680173eb35",
+      "translation_text_hash": "0d3c539a3cebd5346471da5dc402530a14685b3850b65ab6ec7ccd3aa6562b26",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈은 몸의 등불이니 그러므로 네 눈이 성하면 온 몸이 밝을 것이요"
+      ],
+      "raw_text_hashes": [
+        "0d3c539a3cebd5346471da5dc402530a14685b3850b65ab6ec7ccd3aa6562b26"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:23",
+      "sequence": 23306,
+      "chapter_label": "MAT 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "But if your eye is evil, your whole body will be full of darkness. If therefore the light that is in you is darkness, how great is the darkness!",
+      "ko": "눈이 나쁘면 온 몸이 어두울 것이니 그러므로 네게 있는 빛이 어두우면 그 어두움이 얼마나 하겠느뇨",
+      "source_text_hash": "41ad49e63ca181d5b98ab58651d926f21a38e063a66ac24a750e931851d8ea2d",
+      "translation_text_hash": "862cd3c017c99d3cb07cb02fb7d33198d1e269bb7b377174416e62a7c46a4d52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈이 나쁘면 온 몸이 어두울 것이니 그러므로 네게 있는 빛이 어두우면 그 어두움이 얼마나 하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "862cd3c017c99d3cb07cb02fb7d33198d1e269bb7b377174416e62a7c46a4d52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:24",
+      "sequence": 23307,
+      "chapter_label": "MAT 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "“No one can serve two masters, for either he will hate the one and love the other, or else he will be devoted to one and despise the other. You can’t serve both God and Mammon.",
+      "ko": "한 사람이 두 주인을 섬기지 못할 것이니 혹 이를 미워하며 저를 사랑하거나 혹 이를 중히 여기며 저를 경히 여김이라 너희가 하나님과 재물을 겸하여 섬기지 못하느니라",
+      "source_text_hash": "44b72c0aec173af5ab77694b42807a1d71f6a69cd3659389e09140f110312b1e",
+      "translation_text_hash": "5c68cd41c86c8071e2106621043283d6efda24092b39d84cbef0a551c192f673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "한 사람이 두 주인을 섬기지 못할 것이니 혹 이를 미워하며 저를 사랑하거나 혹 이를 중히 여기며 저를 경히 여김이라 너희가 하나님과 재물을 겸하여 섬기지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "5c68cd41c86c8071e2106621043283d6efda24092b39d84cbef0a551c192f673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:25",
+      "sequence": 23308,
+      "chapter_label": "MAT 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore I tell you, don’t be anxious for your life: what you will eat, or what you will drink; nor yet for your body, what you will wear. Isn’t life more than food, and the body more than clothing?",
+      "ko": "그러므로 내가 너희에게 이르노니 목숨을 위하여 무엇을 먹을까 무엇을 마실까 몸을 위하여 무엇을 입을까 염려하지 말라 목숨이 음식보다 중하지 아니하며 몸이 의복보다 중하지 아니하냐",
+      "source_text_hash": "75a4b91cae2a191ad375814432726e5e483bbf17ad447e44fba1b75df663ff7a",
+      "translation_text_hash": "234e6efc2193dfb2efd1e527ff2f86ce72446b869414656789bb5bbe36f099ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 이르노니 목숨을 위하여 무엇을 먹을까 무엇을 마실까 몸을 위하여 무엇을 입을까 염려하지 말라 목숨이 음식보다 중하지 아니하며 몸이 의복보다 중하지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "234e6efc2193dfb2efd1e527ff2f86ce72446b869414656789bb5bbe36f099ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:26",
+      "sequence": 23309,
+      "chapter_label": "MAT 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "See the birds of the sky, that they don’t sow, neither do they reap, nor gather into barns. Your heavenly Father feeds them. Aren’t you of much more value than they?",
+      "ko": "공중의 새를 보라 심지도 않고 거두지도 않고 창고에 모아 들이지도 아니하되 너희 천부께서 기르시나니 너희는 이것들보다 귀하지 아니하냐",
+      "source_text_hash": "dea98756b4ccbe94c7f128a657a58df404934e40bb6b14dbc8edb2ff73de113f",
+      "translation_text_hash": "895a210a1bf29ee22fc8b15f8389d6d43a3014b12aaaab39d560291e9d6541c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "공중의 새를 보라 심지도 않고 거두지도 않고 창고에 모아 들이지도 아니하되 너희 천부께서 기르시나니 너희는 이것들보다 귀하지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "895a210a1bf29ee22fc8b15f8389d6d43a3014b12aaaab39d560291e9d6541c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:27",
+      "sequence": 23310,
+      "chapter_label": "MAT 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "“Which of you by being anxious, can add one momentto his lifespan?",
+      "ko": "너희 중에 누가 염려함으로 그 키를 한 자나 더할 수 있느냐",
+      "source_text_hash": "abeb4d6a97a646e96d6d4826b8f9af192c73f4c73fd443fa9e84e8c3f4c112b3",
+      "translation_text_hash": "032bccfa393e6bf682ba8c203fdbc3f602b6c3e1c94537c5a75fd0a44eae0732",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 염려함으로 그 키를 한 자나 더할 수 있느냐"
+      ],
+      "raw_text_hashes": [
+        "032bccfa393e6bf682ba8c203fdbc3f602b6c3e1c94537c5a75fd0a44eae0732"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:28",
+      "sequence": 23311,
+      "chapter_label": "MAT 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "Why are you anxious about clothing? Consider the lilies of the field, how they grow. They don’t toil, neither do they spin,",
+      "ko": "또 너희가 어찌 의복을 위하여 염려하느냐 들의 백합화가 어떻게 자라는가 생각하여 보라 수고도 아니하고 길쌈도 아니하느니라",
+      "source_text_hash": "fe3752f9afbb47e8adb76976f24de0c6cb3c13ca3b1bb7f2bc31226e8632e140",
+      "translation_text_hash": "5e26a029348e7997c69aea3fc4f494482a8a54f0804733ca3d37e6b76ce7d1e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 너희가 어찌 의복을 위하여 염려하느냐 들의 백합화가 어떻게 자라는가 생각하여 보라 수고도 아니하고 길쌈도 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "5e26a029348e7997c69aea3fc4f494482a8a54f0804733ca3d37e6b76ce7d1e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:29",
+      "sequence": 23312,
+      "chapter_label": "MAT 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "yet I tell you that even Solomon in all his glory was not dressed like one of these.",
+      "ko": "그러나 내가 너희에게 말하노니 솔로몬의 모든 영광으로도 입은 것이 이 꽃 하나만 같지 못하였느니라",
+      "source_text_hash": "ab3e215f568e4968f4556101c95252b1a26f8670c6a522bbddcf2ea8cc04d0e4",
+      "translation_text_hash": "9a0cdde9aba5a04e3beb9cf481d1f3bf23ad5c52e898962ff902419160551da3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 내가 너희에게 말하노니 솔로몬의 모든 영광으로도 입은 것이 이 꽃 하나만 같지 못하였느니라"
+      ],
+      "raw_text_hashes": [
+        "9a0cdde9aba5a04e3beb9cf481d1f3bf23ad5c52e898962ff902419160551da3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:30",
+      "sequence": 23313,
+      "chapter_label": "MAT 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "But if God so clothes the grass of the field, which today exists and tomorrow is thrown into the oven, won’t he much more clothe you, you of little faith?",
+      "ko": "오늘 있다가 내일 아궁이에 던지우는 들풀도 하나님이 이렇게 입히시거든 하물며 너희일까보냐 믿음이 적은 자들아",
+      "source_text_hash": "945220648835781300c7577eeeb9350e27860243db312ca966f1e1d061e23261",
+      "translation_text_hash": "acae21838f6904304666f0460e5847ce9ea12fe4073498e7fb9785c57072ace3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 있다가 내일 아궁이에 던지우는 들풀도 하나님이 이렇게 입히시거든 하물며 너희일까보냐 믿음이 적은 자들아"
+      ],
+      "raw_text_hashes": [
+        "acae21838f6904304666f0460e5847ce9ea12fe4073498e7fb9785c57072ace3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:31",
+      "sequence": 23314,
+      "chapter_label": "MAT 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "“Therefore don’t be anxious, saying, ‘What will we eat?’, ‘What will we drink?’ or, ‘With what will we be clothed?’",
+      "ko": "그러므로 염려하여 이르기를 무엇을 먹을까 무엇을 마실까 무엇을 입을까 하지 말라",
+      "source_text_hash": "761a5eea54b0da17cb35262ca7e15002334af7ecc9b0f97220a2d89961a0ac1c",
+      "translation_text_hash": "852f45fe52169f12a9aaa70e19f80c5e062269e464b003f9f3c1fe2d260bb74f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 염려하여 이르기를 무엇을 먹을까 무엇을 마실까 무엇을 입을까 하지 말라"
+      ],
+      "raw_text_hashes": [
+        "852f45fe52169f12a9aaa70e19f80c5e062269e464b003f9f3c1fe2d260bb74f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:32",
+      "sequence": 23315,
+      "chapter_label": "MAT 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "For the Gentiles seek after all these things; for your heavenly Father knows that you need all these things.",
+      "ko": "이는 다 이방인들이 구하는 것이라 너희 천부께서 이 모든 것이 너희에게 있어야 할 줄을 아시느니라",
+      "source_text_hash": "62e664e826d2b3047f7ae5b37ad9277db57ae98c4b03c45d505cc6ae90adbe8e",
+      "translation_text_hash": "3bc5721c0007ac69260bb98eed87b1b9a02a2a22ec6049fdba0bc939fbd67b51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 이방인들이 구하는 것이라 너희 천부께서 이 모든 것이 너희에게 있어야 할 줄을 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "3bc5721c0007ac69260bb98eed87b1b9a02a2a22ec6049fdba0bc939fbd67b51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:33",
+      "sequence": 23316,
+      "chapter_label": "MAT 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "But seek first God’s Kingdom and his righteousness; and all these things will be given to you as well.",
+      "ko": "너희는 먼저 그의 나라와 그의 의를 구하라 그리하면 이 모든 것을 너희에게 더하시리라",
+      "source_text_hash": "72580c3c263664f7b53b56b7c571f669fffa03ebfd8d4910a8f03d493853f269",
+      "translation_text_hash": "3e35a742eb377684021349009229cad48b4c3ef9dd6d41f9ff43e035179f78a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 먼저 그의 나라와 그의 의를 구하라 그리하면 이 모든 것을 너희에게 더하시리라"
+      ],
+      "raw_text_hashes": [
+        "3e35a742eb377684021349009229cad48b4c3ef9dd6d41f9ff43e035179f78a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:6:34",
+      "sequence": 23317,
+      "chapter_label": "MAT 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "Therefore don’t be anxious for tomorrow, for tomorrow will be anxious for itself. Each day’s own evil is sufficient.",
+      "ko": "그러므로 내일 일을 위하여 염려하지 말라 내일 일은 내일 염려할 것이요 한 날 괴로움은 그날에 족하니라",
+      "source_text_hash": "bc31be84e3eec5e06e68a280d01c85524bf6bc50cd8e09e0082d741730e8d594",
+      "translation_text_hash": "1884dd50b7052cd5d634c36fe4a88efb892e2656604a274499933749a7ce4200",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내일 일을 위하여 염려하지 말라 내일 일은 내일 염려할 것이요 한 날 괴로움은 그날에 족하니라"
+      ],
+      "raw_text_hashes": [
+        "1884dd50b7052cd5d634c36fe4a88efb892e2656604a274499933749a7ce4200"
+      ]
+    }
+  ]
+}

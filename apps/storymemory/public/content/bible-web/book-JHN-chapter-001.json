@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:001",
+  "unit_ordinal": 998,
+  "unit_label": "JHN 1",
+  "book_code": "JHN",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:1:1",
+      "sequence": 26045,
+      "chapter_label": "JHN 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "In the beginning was the Word, and the Word was with God, and the Word was God.",
+      "ko": "태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라",
+      "source_text_hash": "09c9620e89cbbf56f96c3edb0ddb8b0824a656bf92e940a83cdb527bd3426765",
+      "translation_text_hash": "8c7ccf594cd910d71741c70526d52cfda2f4516c04581b65ec3e9b9ba159dd66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라"
+      ],
+      "raw_text_hashes": [
+        "8c7ccf594cd910d71741c70526d52cfda2f4516c04581b65ec3e9b9ba159dd66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:2",
+      "sequence": 26046,
+      "chapter_label": "JHN 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "The same was in the beginning with God.",
+      "ko": "그가 태초에 하나님과 함께 계셨고",
+      "source_text_hash": "f20f25ca54038979da7652c54ee652608d0127f2bb1918a71493493f7d49f10e",
+      "translation_text_hash": "6223b631d43390dcfd9faf452f8b6d1596dca896071d2b2a70534cbc6236bfb8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 태초에 하나님과 함께 계셨고"
+      ],
+      "raw_text_hashes": [
+        "6223b631d43390dcfd9faf452f8b6d1596dca896071d2b2a70534cbc6236bfb8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:3",
+      "sequence": 26047,
+      "chapter_label": "JHN 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "All things were made through him. Without him, nothing was made that has been made.",
+      "ko": "만물이 그로 말미암아 지은바 되었으니 지은 것이 하나도 그가 없이는 된 것이 없느니라",
+      "source_text_hash": "51723f6f3d574ae1e9aa9df1c1e872f98d0ee18c83fc21952f03afbcbe996b1f",
+      "translation_text_hash": "ca6bd71445b5fba811d53bad390c39f2f424a81eee18f9b1db21f6e0c1fd0bcb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만물이 그로 말미암아 지은바 되었으니 지은 것이 하나도 그가 없이는 된 것이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "ca6bd71445b5fba811d53bad390c39f2f424a81eee18f9b1db21f6e0c1fd0bcb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:4",
+      "sequence": 26048,
+      "chapter_label": "JHN 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "In him was life, and the life was the light of men.",
+      "ko": "그 안에 생명이 있었으니 이 생명은 사람들의 빛이라",
+      "source_text_hash": "15084516238f9cc56d4e6cc945d58fd1ce97bf359f95925fc9fbbb0ad16cc171",
+      "translation_text_hash": "1e8aea96aa9e4b1c58ac0c8c11b0dcaf7ace8583f60a17d5f28d2340682e83a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에 생명이 있었으니 이 생명은 사람들의 빛이라"
+      ],
+      "raw_text_hashes": [
+        "1e8aea96aa9e4b1c58ac0c8c11b0dcaf7ace8583f60a17d5f28d2340682e83a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:5",
+      "sequence": 26049,
+      "chapter_label": "JHN 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "The light shines in the darkness, and the darkness hasn’t overcome it.",
+      "ko": "빛이 어두움에 비취되 어두움이 깨닫지 못하더라",
+      "source_text_hash": "0c735e4deb459d495c702c16c367a209178ab05f83b148feb074824b179a8db1",
+      "translation_text_hash": "ff6bdd1a7c2a102d9e6f5646455ad056637d527cfa51bc4e413fd72b2c84c288",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빛이 어두움에 비취되 어두움이 깨닫지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "ff6bdd1a7c2a102d9e6f5646455ad056637d527cfa51bc4e413fd72b2c84c288"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:6",
+      "sequence": 26050,
+      "chapter_label": "JHN 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "There came a man sent from God, whose name was John.",
+      "ko": "하나님께로서 보내심을 받은 사람이 났으니 이름은 요한이라",
+      "source_text_hash": "5bebec8d8b88b5e725139fde37abb6ef5e203c99b2a6f4f3adaa64da3366bd5b",
+      "translation_text_hash": "e35db2716a6ee29c8cf1b22c6e411ea081d2d0b0a959686502de8826b56af8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께로서 보내심을 받은 사람이 났으니 이름은 요한이라"
+      ],
+      "raw_text_hashes": [
+        "e35db2716a6ee29c8cf1b22c6e411ea081d2d0b0a959686502de8826b56af8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:7",
+      "sequence": 26051,
+      "chapter_label": "JHN 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "The same came as a witness, that he might testify about the light, that all might believe through him.",
+      "ko": "저가 증거하러 왔으니 곧 빛에 대하여 증거하고 모든 사람으로 자기를 인하여 믿게 하려 함이라",
+      "source_text_hash": "7d88ae9b2c3820db084667d8aa58185588526842d309410483a757998f453730",
+      "translation_text_hash": "b6e6cc3a8265035a4df72057938b3f024b3289be3aecf7dad3874aa66c37c708",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 증거하러 왔으니 곧 빛에 대하여 증거하고 모든 사람으로 자기를 인하여 믿게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "b6e6cc3a8265035a4df72057938b3f024b3289be3aecf7dad3874aa66c37c708"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:8",
+      "sequence": 26052,
+      "chapter_label": "JHN 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "He was not the light, but was sent that he might testify about the light.",
+      "ko": "그는 이 빛이 아니요 이 빛에 대하여 증거하러 온 자라",
+      "source_text_hash": "5e6ad4ad7d2d24325c72adc978abb159cad57448c859c33773beecd790513284",
+      "translation_text_hash": "a1dd4caf00a958c9be1657848c1005c7f3ba519595a3d5e3b1ed746988ba05fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 이 빛이 아니요 이 빛에 대하여 증거하러 온 자라"
+      ],
+      "raw_text_hashes": [
+        "a1dd4caf00a958c9be1657848c1005c7f3ba519595a3d5e3b1ed746988ba05fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:9",
+      "sequence": 26053,
+      "chapter_label": "JHN 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "The true light that enlightens everyone was coming into the world.",
+      "ko": "참빛 곧 세상에 와서 각 사람에게 비취는 빛이 있었나니",
+      "source_text_hash": "6f5e21f2e41c55510968e7d8ab93086b60a9f687f42182f62d126f59030baa01",
+      "translation_text_hash": "b0e955c47363aeae186e9959cce5e7288186c8b5eba2e05dd5897b529b9c8645",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "참빛 곧 세상에 와서 각 사람에게 비취는 빛이 있었나니"
+      ],
+      "raw_text_hashes": [
+        "b0e955c47363aeae186e9959cce5e7288186c8b5eba2e05dd5897b529b9c8645"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:10",
+      "sequence": 26054,
+      "chapter_label": "JHN 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "He was in the world, and the world was made through him, and the world didn’t recognize him.",
+      "ko": "그가 세상에 계셨으며 세상은 그로 말미암아 지은바 되었으되 세상이 그를 알지 못하였고",
+      "source_text_hash": "d651c23aad571e3dd925396e32254c460ae8b11f57f35cf5448db2e61656eeab",
+      "translation_text_hash": "45ed51447405d321a1c95e365634747662eb0cd148ff6e8d1b43817c6e138769",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 세상에 계셨으며 세상은 그로 말미암아 지은바 되었으되 세상이 그를 알지 못하였고"
+      ],
+      "raw_text_hashes": [
+        "45ed51447405d321a1c95e365634747662eb0cd148ff6e8d1b43817c6e138769"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:11",
+      "sequence": 26055,
+      "chapter_label": "JHN 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "He came to his own, and those who were his own didn’t receive him.",
+      "ko": "자기 땅에 오매 자기 백성이 영접지 아니하였으나",
+      "source_text_hash": "048ab0d0741ed5109e87d0776e4b74fe347205f29c4251e5de511bed36502e0a",
+      "translation_text_hash": "b1e27ef08f309035a9ae338e2640eb29400687d1645d254ad8b7c18a78b14fba",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 땅에 오매 자기 백성이 영접지 아니하였으나"
+      ],
+      "raw_text_hashes": [
+        "b1e27ef08f309035a9ae338e2640eb29400687d1645d254ad8b7c18a78b14fba"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:12",
+      "sequence": 26056,
+      "chapter_label": "JHN 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "But as many as received him, to them he gave the right to become God’s children, to those who believe in his name:",
+      "ko": "영접하는 자 곧 그 이름을 믿는 자들에게는 하나님의 자녀가 되는 권세를 주셨으니",
+      "source_text_hash": "f0e2b563552c057e42b00f84582425a20cc61d6b72a9105d64442ea8a21da099",
+      "translation_text_hash": "16b4ee239509b558f140bdef4e8f23305dc81666ee1c28aad82f73d4a685baf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영접하는 자 곧 그 이름을 믿는 자들에게는 하나님의 자녀가 되는 권세를 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "16b4ee239509b558f140bdef4e8f23305dc81666ee1c28aad82f73d4a685baf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:13",
+      "sequence": 26057,
+      "chapter_label": "JHN 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "who were born, not of blood, nor of the will of the flesh, nor of the will of man, but of God.",
+      "ko": "이는 혈통으로나 육정으로나 사람의 뜻으로 나지 아니하고 오직 하나님께로서 난 자들이니라",
+      "source_text_hash": "ccbf1ae200f8ed6237ece97ce0a63c92f8c3af18f2434241271397dd6f685e0b",
+      "translation_text_hash": "7b87654ce29a65d361f29bcb86a2e0da3d7353c7e401e8aa3cf090e7af144c96",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 혈통으로나 육정으로나 사람의 뜻으로 나지 아니하고 오직 하나님께로서 난 자들이니라"
+      ],
+      "raw_text_hashes": [
+        "7b87654ce29a65d361f29bcb86a2e0da3d7353c7e401e8aa3cf090e7af144c96"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:14",
+      "sequence": 26058,
+      "chapter_label": "JHN 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "The Word became flesh and lived among us. We saw his glory, such glory as of the only born Son of the Father, full of grace and truth.",
+      "ko": "말씀이 육신이 되어 우리 가운데 거하시매 우리가 그 영광을 보니 아버지의 독생자의 영광이요 은혜와 진리가 충만하더라",
+      "source_text_hash": "4ac8eff4242ce3691419610f7da2080690a9bb9eff2f11a8ae3cd5600f3ebc6c",
+      "translation_text_hash": "56cc9dd3df742bdccf10e6f3f9eadbb5456302fbe9e5c555383dbced2c7ddbf2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말씀이 육신이 되어 우리 가운데 거하시매 우리가 그 영광을 보니 아버지의 독생자의 영광이요 은혜와 진리가 충만하더라"
+      ],
+      "raw_text_hashes": [
+        "56cc9dd3df742bdccf10e6f3f9eadbb5456302fbe9e5c555383dbced2c7ddbf2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:15",
+      "sequence": 26059,
+      "chapter_label": "JHN 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "John testified about him. He cried out, saying, “This was he of whom I said, ‘He who comes after me has surpassed me, for he was before me.’”",
+      "ko": "요한이 그에 대하여 증거하여 외쳐 가로되 내가 전에 말하기를 내 뒤에 오시는 이가 나보다 앞선 것은 나보다 먼저 계심이니라 한 것이 이 사람을 가리킴이라 하니라",
+      "source_text_hash": "261defaec3a2d7819ff1ce8dfab57468a2e586eec16ae635e0b51010383945b7",
+      "translation_text_hash": "26a97ec6cf9e42884aa5989e3a2cf48ff1d0a6e10a337850822e0fddde8d8087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 그에 대하여 증거하여 외쳐 가로되 내가 전에 말하기를 내 뒤에 오시는 이가 나보다 앞선 것은 나보다 먼저 계심이니라 한 것이 이 사람을 가리킴이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "26a97ec6cf9e42884aa5989e3a2cf48ff1d0a6e10a337850822e0fddde8d8087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:16",
+      "sequence": 26060,
+      "chapter_label": "JHN 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "From his fullness we all received grace upon grace.",
+      "ko": "우리가 다 그의 충만한데서 받으니 은혜 위에 은혜러라",
+      "source_text_hash": "cfcdc47cda689650afeb4623b961492127bb723cedbb3f420f58b8cf1dc485ae",
+      "translation_text_hash": "34a269ac897a6fe8463cd67526072a668a7551c08d0f76065eb5097f8d33c26c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다 그의 충만한데서 받으니 은혜 위에 은혜러라"
+      ],
+      "raw_text_hashes": [
+        "34a269ac897a6fe8463cd67526072a668a7551c08d0f76065eb5097f8d33c26c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:17",
+      "sequence": 26061,
+      "chapter_label": "JHN 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "For the law was given through Moses. Grace and truth were realized through Jesus Christ.",
+      "ko": "율법은 모세로 말미암아 주신 것이요 은혜와 진리는 예수 그리스도로 말미암아 온 것이라",
+      "source_text_hash": "db85cbcc913dbdeb87892e1327d836772816cd7940192fcf9d726784aec737dd",
+      "translation_text_hash": "4e4fdfbc347b9e4d6746da9db7776b118a20e3b61134ee695f177ba70814bf7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법은 모세로 말미암아 주신 것이요 은혜와 진리는 예수 그리스도로 말미암아 온 것이라"
+      ],
+      "raw_text_hashes": [
+        "4e4fdfbc347b9e4d6746da9db7776b118a20e3b61134ee695f177ba70814bf7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:18",
+      "sequence": 26062,
+      "chapter_label": "JHN 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "No one has seen God at any time. The only born Son, who is in the bosom of the Father, has declared him.",
+      "ko": "본래 하나님을 본 사람이 없으되 아버지 품속에 있는 독생하신 하나님이 나타내셨느니라",
+      "source_text_hash": "90e02e77c0edd032cdbe392ed3cc026fd400c0010470ff8f1be5e075a9eb2538",
+      "translation_text_hash": "2c20771cfb4f224fd722041d35ff229e0139a9512cceb5d67ca835dd3503b65f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "본래 하나님을 본 사람이 없으되 아버지 품속에 있는 독생하신 하나님이 나타내셨느니라"
+      ],
+      "raw_text_hashes": [
+        "2c20771cfb4f224fd722041d35ff229e0139a9512cceb5d67ca835dd3503b65f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:19",
+      "sequence": 26063,
+      "chapter_label": "JHN 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "This is John’s testimony, when the Jews sent priests and Levites from Jerusalem to ask him, “Who are you?”",
+      "ko": "유대인들이 예루살렘에서 제사장들과 레위인들을 요한에게 보내어 네가 누구냐 물을 때에 요한의 증거가 이러하니라",
+      "source_text_hash": "bb62ecc6a1d55b85d5c38dc057bec4638d4c26d889886185da39c53fbcd91466",
+      "translation_text_hash": "14c5b85ed375b80470ac37ef70df18da2806cc13691f80d3915114ef794f830e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 예루살렘에서 제사장들과 레위인들을 요한에게 보내어 네가 누구냐 물을 때에 요한의 증거가 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "14c5b85ed375b80470ac37ef70df18da2806cc13691f80d3915114ef794f830e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:20",
+      "sequence": 26064,
+      "chapter_label": "JHN 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "He declared, and didn’t deny, but he declared, “I am not the Christ.”",
+      "ko": "요한이 드러내어 말하고 숨기지 아니하니 드러내어 하는 말이 나는 그리스도가 아니라 한대",
+      "source_text_hash": "3a1b5c2b1a9ff8eb4496bc5da2d1eb38c32eb943af7380a21e37e1000ba998b6",
+      "translation_text_hash": "dd63f6ceaf38b145b71fd4b0424b25cc1bef8628ad4356731c4ddbb3b2bad2d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 드러내어 말하고 숨기지 아니하니 드러내어 하는 말이 나는 그리스도가 아니라 한대"
+      ],
+      "raw_text_hashes": [
+        "dd63f6ceaf38b145b71fd4b0424b25cc1bef8628ad4356731c4ddbb3b2bad2d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:21",
+      "sequence": 26065,
+      "chapter_label": "JHN 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "They asked him, “What then? Are you Elijah?” He said, “I am not.” “Are you the prophet?” He answered, “No.”",
+      "ko": "또 묻되 그러면 무엇, 네가 엘리야냐 가로되 나는 아니라 또 묻되 네가 그 선지자냐 대답하되 아니라",
+      "source_text_hash": "0ac1707b42a5eb3d0682ec119910cb539cf512f8178a7352490aba8abb578467",
+      "translation_text_hash": "4e2649455c18d65c42761cf5a1dcb3907add094447fbf5f33e3eeb3328c1c96b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 묻되 그러면 무엇, 네가 엘리야냐 가로되 나는 아니라 또 묻되 네가 그 선지자냐 대답하되 아니라"
+      ],
+      "raw_text_hashes": [
+        "4e2649455c18d65c42761cf5a1dcb3907add094447fbf5f33e3eeb3328c1c96b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:22",
+      "sequence": 26066,
+      "chapter_label": "JHN 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "They said therefore to him, “Who are you? Give us an answer to take back to those who sent us. What do you say about yourself?”",
+      "ko": "또 말하되 누구냐 우리를 보낸 이들에게 대답하게 하라 너는 네게 대하여 무엇이라 하느냐",
+      "source_text_hash": "55a22c6a23614a8f18295d0e718e6a5688a481241e238c44d433caa363e7735d",
+      "translation_text_hash": "cc5c06012a2080e4a1fdf622379a070d54e9dabfd40b87eafcf9f8d5131ff83a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 말하되 누구냐 우리를 보낸 이들에게 대답하게 하라 너는 네게 대하여 무엇이라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "cc5c06012a2080e4a1fdf622379a070d54e9dabfd40b87eafcf9f8d5131ff83a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:23",
+      "sequence": 26067,
+      "chapter_label": "JHN 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "He said, “I am the voice of one crying in the wilderness, ‘Make straight the way of the Lord,’ as Isaiah the prophet said.”",
+      "ko": "가로되 나는 선지자 이사야의 말과 같이 주의 길을 곧게 하라고 광야에서 외치는 자의 소리로라 하니라",
+      "source_text_hash": "476cfcdb2ff03fbd632e70253b06d8e7a6be1e35c74cc81fcc19c53675ceb863",
+      "translation_text_hash": "f7446f5976aa53a4662dca951ee3449d4ad4e920e346f142648e4e764717b537",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 나는 선지자 이사야의 말과 같이 주의 길을 곧게 하라고 광야에서 외치는 자의 소리로라 하니라"
+      ],
+      "raw_text_hashes": [
+        "f7446f5976aa53a4662dca951ee3449d4ad4e920e346f142648e4e764717b537"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:24",
+      "sequence": 26068,
+      "chapter_label": "JHN 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "The ones who had been sent were from the Pharisees.",
+      "ko": "저희는 바리새인들에게서 보낸 자라",
+      "source_text_hash": "8ec6a4e2612386e6f577348c73a7d50a519c078e62d6daeb1ad840441560b870",
+      "translation_text_hash": "868d932d1f6c3347af10b9d4b90c1b58feea556f837e06729e21fa857d72a196",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 바리새인들에게서 보낸 자라"
+      ],
+      "raw_text_hashes": [
+        "868d932d1f6c3347af10b9d4b90c1b58feea556f837e06729e21fa857d72a196"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:25",
+      "sequence": 26069,
+      "chapter_label": "JHN 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "They asked him, “Why then do you baptize if you are not the Christ, nor Elijah, nor the prophet?”",
+      "ko": "또 물어 가로되 네가 만일 그리스도도 아니요 엘리야도 아니요 그 선지자도 아닐찐대 어찌하여 세례를 주느냐",
+      "source_text_hash": "4a80fafd89f0bdaca13c12d1191bed1cbf3160b52df6c7f99e675754a732e856",
+      "translation_text_hash": "b100e07225335485e12f2e7e4ad5b2511285ade1f1123bd00e7f1604c972de98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 물어 가로되 네가 만일 그리스도도 아니요 엘리야도 아니요 그 선지자도 아닐찐대 어찌하여 세례를 주느냐"
+      ],
+      "raw_text_hashes": [
+        "b100e07225335485e12f2e7e4ad5b2511285ade1f1123bd00e7f1604c972de98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:26",
+      "sequence": 26070,
+      "chapter_label": "JHN 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "John answered them, “I baptize in water, but among you stands one whom you don’t know.",
+      "ko": "요한이 대답하되 나는 물로 세례를 주거니와 너희 가운데 너희가 알지 못하는 한 사람이 섰으니",
+      "source_text_hash": "b889405d9048621411739aaa48fdefdc8a68ae7ee655aed61fe6ce48472da2c2",
+      "translation_text_hash": "18540ce7a9200db145f74b0a3f0d971931e37356b811e6aeee4b9ec6c85aca49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 대답하되 나는 물로 세례를 주거니와 너희 가운데 너희가 알지 못하는 한 사람이 섰으니"
+      ],
+      "raw_text_hashes": [
+        "18540ce7a9200db145f74b0a3f0d971931e37356b811e6aeee4b9ec6c85aca49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:27",
+      "sequence": 26071,
+      "chapter_label": "JHN 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "He is the one who comes after me, who is preferred before me, whose sandal strap I’m not worthy to loosen.”",
+      "ko": "곧 내 뒤에 오시는 그이라 나는 그의 신들메 풀기도 감당치 못하겠노라 하더라",
+      "source_text_hash": "a104a54c0a0d88e09bfb0ee05d7d27cdf360c2a98c6849be01be484c7f207562",
+      "translation_text_hash": "e3e536349bce80bdfa035783d52776f53fa2e842b3d40467e4e71aa22a664a1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 내 뒤에 오시는 그이라 나는 그의 신들메 풀기도 감당치 못하겠노라 하더라"
+      ],
+      "raw_text_hashes": [
+        "e3e536349bce80bdfa035783d52776f53fa2e842b3d40467e4e71aa22a664a1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:28",
+      "sequence": 26072,
+      "chapter_label": "JHN 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "These things were done in Bethany beyond the Jordan, where John was baptizing.",
+      "ko": "이 일은 요한의 세례 주던 곳 요단강 건너편 베다니에서 된 일이니라",
+      "source_text_hash": "d6d94c4693a359d676de1e4b9300ce336f659b6f9e6a2c7cea1c1e2b5a0a8066",
+      "translation_text_hash": "80594b20e4f66a30a0f77aac989e114222c36473a61a7a1a714d80220c7c3c1a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일은 요한의 세례 주던 곳 요단강 건너편 베다니에서 된 일이니라"
+      ],
+      "raw_text_hashes": [
+        "80594b20e4f66a30a0f77aac989e114222c36473a61a7a1a714d80220c7c3c1a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:29",
+      "sequence": 26073,
+      "chapter_label": "JHN 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "The next day, he saw Jesus coming to him, and said, “Behold, the Lamb of God, who takes away the sin of the world!",
+      "ko": "이튿날 요한이 예수께서 자기에게 나아오심을 보고 가로되 보라 세상 죄를 지고 가는 하나님의 어린 양이로다",
+      "source_text_hash": "008b954881e48ce131f39f6aaeae7e5fdccd6e32bcad400d6c325ba108754488",
+      "translation_text_hash": "806c024da86fe4591fa892c606f55dd2d8c3e53eebbcd99ba73a96b6b7feabc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 요한이 예수께서 자기에게 나아오심을 보고 가로되 보라 세상 죄를 지고 가는 하나님의 어린 양이로다"
+      ],
+      "raw_text_hashes": [
+        "806c024da86fe4591fa892c606f55dd2d8c3e53eebbcd99ba73a96b6b7feabc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:30",
+      "sequence": 26074,
+      "chapter_label": "JHN 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "This is he of whom I said, ‘After me comes a man who is preferred before me, for he was before me.’",
+      "ko": "내가 전에 말하기를 내 뒤에 오는 사람이 있는데 나보다 앞선 것은 그가 나보다 먼저 계심이라 한 것이 이 사람을 가리킴이라",
+      "source_text_hash": "486634cae67ac14bad46dfc366169ffebe71cedd76d153b629422d7ab043fa27",
+      "translation_text_hash": "3ee4e570e692772d14b74049334eee3bd78a4a7986ae71339c14df55706e4014",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 전에 말하기를 내 뒤에 오는 사람이 있는데 나보다 앞선 것은 그가 나보다 먼저 계심이라 한 것이 이 사람을 가리킴이라"
+      ],
+      "raw_text_hashes": [
+        "3ee4e570e692772d14b74049334eee3bd78a4a7986ae71339c14df55706e4014"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:31",
+      "sequence": 26075,
+      "chapter_label": "JHN 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "I didn’t know him, but for this reason I came baptizing in water, that he would be revealed to Israel.”",
+      "ko": "나도 그를 알지 못하였으나 내가 와서 물로 세례를 주는 것은 그를 이스라엘에게 나타내려 함이라 하니라",
+      "source_text_hash": "003189f54a618d6d6eb6ae5a0c49ae5453789729aa7f996c344c3490b7dfc7be",
+      "translation_text_hash": "9baa609b1bf0c2140347c98aa245021071c3c24442bb04db7cb2e0bbd6b8a097",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 그를 알지 못하였으나 내가 와서 물로 세례를 주는 것은 그를 이스라엘에게 나타내려 함이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "9baa609b1bf0c2140347c98aa245021071c3c24442bb04db7cb2e0bbd6b8a097"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:32",
+      "sequence": 26076,
+      "chapter_label": "JHN 1",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 32
+        }
+      ],
+      "en": "John testified, saying, “I have seen the Spirit descending like a dove out of heaven, and it remained on him.",
+      "ko": "요한이 또 증거하여 가로되 내가 보매 성령이 비둘기 같이 하늘로서 내려와서 그의 위에 머물렀더라",
+      "source_text_hash": "3418a7fe03fab07b51cec7dc1fedcd7b4e44f55ae55ddc547c4cbc9e295b943a",
+      "translation_text_hash": "1d8a912dcedcb3d9a7d15502fd5026e69650f50490895a9a4782f099acaec419",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한이 또 증거하여 가로되 내가 보매 성령이 비둘기 같이 하늘로서 내려와서 그의 위에 머물렀더라"
+      ],
+      "raw_text_hashes": [
+        "1d8a912dcedcb3d9a7d15502fd5026e69650f50490895a9a4782f099acaec419"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:33",
+      "sequence": 26077,
+      "chapter_label": "JHN 1",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 33
+        }
+      ],
+      "en": "I didn’t recognize him, but he who sent me to baptize in water said to me, ‘On whomever you will see the Spirit descending and remaining on him is he who baptizes in the Holy Spirit.’",
+      "ko": "나도 그를 알지 못하였으나 나를 보내어 물로 세례를 주라 하신 그이가 나에게 말씀하시되 성령이 내려서 누구 위에든지 머무는 것을 보거든 그가 곧 성령으로 세례를 주는 이인줄 알라 하셨기에",
+      "source_text_hash": "10367ca908ddedb08027da5fc53ba3bd97d9229ae6fd249e4e2021f5c600909d",
+      "translation_text_hash": "89b20408e0d6c05123efe2c2619723685b9f6500934b9ca026188704f2378524",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 그를 알지 못하였으나 나를 보내어 물로 세례를 주라 하신 그이가 나에게 말씀하시되 성령이 내려서 누구 위에든지 머무는 것을 보거든 그가 곧 성령으로 세례를 주는 이인줄 알라 하셨기에"
+      ],
+      "raw_text_hashes": [
+        "89b20408e0d6c05123efe2c2619723685b9f6500934b9ca026188704f2378524"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:34",
+      "sequence": 26078,
+      "chapter_label": "JHN 1",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 34
+        }
+      ],
+      "en": "I have seen and have testified that this is the Son of God.”",
+      "ko": "내가 보고 그가 하나님의 아들이심을 증거하였노라 하니라",
+      "source_text_hash": "aecc4d1376283eb998c42e17118e52d4c140bb51dc7382b239c6df0037c85678",
+      "translation_text_hash": "c3e585bab963280aee9f498a82d803f2080596330e4ff75f76e569b7ce66392a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 보고 그가 하나님의 아들이심을 증거하였노라 하니라"
+      ],
+      "raw_text_hashes": [
+        "c3e585bab963280aee9f498a82d803f2080596330e4ff75f76e569b7ce66392a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:35",
+      "sequence": 26079,
+      "chapter_label": "JHN 1",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 35
+        }
+      ],
+      "en": "Again, the next day, John was standing with two of his disciples,",
+      "ko": "또 이튿날 요한이 자기 제자 중 두 사람과 함께 섰다가",
+      "source_text_hash": "764fc120809142afbcdfec0ac5962d67056d5849e4d3692892c5803ef7dd1471",
+      "translation_text_hash": "a1eb3d2bb004600f0066c0445a43aaf362b1237867d3de5c2bcfd34375bae343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 이튿날 요한이 자기 제자 중 두 사람과 함께 섰다가"
+      ],
+      "raw_text_hashes": [
+        "a1eb3d2bb004600f0066c0445a43aaf362b1237867d3de5c2bcfd34375bae343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:36",
+      "sequence": 26080,
+      "chapter_label": "JHN 1",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 36
+        }
+      ],
+      "en": "and he looked at Jesus as he walked, and said, “Behold, the Lamb of God!”",
+      "ko": "예수의 다니심을 보고 말하되 보라 하나님의 어린 양이로다",
+      "source_text_hash": "23329cfbf47c7322da10af7523d500b5a32c37811fa4224138b9f2f6661f213d",
+      "translation_text_hash": "df9bf0c2e5a19945498b3c9d46e84b04b4617ca990973a2743d63dd4065991c8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수의 다니심을 보고 말하되 보라 하나님의 어린 양이로다"
+      ],
+      "raw_text_hashes": [
+        "df9bf0c2e5a19945498b3c9d46e84b04b4617ca990973a2743d63dd4065991c8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:37",
+      "sequence": 26081,
+      "chapter_label": "JHN 1",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 37
+        }
+      ],
+      "en": "The two disciples heard him speak, and they followed Jesus.",
+      "ko": "두 제자가 그의 말을 듣고 예수를 좇거늘",
+      "source_text_hash": "709d27e9c211980a94821f87bd3dc6ff477ca6e63c13090da010ee72331e9930",
+      "translation_text_hash": "82e84d57664a4938b46a56e58dc5e2e2a1199700459cf9676e52a7ff0e2f8422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 제자가 그의 말을 듣고 예수를 좇거늘"
+      ],
+      "raw_text_hashes": [
+        "82e84d57664a4938b46a56e58dc5e2e2a1199700459cf9676e52a7ff0e2f8422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:38",
+      "sequence": 26082,
+      "chapter_label": "JHN 1",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 38
+        }
+      ],
+      "en": "Jesus turned and saw them following, and said to them, “What are you looking for?”They said to him, “Rabbi” (which is to say, being interpreted, Teacher), “where are you staying?”",
+      "ko": "예수께서 돌이켜 그 좇는 것을 보시고 물어 가라사대 무엇을 구하느냐 가로되 랍비여 어디 계시오니이까 하니 (랍비는 번역하면 선생이라)",
+      "source_text_hash": "8eeaa2b4782541bd325cd542a242f39282fa1de35741b36da7c9546ada8349db",
+      "translation_text_hash": "245a54cb1ea2e4db353fefa965fc3c80097fa26939b0f00bb810cbce11607aae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 돌이켜 그 좇는 것을 보시고 물어 가라사대 무엇을 구하느냐 가로되 랍비여 어디 계시오니이까 하니 (랍비는 번역하면 선생이라)"
+      ],
+      "raw_text_hashes": [
+        "245a54cb1ea2e4db353fefa965fc3c80097fa26939b0f00bb810cbce11607aae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:39",
+      "sequence": 26083,
+      "chapter_label": "JHN 1",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 39
+        }
+      ],
+      "en": "He said to them, “Come and see.”They came and saw where he was staying, and they stayed with him that day. It was about the tenth hour.",
+      "ko": "예수께서 가라사대 와 보라 그러므로 저희가 가서 계신데를 보고 그 날 함께 거하니 때가 제 십시쯤 되었더라",
+      "source_text_hash": "157b8c1a7c21cc34b5358b67ca3c06acf7a5862f75db03643de86376a32ccd5e",
+      "translation_text_hash": "32b252df13109fa20b8bed0fb9bb05b3434afc73c703a78a61092190bd79e6fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 와 보라 그러므로 저희가 가서 계신데를 보고 그 날 함께 거하니 때가 제 십시쯤 되었더라"
+      ],
+      "raw_text_hashes": [
+        "32b252df13109fa20b8bed0fb9bb05b3434afc73c703a78a61092190bd79e6fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:40",
+      "sequence": 26084,
+      "chapter_label": "JHN 1",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 40
+        }
+      ],
+      "en": "One of the two who heard John and followed him was Andrew, Simon Peter’s brother.",
+      "ko": "요한의 말을 듣고 예수를 좇는 두 사람 중에 하나는 시몬 베드로의 형제 안드레라",
+      "source_text_hash": "d1bed6f9624cc116886b3e2e72e0478cc6071ba30cc3199e4b7c1788f68da483",
+      "translation_text_hash": "76bf30f14b69e8a89519f3c9274cec3a280b1a126e6ba8b6c443fdf536e64c90",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 말을 듣고 예수를 좇는 두 사람 중에 하나는 시몬 베드로의 형제 안드레라"
+      ],
+      "raw_text_hashes": [
+        "76bf30f14b69e8a89519f3c9274cec3a280b1a126e6ba8b6c443fdf536e64c90"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:41",
+      "sequence": 26085,
+      "chapter_label": "JHN 1",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 41
+        }
+      ],
+      "en": "He first found his own brother, Simon, and said to him, “We have found the Messiah!” (which is, being interpreted, Christ).",
+      "ko": "그가 먼저 자기의 형제 시몬을 찾아 말하되 우리가 메시야를 만났다 하고 (메시야는 번역하면 그리스도라)",
+      "source_text_hash": "d84057bf0d06af8894c1ad0bb1c6c1189f537283e3e55b03037bcfe24389092b",
+      "translation_text_hash": "6e793d5fc55d541a5dcbb327b1ae219554aac43f76f6d83b67a002c1d791383f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 먼저 자기의 형제 시몬을 찾아 말하되 우리가 메시야를 만났다 하고 (메시야는 번역하면 그리스도라)"
+      ],
+      "raw_text_hashes": [
+        "6e793d5fc55d541a5dcbb327b1ae219554aac43f76f6d83b67a002c1d791383f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:42",
+      "sequence": 26086,
+      "chapter_label": "JHN 1",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 42
+        }
+      ],
+      "en": "He brought him to Jesus. Jesus looked at him and said, “You are Simon the son of Jonah. You shall be called Cephas”(which is by interpretation, Peter).",
+      "ko": "데리고 예수께로 오니 예수께서 보시고 가라사대 네가 요한의 아들 시몬이니 장차 게바라 하리라 하시니라 (게바는 번역하면 베드로라)",
+      "source_text_hash": "1dbb696c3a34db724c29094f2afe3bc9c5bc270dd7ebe32e5ae7d59a3bff34b3",
+      "translation_text_hash": "ad42390209fc08d35ab00700816d5fb421ca2e459ac97698d981856dcd10d8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "데리고 예수께로 오니 예수께서 보시고 가라사대 네가 요한의 아들 시몬이니 장차 게바라 하리라 하시니라 (게바는 번역하면 베드로라)"
+      ],
+      "raw_text_hashes": [
+        "ad42390209fc08d35ab00700816d5fb421ca2e459ac97698d981856dcd10d8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:43",
+      "sequence": 26087,
+      "chapter_label": "JHN 1",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 43
+        }
+      ],
+      "en": "On the next day, he was determined to go out into Galilee, and he found Philip. Jesus said to him, “Follow me.”",
+      "ko": "이튿날 예수께서 갈릴리로 나가려 하시다가 빌립을 만나 이르시되 나를 좇으라 하시니",
+      "source_text_hash": "577bc2720a8a3e726f9cab1d61c05dd6ea182e28524c30456e556b9257112ba2",
+      "translation_text_hash": "0b7bc189a765c50588b626d78e75110f516a1fc1efb8b83c01faa5501634f80e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 예수께서 갈릴리로 나가려 하시다가 빌립을 만나 이르시되 나를 좇으라 하시니"
+      ],
+      "raw_text_hashes": [
+        "0b7bc189a765c50588b626d78e75110f516a1fc1efb8b83c01faa5501634f80e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:44",
+      "sequence": 26088,
+      "chapter_label": "JHN 1",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 44
+        }
+      ],
+      "en": "Now Philip was from Bethsaida, the city of Andrew and Peter.",
+      "ko": "빌립은 안드레와 베드로와 한 동네 벳새다 사람이라",
+      "source_text_hash": "316830576800d83a3cfbe42b5dc1cf1844b1df682cbd27f33cfee6be275ffe1b",
+      "translation_text_hash": "5cd9388c6f86497c4bbdb6caa8565268f3902483c140f08a6ab11130c2543011",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립은 안드레와 베드로와 한 동네 벳새다 사람이라"
+      ],
+      "raw_text_hashes": [
+        "5cd9388c6f86497c4bbdb6caa8565268f3902483c140f08a6ab11130c2543011"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:45",
+      "sequence": 26089,
+      "chapter_label": "JHN 1",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 45
+        }
+      ],
+      "en": "Philip found Nathanael, and said to him, “We have found him of whom Moses in the law and also the prophets, wrote: Jesus of Nazareth, the son of Joseph.”",
+      "ko": "빌립이 나다나엘을 찾아 이르되 모세가 율법에 기록하였고 여러 선지자가 기록한 그이를 우리가 만났으니 요셉의 아들 나사렛 예수니라",
+      "source_text_hash": "072735d3373890382f5e7b0d29dae14b8213bd86a95cab695dc809012f880079",
+      "translation_text_hash": "c50acb8c2858aa61a555e46deed78decefa97be963d23823245d27e771bb9e00",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "빌립이 나다나엘을 찾아 이르되 모세가 율법에 기록하였고 여러 선지자가 기록한 그이를 우리가 만났으니 요셉의 아들 나사렛 예수니라"
+      ],
+      "raw_text_hashes": [
+        "c50acb8c2858aa61a555e46deed78decefa97be963d23823245d27e771bb9e00"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:46",
+      "sequence": 26090,
+      "chapter_label": "JHN 1",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 46
+        }
+      ],
+      "en": "Nathanael said to him, “Can any good thing come out of Nazareth?” Philip said to him, “Come and see.”",
+      "ko": "나다나엘이 가로되 나사렛에서 무슨 선한 것이 날 수 있느냐 빌립이 가로되 와 보라 하니라",
+      "source_text_hash": "7f6b58e73a60e2d97732fb247ebdc0f7253f4a6f16f38d0c03124e03b9a24de3",
+      "translation_text_hash": "1354665afe3a5335e7de5f67a796ab9d8067efe4a6b6eddb0d4bddb17a522d78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나다나엘이 가로되 나사렛에서 무슨 선한 것이 날 수 있느냐 빌립이 가로되 와 보라 하니라"
+      ],
+      "raw_text_hashes": [
+        "1354665afe3a5335e7de5f67a796ab9d8067efe4a6b6eddb0d4bddb17a522d78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:47",
+      "sequence": 26091,
+      "chapter_label": "JHN 1",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 47
+        }
+      ],
+      "en": "Jesus saw Nathanael coming to him, and said about him, “Behold, an Israelite indeed, in whom is no deceit!”",
+      "ko": "예수께서 나다나엘이 자기에게 오는 것을 보시고 그를 가리켜 가라사대 보라 이는 참 이스라엘 사람이라 그 속에 간사한 것이 없도다",
+      "source_text_hash": "8cf2c5b8c3997d4ac98a22502aaf0124eeeeedca79eae8d48996c91ed899af89",
+      "translation_text_hash": "1b8aa8a8a07fb7a192d215afe4e6d02c722f218cdbc0a66f7ce28b5257c1205c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나다나엘이 자기에게 오는 것을 보시고 그를 가리켜 가라사대 보라 이는 참 이스라엘 사람이라 그 속에 간사한 것이 없도다"
+      ],
+      "raw_text_hashes": [
+        "1b8aa8a8a07fb7a192d215afe4e6d02c722f218cdbc0a66f7ce28b5257c1205c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:48",
+      "sequence": 26092,
+      "chapter_label": "JHN 1",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 48
+        }
+      ],
+      "en": "Nathanael said to him, “How do you know me?” Jesus answered him, “Before Philip called you, when you were under the fig tree, I saw you.”",
+      "ko": "나다나엘이 가로되 어떻게 나를 아시나이까 예수께서 대답하여 가라사대 빌립이 너를 부르기 전에 네가 무화과나무 아래 있을 때에 보았노라",
+      "source_text_hash": "67fccff4a1bf198b51da1aef27a4e27fa9372a4bf0165725b4b293a1ed6cfeb1",
+      "translation_text_hash": "04e812223a8ac57f2c9e69c08a812063243aa4dbe5ea1b3ff515247dc605607e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나다나엘이 가로되 어떻게 나를 아시나이까 예수께서 대답하여 가라사대 빌립이 너를 부르기 전에 네가 무화과나무 아래 있을 때에 보았노라"
+      ],
+      "raw_text_hashes": [
+        "04e812223a8ac57f2c9e69c08a812063243aa4dbe5ea1b3ff515247dc605607e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:49",
+      "sequence": 26093,
+      "chapter_label": "JHN 1",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 49
+        }
+      ],
+      "en": "Nathanael answered him, “Rabbi, you are the Son of God! You are King of Israel!”",
+      "ko": "나다나엘이 대답하되 랍비여 당신은 하나님의 아들이시요 당신은 이스라엘의 임금이로소이다",
+      "source_text_hash": "a1c612230b38b8f6afc128d0aec46210409ff0c96d4b7290746e1494dc4b1aa2",
+      "translation_text_hash": "f0aee8c8fd693ead5f7c7b5969a1f9256b507df6ba2fa485dbc8af38a5619f9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나다나엘이 대답하되 랍비여 당신은 하나님의 아들이시요 당신은 이스라엘의 임금이로소이다"
+      ],
+      "raw_text_hashes": [
+        "f0aee8c8fd693ead5f7c7b5969a1f9256b507df6ba2fa485dbc8af38a5619f9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:50",
+      "sequence": 26094,
+      "chapter_label": "JHN 1",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 50
+        }
+      ],
+      "en": "Jesus answered him, “Because I told you, ‘I saw you underneath the fig tree,’ do you believe? You will see greater things than these!”",
+      "ko": "예수께서 대답하여 가라사대 내가 너를 무화과나무 아래서 보았다 하므로 믿느냐 이보다 더 큰 일을 보리라",
+      "source_text_hash": "2ecbb00a30fefb0bb6ef8e1709b99f38bd89d1c27ee8ba156d71fe1e4dfb9e0f",
+      "translation_text_hash": "84aeaa01a7a5bdba4b2ce02f429376fc229cbef24b96fda6eafe6c02e6c7c290",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내가 너를 무화과나무 아래서 보았다 하므로 믿느냐 이보다 더 큰 일을 보리라"
+      ],
+      "raw_text_hashes": [
+        "84aeaa01a7a5bdba4b2ce02f429376fc229cbef24b96fda6eafe6c02e6c7c290"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:1:51",
+      "sequence": 26095,
+      "chapter_label": "JHN 1",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 1,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 1,
+          "verse": 51
+        }
+      ],
+      "en": "He said to him, “Most certainly, I tell you all, hereafter you will see heaven opened, and the angels of God ascending and descending on the Son of Man.”",
+      "ko": "또 가라사대 진실로 진실로 너희에게 이르노니 하늘이 열리고 하나님의 사자들이 인자 위에 오르락 내리락하는 것을 보리라 하시니라",
+      "source_text_hash": "556e4fd848917447cbdc4f9ec7b24432550f611bc00b96c422e92a61d4d39da4",
+      "translation_text_hash": "8b4aa66acb7d85994f5131e8c9e1d49b97a30adfa9a199f51a0234e61fee3516",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 가라사대 진실로 진실로 너희에게 이르노니 하늘이 열리고 하나님의 사자들이 인자 위에 오르락 내리락하는 것을 보리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8b4aa66acb7d85994f5131e8c9e1d49b97a30adfa9a199f51a0234e61fee3516"
+      ]
+    }
+  ]
+}

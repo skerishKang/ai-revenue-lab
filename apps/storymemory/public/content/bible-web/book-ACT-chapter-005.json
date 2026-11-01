@@ -1,0 +1,1357 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:005",
+  "unit_ordinal": 1023,
+  "unit_label": "ACT 5",
+  "book_code": "ACT",
+  "chapter_number": 5,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:5:1",
+      "sequence": 27060,
+      "chapter_label": "ACT 5",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 1
+        }
+      ],
+      "en": "But a certain man named Ananias, with Sapphira his wife, sold a possession,",
+      "ko": "아나니아라 하는 사람이 그 아내 삽비라로 더불어 소유를 팔아",
+      "source_text_hash": "3cf2ce9c01b85ed08f7ca2aef9a0b93275d60b521c15ca2362c3989f30c5b3b1",
+      "translation_text_hash": "71a50a974ee15f0821862a3d0bbe3bda2924852d7f80c4e2bb264a81c3f60223",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나니아라 하는 사람이 그 아내 삽비라로 더불어 소유를 팔아"
+      ],
+      "raw_text_hashes": [
+        "71a50a974ee15f0821862a3d0bbe3bda2924852d7f80c4e2bb264a81c3f60223"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:2",
+      "sequence": 27061,
+      "chapter_label": "ACT 5",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 2
+        }
+      ],
+      "en": "and kept back part of the price, his wife also being aware of it, then brought a certain part and laid it at the apostles’ feet.",
+      "ko": "그 값에서 얼마를 감추매 그 아내도 알더라 얼마를 가져다가 사도들의 발 앞에 두니",
+      "source_text_hash": "ed7e7b47e8bba292fc69fadd8a4f17512c1d2fd90f28cc80aa9d8ef898b1f675",
+      "translation_text_hash": "5cde81548760384d75636a89a39f4970e790b194139b78e211e69e4f41b97dc9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 값에서 얼마를 감추매 그 아내도 알더라 얼마를 가져다가 사도들의 발 앞에 두니"
+      ],
+      "raw_text_hashes": [
+        "5cde81548760384d75636a89a39f4970e790b194139b78e211e69e4f41b97dc9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:3",
+      "sequence": 27062,
+      "chapter_label": "ACT 5",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 3
+        }
+      ],
+      "en": "But Peter said, “Ananias, why has Satan filled your heart to lie to the Holy Spirit and to keep back part of the price of the land?",
+      "ko": "베드로가 가로되 아나니아야 어찌하여 사단이 네 마음에 가득하여 네가 성령을 속이고 땅값 얼마를 감추었느냐",
+      "source_text_hash": "24bd7280a291c4cf95f76046c2bc8bbead27dc103eae1d4f2035cb1f1362a176",
+      "translation_text_hash": "e239f4f52c5358239fa2dd33cd4895337c343a4e1aef5d4950c7e0b56e3ae36a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 아나니아야 어찌하여 사단이 네 마음에 가득하여 네가 성령을 속이고 땅값 얼마를 감추었느냐"
+      ],
+      "raw_text_hashes": [
+        "e239f4f52c5358239fa2dd33cd4895337c343a4e1aef5d4950c7e0b56e3ae36a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:4",
+      "sequence": 27063,
+      "chapter_label": "ACT 5",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 4
+        }
+      ],
+      "en": "While you kept it, didn’t it remain your own? After it was sold, wasn’t it in your power? How is it that you have conceived this thing in your heart? You haven’t lied to men, but to God.”",
+      "ko": "땅이 그대로 있을 때에는 네 땅이 아니며 판 후에도 네 임의로 할 수가 없더냐 어찌하여 이 일을 네 마음에 두었느냐 사람에게 거짓말 한 것이 아니요 하나님께로다",
+      "source_text_hash": "10d6a67d9b7e8a77257635dff4c3cd536c776196233e40d8902ed68e51cdd03f",
+      "translation_text_hash": "48e6eaec00453fd24b659ae71a360c9b3b57f6299758c93ad8882a184184cc8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 그대로 있을 때에는 네 땅이 아니며 판 후에도 네 임의로 할 수가 없더냐 어찌하여 이 일을 네 마음에 두었느냐 사람에게 거짓말 한 것이 아니요 하나님께로다"
+      ],
+      "raw_text_hashes": [
+        "48e6eaec00453fd24b659ae71a360c9b3b57f6299758c93ad8882a184184cc8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:5",
+      "sequence": 27064,
+      "chapter_label": "ACT 5",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 5
+        }
+      ],
+      "en": "Ananias, hearing these words, fell down and died. Great fear came on all who heard these things.",
+      "ko": "아나니아가 이 말을 듣고 엎드러져 혼이 떠나니 이 일을 듣는 사람이 다 크게 두려워하더라",
+      "source_text_hash": "4921aa7b92dc5d839633328bde4072a4de53a023fe838cd9e8bcaa02efce086f",
+      "translation_text_hash": "61ba43e9890030f5bc7a7ada16b13d9bb7145e577df9aec75eeff45efe3c9526",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나니아가 이 말을 듣고 엎드러져 혼이 떠나니 이 일을 듣는 사람이 다 크게 두려워하더라"
+      ],
+      "raw_text_hashes": [
+        "61ba43e9890030f5bc7a7ada16b13d9bb7145e577df9aec75eeff45efe3c9526"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:6",
+      "sequence": 27065,
+      "chapter_label": "ACT 5",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 6
+        }
+      ],
+      "en": "The young men arose and wrapped him up, and they carried him out and buried him.",
+      "ko": "젊은 사람들이 일어나 시신을 싸서 메고 나가 장사하니라",
+      "source_text_hash": "77cbe6a18d86f8e13c2ff7996df4afc54ab54af1c225c774e8d6573c71cdb721",
+      "translation_text_hash": "ac5367b7682e2d1c01b61ffdbf5c8b225990e1727e016165f71110258f0d9792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "젊은 사람들이 일어나 시신을 싸서 메고 나가 장사하니라"
+      ],
+      "raw_text_hashes": [
+        "ac5367b7682e2d1c01b61ffdbf5c8b225990e1727e016165f71110258f0d9792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:7",
+      "sequence": 27066,
+      "chapter_label": "ACT 5",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 7
+        }
+      ],
+      "en": "About three hours later, his wife, not knowing what had happened, came in.",
+      "ko": "세 시간쯤 지나 그 아내가 그 생긴 일을 알지 못하고 들어 오니",
+      "source_text_hash": "8275d46b14fe9c2dec2d58842e4c11df8291134b44c9dc9e35fa81e9980597d7",
+      "translation_text_hash": "6130029f3cc67421df4a09c26e28345b638a2a4e2ce907cfa82f3268457cc834",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세 시간쯤 지나 그 아내가 그 생긴 일을 알지 못하고 들어 오니"
+      ],
+      "raw_text_hashes": [
+        "6130029f3cc67421df4a09c26e28345b638a2a4e2ce907cfa82f3268457cc834"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:8",
+      "sequence": 27067,
+      "chapter_label": "ACT 5",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 8
+        }
+      ],
+      "en": "Peter answered her, “Tell me whether you sold the land for so much.” She said, “Yes, for so much.”",
+      "ko": "베드로가 가로되 그 땅 판 값이 이것 뿐이냐 내게 말하라 하니 가로되 예 이뿐이로라",
+      "source_text_hash": "0db4ab89c91f07eef1624efd12348aa0cb866cede6faa7416c494d6b0cc3d863",
+      "translation_text_hash": "2845564830d7004b39a8baab869eb5eb806625e3615adcbea8b1dc0a9256362b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 그 땅 판 값이 이것 뿐이냐 내게 말하라 하니 가로되 예 이뿐이로라"
+      ],
+      "raw_text_hashes": [
+        "2845564830d7004b39a8baab869eb5eb806625e3615adcbea8b1dc0a9256362b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:9",
+      "sequence": 27068,
+      "chapter_label": "ACT 5",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 9
+        }
+      ],
+      "en": "But Peter asked her, “How is it that you have agreed together to tempt the Spirit of the Lord? Behold, the feet of those who have buried your husband are at the door, and they will carry you out.”",
+      "ko": "베드로가 가로되 너희가 어찌 함께 꾀하여 주의 영을 시험하려 하느냐 보라 네 남편을 장사하고 오는 사람들의 발이 문앞에 이르렀으니 또 너를 메어 내가리라 한대",
+      "source_text_hash": "d80af066e360f608935a17e92022528b5442d651b41df2313de4bacaabd6c9fa",
+      "translation_text_hash": "4bb2a89c5a5ee676c9c95031f193542f8c41cf73af4148c89a25ac079e5756df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 너희가 어찌 함께 꾀하여 주의 영을 시험하려 하느냐 보라 네 남편을 장사하고 오는 사람들의 발이 문앞에 이르렀으니 또 너를 메어 내가리라 한대"
+      ],
+      "raw_text_hashes": [
+        "4bb2a89c5a5ee676c9c95031f193542f8c41cf73af4148c89a25ac079e5756df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:10",
+      "sequence": 27069,
+      "chapter_label": "ACT 5",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 10
+        }
+      ],
+      "en": "She fell down immediately at his feet and died. The young men came in and found her dead, and they carried her out and buried her by her husband.",
+      "ko": "곧 베드로의 발 앞에 엎드러져 혼이 떠나는지라 젊은 사람들이 들어와 죽은 것을 보고 메어다가 그 남편 곁에 장사하니",
+      "source_text_hash": "4625c0002cfd7d12a648e113d3c16c3d1b41fe765d2849a12c13c9ae9918cc0f",
+      "translation_text_hash": "efeaf2d48b36f3ababc52078b02e029630c9e3d22467408b30139d5798bd8039",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 베드로의 발 앞에 엎드러져 혼이 떠나는지라 젊은 사람들이 들어와 죽은 것을 보고 메어다가 그 남편 곁에 장사하니"
+      ],
+      "raw_text_hashes": [
+        "efeaf2d48b36f3ababc52078b02e029630c9e3d22467408b30139d5798bd8039"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:11",
+      "sequence": 27070,
+      "chapter_label": "ACT 5",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 11
+        }
+      ],
+      "en": "Great fear came on the whole assembly, and on all who heard these things.",
+      "ko": "온 교회와 이 일을 듣는 사람들이 다 크게 두려워하니라",
+      "source_text_hash": "6ae4668ec3188d153d6adba7513e5f10238f1e6113c42f80626be7f945b8ba17",
+      "translation_text_hash": "80172a1c702aac768247865e69ecbfcd9a620203da759fdb8afb24324ee2888e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "온 교회와 이 일을 듣는 사람들이 다 크게 두려워하니라"
+      ],
+      "raw_text_hashes": [
+        "80172a1c702aac768247865e69ecbfcd9a620203da759fdb8afb24324ee2888e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:12",
+      "sequence": 27071,
+      "chapter_label": "ACT 5",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 12
+        }
+      ],
+      "en": "By the hands of the apostles many signs and wonders were done among the people. They were all with one accord in Solomon’s porch.",
+      "ko": "사도들의 손으로 민간에 표적과 기사가 많이 되매 믿는 사람이 다 마음을 같이하여 솔로몬 행각에 모이고",
+      "source_text_hash": "3094ac9a3cd1f4aacb9a724f24f61cfb189a2d236aada44a229b4622541ddcc4",
+      "translation_text_hash": "d8ae8f02cc2a6df1c26a2d39ef5041de165803100451db58d3095ee5890e8723",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들의 손으로 민간에 표적과 기사가 많이 되매 믿는 사람이 다 마음을 같이하여 솔로몬 행각에 모이고"
+      ],
+      "raw_text_hashes": [
+        "d8ae8f02cc2a6df1c26a2d39ef5041de165803100451db58d3095ee5890e8723"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:13",
+      "sequence": 27072,
+      "chapter_label": "ACT 5",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 13
+        }
+      ],
+      "en": "None of the rest dared to join them; however, the people honored them.",
+      "ko": "그 나머지는 감히 그들과 상종하는 사람이 없으나 백성이 칭송하더라",
+      "source_text_hash": "13008d325020bfcf388332f8187e99b4145e0d9ec85aff38b8a94203bbc30282",
+      "translation_text_hash": "6925686e7c57c26824a5c4cd633afb063aa8ec06f7bc92ace4499e93d9c5c909",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 나머지는 감히 그들과 상종하는 사람이 없으나 백성이 칭송하더라"
+      ],
+      "raw_text_hashes": [
+        "6925686e7c57c26824a5c4cd633afb063aa8ec06f7bc92ace4499e93d9c5c909"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:14",
+      "sequence": 27073,
+      "chapter_label": "ACT 5",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 14
+        }
+      ],
+      "en": "More believers were added to the Lord, multitudes of both men and women.",
+      "ko": "믿고 주께로 나오는 자가 더 많으니 남녀의 큰 무리더라",
+      "source_text_hash": "c21fbc5825981a37645bc277259c00230dd94a3ed3afc1498fd9887575e76807",
+      "translation_text_hash": "dbccca15cf36521e37ed842d12181274c55672b4c2aadd26300f58e7bbf23755",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "믿고 주께로 나오는 자가 더 많으니 남녀의 큰 무리더라"
+      ],
+      "raw_text_hashes": [
+        "dbccca15cf36521e37ed842d12181274c55672b4c2aadd26300f58e7bbf23755"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:15",
+      "sequence": 27074,
+      "chapter_label": "ACT 5",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 15
+        }
+      ],
+      "en": "They even carried out the sick into the streets and laid them on cots and mattresses, so that as Peter came by, at least his shadow might overshadow some of them.",
+      "ko": "심지어 병든 사람을 메고 거리에 나가 침대와 요 위에 뉘이고 베드로가 지날 때에 혹 그 그림자라도 뉘게 덮일까 바라고",
+      "source_text_hash": "5071944056cb2b7b8859111100ac928214f5ac2e9c60415fbf8581aedb137fbc",
+      "translation_text_hash": "3d57e955380ec57c0cddb0a025fca4855a9a58b1d322a3493d3fd9ab7e528e0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심지어 병든 사람을 메고 거리에 나가 침대와 요 위에 뉘이고 베드로가 지날 때에 혹 그 그림자라도 뉘게 덮일까 바라고"
+      ],
+      "raw_text_hashes": [
+        "3d57e955380ec57c0cddb0a025fca4855a9a58b1d322a3493d3fd9ab7e528e0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:16",
+      "sequence": 27075,
+      "chapter_label": "ACT 5",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 16
+        }
+      ],
+      "en": "The multitude also came together from the cities around Jerusalem, bringing sick people and those who were tormented by unclean spirits; and they were all healed.",
+      "ko": "예루살렘 근읍 허다한 사람들도 모여 병든 사람과 더러운 귀신에게 괴로움 받는 사람을 데리고 와서 다 나음을 얻으니라",
+      "source_text_hash": "721fd936d318741f6b9037a5d8f1af0863480889c5b9d5c08953d4d3c1c5d5ef",
+      "translation_text_hash": "70038ae87342d1455d017b9dc4d9c9046f56778e1b3a7dc099094b60bb2b9503",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예루살렘 근읍 허다한 사람들도 모여 병든 사람과 더러운 귀신에게 괴로움 받는 사람을 데리고 와서 다 나음을 얻으니라"
+      ],
+      "raw_text_hashes": [
+        "70038ae87342d1455d017b9dc4d9c9046f56778e1b3a7dc099094b60bb2b9503"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:17",
+      "sequence": 27076,
+      "chapter_label": "ACT 5",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 17
+        }
+      ],
+      "en": "But the high priest rose up, and all those who were with him (which is the sect of the Sadducees), and they were filled with jealousy",
+      "ko": "대제사장과 그와 함께 있는 사람 즉 사두개인의 당파가 다 마음에 시기가 가득하여 일어나서",
+      "source_text_hash": "411585adeecebe1806d33b774fe2e1730469a5d08067b699ce7591487e9cd8b8",
+      "translation_text_hash": "a2a12f22df9e01a4225441e341aa0aa1b368a5fbd7d4053178c07617bfa0824d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장과 그와 함께 있는 사람 즉 사두개인의 당파가 다 마음에 시기가 가득하여 일어나서"
+      ],
+      "raw_text_hashes": [
+        "a2a12f22df9e01a4225441e341aa0aa1b368a5fbd7d4053178c07617bfa0824d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:18",
+      "sequence": 27077,
+      "chapter_label": "ACT 5",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 18
+        }
+      ],
+      "en": "and laid hands on the apostles, then put them in public custody.",
+      "ko": "사도들을 잡아다가 옥에 가두었더니",
+      "source_text_hash": "caa8a3d96c3e43eae39e108be7d12d7e7faeaa71dcf95ea2bbfe5cb0f17f4ce4",
+      "translation_text_hash": "6b72fd30ae5bf81b5ce5d045e8523ccd7de6606a01303aaf5d45bd0e3bd0f8fb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들을 잡아다가 옥에 가두었더니"
+      ],
+      "raw_text_hashes": [
+        "6b72fd30ae5bf81b5ce5d045e8523ccd7de6606a01303aaf5d45bd0e3bd0f8fb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:19",
+      "sequence": 27078,
+      "chapter_label": "ACT 5",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 19
+        }
+      ],
+      "en": "But an angel of the Lord opened the prison doors by night, and brought them out and said,",
+      "ko": "주의 사자가 밤에 옥문을 열고 끌어내어 가로되",
+      "source_text_hash": "2f96bbdbff204f9950cd558fb364e6c71042d1e7b999d127041a83f1b155d073",
+      "translation_text_hash": "f942b072652322fe9f29d4aae469f0be7040640843d4ad53496bd58e20870f54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사자가 밤에 옥문을 열고 끌어내어 가로되"
+      ],
+      "raw_text_hashes": [
+        "f942b072652322fe9f29d4aae469f0be7040640843d4ad53496bd58e20870f54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:20",
+      "sequence": 27079,
+      "chapter_label": "ACT 5",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 20
+        }
+      ],
+      "en": "“Go stand and speak in the temple to the people all the words of this life.”",
+      "ko": "가서 성전에 서서 이 생명의 말씀을 다 백성에게 말하라 하매",
+      "source_text_hash": "e013c0d3f45224a5efaac9e53ceaaef91633bfa161224263ce3d1c14e17bf469",
+      "translation_text_hash": "fd07655c33f7f5c1a01fadbaf352ddab2cc63f4d69efac0260630af06be4ffce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 성전에 서서 이 생명의 말씀을 다 백성에게 말하라 하매"
+      ],
+      "raw_text_hashes": [
+        "fd07655c33f7f5c1a01fadbaf352ddab2cc63f4d69efac0260630af06be4ffce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:21",
+      "sequence": 27080,
+      "chapter_label": "ACT 5",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 21
+        }
+      ],
+      "en": "When they heard this, they entered into the temple about daybreak and taught. But the high priest and those who were with him came and called the council together, with all the senate of the children of Israel, and sent to the prison to have them brought.",
+      "ko": "저희가 듣고 새벽에 성전에 들어가서 가르치더니 대제사장과 그와 함께 있는 사람들이 와서 공회와 이스라엘 족속의 원로들을 다 모으고 사람을 옥에 보내어 사도들을 잡아오라 하니",
+      "source_text_hash": "f19f84df8c66f1f374b6df9f79c0bcab976a3b1d42fdeb612ca2cff22b883ff0",
+      "translation_text_hash": "c9a5bc1def7c69d9d960c4dc8fa8ce41b3af83e660ad6fb9168ec582f9bcb11b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 새벽에 성전에 들어가서 가르치더니 대제사장과 그와 함께 있는 사람들이 와서 공회와 이스라엘 족속의 원로들을 다 모으고 사람을 옥에 보내어 사도들을 잡아오라 하니"
+      ],
+      "raw_text_hashes": [
+        "c9a5bc1def7c69d9d960c4dc8fa8ce41b3af83e660ad6fb9168ec582f9bcb11b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:22",
+      "sequence": 27081,
+      "chapter_label": "ACT 5",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 22
+        }
+      ],
+      "en": "But the officers who came didn’t find them in the prison. They returned and reported,",
+      "ko": "관속들이 가서 옥에서 사도들을 보지 못하고 돌아와 말하여",
+      "source_text_hash": "942d0a4e0ae55d08acd48d63c6cde285d63433786cf446ce54d99133f05a932a",
+      "translation_text_hash": "061c429792c7a8c9098649fc14ebcf515dc06ad27d53cd1eb6dfbaa1498249a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "관속들이 가서 옥에서 사도들을 보지 못하고 돌아와 말하여"
+      ],
+      "raw_text_hashes": [
+        "061c429792c7a8c9098649fc14ebcf515dc06ad27d53cd1eb6dfbaa1498249a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:23",
+      "sequence": 27082,
+      "chapter_label": "ACT 5",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 23
+        }
+      ],
+      "en": "“We found the prison shut and locked, and the guards standing before the doors, but when we opened them, we found no one inside!”",
+      "ko": "가로되 우리가 보니 옥은 든든하게 잠기고 지킨 사람들이 문에 섰으되 문을 열고 본즉 그 안에는 한 사람도 없더이다 하니",
+      "source_text_hash": "9bd2b8f4135ca82cd6eba857a5f221490e79b9defb2993bae3bb6911b132a493",
+      "translation_text_hash": "c0d43ca077df7a604fc9950e868661c2a141cedf825d5b5d8f042c3a1947a59c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 우리가 보니 옥은 든든하게 잠기고 지킨 사람들이 문에 섰으되 문을 열고 본즉 그 안에는 한 사람도 없더이다 하니"
+      ],
+      "raw_text_hashes": [
+        "c0d43ca077df7a604fc9950e868661c2a141cedf825d5b5d8f042c3a1947a59c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:24",
+      "sequence": 27083,
+      "chapter_label": "ACT 5",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 24
+        }
+      ],
+      "en": "Now when the high priest, the captain of the temple, and the chief priests heard these words, they were very perplexed about them and what might become of this.",
+      "ko": "성전 맡은 자와 제사장들이 이 말을 듣고 의혹하여 이 일이 어찌 될까 하더니",
+      "source_text_hash": "e87a79da021691c5038ee4ec0f1c5b82d0b8e3003daa9a0d43c6e5f8b9456fee",
+      "translation_text_hash": "ac49cd73043c3b5604b26d6823be64c3334167c0149c5994b40f1c8edf5bad72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전 맡은 자와 제사장들이 이 말을 듣고 의혹하여 이 일이 어찌 될까 하더니"
+      ],
+      "raw_text_hashes": [
+        "ac49cd73043c3b5604b26d6823be64c3334167c0149c5994b40f1c8edf5bad72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:25",
+      "sequence": 27084,
+      "chapter_label": "ACT 5",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 25
+        }
+      ],
+      "en": "One came and told them, “Behold, the men whom you put in prison are in the temple, standing and teaching the people.”",
+      "ko": "사람이 와서 고하되 보소서 옥에 가두었던 사람들이 성전에 서서 백성을 가르치더이다 하니",
+      "source_text_hash": "fc5fbf643194e059362cb3ac4e27cb593fc3dd61dda4ebd057b024cc52fa2b79",
+      "translation_text_hash": "dbff7da32579b947a03057be35c4baa030bf814a7b5c680e6041964ee844933d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 와서 고하되 보소서 옥에 가두었던 사람들이 성전에 서서 백성을 가르치더이다 하니"
+      ],
+      "raw_text_hashes": [
+        "dbff7da32579b947a03057be35c4baa030bf814a7b5c680e6041964ee844933d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:26",
+      "sequence": 27085,
+      "chapter_label": "ACT 5",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 26
+        }
+      ],
+      "en": "Then the captain went with the officers, and brought them without violence, for they were afraid that the people might stone them.",
+      "ko": "성전 맡은 자가 관속들과 같이 가서 저희를 잡아 왔으나 강제로 못함은 백성들이 돌로 칠까 두려워함이러라",
+      "source_text_hash": "b4af2fe949c53f6aa6ec657a73828a72cf86588baeb627c27373706b99038033",
+      "translation_text_hash": "5e7506885d88cf3799e074fea5cbde06d51e946bd41bc4f99459cdc3bf2a6ec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성전 맡은 자가 관속들과 같이 가서 저희를 잡아 왔으나 강제로 못함은 백성들이 돌로 칠까 두려워함이러라"
+      ],
+      "raw_text_hashes": [
+        "5e7506885d88cf3799e074fea5cbde06d51e946bd41bc4f99459cdc3bf2a6ec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:27",
+      "sequence": 27086,
+      "chapter_label": "ACT 5",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 27
+        }
+      ],
+      "en": "When they had brought them, they set them before the council. The high priest questioned them,",
+      "ko": "저희를 끌어다가 공회 앞에 세우니 대제사장이 물어",
+      "source_text_hash": "195d92d857ab9c2e33f69cac086e317e342a88c9bf0747fbf5b8ff7875f45b05",
+      "translation_text_hash": "6e169f6860f8c97c5634f33a515032d5c4e985211c4ebdfb9fdf4545deb7ef9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희를 끌어다가 공회 앞에 세우니 대제사장이 물어"
+      ],
+      "raw_text_hashes": [
+        "6e169f6860f8c97c5634f33a515032d5c4e985211c4ebdfb9fdf4545deb7ef9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:28",
+      "sequence": 27087,
+      "chapter_label": "ACT 5",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 28
+        }
+      ],
+      "en": "saying, “Didn’t we strictly command you not to teach in this name? Behold, you have filled Jerusalem with your teaching, and intend to bring this man’s blood on us.”",
+      "ko": "가로되 우리가 이 이름으로 사람을 가르치지 말라고 엄금하였으되 너희가 너희 교를 예루살렘에 가득하게 하니 이 사람의 피를 우리에게로 돌리고자 함이로다",
+      "source_text_hash": "98e7d27aba69671e260389882cd3e9024c7791c1ccee80d84f63fd8521546dc4",
+      "translation_text_hash": "85d8e59a04689ffc4da41d8dad1a24c546f7147ae2912bfffb1009c92e7b9a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 우리가 이 이름으로 사람을 가르치지 말라고 엄금하였으되 너희가 너희 교를 예루살렘에 가득하게 하니 이 사람의 피를 우리에게로 돌리고자 함이로다"
+      ],
+      "raw_text_hashes": [
+        "85d8e59a04689ffc4da41d8dad1a24c546f7147ae2912bfffb1009c92e7b9a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:29",
+      "sequence": 27088,
+      "chapter_label": "ACT 5",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 29
+        }
+      ],
+      "en": "But Peter and the apostles answered, “We must obey God rather than men.",
+      "ko": "베드로와 사도들이 대답하여 가로되 사람보다 하나님을 순종하는 것이 마땅하니라",
+      "source_text_hash": "99891f30a30126815564fbd8c1d400e0e4c477f34f0876017834cb8d0d6b5629",
+      "translation_text_hash": "733a8886543ed117e1d34c3fb39ac65f07fd14e45f0bcf5957784ba94e99b776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 사도들이 대답하여 가로되 사람보다 하나님을 순종하는 것이 마땅하니라"
+      ],
+      "raw_text_hashes": [
+        "733a8886543ed117e1d34c3fb39ac65f07fd14e45f0bcf5957784ba94e99b776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:30",
+      "sequence": 27089,
+      "chapter_label": "ACT 5",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 30
+        }
+      ],
+      "en": "The God of our fathers raised up Jesus, whom you killed, hanging him on a tree.",
+      "ko": "너희가 나무에 달아 죽인 예수를 우리 조상의 하나님이 살리시고",
+      "source_text_hash": "8bb2fe8801f9ca075fa9503afcabacd1b447017e0a2fc1aa50d1d9aa1aeea53e",
+      "translation_text_hash": "26b125bf12d64c64e7a03dd09a9f6bd3279e5bb449c23f50230135b43b2762df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 나무에 달아 죽인 예수를 우리 조상의 하나님이 살리시고"
+      ],
+      "raw_text_hashes": [
+        "26b125bf12d64c64e7a03dd09a9f6bd3279e5bb449c23f50230135b43b2762df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:31",
+      "sequence": 27090,
+      "chapter_label": "ACT 5",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 31
+        }
+      ],
+      "en": "God exalted him with his right hand to be a Prince and a Savior, to give repentance to Israel, and remission of sins.",
+      "ko": "이스라엘로 회개케 하사 죄 사함을 얻게 하시려고 그를 오른손으로 높이사 임금과 구주를 삼으셨느니라",
+      "source_text_hash": "a8b5e69e6cf596f2d1a5c0b10af16ce0873bc970411472e62e4b2b12e6ca0032",
+      "translation_text_hash": "82c1df48aaf06c02a305befed951bc2d7307e875c0fced996575f250f1b7f425",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘로 회개케 하사 죄 사함을 얻게 하시려고 그를 오른손으로 높이사 임금과 구주를 삼으셨느니라"
+      ],
+      "raw_text_hashes": [
+        "82c1df48aaf06c02a305befed951bc2d7307e875c0fced996575f250f1b7f425"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:32",
+      "sequence": 27091,
+      "chapter_label": "ACT 5",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 32
+        }
+      ],
+      "en": "We are his witnesses of these things; and so also is the Holy Spirit, whom God has given to those who obey him.”",
+      "ko": "우리는 이 일에 증인이요 하나님이 자기를 순종하는 사람들에게 주신 성령도 그러하니라 하더라",
+      "source_text_hash": "273ed6afab98577e44fb6bad85c048887fc87629b00e3fac88b5d912c7007f51",
+      "translation_text_hash": "e3e01993dc3caa941df114492dd9db1c447be5bb184ac7626f32a72da29d21b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 이 일에 증인이요 하나님이 자기를 순종하는 사람들에게 주신 성령도 그러하니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "e3e01993dc3caa941df114492dd9db1c447be5bb184ac7626f32a72da29d21b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:33",
+      "sequence": 27092,
+      "chapter_label": "ACT 5",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 33
+        }
+      ],
+      "en": "But they, when they heard this, were cut to the heart, and were determined to kill them.",
+      "ko": "저희가 듣고 크게 노하여 사도들을 없이하고자 할쌔",
+      "source_text_hash": "e68eb80dd527c573d91326b1155a00f1a32d854cf8c8f56d0102e2809cf32d15",
+      "translation_text_hash": "536f86753fc8592b08415df6f3e14359a821b7cd73e374196d120a5c5e165840",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 듣고 크게 노하여 사도들을 없이하고자 할쌔"
+      ],
+      "raw_text_hashes": [
+        "536f86753fc8592b08415df6f3e14359a821b7cd73e374196d120a5c5e165840"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:34",
+      "sequence": 27093,
+      "chapter_label": "ACT 5",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 34
+        }
+      ],
+      "en": "But one stood up in the council, a Pharisee named Gamaliel, a teacher of the law, honored by all the people, and commanded to put the apostles out for a little while.",
+      "ko": "바리새인 가말리엘은 교법사로 모든 백성에게 존경을 받는 자라 공회 중에 일어나 명하여 사도들을 잠간 밖에 나가게 하고",
+      "source_text_hash": "73b1a60b28a4e557445c5a12dcfff4119a3e12bc4410135ca0306ca637ce8590",
+      "translation_text_hash": "02d633f47b70cdc9908b84232dfc5e770fe32018a82bab39f2e8e90bbfb6e6f6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인 가말리엘은 교법사로 모든 백성에게 존경을 받는 자라 공회 중에 일어나 명하여 사도들을 잠간 밖에 나가게 하고"
+      ],
+      "raw_text_hashes": [
+        "02d633f47b70cdc9908b84232dfc5e770fe32018a82bab39f2e8e90bbfb6e6f6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:35",
+      "sequence": 27094,
+      "chapter_label": "ACT 5",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 35
+        }
+      ],
+      "en": "He said to them, “You men of Israel, be careful concerning these men, what you are about to do.",
+      "ko": "말하되 이스라엘 사람들아 너희가 이 사람들에게 대하여 어떻게 하려는 것을 조심하라",
+      "source_text_hash": "378b9e8db8d060747f90464e014cbdc061ace78400f9071f971d772e9f7387a9",
+      "translation_text_hash": "1e9a69573e5d008f104cebd79e88ae9e16d9dfd55f74e2c032ae9f5d26b0aba5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 이스라엘 사람들아 너희가 이 사람들에게 대하여 어떻게 하려는 것을 조심하라"
+      ],
+      "raw_text_hashes": [
+        "1e9a69573e5d008f104cebd79e88ae9e16d9dfd55f74e2c032ae9f5d26b0aba5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:36",
+      "sequence": 27095,
+      "chapter_label": "ACT 5",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 36
+        }
+      ],
+      "en": "For before these days Theudas rose up, making himself out to be somebody; to whom a number of men, about four hundred, joined themselves. He was slain; and all, as many as obeyed him, were dispersed and came to nothing.",
+      "ko": "이전에 드다가 일어나 스스로 자랑하매 사람이 약 사백이나 따르더니 그가 죽임을 당하매 좇던 사람이 다 흩어져 없어졌고",
+      "source_text_hash": "7f386836af91327b7df55ea2e6df9e3a626e9a8e9774478d74aa5b57f1b5cd6c",
+      "translation_text_hash": "69b4f621c262f9daf57f105922e188b161ff2f4991b000a411a362fb02972500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이전에 드다가 일어나 스스로 자랑하매 사람이 약 사백이나 따르더니 그가 죽임을 당하매 좇던 사람이 다 흩어져 없어졌고"
+      ],
+      "raw_text_hashes": [
+        "69b4f621c262f9daf57f105922e188b161ff2f4991b000a411a362fb02972500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:37",
+      "sequence": 27096,
+      "chapter_label": "ACT 5",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 37
+        }
+      ],
+      "en": "After this man, Judas of Galilee rose up in the days of the enrollment, and drew away some people after him. He also perished, and all, as many as obeyed him, were scattered abroad.",
+      "ko": "그 후 호적할 때에 갈릴리 유다가 일어나 백성을 꾀어 좇게 하다가 그도 망한즉 좇던 사람이 다 흩어졌느니라",
+      "source_text_hash": "1646a9d425d812af21277cf5b8ad78d65af16c64f82d036cb756fad29c7f72ad",
+      "translation_text_hash": "a5c9ef04a81908d79f30350ec62911b67881dd948d3dfe0602f7cfcf15143e68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후 호적할 때에 갈릴리 유다가 일어나 백성을 꾀어 좇게 하다가 그도 망한즉 좇던 사람이 다 흩어졌느니라"
+      ],
+      "raw_text_hashes": [
+        "a5c9ef04a81908d79f30350ec62911b67881dd948d3dfe0602f7cfcf15143e68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:38",
+      "sequence": 27097,
+      "chapter_label": "ACT 5",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 38
+        }
+      ],
+      "en": "Now I tell you, withdraw from these men and leave them alone. For if this counsel or this work is of men, it will be overthrown.",
+      "ko": "이제 내가 너희에게 말하노니 이 사람들을 상관 말고 버려두라 이 사상과 이 소행이 사람에게로서 났으면 무너질 것이요",
+      "source_text_hash": "b5b4ff01b006a97f748616487411238b33217359b625c590ea77f35643c7893e",
+      "translation_text_hash": "3c1fa5257553943ef1af389eb5d96eacf9d52c18224ff9a9752d03ae6ca5f49b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 내가 너희에게 말하노니 이 사람들을 상관 말고 버려두라 이 사상과 이 소행이 사람에게로서 났으면 무너질 것이요"
+      ],
+      "raw_text_hashes": [
+        "3c1fa5257553943ef1af389eb5d96eacf9d52c18224ff9a9752d03ae6ca5f49b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:39",
+      "sequence": 27098,
+      "chapter_label": "ACT 5",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 39
+        }
+      ],
+      "en": "But if it is of God, you will not be able to overthrow it, and you would be found even to be fighting against God!”",
+      "ko": "만일 하나님께로서 났으면 너희가 저희를 무너뜨릴 수 없겠고 도리어 하나님을 대적하는 자가 될까 하노라 하니",
+      "source_text_hash": "540352bba85a32d36a9d99c8f59ba2eebd7e17e75321b5abfa4def07731847ae",
+      "translation_text_hash": "057dcc2ba66d2bbab3af98902ecb81edea0ac70c99c611c29ef7dfcf06ae2d89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 하나님께로서 났으면 너희가 저희를 무너뜨릴 수 없겠고 도리어 하나님을 대적하는 자가 될까 하노라 하니"
+      ],
+      "raw_text_hashes": [
+        "057dcc2ba66d2bbab3af98902ecb81edea0ac70c99c611c29ef7dfcf06ae2d89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:40",
+      "sequence": 27099,
+      "chapter_label": "ACT 5",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 40
+        }
+      ],
+      "en": "They agreed with him. Summoning the apostles, they beat them and commanded them not to speak in the name of Jesus, and let them go.",
+      "ko": "저희가 옳게 여겨 사도들을 불러들여 채찍질하며 예수의 이름으로 말하는 것을 금하고 놓으니",
+      "source_text_hash": "35964810003b07bde71d3ea81bfb9d4fcbb1c5c40d2648635054a963b57200de",
+      "translation_text_hash": "661ebda766742859403b1e5c4bd24c0dd37f61305781e18f35007d81f510bb0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 옳게 여겨 사도들을 불러들여 채찍질하며 예수의 이름으로 말하는 것을 금하고 놓으니"
+      ],
+      "raw_text_hashes": [
+        "661ebda766742859403b1e5c4bd24c0dd37f61305781e18f35007d81f510bb0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:41",
+      "sequence": 27100,
+      "chapter_label": "ACT 5",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 41
+        }
+      ],
+      "en": "They therefore departed from the presence of the council, rejoicing that they were counted worthy to suffer dishonor for Jesus’ name.",
+      "ko": "사도들은 그 이름을 위하여 능욕 받는 일에 합당한 자로 여기심을 기뻐하면서 공회 앞을 떠나니라",
+      "source_text_hash": "4f23ec67ecead0862bacb2da9ed2936ec267c7851edf7bc045c576e918a351c1",
+      "translation_text_hash": "cced4171ee4d503d0ef44ffd3305cd05ca523db9d17f119df3fd63c3342ad718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사도들은 그 이름을 위하여 능욕 받는 일에 합당한 자로 여기심을 기뻐하면서 공회 앞을 떠나니라"
+      ],
+      "raw_text_hashes": [
+        "cced4171ee4d503d0ef44ffd3305cd05ca523db9d17f119df3fd63c3342ad718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:5:42",
+      "sequence": 27101,
+      "chapter_label": "ACT 5",
+      "verse_label": "42",
+      "locator": {
+        "book": "ACT",
+        "chapter": 5,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 5,
+          "verse": 42
+        }
+      ],
+      "en": "Every day, in the temple and at home, they never stopped teaching and preaching Jesus, the Christ.",
+      "ko": "저희가 날마다 성전에 있든지 집에 있든지 예수는 그리스도라 가르치기와 전도하기를 쉬지 아니하니라",
+      "source_text_hash": "08f5c056c004b3ad4b521afdd0c45f2a7613997468d01e4c3d3196b7d55bcae7",
+      "translation_text_hash": "f3e568109e6b21061e6f8811678ccd1b870eb5921e895535dfc2d69e2d54bec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 날마다 성전에 있든지 집에 있든지 예수는 그리스도라 가르치기와 전도하기를 쉬지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "f3e568109e6b21061e6f8811678ccd1b870eb5921e895535dfc2d69e2d54bec7"
+      ]
+    }
+  ]
+}

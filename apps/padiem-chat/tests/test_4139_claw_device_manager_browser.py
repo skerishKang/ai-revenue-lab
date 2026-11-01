@@ -54,7 +54,14 @@ def open_claw(browser, server, width=1280):
     page = browser.new_page(viewport={"width": width, "height": 850})
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    # These cases exercise the signed-in directory contract. Explicitly mock
+    # the session instead of relying on an unauthenticated static server.
+    page.route("**/api/auth/status", lambda route: route.fulfill(json={
+        "ready": True, "authenticated": True, "session_state": "signed_in",
+        "user": {"name": "Synthetic User"}, "history_ready": True,
+    }))
     page.goto(server, wait_until="domcontentloaded")
+    page.wait_for_function("() => window.PadiemAuthGate?.authenticated() === true")
     page.locator("#clawDeviceManagerToggle").wait_for(state="attached")
     # #5015: the panel is mounted once above the shared composer for both
     # products (its own container governs visibility), not inside Claw only.

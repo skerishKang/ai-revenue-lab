@@ -1,0 +1,1549 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:010",
+  "unit_ordinal": 1028,
+  "unit_label": "ACT 10",
+  "book_code": "ACT",
+  "chapter_number": 10,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:10:1",
+      "sequence": 27259,
+      "chapter_label": "ACT 10",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 1
+        }
+      ],
+      "en": "Now there was a certain man in Caesarea, Cornelius by name, a centurion of what was called the Italian Regiment,",
+      "ko": "가이사랴에 고넬료라 하는 사람이 있으니 이달리야대라 하는 군대의 백부장이라",
+      "source_text_hash": "de0933430252770a606bdc3f7048e036d099d15376f70cb26b7a050e406ab460",
+      "translation_text_hash": "aab5c726980e4b0df8fbc9aea34c454c08d50c768a67d7af59a72fd58799bbd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가이사랴에 고넬료라 하는 사람이 있으니 이달리야대라 하는 군대의 백부장이라"
+      ],
+      "raw_text_hashes": [
+        "aab5c726980e4b0df8fbc9aea34c454c08d50c768a67d7af59a72fd58799bbd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:2",
+      "sequence": 27260,
+      "chapter_label": "ACT 10",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 2
+        }
+      ],
+      "en": "a devout man, and one who feared God with all his house, who gave gifts for the needy generously to the people, and always prayed to God.",
+      "ko": "그가 경건하여 온 집으로 더불어 하나님을 경외하며 백성을 많이 구제하고 하나님께 항상 기도하더니",
+      "source_text_hash": "80edaea61074c4dbe91d08bd343a330cd7d8e3e2372102158047abfb5c5b0223",
+      "translation_text_hash": "d71b5a3234a418207ee8c4ea878118b1a8552dbbf4ca4388b7b25d5c8f37997b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 경건하여 온 집으로 더불어 하나님을 경외하며 백성을 많이 구제하고 하나님께 항상 기도하더니"
+      ],
+      "raw_text_hashes": [
+        "d71b5a3234a418207ee8c4ea878118b1a8552dbbf4ca4388b7b25d5c8f37997b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:3",
+      "sequence": 27261,
+      "chapter_label": "ACT 10",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 3
+        }
+      ],
+      "en": "At about the ninth hour of the day, he clearly saw in a vision an angel of God coming to him and saying to him, “Cornelius!”",
+      "ko": "하루는 제 구시쯤 되어 환상 중에 밝히 보매 하나님의 사자가 들어와 가로되 고넬료야 하니",
+      "source_text_hash": "841e2396f4555f7f299910a5a8fcf338fee8b54f530f6cb143a546146fe3d212",
+      "translation_text_hash": "a9878cba25754b8d51e6063c7852043f03d92663f6e812a012e3194bd625d160",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하루는 제 구시쯤 되어 환상 중에 밝히 보매 하나님의 사자가 들어와 가로되 고넬료야 하니"
+      ],
+      "raw_text_hashes": [
+        "a9878cba25754b8d51e6063c7852043f03d92663f6e812a012e3194bd625d160"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:4",
+      "sequence": 27262,
+      "chapter_label": "ACT 10",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 4
+        }
+      ],
+      "en": "He, fastening his eyes on him and being frightened, said, “What is it, Lord?” He said to him, “Your prayers and your gifts to the needy have gone up for a memorial before God.",
+      "ko": "고넬료가 주목하여 보고 두려워 가로되 주여 무슨 일이니이까 천사가 가로되 네 기도와 구제가 하나님 앞에 상달하여 기억하신 바가 되었으니",
+      "source_text_hash": "79766dd2bc645d708769c292821a3604e5a76cd5bd244ebd939b7a0f95744377",
+      "translation_text_hash": "644c4963dfe8cfd78254acbb432797019587a8b435324fd6632b71ccb06c7098",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고넬료가 주목하여 보고 두려워 가로되 주여 무슨 일이니이까 천사가 가로되 네 기도와 구제가 하나님 앞에 상달하여 기억하신 바가 되었으니"
+      ],
+      "raw_text_hashes": [
+        "644c4963dfe8cfd78254acbb432797019587a8b435324fd6632b71ccb06c7098"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:5",
+      "sequence": 27263,
+      "chapter_label": "ACT 10",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 5
+        }
+      ],
+      "en": "Now send men to Joppa, and get Simon, who is also called Peter.",
+      "ko": "네가 지금 사람들을 욥바에 보내어 베드로라 하는 시몬을 청하라",
+      "source_text_hash": "67736903e6ab159e6fa890d24a2dd537182fe8165baeb47e03c870c0d85e8252",
+      "translation_text_hash": "72842f9ddd12cbddb4142408a7ee4012110523593999fcdb181ddbd599909ecb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 지금 사람들을 욥바에 보내어 베드로라 하는 시몬을 청하라"
+      ],
+      "raw_text_hashes": [
+        "72842f9ddd12cbddb4142408a7ee4012110523593999fcdb181ddbd599909ecb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:6",
+      "sequence": 27264,
+      "chapter_label": "ACT 10",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 6
+        }
+      ],
+      "en": "He is staying with a tanner named Simon, whose house is by the seaside.",
+      "ko": "저는 피장 시몬의 집에 우거하니 그 집은 해변에 있느니라 하더라",
+      "source_text_hash": "14231a79e8184f8a9c5407bbe556eb927d9d8725e9018582475f84309c021918",
+      "translation_text_hash": "27a6c78b9d449e5849200b033770ea72d43d34e8379ef16a15cd5f3f33815a38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저는 피장 시몬의 집에 우거하니 그 집은 해변에 있느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "27a6c78b9d449e5849200b033770ea72d43d34e8379ef16a15cd5f3f33815a38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:7",
+      "sequence": 27265,
+      "chapter_label": "ACT 10",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 7
+        }
+      ],
+      "en": "When the angel who spoke to him had departed, Cornelius called two of his household servants and a devout soldier of those who waited on him continually.",
+      "ko": "마침 말하던 천사가 떠나매 고넬료가 집안 하인 둘과 종졸 가운데 경건한 사람 하나를 불러",
+      "source_text_hash": "bbd12ad0905527918b870ac574a610911f3d81498b7f5935ae8bfb2b96bd774c",
+      "translation_text_hash": "51fa241c90fea2d72d8cef4aba521238e5dfe25997aed1151744edbd63ad648e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 말하던 천사가 떠나매 고넬료가 집안 하인 둘과 종졸 가운데 경건한 사람 하나를 불러"
+      ],
+      "raw_text_hashes": [
+        "51fa241c90fea2d72d8cef4aba521238e5dfe25997aed1151744edbd63ad648e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:8",
+      "sequence": 27266,
+      "chapter_label": "ACT 10",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 8
+        }
+      ],
+      "en": "Having explained everything to them, he sent them to Joppa.",
+      "ko": "이 일을 다 고하고 욥바로 보내니라",
+      "source_text_hash": "50ab7b7aa0791d90fe96258d74f85a902486fc803e36bb11a18529a6013d2eae",
+      "translation_text_hash": "9c5ee98130d8f9cd763c0a551ab5c5c3ddf3d6153d18f3ac61db896f6b812085",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 다 고하고 욥바로 보내니라"
+      ],
+      "raw_text_hashes": [
+        "9c5ee98130d8f9cd763c0a551ab5c5c3ddf3d6153d18f3ac61db896f6b812085"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:9",
+      "sequence": 27267,
+      "chapter_label": "ACT 10",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 9
+        }
+      ],
+      "en": "Now on the next day as they were on their journey and got close to the city, Peter went up on the housetop to pray at about noon.",
+      "ko": "이튿날 저희가 행하여 성에 가까이 갔을 그 때에 베드로가 기도하려고 지붕에 올라가니 시간은 제 육시더라",
+      "source_text_hash": "d3dde2bc24dd26d062141c863e0e86d510c88b6b023d720adcb0312d44a672b3",
+      "translation_text_hash": "ac6c99207ad93837fa46366ef9b5dc55ce246d3c9068617fbf9b8561d0972a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 저희가 행하여 성에 가까이 갔을 그 때에 베드로가 기도하려고 지붕에 올라가니 시간은 제 육시더라"
+      ],
+      "raw_text_hashes": [
+        "ac6c99207ad93837fa46366ef9b5dc55ce246d3c9068617fbf9b8561d0972a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:10",
+      "sequence": 27268,
+      "chapter_label": "ACT 10",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 10
+        }
+      ],
+      "en": "He became hungry and desired to eat, but while they were preparing, he fell into a trance.",
+      "ko": "시장하여 먹고자 하매 사람이 준비할 때에 비몽사몽간에",
+      "source_text_hash": "43661b7121cd3851bbf0bc2f6b77c19183be329acea7e18d550cde6ddad50155",
+      "translation_text_hash": "b2f9ded74ded4fffce82318ebb9431183ec5a884f7fefa161780d9d087168ccd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시장하여 먹고자 하매 사람이 준비할 때에 비몽사몽간에"
+      ],
+      "raw_text_hashes": [
+        "b2f9ded74ded4fffce82318ebb9431183ec5a884f7fefa161780d9d087168ccd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:11",
+      "sequence": 27269,
+      "chapter_label": "ACT 10",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 11
+        }
+      ],
+      "en": "He saw heaven opened and a certain container descending to him, like a great sheet let down by four corners on the earth,",
+      "ko": "하늘이 열리며 한 그릇이 내려오는 것을 보니 큰 보자기 같고 네 귀를 매어 땅에 드리웠더라",
+      "source_text_hash": "5d2a7e5fe14abb3aa87c6699c51a49aae723972b450deda17c38e4288aa2892a",
+      "translation_text_hash": "fe16282c90555b2b5794290790ebe26b5c925984f4a3e7ba3ca162c64d43b949",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이 열리며 한 그릇이 내려오는 것을 보니 큰 보자기 같고 네 귀를 매어 땅에 드리웠더라"
+      ],
+      "raw_text_hashes": [
+        "fe16282c90555b2b5794290790ebe26b5c925984f4a3e7ba3ca162c64d43b949"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:12",
+      "sequence": 27270,
+      "chapter_label": "ACT 10",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 12
+        }
+      ],
+      "en": "in which were all kinds of four-footed animals of the earth, wild animals, reptiles, and birds of the sky.",
+      "ko": "그 안에는 땅에 있는 각색 네 발 가진 짐승과 기는 것과 공중에 나는 것들이 있는데",
+      "source_text_hash": "efda81272bdaf3aac8e90c1285b37b0e3919744a80b9f90f57afc34967bccfa5",
+      "translation_text_hash": "fc1f0ac6441a57ed0980123215823fddce2a10029169860c9bb5a3ed2e536fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 안에는 땅에 있는 각색 네 발 가진 짐승과 기는 것과 공중에 나는 것들이 있는데"
+      ],
+      "raw_text_hashes": [
+        "fc1f0ac6441a57ed0980123215823fddce2a10029169860c9bb5a3ed2e536fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:13",
+      "sequence": 27271,
+      "chapter_label": "ACT 10",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 13
+        }
+      ],
+      "en": "A voice came to him, “Rise, Peter, kill and eat!”",
+      "ko": "또 소리가 있으되 베드로야 일어나 잡아 먹으라 하거늘",
+      "source_text_hash": "e374f0e886600029a05704cd66990030d21ccd36fe78f4137d5371e8da0371b6",
+      "translation_text_hash": "201d866226b0fadb68c889330a5eb50410c3cea34ef2da7c3659074a9ff549b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 소리가 있으되 베드로야 일어나 잡아 먹으라 하거늘"
+      ],
+      "raw_text_hashes": [
+        "201d866226b0fadb68c889330a5eb50410c3cea34ef2da7c3659074a9ff549b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:14",
+      "sequence": 27272,
+      "chapter_label": "ACT 10",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 14
+        }
+      ],
+      "en": "But Peter said, “Not so, Lord; for I have never eaten anything that is common or unclean.”",
+      "ko": "베드로가 가로되 주여 그럴수 없나이다 속되고 깨끗지 아니한 물건을 내가 언제든지 먹지 아니하였삽나이다 한대",
+      "source_text_hash": "c352a404fdb65af014e6068859b8024a1068999b27cb2e10e1d573544098b954",
+      "translation_text_hash": "70cb736219a5b6fab43b5620865b287e9098cf94804ead265ce166de714b2549",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 가로되 주여 그럴수 없나이다 속되고 깨끗지 아니한 물건을 내가 언제든지 먹지 아니하였삽나이다 한대"
+      ],
+      "raw_text_hashes": [
+        "70cb736219a5b6fab43b5620865b287e9098cf94804ead265ce166de714b2549"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:15",
+      "sequence": 27273,
+      "chapter_label": "ACT 10",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 15
+        }
+      ],
+      "en": "A voice came to him again the second time, “What God has cleansed, you must not call unclean.”",
+      "ko": "또 두번째 소리 있으되 하나님께서 깨끗케 하신 것을 네가 속되다 하지 말라 하더라",
+      "source_text_hash": "d528b6ca67eb6173257f12420b83793f7ff0e2396818471301f848e24390c17a",
+      "translation_text_hash": "b8d72d8686453d42d76942b0256148377bfbaba994177b8936e59ebba15f4f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 두번째 소리 있으되 하나님께서 깨끗케 하신 것을 네가 속되다 하지 말라 하더라"
+      ],
+      "raw_text_hashes": [
+        "b8d72d8686453d42d76942b0256148377bfbaba994177b8936e59ebba15f4f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:16",
+      "sequence": 27274,
+      "chapter_label": "ACT 10",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 16
+        }
+      ],
+      "en": "This was done three times, and immediately the thing was received up into heaven.",
+      "ko": "이런 일이 세번 있은 후 그 그릇이 곧 하늘로 올리워 가니라",
+      "source_text_hash": "38eea7377e0fb1f33ed0930dcdcc48b97557ff4dca11d81005a37c956a4b23ca",
+      "translation_text_hash": "9952ac8a27d046cce22a91a0b87800d0fcccfc6003763cccbac09cfb965a5181",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 일이 세번 있은 후 그 그릇이 곧 하늘로 올리워 가니라"
+      ],
+      "raw_text_hashes": [
+        "9952ac8a27d046cce22a91a0b87800d0fcccfc6003763cccbac09cfb965a5181"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:17",
+      "sequence": 27275,
+      "chapter_label": "ACT 10",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 17
+        }
+      ],
+      "en": "Now while Peter was very perplexed in himself what the vision which he had seen might mean, behold, the men who were sent by Cornelius, having made inquiry for Simon’s house, stood before the gate,",
+      "ko": "베드로가 본바 환상이 무슨 뜻인지 속으로 의심하더니 마침 고넬료의 보낸 사람들이 시몬의 집을 찾아 문 밖에 서서",
+      "source_text_hash": "ebf1f94a7ae33a2f7104f34f668d8973ddb2644da69c3fd4905cc4565e6c4499",
+      "translation_text_hash": "1e00567f02e0e70dd77105a9184783744f1c7d391574181d577024e5f09b6fb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 본바 환상이 무슨 뜻인지 속으로 의심하더니 마침 고넬료의 보낸 사람들이 시몬의 집을 찾아 문 밖에 서서"
+      ],
+      "raw_text_hashes": [
+        "1e00567f02e0e70dd77105a9184783744f1c7d391574181d577024e5f09b6fb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:18",
+      "sequence": 27276,
+      "chapter_label": "ACT 10",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 18
+        }
+      ],
+      "en": "and called and asked whether Simon, who was also called Peter, was lodging there.",
+      "ko": "불러 묻되 베드로라 하는 시몬이 여기 우거하느냐 하거늘",
+      "source_text_hash": "d72df9ade68911e47b01a8cc3fc18890e1670f72b920b0aea245ea03dc03103a",
+      "translation_text_hash": "b97fb66d39d1b4535c6301c5196758dea2e92ae656fb3ddfe8596b63a8e83099",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불러 묻되 베드로라 하는 시몬이 여기 우거하느냐 하거늘"
+      ],
+      "raw_text_hashes": [
+        "b97fb66d39d1b4535c6301c5196758dea2e92ae656fb3ddfe8596b63a8e83099"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:19",
+      "sequence": 27277,
+      "chapter_label": "ACT 10",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 19
+        }
+      ],
+      "en": "While Peter was pondering the vision, the Spirit said to him, “Behold, three men seek you.",
+      "ko": "베드로가 그 환상에 대하여 생각할 때에 성령께서 저더러 말씀하시되 두 사람이 너를 찾으니",
+      "source_text_hash": "f71340b6ff343cf95431d2848d1478edb4ae0dbd4f61eb9310dcde3709c1c5f7",
+      "translation_text_hash": "36897c33241557e0d9b1385a1fcc31bbdbdb26f50bd6a25d3289d157f49b7636",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 그 환상에 대하여 생각할 때에 성령께서 저더러 말씀하시되 두 사람이 너를 찾으니"
+      ],
+      "raw_text_hashes": [
+        "36897c33241557e0d9b1385a1fcc31bbdbdb26f50bd6a25d3289d157f49b7636"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:20",
+      "sequence": 27278,
+      "chapter_label": "ACT 10",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 20
+        }
+      ],
+      "en": "But arise, get down, and go with them, doubting nothing; for I have sent them.”",
+      "ko": "일어나 내려가 의심치 말고 함께 가라 내가 저희를 보내었느니라 하시니",
+      "source_text_hash": "fbd94b6c54ccb2ec86c552e8480d808fc16cc39874d822342630c0bd3807d085",
+      "translation_text_hash": "54af24be9571e650bb6be7dacb810c7e39f77f0e0f211a98fad105a4edf6f041",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일어나 내려가 의심치 말고 함께 가라 내가 저희를 보내었느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "54af24be9571e650bb6be7dacb810c7e39f77f0e0f211a98fad105a4edf6f041"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:21",
+      "sequence": 27279,
+      "chapter_label": "ACT 10",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 21
+        }
+      ],
+      "en": "Peter went down to the men, and said, “Behold, I am he whom you seek. Why have you come?”",
+      "ko": "베드로가 내려가 그 사람들을 보고 가로되 내가 곧 너희의 찾는 사람이니 너희가 무슨 일로 왔느냐",
+      "source_text_hash": "61b454d7822e291af92a505c7a1f0dc3b0878878d355ebd6a202d55fdac1a96b",
+      "translation_text_hash": "545a6924850f55861e3ae216a46e214b3429a54496c99600c48fe5142c025bc4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 내려가 그 사람들을 보고 가로되 내가 곧 너희의 찾는 사람이니 너희가 무슨 일로 왔느냐"
+      ],
+      "raw_text_hashes": [
+        "545a6924850f55861e3ae216a46e214b3429a54496c99600c48fe5142c025bc4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:22",
+      "sequence": 27280,
+      "chapter_label": "ACT 10",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 22
+        }
+      ],
+      "en": "They said, “Cornelius, a centurion, a righteous man and one who fears God, and well spoken of by all the nation of the Jews, was directed by a holy angel to invite you to his house, and to listen to what you say.”",
+      "ko": "저희가 대답하되 백부장 고넬료는 의인이요 하나님을 경외하는 자라 유대 온 족속이 칭찬하더니 저가 거룩한 천사의 지시를 받아 너를 그 집으로 청하여 말을 들으려 하느니라 한대",
+      "source_text_hash": "f90d4cc9d1a167ff4caad268265142261b39387142dc893673987f54c816753c",
+      "translation_text_hash": "97c9e8b18ae433b4bdbc04a6eaed10e41164f740be653f224c2563adfc7041fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하되 백부장 고넬료는 의인이요 하나님을 경외하는 자라 유대 온 족속이 칭찬하더니 저가 거룩한 천사의 지시를 받아 너를 그 집으로 청하여 말을 들으려 하느니라 한대"
+      ],
+      "raw_text_hashes": [
+        "97c9e8b18ae433b4bdbc04a6eaed10e41164f740be653f224c2563adfc7041fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:23",
+      "sequence": 27281,
+      "chapter_label": "ACT 10",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 23
+        }
+      ],
+      "en": "So he called them in and provided a place to stay. On the next day Peter arose and went out with them, and some of the brothers from Joppa accompanied him.",
+      "ko": "베드로가 불러 들여 유숙하게 하니라 이튿날 일어나 저희와 함께 갈쌔 욥바 두어 형제도 함께 가니라",
+      "source_text_hash": "4e9f2a227c68e4f5209c68979096e104ecadf27a976a89ba22023bb7beb9d735",
+      "translation_text_hash": "3be4811f0305048718cfbd1ff8c2a59650bc56af696dd9ba9801bccc6149353b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 불러 들여 유숙하게 하니라 이튿날 일어나 저희와 함께 갈쌔 욥바 두어 형제도 함께 가니라"
+      ],
+      "raw_text_hashes": [
+        "3be4811f0305048718cfbd1ff8c2a59650bc56af696dd9ba9801bccc6149353b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:24",
+      "sequence": 27282,
+      "chapter_label": "ACT 10",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 24
+        }
+      ],
+      "en": "On the next day they entered into Caesarea. Cornelius was waiting for them, having called together his relatives and his near friends.",
+      "ko": "이튿날 가이사랴에 들어가니 고넬료가 일가와 가까운 친구들을 모아 기다리더니",
+      "source_text_hash": "d06563648f39468ca81f13d356d091a944c3cb2c6a1ee881ee6e514596fed976",
+      "translation_text_hash": "38bb5fe2f1a80132ecb89c1b1d150bfae6045ab6498370ffe8714e0c9d194587",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 가이사랴에 들어가니 고넬료가 일가와 가까운 친구들을 모아 기다리더니"
+      ],
+      "raw_text_hashes": [
+        "38bb5fe2f1a80132ecb89c1b1d150bfae6045ab6498370ffe8714e0c9d194587"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:25",
+      "sequence": 27283,
+      "chapter_label": "ACT 10",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 25
+        }
+      ],
+      "en": "When Peter entered, Cornelius met him, fell down at his feet, and worshiped him.",
+      "ko": "마침 베드로가 들어올 때에 고넬료가 맞아 발앞에 엎드리어 절하니",
+      "source_text_hash": "14cdd80cc990420e7d8123207c284bcd5123afd3559b2b00862e3636d1ad8a4a",
+      "translation_text_hash": "cc1ab2d6bdbd170ecd150b916a4a0e617b35d07593c3456d8054aeb667e712b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마침 베드로가 들어올 때에 고넬료가 맞아 발앞에 엎드리어 절하니"
+      ],
+      "raw_text_hashes": [
+        "cc1ab2d6bdbd170ecd150b916a4a0e617b35d07593c3456d8054aeb667e712b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:26",
+      "sequence": 27284,
+      "chapter_label": "ACT 10",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 26
+        }
+      ],
+      "en": "But Peter raised him up, saying, “Stand up! I myself am also a man.”",
+      "ko": "베드로가 일으켜 가로되 일어서라 나도 사람이라 하고",
+      "source_text_hash": "4b72c4d07baf52dd5198a45214c6b9714ed66373441f361399e69046fe6db655",
+      "translation_text_hash": "c2d8ea4cfe1d483991a32f0ebafc1921e6c88a70c0dde38133035f2851bf7093",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 일으켜 가로되 일어서라 나도 사람이라 하고"
+      ],
+      "raw_text_hashes": [
+        "c2d8ea4cfe1d483991a32f0ebafc1921e6c88a70c0dde38133035f2851bf7093"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:27",
+      "sequence": 27285,
+      "chapter_label": "ACT 10",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 27
+        }
+      ],
+      "en": "As he talked with him, he went in and found many gathered together.",
+      "ko": "더불어 말하며 들어가 여러 사람의 모인것을 보고",
+      "source_text_hash": "1a0f9278a9b5b4e371de258d8835001b2634a70625f19146449620cf532daec3",
+      "translation_text_hash": "46840ad77c67d14a4d7b2f0b3b3afdeb8266425e89aa4d52eb4f45d8f795b703",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "더불어 말하며 들어가 여러 사람의 모인것을 보고"
+      ],
+      "raw_text_hashes": [
+        "46840ad77c67d14a4d7b2f0b3b3afdeb8266425e89aa4d52eb4f45d8f795b703"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:28",
+      "sequence": 27286,
+      "chapter_label": "ACT 10",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 28
+        }
+      ],
+      "en": "He said to them, “You yourselves know how it is an unlawful thing for a man who is a Jew to join himself or come to one of another nation, but God has shown me that I shouldn’t call any man unholy or unclean.",
+      "ko": "이르되 유대인으로서 이방인을 교제하는 것과 가까이 하는 것이 위법인 줄은 너희도 알거니와 하나님께서 내게 지시하사 아무도 속되다 하거나 깨끗지 않다 하지 말라 하시기로",
+      "source_text_hash": "d6348f0d76afa417986dd437a3cec7d10d268960d1ac32f8fd0a879121e05f2d",
+      "translation_text_hash": "4df525d0f99810aba614a0518af31fdf3a3cee7ac4aab025849e2e2e808ad07d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 유대인으로서 이방인을 교제하는 것과 가까이 하는 것이 위법인 줄은 너희도 알거니와 하나님께서 내게 지시하사 아무도 속되다 하거나 깨끗지 않다 하지 말라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "4df525d0f99810aba614a0518af31fdf3a3cee7ac4aab025849e2e2e808ad07d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:29",
+      "sequence": 27287,
+      "chapter_label": "ACT 10",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 29
+        }
+      ],
+      "en": "Therefore I also came without complaint when I was sent for. I ask therefore, why did you send for me?”",
+      "ko": "부름을 사양치 아니하고 왔노라 묻노니 무슨 일로 나를 불렀느뇨",
+      "source_text_hash": "7c3f54492d3fcc1c9f1caf0aa32a1260cc4ed71916a4c79bca41835a3b285184",
+      "translation_text_hash": "387a0038c4e7fd58fdb8e957dde2f926e6a32ce0d4ad0b5a4e6fd99dd9fbeb60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부름을 사양치 아니하고 왔노라 묻노니 무슨 일로 나를 불렀느뇨"
+      ],
+      "raw_text_hashes": [
+        "387a0038c4e7fd58fdb8e957dde2f926e6a32ce0d4ad0b5a4e6fd99dd9fbeb60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:30",
+      "sequence": 27288,
+      "chapter_label": "ACT 10",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 30
+        }
+      ],
+      "en": "Cornelius said, “Four days ago, I was fasting until this hour; and at the ninth hour, I prayed in my house, and behold, a man stood before me in bright clothing",
+      "ko": "고넬료가 가로되 나흘 전 이맘때까지 내 집에서 제 구시 기도를 하는데 홀연히 한 사람이 빛난 옷을 입고 내 앞에 서서",
+      "source_text_hash": "2d02c33b44b31cf716642db2e0d7e1fcf5ff0455e4f6161bcb9d60765bc62767",
+      "translation_text_hash": "c11c94bb623b0a31a65973fc99fdd69054c847ed9a344c19f4bbf553d4315493",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고넬료가 가로되 나흘 전 이맘때까지 내 집에서 제 구시 기도를 하는데 홀연히 한 사람이 빛난 옷을 입고 내 앞에 서서"
+      ],
+      "raw_text_hashes": [
+        "c11c94bb623b0a31a65973fc99fdd69054c847ed9a344c19f4bbf553d4315493"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:31",
+      "sequence": 27289,
+      "chapter_label": "ACT 10",
+      "verse_label": "31",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 31
+        }
+      ],
+      "en": "and said, ‘Cornelius, your prayer is heard, and your gifts to the needy are remembered in the sight of God.",
+      "ko": "말하되 고넬료야 하나님이 네 기도를 들으시고 네 구제를 기억하셨으니",
+      "source_text_hash": "7edc6cdb1bdf793be6d4ad814a508083581922d2c13528803ba217ddc1414d03",
+      "translation_text_hash": "bc70b9ee8e8f8e9136cc4b30e007513061e8a52fc2556cac6bf9c18dded7c79a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하되 고넬료야 하나님이 네 기도를 들으시고 네 구제를 기억하셨으니"
+      ],
+      "raw_text_hashes": [
+        "bc70b9ee8e8f8e9136cc4b30e007513061e8a52fc2556cac6bf9c18dded7c79a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:32",
+      "sequence": 27290,
+      "chapter_label": "ACT 10",
+      "verse_label": "32",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 32
+        }
+      ],
+      "en": "Send therefore to Joppa and summon Simon, who is also called Peter. He is staying in the house of a tanner named Simon, by the seaside. When he comes, he will speak to you.’",
+      "ko": "사람을 욥바에 보내어 베드로라 하는 시몬을 청하라 저가 바닷가 피장 시몬의 집에 우거하느니라 하시기로",
+      "source_text_hash": "77e3875b6fb2ba8bda58da9bba5097c67610f77033737fe8ff491028bc66b27e",
+      "translation_text_hash": "efd82413570b725edd56656acd5b4638962f937ff8084040fe994ae26c637a43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람을 욥바에 보내어 베드로라 하는 시몬을 청하라 저가 바닷가 피장 시몬의 집에 우거하느니라 하시기로"
+      ],
+      "raw_text_hashes": [
+        "efd82413570b725edd56656acd5b4638962f937ff8084040fe994ae26c637a43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:33",
+      "sequence": 27291,
+      "chapter_label": "ACT 10",
+      "verse_label": "33",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 33
+        }
+      ],
+      "en": "Therefore I sent to you at once, and it was good of you to come. Now therefore we are all here present in the sight of God to hear all things that have been commanded you by God.”",
+      "ko": "내가 곧 당신에게 사람을 보내었더니 오셨으니 잘하였나이다 이제 우리는 주께서 당신에게 명하신 모든 것을 듣고자 하여 다 하나님 앞에 있나이다",
+      "source_text_hash": "e933a592b896209cd95c9fed0d0eb0f927f78d60418a6c60c9d98a5bc43887d5",
+      "translation_text_hash": "c4f55652da693a29191a443934684c88cf3125b7d2b960e6d062086730e1d586",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 곧 당신에게 사람을 보내었더니 오셨으니 잘하였나이다 이제 우리는 주께서 당신에게 명하신 모든 것을 듣고자 하여 다 하나님 앞에 있나이다"
+      ],
+      "raw_text_hashes": [
+        "c4f55652da693a29191a443934684c88cf3125b7d2b960e6d062086730e1d586"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:34",
+      "sequence": 27292,
+      "chapter_label": "ACT 10",
+      "verse_label": "34",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 34
+        }
+      ],
+      "en": "Peter opened his mouth and said, “Truly I perceive that God doesn’t show favoritism;",
+      "ko": "베드로가 입을 열어 가로되 내가 참으로 하나님은 사람의 외모를 취하지 아니하시고",
+      "source_text_hash": "8bad6747623f0217ae24c15ed301d5a3ea7e657e18d2a3d9d12b85f1de13515f",
+      "translation_text_hash": "18d9229e1dc27a0e633bcf95b4b0046fefab504bf6a10a85e538c22b0a6ec829",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 입을 열어 가로되 내가 참으로 하나님은 사람의 외모를 취하지 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "18d9229e1dc27a0e633bcf95b4b0046fefab504bf6a10a85e538c22b0a6ec829"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:35",
+      "sequence": 27293,
+      "chapter_label": "ACT 10",
+      "verse_label": "35",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 35
+        }
+      ],
+      "en": "but in every nation he who fears him and works righteousness is acceptable to him.",
+      "ko": "각 나라중 하나님을 경외하며 의를 행하는 사람은 하나님이 받으시는줄 깨달았도다",
+      "source_text_hash": "d3be2d80caa29c622fba54dbc49b880e5df9c44970e45332491061b4d8b591b5",
+      "translation_text_hash": "ca2eeb1e9b6ffd0a3513c2cc9370df9233ffa289abcc446078e905345c48730f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 나라중 하나님을 경외하며 의를 행하는 사람은 하나님이 받으시는줄 깨달았도다"
+      ],
+      "raw_text_hashes": [
+        "ca2eeb1e9b6ffd0a3513c2cc9370df9233ffa289abcc446078e905345c48730f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:36",
+      "sequence": 27294,
+      "chapter_label": "ACT 10",
+      "verse_label": "36",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 36
+        }
+      ],
+      "en": "The word which he sent to the children of Israel, preaching good news of peace by Jesus Christ—he is Lord of all—",
+      "ko": "만유의 주 되신 예수 그리스도로 말미암아 화평의 복음을 전하사 이스라엘 자손들에게 보내신 말씀",
+      "source_text_hash": "4259fc85d8c1009593fc8c26c9ae8421896be7cc2dbaf0ae288a72921ff7800c",
+      "translation_text_hash": "6232b4177c1891e7a104044cd728f5b8e22c5faf9bf56a1c6ed024ecff073341",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만유의 주 되신 예수 그리스도로 말미암아 화평의 복음을 전하사 이스라엘 자손들에게 보내신 말씀"
+      ],
+      "raw_text_hashes": [
+        "6232b4177c1891e7a104044cd728f5b8e22c5faf9bf56a1c6ed024ecff073341"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:37",
+      "sequence": 27295,
+      "chapter_label": "ACT 10",
+      "verse_label": "37",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 37
+        }
+      ],
+      "en": "you yourselves know what happened, which was proclaimed throughout all Judea, beginning from Galilee, after the baptism which John preached;",
+      "ko": "곧 요한이 그 세례를 반포한 후에 갈릴리에서 시작되어 온 유대에 두루 전파된 그것을 너희도 알거니와",
+      "source_text_hash": "7b18184bc1c3b5369316eba1092c3ba9d441d2ae57846a8d18f345d9f6d256a7",
+      "translation_text_hash": "5692fe015292e2f2b9a0c46ea9f374c70a7408a3eb8a4d3c3bc79080cdebf53c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 요한이 그 세례를 반포한 후에 갈릴리에서 시작되어 온 유대에 두루 전파된 그것을 너희도 알거니와"
+      ],
+      "raw_text_hashes": [
+        "5692fe015292e2f2b9a0c46ea9f374c70a7408a3eb8a4d3c3bc79080cdebf53c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:38",
+      "sequence": 27296,
+      "chapter_label": "ACT 10",
+      "verse_label": "38",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 38
+        }
+      ],
+      "en": "how God anointed Jesus of Nazareth with the Holy Spirit and with power, who went about doing good and healing all who were oppressed by the devil, for God was with him.",
+      "ko": "하나님이 나사렛 예수에게 성령과 능력을 기름붓듯 하셨으매 저가 두루 다니시며 착한 일을 행하시고 마귀에게 눌린 모든 자를 고치셨으니 이는 하나님이 함께 하셨음이라",
+      "source_text_hash": "b4cfbd91df3f587f476a348a415ccaf98f6031d539add20324e08d3ef657abae",
+      "translation_text_hash": "486dbae04fa497ffe92041601e5ed6e80041c5d58e42d1f4855409fe997cfb42",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 나사렛 예수에게 성령과 능력을 기름붓듯 하셨으매 저가 두루 다니시며 착한 일을 행하시고 마귀에게 눌린 모든 자를 고치셨으니 이는 하나님이 함께 하셨음이라"
+      ],
+      "raw_text_hashes": [
+        "486dbae04fa497ffe92041601e5ed6e80041c5d58e42d1f4855409fe997cfb42"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:39",
+      "sequence": 27297,
+      "chapter_label": "ACT 10",
+      "verse_label": "39",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 39
+        }
+      ],
+      "en": "We are witnesses of everything he did both in the country of the Jews and in Jerusalem; whom they also killed, hanging him on a tree.",
+      "ko": "우리는 유대인의 땅과 예루살렘에서 그의 행하신 모든 일에 증인이라 그를 저희가 나무에 달아 죽였으나",
+      "source_text_hash": "d472b9508deb5e3326b989b394e999077a8d2d22923ec7138331dc92e9d79573",
+      "translation_text_hash": "d3803ee1e45b8e0e69eb620f970995ac0ee990d7556c9fe6834024d5d79e3e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 유대인의 땅과 예루살렘에서 그의 행하신 모든 일에 증인이라 그를 저희가 나무에 달아 죽였으나"
+      ],
+      "raw_text_hashes": [
+        "d3803ee1e45b8e0e69eb620f970995ac0ee990d7556c9fe6834024d5d79e3e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:40",
+      "sequence": 27298,
+      "chapter_label": "ACT 10",
+      "verse_label": "40",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 40
+        }
+      ],
+      "en": "God raised him up the third day and gave him to be revealed,",
+      "ko": "하나님이 사흘만에 다시 살리사 나타내시되",
+      "source_text_hash": "22b84e8fc22086e98a433b3331b02ef41df1e794601e26fc36935adb8d4bc74c",
+      "translation_text_hash": "fab0028387c5238aee6173e913be37c88c9810e0b8da04524c999d56df3f29de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 사흘만에 다시 살리사 나타내시되"
+      ],
+      "raw_text_hashes": [
+        "fab0028387c5238aee6173e913be37c88c9810e0b8da04524c999d56df3f29de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:41",
+      "sequence": 27299,
+      "chapter_label": "ACT 10",
+      "verse_label": "41",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 41
+        }
+      ],
+      "en": "not to all the people, but to witnesses who were chosen before by God, to us, who ate and drank with him after he rose from the dead.",
+      "ko": "모든 백성에게 하신 것이 아니요 오직 미리 택하신 증인 곧 죽은자 가운데서 일어나신 후 모시고 음식을 먹은 우리에게 하신 것이라",
+      "source_text_hash": "65465644b6eb85ee5e1da300e6c585e528da75e37359b242b051a1e3184b6e6a",
+      "translation_text_hash": "5bb345502376131364ed714d1bd7a9b5c28e9a8935c63880d3fe90de497170c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 백성에게 하신 것이 아니요 오직 미리 택하신 증인 곧 죽은자 가운데서 일어나신 후 모시고 음식을 먹은 우리에게 하신 것이라"
+      ],
+      "raw_text_hashes": [
+        "5bb345502376131364ed714d1bd7a9b5c28e9a8935c63880d3fe90de497170c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:42",
+      "sequence": 27300,
+      "chapter_label": "ACT 10",
+      "verse_label": "42",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 42
+        }
+      ],
+      "en": "He commanded us to preach to the people and to testify that this is he who is appointed by God as the Judge of the living and the dead.",
+      "ko": "우리를 명하사 백성에게 전도하되 하나님이 산 자와 죽은 자의 재판장으로 정하신 자가 곧 이 사람인 것을 증거하게 하셨고",
+      "source_text_hash": "eec1bdbe003ce2387aed6339e0e5587290d00a97d829e97ad9e7d5a59f6d98c6",
+      "translation_text_hash": "e295fba56c063adc09a8dbd318054af9fc2e751ebef2316222cb97d602dd11a4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 명하사 백성에게 전도하되 하나님이 산 자와 죽은 자의 재판장으로 정하신 자가 곧 이 사람인 것을 증거하게 하셨고"
+      ],
+      "raw_text_hashes": [
+        "e295fba56c063adc09a8dbd318054af9fc2e751ebef2316222cb97d602dd11a4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:43",
+      "sequence": 27301,
+      "chapter_label": "ACT 10",
+      "verse_label": "43",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 43
+        }
+      ],
+      "en": "All the prophets testify about him, that through his name everyone who believes in him will receive remission of sins.”",
+      "ko": "저에 대하여 모든 선지자도 증거하되 저를 믿는 사람들이 다 그 이름을 힘입어 죄 사함을 받는다 하였느니라",
+      "source_text_hash": "57b50ff4b94e52b5067c29f9bd37bd3c4801b62b52d34106af5a62d3401b6159",
+      "translation_text_hash": "7fb07652375300e48e4ba2f55712388482a52162c94764eb0632d080554c32e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저에 대하여 모든 선지자도 증거하되 저를 믿는 사람들이 다 그 이름을 힘입어 죄 사함을 받는다 하였느니라"
+      ],
+      "raw_text_hashes": [
+        "7fb07652375300e48e4ba2f55712388482a52162c94764eb0632d080554c32e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:44",
+      "sequence": 27302,
+      "chapter_label": "ACT 10",
+      "verse_label": "44",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 44
+        }
+      ],
+      "en": "While Peter was still speaking these words, the Holy Spirit fell on all those who heard the word.",
+      "ko": "베드로가 이 말 할때에 성령이 말씀 듣는 모든 사람에게 내려오시니",
+      "source_text_hash": "8146e6f43ca46ffb541b2f227ae54c063f2db293b77a679b15613e70930ee528",
+      "translation_text_hash": "2efccc308371db8165e4fae246c5ca1c7fad8b796a2d552456eef07581570ec8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 이 말 할때에 성령이 말씀 듣는 모든 사람에게 내려오시니"
+      ],
+      "raw_text_hashes": [
+        "2efccc308371db8165e4fae246c5ca1c7fad8b796a2d552456eef07581570ec8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:45",
+      "sequence": 27303,
+      "chapter_label": "ACT 10",
+      "verse_label": "45",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 45
+        }
+      ],
+      "en": "They of the circumcision who believed were amazed, as many as came with Peter, because the gift of the Holy Spirit was also poured out on the Gentiles.",
+      "ko": "베드로와 함께 온 할례 받은 신자들이 이방인들에게도 성령 부어 주심을 인하여 놀라니",
+      "source_text_hash": "7a8daf2a38dc98b7b75ab6748b49e971fe462732b9b3012c8f9dfde7cfd831ac",
+      "translation_text_hash": "0153158513e178a5a741b17b76056851e0686944f01ed36dd7cf189b2c5f4963",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로와 함께 온 할례 받은 신자들이 이방인들에게도 성령 부어 주심을 인하여 놀라니"
+      ],
+      "raw_text_hashes": [
+        "0153158513e178a5a741b17b76056851e0686944f01ed36dd7cf189b2c5f4963"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:46",
+      "sequence": 27304,
+      "chapter_label": "ACT 10",
+      "verse_label": "46",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 46
+        }
+      ],
+      "en": "For they heard them speaking in other languages and magnifying God. Then Peter answered,",
+      "ko": "이는 방언을 말하며 하나님 높임을 들음이러라",
+      "source_text_hash": "8ea5c4d9de9df768e5ef782c816370a7b41aa61a4f9eb0e976fd1b30f7e3cc07",
+      "translation_text_hash": "5fde561b42ad067b4fb8909f18c228e0af35c4d6cc3c0b4e116ed67d020bcc43",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 방언을 말하며 하나님 높임을 들음이러라"
+      ],
+      "raw_text_hashes": [
+        "5fde561b42ad067b4fb8909f18c228e0af35c4d6cc3c0b4e116ed67d020bcc43"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:47",
+      "sequence": 27305,
+      "chapter_label": "ACT 10",
+      "verse_label": "47",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 47
+        }
+      ],
+      "en": "“Can anyone forbid these people from being baptized with water? They have received the Holy Spirit just like us.”",
+      "ko": "이에 베드로가 가로되 이 사람들이 우리와 같이 성령을 받았으니 누가 능히 물로 세례 줌을 금하리요 하고",
+      "source_text_hash": "1163ee5ace1f22b84fd41d8149fd49d1c5c46537b53bc685702db5ecd2439022",
+      "translation_text_hash": "ee6924108ac94593e5cf9e609241e06a0387485537060e2347d718eb20075776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 베드로가 가로되 이 사람들이 우리와 같이 성령을 받았으니 누가 능히 물로 세례 줌을 금하리요 하고"
+      ],
+      "raw_text_hashes": [
+        "ee6924108ac94593e5cf9e609241e06a0387485537060e2347d718eb20075776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:10:48",
+      "sequence": 27306,
+      "chapter_label": "ACT 10",
+      "verse_label": "48",
+      "locator": {
+        "book": "ACT",
+        "chapter": 10,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 10,
+          "verse": 48
+        }
+      ],
+      "en": "He commanded them to be baptized in the name of Jesus Christ. Then they asked him to stay some days.",
+      "ko": "명하여 예수 그리스도의 이름으로 세례를 주라 하니라 저희가 베드로에게 수일 더 유하기를 청하니라",
+      "source_text_hash": "6e81a0ec576d0aed522b3d288f3a1b207d31979380f7ff993badcff69ef1a9d7",
+      "translation_text_hash": "35f06fd30d58f35ac485a6f0fb2588ed4ed3808d08e76cb74e19005313bc3acd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "명하여 예수 그리스도의 이름으로 세례를 주라 하니라 저희가 베드로에게 수일 더 유하기를 청하니라"
+      ],
+      "raw_text_hashes": [
+        "35f06fd30d58f35ac485a6f0fb2588ed4ed3808d08e76cb74e19005313bc3acd"
+      ]
+    }
+  ]
+}

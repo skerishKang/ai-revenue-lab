@@ -1,0 +1,333 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:035",
+  "unit_ordinal": 714,
+  "unit_label": "ISA 35",
+  "book_code": "ISA",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:35:1",
+      "sequence": 18322,
+      "chapter_label": "ISA 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "The wilderness and the dry land will be glad. The desert will rejoice and blossom like a rose.",
+      "ko": "광야와 메마른 땅이 기뻐하며 사막이 백합화 같이 피어 즐거워하며",
+      "source_text_hash": "ef7493f530a6850693ba6550471230e4a8b2bf92649278b277be881843195f5e",
+      "translation_text_hash": "fd0da0cac7fe8a59ff292b88f6a4af9d623b9fbe2b2301bd6f6c23849e58547d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "광야와 메마른 땅이 기뻐하며 사막이 백합화 같이 피어 즐거워하며"
+      ],
+      "raw_text_hashes": [
+        "fd0da0cac7fe8a59ff292b88f6a4af9d623b9fbe2b2301bd6f6c23849e58547d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:2",
+      "sequence": 18323,
+      "chapter_label": "ISA 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "It will blossom abundantly, and rejoice even with joy and singing. Lebanon’s glory will be given to it, the excellence of Carmel and Sharon. They will see the LORD’s glory, the excellence of our God.",
+      "ko": "무성하게 피어 기쁜 노래로 즐거워하며 레바논의 영광과 갈멜과 사론의 아름다움을 얻을 것이라 그것들이 여호와의 영광 곧 우리 하나님의 아름다움을 보리로다",
+      "source_text_hash": "8ec04515405ff2515dd1bb27dd7641fa98817b19c6afe9d3a5950f32e3e6cead",
+      "translation_text_hash": "682f317899675e6dbbe9faafb756ceb5a863e0003ffb1b8964f8a183e483c758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무성하게 피어 기쁜 노래로 즐거워하며 레바논의 영광과 갈멜과 사론의 아름다움을 얻을 것이라 그것들이 여호와의 영광 곧 우리 하나님의 아름다움을 보리로다"
+      ],
+      "raw_text_hashes": [
+        "682f317899675e6dbbe9faafb756ceb5a863e0003ffb1b8964f8a183e483c758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:3",
+      "sequence": 18324,
+      "chapter_label": "ISA 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "Strengthen the weak hands, and make the feeble knees firm.",
+      "ko": "너희는 약한 손을 강하게 하여주며 떨리는 무릎을 굳게 하여주며",
+      "source_text_hash": "d6da0aad3d41dad0aab6de9726bb27f0f9cbc175af418a16b4a12e388160f2c8",
+      "translation_text_hash": "8af56770d8ded62fdbd3d8ada3a41969bb9560591ef64af415bc1e1816aa4673",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 약한 손을 강하게 하여주며 떨리는 무릎을 굳게 하여주며"
+      ],
+      "raw_text_hashes": [
+        "8af56770d8ded62fdbd3d8ada3a41969bb9560591ef64af415bc1e1816aa4673"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:4",
+      "sequence": 18325,
+      "chapter_label": "ISA 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "Tell those who have a fearful heart, “Be strong! Don’t be afraid! Behold, your God will come with vengeance, God’s retribution. He will come and save you.",
+      "ko": "겁내는 자에게 이르기를 너는 굳세게 하라, 두려워 말라, 보라 너희 하나님이 오사 보수하시며 보복하여 주실 것이라 그가 오사 너희를 구하시리라 하라",
+      "source_text_hash": "eac2ca56bba8422f5e038d15b255e124205671790a16884a456e74435b25826b",
+      "translation_text_hash": "69efc2061ab5e46c3a692e1a6c70e6fdc9957f6533385daac63dd58a90a2dc9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "겁내는 자에게 이르기를 너는 굳세게 하라, 두려워 말라, 보라 너희 하나님이 오사 보수하시며 보복하여 주실 것이라 그가 오사 너희를 구하시리라 하라"
+      ],
+      "raw_text_hashes": [
+        "69efc2061ab5e46c3a692e1a6c70e6fdc9957f6533385daac63dd58a90a2dc9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:5",
+      "sequence": 18326,
+      "chapter_label": "ISA 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "Then the eyes of the blind will be opened, and the ears of the deaf will be unstopped.",
+      "ko": "그 때에 소경의 눈이 밝을 것이며 귀머거리의 귀가 열릴 것이며",
+      "source_text_hash": "2fb18d52a16aea27789fe9cfd7e54156929049e0d36b4f3942a54054401da896",
+      "translation_text_hash": "933000b011590f96f5e486a960a460aaa5389f57bab0ce941853afc7496b3f21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 소경의 눈이 밝을 것이며 귀머거리의 귀가 열릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "933000b011590f96f5e486a960a460aaa5389f57bab0ce941853afc7496b3f21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:6",
+      "sequence": 18327,
+      "chapter_label": "ISA 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "Then the lame man will leap like a deer, and the tongue of the mute will sing; for waters will break out in the wilderness, and streams in the desert.",
+      "ko": "그 때에 저는 자는 사슴 같이 뛸 것이며 벙어리의 혀는 노래하리니 이는 광야에서 물이 솟겠고 사막에서 시내가 흐를 것임이라",
+      "source_text_hash": "7d38660cf70a1011fe50bb37c6a45cd7f2720b7a09fb316789d8008fd7ee1770",
+      "translation_text_hash": "44627f6aec15ae489621a1ba880a3115d85eb8cc9683d55cdc9f153b81ef455b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 저는 자는 사슴 같이 뛸 것이며 벙어리의 혀는 노래하리니 이는 광야에서 물이 솟겠고 사막에서 시내가 흐를 것임이라"
+      ],
+      "raw_text_hashes": [
+        "44627f6aec15ae489621a1ba880a3115d85eb8cc9683d55cdc9f153b81ef455b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:7",
+      "sequence": 18328,
+      "chapter_label": "ISA 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "The burning sand will become a pool, and the thirsty ground springs of water. Grass with reeds and rushes will be in the habitation of jackals, where they lay.",
+      "ko": "뜨거운 사막이 변하여 못이 될 것이며 메마른 땅이 변하여 원천이 될 것이며 시랑의 눕던 곳에 풀과 갈대와 부들이 날 것이며",
+      "source_text_hash": "c74eccc9bf5fd6246252445fb7b69df4bb42ec74c319c25aed6124f28978c503",
+      "translation_text_hash": "7a418381724ae50ba70dca4e3928df44c3d8b8b0f5beb9e5e985c1e764d0def1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜨거운 사막이 변하여 못이 될 것이며 메마른 땅이 변하여 원천이 될 것이며 시랑의 눕던 곳에 풀과 갈대와 부들이 날 것이며"
+      ],
+      "raw_text_hashes": [
+        "7a418381724ae50ba70dca4e3928df44c3d8b8b0f5beb9e5e985c1e764d0def1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:8",
+      "sequence": 18329,
+      "chapter_label": "ISA 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "A highway will be there, a road, and it will be called “The Holy Way”. The unclean shall not pass over it, but it will be for those who walk in the Way. Wicked fools shall not go there.",
+      "ko": "거기 대로가 있어 그 길을 거룩한 길이라 일컫는바 되리니 깨끗지 못한 자는 지나지 못하겠고 오직 구속함을 입은 자들을 위하여 있게 된 것이라 우매한 행인은 그 길을 범치 못할 것이며",
+      "source_text_hash": "45f4b59e317ad2e3bd90a2f25195a2dbe4f073d9480e746b044f3722f1ac0cd5",
+      "translation_text_hash": "123915a790f929867f5fb554427f132cde66ae608f335f41ab70efc772c1b8a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 대로가 있어 그 길을 거룩한 길이라 일컫는바 되리니 깨끗지 못한 자는 지나지 못하겠고 오직 구속함을 입은 자들을 위하여 있게 된 것이라 우매한 행인은 그 길을 범치 못할 것이며"
+      ],
+      "raw_text_hashes": [
+        "123915a790f929867f5fb554427f132cde66ae608f335f41ab70efc772c1b8a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:9",
+      "sequence": 18330,
+      "chapter_label": "ISA 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "No lion will be there, nor will any ravenous animal go up on it. They will not be found there; but the redeemed will walk there.",
+      "ko": "거기는 사자가 없고 사나운 짐승이 그리로 올라가지 아니하므로 그것을 만나지 못하겠고 오직 구속함을 얻은 자만 그리로 행할 것이며",
+      "source_text_hash": "b5356159100e4721eeffb746d2e3368faf0defe4856f69ac5efbbf8ff3f58dc2",
+      "translation_text_hash": "52d0dbacb515877db4ee1a30ba9362eb0574928802070b7121d8fbd3d068719b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기는 사자가 없고 사나운 짐승이 그리로 올라가지 아니하므로 그것을 만나지 못하겠고 오직 구속함을 얻은 자만 그리로 행할 것이며"
+      ],
+      "raw_text_hashes": [
+        "52d0dbacb515877db4ee1a30ba9362eb0574928802070b7121d8fbd3d068719b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:35:10",
+      "sequence": 18331,
+      "chapter_label": "ISA 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "Then the LORD’s ransomed ones will return, and come with singing to Zion; and everlasting joy will be on their heads. They will obtain gladness and joy, and sorrow and sighing will flee away.”",
+      "ko": "여호와의 속량함을 얻은 자들이 돌아오되 노래하며 시온에 이르러 그 머리 위에 영영한 희락을 띠고 기쁨과 즐거움을 얻으리니 슬픔과 탄식이 달아나리로다",
+      "source_text_hash": "d615ade7b477ce4ada5b3499e8e3c79eaf0359cb572783c56f3ac1d729bad06b",
+      "translation_text_hash": "f18916638292aa7ec36ed323b7fed42bb688ec98bcca61d3815a46baf05a7604",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 속량함을 얻은 자들이 돌아오되 노래하며 시온에 이르러 그 머리 위에 영영한 희락을 띠고 기쁨과 즐거움을 얻으리니 슬픔과 탄식이 달아나리로다"
+      ],
+      "raw_text_hashes": [
+        "f18916638292aa7ec36ed323b7fed42bb688ec98bcca61d3815a46baf05a7604"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:032",
+  "unit_ordinal": 834,
+  "unit_label": "EZK 32",
+  "book_code": "EZK",
+  "chapter_number": 32,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:32:1",
+      "sequence": 21250,
+      "chapter_label": "EZK 32",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 1
+        }
+      ],
+      "en": "In the twelfth year, in the twelfth month, in the first day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십 이년 십 이월 초일일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "307f9065e268c80cbb562dfa988474069991ba6996b438040ceec9163c586880",
+      "translation_text_hash": "70aa040900596dc12cc3251fe9142978b41a2c7b1a7268c5d7a135029e2b8361",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 이년 십 이월 초일일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "70aa040900596dc12cc3251fe9142978b41a2c7b1a7268c5d7a135029e2b8361"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:2",
+      "sequence": 21251,
+      "chapter_label": "EZK 32",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 2
+        }
+      ],
+      "en": "“Son of man, take up a lamentation over Pharaoh king of Egypt, and tell him, ‘You were likened to a young lion of the nations; yet you are as a monster in the seas. You broke out with your rivers, and troubled the waters with your feet, and fouled their rivers.’”",
+      "ko": "인자야 너는 애굽 왕 바로에 대하여 애가를 불러 그에게 이르라 너를 열국에서 젊은 사자에 비하였더니 실상은 바다 가운데 큰 악어라 강에서 뛰어 일어나 발로 물을 요동하여 그 강을 더럽혔도다",
+      "source_text_hash": "6143fc3b72a0e99facdfce7cdeea20a292beb1613323801ef15b9584dbb96209",
+      "translation_text_hash": "f7d8637fe1a77ad008c754ca3569d8d2d03eb6a5f60b3d0a5e7bcc71cb996e88",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 너는 애굽 왕 바로에 대하여 애가를 불러 그에게 이르라 너를 열국에서 젊은 사자에 비하였더니 실상은 바다 가운데 큰 악어라 강에서 뛰어 일어나 발로 물을 요동하여 그 강을 더럽혔도다"
+      ],
+      "raw_text_hashes": [
+        "f7d8637fe1a77ad008c754ca3569d8d2d03eb6a5f60b3d0a5e7bcc71cb996e88"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:3",
+      "sequence": 21252,
+      "chapter_label": "EZK 32",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 3
+        }
+      ],
+      "en": "The Lord GOD says: “I will spread out my net on you with a company of many peoples. They will bring you up in my net.",
+      "ko": "나 주 여호와의 말이여 내가 많은 백성의 무리를 거느리고 내 그물을 네 위에 치고 그 그물로 너를 끌어 오리로다",
+      "source_text_hash": "d9b05130c8c9aef4a421868dace81f30e4af8067ba9d0b1c7fcdf8ba50e0255f",
+      "translation_text_hash": "a6a80cd291234628a62352b972a5abd7e35581e48618af537bff390555a7ad98",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와의 말이여 내가 많은 백성의 무리를 거느리고 내 그물을 네 위에 치고 그 그물로 너를 끌어 오리로다"
+      ],
+      "raw_text_hashes": [
+        "a6a80cd291234628a62352b972a5abd7e35581e48618af537bff390555a7ad98"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:4",
+      "sequence": 21253,
+      "chapter_label": "EZK 32",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 4
+        }
+      ],
+      "en": "I will leave you on the land. I will cast you out on the open field, and will cause all the birds of the sky to settle on you. I will satisfy the animals of the whole earth with you.",
+      "ko": "내가 너를 뭍에 버리며 들에 던져 공중의 새들로 네 위에 앉게 할 것임이여 온 땅의 짐승으로 너를 먹어 배부르게 하리로다",
+      "source_text_hash": "1d1c433f1f3f0bf86a6ad0995d5e6899a16ec857b80278417bf89bcee6e8dc46",
+      "translation_text_hash": "e46dbc56c7e30119a9280e2c52e96ea142f5183081ae08e4b58f8bbbefbc1984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 뭍에 버리며 들에 던져 공중의 새들로 네 위에 앉게 할 것임이여 온 땅의 짐승으로 너를 먹어 배부르게 하리로다"
+      ],
+      "raw_text_hashes": [
+        "e46dbc56c7e30119a9280e2c52e96ea142f5183081ae08e4b58f8bbbefbc1984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:5",
+      "sequence": 21254,
+      "chapter_label": "EZK 32",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 5
+        }
+      ],
+      "en": "I will lay your flesh on the mountains, and fill the valleys with your height.",
+      "ko": "내가 네 고기를 여러 산에 두며 네 시체를 여러 골짜기에 채울 것임이여",
+      "source_text_hash": "6eb1a3b2cd49917138a4101871e443b3f347648a029c28cbaf002ca4599ea1fd",
+      "translation_text_hash": "7d058d4071e14bcd767f6264d392d9c969a96551135ef81f5ce09d3716bca07b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 고기를 여러 산에 두며 네 시체를 여러 골짜기에 채울 것임이여"
+      ],
+      "raw_text_hashes": [
+        "7d058d4071e14bcd767f6264d392d9c969a96551135ef81f5ce09d3716bca07b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:6",
+      "sequence": 21255,
+      "chapter_label": "EZK 32",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 6
+        }
+      ],
+      "en": "I will also water the land in which you swim with your blood, even to the mountains. The watercourses will be full of you.",
+      "ko": "네 피로 네 헤엄치는 땅에 물 대듯 하여 산에 미치게 하며 그 모든 개천에 채우리로다",
+      "source_text_hash": "017c74d08967104ca751a39ac7314c44106762c62ecff5438c5b60486f509730",
+      "translation_text_hash": "92c3066f02f21a5a6b00faf8df381c14538ea1b0bb787ecf86bb34f02febb8d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 피로 네 헤엄치는 땅에 물 대듯 하여 산에 미치게 하며 그 모든 개천에 채우리로다"
+      ],
+      "raw_text_hashes": [
+        "92c3066f02f21a5a6b00faf8df381c14538ea1b0bb787ecf86bb34f02febb8d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:7",
+      "sequence": 21256,
+      "chapter_label": "EZK 32",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 7
+        }
+      ],
+      "en": "When I extinguish you, I will cover the heavens and make its stars dark. I will cover the sun with a cloud, and the moon won’t give its light.",
+      "ko": "내가 너를 불 끄듯 할 때에 하늘을 가리워 별로 어둡게 하며 해를 구름으로 가리우며 달로 빛을 발하지 못하게 할 것임이여",
+      "source_text_hash": "50d794a21598b25026bd37684c93b86ed23da6af3c2e8cb200b42b045df27beb",
+      "translation_text_hash": "8eababcbe6d1260b08080e8367ec79a61064abd3210155ac78a25a81f2850d61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 불 끄듯 할 때에 하늘을 가리워 별로 어둡게 하며 해를 구름으로 가리우며 달로 빛을 발하지 못하게 할 것임이여"
+      ],
+      "raw_text_hashes": [
+        "8eababcbe6d1260b08080e8367ec79a61064abd3210155ac78a25a81f2850d61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:8",
+      "sequence": 21257,
+      "chapter_label": "EZK 32",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 8
+        }
+      ],
+      "en": "I will make all the bright lights of the sky dark over you, and set darkness on your land,” says the Lord GOD.",
+      "ko": "하늘의 모든 밝은 빛을 내가 네 위에서 어둡게 하여 어두움을 네 땅에 베풀리로다 나 주 여호와의 말이로다",
+      "source_text_hash": "1be5078a7b3029afe1ed3b810395c532fd24d98a9892f3a246a7c4583749ab1d",
+      "translation_text_hash": "774b1988e91c494ae00e8d3f1d7aa255af19c242dbac9efbd801cc68297cf69f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘의 모든 밝은 빛을 내가 네 위에서 어둡게 하여 어두움을 네 땅에 베풀리로다 나 주 여호와의 말이로다"
+      ],
+      "raw_text_hashes": [
+        "774b1988e91c494ae00e8d3f1d7aa255af19c242dbac9efbd801cc68297cf69f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:9",
+      "sequence": 21258,
+      "chapter_label": "EZK 32",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 9
+        }
+      ],
+      "en": "“I will also trouble the hearts of many peoples, when I bring your destruction among the nations, into the countries which you have not known.",
+      "ko": "내가 네 패망의 소문으로 열국 곧 너의 알지 못하는 열방에 이르게 할 때에 많은 백성의 마음을 번뇌케 할 것임이여",
+      "source_text_hash": "4bd8cc10bf66f5f453c7d54329f3fe3f56ffe5cfe2707c2d7e9b61053e93bd19",
+      "translation_text_hash": "b12196f1e9feecb677c6da0ff83f5d63c8465bfa3957590ecb279086674cdf25",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 패망의 소문으로 열국 곧 너의 알지 못하는 열방에 이르게 할 때에 많은 백성의 마음을 번뇌케 할 것임이여"
+      ],
+      "raw_text_hashes": [
+        "b12196f1e9feecb677c6da0ff83f5d63c8465bfa3957590ecb279086674cdf25"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:10",
+      "sequence": 21259,
+      "chapter_label": "EZK 32",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 10
+        }
+      ],
+      "en": "Yes, I will make many peoples amazed at you, and their kings will be horribly afraid for you, when I brandish my sword before them. They will tremble at every moment, every man for his own life, in the day of your fall.”",
+      "ko": "내가 그 많은 백성으로 너를 인하여 놀라게 할 것이며 내가 내 칼로 그들의 왕 앞에서 춤추게 할 때에 그 왕이 너를 인하여 심히 두려워할 것이며 네가 엎드러지는 날에 그들이 각각 자기 생명을 위하여 무시로 떨리로다",
+      "source_text_hash": "ae4e49a33ecdc1a60cfaf34c0df2f8a08baf8ccb4efbd5fca36f1a8148430389",
+      "translation_text_hash": "902e5520a2781d0f8db2d417966ae5e04869592ab0fd2a9caa20a703ab7a54ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 그 많은 백성으로 너를 인하여 놀라게 할 것이며 내가 내 칼로 그들의 왕 앞에서 춤추게 할 때에 그 왕이 너를 인하여 심히 두려워할 것이며 네가 엎드러지는 날에 그들이 각각 자기 생명을 위하여 무시로 떨리로다"
+      ],
+      "raw_text_hashes": [
+        "902e5520a2781d0f8db2d417966ae5e04869592ab0fd2a9caa20a703ab7a54ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:11",
+      "sequence": 21260,
+      "chapter_label": "EZK 32",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 11
+        }
+      ],
+      "en": "For the Lord GOD says: “The sword of the king of Babylon will come on you.",
+      "ko": "나 주 여호와가 말함이여 바벨론 왕의 칼이 네게 임하리로다",
+      "source_text_hash": "ff7916b2d57de429f83bfaedd1bf3a1ef01b3c6691658f574891839f63594e2d",
+      "translation_text_hash": "999ba558c78c9827d30bdcdb840fe8278e91120c9fa4001f4518f8b4b1588a89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 주 여호와가 말함이여 바벨론 왕의 칼이 네게 임하리로다"
+      ],
+      "raw_text_hashes": [
+        "999ba558c78c9827d30bdcdb840fe8278e91120c9fa4001f4518f8b4b1588a89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:12",
+      "sequence": 21261,
+      "chapter_label": "EZK 32",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 12
+        }
+      ],
+      "en": "I will cause your multitude to fall by the swords of the mighty. They are all the ruthless of the nations. They will bring the pride of Egypt to nothing, and all its multitude will be destroyed.",
+      "ko": "내가 네 무리로 용사 곧 열국의 무서운 자들의 칼에 엎드러지게 할 것임이여 그들이 애굽의 교만을 폐하며 그 모든 무리를 멸하리로다",
+      "source_text_hash": "ebef54d16f4eb255ff66bf8e11267506e56fc2108f412bf6f9a530e0b09c5631",
+      "translation_text_hash": "14aa643417b71e46fda43f3bf439d49f3ae3c271cf7517e7212c536682998dde",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 네 무리로 용사 곧 열국의 무서운 자들의 칼에 엎드러지게 할 것임이여 그들이 애굽의 교만을 폐하며 그 모든 무리를 멸하리로다"
+      ],
+      "raw_text_hashes": [
+        "14aa643417b71e46fda43f3bf439d49f3ae3c271cf7517e7212c536682998dde"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:13",
+      "sequence": 21262,
+      "chapter_label": "EZK 32",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 13
+        }
+      ],
+      "en": "I will destroy also all its animals from beside many waters. The foot of man won’t trouble them any more, nor will the hoofs of animals trouble them.",
+      "ko": "내가 또 그 모든 짐승을 큰 물 가에서 멸하리니 사람의 발이나 짐승의 굽이 다시는 그 물을 흐리지 못할 것임이여",
+      "source_text_hash": "83796ba605d5ba5c088a2229b9bc77acffb14cb6a012c1da4dc5e3a3c4617196",
+      "translation_text_hash": "dc84bcec2e40e98188be0b6e6d17c70135f330b220a877d9740ef8b6bc12a797",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 그 모든 짐승을 큰 물 가에서 멸하리니 사람의 발이나 짐승의 굽이 다시는 그 물을 흐리지 못할 것임이여"
+      ],
+      "raw_text_hashes": [
+        "dc84bcec2e40e98188be0b6e6d17c70135f330b220a877d9740ef8b6bc12a797"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:14",
+      "sequence": 21263,
+      "chapter_label": "EZK 32",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 14
+        }
+      ],
+      "en": "Then I will make their waters clear, and cause their rivers to run like oil,” says the Lord GOD.",
+      "ko": "그 때에 내가 그 물을 맑게 하여 그 강으로 기름 같이 흐르게 하리로다 나 주 여호와의 말이로다",
+      "source_text_hash": "a810d3f08744378f9882fe41091bbfb170a83c33d241f00125fbd6d22d3b982e",
+      "translation_text_hash": "763bea1c7b61dfb448f2d3e10c1ef073840d6d5aaab88ce61a0ea72151fcbf70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 내가 그 물을 맑게 하여 그 강으로 기름 같이 흐르게 하리로다 나 주 여호와의 말이로다"
+      ],
+      "raw_text_hashes": [
+        "763bea1c7b61dfb448f2d3e10c1ef073840d6d5aaab88ce61a0ea72151fcbf70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:15",
+      "sequence": 21264,
+      "chapter_label": "EZK 32",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 15
+        }
+      ],
+      "en": "“When I make the land of Egypt desolate and waste, a land destitute of that of which it was full, when I strike all those who dwell therein, then they will know that I am the LORD.",
+      "ko": "내가 애굽 땅으로 황무하여 사막이 되게 하여 거기 풍성한 것이 없게 할 것임이여 그 가운데 모든 거민을 치리니 그들이 나를 여호와인줄 알리로다",
+      "source_text_hash": "515e3189163766bee1ac34b3fecab5fbad290323e8b27d36bc096d4b4fc65a37",
+      "translation_text_hash": "caa222edecda689faaf21a3799cad068247544938b0f1eead72b66b6e98d2479",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 애굽 땅으로 황무하여 사막이 되게 하여 거기 풍성한 것이 없게 할 것임이여 그 가운데 모든 거민을 치리니 그들이 나를 여호와인줄 알리로다"
+      ],
+      "raw_text_hashes": [
+        "caa222edecda689faaf21a3799cad068247544938b0f1eead72b66b6e98d2479"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:16",
+      "sequence": 21265,
+      "chapter_label": "EZK 32",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 16
+        }
+      ],
+      "en": "“‘“This is the lamentation with which they will lament. The daughters of the nations will lament with this. They will lament with it over Egypt, and over all her multitude,” says the Lord GOD.’”",
+      "ko": "이는 슬피 부를 애가니 열국 여자들이 이것을 슬피 부름이여 애굽과 그 모든 무리를 위하여 이것을 슬피 부르리로다 나 주 여호와의 말이로다 하라",
+      "source_text_hash": "a0f1a130fc7e57466ec55a81b302bb18aa495b70133bc712466e9f112c0b7fe8",
+      "translation_text_hash": "566e65980e082302f33edbc5378c259c3b28b3b97c73196fe2685fa9498b81ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 슬피 부를 애가니 열국 여자들이 이것을 슬피 부름이여 애굽과 그 모든 무리를 위하여 이것을 슬피 부르리로다 나 주 여호와의 말이로다 하라"
+      ],
+      "raw_text_hashes": [
+        "566e65980e082302f33edbc5378c259c3b28b3b97c73196fe2685fa9498b81ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:17",
+      "sequence": 21266,
+      "chapter_label": "EZK 32",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 17
+        }
+      ],
+      "en": "Also in the twelfth year, in the fifteenth day of the month, the LORD’s word came to me, saying,",
+      "ko": "제 십 이년 어느 달 십 오일에 여호와의 말씀이 내게 임하여 가라사대",
+      "source_text_hash": "148b223f5734fe7da0b2401591b1fba76b4244dff68bf524f1d1e57b74251005",
+      "translation_text_hash": "ab5ff6b924dc138c39281ebf81de013e53e21d08c1ddf0beeba77959d7c6b777",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 십 이년 어느 달 십 오일에 여호와의 말씀이 내게 임하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "ab5ff6b924dc138c39281ebf81de013e53e21d08c1ddf0beeba77959d7c6b777"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:18",
+      "sequence": 21267,
+      "chapter_label": "EZK 32",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 18
+        }
+      ],
+      "en": "“Son of man, wail for the multitude of Egypt, and cast them down, even her and the daughters of the famous nations, to the lower parts of the earth, with those who go down into the pit.",
+      "ko": "인자야 애굽의 무리를 애곡하고 그와 유명한 나라 여자들을 구덩이에 내려가는 자와 함께 지하에 던지며",
+      "source_text_hash": "9035287f59c7225d76a5aaad63521c6310a78d52085267f490a8a547aad42c5c",
+      "translation_text_hash": "3eb49fde7adad0faa5c603aee12ba3f892e0fe545a71623ab245d224032011d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "인자야 애굽의 무리를 애곡하고 그와 유명한 나라 여자들을 구덩이에 내려가는 자와 함께 지하에 던지며"
+      ],
+      "raw_text_hashes": [
+        "3eb49fde7adad0faa5c603aee12ba3f892e0fe545a71623ab245d224032011d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:19",
+      "sequence": 21268,
+      "chapter_label": "EZK 32",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 19
+        }
+      ],
+      "en": "Whom do you pass in beauty? Go down, and be laid with the uncircumcised.",
+      "ko": "이르라 너의 아름다움이 누구보다 지나가는고 너는 내려가서 할례 받지 않은 자와 함께 뉘울찌어다",
+      "source_text_hash": "03300e64abf1c0fb101e35c42413c1e3265dc2fa8f60dad740500c6970760d66",
+      "translation_text_hash": "bc9e82578f33a450f912d1f30dbc96970d8ec7848e8b7bf0191f9ef129def0a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르라 너의 아름다움이 누구보다 지나가는고 너는 내려가서 할례 받지 않은 자와 함께 뉘울찌어다"
+      ],
+      "raw_text_hashes": [
+        "bc9e82578f33a450f912d1f30dbc96970d8ec7848e8b7bf0191f9ef129def0a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:20",
+      "sequence": 21269,
+      "chapter_label": "EZK 32",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 20
+        }
+      ],
+      "en": "They will fall among those who are slain by the sword. She is delivered to the sword. Draw her away with all her multitudes.",
+      "ko": "그들이 살륙 당한 자 중에 엎드러질 것임이여 그는 칼에 붙인바 되었은즉 그와 그 모든 무리를 끌찌어다",
+      "source_text_hash": "b073d960f62db996d928b10b23ca1154081a8647d753d7dd7b6ef1d2fd302869",
+      "translation_text_hash": "8bce2aae76fc64d692245cd0384aff90eafc6ecda499e7e7efa421391c3b7d4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 살륙 당한 자 중에 엎드러질 것임이여 그는 칼에 붙인바 되었은즉 그와 그 모든 무리를 끌찌어다"
+      ],
+      "raw_text_hashes": [
+        "8bce2aae76fc64d692245cd0384aff90eafc6ecda499e7e7efa421391c3b7d4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:21",
+      "sequence": 21270,
+      "chapter_label": "EZK 32",
+      "verse_label": "21",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 21
+        }
+      ],
+      "en": "The strong among the mighty will speak to him out of the middle of Sheol with those who help him. They have gone down. The uncircumcised lie still, slain by the sword.",
+      "ko": "용사 중에 강한 자가 그를 돕는 자와 함께 음부 가운데서 그에게 말함이여 할례 받지 않은 자 곧 칼에 살륙 당한 자들이 내려와서 가만히 누웠다 하리로다",
+      "source_text_hash": "e7c6875cd2a37a11ad954b163d5ccc380c65b6a2abb33364f63038e1f5aca03f",
+      "translation_text_hash": "9e550e84243666cf08c46ee8a3d73c7a8daba830c353e2ca0470c43064c0bf09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "용사 중에 강한 자가 그를 돕는 자와 함께 음부 가운데서 그에게 말함이여 할례 받지 않은 자 곧 칼에 살륙 당한 자들이 내려와서 가만히 누웠다 하리로다"
+      ],
+      "raw_text_hashes": [
+        "9e550e84243666cf08c46ee8a3d73c7a8daba830c353e2ca0470c43064c0bf09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:22",
+      "sequence": 21271,
+      "chapter_label": "EZK 32",
+      "verse_label": "22",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 22
+        }
+      ],
+      "en": "“Asshur is there with all her company. Her graves are all around her. All of them are slain, fallen by the sword,",
+      "ko": "거기 앗수르와 그 온 무리가 있음이여 다 살륙을 당하여 칼에 엎드러진 자라 그 무덤이 그 사방에 있도다",
+      "source_text_hash": "f43ffe299b06ca61bf3e6ce877f65d5662c364ca13308a6330d43feadae89471",
+      "translation_text_hash": "dc679b80ca4bfed008d8f10b2669c203a715d87e7ebb89fc1c34f2a4bf0fa60c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 앗수르와 그 온 무리가 있음이여 다 살륙을 당하여 칼에 엎드러진 자라 그 무덤이 그 사방에 있도다"
+      ],
+      "raw_text_hashes": [
+        "dc679b80ca4bfed008d8f10b2669c203a715d87e7ebb89fc1c34f2a4bf0fa60c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:23",
+      "sequence": 21272,
+      "chapter_label": "EZK 32",
+      "verse_label": "23",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 23
+        }
+      ],
+      "en": "whose graves are set in the uttermost parts of the pit, and her company is around her grave, all of them slain, fallen by the sword, who caused terror in the land of the living.",
+      "ko": "그 무덤이 구덩이 깊은 곳에 베풀렸고 그 무리가 그 무덤 사방에 있음이여 그들은 다 살륙을 당하여 칼에 엎드러진 자 곧 생존 세상에서 사람을 두렵게 하던 자로다",
+      "source_text_hash": "a8e08dea2734a520666d17b4713884d485947412daae7b7e61b4864b3887ee67",
+      "translation_text_hash": "ebddf193492ea19f6daff806e195faf4beff937c7f5431382377201f93246028",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무덤이 구덩이 깊은 곳에 베풀렸고 그 무리가 그 무덤 사방에 있음이여 그들은 다 살륙을 당하여 칼에 엎드러진 자 곧 생존 세상에서 사람을 두렵게 하던 자로다"
+      ],
+      "raw_text_hashes": [
+        "ebddf193492ea19f6daff806e195faf4beff937c7f5431382377201f93246028"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:24",
+      "sequence": 21273,
+      "chapter_label": "EZK 32",
+      "verse_label": "24",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 24
+        }
+      ],
+      "en": "“There is Elam and all her multitude around her grave; all of them slain, fallen by the sword, who have gone down uncircumcised into the lower parts of the earth, who caused their terror in the land of the living, and have borne their shame with those who go down to the pit.",
+      "ko": "거기 엘람이 있고 그 모든 무리가 그 무덤 사면에 있음이여 그들은 다 할례를 받지 못하고 살륙을 당하여 칼에 엎드러져 지하에 내려간 자로다 그들이 생존 세상에서 두렵게 하였었으나 이제는 구덩이에 내려가는 자와 함께 수치를 당하였도다",
+      "source_text_hash": "9295bf8c49eff9e51e29dbfbc9d6f0f8d3230575a6b2de15e91b11659a51fd8d",
+      "translation_text_hash": "439b77b1c519b0a0c9a3e95c04a028a10632a8550f372b29fdb7f3ef53d27ea3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 엘람이 있고 그 모든 무리가 그 무덤 사면에 있음이여 그들은 다 할례를 받지 못하고 살륙을 당하여 칼에 엎드러져 지하에 내려간 자로다 그들이 생존 세상에서 두렵게 하였었으나 이제는 구덩이에 내려가는 자와 함께 수치를 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "439b77b1c519b0a0c9a3e95c04a028a10632a8550f372b29fdb7f3ef53d27ea3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:25",
+      "sequence": 21274,
+      "chapter_label": "EZK 32",
+      "verse_label": "25",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 25
+        }
+      ],
+      "en": "They have made Elam a bed among the slain with all her multitude. Her graves are around her, all of them uncircumcised, slain by the sword; for their terror was caused in the land of the living, and they have borne their shame with those who go down to the pit. He is put among those who are slain.",
+      "ko": "그와 그 모든 무리를 위하여 침상을 살륙 당한 자 중에 베풀었고 그 여러 무덤은 사면에 있음이여 그들은 다 할례를 받지 못하고 칼에 살륙을 당한 자로다 그들이 생존 세상에서 두렵게 하였었으나 이제는 구덩이에 내려가는 자와 함께 수치를 당하고 살륙 당한 자 중에 뉘었도다",
+      "source_text_hash": "04f53543f1378d816bc22e8b37e5021cf6d2c3396832a9f990dd3b8408b5c966",
+      "translation_text_hash": "10af82b6137e797bea606dc896d058cdf1c535116ce3427549875cfcbdb86863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 그 모든 무리를 위하여 침상을 살륙 당한 자 중에 베풀었고 그 여러 무덤은 사면에 있음이여 그들은 다 할례를 받지 못하고 칼에 살륙을 당한 자로다 그들이 생존 세상에서 두렵게 하였었으나 이제는 구덩이에 내려가는 자와 함께 수치를 당하고 살륙 당한 자 중에 뉘었도다"
+      ],
+      "raw_text_hashes": [
+        "10af82b6137e797bea606dc896d058cdf1c535116ce3427549875cfcbdb86863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:26",
+      "sequence": 21275,
+      "chapter_label": "EZK 32",
+      "verse_label": "26",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 26
+        }
+      ],
+      "en": "“There is Meshech, Tubal, and all their multitude. Their graves are around them, all of them uncircumcised, slain by the sword; for they caused their terror in the land of the living.",
+      "ko": "거기 메섹과 두발과 그 모든 무리가 있고 그 여러 무덤은 사면에 있음이여 그들은 다 할례를 받지 못하고 칼에 살륙을 당한 자로다 그들이 생존 세상에서 두렵게 하였었으나",
+      "source_text_hash": "3217ef41a08c44702feee7b752b8450cf7a3d08a3da1a84908a8f5cf18caa42d",
+      "translation_text_hash": "aecddd82eaf4888da2603439020a6e0deed92d552cd0cf8de870e0860e523eed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 메섹과 두발과 그 모든 무리가 있고 그 여러 무덤은 사면에 있음이여 그들은 다 할례를 받지 못하고 칼에 살륙을 당한 자로다 그들이 생존 세상에서 두렵게 하였었으나"
+      ],
+      "raw_text_hashes": [
+        "aecddd82eaf4888da2603439020a6e0deed92d552cd0cf8de870e0860e523eed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:27",
+      "sequence": 21276,
+      "chapter_label": "EZK 32",
+      "verse_label": "27",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 27
+        }
+      ],
+      "en": "They will not lie with the mighty who are fallen of the uncircumcised, who have gone down to Sheol with their weapons of war and have laid their swords under their heads. Their iniquities are on their bones; for they were the terror of the mighty in the land of the living.",
+      "ko": "그들이 할례 받지 못한 자 중에 이미 엎드러진 용사와 함께 누운 것이 마땅치 아니하냐 이 용사들은 다 병기를 가지고 음부에 내려 자기의 칼을 베개하였으니 그 백골이 자기 죄악을 졌음이여 생존 세상에서 용사의 두려움이 있던 자로다",
+      "source_text_hash": "cf53bf8bf16bc5c02bfde7dd5c716182f008880e427ee85ca076b1ac9d4e0beb",
+      "translation_text_hash": "caa5591eb235e03cccad4c6e7bb4a8b15d15b13a7e57827724258f018c1b7bea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 할례 받지 못한 자 중에 이미 엎드러진 용사와 함께 누운 것이 마땅치 아니하냐 이 용사들은 다 병기를 가지고 음부에 내려 자기의 칼을 베개하였으니 그 백골이 자기 죄악을 졌음이여 생존 세상에서 용사의 두려움이 있던 자로다"
+      ],
+      "raw_text_hashes": [
+        "caa5591eb235e03cccad4c6e7bb4a8b15d15b13a7e57827724258f018c1b7bea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:28",
+      "sequence": 21277,
+      "chapter_label": "EZK 32",
+      "verse_label": "28",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 28
+        }
+      ],
+      "en": "“But you will be broken among the uncircumcised, and will lie with those who are slain by the sword.",
+      "ko": "오직 너는 할례 받지 못한 자와 일반으로 패망할 것임이여 칼에 살륙 당한 자와 함께 누우리로다",
+      "source_text_hash": "5411eaee03ff8f1694ac0503b03fe9dfbe396c2d2e1b733a4c9c6a2cb1463ec7",
+      "translation_text_hash": "66ddd53faf6b7038c97188de9ca41f455bce0ba24f5680d33d7f717997e15424",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너는 할례 받지 못한 자와 일반으로 패망할 것임이여 칼에 살륙 당한 자와 함께 누우리로다"
+      ],
+      "raw_text_hashes": [
+        "66ddd53faf6b7038c97188de9ca41f455bce0ba24f5680d33d7f717997e15424"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:29",
+      "sequence": 21278,
+      "chapter_label": "EZK 32",
+      "verse_label": "29",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 29
+        }
+      ],
+      "en": "“There is Edom, her kings, and all her princes, who in their might are laid with those who are slain by the sword. They will lie with the uncircumcised, and with those who go down to the pit.",
+      "ko": "거기 에돔 곧 그 열왕과 그 모든 방백이 있음이여 그들이 강성하였었으나 칼에 살륙 당한 자와 함께 있겠고 할례 받지 못하고 구덩이에 내려간 자와 함께 누우리로다",
+      "source_text_hash": "d7163678c475955cd25aababf97698ac8ab3a16e786575db814f8dfebf0a4b41",
+      "translation_text_hash": "e7b3be03b2794d0325b6f908b029607a4cc5360515c93f92bba0f05586e7eedb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 에돔 곧 그 열왕과 그 모든 방백이 있음이여 그들이 강성하였었으나 칼에 살륙 당한 자와 함께 있겠고 할례 받지 못하고 구덩이에 내려간 자와 함께 누우리로다"
+      ],
+      "raw_text_hashes": [
+        "e7b3be03b2794d0325b6f908b029607a4cc5360515c93f92bba0f05586e7eedb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:30",
+      "sequence": 21279,
+      "chapter_label": "EZK 32",
+      "verse_label": "30",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 30
+        }
+      ],
+      "en": "“There are the princes of the north, all of them, and all the Sidonians, who have gone down with the slain. They are put to shame in the terror which they caused by their might. They lie uncircumcised with those who are slain by the sword, and bear their shame with those who go down to the pit.",
+      "ko": "거기 살륙 당한 자와 함께 내려간 북방 모든 방백과 모든 시돈 사람이 있음이여 그들이 본래는 강성하였으므로 두렵게 하였었으나 이제는 부끄러움을 품고 할례 받지 못하고 칼에 살륙 당한 자와 함께 누웠고 구덩이에 내려 가는 자와 함께 수욕을 당하였도다",
+      "source_text_hash": "4a9dfa0632d64c9c10a2aaca5a3095634a3f4b104e7fe024a2848187a34351ee",
+      "translation_text_hash": "96943e20ff909667106378800e80b49d18bf176eade0abfdf5ed87b0ea50ecb7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 살륙 당한 자와 함께 내려간 북방 모든 방백과 모든 시돈 사람이 있음이여 그들이 본래는 강성하였으므로 두렵게 하였었으나 이제는 부끄러움을 품고 할례 받지 못하고 칼에 살륙 당한 자와 함께 누웠고 구덩이에 내려 가는 자와 함께 수욕을 당하였도다"
+      ],
+      "raw_text_hashes": [
+        "96943e20ff909667106378800e80b49d18bf176eade0abfdf5ed87b0ea50ecb7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:31",
+      "sequence": 21280,
+      "chapter_label": "EZK 32",
+      "verse_label": "31",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 31
+        }
+      ],
+      "en": "“Pharaoh will see them and will be comforted over all his multitude, even Pharaoh and all his army, slain by the sword,” says the Lord GOD.",
+      "ko": "바로가 그들을 보고 그 모든 무리로 인하여 위로를 받을 것임이여 칼에 살륙 당한 바로와 그 온 군대가 그러하리로다 나 주 여호와의 말이로다",
+      "source_text_hash": "45e118c3370f00b1e0b72ca76eb8e2cacf1f45d4ab12431749df0e6a96cd278b",
+      "translation_text_hash": "ccf5de44d2c31a9e9ecf2c45a8deeff4467174bdb07ab880d89c3e6bcdd44436",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바로가 그들을 보고 그 모든 무리로 인하여 위로를 받을 것임이여 칼에 살륙 당한 바로와 그 온 군대가 그러하리로다 나 주 여호와의 말이로다"
+      ],
+      "raw_text_hashes": [
+        "ccf5de44d2c31a9e9ecf2c45a8deeff4467174bdb07ab880d89c3e6bcdd44436"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:32:32",
+      "sequence": 21281,
+      "chapter_label": "EZK 32",
+      "verse_label": "32",
+      "locator": {
+        "book": "EZK",
+        "chapter": 32,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 32,
+          "verse": 32
+        }
+      ],
+      "en": "“For I have put his terror in the land of the living. He will be laid among the uncircumcised, with those who are slain by the sword, even Pharaoh and all his multitude,” says the Lord GOD.",
+      "ko": "내가 바로로 생존 세상에서 사람을 두렵게 하게 하였었으나 이제는 그가 그 모든 무리로 더불어 할례 받지 못한 자 곧 칼에 살륙 당한 자와 함께 뉘우리로다 나 주 여호와의 말이로다",
+      "source_text_hash": "19ffbe36c660c70de03feec678b1bb2f7c5cab5feff24fc9bd7a864571ad880c",
+      "translation_text_hash": "4d6039151dee48d5eeb5affa8c1d02ec3451fc62e75645a06475dafce8cfce06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 바로로 생존 세상에서 사람을 두렵게 하게 하였었으나 이제는 그가 그 모든 무리로 더불어 할례 받지 못한 자 곧 칼에 살륙 당한 자와 함께 뉘우리로다 나 주 여호와의 말이로다"
+      ],
+      "raw_text_hashes": [
+        "4d6039151dee48d5eeb5affa8c1d02ec3451fc62e75645a06475dafce8cfce06"
+      ]
+    }
+  ]
+}

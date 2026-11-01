@@ -54,7 +54,7 @@
       ],
       "credential_source": "platform_secret",
       "credential_binding_name": "PADIEM_SENSENOVA_API_KEY",
-      "enabled": true
+      "enabled": false
     },
     "experiential": {
       "base_origin": "https://api.experientiallabs.ai/v1",
@@ -285,7 +285,7 @@
       "output_price_usd_per_1m": null,
       "source": "sensenova_token_api_measured",
       "source_checked_at": "2026-09-06",
-      "enabled": true
+      "enabled": false
     },
     {
       "id": "experiential/qwen3.8-flash-next-uncensored",

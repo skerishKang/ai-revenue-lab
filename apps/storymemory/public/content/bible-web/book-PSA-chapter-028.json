@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:028",
+  "unit_ordinal": 506,
+  "unit_label": "PSA 28",
+  "book_code": "PSA",
+  "chapter_number": 28,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:28:1",
+      "sequence": 14301,
+      "chapter_label": "PSA 28",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 1
+        }
+      ],
+      "en": "To you, LORD, I call. My rock, don’t be deaf to me, lest, if you are silent to me, I would become like those who go down into the pit.",
+      "ko": "여호와여 내가 주께 부르짖으오니 나의 반석이여 내게 귀를 막지 마소서 주께서 내게 잠잠하시면 내가 무덤에 내려가는 자와 같을까 하나이다",
+      "source_text_hash": "ed8dee6299f788f7a69f21989eb4ca9354a0263f54ad1a3ddf4315cd34b0bb89",
+      "translation_text_hash": "496a9e78eb88f784057d6cd112b8048fa0357d0225a0c389fc8022a9cc1bd933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 주께 부르짖으오니 나의 반석이여 내게 귀를 막지 마소서 주께서 내게 잠잠하시면 내가 무덤에 내려가는 자와 같을까 하나이다"
+      ],
+      "raw_text_hashes": [
+        "496a9e78eb88f784057d6cd112b8048fa0357d0225a0c389fc8022a9cc1bd933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:2",
+      "sequence": 14302,
+      "chapter_label": "PSA 28",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 2
+        }
+      ],
+      "en": "Hear the voice of my petitions, when I cry to you, when I lift up my hands toward your Most Holy Place.",
+      "ko": "내가 주의 성소를 향하여 나의 손을 들고 주께 부르짖을 때에 나의 간구하는 소리를 들으소서",
+      "source_text_hash": "a4855bb846324d44011c8f36174f8b33d4516277996943567c9e86e4f0e18940",
+      "translation_text_hash": "163987156ade146a7caf9f2baa57a111c70f17f66e91affd1f5472826b8dc27b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 주의 성소를 향하여 나의 손을 들고 주께 부르짖을 때에 나의 간구하는 소리를 들으소서"
+      ],
+      "raw_text_hashes": [
+        "163987156ade146a7caf9f2baa57a111c70f17f66e91affd1f5472826b8dc27b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:3",
+      "sequence": 14303,
+      "chapter_label": "PSA 28",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 3
+        }
+      ],
+      "en": "Don’t draw me away with the wicked, with the workers of iniquity who speak peace with their neighbors, but mischief is in their hearts.",
+      "ko": "악인과 행악하는 자와 함께 나를 끌지 마옵소서 저희는 그 이웃에게 화평을 말하나 그 마음에는 악독이 있나이다",
+      "source_text_hash": "c06fbe5184d87b7473e3cf40cfb9281eb598105d85a511d75f1841a7c37fdb7c",
+      "translation_text_hash": "9ff82aa78463b245a00f197869374288427615aa4a35be0d4ecb7ccd23b09289",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악인과 행악하는 자와 함께 나를 끌지 마옵소서 저희는 그 이웃에게 화평을 말하나 그 마음에는 악독이 있나이다"
+      ],
+      "raw_text_hashes": [
+        "9ff82aa78463b245a00f197869374288427615aa4a35be0d4ecb7ccd23b09289"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:4",
+      "sequence": 14304,
+      "chapter_label": "PSA 28",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 4
+        }
+      ],
+      "en": "Give them according to their work, and according to the wickedness of their doings. Give them according to the operation of their hands. Bring back on them what they deserve.",
+      "ko": "저희의 행사와 그 행위의 악한대로 갚으시며 저희 손의 지은대로 갚아 그 마땅히 받을 것으로 보응하소서",
+      "source_text_hash": "c296f29e8783d74f3fdac2fccce5760a57fad8570447fd6d6cc73cc419bf8aa8",
+      "translation_text_hash": "80e48bc846b02ab2906b09ff71dfaec170e9cf8bbf4ad0c53bffcdb45f83ac10",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희의 행사와 그 행위의 악한대로 갚으시며 저희 손의 지은대로 갚아 그 마땅히 받을 것으로 보응하소서"
+      ],
+      "raw_text_hashes": [
+        "80e48bc846b02ab2906b09ff71dfaec170e9cf8bbf4ad0c53bffcdb45f83ac10"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:5",
+      "sequence": 14305,
+      "chapter_label": "PSA 28",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 5
+        }
+      ],
+      "en": "Because they don’t respect the works of the LORD, nor the operation of his hands, he will break them down and not build them up.",
+      "ko": "저희는 여호와의 행하신 일과 손으로 지으신 것을 생각지 아니하므로 여호와께서 저희를 파괴하고 건설치 아니하시리로다",
+      "source_text_hash": "cf70ccb5124772ab4234f22b9aece58a0eb7467e8071e587eb70747eed3f8377",
+      "translation_text_hash": "92db0385630558d40fcb1211a9bbc81fe527da45b73342e5e0c77bd30de3d9c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 여호와의 행하신 일과 손으로 지으신 것을 생각지 아니하므로 여호와께서 저희를 파괴하고 건설치 아니하시리로다"
+      ],
+      "raw_text_hashes": [
+        "92db0385630558d40fcb1211a9bbc81fe527da45b73342e5e0c77bd30de3d9c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:6",
+      "sequence": 14306,
+      "chapter_label": "PSA 28",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 6
+        }
+      ],
+      "en": "Blessed be the LORD, because he has heard the voice of my petitions.",
+      "ko": "여호와를 찬송함이여 내 간구하는 소리를 들으심이로다",
+      "source_text_hash": "6f784e054f9673d9ef3eb0347a4b49cf61cd6ed7f9fea9ff3a830047cda778b0",
+      "translation_text_hash": "d7dbff29d8e10c8b89b5009ed0891ff0e5659ade8bfd3c152cd81d3447a0031d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와를 찬송함이여 내 간구하는 소리를 들으심이로다"
+      ],
+      "raw_text_hashes": [
+        "d7dbff29d8e10c8b89b5009ed0891ff0e5659ade8bfd3c152cd81d3447a0031d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:7",
+      "sequence": 14307,
+      "chapter_label": "PSA 28",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 7
+        }
+      ],
+      "en": "The LORD is my strength and my shield. My heart has trusted in him, and I am helped. Therefore my heart greatly rejoices. With my song I will thank him.",
+      "ko": "여호와는 나의 힘과 나의 방패시니 내 마음이 저를 의지하여 도움을 얻었도다 그러므로 내 마음이 크게 기뻐하며 내 노래로 저를 찬송하리로다",
+      "source_text_hash": "7f31cab5066b4b171b5278412ca22a613216bef941eb422d380e65cfe847bddc",
+      "translation_text_hash": "4f2f1c9d4b681b89f3782288618b9e2d93f8a1e9df047b5c1b92a1dbb5ff31df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 나의 힘과 나의 방패시니 내 마음이 저를 의지하여 도움을 얻었도다 그러므로 내 마음이 크게 기뻐하며 내 노래로 저를 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "4f2f1c9d4b681b89f3782288618b9e2d93f8a1e9df047b5c1b92a1dbb5ff31df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:8",
+      "sequence": 14308,
+      "chapter_label": "PSA 28",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD is their strength. He is a stronghold of salvation to his anointed.",
+      "ko": "여호와는 저희의 힘이시요 그 기름 부음 받은 자의 구원의 산성이시로다",
+      "source_text_hash": "d28b9558ce7b15f6f12d8bf2d1c4d637cdf8aa6d95ec09699bfcf23dbc6e59e5",
+      "translation_text_hash": "ca6d277df9e2978e75b38b3f2dea3fcc750fda2756456d08e8b50eef0f0e16be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 저희의 힘이시요 그 기름 부음 받은 자의 구원의 산성이시로다"
+      ],
+      "raw_text_hashes": [
+        "ca6d277df9e2978e75b38b3f2dea3fcc750fda2756456d08e8b50eef0f0e16be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:28:9",
+      "sequence": 14309,
+      "chapter_label": "PSA 28",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 28,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 28,
+          "verse": 9
+        }
+      ],
+      "en": "Save your people, and bless your inheritance. Be their shepherd also, and bear them up forever.",
+      "ko": "주의 백성을 구원하시며 주의 산업에 복을 주시고 또 저희의 목자가 되사 영원토록 드십소서",
+      "source_text_hash": "5264f1cfaa745dbd57ec2e4092bd1031c34d94741aad22af3dc0ea37b9364230",
+      "translation_text_hash": "952b27ca16d17838eed361337e264a6712601f755cceec0157c98142b1755240",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 백성을 구원하시며 주의 산업에 복을 주시고 또 저희의 목자가 되사 영원토록 드십소서"
+      ],
+      "raw_text_hashes": [
+        "952b27ca16d17838eed361337e264a6712601f755cceec0157c98142b1755240"
+      ]
+    }
+  ]
+}

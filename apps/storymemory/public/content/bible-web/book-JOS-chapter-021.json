@@ -1,0 +1,1453 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOS:chapter:021",
+  "unit_ordinal": 208,
+  "unit_label": "JOS 21",
+  "book_code": "JOS",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOS:21:1",
+      "sequence": 6383,
+      "chapter_label": "JOS 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "Then the heads of fathers’ houses of the Levites came near to Eleazar the priest, and to Joshua the son of Nun, and to the heads of fathers’ houses of the tribes of the children of Israel.",
+      "ko": "때에 레위 사람의 족장들이 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손의 지파 족장들에게 나아와",
+      "source_text_hash": "2885cfa0654bc6f157b444dfe21d20c9d09441745b0ea7580848f28ef09a8f21",
+      "translation_text_hash": "d7ec6887d4fdaee820858a1ea4438a743f95659f40165bdb1e51b42a0d9120eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 레위 사람의 족장들이 제사장 엘르아살과 눈의 아들 여호수아와 이스라엘 자손의 지파 족장들에게 나아와"
+      ],
+      "raw_text_hashes": [
+        "d7ec6887d4fdaee820858a1ea4438a743f95659f40165bdb1e51b42a0d9120eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:2",
+      "sequence": 6384,
+      "chapter_label": "JOS 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "They spoke to them at Shiloh in the land of Canaan, saying, “The LORD commanded through Moses to give us cities to dwell in, with their pasture lands for our livestock.”",
+      "ko": "가나안 땅 실로에서 그들에게 말하여 가로되 여호와께서 모세로 명하사 우리의 거할 성읍들과 우리의 가축 먹일 그 들을 우리에게 주라 하셨었나이다 하매",
+      "source_text_hash": "e6f8933553e82f6b03cb6249fc2c7771b9b276f36de91c0641861bea3adc7e58",
+      "translation_text_hash": "634aada34c940f9a57debfcbaafefe6c354d8a828ee6dde6f14124ebdf67a087",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가나안 땅 실로에서 그들에게 말하여 가로되 여호와께서 모세로 명하사 우리의 거할 성읍들과 우리의 가축 먹일 그 들을 우리에게 주라 하셨었나이다 하매"
+      ],
+      "raw_text_hashes": [
+        "634aada34c940f9a57debfcbaafefe6c354d8a828ee6dde6f14124ebdf67a087"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:3",
+      "sequence": 6385,
+      "chapter_label": "JOS 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "The children of Israel gave to the Levites out of their inheritance, according to the commandment of the LORD, these cities with their pasture lands.",
+      "ko": "이스라엘 자손이 여호와의 명을 따라 자기의 기업에서 이 아래 성읍들과 그 들을 레위 사람에게 주니라",
+      "source_text_hash": "1216f417ed6f136013e8c714c00bfa39e7e625909c5383a26c504ac79568eac7",
+      "translation_text_hash": "cd633f40c1a4721860318e29219c7d5a1b91e939affe70b5920b44786b36d907",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손이 여호와의 명을 따라 자기의 기업에서 이 아래 성읍들과 그 들을 레위 사람에게 주니라"
+      ],
+      "raw_text_hashes": [
+        "cd633f40c1a4721860318e29219c7d5a1b91e939affe70b5920b44786b36d907"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:4",
+      "sequence": 6386,
+      "chapter_label": "JOS 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "The lot came out for the families of the Kohathites. The children of Aaron the priest, who were of the Levites, had thirteen cities by lot out of the tribe of Judah, out of the tribe of the Simeonites, and out of the tribe of Benjamin.",
+      "ko": "그핫 가족을 위하여 제비를 뽑았는데 레위 사람중 제사장 아론의 자손들은 유다 지파와 시므온 지파와 베냐민 지파 중에서 제비대로 십 삼 성읍을 얻었고",
+      "source_text_hash": "f43748db79e842ab069c55f98428e2d0571e0431a2644dd9467ba3269416f82f",
+      "translation_text_hash": "d3296d5578b7df79a86ab42550a15cc52cd0df6d46036c99fa536e02fbc1bc14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 가족을 위하여 제비를 뽑았는데 레위 사람중 제사장 아론의 자손들은 유다 지파와 시므온 지파와 베냐민 지파 중에서 제비대로 십 삼 성읍을 얻었고"
+      ],
+      "raw_text_hashes": [
+        "d3296d5578b7df79a86ab42550a15cc52cd0df6d46036c99fa536e02fbc1bc14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:5",
+      "sequence": 6387,
+      "chapter_label": "JOS 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "The rest of the children of Kohath had ten cities by lot out of the families of the tribe of Ephraim, out of the tribe of Dan, and out of the half-tribe of Manasseh.",
+      "ko": "그 남은 그핫 자손들은 에브라임 지파의 가족과 단 지파와 므낫세 반 지파 중에서 제비대로 열 성읍을 얻었으며",
+      "source_text_hash": "0cb9f8d6c8f16b9362c407d584c8c47b3430f75a0e05e3088dbe736854e75bad",
+      "translation_text_hash": "358f862b4b92639bbec0fff6671ae10719ee484b6329733ad5f556c8f403eaa1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 그핫 자손들은 에브라임 지파의 가족과 단 지파와 므낫세 반 지파 중에서 제비대로 열 성읍을 얻었으며"
+      ],
+      "raw_text_hashes": [
+        "358f862b4b92639bbec0fff6671ae10719ee484b6329733ad5f556c8f403eaa1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:6",
+      "sequence": 6388,
+      "chapter_label": "JOS 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "The children of Gershon had thirteen cities by lot out of the families of the tribe of Issachar, out of the tribe of Asher, out of the tribe of Naphtali, and out of the half-tribe of Manasseh in Bashan.",
+      "ko": "게르손 자손들은 잇사갈 지파의 가족들과 아셀 지파와 납달리 지파와 바산에 있는 므낫세 반 지파 중에서 제비대로 십 삼 성읍을 얻었더라",
+      "source_text_hash": "1078fc331b3a666ea62b9a7ec1662e1a5f438b8ba1c169181c5a4bc50b5ad83c",
+      "translation_text_hash": "8ec9b2186f5f0498fa074ee7a0850ade9a948338096e1b0f5fab2e79e72f2783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 자손들은 잇사갈 지파의 가족들과 아셀 지파와 납달리 지파와 바산에 있는 므낫세 반 지파 중에서 제비대로 십 삼 성읍을 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "8ec9b2186f5f0498fa074ee7a0850ade9a948338096e1b0f5fab2e79e72f2783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:7",
+      "sequence": 6389,
+      "chapter_label": "JOS 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "The children of Merari according to their families had twelve cities out of the tribe of Reuben, out of the tribe of Gad, and out of the tribe of Zebulun.",
+      "ko": "므라리 자손들은 그 가족대로 르우벤 지파와 갓 지파와 스불론 지파중에서 십 이 성읍을 얻었더라",
+      "source_text_hash": "bb1ffae4dea4abc1a449a8e7df9d565f1e09dd811241bd7bdd54e41dffa27968",
+      "translation_text_hash": "0852c48b610116387418e9e023d27cd61e0c51f6cf05980e4fec77120b62f22f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손들은 그 가족대로 르우벤 지파와 갓 지파와 스불론 지파중에서 십 이 성읍을 얻었더라"
+      ],
+      "raw_text_hashes": [
+        "0852c48b610116387418e9e023d27cd61e0c51f6cf05980e4fec77120b62f22f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:8",
+      "sequence": 6390,
+      "chapter_label": "JOS 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "The children of Israel gave these cities with their pasture lands by lot to the Levites, as the LORD commanded by Moses.",
+      "ko": "여호와께서 모세로 명하신대로 이스라엘 자손이 제비 뽑아 레위 사람에게 준 성읍들과 그 들이 이러하니라",
+      "source_text_hash": "a0b6514ff0ecb382ab97c8ae89963c6bee3ab7765c82747cf20fc670cdb1ae62",
+      "translation_text_hash": "a76b9dfa7891c29a138010aa3967e978ecafb7c7a8963e17d65ca60ea107fdbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세로 명하신대로 이스라엘 자손이 제비 뽑아 레위 사람에게 준 성읍들과 그 들이 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "a76b9dfa7891c29a138010aa3967e978ecafb7c7a8963e17d65ca60ea107fdbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:9",
+      "sequence": 6391,
+      "chapter_label": "JOS 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "They gave out of the tribe of the children of Judah, and out of the tribe of the children of Simeon, these cities which are mentioned by name:",
+      "ko": "유다 자손의 지파와 시므온 자손의 지파 중에서는 이 아래 기명한 성읍들을 주었는데",
+      "source_text_hash": "fe2abb8c39a8c4d2dc8a8b26ffc907a904d75f3cd919f19f9a339f5e2bb43038",
+      "translation_text_hash": "fce13c3f072368af065fa1f0ba5dcea0be62c8322b88b3217fcf62e7f4ff5032",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 자손의 지파와 시므온 자손의 지파 중에서는 이 아래 기명한 성읍들을 주었는데"
+      ],
+      "raw_text_hashes": [
+        "fce13c3f072368af065fa1f0ba5dcea0be62c8322b88b3217fcf62e7f4ff5032"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:10",
+      "sequence": 6392,
+      "chapter_label": "JOS 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "and they were for the children of Aaron, of the families of the Kohathites, who were of the children of Levi; for theirs was the first lot.",
+      "ko": "레위 자손 중 그핫 가족들에 속한 아론 자손이 첫째로 제비 뽑혔으므로",
+      "source_text_hash": "a30518bc587c7b9ea995d69004bfe4f9c85676c6938bd96c31e0c09754ef0c23",
+      "translation_text_hash": "de93af4364b90c92da0753b0520bf3b07716230d7dd5ffd4eb3f267de9b58bc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손 중 그핫 가족들에 속한 아론 자손이 첫째로 제비 뽑혔으므로"
+      ],
+      "raw_text_hashes": [
+        "de93af4364b90c92da0753b0520bf3b07716230d7dd5ffd4eb3f267de9b58bc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:11",
+      "sequence": 6393,
+      "chapter_label": "JOS 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "They gave them Kiriath Arba, named after the father of Anak (also called Hebron), in the hill country of Judah, with its pasture lands around it.",
+      "ko": "아낙의 아비 아르바의 성읍 유다 산지 기럇 아르바 곧 헤브론과 그 사면 들을 그들에게 주었고",
+      "source_text_hash": "d3fe5a4e46a870ac4851432ca6a31b3ca9a1e060caad54a05386ee3b546e6974",
+      "translation_text_hash": "a6041707e53af306cc4c1dffb96a39a4daacf22d143f5f65608adc41a5c56791",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아낙의 아비 아르바의 성읍 유다 산지 기럇 아르바 곧 헤브론과 그 사면 들을 그들에게 주었고"
+      ],
+      "raw_text_hashes": [
+        "a6041707e53af306cc4c1dffb96a39a4daacf22d143f5f65608adc41a5c56791"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:12",
+      "sequence": 6394,
+      "chapter_label": "JOS 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "But they gave the fields of the city and its villages to Caleb the son of Jephunneh for his possession.",
+      "ko": "오직 그 성읍의 밭과 촌락은 여분네의 아들 갈렙에게 주어 소유가 되게 하였더라",
+      "source_text_hash": "6616351e1ac2cecfac0c30fbb345d15c744e4958711172657ab0f132b118d8b1",
+      "translation_text_hash": "d7418307aa346d8cf331e9e124f30ca3d63c46c2622886f7eae117ad279332af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 성읍의 밭과 촌락은 여분네의 아들 갈렙에게 주어 소유가 되게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "d7418307aa346d8cf331e9e124f30ca3d63c46c2622886f7eae117ad279332af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:13",
+      "sequence": 6395,
+      "chapter_label": "JOS 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "To the children of Aaron the priest they gave Hebron with its pasture lands, the city of refuge for the man slayer, Libnah with its pasture lands,",
+      "ko": "제사장 아론 자손에게 준 것은 살인자의 도피성 헤브론과 그 들이요 또 립나와 그 들과",
+      "source_text_hash": "5869d7b4a228c87f7b98cd424d3bce6fc7777c9fe807c282e2895b845ab05dbe",
+      "translation_text_hash": "ecee2299b00c11c583a21dc9394faea9969239d6042bdc2ecc79cb66c733feec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론 자손에게 준 것은 살인자의 도피성 헤브론과 그 들이요 또 립나와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "ecee2299b00c11c583a21dc9394faea9969239d6042bdc2ecc79cb66c733feec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:14",
+      "sequence": 6396,
+      "chapter_label": "JOS 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "Jattir with its pasture lands, Eshtemoa with its pasture lands,",
+      "ko": "얏딜과 그 들과 에스드모아와 그 들과",
+      "source_text_hash": "3c45b713acbc4250dd811ed55e0ac50b6c74b4503884393b63b51026e9ff13df",
+      "translation_text_hash": "d0d61134e79a9d017817050a76082ab6788cebc885f0f5a0d02ab71006323a87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "얏딜과 그 들과 에스드모아와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "d0d61134e79a9d017817050a76082ab6788cebc885f0f5a0d02ab71006323a87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:15",
+      "sequence": 6397,
+      "chapter_label": "JOS 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "Holon with its pasture lands, Debir with its pasture lands,",
+      "ko": "홀론과 그 들과 드빌과 그 들과",
+      "source_text_hash": "d3bdcde5642987ea8cd12218d1ef64598b4ed5a88dfa337255b07450452967a7",
+      "translation_text_hash": "1bf4882017663e7c5bd7d7e4df01a0026b918f0e5bad2464e8aef40ea5429bcf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홀론과 그 들과 드빌과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "1bf4882017663e7c5bd7d7e4df01a0026b918f0e5bad2464e8aef40ea5429bcf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:16",
+      "sequence": 6398,
+      "chapter_label": "JOS 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "Ain with its pasture lands, Juttah with its pasture lands, and Beth Shemesh with its pasture lands: nine cities out of those two tribes.",
+      "ko": "아인과 그 들과 윳다와 그 들과 벧 세메스와 그 들이니 이 두 지파에서 아홉 성읍을 내었고",
+      "source_text_hash": "01b32996284d03380d40a0a3976643b02e130ab8636ceb9c87139e311493f5f3",
+      "translation_text_hash": "99128fa3946d4285e6489c4c38e64aeea569a8b6115d5918aefdacd9e0e17b7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아인과 그 들과 윳다와 그 들과 벧 세메스와 그 들이니 이 두 지파에서 아홉 성읍을 내었고"
+      ],
+      "raw_text_hashes": [
+        "99128fa3946d4285e6489c4c38e64aeea569a8b6115d5918aefdacd9e0e17b7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:17",
+      "sequence": 6399,
+      "chapter_label": "JOS 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "Out of the tribe of Benjamin, Gibeon with its pasture lands, Geba with its pasture lands,",
+      "ko": "또 베냐민 지파 중에서는 기브온과 그 들과 게바와 그 들과",
+      "source_text_hash": "779506ad13b3f2806dc896708d8e66830d593ccbd3a66a65a99bec47669007f2",
+      "translation_text_hash": "b937fa97073fd43196ee07bde76e6b5b25a4d013d777ab5ef5e595aebb7430a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 베냐민 지파 중에서는 기브온과 그 들과 게바와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "b937fa97073fd43196ee07bde76e6b5b25a4d013d777ab5ef5e595aebb7430a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:18",
+      "sequence": 6400,
+      "chapter_label": "JOS 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "Anathoth with its pasture lands, and Almon with its pasture lands: four cities.",
+      "ko": "아나돗과 그 들과 알몬과 그 들 곧 네 성읍을 내었으니",
+      "source_text_hash": "33f33823577918431c4801cb404e1b41a2d4885fed42416845ae30b5a70788ef",
+      "translation_text_hash": "eba2575e988a21df1227edb310ecee2645d37fa022b6d25de473678ba64ff325",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아나돗과 그 들과 알몬과 그 들 곧 네 성읍을 내었으니"
+      ],
+      "raw_text_hashes": [
+        "eba2575e988a21df1227edb310ecee2645d37fa022b6d25de473678ba64ff325"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:19",
+      "sequence": 6401,
+      "chapter_label": "JOS 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "All the cities of the children of Aaron, the priests, were thirteen cities with their pasture lands.",
+      "ko": "제사장 아론 자손의 성읍이 모두 십삼 성읍과 그 들이었더라",
+      "source_text_hash": "c7a61ba28d14c801b8b653f0decdecfa1d9d858ee469fd3f8642971d3f64d6a1",
+      "translation_text_hash": "d632069bd5ebf6560623af23e2b4baa09dfa7ef7747d841634574149fdeef115",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론 자손의 성읍이 모두 십삼 성읍과 그 들이었더라"
+      ],
+      "raw_text_hashes": [
+        "d632069bd5ebf6560623af23e2b4baa09dfa7ef7747d841634574149fdeef115"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:20",
+      "sequence": 6402,
+      "chapter_label": "JOS 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "The families of the children of Kohath, the Levites, even the rest of the children of Kohath, had the cities of their lot out of the tribe of Ephraim.",
+      "ko": "그 남은 레위 사람 그핫 자손의 가족 곧 그핫 자손에게는 제비 뽑아 에브라임 지파 중에서 그 성읍들을 주었으니",
+      "source_text_hash": "47ef817ddea4f8dfa25b81156db5bd64d174518098d69ba1ba29b258febce289",
+      "translation_text_hash": "89b3f074e58a0d5f7e1df1f148a21880add8df642991696943ee9aad10a51908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 레위 사람 그핫 자손의 가족 곧 그핫 자손에게는 제비 뽑아 에브라임 지파 중에서 그 성읍들을 주었으니"
+      ],
+      "raw_text_hashes": [
+        "89b3f074e58a0d5f7e1df1f148a21880add8df642991696943ee9aad10a51908"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:21",
+      "sequence": 6403,
+      "chapter_label": "JOS 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "They gave them Shechem with its pasture lands in the hill country of Ephraim, the city of refuge for the man slayer, and Gezer with its pasture lands,",
+      "ko": "곧 살인자의 도피성 에브라임 산지 세겜과 그 들이요 또 게셀과 그 들과",
+      "source_text_hash": "1e5ddf1357f396ba9e69ea79e416f65732386b66b31192dfd6446aee625f31b0",
+      "translation_text_hash": "ee50c177ceda309da5c5ba375bfdddde5df9122872368ee3eef8c4142f151945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 살인자의 도피성 에브라임 산지 세겜과 그 들이요 또 게셀과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "ee50c177ceda309da5c5ba375bfdddde5df9122872368ee3eef8c4142f151945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:22",
+      "sequence": 6404,
+      "chapter_label": "JOS 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "Kibzaim with its pasture lands, and Beth Horon with its pasture lands: four cities.",
+      "ko": "깁사임과 그 들과 벧 호론과 그 들이니 네 성읍이요",
+      "source_text_hash": "35f3bba685e660e48f2e0f802723a9711e92bf2086198a982d8d306bb29c579d",
+      "translation_text_hash": "d69abcb95b116c23fa97e60fbe3e79a107b8399a319ce2164b9ab22c8ba23804",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깁사임과 그 들과 벧 호론과 그 들이니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "d69abcb95b116c23fa97e60fbe3e79a107b8399a319ce2164b9ab22c8ba23804"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:23",
+      "sequence": 6405,
+      "chapter_label": "JOS 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "Out of the tribe of Dan, Elteke with its pasture lands, Gibbethon with its pasture lands,",
+      "ko": "또 단 지파 중에서 준것은 엘드게와 그 들과 깁브돈과 그 들과",
+      "source_text_hash": "3bfc97c0b0bd05c85af14efc024397f1404db1dd41b147590aa2cc5de09e5fb6",
+      "translation_text_hash": "156dcefce919905f897504166dcc01d93cf309b24ce9425cde07156d7300fc9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 단 지파 중에서 준것은 엘드게와 그 들과 깁브돈과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "156dcefce919905f897504166dcc01d93cf309b24ce9425cde07156d7300fc9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:24",
+      "sequence": 6406,
+      "chapter_label": "JOS 21",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 24
+        }
+      ],
+      "en": "Aijalon with its pasture lands, Gath Rimmon with its pasture lands: four cities.",
+      "ko": "아얄론과 그 들과 가드 림몬과 그 들이니 네 성읍이요",
+      "source_text_hash": "36633d31a2608ef1e4d2c69a56d988706bfc5554c57f3399c6b30618beed254e",
+      "translation_text_hash": "e59d21c801e19afc830ef0b28745b2e81704a5f30b9ac6588f1caaee2cae5806",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아얄론과 그 들과 가드 림몬과 그 들이니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "e59d21c801e19afc830ef0b28745b2e81704a5f30b9ac6588f1caaee2cae5806"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:25",
+      "sequence": 6407,
+      "chapter_label": "JOS 21",
+      "verse_label": "25",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 25
+        }
+      ],
+      "en": "Out of the half-tribe of Manasseh, Taanach with its pasture lands, and Gath Rimmon with its pasture lands: two cities.",
+      "ko": "또 므낫세 반 지파 중에서 준것은 다아낙과 그 들과 가드 림몬과 그 들이니 두 성읍이라",
+      "source_text_hash": "c119cfc10fb8529c59c1c91dd07f432db6ec373a4f565a9a6d0a4573f0fc58ff",
+      "translation_text_hash": "0209227758c9fd7cce20d5616e5ae88aadc10c8f4ade1016ef0cc762b88d121b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 므낫세 반 지파 중에서 준것은 다아낙과 그 들과 가드 림몬과 그 들이니 두 성읍이라"
+      ],
+      "raw_text_hashes": [
+        "0209227758c9fd7cce20d5616e5ae88aadc10c8f4ade1016ef0cc762b88d121b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:26",
+      "sequence": 6408,
+      "chapter_label": "JOS 21",
+      "verse_label": "26",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 26
+        }
+      ],
+      "en": "All the cities of the families of the rest of the children of Kohath were ten with their pasture lands.",
+      "ko": "그핫 자손의 남은 가족의 성읍이 모두 열과 그 들이었더라",
+      "source_text_hash": "ae15d08e5a9c71c3e84cb163e399b383f35ee3ef884d097910ff18691ef71d68",
+      "translation_text_hash": "d4409024ded5d8935d93aeb3c6f203ea3304db8f9a5859a9f6de108094712f45",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그핫 자손의 남은 가족의 성읍이 모두 열과 그 들이었더라"
+      ],
+      "raw_text_hashes": [
+        "d4409024ded5d8935d93aeb3c6f203ea3304db8f9a5859a9f6de108094712f45"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:27",
+      "sequence": 6409,
+      "chapter_label": "JOS 21",
+      "verse_label": "27",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 27
+        }
+      ],
+      "en": "They gave to the children of Gershon, of the families of the Levites, out of the half-tribe of Manasseh Golan in Bashan with its pasture lands, the city of refuge for the man slayer, and Be Eshterah with its pasture lands: two cities.",
+      "ko": "레위 가족의 게르손 자손들에게는 므낫세 반 지파 중에서 살인자의 도피성 바산 골란과 그 들을 주었고 또 브에스드라와 그 들을 주었으니 두 성읍이요",
+      "source_text_hash": "cbe750fd93c3175b8d9a49b0311fa4c4cf99fe26217031f976c8ae3224f6f75b",
+      "translation_text_hash": "65e7f246a519881b519472dd55dbec95c7b163736070e2c861fc0ad33f9598a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 가족의 게르손 자손들에게는 므낫세 반 지파 중에서 살인자의 도피성 바산 골란과 그 들을 주었고 또 브에스드라와 그 들을 주었으니 두 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "65e7f246a519881b519472dd55dbec95c7b163736070e2c861fc0ad33f9598a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:28",
+      "sequence": 6410,
+      "chapter_label": "JOS 21",
+      "verse_label": "28",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 28
+        }
+      ],
+      "en": "Out of the tribe of Issachar, Kishion with its pasture lands, Daberath with its pasture lands,",
+      "ko": "잇사갈 지파 중에서는 기시온과 그 들과 다브랏과 그 들과",
+      "source_text_hash": "40de320ac9f6ab15de4643ba77d4b4a051be462639bed7e6f7ca853a7d4a0e2e",
+      "translation_text_hash": "bc590ee5a5b4d319447d5b72d1afe10a50ba81edcf97957e8de950f708006ee7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잇사갈 지파 중에서는 기시온과 그 들과 다브랏과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "bc590ee5a5b4d319447d5b72d1afe10a50ba81edcf97957e8de950f708006ee7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:29",
+      "sequence": 6411,
+      "chapter_label": "JOS 21",
+      "verse_label": "29",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 29
+        }
+      ],
+      "en": "Jarmuth with its pasture lands, En Gannim with its pasture lands: four cities.",
+      "ko": "야르뭇과 그 들과 언 간님과 그 들을 주었으니 네 성읍이요",
+      "source_text_hash": "512c2326fd0f66de5b411458b01b708c46d920ef2cd2ad4a5a72fd0cb07a901e",
+      "translation_text_hash": "9983b1b297f1cc125797088a356b5878718220bd444b4689fabbabcdc94f541c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야르뭇과 그 들과 언 간님과 그 들을 주었으니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "9983b1b297f1cc125797088a356b5878718220bd444b4689fabbabcdc94f541c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:30",
+      "sequence": 6412,
+      "chapter_label": "JOS 21",
+      "verse_label": "30",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 30
+        }
+      ],
+      "en": "Out of the tribe of Asher, Mishal with its pasture lands, Abdon with its pasture lands,",
+      "ko": "아셀 지파 중에서는 미살과 그 들과 압돈과 그 들과",
+      "source_text_hash": "01058da54afef8aedfcffe1ef1b0b4141217b71f6dd42211fa5cbab41d057b3a",
+      "translation_text_hash": "2072f30a6d260958198e0067ffc3aa2b3d8487d58570a5567ce0950da1e01964",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아셀 지파 중에서는 미살과 그 들과 압돈과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "2072f30a6d260958198e0067ffc3aa2b3d8487d58570a5567ce0950da1e01964"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:31",
+      "sequence": 6413,
+      "chapter_label": "JOS 21",
+      "verse_label": "31",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 31
+        }
+      ],
+      "en": "Helkath with its pasture lands, and Rehob with its pasture lands: four cities.",
+      "ko": "헬갓과 그 들과 르홉과 그 들을 주었으니 네 성읍이요",
+      "source_text_hash": "15b89dae6952f26d8aea5a9687056c953b5c80bf7e1d7dd387c87fc6b00e9333",
+      "translation_text_hash": "c5201a7bc9bbb690c11551608d21f6a5aabb23e04e12508dcbb652207a829f71",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헬갓과 그 들과 르홉과 그 들을 주었으니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "c5201a7bc9bbb690c11551608d21f6a5aabb23e04e12508dcbb652207a829f71"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:32",
+      "sequence": 6414,
+      "chapter_label": "JOS 21",
+      "verse_label": "32",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 32
+        }
+      ],
+      "en": "Out of the tribe of Naphtali, Kedesh in Galilee with its pasture lands, the city of refuge for the man slayer, Hammothdor with its pasture lands, and Kartan with its pasture lands: three cities.",
+      "ko": "납달리 지파 중에서는 살인자의 도피성 갈릴리 게데스와 그 들을 주었고 또 함못 돌과 그 들과 가르단과 그 들을 주었으니 세 성읍이라",
+      "source_text_hash": "c3e1b7e63c9833b81103a19d9f67a332c329a7288d046e6235c4ca9969ce46c5",
+      "translation_text_hash": "86a35a42af46c366ede9d43afe7df55e546192ec8b96fffe097799a3d4aa6757",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "납달리 지파 중에서는 살인자의 도피성 갈릴리 게데스와 그 들을 주었고 또 함못 돌과 그 들과 가르단과 그 들을 주었으니 세 성읍이라"
+      ],
+      "raw_text_hashes": [
+        "86a35a42af46c366ede9d43afe7df55e546192ec8b96fffe097799a3d4aa6757"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:33",
+      "sequence": 6415,
+      "chapter_label": "JOS 21",
+      "verse_label": "33",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 33
+        }
+      ],
+      "en": "All the cities of the Gershonites according to their families were thirteen cities with their pasture lands.",
+      "ko": "게르손 사람이 그 가족대로 얻은 성읍이 모두 열 세 성읍과 그 들이었더라",
+      "source_text_hash": "ac70c1a553c1fe3b8e34c4def29c5acc5675cdece0fe220f1d7d795f6423a3db",
+      "translation_text_hash": "a4482b1e9ee27e47b99100ab2a13aec4a9438f0e48208c8f32125dbb685ea07c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게르손 사람이 그 가족대로 얻은 성읍이 모두 열 세 성읍과 그 들이었더라"
+      ],
+      "raw_text_hashes": [
+        "a4482b1e9ee27e47b99100ab2a13aec4a9438f0e48208c8f32125dbb685ea07c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:34",
+      "sequence": 6416,
+      "chapter_label": "JOS 21",
+      "verse_label": "34",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 34
+        }
+      ],
+      "en": "To the families of the children of Merari, the rest of the Levites, out of the tribe of Zebulun, Jokneam with its pasture lands, Kartah with its pasture lands,",
+      "ko": "그 남은 레위 사람 므라리 자손의 가족들에게 준 것은 스불론 지파 중에서 욕느암과 그 들과 가르다와 그 들과",
+      "source_text_hash": "91f494475d67cb323da47c22186cc95dcd10c72b876e1a7ce64075203561d1f8",
+      "translation_text_hash": "33a5983dcbd8fcb33c3eb0de3946d9c755fbae999f13a1cc7b22701d90748275",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남은 레위 사람 므라리 자손의 가족들에게 준 것은 스불론 지파 중에서 욕느암과 그 들과 가르다와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "33a5983dcbd8fcb33c3eb0de3946d9c755fbae999f13a1cc7b22701d90748275"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:35",
+      "sequence": 6417,
+      "chapter_label": "JOS 21",
+      "verse_label": "35",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 35
+        }
+      ],
+      "en": "Dimnah with its pasture lands, and Nahalal with its pasture lands: four cities.",
+      "ko": "딤나와 그 들과 나할랄과 그 들이니 네 성읍이요",
+      "source_text_hash": "2a780ad8c792023280b46e86c6cd8431d605f1b0ce5616e4e521dc04e8fad5f3",
+      "translation_text_hash": "4bfa4ebbd97467e1e7ffa9bdbc0c810115816bf8e9a62249a03d3844dced0204",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딤나와 그 들과 나할랄과 그 들이니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "4bfa4ebbd97467e1e7ffa9bdbc0c810115816bf8e9a62249a03d3844dced0204"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:36",
+      "sequence": 6418,
+      "chapter_label": "JOS 21",
+      "verse_label": "36",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 36
+        }
+      ],
+      "en": "Out of the tribe of Reuben, Bezer with its pasture lands, Jahaz with its pasture lands,",
+      "ko": "르우벤 지파 중에서 준 것은 베셀과 그 들과 야하스와 그 들과",
+      "source_text_hash": "bf9075094ef91f3b16f7a3b8f1b0a73c058e271e96e90b7b29b4ec9b7f30c5b2",
+      "translation_text_hash": "0c5c09c1714fed8933eccfda3bdda93a9e335891dc48e71b816b82b8ec4f93ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "르우벤 지파 중에서 준 것은 베셀과 그 들과 야하스와 그 들과"
+      ],
+      "raw_text_hashes": [
+        "0c5c09c1714fed8933eccfda3bdda93a9e335891dc48e71b816b82b8ec4f93ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:37",
+      "sequence": 6419,
+      "chapter_label": "JOS 21",
+      "verse_label": "37",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 37
+        }
+      ],
+      "en": "Kedemoth with its pasture lands, and Mephaath with its pasture lands: four cities.",
+      "ko": "그데못과 그 들과 므바앗과 그 들이니 네 성읍이요",
+      "source_text_hash": "37a0b2334d5cbeb5a9020af9dbeffc8e9efd2b4119b357cc2c3fabe24b9672f0",
+      "translation_text_hash": "f3a34cab33bddf41f4f19e43342852eecca854244109a562572e02c24356e20d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그데못과 그 들과 므바앗과 그 들이니 네 성읍이요"
+      ],
+      "raw_text_hashes": [
+        "f3a34cab33bddf41f4f19e43342852eecca854244109a562572e02c24356e20d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:38",
+      "sequence": 6420,
+      "chapter_label": "JOS 21",
+      "verse_label": "38",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 38
+        }
+      ],
+      "en": "Out of the tribe of Gad, Ramoth in Gilead with its pasture lands, the city of refuge for the man slayer, and Mahanaim with its pasture lands,",
+      "ko": "갓 지파 중에서 준 것은 살인자의 도피성 길르앗 라못과 그 들이요 또 마하나임과 그 들과",
+      "source_text_hash": "8780ded1be15047f7ae1736ae7c3f1f0923f0dfa43346218897b0ef6cda20eb0",
+      "translation_text_hash": "0485ac8a817607b82a71d3e4bdd5e0ee7be5050bd5856479d8421776f89c2da9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "갓 지파 중에서 준 것은 살인자의 도피성 길르앗 라못과 그 들이요 또 마하나임과 그 들과"
+      ],
+      "raw_text_hashes": [
+        "0485ac8a817607b82a71d3e4bdd5e0ee7be5050bd5856479d8421776f89c2da9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:39",
+      "sequence": 6421,
+      "chapter_label": "JOS 21",
+      "verse_label": "39",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 39
+        }
+      ],
+      "en": "Heshbon with its pasture lands, Jazer with its pasture lands: four cities in all.",
+      "ko": "헤스본과 그 들과 야셀과 그 들이니 모두 네 성읍이라",
+      "source_text_hash": "fe43a1b2224e7b14b9430dad4e28e396c91d29bfe45b40ccde077cef31fbd823",
+      "translation_text_hash": "0e983f260f8f8b5e6d661864cdbf44ff6bf38dfba7919cd449ebe257872ae149",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤스본과 그 들과 야셀과 그 들이니 모두 네 성읍이라"
+      ],
+      "raw_text_hashes": [
+        "0e983f260f8f8b5e6d661864cdbf44ff6bf38dfba7919cd449ebe257872ae149"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:40",
+      "sequence": 6422,
+      "chapter_label": "JOS 21",
+      "verse_label": "40",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 40
+        }
+      ],
+      "en": "All these were the cities of the children of Merari according to their families, even the rest of the families of the Levites. Their lot was twelve cities.",
+      "ko": "이는 레위 가족의 남은 자 곧 므라리 자손이 그 가족대로 얻은 성읍이니 그 제비 뽑아 얻은 성읍이 십 이 성읍이었더라",
+      "source_text_hash": "74807adfbf3f82f5c5396876b67cc2244fd989e4981260e9f01f0f1b45ee3b89",
+      "translation_text_hash": "7e7d72a63946444097f8a6690e031f11d668e9f1359e8f9d5a9173910e9ee10f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 레위 가족의 남은 자 곧 므라리 자손이 그 가족대로 얻은 성읍이니 그 제비 뽑아 얻은 성읍이 십 이 성읍이었더라"
+      ],
+      "raw_text_hashes": [
+        "7e7d72a63946444097f8a6690e031f11d668e9f1359e8f9d5a9173910e9ee10f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:41",
+      "sequence": 6423,
+      "chapter_label": "JOS 21",
+      "verse_label": "41",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 41
+        }
+      ],
+      "en": "All the cities of the Levites among the possessions of the children of Israel were forty-eight cities with their pasture lands.",
+      "ko": "레위 사람의 이스라엘 자손의 기업 중에서 얻은 성읍이 모두 사십 팔 성읍이요 또 그 들이라",
+      "source_text_hash": "f0b8b166a253d454536f35f20e6238752ac739d1f6027d1863a3a895a8cb8775",
+      "translation_text_hash": "c878a1a69fbc15839d97376357f17aba379e1ee058badb389d1dd94767b0c993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람의 이스라엘 자손의 기업 중에서 얻은 성읍이 모두 사십 팔 성읍이요 또 그 들이라"
+      ],
+      "raw_text_hashes": [
+        "c878a1a69fbc15839d97376357f17aba379e1ee058badb389d1dd94767b0c993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:42",
+      "sequence": 6424,
+      "chapter_label": "JOS 21",
+      "verse_label": "42",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 42
+        }
+      ],
+      "en": "Each of these cities included their pasture lands around them. It was this way with all these cities.",
+      "ko": "이 각 성읍의 사면에 들이 있었고 모든 성읍이 다 그러하였더라",
+      "source_text_hash": "d0bfad8457560210768acc57e93fd4681ee2c0e6d4c020309ae6a82e9776a98f",
+      "translation_text_hash": "754a12942290fe82d9b42cfdcdbe8b1e7fca33ef6bb2b529013bc09aacc737fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 각 성읍의 사면에 들이 있었고 모든 성읍이 다 그러하였더라"
+      ],
+      "raw_text_hashes": [
+        "754a12942290fe82d9b42cfdcdbe8b1e7fca33ef6bb2b529013bc09aacc737fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:43",
+      "sequence": 6425,
+      "chapter_label": "JOS 21",
+      "verse_label": "43",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 43
+        }
+      ],
+      "en": "So the LORD gave to Israel all the land which he swore to give to their fathers. They possessed it, and lived in it.",
+      "ko": "여호와께서 이스라엘의 열조에게 맹세하사 주마 하신 온 땅을 이와 같이 이스라엘에게 다 주셨으므로 그들이 그것을 얻어 거기 거하였으며",
+      "source_text_hash": "7954269ce5b7686cb515bb7a36786e2fc1a5de6a61b1758422e8c2bdc5c6925b",
+      "translation_text_hash": "363e5f94561e91d8e3b81f6b630ca218598968152277da25b28ec2a46613cd19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘의 열조에게 맹세하사 주마 하신 온 땅을 이와 같이 이스라엘에게 다 주셨으므로 그들이 그것을 얻어 거기 거하였으며"
+      ],
+      "raw_text_hashes": [
+        "363e5f94561e91d8e3b81f6b630ca218598968152277da25b28ec2a46613cd19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:44",
+      "sequence": 6426,
+      "chapter_label": "JOS 21",
+      "verse_label": "44",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 44
+        }
+      ],
+      "en": "The LORD gave them rest all around, according to all that he swore to their fathers. Not a man of all their enemies stood before them. The LORD delivered all their enemies into their hand.",
+      "ko": "여호와께서 그들의 사방에 안식을 주셨으되 그 열조에게 맹세하신대로 하셨으므로 그 모든 대적이 그들을 당한 자가 하나도 없었으니 이는 여호와께서 그들의 모든 대적을 그들의 손에 붙이셨음이라",
+      "source_text_hash": "cfb885b7ad27f9cf72029eedddeec7bdfd87e65df14aa1ab243dab5b1964ad63",
+      "translation_text_hash": "cf9b953cbb0a0108041fbadfd5e284a7a5930b8b825eaf230be6bf0cd82004e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 그들의 사방에 안식을 주셨으되 그 열조에게 맹세하신대로 하셨으므로 그 모든 대적이 그들을 당한 자가 하나도 없었으니 이는 여호와께서 그들의 모든 대적을 그들의 손에 붙이셨음이라"
+      ],
+      "raw_text_hashes": [
+        "cf9b953cbb0a0108041fbadfd5e284a7a5930b8b825eaf230be6bf0cd82004e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOS:21:45",
+      "sequence": 6427,
+      "chapter_label": "JOS 21",
+      "verse_label": "45",
+      "locator": {
+        "book": "JOS",
+        "chapter": 21,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JOS",
+          "chapter": 21,
+          "verse": 45
+        }
+      ],
+      "en": "Nothing failed of any good thing which the LORD had spoken to the house of Israel. All came to pass.",
+      "ko": "여호와께서 이스라엘 족속에게 말씀하신 선한 일이 하나도 남음이 없이 다 응하였더라",
+      "source_text_hash": "9c861035afa86aec6764ccecd486cee180323d41bd0d63de272a998b9e98abb0",
+      "translation_text_hash": "278703cab63d43eb35748d5a41559dca96c9bcb1ebad88642948e39a1669c666",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이스라엘 족속에게 말씀하신 선한 일이 하나도 남음이 없이 다 응하였더라"
+      ],
+      "raw_text_hashes": [
+        "278703cab63d43eb35748d5a41559dca96c9bcb1ebad88642948e39a1669c666"
+      ]
+    }
+  ]
+}

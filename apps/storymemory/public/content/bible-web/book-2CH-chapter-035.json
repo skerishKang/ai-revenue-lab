@@ -1,0 +1,877 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CH:chapter:035",
+  "unit_ordinal": 402,
+  "unit_label": "2CH 35",
+  "book_code": "2CH",
+  "chapter_number": 35,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CH:35:1",
+      "sequence": 11968,
+      "chapter_label": "2CH 35",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 1
+        }
+      ],
+      "en": "Josiah kept a Passover to the LORD in Jerusalem. They killed the Passover on the fourteenth day of the first month.",
+      "ko": "요시야가 예루살렘 여호와 앞에서 유월절을 지켜 정월 십 사일에 유월절 어린 양을 잡으니라",
+      "source_text_hash": "cf05cbc30737ab33991ed39ed0633f2327cded45d47ec4f8ab9685a859e5371a",
+      "translation_text_hash": "d0efec9197e841678a063ca4ee0609cd74b0f76f4b8f385d4811ff1dd4bb4b0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 예루살렘 여호와 앞에서 유월절을 지켜 정월 십 사일에 유월절 어린 양을 잡으니라"
+      ],
+      "raw_text_hashes": [
+        "d0efec9197e841678a063ca4ee0609cd74b0f76f4b8f385d4811ff1dd4bb4b0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:2",
+      "sequence": 11969,
+      "chapter_label": "2CH 35",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 2
+        }
+      ],
+      "en": "He set the priests in their offices and encouraged them in the service of the LORD’s house.",
+      "ko": "왕이 제사장들에게 그 직분을 맡기고 면려하여 여호와의 전에서 사무를 행하게 하고",
+      "source_text_hash": "99865531cc8646063f2ec277f314b640f7bfd11c30c6bdd82100e22601a16df7",
+      "translation_text_hash": "0aee47fd6b0aa3153e4d2c47a6edf1d60da08f9a8005c673c5978a5da5bef467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 제사장들에게 그 직분을 맡기고 면려하여 여호와의 전에서 사무를 행하게 하고"
+      ],
+      "raw_text_hashes": [
+        "0aee47fd6b0aa3153e4d2c47a6edf1d60da08f9a8005c673c5978a5da5bef467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:3",
+      "sequence": 11970,
+      "chapter_label": "2CH 35",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 3
+        }
+      ],
+      "en": "He said to the Levites who taught all Israel, who were holy to the LORD, “Put the holy ark in the house which Solomon the son of David king of Israel built. It will no longer be a burden on your shoulders. Now serve the LORD your God and his people Israel.",
+      "ko": "또 여호와 앞에 구별되어서 온 이스라엘을 가르치는 레위 사람에게 이르되 거룩한 궤를 이스라엘 왕 다윗의 아들 솔로몬의 건축한 전 가운데 두고 다시는 너희 어깨에 메지 말고 마땅히 너희 하나님 여호와와 그 백성 이스라엘을 섬길 것이라",
+      "source_text_hash": "1986b57fa1338254492fa5eb0e1004f15af6a99e77c750899ea92dd60b126efa",
+      "translation_text_hash": "ad87476a82d7177e7d3e0dc847d637a2424dedc26194443fb9ab3abae14ad906",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 여호와 앞에 구별되어서 온 이스라엘을 가르치는 레위 사람에게 이르되 거룩한 궤를 이스라엘 왕 다윗의 아들 솔로몬의 건축한 전 가운데 두고 다시는 너희 어깨에 메지 말고 마땅히 너희 하나님 여호와와 그 백성 이스라엘을 섬길 것이라"
+      ],
+      "raw_text_hashes": [
+        "ad87476a82d7177e7d3e0dc847d637a2424dedc26194443fb9ab3abae14ad906"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:4",
+      "sequence": 11971,
+      "chapter_label": "2CH 35",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 4
+        }
+      ],
+      "en": "Prepare yourselves after your fathers’ houses by your divisions, according to the writing of David king of Israel, and according to the writing of Solomon his son.",
+      "ko": "너희는 이스라엘 왕 다윗의 글과 다윗의 아들 솔로몬의 글을 준행하여 너희 족속대로 반열을 따라 스스로 예비하고",
+      "source_text_hash": "c2349dd9757a8ff552b3eeff61e984b3863c8bbee377342920fba69a2b2a72f2",
+      "translation_text_hash": "5aad85c7af2882e0518c503e85f1a9ae967443e4d4a553ee3e37076c2be180fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 이스라엘 왕 다윗의 글과 다윗의 아들 솔로몬의 글을 준행하여 너희 족속대로 반열을 따라 스스로 예비하고"
+      ],
+      "raw_text_hashes": [
+        "5aad85c7af2882e0518c503e85f1a9ae967443e4d4a553ee3e37076c2be180fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:5",
+      "sequence": 11972,
+      "chapter_label": "2CH 35",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 5
+        }
+      ],
+      "en": "Stand in the holy place according to the divisions of the fathers’ houses of your brothers the children of the people, and let there be for each a portion of a fathers’ house of the Levites.",
+      "ko": "너희 형제 모든 백성의 족속의 차서대로 또는 레위 족속의 차서대로 성소에 서서",
+      "source_text_hash": "a65307c013a5a17389e65252eb117768ff4685215924682719ff30437640b3e2",
+      "translation_text_hash": "88b4cf0434a5c61995315d54a2beb8fbcfcc0d46e248617c58e7a6dd7cb4cbb0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 형제 모든 백성의 족속의 차서대로 또는 레위 족속의 차서대로 성소에 서서"
+      ],
+      "raw_text_hashes": [
+        "88b4cf0434a5c61995315d54a2beb8fbcfcc0d46e248617c58e7a6dd7cb4cbb0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:6",
+      "sequence": 11973,
+      "chapter_label": "2CH 35",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 6
+        }
+      ],
+      "en": "Kill the Passover lamb, sanctify yourselves, and prepare for your brothers, to do according to the LORD’s word by Moses.”",
+      "ko": "스스로 성결케 하고 유월절 어린양을 잡아 너희 형제를 위하여 예비하되 여호와께서 모세로 전하신 말씀을 좇아 행할찌니라",
+      "source_text_hash": "1b6fd0a7e4279f3abaa11bb07ae28b955bda139068642d22c9410abe042f7a72",
+      "translation_text_hash": "ab2de1da1c901516fa357983e9e9936b2756716f37c4e480537e7b3705fca141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 성결케 하고 유월절 어린양을 잡아 너희 형제를 위하여 예비하되 여호와께서 모세로 전하신 말씀을 좇아 행할찌니라"
+      ],
+      "raw_text_hashes": [
+        "ab2de1da1c901516fa357983e9e9936b2756716f37c4e480537e7b3705fca141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:7",
+      "sequence": 11974,
+      "chapter_label": "2CH 35",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 7
+        }
+      ],
+      "en": "Josiah gave to the children of the people, of the flock, lambs and young goats, all of them for the Passover offerings, to all who were present, to the number of thirty thousand, and three thousand bulls. These were of the king’s substance.",
+      "ko": "요시야가 그 모인 백성들에게 자기의 소유 양떼 중에서 어린 양과 어린 염소 삼만과 수소 삼천을 내어 유월절 제물로 주매",
+      "source_text_hash": "323bbe5a4960df7928f3dd69fa6597ac00f741abc32a120825cdb8af7959fab1",
+      "translation_text_hash": "9c29a88c3f4a082d30d9ebf7d34f92bba839b57add69cc630d386dc2db88c8d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 그 모인 백성들에게 자기의 소유 양떼 중에서 어린 양과 어린 염소 삼만과 수소 삼천을 내어 유월절 제물로 주매"
+      ],
+      "raw_text_hashes": [
+        "9c29a88c3f4a082d30d9ebf7d34f92bba839b57add69cc630d386dc2db88c8d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:8",
+      "sequence": 11975,
+      "chapter_label": "2CH 35",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 8
+        }
+      ],
+      "en": "His princes gave a free will offering to the people, to the priests, and to the Levites. Hilkiah, Zechariah, and Jehiel, the rulers of God’s house, gave to the priests for the Passover offerings two thousand six hundred small livestock, and three hundred head of cattle.",
+      "ko": "방백들도 즐거이 희생을 드려 백성과 제사장들과 레위 사람들에게 주었고 하나님의 전을 주장하는 자 힐기야와 스가랴와 여히엘은 제사장들에게 양 이천 육백과 수소 삼백을 유월절 제물로 주었고",
+      "source_text_hash": "0170f958f1eaa797632000575c2af4f3068c5768abe98a6c1d311377cf8e0d6e",
+      "translation_text_hash": "539f0e25837ab271c383b3f6ca89f4f3d9e182fffefff1a1b3d6512fe94a3d3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들도 즐거이 희생을 드려 백성과 제사장들과 레위 사람들에게 주었고 하나님의 전을 주장하는 자 힐기야와 스가랴와 여히엘은 제사장들에게 양 이천 육백과 수소 삼백을 유월절 제물로 주었고"
+      ],
+      "raw_text_hashes": [
+        "539f0e25837ab271c383b3f6ca89f4f3d9e182fffefff1a1b3d6512fe94a3d3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:9",
+      "sequence": 11976,
+      "chapter_label": "2CH 35",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 9
+        }
+      ],
+      "en": "Conaniah also, and Shemaiah and Nethanel, his brothers, and Hashabiah, Jeiel, and Jozabad, the chiefs of the Levites, gave to the Levites for the Passover offerings five thousand small livestock and five hundred head of cattle.",
+      "ko": "또 레위 사람의 두목들 곧 고나냐와 그 형제 스마야와 느다넬과 또 하사뱌와 여이엘과 요사밧은 양 오천과 수소 오백을 레위 사람들에게 유월절 제물로 주었더라",
+      "source_text_hash": "414e18b55ebb0f7f97e48f69d9a0fe14c2fc22ffa3cb633423f399245ea8f4b5",
+      "translation_text_hash": "d80d6cd077099c7d33871d154bbb8791fb7019fca95cebb8274746f59a0a78a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 레위 사람의 두목들 곧 고나냐와 그 형제 스마야와 느다넬과 또 하사뱌와 여이엘과 요사밧은 양 오천과 수소 오백을 레위 사람들에게 유월절 제물로 주었더라"
+      ],
+      "raw_text_hashes": [
+        "d80d6cd077099c7d33871d154bbb8791fb7019fca95cebb8274746f59a0a78a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:10",
+      "sequence": 11977,
+      "chapter_label": "2CH 35",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 10
+        }
+      ],
+      "en": "So the service was prepared, and the priests stood in their place, and the Levites by their divisions, according to the king’s commandment.",
+      "ko": "이와 같이 섬길 일이 구비하매 왕의 명을 좇아 제사장들은 자기 처소에 서고 레위 사람들은 그 반열대로 서고",
+      "source_text_hash": "1bf77a806a44a47d90a2e80acfea0b39caa736f11cb98e72fcc8dae6bae370fe",
+      "translation_text_hash": "39f844b15a6248cd87b7bb605d09af3c7f719e8e8ba0e71b69a2a8c1cdcb6592",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 섬길 일이 구비하매 왕의 명을 좇아 제사장들은 자기 처소에 서고 레위 사람들은 그 반열대로 서고"
+      ],
+      "raw_text_hashes": [
+        "39f844b15a6248cd87b7bb605d09af3c7f719e8e8ba0e71b69a2a8c1cdcb6592"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:11",
+      "sequence": 11978,
+      "chapter_label": "2CH 35",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 11
+        }
+      ],
+      "en": "They killed the Passover lambs, and the priests sprinkled the blood which they received from their hands, and the Levites skinned them.",
+      "ko": "유월절 양을 잡으니 제사장들은 저희 손에서 피를 받아 뿌리고 또 레위 사람들은 잡은 짐승의 가죽을 벗기고",
+      "source_text_hash": "0db9d843f2b65c99f642567a4ba9f99c1c72e68918db28a0e17a99cb0139751d",
+      "translation_text_hash": "507d7fa7677322449b6fb3eb038f553da167c22461da783fe0437a9f10e26086",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유월절 양을 잡으니 제사장들은 저희 손에서 피를 받아 뿌리고 또 레위 사람들은 잡은 짐승의 가죽을 벗기고"
+      ],
+      "raw_text_hashes": [
+        "507d7fa7677322449b6fb3eb038f553da167c22461da783fe0437a9f10e26086"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:12",
+      "sequence": 11979,
+      "chapter_label": "2CH 35",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 12
+        }
+      ],
+      "en": "They removed the burnt offerings, that they might give them according to the divisions of the fathers’ houses of the children of the people, to offer to the LORD, as it is written in the book of Moses. They did the same with the cattle.",
+      "ko": "그 번제물을 옮겨 족속의 차서대로 모든 백성에게 나누어 모세의 책에 기록된대로 여호와께 드리게 하고 소도 그와 같이 하고",
+      "source_text_hash": "45d6c02e00384ec9c51fec301813f2be908d9fac7b16b25ac42858bfb484c627",
+      "translation_text_hash": "427cd50ce13d9a74346d62c4244d47fe2e0291c15aacab6d913011ff5fff4fa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 번제물을 옮겨 족속의 차서대로 모든 백성에게 나누어 모세의 책에 기록된대로 여호와께 드리게 하고 소도 그와 같이 하고"
+      ],
+      "raw_text_hashes": [
+        "427cd50ce13d9a74346d62c4244d47fe2e0291c15aacab6d913011ff5fff4fa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:13",
+      "sequence": 11980,
+      "chapter_label": "2CH 35",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 13
+        }
+      ],
+      "en": "They roasted the Passover with fire according to the ordinance. They boiled the holy offerings in pots, in cauldrons, and in pans, and carried them quickly to all the children of the people.",
+      "ko": "이에 규례대로 유월절 양을 불에 굽고 그 나머지 성물은 솥과 가마와 남비에 삶아 모든 백성에게 속히 분배하고",
+      "source_text_hash": "6c24da72339e3ee639d43dcaccf95c0c3c8363d4b442071d7b6c3fc467584d5f",
+      "translation_text_hash": "08ce951415e15088dfad25ee50749293a3753ab66e46ca73b8cf002c1a4dd0d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 규례대로 유월절 양을 불에 굽고 그 나머지 성물은 솥과 가마와 남비에 삶아 모든 백성에게 속히 분배하고"
+      ],
+      "raw_text_hashes": [
+        "08ce951415e15088dfad25ee50749293a3753ab66e46ca73b8cf002c1a4dd0d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:14",
+      "sequence": 11981,
+      "chapter_label": "2CH 35",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 14
+        }
+      ],
+      "en": "Afterward they prepared for themselves and for the priests, because the priests the sons of Aaron were busy with offering the burnt offerings and the fat until night. Therefore the Levites prepared for themselves and for the priests the sons of Aaron.",
+      "ko": "그 후에 자기와 제사장들을 위하여 준비하니 이는 아론의 자손 제사장들이 번제와 기름을 저녁까지 드리는고로 레위 사람들이 자기와 아론의 자손 제사장들을 위하여 준비함이더라",
+      "source_text_hash": "a4b7c95eb6a93a53e6d4a500864f1f46a750b8e8180f02f01ea2dbb0ba68fe0f",
+      "translation_text_hash": "4e2b84df9623fc29b96e4d63af152f2fa8fa3315458fb02f5fe26cc9fa566ee8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 자기와 제사장들을 위하여 준비하니 이는 아론의 자손 제사장들이 번제와 기름을 저녁까지 드리는고로 레위 사람들이 자기와 아론의 자손 제사장들을 위하여 준비함이더라"
+      ],
+      "raw_text_hashes": [
+        "4e2b84df9623fc29b96e4d63af152f2fa8fa3315458fb02f5fe26cc9fa566ee8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:15",
+      "sequence": 11982,
+      "chapter_label": "2CH 35",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 15
+        }
+      ],
+      "en": "The singers, the sons of Asaph, were in their place, according to the commandment of David, Asaph, Heman, and Jeduthun the king’s seer; and the gatekeepers were at every gate. They didn’t need to depart from their service, because their brothers the Levites prepared for them.",
+      "ko": "아삽의 자손 노래하는 자들은 다윗과 아삽과 헤만과 왕의 선견자 여두둔의 명한대로 자기 처소에 있고 문지기들은 각 문에 있고 그 직임에서 떠날 것이 없었으니 이는 그 형제 레위 사람들이 저희를 위하여 예비하였음이더라",
+      "source_text_hash": "5d9a83f348879d1153886563c1bc9d51e2c11a6e71e517d7ff20a430ec5c054d",
+      "translation_text_hash": "c20022ba2892a5d34923d5ca31ac65a9c4d1ae765be0598c74d8ce8abb40fbed",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아삽의 자손 노래하는 자들은 다윗과 아삽과 헤만과 왕의 선견자 여두둔의 명한대로 자기 처소에 있고 문지기들은 각 문에 있고 그 직임에서 떠날 것이 없었으니 이는 그 형제 레위 사람들이 저희를 위하여 예비하였음이더라"
+      ],
+      "raw_text_hashes": [
+        "c20022ba2892a5d34923d5ca31ac65a9c4d1ae765be0598c74d8ce8abb40fbed"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:16",
+      "sequence": 11983,
+      "chapter_label": "2CH 35",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 16
+        }
+      ],
+      "en": "So all the service of the LORD was prepared the same day, to keep the Passover, and to offer burnt offerings on the LORD’s altar, according to the commandment of King Josiah.",
+      "ko": "이와 같이 당일에 여호와를 섬길 일이 다 준비되매 요시야왕의 명대로 유월절을 지키며 번제를 여호와의 단에 드렸으며",
+      "source_text_hash": "10840b199d5d2c080de1cb417cbdfcd6e47eb6d2d64240dc395ae7f63301150f",
+      "translation_text_hash": "6a0fd5f46ad33b456f2a9e93217c9fb8930e54eb4664b180d5954a4499d5e422",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 당일에 여호와를 섬길 일이 다 준비되매 요시야왕의 명대로 유월절을 지키며 번제를 여호와의 단에 드렸으며"
+      ],
+      "raw_text_hashes": [
+        "6a0fd5f46ad33b456f2a9e93217c9fb8930e54eb4664b180d5954a4499d5e422"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:17",
+      "sequence": 11984,
+      "chapter_label": "2CH 35",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 17
+        }
+      ],
+      "en": "The children of Israel who were present kept the Passover at that time, and the feast of unleavened bread seven days.",
+      "ko": "그 때에 모인 이스라엘 자손이 유월절을 지키고 연하여 무교절을 칠일 동안 지켰으니",
+      "source_text_hash": "d855fc3feac93651621ab70de1b85918426b6c6b00529f90c70cc9ebfecef5c7",
+      "translation_text_hash": "26a67e58ba7d9c721fa7fd414b153f5a55721494a854014be9bf87bed8dba534",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 모인 이스라엘 자손이 유월절을 지키고 연하여 무교절을 칠일 동안 지켰으니"
+      ],
+      "raw_text_hashes": [
+        "26a67e58ba7d9c721fa7fd414b153f5a55721494a854014be9bf87bed8dba534"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:18",
+      "sequence": 11985,
+      "chapter_label": "2CH 35",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 18
+        }
+      ],
+      "en": "There was no Passover like that kept in Israel from the days of Samuel the prophet, nor did any of the kings of Israel keep such a Passover as Josiah kept—with the priests, the Levites, and all Judah and Israel who were present, and the inhabitants of Jerusalem.",
+      "ko": "선지자 사무엘 이후로 이스라엘 가운데서 유월절을 이같이 지키지 못하였고 이스라엘 열왕도 요시야가 제사장들과 레위 사람들과 모인 온 유다와 이스라엘 무리와 예루살렘 거민과 함께 지킨 것처럼은 유월절을 지키지 못하였더라",
+      "source_text_hash": "abb74877ef24bf9519e3dc8df971d15b1987f933d748a769b469ea7c0bfeff48",
+      "translation_text_hash": "a22da906049b9fa32e0556857a261cebe6ba779f7fffbb552a704f34713e759f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자 사무엘 이후로 이스라엘 가운데서 유월절을 이같이 지키지 못하였고 이스라엘 열왕도 요시야가 제사장들과 레위 사람들과 모인 온 유다와 이스라엘 무리와 예루살렘 거민과 함께 지킨 것처럼은 유월절을 지키지 못하였더라"
+      ],
+      "raw_text_hashes": [
+        "a22da906049b9fa32e0556857a261cebe6ba779f7fffbb552a704f34713e759f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:19",
+      "sequence": 11986,
+      "chapter_label": "2CH 35",
+      "verse_label": "19",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 19
+        }
+      ],
+      "en": "This Passover was kept in the eighteenth year of the reign of Josiah.",
+      "ko": "요시야의 위에 있은지 십 팔년에 이 유월절을 지켰더라",
+      "source_text_hash": "68a2a032ccf4c8ff83b4a06c9c6c94ecff0dff9aa3e616f3a013e82e40975267",
+      "translation_text_hash": "23372da54f6497698555200543d881f491f080a5ba84db869692faeff2916d33",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 위에 있은지 십 팔년에 이 유월절을 지켰더라"
+      ],
+      "raw_text_hashes": [
+        "23372da54f6497698555200543d881f491f080a5ba84db869692faeff2916d33"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:20",
+      "sequence": 11987,
+      "chapter_label": "2CH 35",
+      "verse_label": "20",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 20
+        }
+      ],
+      "en": "After all this, when Josiah had prepared the temple, Neco king of Egypt went up to fight against Carchemish by the Euphrates, and Josiah went out against him.",
+      "ko": "이 모든 일 후 곧 요시야가 전을 정돈하기를 마친 후에 애굽 왕 느고가 유브라데강 가의 갈그미스를 치러 올라온고로 요시야가 나가서 방비하였더니",
+      "source_text_hash": "3660210f7f4fd2a74bc616f85d2ff10bb682e9085abfc5cc1d5fa0fd388b74d3",
+      "translation_text_hash": "81b4efd1828b859501bc119e4036c67f57bb995e3cb7e5205889dda737df38cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일 후 곧 요시야가 전을 정돈하기를 마친 후에 애굽 왕 느고가 유브라데강 가의 갈그미스를 치러 올라온고로 요시야가 나가서 방비하였더니"
+      ],
+      "raw_text_hashes": [
+        "81b4efd1828b859501bc119e4036c67f57bb995e3cb7e5205889dda737df38cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:21",
+      "sequence": 11988,
+      "chapter_label": "2CH 35",
+      "verse_label": "21",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 21
+        }
+      ],
+      "en": "But he sent ambassadors to him, saying, “What have I to do with you, you king of Judah? I come not against you today, but against the house with which I have war. God has commanded me to make haste. Beware that it is God who is with me, that he not destroy you.”",
+      "ko": "느고가 요시야에게 사자를 보내어 가로되 유다 왕이여 내가 그대와 무슨 관계가 있느뇨 내가 오늘날 그대를 치려는 것이 아니요 나로 더불어 싸우는 족속을 치려는 것이라 하나님이 나를 명하사 속히 하라 하셨은즉 하나님이 나와 함께 계시니 그대는 하나님을 거스리지 말라 그대를 멸하실까 하노라 하나",
+      "source_text_hash": "d268ea4fdd330f94c82e0e6b3925039e2ca728268da104341a375cc9fbc9dd28",
+      "translation_text_hash": "77b9fa65a5e8b2a0818e46967873f84013be4d40e18bc7b8b55d8eb7c84f0a5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "느고가 요시야에게 사자를 보내어 가로되 유다 왕이여 내가 그대와 무슨 관계가 있느뇨 내가 오늘날 그대를 치려는 것이 아니요 나로 더불어 싸우는 족속을 치려는 것이라 하나님이 나를 명하사 속히 하라 하셨은즉 하나님이 나와 함께 계시니 그대는 하나님을 거스리지 말라 그대를 멸하실까 하노라 하나"
+      ],
+      "raw_text_hashes": [
+        "77b9fa65a5e8b2a0818e46967873f84013be4d40e18bc7b8b55d8eb7c84f0a5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:22",
+      "sequence": 11989,
+      "chapter_label": "2CH 35",
+      "verse_label": "22",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 22
+        }
+      ],
+      "en": "Nevertheless Josiah would not turn his face from him, but disguised himself, that he might fight with him, and didn’t listen to the words of Neco from the mouth of God, and came to fight in the valley of Megiddo.",
+      "ko": "요시야가 몸을 돌이켜 떠나기를 싫어하고 변장하고 싸우고자 하여 하나님의 입에서 나온 느고의 말을 듣지 아니하고 므깃도 골짜기에 이르러 싸울 때에",
+      "source_text_hash": "ad1829a67250feff22abf038d8b897a02226beb8475d6eaa4beab83bf97d4615",
+      "translation_text_hash": "5f8505fb8340974c8f7db8f49991e1eaf8268e418577771293e8234beb2bb86b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야가 몸을 돌이켜 떠나기를 싫어하고 변장하고 싸우고자 하여 하나님의 입에서 나온 느고의 말을 듣지 아니하고 므깃도 골짜기에 이르러 싸울 때에"
+      ],
+      "raw_text_hashes": [
+        "5f8505fb8340974c8f7db8f49991e1eaf8268e418577771293e8234beb2bb86b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:23",
+      "sequence": 11990,
+      "chapter_label": "2CH 35",
+      "verse_label": "23",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 23
+        }
+      ],
+      "en": "The archers shot at King Josiah; and the king said to his servants, “Take me away, because I am seriously wounded!”",
+      "ko": "활 쏘는 자가 요시야왕을 쏜지라 왕이 그 신복에게 이르되 내가 중상하였으니 나를 도와 나가게 하라",
+      "source_text_hash": "78f47d1062e4a991fc05253090c51eb297b123841ff18939f7b0dd4c7ab4e074",
+      "translation_text_hash": "4f072fadfa8995bb7a69a6fb7b2f19a7611bb50f30f74600ee8b169781b1d643",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "활 쏘는 자가 요시야왕을 쏜지라 왕이 그 신복에게 이르되 내가 중상하였으니 나를 도와 나가게 하라"
+      ],
+      "raw_text_hashes": [
+        "4f072fadfa8995bb7a69a6fb7b2f19a7611bb50f30f74600ee8b169781b1d643"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:24",
+      "sequence": 11991,
+      "chapter_label": "2CH 35",
+      "verse_label": "24",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 24
+        }
+      ],
+      "en": "So his servants took him out of the chariot, and put him in the second chariot that he had, and brought him to Jerusalem; and he died, and was buried in the tombs of his fathers. All Judah and Jerusalem mourned for Josiah.",
+      "ko": "그 신복이 저를 병거에서 내리게 하고 저의 버금 병거에 태워 예루살렘에 이른 후에 저가 죽으니 그 열조의 묘실에 장사하니라 온 유다와 예루살렘 사람들이 요시야를 슬퍼하고",
+      "source_text_hash": "011986960985cf92a43c549e0b7b848819ae30f9367f7f17da2deb3c5d9429bc",
+      "translation_text_hash": "e4afc704613f0188913da844900c6e1438620d4cfb914448721d6602faece327",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 신복이 저를 병거에서 내리게 하고 저의 버금 병거에 태워 예루살렘에 이른 후에 저가 죽으니 그 열조의 묘실에 장사하니라 온 유다와 예루살렘 사람들이 요시야를 슬퍼하고"
+      ],
+      "raw_text_hashes": [
+        "e4afc704613f0188913da844900c6e1438620d4cfb914448721d6602faece327"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:25",
+      "sequence": 11992,
+      "chapter_label": "2CH 35",
+      "verse_label": "25",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 25
+        }
+      ],
+      "en": "Jeremiah lamented for Josiah, and all the singing men and singing women spoke of Josiah in their lamentations to this day; and they made them an ordinance in Israel. Behold, they are written in the lamentations.",
+      "ko": "예레미야는 저를 위하여 애가를 지었으며 노래하는 남자와 여자는 요시야를 슬피 노래하니 이스라엘에 규례가 되어 오늘날까지 이르렀으며 그 가사는 애가 중에 기록되었더라",
+      "source_text_hash": "70c5bfe589b0be3b78b4590b6f6f5b832b4b134e462d1d9f639856c52695e8ad",
+      "translation_text_hash": "6af9d308e9db26b1339ee45ae7eb9bcc414784c6f913e3a017a91509c7ad6c14",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예레미야는 저를 위하여 애가를 지었으며 노래하는 남자와 여자는 요시야를 슬피 노래하니 이스라엘에 규례가 되어 오늘날까지 이르렀으며 그 가사는 애가 중에 기록되었더라"
+      ],
+      "raw_text_hashes": [
+        "6af9d308e9db26b1339ee45ae7eb9bcc414784c6f913e3a017a91509c7ad6c14"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:26",
+      "sequence": 11993,
+      "chapter_label": "2CH 35",
+      "verse_label": "26",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 26
+        }
+      ],
+      "en": "Now the rest of the acts of Josiah and his good deeds, according to that which is written in the LORD’s law,",
+      "ko": "요시야의 남은 사적과 여호와의 율법에 기록된대로 행한 모든 선한 일과",
+      "source_text_hash": "3470f18d819f7438129121bce4c082a1da0b370fd71e9117b4ed1f8e4910142b",
+      "translation_text_hash": "efeecd1b7410c3f5fe2344505b6244e198014acad13d32cb8c0546d05cbc1fee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요시야의 남은 사적과 여호와의 율법에 기록된대로 행한 모든 선한 일과"
+      ],
+      "raw_text_hashes": [
+        "efeecd1b7410c3f5fe2344505b6244e198014acad13d32cb8c0546d05cbc1fee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CH:35:27",
+      "sequence": 11994,
+      "chapter_label": "2CH 35",
+      "verse_label": "27",
+      "locator": {
+        "book": "2CH",
+        "chapter": 35,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "2CH",
+          "chapter": 35,
+          "verse": 27
+        }
+      ],
+      "en": "and his acts, first and last, behold, they are written in the book of the kings of Israel and Judah.",
+      "ko": "그 시종 행적이 이스라엘과 유다 열왕기에 기록되니라",
+      "source_text_hash": "91073ce1b7f37efe1b1e096b4c57a5e118e11827cddeeaca67f0ca349aae33ef",
+      "translation_text_hash": "e2f0d7cd9862aad6d6494e4ced56ccfa8ee83c2efeae2bf3b524b259668525ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시종 행적이 이스라엘과 유다 열왕기에 기록되니라"
+      ],
+      "raw_text_hashes": [
+        "e2f0d7cd9862aad6d6494e4ced56ccfa8ee83c2efeae2bf3b524b259668525ee"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:024",
+  "unit_ordinal": 703,
+  "unit_label": "ISA 24",
+  "book_code": "ISA",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:24:1",
+      "sequence": 18097,
+      "chapter_label": "ISA 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Behold, the LORD makes the earth empty, makes it waste, turns it upside down, and scatters its inhabitants.",
+      "ko": "여호와께서 땅을 공허하게 하시며 황무하게 하시며 뒤집어 엎으시고 그 거민을 흩으시리니",
+      "source_text_hash": "1a6da0420a5b13cf2fe03a756c6acabb0d92832913659ee1f26497a0fe48d093",
+      "translation_text_hash": "b51498956c89628def04e585a9fd7274cf7ec4dea401dce0cbafe1c7a8f62375",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 땅을 공허하게 하시며 황무하게 하시며 뒤집어 엎으시고 그 거민을 흩으시리니"
+      ],
+      "raw_text_hashes": [
+        "b51498956c89628def04e585a9fd7274cf7ec4dea401dce0cbafe1c7a8f62375"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:2",
+      "sequence": 18098,
+      "chapter_label": "ISA 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "It will be as with the people, so with the priest; as with the servant, so with his master; as with the maid, so with her mistress; as with the buyer, so with the seller; as with the creditor, so with the debtor; as with the taker of interest, so with the giver of interest.",
+      "ko": "백성과 제사장이 일반일 것이며 종과 상전이 일반일 것이며 비자와 가모가 일반일 것이며 사는 자와 파는 자가 일반일 것이며 채급하는 자와 채용하는 자가 일반일 것이며 이자를 받는 자와 이자를 내는 자가 일반일 것이라",
+      "source_text_hash": "6db0db849ad87df280512039feaa41f8687174c4ad0fbbb867e0cbe8bf615fb5",
+      "translation_text_hash": "d28d8024dd47043415db27d634b0e2a262916ba7f4a937c9e1269072e7e95a66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백성과 제사장이 일반일 것이며 종과 상전이 일반일 것이며 비자와 가모가 일반일 것이며 사는 자와 파는 자가 일반일 것이며 채급하는 자와 채용하는 자가 일반일 것이며 이자를 받는 자와 이자를 내는 자가 일반일 것이라"
+      ],
+      "raw_text_hashes": [
+        "d28d8024dd47043415db27d634b0e2a262916ba7f4a937c9e1269072e7e95a66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:3",
+      "sequence": 18099,
+      "chapter_label": "ISA 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "The earth will be utterly emptied and utterly laid waste; for the LORD has spoken this word.",
+      "ko": "땅이 온전히 공허하게 되고 온전히 황무하게 되리라 여호와께서 이 말씀을 하셨느니라",
+      "source_text_hash": "420463dffa155b0003420ba3e455d37aed9aa38215e2ddaae751e1ffa4a8db57",
+      "translation_text_hash": "9d72195de40fd1088014de47aaeb271c835b22ce22ef17aec9debec2b1eaa927",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 온전히 공허하게 되고 온전히 황무하게 되리라 여호와께서 이 말씀을 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "9d72195de40fd1088014de47aaeb271c835b22ce22ef17aec9debec2b1eaa927"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:4",
+      "sequence": 18100,
+      "chapter_label": "ISA 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "The earth mourns and fades away. The world languishes and fades away. The lofty people of the earth languish.",
+      "ko": "땅이 슬퍼하고 쇠잔하며 세계가 쇠약하고 쇠잔하며 세상 백성 중에 높은 자가 쇠약하며",
+      "source_text_hash": "845cc663e12b7e0294575d46f4295f3993cd8a99ba83ab8fcdedaf52cdd3a360",
+      "translation_text_hash": "7bc8574fa85fb57f81c21e258841f8c1e2bc53cb2a98f9369f28033c0d1a2d0e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 슬퍼하고 쇠잔하며 세계가 쇠약하고 쇠잔하며 세상 백성 중에 높은 자가 쇠약하며"
+      ],
+      "raw_text_hashes": [
+        "7bc8574fa85fb57f81c21e258841f8c1e2bc53cb2a98f9369f28033c0d1a2d0e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:5",
+      "sequence": 18101,
+      "chapter_label": "ISA 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "The earth also is polluted under its inhabitants, because they have transgressed the laws, violated the statutes, and broken the everlasting covenant.",
+      "ko": "땅이 또한 그 거민 아래서 더럽게 되었으니 이는 그들이 율법을 범하며 율례를 어기며 영원한 언약을 파하였음이라",
+      "source_text_hash": "0c2508ab8af975394400cb642c05b0d4bb0342e9691a7b2c2f5c163472f23169",
+      "translation_text_hash": "ac019058e9f8a8adad40e2837e27cc489e424a5633fcbf06481683c3bf98372d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 또한 그 거민 아래서 더럽게 되었으니 이는 그들이 율법을 범하며 율례를 어기며 영원한 언약을 파하였음이라"
+      ],
+      "raw_text_hashes": [
+        "ac019058e9f8a8adad40e2837e27cc489e424a5633fcbf06481683c3bf98372d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:6",
+      "sequence": 18102,
+      "chapter_label": "ISA 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "Therefore the curse has devoured the earth, and those who dwell therein are found guilty. Therefore the inhabitants of the earth are burned, and few men are left.",
+      "ko": "그러므로 저주가 땅을 삼켰고 그 중에 거하는 자들이 정죄함을 당하였고 땅의 거민이 불타서 남은 자가 적으며",
+      "source_text_hash": "3b73f8e6c16ad3eaf91a43400688c85329830f8116b461d0b0aee9295f25bdef",
+      "translation_text_hash": "027ac9e484fb8e15a6ca878574dade75590a0155bbfe9ecfa509041feec17f8b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 저주가 땅을 삼켰고 그 중에 거하는 자들이 정죄함을 당하였고 땅의 거민이 불타서 남은 자가 적으며"
+      ],
+      "raw_text_hashes": [
+        "027ac9e484fb8e15a6ca878574dade75590a0155bbfe9ecfa509041feec17f8b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:7",
+      "sequence": 18103,
+      "chapter_label": "ISA 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "The new wine mourns. The vine languishes. All the merry-hearted sigh.",
+      "ko": "새 포도즙이 슬퍼하고 포도나무가 쇠잔하며 마음이 즐겁던 자가 다 탄식하며",
+      "source_text_hash": "d677b26d967c0c4adcd9612148e64d758d32b7c529f684dffdc872b1bcbcc45f",
+      "translation_text_hash": "5f7c190e62326e17cab969cc98ee4e4df23048d22fdeffe672ae19e858af7614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "새 포도즙이 슬퍼하고 포도나무가 쇠잔하며 마음이 즐겁던 자가 다 탄식하며"
+      ],
+      "raw_text_hashes": [
+        "5f7c190e62326e17cab969cc98ee4e4df23048d22fdeffe672ae19e858af7614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:8",
+      "sequence": 18104,
+      "chapter_label": "ISA 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "The mirth of tambourines ceases. The sound of those who rejoice ends. The joy of the harp ceases.",
+      "ko": "소고 치는 기쁨이 그치고 즐거워하는 자의 소리가 마치고 수금 타는 기쁨이 그쳤으며",
+      "source_text_hash": "d2200a3132211dbaf11e8969a8821dbf212168050f371b77bccd0594e89038d8",
+      "translation_text_hash": "345234837d6ecddda16b0287fdda321eac417163f5602a73d9e5e49633f84998",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소고 치는 기쁨이 그치고 즐거워하는 자의 소리가 마치고 수금 타는 기쁨이 그쳤으며"
+      ],
+      "raw_text_hashes": [
+        "345234837d6ecddda16b0287fdda321eac417163f5602a73d9e5e49633f84998"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:9",
+      "sequence": 18105,
+      "chapter_label": "ISA 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "They will not drink wine with a song. Strong drink will be bitter to those who drink it.",
+      "ko": "노래하며 포도주를 마시지 못하고 독주는 그 마시는 자에게 쓰게 될 것이며",
+      "source_text_hash": "748a4222d11fc3f46e1d6be8247f4c94e4187bf58db47487971c7c50a23db660",
+      "translation_text_hash": "799e91da621e852e2d7c48f9476ed45609a86a7e56da1b1ba6e4e68b4bb9cf5b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노래하며 포도주를 마시지 못하고 독주는 그 마시는 자에게 쓰게 될 것이며"
+      ],
+      "raw_text_hashes": [
+        "799e91da621e852e2d7c48f9476ed45609a86a7e56da1b1ba6e4e68b4bb9cf5b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:10",
+      "sequence": 18106,
+      "chapter_label": "ISA 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "The confused city is broken down. Every house is shut up, that no man may come in.",
+      "ko": "약탈을 당한 성읍이 훼파되고 집마다 닫히었고 들어가는 자가 없으며",
+      "source_text_hash": "c57f90fbf0716bcfa6a5536dd1f5390fbaa8ca4d2db9a44a2fbd1529848b3f4e",
+      "translation_text_hash": "a6aa624b6312428f18199de332b57a0f5ed30abc7cca6d2b1bc5999c73dccbc8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약탈을 당한 성읍이 훼파되고 집마다 닫히었고 들어가는 자가 없으며"
+      ],
+      "raw_text_hashes": [
+        "a6aa624b6312428f18199de332b57a0f5ed30abc7cca6d2b1bc5999c73dccbc8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:11",
+      "sequence": 18107,
+      "chapter_label": "ISA 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "There is a crying in the streets because of the wine. All joy is darkened. The mirth of the land is gone.",
+      "ko": "포도주가 없으므로 거리에서 부르짖으며 모든 즐거움이 암흑하여졌으며 땅의 기쁨이 소멸되었으며",
+      "source_text_hash": "cdd20212581b0860cba3214458f9dbdeb6a8028b6d8b7a0c8eab28fabb9e056f",
+      "translation_text_hash": "06b3403f7ede743e8fa5a7600a7596e515b8b2e44f20f92e0d8f1d3ea1566b38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "포도주가 없으므로 거리에서 부르짖으며 모든 즐거움이 암흑하여졌으며 땅의 기쁨이 소멸되었으며"
+      ],
+      "raw_text_hashes": [
+        "06b3403f7ede743e8fa5a7600a7596e515b8b2e44f20f92e0d8f1d3ea1566b38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:12",
+      "sequence": 18108,
+      "chapter_label": "ISA 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "The city is left in desolation, and the gate is struck with destruction.",
+      "ko": "성읍이 황무하고 성문이 파괴되었느니라",
+      "source_text_hash": "ba581e4f931371da2f35cb7a3dc3738ba4fa930c188e9a498e41eb44759412d0",
+      "translation_text_hash": "791163cf34bb6fc9796555ac9707a0ebe2f004290728344545d872ddf87d2a0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍이 황무하고 성문이 파괴되었느니라"
+      ],
+      "raw_text_hashes": [
+        "791163cf34bb6fc9796555ac9707a0ebe2f004290728344545d872ddf87d2a0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:13",
+      "sequence": 18109,
+      "chapter_label": "ISA 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "For it will be so within the earth among the peoples, as the shaking of an olive tree, as the gleanings when the vintage is done.",
+      "ko": "세계 민족 중에 이러한 일이 있으리니 곧 감람나무를 흔듬 같고 포도를 거둔 후에 그 남은 것을 주움 같을 것이니라",
+      "source_text_hash": "68010256b9c31b4b05f78e46abf004fafa98c3173cdab595085aa1ca7093f8aa",
+      "translation_text_hash": "f8cf0e14c0e7bfeaf0f28984ff2632a0eaa5df53c5d2b04998ea5aa137f998d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세계 민족 중에 이러한 일이 있으리니 곧 감람나무를 흔듬 같고 포도를 거둔 후에 그 남은 것을 주움 같을 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f8cf0e14c0e7bfeaf0f28984ff2632a0eaa5df53c5d2b04998ea5aa137f998d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:14",
+      "sequence": 18110,
+      "chapter_label": "ISA 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "These shall lift up their voice. They will shout for the majesty of the LORD. They cry aloud from the sea.",
+      "ko": "무리가 소리를 높여 부를 것이며 여호와의 위엄을 인하여 바다에서부터 크게 외치리니",
+      "source_text_hash": "86ca2be6e6238d1c9dd526f19a8561897aa7fefe5af7b6c91d146dfff467be3a",
+      "translation_text_hash": "04f6401bbd3232981ac7846ee6841890ad98699e9a0663761186f9975c95ee76",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무리가 소리를 높여 부를 것이며 여호와의 위엄을 인하여 바다에서부터 크게 외치리니"
+      ],
+      "raw_text_hashes": [
+        "04f6401bbd3232981ac7846ee6841890ad98699e9a0663761186f9975c95ee76"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:15",
+      "sequence": 18111,
+      "chapter_label": "ISA 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore glorify the LORD in the east, even the name of the LORD, the God of Israel, in the islands of the sea!",
+      "ko": "그러므로 너희가 동방에서 여호와를 영화롭게 하며 바다 모든 섬에서 이스라엘 하나님 여호와의 이름을 영화롭게 할 것이라",
+      "source_text_hash": "60f18e5705ca07ac3baf672dbd382ab5fa29ae9aba9d9db9687baafef5ffd444",
+      "translation_text_hash": "893ee53c5e3e3dacc2f40b163665f3147850fbc9e69c693fcd4744cdd22fc02e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 동방에서 여호와를 영화롭게 하며 바다 모든 섬에서 이스라엘 하나님 여호와의 이름을 영화롭게 할 것이라"
+      ],
+      "raw_text_hashes": [
+        "893ee53c5e3e3dacc2f40b163665f3147850fbc9e69c693fcd4744cdd22fc02e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:16",
+      "sequence": 18112,
+      "chapter_label": "ISA 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "From the uttermost part of the earth have we heard songs. Glory to the righteous! But I said, “I pine away! I pine away! woe is me!” The treacherous have dealt treacherously. Yes, the treacherous have dealt very treacherously.",
+      "ko": "땅 끝에서부터 노래하는 소리가 우리에게 들리기를 의로우신 자에게 영광을 돌리세 하도다 그러나 나는 이르기를 나는 쇠잔하였고 나는 쇠잔하였으니 내게 화가 있도다 궤휼자가 궤휼을 행하도다 궤휼자가 심히 궤휼을 행하도다 하였도다",
+      "source_text_hash": "ba0444e32c968a167859bffa91dc63fb7b3c847243c3259eb01f5afcb3355395",
+      "translation_text_hash": "0aeb3aa1e8009ffc90eb36540d47796e22a71f0d5b890eab1f2ab64e22002f29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅 끝에서부터 노래하는 소리가 우리에게 들리기를 의로우신 자에게 영광을 돌리세 하도다 그러나 나는 이르기를 나는 쇠잔하였고 나는 쇠잔하였으니 내게 화가 있도다 궤휼자가 궤휼을 행하도다 궤휼자가 심히 궤휼을 행하도다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "0aeb3aa1e8009ffc90eb36540d47796e22a71f0d5b890eab1f2ab64e22002f29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:17",
+      "sequence": 18113,
+      "chapter_label": "ISA 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "Fear, the pit, and the snare are on you who inhabit the earth.",
+      "ko": "땅의 거민아 두려움과 함정과 올무가 네게 임하였나니",
+      "source_text_hash": "4629e67f4585ec9f97e22988daa481a9ac172b2cf5d8bf287ce5eaf0202fb11b",
+      "translation_text_hash": "62a3b7a34f25bfb98728c68bb2e0218fb35ffb51c251f1c77652041d0a87fd4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 거민아 두려움과 함정과 올무가 네게 임하였나니"
+      ],
+      "raw_text_hashes": [
+        "62a3b7a34f25bfb98728c68bb2e0218fb35ffb51c251f1c77652041d0a87fd4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:18",
+      "sequence": 18114,
+      "chapter_label": "ISA 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "It will happen that he who flees from the noise of the fear will fall into the pit; and he who comes up out of the middle of the pit will be taken in the snare; for the windows on high are opened, and the foundations of the earth tremble.",
+      "ko": "두려운 소리를 인하여 도망하는 자는 함정에 빠지겠고 함정 속에서 올라오는 자는 올무에 걸리리니 이는 위에 있는 문이 열리고 땅의 기초가 진동함이라",
+      "source_text_hash": "bdb6a8e9031f355fb5646bcb3bdbf0f3f98d8f5b65dba7bdf9541a0f107c768b",
+      "translation_text_hash": "e883d829a2b798020ef06967ce0a6c060470ead3edc4f75851f83e27d1f0f448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두려운 소리를 인하여 도망하는 자는 함정에 빠지겠고 함정 속에서 올라오는 자는 올무에 걸리리니 이는 위에 있는 문이 열리고 땅의 기초가 진동함이라"
+      ],
+      "raw_text_hashes": [
+        "e883d829a2b798020ef06967ce0a6c060470ead3edc4f75851f83e27d1f0f448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:19",
+      "sequence": 18115,
+      "chapter_label": "ISA 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "The earth is utterly broken. The earth is torn apart. The earth is shaken violently.",
+      "ko": "땅이 깨어지고 깨어지며 땅이 갈라지고 땅이 흔들리고 흔들리며",
+      "source_text_hash": "4fdbdc167e318046efce157c24b821d7b0b3c48965686adf0922a8760d3ff70d",
+      "translation_text_hash": "8cbd9c099e1e159722c12e25a3df849c6d123c69b5cb9d629e9eafd38e05ca03",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 깨어지고 깨어지며 땅이 갈라지고 땅이 흔들리고 흔들리며"
+      ],
+      "raw_text_hashes": [
+        "8cbd9c099e1e159722c12e25a3df849c6d123c69b5cb9d629e9eafd38e05ca03"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:20",
+      "sequence": 18116,
+      "chapter_label": "ISA 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "The earth will stagger like a drunken man, and will sway back and forth like a hammock. Its disobedience will be heavy on it, and it will fall and not rise again.",
+      "ko": "땅이 취한 자 같이 비틀비틀하며 침망 같이 흔들리며 그 위의 죄악이 중하므로 떨어지고 다시 일지 못하리라",
+      "source_text_hash": "10d2efcf3914f072aea843ad8040fe031aa4e1115acc719fd55bfdd490afb3ae",
+      "translation_text_hash": "bfbbc66294fbd18010d14bf05501a3a3fc89b9a16ced097e23b367797bccfa0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅이 취한 자 같이 비틀비틀하며 침망 같이 흔들리며 그 위의 죄악이 중하므로 떨어지고 다시 일지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "bfbbc66294fbd18010d14bf05501a3a3fc89b9a16ced097e23b367797bccfa0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:21",
+      "sequence": 18117,
+      "chapter_label": "ISA 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "It will happen in that day that the LORD will punish the army of the high ones on high, and the kings of the earth on the earth.",
+      "ko": "그 날에 여호와께서 높은데서 높은 군대를 벌하시며 땅에서 땅의 왕들을 벌하시리니",
+      "source_text_hash": "80a2d6deb1432f20b14c60cd71158e64072af81c7e76dfd4c89007dc6a7d7070",
+      "translation_text_hash": "4d46a4d571af7ff3b72c38408232f57ef6b9df42731f53c3b25ff70c1abc274c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 여호와께서 높은데서 높은 군대를 벌하시며 땅에서 땅의 왕들을 벌하시리니"
+      ],
+      "raw_text_hashes": [
+        "4d46a4d571af7ff3b72c38408232f57ef6b9df42731f53c3b25ff70c1abc274c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:22",
+      "sequence": 18118,
+      "chapter_label": "ISA 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "They will be gathered together, as prisoners are gathered in the pit, and will be shut up in the prison; and after many days they will be visited.",
+      "ko": "그들이 죄수가 깊은 옥에 모임 같이 모음을 입고 옥에 갇혔다가 여러 날 후에 형벌을 받을 것이라",
+      "source_text_hash": "6129ad59c356ccbdd239e00ac29cc9a425f3e8a9fe3b504b71e4bcf9f471f924",
+      "translation_text_hash": "1e423f8614b71c97835016e7f1c3ad5fb3b1a75720783fa48f048006a0511a57",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 죄수가 깊은 옥에 모임 같이 모음을 입고 옥에 갇혔다가 여러 날 후에 형벌을 받을 것이라"
+      ],
+      "raw_text_hashes": [
+        "1e423f8614b71c97835016e7f1c3ad5fb3b1a75720783fa48f048006a0511a57"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:24:23",
+      "sequence": 18119,
+      "chapter_label": "ISA 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "Then the moon will be confounded, and the sun ashamed; for the LORD of Armies will reign on Mount Zion and in Jerusalem; and glory will be before his elders.",
+      "ko": "그 때에 달이 무색하고 해가 부끄러워하리니 이는 만군의 여호와께서 시온산과 예루살렘에서 왕이 되시고 그 장로들 앞에서 영광을 나타내실 것임이니라",
+      "source_text_hash": "b7fbc79f0551f1d15b9aa28616d60cf71de58e9b839b1cc2fb017a5fd17039f2",
+      "translation_text_hash": "ed4fe113c344c093758ebac64ba006dea5045338c04f14d056e79bb9bbd89dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 달이 무색하고 해가 부끄러워하리니 이는 만군의 여호와께서 시온산과 예루살렘에서 왕이 되시고 그 장로들 앞에서 영광을 나타내실 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "ed4fe113c344c093758ebac64ba006dea5045338c04f14d056e79bb9bbd89dd1"
+      ]
+    }
+  ]
+}

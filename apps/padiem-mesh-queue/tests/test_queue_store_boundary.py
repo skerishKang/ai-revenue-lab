@@ -136,7 +136,7 @@ def test_a_store_failure_names_its_class_and_never_its_text(tmp_path, capsys):
     assert response.status_code == 502
     printed = capsys.readouterr().out
     line = [l for l in printed.splitlines() if l.startswith(STORE_FAILURE_PREFIX)][0]
-    assert line == "%s path=%s rpc=upsert fail=MeshDevicePresenceStoreError" % (
+    assert line == "%s path=%s rpc=upsert fail=MeshDevicePresenceStoreError run_hash=none dispatch_id=none" % (
         STORE_FAILURE_PREFIX, INTERNAL_STORE_PATH)
     assert "customer" not in printed and "path.txt" not in printed
     assert "MeshDevicePresenceStoreError" in STORE_FAILURE_CLASSES
@@ -182,7 +182,7 @@ def test_a_transaction_found_open_is_closed_and_said(tmp_path, capsys):
     assert connection.in_transaction is False
     printed = capsys.readouterr().out
     recovery = [l for l in printed.splitlines() if l.startswith(TXN_RECOVERY_PREFIX)]
-    assert recovery == ["%s path=%s rpc=upsert" % (TXN_RECOVERY_PREFIX, INTERNAL_STORE_PATH)]
+    assert recovery == ["%s path=%s rpc=upsert run_hash=none dispatch_id=none" % (TXN_RECOVERY_PREFIX, INTERNAL_STORE_PATH)]
 
 
 def test_a_batch_interrupted_by_a_baseexception_leaves_no_transaction():
@@ -218,8 +218,8 @@ def test_a_batch_interrupted_by_a_baseexception_leaves_no_transaction():
     assert left == []
 
 
-def test_the_five_field_request_line_keeps_its_shape(tmp_path, capsys):
-    """The runbook documents five fields on the refusal line; the new kinds are separate."""
+def test_the_correlated_request_line_keeps_its_shape(tmp_path, capsys):
+    """The request line has fixed diagnostic and bounded correlation fields."""
 
     connection = _connection()
     handler, state = _door(connection)
@@ -230,5 +230,6 @@ def test_the_five_field_request_line_keeps_its_shape(tmp_path, capsys):
     printed = capsys.readouterr().out
     request = [l for l in printed.splitlines() if l.startswith("MESH_QUEUE_REQUEST")][0]
     fields = [token.split("=")[0] for token in request.split()[1:]]
-    assert fields == ["path", "rpc", "status", "ms", "proof"]
+    assert fields == ["path", "rpc", "status", "ms", "proof", "run_hash", "dispatch_id"]
+    assert request.endswith("run_hash=none dispatch_id=none")
     assert not any(token.startswith(("fail=", "txn=")) for token in request.split()[1:])

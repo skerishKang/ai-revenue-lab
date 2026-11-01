@@ -1,0 +1,64 @@
+/* B61 #1850/#1853 · desktop floating-glass Memory/AI overlays (>=1280px).
+   Below 1280px the existing in-flow panel columns stay as-is (the paper
+   nearly fills the stage there, so no glass can clear the page-turn hitzones).
+   Collapsed 44px rails persist; open panels float as near-opaque glass cards
+   over the desk, never over the paper text or page-turn controls (glass z:30
+   sits above the paper stack z:4 and below page-turn buttons z:32).
+   Reuses the body.memory-open / body.ai-open state contract. */
+@media(min-width:1280px){
+  .reader-layout{grid-template-columns:44px minmax(0,1fr) 44px!important}
+  body.focus-reading .reader-layout{grid-template-columns:0 minmax(0,1fr) 0!important}
+  body.focus-reading .reader-layout>.memory-rail,
+  body.focus-reading .reader-layout>.ai-panel{display:none!important}
+
+  .reader-layout>.memory-rail,
+  .reader-layout>.ai-panel{transition:opacity .28s ease,box-shadow .28s ease}
+
+  body.memory-open .reader-layout>.memory-rail,
+  body.ai-open .reader-layout>.ai-panel{
+    position:fixed!important;
+    inset:16px auto 27px auto!important;
+    width:min(240px,calc(50vw - 482px))!important;
+    min-height:0!important;
+    max-height:calc(100vh - 43px)!important;
+    z-index:30!important;
+    background:rgba(250,247,242,.93)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(1.12);
+    backdrop-filter:blur(22px) saturate(1.12);
+    border:1px solid rgba(94,72,50,.14)!important;
+    border-radius:18px;
+    box-shadow:0 28px 70px rgba(48,33,21,.16),0 2px 10px rgba(48,33,21,.06)!important;
+  }
+  body.memory-open .reader-layout>.memory-rail{
+    left:12px!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    animation:smGlassFade .30s ease both;
+  }
+  body.ai-open .reader-layout>.ai-panel{
+    right:12px!important;
+    overflow:hidden!important;
+    animation:smGlassFade .30s ease both;
+  }
+  body.memory-open .memory-rail .sheet-close,
+  body.ai-open .ai-panel .sheet-close{
+    display:block!important;
+    float:right;border:0;background:transparent;
+    font-size:16px;line-height:1;color:var(--muted);cursor:pointer;
+  }
+  body.memory-open .memory-rail .sheet-close:hover,
+  body.ai-open .ai-panel .sheet-close:hover{color:#211f1b}
+
+  .reader-layout>.memory-rail:focus-visible,
+  .reader-layout>.ai-panel:focus-visible{outline:2px solid #b1704e;outline-offset:-3px}
+}
+
+@keyframes smGlassFade{
+  from{opacity:0}
+  to{opacity:1}
+}
+
+@media(prefers-reduced-motion:reduce){
+  body.memory-open .reader-layout>.memory-rail,
+  body.ai-open .reader-layout>.ai-panel{animation:none}
+  .reader-layout>.memory-rail,.reader-layout>.ai-panel{transition:none}
+}

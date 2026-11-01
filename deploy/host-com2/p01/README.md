@@ -27,19 +27,13 @@ bash deploy/host-com2/p01/status.sh
 bash deploy/host-com2/p01/stop.sh
 ```
 
-`install.sh`는 `/opt/padiem/p01`이 이미 릴리스로 채워져 있는 것을 전제한다:
-`/opt/padiem/p01/app/asgi.py`, `/opt/padiem/p01/venv/bin/python`. 없으면
-`ASGI_ENTRY_MISSING` / `VENV_PYTHON_MISSING`으로 거부하고 아무것도 설치하지 않는다.
-
-## 알려진 공백 — 엔진의 CPython ASGI 진입점
-
-이 저장소의 엔진은 두 진입점만 있다: Cloudflare Worker(`apps/padiem-ai-engine/worker.py`)와
-Windows 릴리스(`p01-ai-engine/start-p01-local.ps1`, 저장소 밖). 리눅스에서 8811로 띄울
-**CPython ASGI 진입점(`asgi.py`)은 아직 저장소에 없다.** 그래서 이 유닛은 릴리스 디렉터리의
-`asgi:app`을 실행하고, 파일이 없으면 `ConditionPathExists`·`check_config.py`가 먼저 거부한다.
-없는 진입점을 이 꾸러미가 대신 만들어 내지 않는다 — 그건 별도 구현 레인이다.
+The installer uses the current checkout as its default source and requires an existing /opt/padiem/p01/venv/bin/python. It refuses a missing source ASGI entry (ASGI_ENTRY_MISSING), a missing venv, or an active P01 service.
 
 ## 경계
+
+Chat canonical subject와 P01 identity HTTPS 연결 설정·머지 후 반영/복구 절차는
+[P01 identity/entitlement 수정 기록](../../../docs/operations/P01_IDENTITY_ENTITLEMENT_HOST_FIX_20261031.md)을 따른다.
+P01 identity 설정 추가만으로 Chat의 제품 내부 사용자 ID가 canonical subject로 바뀌지는 않는다.
 
 - Chat이 이 엔진을 부르는 주소는 Chat 호스트 설정이다:
   `PADIEM_CHAT_LOCAL_P01_ENGINE_ORIGIN=http://127.0.0.1:8811` (설정 이름은 #6382).
@@ -56,3 +50,7 @@ python -m pytest deploy/host-com2/p01/tests -q
 유닛 렌더링(루프백·포트·`0.0.0.0` 부재), 스크립트 문법과 `systemctl start|enable` 부재,
 설치 기본 dry-run, 설정 게이트 6종, health 계약이 `com2_runtime.CONTRACTS["p01"]`와 동일함,
 환경 예시가 이름만 담는지 검사한다.
+
+## Code staging and rollback
+
+The install.sh --apply command accepts --source-root CHECKOUT and copies Engine code into a new release; the service must be stopped and its existing venv must remain available. The default source is this checkout. Previous app contents, including an existing checkout symlink target, are snapshotted under /opt/padiem/p01/rollback/. To roll back, stop P01, select the verified previous snapshot and run ln -sfnT /opt/padiem/p01/rollback/<snapshot> /opt/padiem/p01/app; verify configuration before the separately authorized restart. An absent source asgi.py is refused with ASGI_ENTRY_MISSING.

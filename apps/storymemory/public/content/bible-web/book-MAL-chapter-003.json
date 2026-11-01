@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAL:chapter:003",
+  "unit_ordinal": 928,
+  "unit_label": "MAL 3",
+  "book_code": "MAL",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAL:3:1",
+      "sequence": 23122,
+      "chapter_label": "MAL 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "“Behold, I send my messenger, and he will prepare the way before me! The Lord, whom you seek, will suddenly come to his temple. Behold, the messenger of the covenant, whom you desire, is coming!” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 보라 내가 내 사자를 보내리니 그가 내 앞에서 길을 예비할 것이요 또 너희의 구하는바 주가 홀연히 그 전에 임하리니 곧 너희의 사모하는바 언약의 사자가 임할 것이라",
+      "source_text_hash": "f3207a58afa0854418134b1986bbd64999a5960e357e0da6fd6f162e7cc2ce51",
+      "translation_text_hash": "154b65c6f8610fa6bc1bc71b0f1317d9100ae1e6fef5ed3cfce49b5ed66bbdcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 보라 내가 내 사자를 보내리니 그가 내 앞에서 길을 예비할 것이요 또 너희의 구하는바 주가 홀연히 그 전에 임하리니 곧 너희의 사모하는바 언약의 사자가 임할 것이라"
+      ],
+      "raw_text_hashes": [
+        "154b65c6f8610fa6bc1bc71b0f1317d9100ae1e6fef5ed3cfce49b5ed66bbdcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:2",
+      "sequence": 23123,
+      "chapter_label": "MAL 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "“But who can endure the day of his coming? And who will stand when he appears? For he is like a refiner’s fire, and like launderers’ soap;",
+      "ko": "그의 임하는 날을 누가 능히 당하며 그의 나타나는 때에 누가 능히 서리요 그는 금을 연단하는 자의 불과 표백하는 자의 잿물과 같을것이라",
+      "source_text_hash": "d3b9c1e1fae73b08bd0f72beb5b678ac02ff08d7d0c6535653315d7dcc9bae79",
+      "translation_text_hash": "791a35d981adea84ece9e9bf8e3b37fcbdb7b2d8d121a314e822a5469a5825f7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그의 임하는 날을 누가 능히 당하며 그의 나타나는 때에 누가 능히 서리요 그는 금을 연단하는 자의 불과 표백하는 자의 잿물과 같을것이라"
+      ],
+      "raw_text_hashes": [
+        "791a35d981adea84ece9e9bf8e3b37fcbdb7b2d8d121a314e822a5469a5825f7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:3",
+      "sequence": 23124,
+      "chapter_label": "MAL 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "and he will sit as a refiner and purifier of silver, and he will purify the sons of Levi, and refine them as gold and silver; and they shall offer to the LORD offerings in righteousness.",
+      "ko": "그가 은을 연단하여 깨끗케 하는 자 같이 앉아서 레위 자손을 깨끗케 하되 금, 은 같이 그들을 연단하리니 그들이 의로운 제물을 나 여호와께 드릴 것이라",
+      "source_text_hash": "9c4a6e8b14c41e8969828dfa4edb00dca757be54f2b604345447465a8c863a4f",
+      "translation_text_hash": "19d860a9893c09365d1cb56524956353ac1330468aba28d45093fb741180b178",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 은을 연단하여 깨끗케 하는 자 같이 앉아서 레위 자손을 깨끗케 하되 금, 은 같이 그들을 연단하리니 그들이 의로운 제물을 나 여호와께 드릴 것이라"
+      ],
+      "raw_text_hashes": [
+        "19d860a9893c09365d1cb56524956353ac1330468aba28d45093fb741180b178"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:4",
+      "sequence": 23125,
+      "chapter_label": "MAL 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "Then the offering of Judah and Jerusalem will be pleasant to the LORD as in the days of old and as in ancient years.",
+      "ko": "그 때에 유다와 예루살렘의 헌물이 옛날과 고대와 같이 나 여호와께 기쁨이 되려니와",
+      "source_text_hash": "fa5d522b6df5f4d615580219428e13549c4974b36da9a48087bb1986717c3f41",
+      "translation_text_hash": "7a535477db6033017587c76cb8619098f0a08e069652e5a7601628a4c5f8eaec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 유다와 예루살렘의 헌물이 옛날과 고대와 같이 나 여호와께 기쁨이 되려니와"
+      ],
+      "raw_text_hashes": [
+        "7a535477db6033017587c76cb8619098f0a08e069652e5a7601628a4c5f8eaec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:5",
+      "sequence": 23126,
+      "chapter_label": "MAL 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "I will come near to you to judgment. I will be a swift witness against the sorcerers, against the adulterers, against the perjurers, and against those who oppress the hireling in his wages, the widow, and the fatherless, and who deprive the foreigner of justice, and don’t fear me,” says the LORD of Armies.",
+      "ko": "내가 심판하러 너희에게 임할 것이라 술수하는 자에게와 간음하는 자에게와 거짓 맹세하는 자에게와 품군의 삯에 대하여 억울케 하며 과부와 고아를 압제하며 나그네를 억울케 하며 나를 경외치 아니하는 자들에게 속히 증거하리라 만군의 여호와가 말하였느니라",
+      "source_text_hash": "275faa45a1ae0b0688d928d36e9787fa2e5ac42cc20b2f3e83ee4144d82f60fa",
+      "translation_text_hash": "5a618fcd530685ab5068489e3def1de44418fc005f1aa4f2f015c355a060d03e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 심판하러 너희에게 임할 것이라 술수하는 자에게와 간음하는 자에게와 거짓 맹세하는 자에게와 품군의 삯에 대하여 억울케 하며 과부와 고아를 압제하며 나그네를 억울케 하며 나를 경외치 아니하는 자들에게 속히 증거하리라 만군의 여호와가 말하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5a618fcd530685ab5068489e3def1de44418fc005f1aa4f2f015c355a060d03e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:6",
+      "sequence": 23127,
+      "chapter_label": "MAL 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "“For I, the LORD, don’t change; therefore you, sons of Jacob, are not consumed.",
+      "ko": "나 여호와는 변역지 아니하나니 그러므로 야곱의 자손들아 너희가 소멸되지 아니하느니라",
+      "source_text_hash": "11665731f3619198b93476a90915f1ed65ca9afec3c831534e96aa63e68d9307",
+      "translation_text_hash": "1a85cbd5926eee87af80e69db8c649d7db3302935fb3331432ad8f35f5d7e3d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와는 변역지 아니하나니 그러므로 야곱의 자손들아 너희가 소멸되지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "1a85cbd5926eee87af80e69db8c649d7db3302935fb3331432ad8f35f5d7e3d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:7",
+      "sequence": 23128,
+      "chapter_label": "MAL 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "From the days of your fathers you have turned away from my ordinances and have not kept them. Return to me, and I will return to you,” says the LORD of Armies. “But you say, ‘How shall we return?’",
+      "ko": "만군의 여호와가 이르노라 너희 열조의 날로부터 너희가 나의 규례를 떠나 지키지 아니하였도다 그런즉 내게로 돌아오라 그리하면 나도 너희에게로 돌아가리라 하였더니 너희가 이르기를 우리가 어떻게 하여야 돌아가리이까 하도다",
+      "source_text_hash": "9a8e7e391fb0270f0b70bb9f47bbabc9b41220aeae3e745c8a7e688275144822",
+      "translation_text_hash": "a7c98853ac0a84cadcb5c3297746bd52dc10ad044ad3c9de9d218bd4049cdb38",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희 열조의 날로부터 너희가 나의 규례를 떠나 지키지 아니하였도다 그런즉 내게로 돌아오라 그리하면 나도 너희에게로 돌아가리라 하였더니 너희가 이르기를 우리가 어떻게 하여야 돌아가리이까 하도다"
+      ],
+      "raw_text_hashes": [
+        "a7c98853ac0a84cadcb5c3297746bd52dc10ad044ad3c9de9d218bd4049cdb38"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:8",
+      "sequence": 23129,
+      "chapter_label": "MAL 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Will a man rob God? Yet you rob me! But you say, ‘How have we robbed you?’ In tithes and offerings.",
+      "ko": "사람이 어찌 하나님의 것을 도적질하겠느냐 그러나 너희는 나의 것을 도적질하고도 말하기를 우리가 어떻게 주의 것을 도적질하였나이까 하도다 이는 곧 십일조와 헌물이라",
+      "source_text_hash": "7509ed626e839c0b78b6493625ca76f2fcdfa447627d9eb7a3bf3082e1f3e5f4",
+      "translation_text_hash": "07724fabc693cd8043a7a456353ade3161ddb065d1da9869dcadbb9ce055b265",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 어찌 하나님의 것을 도적질하겠느냐 그러나 너희는 나의 것을 도적질하고도 말하기를 우리가 어떻게 주의 것을 도적질하였나이까 하도다 이는 곧 십일조와 헌물이라"
+      ],
+      "raw_text_hashes": [
+        "07724fabc693cd8043a7a456353ade3161ddb065d1da9869dcadbb9ce055b265"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:9",
+      "sequence": 23130,
+      "chapter_label": "MAL 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "You are cursed with the curse; for you rob me, even this whole nation.",
+      "ko": "너희 곧 온 나라가 나의 것을 도적질하였으므로 너희가 저주를 받았느니라",
+      "source_text_hash": "b662584c4d92d1807121559447e02fcc09b79afc745e88d9131dea9d5eb006f3",
+      "translation_text_hash": "fdee9ff756814889d67f89901dabce4ef8346903206e7475024212974adc9711",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 곧 온 나라가 나의 것을 도적질하였으므로 너희가 저주를 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "fdee9ff756814889d67f89901dabce4ef8346903206e7475024212974adc9711"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:10",
+      "sequence": 23131,
+      "chapter_label": "MAL 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "Bring the whole tithe into the storehouse, that there may be food in my house, and test me now in this,” says the LORD of Armies, “if I will not open you the windows of heaven, and pour you out a blessing, that there will not be enough room for.",
+      "ko": "만군의 여호와가 이르노라 너희의 온전한 십일조를 창고에 들여 나의 집에 양식이 있게 하고 그것으로 나를 시험하여 내가 하늘 문을 열고 너희에게 복을 쌓을 곳이 없도록 붓지 아니하나 보라",
+      "source_text_hash": "9aeedfb82ed29d49791716a493d6a1813244005412e0ad0b2db887db61efe36e",
+      "translation_text_hash": "075b59a7cae7043168b4bb7a2d05bae36ec71dfb5bda6771dace58e3a72f03b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 너희의 온전한 십일조를 창고에 들여 나의 집에 양식이 있게 하고 그것으로 나를 시험하여 내가 하늘 문을 열고 너희에게 복을 쌓을 곳이 없도록 붓지 아니하나 보라"
+      ],
+      "raw_text_hashes": [
+        "075b59a7cae7043168b4bb7a2d05bae36ec71dfb5bda6771dace58e3a72f03b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:11",
+      "sequence": 23132,
+      "chapter_label": "MAL 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "I will rebuke the devourer for your sakes, and he shall not destroy the fruits of your ground; neither shall your vine cast its fruit before its time in the field,” says the LORD of Armies.",
+      "ko": "만군의 여호와가 이르노라 내가 너희를 위하여 황충을 금하여 너희 토지 소산을 멸하지 않게 하며 너희 밭에 포도나무의 과실로 기한 전에 떨어지지 않게 하리니",
+      "source_text_hash": "534bf239c06437425f0312e73bcfd448b224163419d77e52fd231c33c69301cc",
+      "translation_text_hash": "a9dd8e87dc65463c38425d01ff287a778fd25721dc3f5c79ab3c31bf84313ab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 내가 너희를 위하여 황충을 금하여 너희 토지 소산을 멸하지 않게 하며 너희 밭에 포도나무의 과실로 기한 전에 떨어지지 않게 하리니"
+      ],
+      "raw_text_hashes": [
+        "a9dd8e87dc65463c38425d01ff287a778fd25721dc3f5c79ab3c31bf84313ab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:12",
+      "sequence": 23133,
+      "chapter_label": "MAL 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "“All nations shall call you blessed, for you will be a delightful land,” says the LORD of Armies.",
+      "ko": "너희 땅이 아름다와지므로 열방이 너희를 복되다 하리라 만군의 여호와의 말이니라",
+      "source_text_hash": "9db4297a49ae19f902c01c363ab9948f9274f20cec9c4dd570add9a2ab87b041",
+      "translation_text_hash": "abd572c7d1696cd72cfb8657083d51781a8a1b00d4f736a02ad51c6a4f47599d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 땅이 아름다와지므로 열방이 너희를 복되다 하리라 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "abd572c7d1696cd72cfb8657083d51781a8a1b00d4f736a02ad51c6a4f47599d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:13",
+      "sequence": 23134,
+      "chapter_label": "MAL 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "“Your words have been harsh against me,” says the LORD. “Yet you say, ‘What have we spoken against you?’",
+      "ko": "여호와가 이르노라 너희가 완악한 말로 나를 대적하고도 이르기를 우리가 무슨 말로 주를 대적하였나이까 하는도다",
+      "source_text_hash": "97f7a5dce2d184e3eb502c30b3190405fce9f4772317b0782a22b0326b432378",
+      "translation_text_hash": "5c37c8713d8f5b3f39c0668ab7d569316ea9f34eb128740cc674600cdb4a3a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와가 이르노라 너희가 완악한 말로 나를 대적하고도 이르기를 우리가 무슨 말로 주를 대적하였나이까 하는도다"
+      ],
+      "raw_text_hashes": [
+        "5c37c8713d8f5b3f39c0668ab7d569316ea9f34eb128740cc674600cdb4a3a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:14",
+      "sequence": 23135,
+      "chapter_label": "MAL 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "You have said, ‘It is vain to serve God,’ and ‘What profit is it that we have followed his instructions and that we have walked mournfully before the LORD of Armies?",
+      "ko": "이는 너희가 말하기를 하나님을 섬기는 것이 헛되니 만군의 여호와 앞에 그 명령을 지키며 슬프게 행하는 것이 무엇이 유익하리요",
+      "source_text_hash": "fd80cbe53afb9a078e862a27094559d86a6ceb22e0ad8641f706ba58615476c9",
+      "translation_text_hash": "bca9e4648cb85f954641af4c84a4ee7ed4c0670ef7ad616b8f81a34be5f26175",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희가 말하기를 하나님을 섬기는 것이 헛되니 만군의 여호와 앞에 그 명령을 지키며 슬프게 행하는 것이 무엇이 유익하리요"
+      ],
+      "raw_text_hashes": [
+        "bca9e4648cb85f954641af4c84a4ee7ed4c0670ef7ad616b8f81a34be5f26175"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:15",
+      "sequence": 23136,
+      "chapter_label": "MAL 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "Now we call the proud happy; yes, those who work wickedness are built up; yes, they tempt God, and escape.’",
+      "ko": "지금 우리는 교만한 자가 복되다 하며 악을 행하는 자가 창성하며 하나님을 시험하는 자가 화를 면한다 하노라 함이니라",
+      "source_text_hash": "a6c5a8fcb9278cb3d1e67081eef7e8c7dc1db7ecf8703c75d050198b52221b03",
+      "translation_text_hash": "63f9979f4315d03d28b3aa68943f07179b447357b63ee20cc1a94eb812bd2871",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 우리는 교만한 자가 복되다 하며 악을 행하는 자가 창성하며 하나님을 시험하는 자가 화를 면한다 하노라 함이니라"
+      ],
+      "raw_text_hashes": [
+        "63f9979f4315d03d28b3aa68943f07179b447357b63ee20cc1a94eb812bd2871"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:16",
+      "sequence": 23137,
+      "chapter_label": "MAL 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Then those who feared the LORD spoke one with another; and the LORD listened and heard, and a book of memory was written before him for those who feared the LORD and who honored his name.",
+      "ko": "그 때에 여호와를 경외하는 자들이 피차에 말하매 여호와께서 그것을 분명히 들으시고 여호와를 경외하는 자와 그 이름을 존중히 생각하는 자를 위하여 여호와 앞에 있는 기념책에 기록하셨느니라",
+      "source_text_hash": "07ab567e5589e302f8111f69b02239cd08414d96b402615e869dce873203b87f",
+      "translation_text_hash": "d1488a810780e7b87ddbda166eee041fe51c0a85510dd242b8eb5f5037adc020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 여호와를 경외하는 자들이 피차에 말하매 여호와께서 그것을 분명히 들으시고 여호와를 경외하는 자와 그 이름을 존중히 생각하는 자를 위하여 여호와 앞에 있는 기념책에 기록하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "d1488a810780e7b87ddbda166eee041fe51c0a85510dd242b8eb5f5037adc020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:17",
+      "sequence": 23138,
+      "chapter_label": "MAL 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "They shall be mine,” says the LORD of Armies, “my own possession in the day that I make. I will spare them, as a man spares his own son who serves him.",
+      "ko": "만군의 여호와가 이르노라 내가 나의 정한 날에 그들로 나의 특별한 소유를 삼을 것이요 또 사람이 자기를 섬기는 아들을 아낌 같이 내가 그들을 아끼리니",
+      "source_text_hash": "890ce0531b1277a3984922cdc47cad6944ada0e97919a0936f47d61402cc53d9",
+      "translation_text_hash": "cbc21a3462f8ecd10a183de636cea3fa1d6d31b0a9a5f87fdd655d5073c62e52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와가 이르노라 내가 나의 정한 날에 그들로 나의 특별한 소유를 삼을 것이요 또 사람이 자기를 섬기는 아들을 아낌 같이 내가 그들을 아끼리니"
+      ],
+      "raw_text_hashes": [
+        "cbc21a3462f8ecd10a183de636cea3fa1d6d31b0a9a5f87fdd655d5073c62e52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAL:3:18",
+      "sequence": 23139,
+      "chapter_label": "MAL 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAL",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAL",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Then you shall return and discern between the righteous and the wicked, between him who serves God and him who doesn’t serve him.",
+      "ko": "그 때에 너희가 돌아와서 의인과 악인이며 하나님을 섬기는 자와 섬기지 아니하는 자를 분별하리라",
+      "source_text_hash": "3d892c36b01fb8a5f868ae623727773597c370cab1723a345a710f00a7c3505f",
+      "translation_text_hash": "7ca085c85ccb08d31cbfcb7411f7ff4335742531e0714d5af28c5279aaec878f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 너희가 돌아와서 의인과 악인이며 하나님을 섬기는 자와 섬기지 아니하는 자를 분별하리라"
+      ],
+      "raw_text_hashes": [
+        "7ca085c85ccb08d31cbfcb7411f7ff4335742531e0714d5af28c5279aaec878f"
+      ]
+    }
+  ]
+}

@@ -28,11 +28,15 @@ ELEVEN={
     "sensenova/sensenova-6.8-flash-lite",
 }
 
+DISABLED_SENSENOVA = "sensenova/sensenova-6.8-flash-lite"
+ACTIVE_REQUIRED = ELEVEN - {DISABLED_SENSENOVA}
+
 def test_current_roster_contains_all_prior_owner_registered_models():
     got=load_current_models()
     canonical=json.loads(CANONICAL_REGISTRY.read_text(encoding="utf8"))
     ids={model["id"] for model in canonical["models"] if model["enabled"] and canonical["providers"][model["provider_id"]]["enabled"]}
-    assert ELEVEN <= set(got)
+    assert ACTIVE_REQUIRED <= set(got)
+    assert DISABLED_SENSENOVA not in got
     assert set(got)==ids
     assert len(got)==len(ids)
     assert not (set(got)&OWNER_RETIRED)
@@ -43,6 +47,16 @@ def test_current_roster_contains_all_prior_owner_registered_models():
         with pytest.raises(ValueError, match="evaluation_candidate_count_invalid"):
             authorize_exact_models(tuple(got))
     assert got["poolside/laguna-s-2.1"]["provider_id"]=="poolside"
+
+def test_disabled_sensenova_remains_in_registry_but_cannot_be_evaluated():
+    canonical = json.loads(CANONICAL_REGISTRY.read_text(encoding="utf8"))
+    model = next(m for m in canonical["models"] if m["id"] == DISABLED_SENSENOVA)
+    assert model["provider_id"] == "sensenova"
+    assert model["enabled"] is False
+    assert canonical["providers"]["sensenova"]["enabled"] is False
+    assert DISABLED_SENSENOVA not in load_current_models()
+    with pytest.raises(ValueError):
+        authorize_exact_models((DISABLED_SENSENOVA,))
 
 @pytest.mark.parametrize("deleted", sorted(OWNER_RETIRED) + [
     "kilo/poolside/laguna-s-2.1:free",
@@ -167,7 +181,8 @@ def test_main_inert_list_and_only_exact_selector(capsys):
     # The historical owner-approved roster is a required subset, not a frozen total.
     # New exact-ID registrations must appear in --list without relaxing retirement gates.
     current=set(load_current_models())
-    assert ELEVEN <= current
+    assert ACTIVE_REQUIRED <= current
+    assert DISABLED_SENSENOVA not in current
     assert set(out["model_ids"])==current
     assert not (current & OWNER_RETIRED)
     assert out["network_calls"]==0

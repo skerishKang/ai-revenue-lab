@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:108",
+  "unit_ordinal": 586,
+  "unit_label": "PSA 108",
+  "book_code": "PSA",
+  "chapter_number": 108,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:108:1",
+      "sequence": 15744,
+      "chapter_label": "PSA 108",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 1
+        }
+      ],
+      "en": "My heart is steadfast, God. I will sing and I will make music with my soul.",
+      "ko": "하나님이여 내 마음을 정하였사오니 내가 노래하며 내 심령으로 찬양하리로다",
+      "source_text_hash": "8db495b3d44b7ecfb8771990b42f720e7d3ebaeafc8d9cd09c31cfcd7bbacd95",
+      "translation_text_hash": "7fd1276b95637e8d64e315cfb1c5d3e0e0e6ffdd995265ef086b78241c056fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 내 마음을 정하였사오니 내가 노래하며 내 심령으로 찬양하리로다"
+      ],
+      "raw_text_hashes": [
+        "7fd1276b95637e8d64e315cfb1c5d3e0e0e6ffdd995265ef086b78241c056fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:2",
+      "sequence": 15745,
+      "chapter_label": "PSA 108",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 2
+        }
+      ],
+      "en": "Wake up, harp and lyre! I will wake up the dawn.",
+      "ko": "비파야, 수금아, 깰지어다 내가 새벽을 깨우리로다",
+      "source_text_hash": "3c2328fb7b6492d37801a70fe7bd2ce81c4879922295e056eb5683be4abbd77b",
+      "translation_text_hash": "3774d36195aaab1feb4a780cb152c524704a79fd64fa86c9cc3023beaf136ed6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "비파야, 수금아, 깰지어다 내가 새벽을 깨우리로다"
+      ],
+      "raw_text_hashes": [
+        "3774d36195aaab1feb4a780cb152c524704a79fd64fa86c9cc3023beaf136ed6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:3",
+      "sequence": 15746,
+      "chapter_label": "PSA 108",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 3
+        }
+      ],
+      "en": "I will give thanks to you, LORD, among the nations. I will sing praises to you among the peoples.",
+      "ko": "여호와여 내가 만민 중에서 주께 감사하고 열방 중에서 주를 찬양하오리니",
+      "source_text_hash": "6b8d6b67967230b685850d13bd2a12bb00bcf8ce287a2a918e7d9de9e70d1f65",
+      "translation_text_hash": "f5ddbe08da942e481e838d304bb913d4706262291d9242b0fcac8e26b66245a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 내가 만민 중에서 주께 감사하고 열방 중에서 주를 찬양하오리니"
+      ],
+      "raw_text_hashes": [
+        "f5ddbe08da942e481e838d304bb913d4706262291d9242b0fcac8e26b66245a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:4",
+      "sequence": 15747,
+      "chapter_label": "PSA 108",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 4
+        }
+      ],
+      "en": "For your loving kindness is great above the heavens. Your faithfulness reaches to the skies.",
+      "ko": "대저 주의 인자하심이 하늘 위에 광대하시며 주의 진실은 궁창에 미치나이다",
+      "source_text_hash": "86813f2cfe90ced88a3f0c569fc922f8fd6b06b212387d7bbde94d78749ab38a",
+      "translation_text_hash": "7d2964cc4a9a7da8780e455cc7c4e2d2cb95ae8922c47821d734df0d59950c7e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 주의 인자하심이 하늘 위에 광대하시며 주의 진실은 궁창에 미치나이다"
+      ],
+      "raw_text_hashes": [
+        "7d2964cc4a9a7da8780e455cc7c4e2d2cb95ae8922c47821d734df0d59950c7e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:5",
+      "sequence": 15748,
+      "chapter_label": "PSA 108",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 5
+        }
+      ],
+      "en": "Be exalted, God, above the heavens! Let your glory be over all the earth.",
+      "ko": "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광이 온 세계 위에 높으시기를 원하나이다",
+      "source_text_hash": "59e28c5c9847f7621c0f2d31f253d42b17a729f5de08699a6774a2e9832be69a",
+      "translation_text_hash": "8208509f2f530166d5cfcacb6777bf7d7d7425b2f111bc1ad3ee3728e6b2a427",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주는 하늘 위에 높이 들리시며 주의 영광이 온 세계 위에 높으시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "8208509f2f530166d5cfcacb6777bf7d7d7425b2f111bc1ad3ee3728e6b2a427"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:6",
+      "sequence": 15749,
+      "chapter_label": "PSA 108",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 6
+        }
+      ],
+      "en": "That your beloved may be delivered, save with your right hand, and answer us.",
+      "ko": "주의 사랑하는 자를 건지시기 위하여 우리에게 응답하사 오른손으로 구원하소서",
+      "source_text_hash": "ff9e7d39587e12b77fddc1c5b3aa4e219cf83ead50512ce5732b5cfa41cf9939",
+      "translation_text_hash": "d75b58ccf3579d958cbe06897be081b7dc13d4f5325f5a3bed72cb57e9e20fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주의 사랑하는 자를 건지시기 위하여 우리에게 응답하사 오른손으로 구원하소서"
+      ],
+      "raw_text_hashes": [
+        "d75b58ccf3579d958cbe06897be081b7dc13d4f5325f5a3bed72cb57e9e20fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:7",
+      "sequence": 15750,
+      "chapter_label": "PSA 108",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 7
+        }
+      ],
+      "en": "God has spoken from his sanctuary: “In triumph, I will divide Shechem, and measure out the valley of Succoth.",
+      "ko": "하나님이 그 거룩하심으로 말씀하시되 내가 뛰놀리라 내가 세겜을 나누며 숙곳 골짜기를 척량하리라",
+      "source_text_hash": "43a0406ba1c4e0f734a48b255aaeb0feeb1d61068c27bfef7876d851aebb4b54",
+      "translation_text_hash": "265e2dbf85e5d36d370b35f15d0146ff5c04afd91923f9d18c47ab150e72eb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이 그 거룩하심으로 말씀하시되 내가 뛰놀리라 내가 세겜을 나누며 숙곳 골짜기를 척량하리라"
+      ],
+      "raw_text_hashes": [
+        "265e2dbf85e5d36d370b35f15d0146ff5c04afd91923f9d18c47ab150e72eb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:8",
+      "sequence": 15751,
+      "chapter_label": "PSA 108",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 8
+        }
+      ],
+      "en": "Gilead is mine. Manasseh is mine. Ephraim also is my helmet. Judah is my scepter.",
+      "ko": "길르앗이 내 것이요 므낫세도 내 것이며 에브라임은 내 머리의 보호자요 유다는 나의 홀이며",
+      "source_text_hash": "7ed9ea9bf287a604c91d2660ccde0fd645156feae1dcfa65cc9225bf1c1a2d62",
+      "translation_text_hash": "085bc2a9468f46b3ce1b89ed3b5d1c0bca651827d9f688e15840bb0c13531d4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길르앗이 내 것이요 므낫세도 내 것이며 에브라임은 내 머리의 보호자요 유다는 나의 홀이며"
+      ],
+      "raw_text_hashes": [
+        "085bc2a9468f46b3ce1b89ed3b5d1c0bca651827d9f688e15840bb0c13531d4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:9",
+      "sequence": 15752,
+      "chapter_label": "PSA 108",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 9
+        }
+      ],
+      "en": "Moab is my wash pot. I will toss my sandal on Edom. I will shout over Philistia.”",
+      "ko": "모압은 내 목욕통이라 에돔에는 내 신을 던질지며 블레셋 위에서 내가 외치리라 하셨도다",
+      "source_text_hash": "13ed386f274211ce8b645b927bdd1f1b6ddc7b4a5f9bb94a1f57e3b58e9607ca",
+      "translation_text_hash": "466e9ead910f110312255dfe8d0de0fc4ad99d0f32d2893bbbde097ca1c0d477",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모압은 내 목욕통이라 에돔에는 내 신을 던질지며 블레셋 위에서 내가 외치리라 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "466e9ead910f110312255dfe8d0de0fc4ad99d0f32d2893bbbde097ca1c0d477"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:10",
+      "sequence": 15753,
+      "chapter_label": "PSA 108",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 10
+        }
+      ],
+      "en": "Who will bring me into the fortified city? Who will lead me to Edom?",
+      "ko": "누가 나를 이끌어 견고한 성에 들이며 누가 나를 에돔에 인도할꼬",
+      "source_text_hash": "2fc46733ff8c883563ee444f1fc1ddeda596be699a7e93ca7a11032e5564d56c",
+      "translation_text_hash": "87ac30374af34f823f6c9ba1726407261865e45bae03c4a149871f16db4c2bfa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누가 나를 이끌어 견고한 성에 들이며 누가 나를 에돔에 인도할꼬"
+      ],
+      "raw_text_hashes": [
+        "87ac30374af34f823f6c9ba1726407261865e45bae03c4a149871f16db4c2bfa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:11",
+      "sequence": 15754,
+      "chapter_label": "PSA 108",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 11
+        }
+      ],
+      "en": "Haven’t you rejected us, God? You don’t go out, God, with our armies.",
+      "ko": "하나님이여 주께서 우리를 버리지 아니하셨나이까 하나님이여 주께서 우리 군대와 함께 나아가지 아니하시나이다",
+      "source_text_hash": "54467376e1d1fcbc47ba5721fa7bcbad0cf8656dcd2dbc9da4f1e29fec4f14bc",
+      "translation_text_hash": "4907520bfa84cbbc4fcb5e5852bc36d9fb65ca962e91bc940b743181924e5a3e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주께서 우리를 버리지 아니하셨나이까 하나님이여 주께서 우리 군대와 함께 나아가지 아니하시나이다"
+      ],
+      "raw_text_hashes": [
+        "4907520bfa84cbbc4fcb5e5852bc36d9fb65ca962e91bc940b743181924e5a3e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:12",
+      "sequence": 15755,
+      "chapter_label": "PSA 108",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 12
+        }
+      ],
+      "en": "Give us help against the enemy, for the help of man is vain.",
+      "ko": "우리를 도와 대적을 치게 하소서 사람의 구원은 헛됨이니이다",
+      "source_text_hash": "fd421c22f3c2623cc1fe9bdbf5e7efd167c208cf43345176bec2f042c75a0329",
+      "translation_text_hash": "6f9458478b6297d358d757ea9be6165c242810337d320c229ba07a192394e665",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리를 도와 대적을 치게 하소서 사람의 구원은 헛됨이니이다"
+      ],
+      "raw_text_hashes": [
+        "6f9458478b6297d358d757ea9be6165c242810337d320c229ba07a192394e665"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:108:13",
+      "sequence": 15756,
+      "chapter_label": "PSA 108",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 108,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 108,
+          "verse": 13
+        }
+      ],
+      "en": "Through God, we will do valiantly, for it is he who will tread down our enemies.",
+      "ko": "우리가 하나님을 의지하고 용감히 행하리니 저는 우리의 대적을 밟으실 자이심이로다",
+      "source_text_hash": "81a2a2c916342d5b4d0d24287022d5cbde790e479ca4b7b7206ede223e4ce6b6",
+      "translation_text_hash": "b093356de6672bbccfc585fdb226763db8c435e7e645a46e6a34d32e7dc2565f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하나님을 의지하고 용감히 행하리니 저는 우리의 대적을 밟으실 자이심이로다"
+      ],
+      "raw_text_hashes": [
+        "b093356de6672bbccfc585fdb226763db8c435e7e645a46e6a34d32e7dc2565f"
+      ]
+    }
+  ]
+}

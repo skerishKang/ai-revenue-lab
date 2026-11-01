@@ -1,0 +1,973 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ACT:chapter:022",
+  "unit_ordinal": 1040,
+  "unit_label": "ACT 22",
+  "book_code": "ACT",
+  "chapter_number": 22,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ACT:22:1",
+      "sequence": 27703,
+      "chapter_label": "ACT 22",
+      "verse_label": "1",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 1
+        }
+      ],
+      "en": "“Brothers and fathers, listen to the defense which I now make to you.”",
+      "ko": "부형들아 내가 지금 너희 앞에서 변명하는 말을 들으라 하더라",
+      "source_text_hash": "5817831e47d68c0931231abdafcc3b224bd83a372866fff0c5dab1271aff5fc3",
+      "translation_text_hash": "608da206c480780e4dca303fdd8c2c9f6f747f468c70cda661698acce2e6fd2f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부형들아 내가 지금 너희 앞에서 변명하는 말을 들으라 하더라"
+      ],
+      "raw_text_hashes": [
+        "608da206c480780e4dca303fdd8c2c9f6f747f468c70cda661698acce2e6fd2f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:2",
+      "sequence": 27704,
+      "chapter_label": "ACT 22",
+      "verse_label": "2",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 2
+        }
+      ],
+      "en": "When they heard that he spoke to them in the Hebrew language, they were even more quiet. He said,",
+      "ko": "저희가 그 히브리 방언으로 말함을 듣고 더욱 종용한지라 이어 가로되",
+      "source_text_hash": "1f0904c866e378e306d89294653c7836ee46d181c4d67e45856eed88df3757cb",
+      "translation_text_hash": "a7323326afb0850216ce4814a56a5c6dbfff3fc54ac5931b4517ccab061b64a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 그 히브리 방언으로 말함을 듣고 더욱 종용한지라 이어 가로되"
+      ],
+      "raw_text_hashes": [
+        "a7323326afb0850216ce4814a56a5c6dbfff3fc54ac5931b4517ccab061b64a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:3",
+      "sequence": 27705,
+      "chapter_label": "ACT 22",
+      "verse_label": "3",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 3
+        }
+      ],
+      "en": "“I am indeed a Jew, born in Tarsus of Cilicia, but brought up in this city at the feet of Gamaliel, instructed according to the strict tradition of the law of our fathers, being zealous for God, even as you all are today.",
+      "ko": "나는 유대인으로 길리기아 다소에서 났고 이 성에서 자라 가말리엘의 문하에서 우리 조상들의 율법의 엄한 교훈을 받았고 오늘 너희 모든 사람처럼 하나님께 대하여 열심하는 자라",
+      "source_text_hash": "6b5087c72c85914ae4a01ead650e419104e8f7b019980bea41675d6212fa7cc0",
+      "translation_text_hash": "48d027811422e2c50e39fe570cf5058b5fad2acb21882247a72baeea04af3453",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 유대인으로 길리기아 다소에서 났고 이 성에서 자라 가말리엘의 문하에서 우리 조상들의 율법의 엄한 교훈을 받았고 오늘 너희 모든 사람처럼 하나님께 대하여 열심하는 자라"
+      ],
+      "raw_text_hashes": [
+        "48d027811422e2c50e39fe570cf5058b5fad2acb21882247a72baeea04af3453"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:4",
+      "sequence": 27706,
+      "chapter_label": "ACT 22",
+      "verse_label": "4",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 4
+        }
+      ],
+      "en": "I persecuted this Way to the death, binding and delivering into prisons both men and women,",
+      "ko": "내가 이 도를 핍박하여 사람을 죽이기까지 하고 남녀를 결박하여 옥에 넘겼노니",
+      "source_text_hash": "a4fa05b94e9f11fa42aa5d961993c80b583adcd566b07d7851ba6a200c7ebf99",
+      "translation_text_hash": "6983c3e5c5184617016b1395c00b82df48385308f52aad0bdc89278a64eb06fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이 도를 핍박하여 사람을 죽이기까지 하고 남녀를 결박하여 옥에 넘겼노니"
+      ],
+      "raw_text_hashes": [
+        "6983c3e5c5184617016b1395c00b82df48385308f52aad0bdc89278a64eb06fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:5",
+      "sequence": 27707,
+      "chapter_label": "ACT 22",
+      "verse_label": "5",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 5
+        }
+      ],
+      "en": "as also the high priest and all the council of the elders testify, from whom also I received letters to the brothers, and traveled to Damascus to bring them also who were there to Jerusalem in bonds to be punished.",
+      "ko": "이에 대제사장과 모든 장로들이 내 증인이라 또 내가 저희에게서 다메섹 형제들에게 가는 공문을 받아 가지고 거기 있는 자들도 결박하여 예루살렘으로 끌어다가 형벌 받게 하려고 가더니",
+      "source_text_hash": "7443db3845db983f3b1b276d6c3821ec312296be75c5499e8f83bbf9698cca23",
+      "translation_text_hash": "a3553d96a5117e7a767da067a7e94e68ace75547bc72749f844545ec645a7bdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 대제사장과 모든 장로들이 내 증인이라 또 내가 저희에게서 다메섹 형제들에게 가는 공문을 받아 가지고 거기 있는 자들도 결박하여 예루살렘으로 끌어다가 형벌 받게 하려고 가더니"
+      ],
+      "raw_text_hashes": [
+        "a3553d96a5117e7a767da067a7e94e68ace75547bc72749f844545ec645a7bdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:6",
+      "sequence": 27708,
+      "chapter_label": "ACT 22",
+      "verse_label": "6",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 6
+        }
+      ],
+      "en": "“As I made my journey and came close to Damascus, about noon suddenly a great light shone around me from the sky.",
+      "ko": "가는데 다메섹에 가까왔을 때에 오정쯤 되어 홀연히 하늘로서 큰 빛이 나를 둘러 비취매",
+      "source_text_hash": "ef79b59b47c97755a99eb28079df22a611ca95d343255b30bda8fe99348aafb3",
+      "translation_text_hash": "f644bdd4639ccf189f25e3ad90e55022aff191b94a6cb533b4ab170dea2420e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가는데 다메섹에 가까왔을 때에 오정쯤 되어 홀연히 하늘로서 큰 빛이 나를 둘러 비취매"
+      ],
+      "raw_text_hashes": [
+        "f644bdd4639ccf189f25e3ad90e55022aff191b94a6cb533b4ab170dea2420e3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:7",
+      "sequence": 27709,
+      "chapter_label": "ACT 22",
+      "verse_label": "7",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 7
+        }
+      ],
+      "en": "I fell to the ground and heard a voice saying to me, ‘Saul, Saul, why are you persecuting me?’",
+      "ko": "내가 땅에 엎드러져 들으니 소리 있어 가로되 사울아 사울아 네가 왜 나를 핍박하느냐 하시거늘",
+      "source_text_hash": "d79610ea3c7f882e536f055fe67f98c980a4c91f813f540af2675b83077258ee",
+      "translation_text_hash": "f2baca17c481027544033dcac3884239b6ad1c9b1a162a2e1b718d24b2f19050",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 땅에 엎드러져 들으니 소리 있어 가로되 사울아 사울아 네가 왜 나를 핍박하느냐 하시거늘"
+      ],
+      "raw_text_hashes": [
+        "f2baca17c481027544033dcac3884239b6ad1c9b1a162a2e1b718d24b2f19050"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:8",
+      "sequence": 27710,
+      "chapter_label": "ACT 22",
+      "verse_label": "8",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 8
+        }
+      ],
+      "en": "I answered, ‘Who are you, Lord?’ He said to me, ‘I am Jesus of Nazareth, whom you persecute.’",
+      "ko": "내가 대답하되 주여 뉘시니이까 하니 가라사대 나는 네가 핍박하는 나사렛 예수라 하시더라",
+      "source_text_hash": "7df06f100f5e1283c62846977e467dde1d731332aeac040a3617a77e80b1e03f",
+      "translation_text_hash": "5d851458955770d6ddfdcf4e1469ed5d6eedbb35e2592ec33ad76d51f7933f44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 대답하되 주여 뉘시니이까 하니 가라사대 나는 네가 핍박하는 나사렛 예수라 하시더라"
+      ],
+      "raw_text_hashes": [
+        "5d851458955770d6ddfdcf4e1469ed5d6eedbb35e2592ec33ad76d51f7933f44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:9",
+      "sequence": 27711,
+      "chapter_label": "ACT 22",
+      "verse_label": "9",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 9
+        }
+      ],
+      "en": "“Those who were with me indeed saw the light and were afraid, but they didn’t understand the voice of him who spoke to me.",
+      "ko": "나와 함께 있는 사람들이 빛은 보면서도 나더러 말하시는 이의 소리는 듣지 못하더라",
+      "source_text_hash": "7269e3972f6767c63e6504471853e9fc3001f4d58e6bccc82e5973ea0d87851b",
+      "translation_text_hash": "67583ed727ff918ed50c9569093457cddfe76a46025e4276bcf7995fa0989ab5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나와 함께 있는 사람들이 빛은 보면서도 나더러 말하시는 이의 소리는 듣지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "67583ed727ff918ed50c9569093457cddfe76a46025e4276bcf7995fa0989ab5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:10",
+      "sequence": 27712,
+      "chapter_label": "ACT 22",
+      "verse_label": "10",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 10
+        }
+      ],
+      "en": "I said, ‘What shall I do, Lord?’ The Lord said to me, ‘Arise, and go into Damascus. There you will be told about all things which are appointed for you to do.’",
+      "ko": "내가 가로되 주여 무엇을 하리이까 주께서 가라사대 일어나 다메섹으로 들어가라 정한바 너의 모든 행할 것을 거기서 누가 이르리라 하시거늘",
+      "source_text_hash": "9cf4c1908482c754f73533e75412181ea848ed011ca3516ed139d52d91bcc825",
+      "translation_text_hash": "fec9610e48d568058fb797d29d2db09e885d126377e2dbd9b32f0d2121cc6cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 가로되 주여 무엇을 하리이까 주께서 가라사대 일어나 다메섹으로 들어가라 정한바 너의 모든 행할 것을 거기서 누가 이르리라 하시거늘"
+      ],
+      "raw_text_hashes": [
+        "fec9610e48d568058fb797d29d2db09e885d126377e2dbd9b32f0d2121cc6cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:11",
+      "sequence": 27713,
+      "chapter_label": "ACT 22",
+      "verse_label": "11",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 11
+        }
+      ],
+      "en": "When I couldn’t see for the glory of that light, being led by the hand of those who were with me, I came into Damascus.",
+      "ko": "나는 그 빛의 광채를 인하여 볼 수 없게 되었으므로 나와 함께 있는 사람들의 손에 끌려 다메섹에 들어갔노라",
+      "source_text_hash": "a530fe945759efe8f2f1b2e0337b0b703ac4ca7d3f58c4c9432d8c5312fe1530",
+      "translation_text_hash": "08fc4022930414722a0fef651dc109a8f2e998a44bac485d5af78297b78a7127",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 그 빛의 광채를 인하여 볼 수 없게 되었으므로 나와 함께 있는 사람들의 손에 끌려 다메섹에 들어갔노라"
+      ],
+      "raw_text_hashes": [
+        "08fc4022930414722a0fef651dc109a8f2e998a44bac485d5af78297b78a7127"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:12",
+      "sequence": 27714,
+      "chapter_label": "ACT 22",
+      "verse_label": "12",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 12
+        }
+      ],
+      "en": "“One Ananias, a devout man according to the law, well reported of by all the Jews who lived in Damascus,",
+      "ko": "율법에 의하면 경건한 사람으로 거기 사는 모든 유대인들에게 칭찬을 듣는 아나니아라 하는 이가",
+      "source_text_hash": "143a98f54982460a31b7b2a0d93ab3504de49cf21d78cb8ba5bc7c8fec8705d8",
+      "translation_text_hash": "7a32e9ab2a4e095740dfb3715a8513abafc9d2694adaa1eeef44b39498f96b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "율법에 의하면 경건한 사람으로 거기 사는 모든 유대인들에게 칭찬을 듣는 아나니아라 하는 이가"
+      ],
+      "raw_text_hashes": [
+        "7a32e9ab2a4e095740dfb3715a8513abafc9d2694adaa1eeef44b39498f96b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:13",
+      "sequence": 27715,
+      "chapter_label": "ACT 22",
+      "verse_label": "13",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 13
+        }
+      ],
+      "en": "came to me, and standing by me said to me, ‘Brother Saul, receive your sight!’ In that very hour I looked up at him.",
+      "ko": "내게 와 곁에 서서 말하되 형제 사울아 다시 보라 하거늘 즉시 그를 쳐다보았노라",
+      "source_text_hash": "14e5dbe5a70da47583e097744dc735f6e5efc7b5456474e2cd0bb8d025b51de4",
+      "translation_text_hash": "8719c7eb8b7a2668707367e5dc7754e3c2b77e83e24ab984e5631fc205c96f31",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 와 곁에 서서 말하되 형제 사울아 다시 보라 하거늘 즉시 그를 쳐다보았노라"
+      ],
+      "raw_text_hashes": [
+        "8719c7eb8b7a2668707367e5dc7754e3c2b77e83e24ab984e5631fc205c96f31"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:14",
+      "sequence": 27716,
+      "chapter_label": "ACT 22",
+      "verse_label": "14",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 14
+        }
+      ],
+      "en": "He said, ‘The God of our fathers has appointed you to know his will, and to see the Righteous One, and to hear a voice from his mouth.",
+      "ko": "그가 또 가로되 우리 조상들의 하나님이 너를 택하여 너로 하여금 자기 뜻을 알게 하시며 저 의인을 보게 하시고 그 입에서 나오는 음성을 듣게 하셨으니",
+      "source_text_hash": "d5a06bdf5944506cc5274c87127b6a616676608107ca86c42cba3cf12462a9a5",
+      "translation_text_hash": "90a968f10b3c686ad41cd34206c70582c95b4f26352d12ff24365f4bd5ebfb56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 가로되 우리 조상들의 하나님이 너를 택하여 너로 하여금 자기 뜻을 알게 하시며 저 의인을 보게 하시고 그 입에서 나오는 음성을 듣게 하셨으니"
+      ],
+      "raw_text_hashes": [
+        "90a968f10b3c686ad41cd34206c70582c95b4f26352d12ff24365f4bd5ebfb56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:15",
+      "sequence": 27717,
+      "chapter_label": "ACT 22",
+      "verse_label": "15",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 15
+        }
+      ],
+      "en": "For you will be a witness for him to all men of what you have seen and heard.",
+      "ko": "네가 그를 위하여 모든 사람 앞에서 너의 보고 들은 것에 증인이 되리라",
+      "source_text_hash": "9b8ea31c0812eb09ac9580abea29baa45101eedb0fc86bc062a4832c92ec2ea7",
+      "translation_text_hash": "a2de01c716848bc70179801904c2e225403e55d81c0e3d6e64592af9848d14fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 그를 위하여 모든 사람 앞에서 너의 보고 들은 것에 증인이 되리라"
+      ],
+      "raw_text_hashes": [
+        "a2de01c716848bc70179801904c2e225403e55d81c0e3d6e64592af9848d14fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:16",
+      "sequence": 27718,
+      "chapter_label": "ACT 22",
+      "verse_label": "16",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 16
+        }
+      ],
+      "en": "Now why do you wait? Arise, be baptized, and wash away your sins, calling on the name of the Lord.’",
+      "ko": "이제는 왜 주저하느뇨 일어나 주의 이름을 불러 세례를 받고 너의 죄를 씻으라 하더라",
+      "source_text_hash": "f638b568a7e86479f4b668be0b70698abdf12d8dc91831104a3b912b8ac3233c",
+      "translation_text_hash": "2833ced4ef8d23e11e3ec9cd824f0d0a6e0df03cc4bbd9ff5ca63ccb75761933",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 왜 주저하느뇨 일어나 주의 이름을 불러 세례를 받고 너의 죄를 씻으라 하더라"
+      ],
+      "raw_text_hashes": [
+        "2833ced4ef8d23e11e3ec9cd824f0d0a6e0df03cc4bbd9ff5ca63ccb75761933"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:17",
+      "sequence": 27719,
+      "chapter_label": "ACT 22",
+      "verse_label": "17",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 17
+        }
+      ],
+      "en": "“When I had returned to Jerusalem and while I prayed in the temple, I fell into a trance",
+      "ko": "후에 내가 예루살렘으로 돌아와서 성전에서 기도할 때에 비몽사몽간에",
+      "source_text_hash": "3f3f136ce0e02f9d613de5bb623f273fc1380cb1719b954d91a01a21de29e99b",
+      "translation_text_hash": "5990e299b77da66bac4e63ea7d0c7bcb58c905c1453976806b6d7ee611b56d34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "후에 내가 예루살렘으로 돌아와서 성전에서 기도할 때에 비몽사몽간에"
+      ],
+      "raw_text_hashes": [
+        "5990e299b77da66bac4e63ea7d0c7bcb58c905c1453976806b6d7ee611b56d34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:18",
+      "sequence": 27720,
+      "chapter_label": "ACT 22",
+      "verse_label": "18",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 18
+        }
+      ],
+      "en": "and saw him saying to me, ‘Hurry and get out of Jerusalem quickly, because they will not receive testimony concerning me from you.’",
+      "ko": "보매 주께서 내게 말씀하시되 속히 예루살렘에서 나가라 저희는 네가 내게 대하여 증거하는 말을 듣지 아니하리라 하시거늘",
+      "source_text_hash": "91264411e2eb33f972d5dc901508267ba87a1b29c9bbb1222ab66d50e57ddc65",
+      "translation_text_hash": "125ac06b1ba7a1fb4129b43b5b814cdb3fbbed880dedc5e81b29de2f7da60fce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보매 주께서 내게 말씀하시되 속히 예루살렘에서 나가라 저희는 네가 내게 대하여 증거하는 말을 듣지 아니하리라 하시거늘"
+      ],
+      "raw_text_hashes": [
+        "125ac06b1ba7a1fb4129b43b5b814cdb3fbbed880dedc5e81b29de2f7da60fce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:19",
+      "sequence": 27721,
+      "chapter_label": "ACT 22",
+      "verse_label": "19",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 19
+        }
+      ],
+      "en": "I said, ‘Lord, they themselves know that I imprisoned and beat in every synagogue those who believed in you.",
+      "ko": "내가 말하기를 주여 내가 주 믿는 사람들을 가두고 또 각 회당에서 때리고",
+      "source_text_hash": "52cc2efdb521b7e793ef4834df4b1c52d721fac6a875d836115d7c1accdebee8",
+      "translation_text_hash": "ca085149bf5a96503cd1bcd2781390dab3c9abfd78bf7e429ac60487031b2b66",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 말하기를 주여 내가 주 믿는 사람들을 가두고 또 각 회당에서 때리고"
+      ],
+      "raw_text_hashes": [
+        "ca085149bf5a96503cd1bcd2781390dab3c9abfd78bf7e429ac60487031b2b66"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:20",
+      "sequence": 27722,
+      "chapter_label": "ACT 22",
+      "verse_label": "20",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 20
+        }
+      ],
+      "en": "When the blood of Stephen, your witness, was shed, I also was standing by, consenting to his death, and guarding the cloaks of those who killed him.’",
+      "ko": "또 주의 증인 스데반의 피를 흘릴 적에 내가 곁에 서서 찬성하고 그 죽이는 사람들의 옷을 지킨줄 저희도 아나이다",
+      "source_text_hash": "4c71fb5b6b43fb3cb0e1120d3d71eae4643748d3b73dd3f6096a820c196b4b4f",
+      "translation_text_hash": "30a2a009822ddd40cf07f9e26c9fc022a435caf5cb50796034d800afb87dc993",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주의 증인 스데반의 피를 흘릴 적에 내가 곁에 서서 찬성하고 그 죽이는 사람들의 옷을 지킨줄 저희도 아나이다"
+      ],
+      "raw_text_hashes": [
+        "30a2a009822ddd40cf07f9e26c9fc022a435caf5cb50796034d800afb87dc993"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:21",
+      "sequence": 27723,
+      "chapter_label": "ACT 22",
+      "verse_label": "21",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 21
+        }
+      ],
+      "en": "“He said to me, ‘Depart, for I will send you out far from here to the Gentiles.’”",
+      "ko": "나더러 또 이르시되 떠나가라 내가 너를 멀리 이방인에게로 보내리라 하셨느니라",
+      "source_text_hash": "14c58b755d441d9e7c92e1db8b09b62b576d7609a782611e189946ab2eec2238",
+      "translation_text_hash": "1fca9093bddf79e8b798c8ba89acbe9070e7612877ef0299df860b77bd0b4bdc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나더러 또 이르시되 떠나가라 내가 너를 멀리 이방인에게로 보내리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "1fca9093bddf79e8b798c8ba89acbe9070e7612877ef0299df860b77bd0b4bdc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:22",
+      "sequence": 27724,
+      "chapter_label": "ACT 22",
+      "verse_label": "22",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 22
+        }
+      ],
+      "en": "They listened to him until he said that; then they lifted up their voice and said, “Rid the earth of this fellow, for he isn’t fit to live!”",
+      "ko": "이 말 하는 것까지 저희가 듣다가 소리질러 가로되 이러한 놈은 세상에서 없이 하자 살려 둘 자가 아니라 하여",
+      "source_text_hash": "330a8863d06c0d9bbd858fef87bbf1eafe1948cbb25079a7f877d8985417d669",
+      "translation_text_hash": "0a9387838d76c600411638e29c815075c6da05aa05b4ae5d3f8be07429860ab9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말 하는 것까지 저희가 듣다가 소리질러 가로되 이러한 놈은 세상에서 없이 하자 살려 둘 자가 아니라 하여"
+      ],
+      "raw_text_hashes": [
+        "0a9387838d76c600411638e29c815075c6da05aa05b4ae5d3f8be07429860ab9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:23",
+      "sequence": 27725,
+      "chapter_label": "ACT 22",
+      "verse_label": "23",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 23
+        }
+      ],
+      "en": "As they cried out, threw off their cloaks, and threw dust into the air,",
+      "ko": "떠들며 옷을 벗어 던지고 티끌을 공중에 날리니",
+      "source_text_hash": "9d17f29f7e9ad0e1aa51e3d5ea9d7fa6c5ded89092be6e87d7826bb5c10c887d",
+      "translation_text_hash": "a06129bf1ad29907eeb40016d8103f63e9ae725cc8b0a8681a2654b4a3b3baeb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "떠들며 옷을 벗어 던지고 티끌을 공중에 날리니"
+      ],
+      "raw_text_hashes": [
+        "a06129bf1ad29907eeb40016d8103f63e9ae725cc8b0a8681a2654b4a3b3baeb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:24",
+      "sequence": 27726,
+      "chapter_label": "ACT 22",
+      "verse_label": "24",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 24
+        }
+      ],
+      "en": "the commanding officer commanded him to be brought into the barracks, ordering him to be examined by scourging, that he might know for what crime they shouted against him like that.",
+      "ko": "천부장이 바울을 영문 안으로 데려가라 명하고 저희가 무슨 일로 그를 대하여 떠드나 알고자 하여 채찍질하며 신문하라 한대",
+      "source_text_hash": "b0047bf2873a28e098cbea912ebca9f0c607d1b90691f28f3084a8e8b6b0672e",
+      "translation_text_hash": "d2e6b48faccad3a1558a833db76a82332d85147e3f8cd7230232646bd69e14b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장이 바울을 영문 안으로 데려가라 명하고 저희가 무슨 일로 그를 대하여 떠드나 알고자 하여 채찍질하며 신문하라 한대"
+      ],
+      "raw_text_hashes": [
+        "d2e6b48faccad3a1558a833db76a82332d85147e3f8cd7230232646bd69e14b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:25",
+      "sequence": 27727,
+      "chapter_label": "ACT 22",
+      "verse_label": "25",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 25
+        }
+      ],
+      "en": "When they had tied him up with straps, Paul asked the centurion who stood by, “Is it lawful for you to scourge a man who is a Roman, and not found guilty?”",
+      "ko": "가죽줄로 바울을 매니 바울이 곁에 섰는 백부장더러 이르되 너희가 로마 사람 된 자를 죄도 정치 아니하고 채찍질할 수 있느냐 하니",
+      "source_text_hash": "0853af3d3084bd9541d9311d4b3636ead5d35626aca6358061e923af71b87d2c",
+      "translation_text_hash": "cc575c01b38ec15d43322901e45a046457fb3305ffbe45619bda3225c5fadc68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가죽줄로 바울을 매니 바울이 곁에 섰는 백부장더러 이르되 너희가 로마 사람 된 자를 죄도 정치 아니하고 채찍질할 수 있느냐 하니"
+      ],
+      "raw_text_hashes": [
+        "cc575c01b38ec15d43322901e45a046457fb3305ffbe45619bda3225c5fadc68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:26",
+      "sequence": 27728,
+      "chapter_label": "ACT 22",
+      "verse_label": "26",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 26
+        }
+      ],
+      "en": "When the centurion heard it, he went to the commanding officer and told him, “Watch what you are about to do, for this man is a Roman!”",
+      "ko": "백부장이 듣고 가서 천부장에게 전하여 가로되 어찌하려 하느뇨 이는 로마 사람이라 하니",
+      "source_text_hash": "da92b91ac0e60608bf1e3fc44d16436c5cb8c161e94f5298952db26478a63786",
+      "translation_text_hash": "c77e5ebc36ffb499944c45f3412a38f1a14c2c74fba2eabdad6c06722f01d2b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "백부장이 듣고 가서 천부장에게 전하여 가로되 어찌하려 하느뇨 이는 로마 사람이라 하니"
+      ],
+      "raw_text_hashes": [
+        "c77e5ebc36ffb499944c45f3412a38f1a14c2c74fba2eabdad6c06722f01d2b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:27",
+      "sequence": 27729,
+      "chapter_label": "ACT 22",
+      "verse_label": "27",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 27
+        }
+      ],
+      "en": "The commanding officer came and asked him, “Tell me, are you a Roman?” He said, “Yes.”",
+      "ko": "천부장이 와서 바울에게 말하되 네가 로마사람이냐 내게 말하라 가로되 그러하다",
+      "source_text_hash": "8f549aa392b9be4f95e11647057980f6e1ec2ed659b988aef273b99528b7c21f",
+      "translation_text_hash": "ab30ca7a2e7d515d4bf07d71946ed92c9d6054c11c5fbea84fbc5c969fc9c28f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장이 와서 바울에게 말하되 네가 로마사람이냐 내게 말하라 가로되 그러하다"
+      ],
+      "raw_text_hashes": [
+        "ab30ca7a2e7d515d4bf07d71946ed92c9d6054c11c5fbea84fbc5c969fc9c28f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:28",
+      "sequence": 27730,
+      "chapter_label": "ACT 22",
+      "verse_label": "28",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 28
+        }
+      ],
+      "en": "The commanding officer answered, “I bought my citizenship for a great price.” Paul said, “But I was born a Roman.”",
+      "ko": "천부장이 대답하되 나는 돈을 많이 들여 이 시민권을 얻었노라 바울이 가로되 나는 나면서부터로라 하니",
+      "source_text_hash": "2efa19bf3a08c35cc18efdfb216ea101f7d0f3ec49ebd76f6a0a3061f2235df5",
+      "translation_text_hash": "fe54d3c52ec8479f6041be5e4c67aee553596afef8474e8c56e939dd2cb392c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천부장이 대답하되 나는 돈을 많이 들여 이 시민권을 얻었노라 바울이 가로되 나는 나면서부터로라 하니"
+      ],
+      "raw_text_hashes": [
+        "fe54d3c52ec8479f6041be5e4c67aee553596afef8474e8c56e939dd2cb392c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:29",
+      "sequence": 27731,
+      "chapter_label": "ACT 22",
+      "verse_label": "29",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 29
+        }
+      ],
+      "en": "Immediately those who were about to examine him departed from him, and the commanding officer also was afraid when he realized that he was a Roman, because he had bound him.",
+      "ko": "신문하려던 사람들이 곧 그에게서 물러가고 천부장도 그가 로마 사람인줄 알고 또는 그 결박한 것을 인하여 두려워하니라",
+      "source_text_hash": "0484192180ba3ba63256cdd9429d527fe74fe0d66bcd00baca2be769563fd7f4",
+      "translation_text_hash": "1d4888835c6858be745676d5ea078a53a4b2f94281412e4afa93cf6500b870cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신문하려던 사람들이 곧 그에게서 물러가고 천부장도 그가 로마 사람인줄 알고 또는 그 결박한 것을 인하여 두려워하니라"
+      ],
+      "raw_text_hashes": [
+        "1d4888835c6858be745676d5ea078a53a4b2f94281412e4afa93cf6500b870cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ACT:22:30",
+      "sequence": 27732,
+      "chapter_label": "ACT 22",
+      "verse_label": "30",
+      "locator": {
+        "book": "ACT",
+        "chapter": 22,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ACT",
+          "chapter": 22,
+          "verse": 30
+        }
+      ],
+      "en": "But on the next day, desiring to know the truth about why he was accused by the Jews, he freed him from the bonds and commanded the chief priests and all the council to come together, and brought Paul down and set him before them.",
+      "ko": "이튿날 천부장이 무슨 일로 유대인들이 그를 송사하는지 실상을 알고자 하여 그 결박을 풀고 명하여 제사장들과 온 공회를 모으고 바울을 데리고 내려가서 저희 앞에 세우니라",
+      "source_text_hash": "72abae6e0ca0a6e1f97d3fda78060afe3d05cec516345473e73f22fd31d7f3de",
+      "translation_text_hash": "deb6914e2a133ffc9fe40d896989c753360d0fc3305adaa3e29d0e79c5b4f7f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 천부장이 무슨 일로 유대인들이 그를 송사하는지 실상을 알고자 하여 그 결박을 풀고 명하여 제사장들과 온 공회를 모으고 바울을 데리고 내려가서 저희 앞에 세우니라"
+      ],
+      "raw_text_hashes": [
+        "deb6914e2a133ffc9fe40d896989c753360d0fc3305adaa3e29d0e79c5b4f7f4"
+      ]
+    }
+  ]
+}

@@ -74,7 +74,9 @@
     { n:59, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"NOT_APPLICABLE" },
     { n:60, ui:"IN_PROGRESS",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
     { n:61, ui:"UI_APPROVED",   ux:"IN_PROGRESS",    be:"IMPLEMENTED" },
-    { n:64, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"IN_PROGRESS" }
+    { n:64, ui:"IN_PROGRESS",   ux:"IN_PROGRESS",    be:"IN_PROGRESS" },
+    { n:72, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" },
+    { n:73, ui:"NOT_STARTED",   ux:"BLOCKED_BY_UI",  be:"FROZEN" }
   ]);
 
   var byNumber = {};

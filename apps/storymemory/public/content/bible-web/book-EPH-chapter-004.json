@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EPH:chapter:004",
+  "unit_ordinal": 1101,
+  "unit_label": "EPH 4",
+  "book_code": "EPH",
+  "chapter_number": 4,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EPH:4:1",
+      "sequence": 29270,
+      "chapter_label": "EPH 4",
+      "verse_label": "1",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 1
+        }
+      ],
+      "en": "I therefore, the prisoner in the Lord, beg you to walk worthily of the calling with which you were called,",
+      "ko": "그러므로 주 안에서 갇힌 내가 너희를 권하노니 너희가 부르심을 입은 부름에 합당하게 행하여",
+      "source_text_hash": "a845a8541f235b854f12d7e6d155217b42388a5b6d74094739ea13b6cc8fd9a1",
+      "translation_text_hash": "1253331250a9e93bd883fc08a0a7f4b0425397a92809b22d7584788ea9518a4d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 안에서 갇힌 내가 너희를 권하노니 너희가 부르심을 입은 부름에 합당하게 행하여"
+      ],
+      "raw_text_hashes": [
+        "1253331250a9e93bd883fc08a0a7f4b0425397a92809b22d7584788ea9518a4d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:2",
+      "sequence": 29271,
+      "chapter_label": "EPH 4",
+      "verse_label": "2",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 2
+        }
+      ],
+      "en": "with all lowliness and humility, with patience, bearing with one another in love,",
+      "ko": "모든 겸손과 온유로 하고 오래 참음으로 사랑 가운데서 서로 용납하고",
+      "source_text_hash": "12c0b9997529d51ad23c7a3c21d46f7942193de686967c3e196330574bd3f1ce",
+      "translation_text_hash": "7febe5eff14df4cc1c3512d20e00e474c5c212c9528749c336a75906494d3bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 겸손과 온유로 하고 오래 참음으로 사랑 가운데서 서로 용납하고"
+      ],
+      "raw_text_hashes": [
+        "7febe5eff14df4cc1c3512d20e00e474c5c212c9528749c336a75906494d3bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:3",
+      "sequence": 29272,
+      "chapter_label": "EPH 4",
+      "verse_label": "3",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 3
+        }
+      ],
+      "en": "being eager to keep the unity of the Spirit in the bond of peace.",
+      "ko": "평안의 매는 줄로 성령의 하나 되게 하신 것을 힘써 지키라",
+      "source_text_hash": "a29ff86278a68af132c16bb0506fd8ab0b27a6208bc9dba539ff6de8a46d2994",
+      "translation_text_hash": "0b06563beb5d729b3d8c43577ec718723b2a89d6aef1d849209f26a1cf29be63",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평안의 매는 줄로 성령의 하나 되게 하신 것을 힘써 지키라"
+      ],
+      "raw_text_hashes": [
+        "0b06563beb5d729b3d8c43577ec718723b2a89d6aef1d849209f26a1cf29be63"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:4",
+      "sequence": 29273,
+      "chapter_label": "EPH 4",
+      "verse_label": "4",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 4
+        }
+      ],
+      "en": "There is one body and one Spirit, even as you also were called in one hope of your calling,",
+      "ko": "몸이 하나이요 성령이 하나이니 이와 같이 너희가 부르심의 한 소망 안에서 부르심을 입었느니라",
+      "source_text_hash": "cb72cd8cd382caf618125951f08cd6d62f145527fa48310f4cc5eb6866c1bfe8",
+      "translation_text_hash": "90128fa119d340cd57c621677151280be12835fbee43082c16a3e54827b6ce91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "몸이 하나이요 성령이 하나이니 이와 같이 너희가 부르심의 한 소망 안에서 부르심을 입었느니라"
+      ],
+      "raw_text_hashes": [
+        "90128fa119d340cd57c621677151280be12835fbee43082c16a3e54827b6ce91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:5",
+      "sequence": 29274,
+      "chapter_label": "EPH 4",
+      "verse_label": "5",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 5
+        }
+      ],
+      "en": "one Lord, one faith, one baptism,",
+      "ko": "주도 하나이요 믿음도 하나이요 세례도 하나이요",
+      "source_text_hash": "6f128be79735d28f84ac8f20846e5acab1e625a7a7fe4fcf51e6a4fe599d30f5",
+      "translation_text_hash": "0a345fba3428c755941a8a41a85274275695d9dce195aa0c17df96b895351d5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주도 하나이요 믿음도 하나이요 세례도 하나이요"
+      ],
+      "raw_text_hashes": [
+        "0a345fba3428c755941a8a41a85274275695d9dce195aa0c17df96b895351d5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:6",
+      "sequence": 29275,
+      "chapter_label": "EPH 4",
+      "verse_label": "6",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 6
+        }
+      ],
+      "en": "one God and Father of all, who is over all and through all and in us all.",
+      "ko": "하나님도 하나이시니 곧 만유의 아버지시라 만유 위에 계시고 만유를 통일하시고 만유 가운데 계시도다",
+      "source_text_hash": "99473de25101531e8d8bff55757b08caf15e647f262223c38e71abcb3130bff5",
+      "translation_text_hash": "6f6d45ecae65814fece6f19f7c99a577ddb10d42c01a9e4ffb95af0481bf8004",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님도 하나이시니 곧 만유의 아버지시라 만유 위에 계시고 만유를 통일하시고 만유 가운데 계시도다"
+      ],
+      "raw_text_hashes": [
+        "6f6d45ecae65814fece6f19f7c99a577ddb10d42c01a9e4ffb95af0481bf8004"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:7",
+      "sequence": 29276,
+      "chapter_label": "EPH 4",
+      "verse_label": "7",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 7
+        }
+      ],
+      "en": "But to each one of us, the grace was given according to the measure of the gift of Christ.",
+      "ko": "우리 각 사람에게 그리스도의 선물의 분량대로 은혜를 주셨나니",
+      "source_text_hash": "7b6598f0040157d3194ff721148f3b7bba6a1c4b197cb3ce255eef9a1184f418",
+      "translation_text_hash": "c74f0fd8b044a6041b72d0503e6b077d01bc3f79f1f1663bda159a4d0a352ffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리 각 사람에게 그리스도의 선물의 분량대로 은혜를 주셨나니"
+      ],
+      "raw_text_hashes": [
+        "c74f0fd8b044a6041b72d0503e6b077d01bc3f79f1f1663bda159a4d0a352ffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:8",
+      "sequence": 29277,
+      "chapter_label": "EPH 4",
+      "verse_label": "8",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore he says, “When he ascended on high, he led captivity captive, and gave gifts to people.”",
+      "ko": "그러므로 이르기를 그가 위로 올라가실 때에 사로잡힌 자를 사로잡고 사람들에게 선물을 주셨다 하였도다",
+      "source_text_hash": "5e22dbd04132fdb14b3c0194d9cab266f2d79c4ecf054687c9c5521e9f2b0d3c",
+      "translation_text_hash": "df34760c5575f079825297aab53a9f19045affe6325f53f069f6af25438d6ecf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 이르기를 그가 위로 올라가실 때에 사로잡힌 자를 사로잡고 사람들에게 선물을 주셨다 하였도다"
+      ],
+      "raw_text_hashes": [
+        "df34760c5575f079825297aab53a9f19045affe6325f53f069f6af25438d6ecf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:9",
+      "sequence": 29278,
+      "chapter_label": "EPH 4",
+      "verse_label": "9",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 9
+        }
+      ],
+      "en": "Now this, “He ascended”, what is it but that he also first descended into the lower parts of the earth?",
+      "ko": "올라가셨다 하였은즉 땅 아랫곳으로 내리셨던 것이 아니면 무엇이냐",
+      "source_text_hash": "64aefe6d234faba458c03082b59be69cbf2020c792f133df9a314b8a6de5f8d1",
+      "translation_text_hash": "8fa16876f91030a8737cffc7d9ca2aa867d4828d095972454e1b8043c70d067a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "올라가셨다 하였은즉 땅 아랫곳으로 내리셨던 것이 아니면 무엇이냐"
+      ],
+      "raw_text_hashes": [
+        "8fa16876f91030a8737cffc7d9ca2aa867d4828d095972454e1b8043c70d067a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:10",
+      "sequence": 29279,
+      "chapter_label": "EPH 4",
+      "verse_label": "10",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 10
+        }
+      ],
+      "en": "He who descended is the one who also ascended far above all the heavens, that he might fill all things.",
+      "ko": "내리셨던 그가 곧 모든 하늘 위에 오르신 자니 이는 만물을 충만케 하려 하심이니라",
+      "source_text_hash": "dd1eec918c4c291b07885cba32727617aca00dca9ccb05e322cb1810b6f4cda3",
+      "translation_text_hash": "ebceceb74200e0cc104e61af799569b24acf8cabd211f3a3e44df83338b98642",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내리셨던 그가 곧 모든 하늘 위에 오르신 자니 이는 만물을 충만케 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "ebceceb74200e0cc104e61af799569b24acf8cabd211f3a3e44df83338b98642"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:11",
+      "sequence": 29280,
+      "chapter_label": "EPH 4",
+      "verse_label": "11",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 11
+        }
+      ],
+      "en": "He gave some to be apostles; and some, prophets; and some, evangelists; and some, shepherds and teachers;",
+      "ko": "그가 혹은 사도로, 혹은 선지자로, 혹은 복음 전하는 자로, 혹은 목사와 교사로 주셨으니",
+      "source_text_hash": "a8f6dd861ef031c4d85a0a2a1098a333967f797d55086468181549232a1fd420",
+      "translation_text_hash": "6a6272b058106b197ab1fbc51d91bb2c700a9ba6bb3807430ca86a801907b783",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 혹은 사도로, 혹은 선지자로, 혹은 복음 전하는 자로, 혹은 목사와 교사로 주셨으니"
+      ],
+      "raw_text_hashes": [
+        "6a6272b058106b197ab1fbc51d91bb2c700a9ba6bb3807430ca86a801907b783"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:12",
+      "sequence": 29281,
+      "chapter_label": "EPH 4",
+      "verse_label": "12",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 12
+        }
+      ],
+      "en": "for the perfecting of the saints, to the work of serving, to the building up of the body of Christ,",
+      "ko": "이는 성도를 온전케 하며 봉사의 일을 하게 하며 그리스도의 몸을 세우려 하심이라",
+      "source_text_hash": "72059c9e9575adc4b5fda967812b0443de9ceb8a1e3a0e239dc56750571ac491",
+      "translation_text_hash": "0307626a3ba3149b5bff82b868a599a5def5a75ce8a1dc1933191c85e5f17855",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 성도를 온전케 하며 봉사의 일을 하게 하며 그리스도의 몸을 세우려 하심이라"
+      ],
+      "raw_text_hashes": [
+        "0307626a3ba3149b5bff82b868a599a5def5a75ce8a1dc1933191c85e5f17855"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:13",
+      "sequence": 29282,
+      "chapter_label": "EPH 4",
+      "verse_label": "13",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 13
+        }
+      ],
+      "en": "until we all attain to the unity of the faith and of the knowledge of the Son of God, to a full grown man, to the measure of the stature of the fullness of Christ,",
+      "ko": "우리가 다 하나님의 아들을 믿는 것과 아는 일에 하나가 되어 온전한 사람을 이루어 그리스도의 장성한 분량이 충만한데까지 이르리니",
+      "source_text_hash": "5c3eb0400eb8f5b9f68464fc627c2bbfc5e079beb4ee3e754d818cfa7751ebc6",
+      "translation_text_hash": "b220ef03d0c723f41b64a457d9ca11fa7edc4dbab6b28573e72ee48f1efcb16b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 다 하나님의 아들을 믿는 것과 아는 일에 하나가 되어 온전한 사람을 이루어 그리스도의 장성한 분량이 충만한데까지 이르리니"
+      ],
+      "raw_text_hashes": [
+        "b220ef03d0c723f41b64a457d9ca11fa7edc4dbab6b28573e72ee48f1efcb16b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:14",
+      "sequence": 29283,
+      "chapter_label": "EPH 4",
+      "verse_label": "14",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 14
+        }
+      ],
+      "en": "that we may no longer be children, tossed back and forth and carried about with every wind of doctrine, by the trickery of men, in craftiness, after the wiles of error;",
+      "ko": "이는 우리가 이제부터 어린 아이가 되지 아니하여 사람의 궤술과 간사한 유혹에 빠져 모든 교훈의 풍조에 밀려 요동치 않게 하려 함이라",
+      "source_text_hash": "928f3cd283ec4c5698e1a052259b4b4532c41e65537b8f3a5fdb6791cee42f86",
+      "translation_text_hash": "8478775dce497077e37b945771e95e4eee582c3502c293c924d423eca85e53e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 우리가 이제부터 어린 아이가 되지 아니하여 사람의 궤술과 간사한 유혹에 빠져 모든 교훈의 풍조에 밀려 요동치 않게 하려 함이라"
+      ],
+      "raw_text_hashes": [
+        "8478775dce497077e37b945771e95e4eee582c3502c293c924d423eca85e53e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:15",
+      "sequence": 29284,
+      "chapter_label": "EPH 4",
+      "verse_label": "15",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 15
+        }
+      ],
+      "en": "but speaking truth in love, we may grow up in all things into him who is the head, Christ,",
+      "ko": "오직 사랑 안에서 참된 것을 하여 범사에 그에게까지 자랄찌라 그는 머리니 곧 그리스도라",
+      "source_text_hash": "0ca3eec89732e143ea8119de84d97ceed0934229c53045d939e3786b559c7731",
+      "translation_text_hash": "045bcbc73b5a419778541252746b51ab5136dcc63c23f642f7de11182866aaec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 사랑 안에서 참된 것을 하여 범사에 그에게까지 자랄찌라 그는 머리니 곧 그리스도라"
+      ],
+      "raw_text_hashes": [
+        "045bcbc73b5a419778541252746b51ab5136dcc63c23f642f7de11182866aaec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:16",
+      "sequence": 29285,
+      "chapter_label": "EPH 4",
+      "verse_label": "16",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 16
+        }
+      ],
+      "en": "from whom all the body, being fitted and knit together through that which every joint supplies, according to the working in measure of each individual part, makes the body increase to the building up of itself in love.",
+      "ko": "그에게서 온 몸이 각 마디를 통하여 도움을 입음으로 연락하고 상합하여 각 지체의 분량대로 역사하여 그 몸을 자라게 하며 사랑 안에서 스스로 세우느니라",
+      "source_text_hash": "54948af2dc61b91481eb092c90364eba2dd8462013ad545da75d439a74eeced7",
+      "translation_text_hash": "427ab61383ec0b7d9eaf81c763bc37a8f11b032e6939d3bebaedbfc714ede94e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그에게서 온 몸이 각 마디를 통하여 도움을 입음으로 연락하고 상합하여 각 지체의 분량대로 역사하여 그 몸을 자라게 하며 사랑 안에서 스스로 세우느니라"
+      ],
+      "raw_text_hashes": [
+        "427ab61383ec0b7d9eaf81c763bc37a8f11b032e6939d3bebaedbfc714ede94e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:17",
+      "sequence": 29286,
+      "chapter_label": "EPH 4",
+      "verse_label": "17",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 17
+        }
+      ],
+      "en": "This I say therefore, and testify in the Lord, that you no longer walk as the rest of the Gentiles also walk, in the futility of their mind,",
+      "ko": "그러므로 내가 이것을 말하며 주 안에서 증거하노니 이제부터는 이방인이 그 마음의 허망한 것으로 행함 같이 너희는 행하지 말라",
+      "source_text_hash": "91ecbdb1a1548cf2128772bb17a713979825537ca8078ba5ff4993b0898aa9fc",
+      "translation_text_hash": "8391386933f4aa5a8f85e7647014f823d98a1a4c674879bb5487b4cb6757a8eb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 이것을 말하며 주 안에서 증거하노니 이제부터는 이방인이 그 마음의 허망한 것으로 행함 같이 너희는 행하지 말라"
+      ],
+      "raw_text_hashes": [
+        "8391386933f4aa5a8f85e7647014f823d98a1a4c674879bb5487b4cb6757a8eb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:18",
+      "sequence": 29287,
+      "chapter_label": "EPH 4",
+      "verse_label": "18",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 18
+        }
+      ],
+      "en": "being darkened in their understanding, alienated from the life of God because of the ignorance that is in them, because of the hardening of their hearts.",
+      "ko": "저희 총명이 어두워지고 저희 가운데 있는 무지함과 저희 마음이 굳어짐으로 말미암아 하나님의 생명에서 떠나 있도다",
+      "source_text_hash": "07daef2f6a5d284142093ff54fa605256c8a02ce460cc3cc580f278a7c325fca",
+      "translation_text_hash": "14187431bd21a810c7f560267c7e3b8eb2f927fa54d62d4cd6b8dd35530ba947",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 총명이 어두워지고 저희 가운데 있는 무지함과 저희 마음이 굳어짐으로 말미암아 하나님의 생명에서 떠나 있도다"
+      ],
+      "raw_text_hashes": [
+        "14187431bd21a810c7f560267c7e3b8eb2f927fa54d62d4cd6b8dd35530ba947"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:19",
+      "sequence": 29288,
+      "chapter_label": "EPH 4",
+      "verse_label": "19",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 19
+        }
+      ],
+      "en": "They, having become callous, gave themselves up to lust, to work all uncleanness with greediness.",
+      "ko": "저희가 감각 없는 자 되어 자신을 방탕에 방임하여 모든 더러운 것을 욕심으로 행하되",
+      "source_text_hash": "4bc11581a5ef4ef14d0cbfd8d4ed5a36fb21dcf4512a941ab9cc0acf894a78ed",
+      "translation_text_hash": "a3a1947e45eb142f88d75d0a666d974519297a00a7c3b6f2570c2f1b879f860b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 감각 없는 자 되어 자신을 방탕에 방임하여 모든 더러운 것을 욕심으로 행하되"
+      ],
+      "raw_text_hashes": [
+        "a3a1947e45eb142f88d75d0a666d974519297a00a7c3b6f2570c2f1b879f860b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:20",
+      "sequence": 29289,
+      "chapter_label": "EPH 4",
+      "verse_label": "20",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 20
+        }
+      ],
+      "en": "But you didn’t learn Christ that way,",
+      "ko": "오직 너희는 그리스도를 이같이 배우지 아니하였느니라",
+      "source_text_hash": "8a9d71614cb6988c9a9c90954ddd9e4c3d350b6d1542fb2f6dd4ce4f6046a880",
+      "translation_text_hash": "a292d4d2498dcde6c432a02f9f18e471ea11dd150a8a7e9592babb8875510e6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 너희는 그리스도를 이같이 배우지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "a292d4d2498dcde6c432a02f9f18e471ea11dd150a8a7e9592babb8875510e6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:21",
+      "sequence": 29290,
+      "chapter_label": "EPH 4",
+      "verse_label": "21",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 21
+        }
+      ],
+      "en": "if indeed you heard him and were taught in him, even as truth is in Jesus:",
+      "ko": "진리가 예수 안에 있는 것 같이 너희가 과연 그에게서 듣고 또한 그 안에서 가르침을 받았을찐대",
+      "source_text_hash": "b46b01b7a28bb29253227c491656c042f8a58f4365eef5d434cbece4fbf651e2",
+      "translation_text_hash": "930ee8f33313c71a350d83d9901c1c68d9fcfedc58740fb13c9cf3bd9325f26e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리가 예수 안에 있는 것 같이 너희가 과연 그에게서 듣고 또한 그 안에서 가르침을 받았을찐대"
+      ],
+      "raw_text_hashes": [
+        "930ee8f33313c71a350d83d9901c1c68d9fcfedc58740fb13c9cf3bd9325f26e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:22",
+      "sequence": 29291,
+      "chapter_label": "EPH 4",
+      "verse_label": "22",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 22
+        }
+      ],
+      "en": "that you put away, as concerning your former way of life, the old man that grows corrupt after the lusts of deceit,",
+      "ko": "너희는 유혹의 욕심을 따라 썩어져 가는 구습을 좇는 옛 사람을 벗어 버리고",
+      "source_text_hash": "f221836c15f9b0aeaf973e024f326d4d9752480ff5e7fd5a8d27f97b5f74fc6c",
+      "translation_text_hash": "3e2f0bc803176ebd2bf271c158bbdf7721c7e99be17e537c72a4efdf95e0c585",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 유혹의 욕심을 따라 썩어져 가는 구습을 좇는 옛 사람을 벗어 버리고"
+      ],
+      "raw_text_hashes": [
+        "3e2f0bc803176ebd2bf271c158bbdf7721c7e99be17e537c72a4efdf95e0c585"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:23",
+      "sequence": 29292,
+      "chapter_label": "EPH 4",
+      "verse_label": "23",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 23
+        }
+      ],
+      "en": "and that you be renewed in the spirit of your mind,",
+      "ko": "오직 심령으로 새롭게 되어",
+      "source_text_hash": "71d78088068bb96be3813710966eb31370d03254866b0e8c50e2f484b9bebc4f",
+      "translation_text_hash": "996db047901c425571c1e8e0b51c2f2f32c3efff914781fab8ee017dda4ceb5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 심령으로 새롭게 되어"
+      ],
+      "raw_text_hashes": [
+        "996db047901c425571c1e8e0b51c2f2f32c3efff914781fab8ee017dda4ceb5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:24",
+      "sequence": 29293,
+      "chapter_label": "EPH 4",
+      "verse_label": "24",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 24
+        }
+      ],
+      "en": "and put on the new man, who in the likeness of God has been created in righteousness and holiness of truth.",
+      "ko": "하나님을 따라 의와 진리의 거룩함으로 지으심을 받은 새 사람을 입으라",
+      "source_text_hash": "39ed585475e443ab5b38a2bc23743ca99de438e5deb87293ff48bf4cf8093bb2",
+      "translation_text_hash": "6dcd8778288c0b1c3fb46954409f00b211d4ff331e4cb828e6d7a4a9bea59084",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님을 따라 의와 진리의 거룩함으로 지으심을 받은 새 사람을 입으라"
+      ],
+      "raw_text_hashes": [
+        "6dcd8778288c0b1c3fb46954409f00b211d4ff331e4cb828e6d7a4a9bea59084"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:25",
+      "sequence": 29294,
+      "chapter_label": "EPH 4",
+      "verse_label": "25",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 25
+        }
+      ],
+      "en": "Therefore, putting away falsehood, speak truth each one with his neighbor, for we are members of one another.",
+      "ko": "그런즉 거짓을 버리고 각각 그 이웃으로 더불어 참된 것을 말하라 이는 우리가 서로 지체가 됨이니라",
+      "source_text_hash": "d848fe2036c30a782e3e97f778e84ba05147457b49ade72b4ca9ed4ce52d35dd",
+      "translation_text_hash": "a7ef1e37e4c1bc44139cfcd8ba41f07413826899aed35938c2dc57ec8101a682",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 거짓을 버리고 각각 그 이웃으로 더불어 참된 것을 말하라 이는 우리가 서로 지체가 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "a7ef1e37e4c1bc44139cfcd8ba41f07413826899aed35938c2dc57ec8101a682"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:26",
+      "sequence": 29295,
+      "chapter_label": "EPH 4",
+      "verse_label": "26",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 26
+        }
+      ],
+      "en": "“Be angry, and don’t sin.” Don’t let the sun go down on your wrath,",
+      "ko": "분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고",
+      "source_text_hash": "e81b349f094fc90f99b7263292fe3152f8770579389057a576bf8fcdc57b9178",
+      "translation_text_hash": "cc33694c650dd8764a41932beaf990d8be4f4e2aea3f6732a99f5f2b8b823d2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고"
+      ],
+      "raw_text_hashes": [
+        "cc33694c650dd8764a41932beaf990d8be4f4e2aea3f6732a99f5f2b8b823d2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:27",
+      "sequence": 29296,
+      "chapter_label": "EPH 4",
+      "verse_label": "27",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 27
+        }
+      ],
+      "en": "and don’t give place to the devil.",
+      "ko": "마귀로 틈을 타지 못하게 하라",
+      "source_text_hash": "d8d195d6789085c7dc5898077b8a7c5fbc57eea8055321f75b500297512a3202",
+      "translation_text_hash": "9f7745c60848815558b1e8d691f571fc3334c63e54013fc296bfd03ddc4aaa6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "마귀로 틈을 타지 못하게 하라"
+      ],
+      "raw_text_hashes": [
+        "9f7745c60848815558b1e8d691f571fc3334c63e54013fc296bfd03ddc4aaa6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:28",
+      "sequence": 29297,
+      "chapter_label": "EPH 4",
+      "verse_label": "28",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 28
+        }
+      ],
+      "en": "Let him who stole steal no more; but rather let him labor, producing with his hands something that is good, that he may have something to give to him who has need.",
+      "ko": "도적질하는 자는 다시 도적질하지 말고 돌이켜 빈궁한 자에게 구제할 것이 있기 위하여 제 손으로 수고하여 선한 일을 하라",
+      "source_text_hash": "3dc23d0a7bdc2dcd99071d4707324ff1a81c6bf3a87886d9ec66d60af4b8aac3",
+      "translation_text_hash": "208c4ebf623797769ac9c4ef35461bd49a266c0ffb2c335551ca35269be1689c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적질하는 자는 다시 도적질하지 말고 돌이켜 빈궁한 자에게 구제할 것이 있기 위하여 제 손으로 수고하여 선한 일을 하라"
+      ],
+      "raw_text_hashes": [
+        "208c4ebf623797769ac9c4ef35461bd49a266c0ffb2c335551ca35269be1689c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:29",
+      "sequence": 29298,
+      "chapter_label": "EPH 4",
+      "verse_label": "29",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 29
+        }
+      ],
+      "en": "Let no corrupt speech proceed out of your mouth, but only what is good for building others up as the need may be, that it may give grace to those who hear.",
+      "ko": "무릇 더러운 말은 너희 입밖에도 내지 말고 오직 덕을 세우는데 소용되는대로 선한 말을 하여 듣는 자들에게 은혜를 끼치게 하라",
+      "source_text_hash": "fb6fa966e264e4534228327355c7efab2549055fc1ac42f0b7d0c923eb5a476b",
+      "translation_text_hash": "c2a91ef910b7628f5c90e7d5fe243d6bb1325be0bfce23010dc425baefe09209",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 더러운 말은 너희 입밖에도 내지 말고 오직 덕을 세우는데 소용되는대로 선한 말을 하여 듣는 자들에게 은혜를 끼치게 하라"
+      ],
+      "raw_text_hashes": [
+        "c2a91ef910b7628f5c90e7d5fe243d6bb1325be0bfce23010dc425baefe09209"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:30",
+      "sequence": 29299,
+      "chapter_label": "EPH 4",
+      "verse_label": "30",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 30
+        }
+      ],
+      "en": "Don’t grieve the Holy Spirit of God, in whom you were sealed for the day of redemption.",
+      "ko": "하나님의 성령을 근심하게 하지 말라 그 안에서 너희가 구속의 날까지 인치심을 받았느니라",
+      "source_text_hash": "b376a4117f2eb72a94457a22fc1a3a25643feedfb2b1e09ce6f4153e41273119",
+      "translation_text_hash": "5cc3e92563ecccc6d95ef6e79e047f144bcc4c51abb5d105eb4246d1c5f624e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 성령을 근심하게 하지 말라 그 안에서 너희가 구속의 날까지 인치심을 받았느니라"
+      ],
+      "raw_text_hashes": [
+        "5cc3e92563ecccc6d95ef6e79e047f144bcc4c51abb5d105eb4246d1c5f624e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:31",
+      "sequence": 29300,
+      "chapter_label": "EPH 4",
+      "verse_label": "31",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 31
+        }
+      ],
+      "en": "Let all bitterness, wrath, anger, outcry, and slander be put away from you, with all malice.",
+      "ko": "너희는 모든 악독과 노함과 분냄과 떠드는 것과 훼방하는 것을 모든 악의와 함께 버리고",
+      "source_text_hash": "619f7e77a8fc355542cbf3375e4c077c39fd63495ce48889574997b06f811fdb",
+      "translation_text_hash": "f1a805beb573837843484ea9dce6da3bbac3304d9d3146793f0d8c77c143d17c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 모든 악독과 노함과 분냄과 떠드는 것과 훼방하는 것을 모든 악의와 함께 버리고"
+      ],
+      "raw_text_hashes": [
+        "f1a805beb573837843484ea9dce6da3bbac3304d9d3146793f0d8c77c143d17c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EPH:4:32",
+      "sequence": 29301,
+      "chapter_label": "EPH 4",
+      "verse_label": "32",
+      "locator": {
+        "book": "EPH",
+        "chapter": 4,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "EPH",
+          "chapter": 4,
+          "verse": 32
+        }
+      ],
+      "en": "And be kind to one another, tender hearted, forgiving each other, just as God also in Christ forgave you.",
+      "ko": "서로 인자하게 하며 불쌍히 여기며 서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라",
+      "source_text_hash": "248a74c2c71046fa6cc89ddeb6df1bb97c3fcef00486648c3b0da0d6ae3cf210",
+      "translation_text_hash": "3534e3081cdb29234cfdad535862795afd0beca44d7cbbeb511754473a7afc82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서로 인자하게 하며 불쌍히 여기며 서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라"
+      ],
+      "raw_text_hashes": [
+        "3534e3081cdb29234cfdad535862795afd0beca44d7cbbeb511754473a7afc82"
+      ]
+    }
+  ]
+}

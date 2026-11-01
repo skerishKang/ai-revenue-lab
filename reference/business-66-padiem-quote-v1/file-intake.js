@@ -232,7 +232,7 @@
       return "양식 등록 파일 이름과 확장자 정보가 일치하지 않습니다. .xlsx 파일을 다시 선택해 주세요.";
     }
     if (code === "legacy_hwp_unsupported") {
-      return "기존 HWP(.hwp)는 아직 지원하지 않습니다. 가능하면 HWPX 또는 PDF로 저장해 주세요.";
+      return "구형 HWP(.hwp)는 편집·변환할 수 없습니다. 한글에서 '다른 이름으로 저장 → HWPX'로 바꾼 뒤 올려 주세요.";
     }
     if (code === "unsupported_file_type") {
       return "PDF, DOCX, PPTX, XLSX, HWPX, JPG, PNG, WebP 파일을 선택해 주세요.";

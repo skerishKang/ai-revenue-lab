@@ -1,0 +1,813 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:001",
+  "unit_ordinal": 930,
+  "unit_label": "MAT 1",
+  "book_code": "MAT",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:1:1",
+      "sequence": 23146,
+      "chapter_label": "MAT 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The book of the genealogy of Jesus Christ, the son of David, the son of Abraham.",
+      "ko": "아브라함과 다윗의 자손 예수 그리스도의 세계라",
+      "source_text_hash": "ecfeea488079113fcbbbffbd18fc9729bc5d55dbb5716e53cecd06e3ae3958e7",
+      "translation_text_hash": "68035217736253d5f2c090ea41ffaf48b501f1f73dac0e66974c1bb9192160f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함과 다윗의 자손 예수 그리스도의 세계라"
+      ],
+      "raw_text_hashes": [
+        "68035217736253d5f2c090ea41ffaf48b501f1f73dac0e66974c1bb9192160f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:2",
+      "sequence": 23147,
+      "chapter_label": "MAT 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Abraham became the father of Isaac. Isaac became the father of Jacob. Jacob became the father of Judah and his brothers.",
+      "ko": "아브라함이 이삭을 낳고 이삭은 야곱을 낳고 야곱은 유다와 그의 형제를 낳고",
+      "source_text_hash": "86173ce48b3f60df7ede1461574031519a510e1a3a9439230a9429e1092f0a53",
+      "translation_text_hash": "59ca43974e2f1708650140362b87be33af1925f96d2e2252d68f8c4b0c8b94f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아브라함이 이삭을 낳고 이삭은 야곱을 낳고 야곱은 유다와 그의 형제를 낳고"
+      ],
+      "raw_text_hashes": [
+        "59ca43974e2f1708650140362b87be33af1925f96d2e2252d68f8c4b0c8b94f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:3",
+      "sequence": 23148,
+      "chapter_label": "MAT 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "Judah became the father of Perez and Zerah by Tamar. Perez became the father of Hezron. Hezron became the father of Ram.",
+      "ko": "유다는 다말에게서 베레스와 세라를 낳고 베레스는 헤스론을 낳고 헤스론은 람을 낳고",
+      "source_text_hash": "887c7cfea13dce7db42f9fc8da8514e7eb43df27f3696734c383b36f4611d73b",
+      "translation_text_hash": "64755c48d2d3f0966b00fab466306219a3174512338cd83973ad4912af87cdaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다는 다말에게서 베레스와 세라를 낳고 베레스는 헤스론을 낳고 헤스론은 람을 낳고"
+      ],
+      "raw_text_hashes": [
+        "64755c48d2d3f0966b00fab466306219a3174512338cd83973ad4912af87cdaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:4",
+      "sequence": 23149,
+      "chapter_label": "MAT 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Ram became the father of Amminadab. Amminadab became the father of Nahshon. Nahshon became the father of Salmon.",
+      "ko": "람은 아미나답을 낳고 아미나답은 나손을 낳고 나손은 살몬을 낳고",
+      "source_text_hash": "be0cc0b1a05abfbf83311970e67df8b996ca6b22ef1bf960cc33f7b9a3ff1e4f",
+      "translation_text_hash": "1f44f69bdcd514eac4e0d5196869c0ba290803a5b9fd75d60f9fec2c0ad69274",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "람은 아미나답을 낳고 아미나답은 나손을 낳고 나손은 살몬을 낳고"
+      ],
+      "raw_text_hashes": [
+        "1f44f69bdcd514eac4e0d5196869c0ba290803a5b9fd75d60f9fec2c0ad69274"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:5",
+      "sequence": 23150,
+      "chapter_label": "MAT 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Salmon became the father of Boaz by Rahab. Boaz became the father of Obed by Ruth. Obed became the father of Jesse.",
+      "ko": "살몬은 라합에게서 보아스를 낳고 보아스는 룻에게서 오벳을 낳고 오벳은 이새를 낳고",
+      "source_text_hash": "7bf8540eda7de7f9ac6592d243120c509514d20d9acf0567da4dfb2399d6bd12",
+      "translation_text_hash": "eadd0e0a1d8b1d7ceed352759b4770fc41e2eebb111fc99ebcb3f81ee5819a1b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "살몬은 라합에게서 보아스를 낳고 보아스는 룻에게서 오벳을 낳고 오벳은 이새를 낳고"
+      ],
+      "raw_text_hashes": [
+        "eadd0e0a1d8b1d7ceed352759b4770fc41e2eebb111fc99ebcb3f81ee5819a1b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:6",
+      "sequence": 23151,
+      "chapter_label": "MAT 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "Jesse became the father of King David. David the king became the father of Solomon by her who had been Uriah’s wife.",
+      "ko": "이새는 다윗왕을 낳으니라 다윗은 우리야의 아내에게서 솔로몬을 낳고",
+      "source_text_hash": "47978020e8ef93bd85cd7edb576add72b730f8223fc2b0b8fbcdfb21948f5033",
+      "translation_text_hash": "c39066c79ad61e0357d5eef735b74ac9a5c93408ae9d47c867452bd014dcd638",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이새는 다윗왕을 낳으니라 다윗은 우리야의 아내에게서 솔로몬을 낳고"
+      ],
+      "raw_text_hashes": [
+        "c39066c79ad61e0357d5eef735b74ac9a5c93408ae9d47c867452bd014dcd638"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:7",
+      "sequence": 23152,
+      "chapter_label": "MAT 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Solomon became the father of Rehoboam. Rehoboam became the father of Abijah. Abijah became the father of Asa.",
+      "ko": "솔로몬은 르호보암을 낳고 르호보암은 아비야를 낳고 아비야는 아사를 낳고",
+      "source_text_hash": "42b3f4b34b539eb3f0a81def1fa40bfde5ac61488f7e94d89cd70be2c61fa268",
+      "translation_text_hash": "39972d88ecbf1213390a97f9eb299cedb5ce3224cc23c92d141c0248e5afda74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "솔로몬은 르호보암을 낳고 르호보암은 아비야를 낳고 아비야는 아사를 낳고"
+      ],
+      "raw_text_hashes": [
+        "39972d88ecbf1213390a97f9eb299cedb5ce3224cc23c92d141c0248e5afda74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:8",
+      "sequence": 23153,
+      "chapter_label": "MAT 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "Asa became the father of Jehoshaphat. Jehoshaphat became the father of Joram. Joram became the father of Uzziah.",
+      "ko": "아사는 여호사밧을 낳고 여호사밧은 요람을 낳고 요람은 웃시야를 낳고",
+      "source_text_hash": "de6256280de98ff445c60327862ea4b05a029d80ce28b48be6a4a2d1db958f14",
+      "translation_text_hash": "0f84ca78ba72ff48f47b98b148332cb05967e4f9b08e49ecade4493a22cade3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아사는 여호사밧을 낳고 여호사밧은 요람을 낳고 요람은 웃시야를 낳고"
+      ],
+      "raw_text_hashes": [
+        "0f84ca78ba72ff48f47b98b148332cb05967e4f9b08e49ecade4493a22cade3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:9",
+      "sequence": 23154,
+      "chapter_label": "MAT 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Uzziah became the father of Jotham. Jotham became the father of Ahaz. Ahaz became the father of Hezekiah.",
+      "ko": "웃시야는 요담을 낳고 요담은 아하스를 낳고 아하스는 히스기야를 낳고",
+      "source_text_hash": "989a81a77340f8ec03aa3f1fc0381a8821adb27ded050b8c5c3d8c4ce8256059",
+      "translation_text_hash": "497ab37d8a247a78d5c311ee95729962a345798ca8cfd23eb4f0f36343c87267",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "웃시야는 요담을 낳고 요담은 아하스를 낳고 아하스는 히스기야를 낳고"
+      ],
+      "raw_text_hashes": [
+        "497ab37d8a247a78d5c311ee95729962a345798ca8cfd23eb4f0f36343c87267"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:10",
+      "sequence": 23155,
+      "chapter_label": "MAT 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Hezekiah became the father of Manasseh. Manasseh became the father of Amon. Amon became the father of Josiah.",
+      "ko": "히스기야는 므낫세를 낳고 므낫세는 아몬을 낳고 아몬은 요시야를 낳고",
+      "source_text_hash": "cd43505bd7c40c81c912b16fe9ed9e00649a1e101a301be346e057d507ce1870",
+      "translation_text_hash": "6412900f5842406dfa9f5e6bd854b73b5d95ae2e08f38d0755d5e2f7f1e36106",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "히스기야는 므낫세를 낳고 므낫세는 아몬을 낳고 아몬은 요시야를 낳고"
+      ],
+      "raw_text_hashes": [
+        "6412900f5842406dfa9f5e6bd854b73b5d95ae2e08f38d0755d5e2f7f1e36106"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:11",
+      "sequence": 23156,
+      "chapter_label": "MAT 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "Josiah became the father of Jechoniah and his brothers at the time of the exile to Babylon.",
+      "ko": "바벨론으로 이거할 때에 요시야는 여고냐와 그의 형제를 낳으니라",
+      "source_text_hash": "96ad7aeb6c6f5dbe03cd951de61e74dde9da52f028cc9f4e9939f6f0760fc5ac",
+      "translation_text_hash": "4c3950f5f85949e288936fd8c4730b052d90301faa2a019a6ceb03c8a757d56b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론으로 이거할 때에 요시야는 여고냐와 그의 형제를 낳으니라"
+      ],
+      "raw_text_hashes": [
+        "4c3950f5f85949e288936fd8c4730b052d90301faa2a019a6ceb03c8a757d56b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:12",
+      "sequence": 23157,
+      "chapter_label": "MAT 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "After the exile to Babylon, Jechoniah became the father of Shealtiel. Shealtiel became the father of Zerubbabel.",
+      "ko": "바벨론으로 이거한 후에 여고냐는 스알디엘을 낳고 스알디엘은 스룹바벨을 낳고",
+      "source_text_hash": "2e2aac55518e9c8cca6e53d4f1f189bba5daaecf15feffe82c721cf33dd6d525",
+      "translation_text_hash": "ab33c3586cdf38e154cf77ee7dc7414ff75641c7b750bd59acb0c3fa48e201d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론으로 이거한 후에 여고냐는 스알디엘을 낳고 스알디엘은 스룹바벨을 낳고"
+      ],
+      "raw_text_hashes": [
+        "ab33c3586cdf38e154cf77ee7dc7414ff75641c7b750bd59acb0c3fa48e201d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:13",
+      "sequence": 23158,
+      "chapter_label": "MAT 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Zerubbabel became the father of Abiud. Abiud became the father of Eliakim. Eliakim became the father of Azor.",
+      "ko": "스룹바벨은 아비훗을 낳고 아비훗은 엘리아김을 낳고 엘리아김은 아소르를 낳고",
+      "source_text_hash": "7051861476ca2b661f684d3db75d0fbcc7e648123c6ca52d9fa31bcb7e1a688e",
+      "translation_text_hash": "076480ffa24e72154bb67566cd5593a33c63ac12fc3642f6fc15781c3eca3d5c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스룹바벨은 아비훗을 낳고 아비훗은 엘리아김을 낳고 엘리아김은 아소르를 낳고"
+      ],
+      "raw_text_hashes": [
+        "076480ffa24e72154bb67566cd5593a33c63ac12fc3642f6fc15781c3eca3d5c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:14",
+      "sequence": 23159,
+      "chapter_label": "MAT 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "Azor became the father of Zadok. Zadok became the father of Achim. Achim became the father of Eliud.",
+      "ko": "아소르는 사독을 낳고 사독은 아킴을 낳고 아킴은 엘리웃을 낳고",
+      "source_text_hash": "a66e0086f7bac8694b1f599c61bc7392addc3b155f1c3f1dd7a94dae1d8ef37a",
+      "translation_text_hash": "738cfdbf76cb69e47b75aedf73b8dfb21b51f61341bd193755ede9aa9fc69ce6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아소르는 사독을 낳고 사독은 아킴을 낳고 아킴은 엘리웃을 낳고"
+      ],
+      "raw_text_hashes": [
+        "738cfdbf76cb69e47b75aedf73b8dfb21b51f61341bd193755ede9aa9fc69ce6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:15",
+      "sequence": 23160,
+      "chapter_label": "MAT 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "Eliud became the father of Eleazar. Eleazar became the father of Matthan. Matthan became the father of Jacob.",
+      "ko": "엘리웃은 엘르아살을 낳고 엘르아살은 맛단을 낳고 맛단은 야곱을 낳고",
+      "source_text_hash": "8ff2c32aca76b1ca2176fabb645ce2d717ae1d312be82a7f569c2dbfc586e95f",
+      "translation_text_hash": "10351b10d40c81036d0fd188ffd991aded8cef69c9b7a88142fd180003242e2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엘리웃은 엘르아살을 낳고 엘르아살은 맛단을 낳고 맛단은 야곱을 낳고"
+      ],
+      "raw_text_hashes": [
+        "10351b10d40c81036d0fd188ffd991aded8cef69c9b7a88142fd180003242e2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:16",
+      "sequence": 23161,
+      "chapter_label": "MAT 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Jacob became the father of Joseph, the husband of Mary, from whom was born Jesus, who is called Christ.",
+      "ko": "야곱은 마리아의 남편 요셉을 낳았으니 마리아에게서 그리스도라 칭하는 예수가 나시니라",
+      "source_text_hash": "655dd7082d332d0b3cb10c2f546de19b22b65fb9640f4590a1fc76da0708c80d",
+      "translation_text_hash": "f2174fc6ad56f2387e14c924d9ff2ffcf586dc0cd791b1f633c4c88dafc9b80e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱은 마리아의 남편 요셉을 낳았으니 마리아에게서 그리스도라 칭하는 예수가 나시니라"
+      ],
+      "raw_text_hashes": [
+        "f2174fc6ad56f2387e14c924d9ff2ffcf586dc0cd791b1f633c4c88dafc9b80e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:17",
+      "sequence": 23162,
+      "chapter_label": "MAT 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "So all the generations from Abraham to David are fourteen generations; from David to the exile to Babylon fourteen generations; and from the carrying away to Babylon to the Christ, fourteen generations.",
+      "ko": "그런즉 모든 대 수가 아브라함부터 다윗까지 열 네 대요 다윗부터 바벨론으로 이거할 때까지 열 네 대요 바벨론으로 이거한 후부터 그리스도까지 열 네 대러라",
+      "source_text_hash": "faaf1e85c10f81baf419e28a12665ae573121861f0fcda159e453c709e7366b8",
+      "translation_text_hash": "ee0d1f862c2a80ef38674d5634bc8fe9cc96320447de52bbea67e539d6cd49d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 모든 대 수가 아브라함부터 다윗까지 열 네 대요 다윗부터 바벨론으로 이거할 때까지 열 네 대요 바벨론으로 이거한 후부터 그리스도까지 열 네 대러라"
+      ],
+      "raw_text_hashes": [
+        "ee0d1f862c2a80ef38674d5634bc8fe9cc96320447de52bbea67e539d6cd49d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:18",
+      "sequence": 23163,
+      "chapter_label": "MAT 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "Now the birth of Jesus Christ was like this: After his mother, Mary, was engaged to Joseph, before they came together, she was found pregnant by the Holy Spirit.",
+      "ko": "예수 그리스도의 나심은 이러하니라 그 모친 마리아가 요셉과 정혼하고 동거하기 전에 성령으로 잉태된 것이 나타났더니",
+      "source_text_hash": "56ccc1f506c182f81ea8d0cd8521648df5b25aadacc019e2feb37c855a0489a5",
+      "translation_text_hash": "087884d18240419946e653b6c160e330b0a440575f67702f8abb911723bda12d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수 그리스도의 나심은 이러하니라 그 모친 마리아가 요셉과 정혼하고 동거하기 전에 성령으로 잉태된 것이 나타났더니"
+      ],
+      "raw_text_hashes": [
+        "087884d18240419946e653b6c160e330b0a440575f67702f8abb911723bda12d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:19",
+      "sequence": 23164,
+      "chapter_label": "MAT 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "Joseph, her husband, being a righteous man, and not willing to make her a public example, intended to put her away secretly.",
+      "ko": "그 남편 요셉은 의로운 사람이라 저를 드러내지 아니하고 가만히 끊고자하여",
+      "source_text_hash": "4d75ecd6b62b0b429a49609a71034935623346b611d77b1a64a933eaa48d8a78",
+      "translation_text_hash": "fc34b4a80541b012780e87e89764819e8bc2f73b18ddbbb95dbca01a9d0f34a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편 요셉은 의로운 사람이라 저를 드러내지 아니하고 가만히 끊고자하여"
+      ],
+      "raw_text_hashes": [
+        "fc34b4a80541b012780e87e89764819e8bc2f73b18ddbbb95dbca01a9d0f34a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:20",
+      "sequence": 23165,
+      "chapter_label": "MAT 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "But when he thought about these things, behold, an angel of the Lord appeared to him in a dream, saying, “Joseph, son of David, don’t be afraid to take to yourself Mary as your wife, for that which is conceived in her is of the Holy Spirit.",
+      "ko": "이 일을 생각할 때에 주의 사자가 현몽하여 가로되 다윗의 자손 요셉아 네 아내 마리아 데려오기를 무서워 말라 저에게 잉태된 자는 성령으로 된 것이라",
+      "source_text_hash": "10602f78176598ff839e98dfaa1722442df6462396b17321f5644fe3b28b71c4",
+      "translation_text_hash": "b89f86fee5ec898f6de26ccf0d42ba2cd3bb4054d6551c3b573a52ce454cfa9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일을 생각할 때에 주의 사자가 현몽하여 가로되 다윗의 자손 요셉아 네 아내 마리아 데려오기를 무서워 말라 저에게 잉태된 자는 성령으로 된 것이라"
+      ],
+      "raw_text_hashes": [
+        "b89f86fee5ec898f6de26ccf0d42ba2cd3bb4054d6551c3b573a52ce454cfa9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:21",
+      "sequence": 23166,
+      "chapter_label": "MAT 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "She shall give birth to a son. You shall name him Jesus, for it is he who shall save his people from their sins.”",
+      "ko": "아들을 낳으리니 이름을 예수라 하라 이는 그가 자기 백성을 저희 죄에서 구원할 자이심이라 하니라",
+      "source_text_hash": "190a22a0bbc51896ae8c6908f813b928cd26e121603d17f88bb65650ba48a259",
+      "translation_text_hash": "c3f931318c1f2b20cd16a10ddffa0b1429573f7086a86ad88b0dce3e763a16c7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들을 낳으리니 이름을 예수라 하라 이는 그가 자기 백성을 저희 죄에서 구원할 자이심이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "c3f931318c1f2b20cd16a10ddffa0b1429573f7086a86ad88b0dce3e763a16c7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:22",
+      "sequence": 23167,
+      "chapter_label": "MAT 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Now all this has happened that it might be fulfilled which was spoken by the Lord through the prophet, saying,",
+      "ko": "이 모든 일의 된 것은 주께서 선지자로 하신 말씀을 이루려 하심이니 가라사대",
+      "source_text_hash": "a734b6ed79e334ca223423aee4e42a371094c8571fb268d1ba90672d154fbe1a",
+      "translation_text_hash": "9b541c3e4c425f823e5de78c5541a74ad27b2a0aa6693bb96c1750d9ac13c07d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 일의 된 것은 주께서 선지자로 하신 말씀을 이루려 하심이니 가라사대"
+      ],
+      "raw_text_hashes": [
+        "9b541c3e4c425f823e5de78c5541a74ad27b2a0aa6693bb96c1750d9ac13c07d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:23",
+      "sequence": 23168,
+      "chapter_label": "MAT 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "“Behold, the virgin shall be with child, and shall give birth to a son. They shall call his name Immanuel,” which is, being interpreted, “God with us.”",
+      "ko": "보라 처녀가 잉태하여 아들을 낳을 것이요 그 이름은 임마누엘이라 하리라 하셨으니 이를 번역한즉 하나님이 우리와 함께 계시다 함이라",
+      "source_text_hash": "b6dddfa2a54732d0bce665a9aa68aef449aceb3f4592bb7fec15802dc68e48bd",
+      "translation_text_hash": "3bbad866cb9d318e1fc0c951441e19f4ac31416de297e21dbddfc485e7ae379d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 처녀가 잉태하여 아들을 낳을 것이요 그 이름은 임마누엘이라 하리라 하셨으니 이를 번역한즉 하나님이 우리와 함께 계시다 함이라"
+      ],
+      "raw_text_hashes": [
+        "3bbad866cb9d318e1fc0c951441e19f4ac31416de297e21dbddfc485e7ae379d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:24",
+      "sequence": 23169,
+      "chapter_label": "MAT 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "Joseph arose from his sleep, and did as the angel of the Lord commanded him, and took his wife to himself;",
+      "ko": "요셉이 잠을 깨어 일어나서 주의 사자의 분부대로 행하여 그 아내를 데려 왔으나",
+      "source_text_hash": "a8db94a4aa8d63a5d5357823e5eda10448a723f5b7f3964f41b2e904219bb033",
+      "translation_text_hash": "e3d5e2291253065581a0bb4121f35df0a477e3ef03d011048a3102d93c4fa4b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요셉이 잠을 깨어 일어나서 주의 사자의 분부대로 행하여 그 아내를 데려 왔으나"
+      ],
+      "raw_text_hashes": [
+        "e3d5e2291253065581a0bb4121f35df0a477e3ef03d011048a3102d93c4fa4b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:1:25",
+      "sequence": 23170,
+      "chapter_label": "MAT 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "and didn’t know her sexually until she had given birth to her firstborn son. He named him Jesus.",
+      "ko": "아들을 낳기까지 동침치 아니하더니 낳으매 이름을 예수라 하니라",
+      "source_text_hash": "69fc4b9e2f64603ed0c035799068646a2df53d881f83b55cf56f3986210d6c54",
+      "translation_text_hash": "dabccdb88fca03ff01a28b8887a46666a3af4b19dc2ad8caa995bca995d45060",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아들을 낳기까지 동침치 아니하더니 낳으매 이름을 예수라 하니라"
+      ],
+      "raw_text_hashes": [
+        "dabccdb88fca03ff01a28b8887a46666a3af4b19dc2ad8caa995bca995d45060"
+      ]
+    }
+  ]
+}

@@ -540,6 +540,23 @@ class CanonicalIdentityDurableObject(CanonicalIdentityEnrollmentConsentRPC, Dura
         except ControlPlaneContractError as exc:
             return _safe_error(exc)
 
+    async def claim_service_id(self, payload: dict) -> dict:
+        """Consume one signed request id; the ingress refuses a second use."""
+
+        try:
+            wire = _closed(payload, _SERVICE_ID_CLAIM_KEYS, "service id claim")
+            service_id = wire["service_id"]
+            expires_at = wire["expires_at"]
+            if not isinstance(service_id, str) or isinstance(expires_at, bool) or not isinstance(expires_at, int):
+                raise ControlPlaneContractError(
+                    "invalid_identity_authority_rpc",
+                    "service id claim must carry an id and an expiry",
+                )
+            claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
+            return {"ok": True, "claimed": claimed}
+        except ControlPlaneContractError as exc:
+            return _safe_error(exc)
+
     async def fetch(self, request):
         del request
         return Response("Not Found", status=404, headers={"cache-control": "no-store"})
@@ -621,23 +638,6 @@ class Default(WorkerEntrypoint):
 
     async def revoke_connector_enrollment_consent(self, payload: dict) -> dict:
         return await self._stub().revoke_connector_enrollment_consent(payload)
-
-    async def claim_service_id(self, payload: dict) -> dict:
-        """Consume one signed request id; the ingress refuses a second use."""
-
-        try:
-            wire = _closed(payload, _SERVICE_ID_CLAIM_KEYS, "service id claim")
-            service_id = wire["service_id"]
-            expires_at = wire["expires_at"]
-            if not isinstance(service_id, str) or isinstance(expires_at, bool) or not isinstance(expires_at, int):
-                raise ControlPlaneContractError(
-                    "invalid_identity_authority_rpc",
-                    "service id claim must carry an id and an expiry",
-                )
-            claimed = await self._service_ids.claim(service_id, expires_at=expires_at)
-            return {"ok": True, "claimed": claimed}
-        except ControlPlaneContractError as exc:
-            return _safe_error(exc)
 
     async def fetch(self, request):
         secret = await resolve_ingress_secret(

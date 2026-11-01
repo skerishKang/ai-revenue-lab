@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JOB:chapter:040",
+  "unit_ordinal": 476,
+  "unit_label": "JOB 40",
+  "book_code": "JOB",
+  "chapter_number": 40,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JOB:40:1",
+      "sequence": 13866,
+      "chapter_label": "JOB 40",
+      "verse_label": "1",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 1
+        }
+      ],
+      "en": "Moreover the LORD answered Job,",
+      "ko": "여호와께서 또 욥에게 말씀하여 가라사대",
+      "source_text_hash": "8871f0f34aa3d58495f8b910549020c937a80056741e3cbb791d03cb5739eefe",
+      "translation_text_hash": "5c0c6bd88304725322c6a2e05b55dc9dadb17791a4097467696c5e7cf39a3b15",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 또 욥에게 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "5c0c6bd88304725322c6a2e05b55dc9dadb17791a4097467696c5e7cf39a3b15"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:2",
+      "sequence": 13867,
+      "chapter_label": "JOB 40",
+      "verse_label": "2",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 2
+        }
+      ],
+      "en": "“Shall he who argues contend with the Almighty? He who argues with God, let him answer it.”",
+      "ko": "변박하는 자가 전능자와 다투겠느냐 하나님과 변론하는 자는 대답할찌니라",
+      "source_text_hash": "0af65be1524ae9a835370bddb88c2ef8b62be7d8da5390478735722dd525d495",
+      "translation_text_hash": "d1e947865da93d6d685c250ac071c257e1cc30a86c241621d77fbe83180c0098",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "변박하는 자가 전능자와 다투겠느냐 하나님과 변론하는 자는 대답할찌니라"
+      ],
+      "raw_text_hashes": [
+        "d1e947865da93d6d685c250ac071c257e1cc30a86c241621d77fbe83180c0098"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:3",
+      "sequence": 13868,
+      "chapter_label": "JOB 40",
+      "verse_label": "3",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 3
+        }
+      ],
+      "en": "Then Job answered the LORD,",
+      "ko": "욥이 여호와께 대답하여 가로되",
+      "source_text_hash": "2ad58405aaf728f7f499b4d8778c1e09e5eebd13c1bb36375001d88f7777b04d",
+      "translation_text_hash": "00c866afc4ed7ee64bd64661050c6c9618f406c6369a669d71ea94061ad0c976",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "욥이 여호와께 대답하여 가로되"
+      ],
+      "raw_text_hashes": [
+        "00c866afc4ed7ee64bd64661050c6c9618f406c6369a669d71ea94061ad0c976"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:4",
+      "sequence": 13869,
+      "chapter_label": "JOB 40",
+      "verse_label": "4",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 4
+        }
+      ],
+      "en": "“Behold, I am of small account. What will I answer you? I lay my hand on my mouth.",
+      "ko": "나는 미천하오니 무엇이라 주께 대답하리이까 손으로 내 입을 가릴 뿐이로소이다",
+      "source_text_hash": "15c5f59dc67f9f35c5c64c25bd039d922789a10a18964e7379755d469227afd9",
+      "translation_text_hash": "f8e8d21b44abd1a82dcb9dbd82e09038f6a3431b700f9b65b27cc21a065b79b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 미천하오니 무엇이라 주께 대답하리이까 손으로 내 입을 가릴 뿐이로소이다"
+      ],
+      "raw_text_hashes": [
+        "f8e8d21b44abd1a82dcb9dbd82e09038f6a3431b700f9b65b27cc21a065b79b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:5",
+      "sequence": 13870,
+      "chapter_label": "JOB 40",
+      "verse_label": "5",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 5
+        }
+      ],
+      "en": "I have spoken once, and I will not answer; Yes, twice, but I will proceed no further.”",
+      "ko": "내가 한두번 말하였사온즉 다시는 더하지도 아니하겠고 대답지도 아니하겠나이다",
+      "source_text_hash": "a96fb39efd598ed5b0022f73c8eec02886350e27a7dbaa7fbcbf6b17382f30bb",
+      "translation_text_hash": "da8799debbe01f3169bd8f875b9e17ebe430637e036e39594e4c0f7dc6835063",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 한두번 말하였사온즉 다시는 더하지도 아니하겠고 대답지도 아니하겠나이다"
+      ],
+      "raw_text_hashes": [
+        "da8799debbe01f3169bd8f875b9e17ebe430637e036e39594e4c0f7dc6835063"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:6",
+      "sequence": 13871,
+      "chapter_label": "JOB 40",
+      "verse_label": "6",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 6
+        }
+      ],
+      "en": "Then the LORD answered Job out of the whirlwind:",
+      "ko": "여호와께서 폭풍 가운데서 욥에게 말씀하여 가라사대",
+      "source_text_hash": "469cb8e0b6d60b3fc4a2781942a98016cd79fbac948d95422fdcfc5b4540c2b7",
+      "translation_text_hash": "40f807fdd3184386bfa7c2ddff43be4b67087405b8b286b4e61955f73fe5bc13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 폭풍 가운데서 욥에게 말씀하여 가라사대"
+      ],
+      "raw_text_hashes": [
+        "40f807fdd3184386bfa7c2ddff43be4b67087405b8b286b4e61955f73fe5bc13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:7",
+      "sequence": 13872,
+      "chapter_label": "JOB 40",
+      "verse_label": "7",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 7
+        }
+      ],
+      "en": "“Now brace yourself like a man. I will question you, and you will answer me.",
+      "ko": "너는 대장부처럼 허리를 묶고 내가 네게 묻는 것을 대답할찌니라",
+      "source_text_hash": "989821d302d1b0683b784038db99fb610ab6e16611b3f61c10eeaeefe8bc58b6",
+      "translation_text_hash": "92400c00a8a840356fc38ae6f3c16fdc4a42bb200aeadb8204e7b38724c2e695",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 대장부처럼 허리를 묶고 내가 네게 묻는 것을 대답할찌니라"
+      ],
+      "raw_text_hashes": [
+        "92400c00a8a840356fc38ae6f3c16fdc4a42bb200aeadb8204e7b38724c2e695"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:8",
+      "sequence": 13873,
+      "chapter_label": "JOB 40",
+      "verse_label": "8",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 8
+        }
+      ],
+      "en": "Will you even annul my judgment? Will you condemn me, that you may be justified?",
+      "ko": "네가 내 심판을 폐하려느냐 스스로 의롭다 하려 하여 나를 불의하다 하느냐",
+      "source_text_hash": "e91f070dff0fa16bac09e74faec9d0498baa999530816dec2281be215a3877a4",
+      "translation_text_hash": "ae857730ddc9fcf310a83ac0c679164497ebb37086d6bc2991318b5dae3de373",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 내 심판을 폐하려느냐 스스로 의롭다 하려 하여 나를 불의하다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "ae857730ddc9fcf310a83ac0c679164497ebb37086d6bc2991318b5dae3de373"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:9",
+      "sequence": 13874,
+      "chapter_label": "JOB 40",
+      "verse_label": "9",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 9
+        }
+      ],
+      "en": "Or do you have an arm like God? Can you thunder with a voice like him?",
+      "ko": "네가 하나님처럼 팔이 있느냐 하나님처럼 우렁차게 울리는 소리를 내겠느냐",
+      "source_text_hash": "f8d57d9bd68cafe2fa4c07c00ce4bbf2bd087f4b4ea2b0a06c8cf649d9dfe815",
+      "translation_text_hash": "f7aad940b46e51fc130a0ae1ddef1fbf805dcfcac8632cf62dfb5356556cf6ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 하나님처럼 팔이 있느냐 하나님처럼 우렁차게 울리는 소리를 내겠느냐"
+      ],
+      "raw_text_hashes": [
+        "f7aad940b46e51fc130a0ae1ddef1fbf805dcfcac8632cf62dfb5356556cf6ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:10",
+      "sequence": 13875,
+      "chapter_label": "JOB 40",
+      "verse_label": "10",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 10
+        }
+      ],
+      "en": "“Now deck yourself with excellency and dignity. Array yourself with honor and majesty.",
+      "ko": "너는 위엄과 존귀로 스스로 꾸미며 영광과 화미를 스스로 입을찌니라",
+      "source_text_hash": "46a6aa1e705204c0c145f9ffe3c22e2f71f8fcc17cb16f9700d3d059fbc23de6",
+      "translation_text_hash": "6ada77beaec444488506899f35387906bea681311a52cdcf90932d60180eb3fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 위엄과 존귀로 스스로 꾸미며 영광과 화미를 스스로 입을찌니라"
+      ],
+      "raw_text_hashes": [
+        "6ada77beaec444488506899f35387906bea681311a52cdcf90932d60180eb3fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:11",
+      "sequence": 13876,
+      "chapter_label": "JOB 40",
+      "verse_label": "11",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 11
+        }
+      ],
+      "en": "Pour out the fury of your anger. Look at everyone who is proud, and bring him low.",
+      "ko": "너의 넘치는 노를 쏟아서 교만한 자를 발견하여 낱낱이 낮추되",
+      "source_text_hash": "9cd00170d4074bacdfd3c62eeafaca8663ca998f167faf9c8c9a8122e4ad85b1",
+      "translation_text_hash": "7b1ce5299e34c55aa328060de7d30133e384c23d44748c6f2be459171cabb0d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 넘치는 노를 쏟아서 교만한 자를 발견하여 낱낱이 낮추되"
+      ],
+      "raw_text_hashes": [
+        "7b1ce5299e34c55aa328060de7d30133e384c23d44748c6f2be459171cabb0d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:12",
+      "sequence": 13877,
+      "chapter_label": "JOB 40",
+      "verse_label": "12",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 12
+        }
+      ],
+      "en": "Look at everyone who is proud, and humble him. Crush the wicked in their place.",
+      "ko": "곧 모든 교만한 자를 발견하여 낮추며 악인을 그 처소에서 밟아서",
+      "source_text_hash": "8940c2a52c7862a970b5ac07293d6c0766bcad1ffa4a2e07b4392e555738bdae",
+      "translation_text_hash": "37d6d90766f5a323d7ab477ea0c2bfd3e647f49652e26a4e24785ec45faa3362",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 모든 교만한 자를 발견하여 낮추며 악인을 그 처소에서 밟아서"
+      ],
+      "raw_text_hashes": [
+        "37d6d90766f5a323d7ab477ea0c2bfd3e647f49652e26a4e24785ec45faa3362"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:13",
+      "sequence": 13878,
+      "chapter_label": "JOB 40",
+      "verse_label": "13",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 13
+        }
+      ],
+      "en": "Hide them in the dust together. Bind their faces in the hidden place.",
+      "ko": "그들을 함께 진토에 묻고 그 얼굴을 싸서 어둑한 곳에 둘찌니라",
+      "source_text_hash": "2d76512a6f4144f932ff36baad2edd34d4d6898224d9ea4746c03beb87042866",
+      "translation_text_hash": "eacd91ccc8fcdcc354c62af3cc1ee8f5ae46048454c12bbd294b6ec06ad46440",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들을 함께 진토에 묻고 그 얼굴을 싸서 어둑한 곳에 둘찌니라"
+      ],
+      "raw_text_hashes": [
+        "eacd91ccc8fcdcc354c62af3cc1ee8f5ae46048454c12bbd294b6ec06ad46440"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:14",
+      "sequence": 13879,
+      "chapter_label": "JOB 40",
+      "verse_label": "14",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 14
+        }
+      ],
+      "en": "Then I will also admit to you that your own right hand can save you.",
+      "ko": "그리하면 네 오른손이 너를 구원할 수 있다고 내가 인정하리라",
+      "source_text_hash": "08b77aca49174d146517697e5dab6f630e18cd6aab6171e284cea1f99565ca5c",
+      "translation_text_hash": "a8bbf3a6dea1aafc2a97c541992e794bddd6e3301267d9cc1585724ecc246792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리하면 네 오른손이 너를 구원할 수 있다고 내가 인정하리라"
+      ],
+      "raw_text_hashes": [
+        "a8bbf3a6dea1aafc2a97c541992e794bddd6e3301267d9cc1585724ecc246792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:15",
+      "sequence": 13880,
+      "chapter_label": "JOB 40",
+      "verse_label": "15",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 15
+        }
+      ],
+      "en": "“See now behemoth, which I made as well as you. He eats grass as an ox.",
+      "ko": "이제 소 같이 풀을 먹는 하마를 볼찌어다 내가 너를 지은것 같이 그것도 지었느니라",
+      "source_text_hash": "b15543fb879957ab4952ba7a272ab91683e825cae852c3e7ab7f3c837fdb80f4",
+      "translation_text_hash": "691b64b28a11748d4ba9b7cd23dc024ddaea4eb1220ea318a7b778c8f10d1ad8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 소 같이 풀을 먹는 하마를 볼찌어다 내가 너를 지은것 같이 그것도 지었느니라"
+      ],
+      "raw_text_hashes": [
+        "691b64b28a11748d4ba9b7cd23dc024ddaea4eb1220ea318a7b778c8f10d1ad8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:16",
+      "sequence": 13881,
+      "chapter_label": "JOB 40",
+      "verse_label": "16",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 16
+        }
+      ],
+      "en": "Look now, his strength is in his thighs. His force is in the muscles of his belly.",
+      "ko": "그 힘은 허리에 있고 그 세력은 배의 힘줄에 있고",
+      "source_text_hash": "a34d96a1d8f7363953e7f3b3c24eb0350ce197ef7ea75f92340422dcab640079",
+      "translation_text_hash": "a421a2e0d39feb8a3c6d3fadaab5dfc92976506f85c14153544bb28c83f16afc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 힘은 허리에 있고 그 세력은 배의 힘줄에 있고"
+      ],
+      "raw_text_hashes": [
+        "a421a2e0d39feb8a3c6d3fadaab5dfc92976506f85c14153544bb28c83f16afc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:17",
+      "sequence": 13882,
+      "chapter_label": "JOB 40",
+      "verse_label": "17",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 17
+        }
+      ],
+      "en": "He moves his tail like a cedar. The sinews of his thighs are knit together.",
+      "ko": "그 꼬리 치는 것은 백향목이 흔들리는 것 같고 그 넓적다리 힘줄은 서로 연락되었으며",
+      "source_text_hash": "b49069e2d5404ef0b27d2005d68e95079e4d83873e44b1dbe24025f2065d0cae",
+      "translation_text_hash": "08872980f90fac68f0838fcc8ce77c87d75d8fb125a01e495a7f28fa7e8116b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 꼬리 치는 것은 백향목이 흔들리는 것 같고 그 넓적다리 힘줄은 서로 연락되었으며"
+      ],
+      "raw_text_hashes": [
+        "08872980f90fac68f0838fcc8ce77c87d75d8fb125a01e495a7f28fa7e8116b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:18",
+      "sequence": 13883,
+      "chapter_label": "JOB 40",
+      "verse_label": "18",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 18
+        }
+      ],
+      "en": "His bones are like tubes of bronze. His limbs are like bars of iron.",
+      "ko": "그 뼈는 놋관 같고 그 가릿대는 철장 같으니",
+      "source_text_hash": "cbb30b5321183530d7261d63f468c001a508ee0017b207eb46f31371631cf5c0",
+      "translation_text_hash": "6d310e3c5754b0dbaebe68c880d27d0c340b2d067cec498fdbb4ecc9a1012589",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 뼈는 놋관 같고 그 가릿대는 철장 같으니"
+      ],
+      "raw_text_hashes": [
+        "6d310e3c5754b0dbaebe68c880d27d0c340b2d067cec498fdbb4ecc9a1012589"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:19",
+      "sequence": 13884,
+      "chapter_label": "JOB 40",
+      "verse_label": "19",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 19
+        }
+      ],
+      "en": "He is the chief of the ways of God. He who made him gives him his sword.",
+      "ko": "그것은 하나님의 창조물 중에 으뜸이라 그것을 지은 자가 칼을 주었고",
+      "source_text_hash": "52b6f42bddc5fb12312d339f6c9fb744f1be336c85f6c2a54a2bb1b7db1c3324",
+      "translation_text_hash": "c145c10fddb951373a5a3c31a0866480d4306718bacdf9d7cebab02e79eed0f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것은 하나님의 창조물 중에 으뜸이라 그것을 지은 자가 칼을 주었고"
+      ],
+      "raw_text_hashes": [
+        "c145c10fddb951373a5a3c31a0866480d4306718bacdf9d7cebab02e79eed0f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:20",
+      "sequence": 13885,
+      "chapter_label": "JOB 40",
+      "verse_label": "20",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 20
+        }
+      ],
+      "en": "Surely the mountains produce food for him, where all the animals of the field play.",
+      "ko": "모든 들 짐승의 노는 산은 그것을 위하여 식물을 내느니라",
+      "source_text_hash": "80d26414655b5db7d7aeeca8536c72c82e91c11ce424bc8b0b4443111cca64b1",
+      "translation_text_hash": "7272abc13ec5811c9277c40616c9983830234cd70bdd39116cd1701400d19233",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 들 짐승의 노는 산은 그것을 위하여 식물을 내느니라"
+      ],
+      "raw_text_hashes": [
+        "7272abc13ec5811c9277c40616c9983830234cd70bdd39116cd1701400d19233"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:21",
+      "sequence": 13886,
+      "chapter_label": "JOB 40",
+      "verse_label": "21",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 21
+        }
+      ],
+      "en": "He lies under the lotus trees, in the covert of the reed, and the marsh.",
+      "ko": "그것이 연 줄기 아래나 갈밭 가운데나 못속에 엎드리니",
+      "source_text_hash": "d375eab3812604e387f9d5060d5169b1d721289df94f430b3cb9ce0c3d83b09f",
+      "translation_text_hash": "cfe4473518ad074cda81d4edcaffc73ab9e5169b850789862fcefdc64fd72792",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 연 줄기 아래나 갈밭 가운데나 못속에 엎드리니"
+      ],
+      "raw_text_hashes": [
+        "cfe4473518ad074cda81d4edcaffc73ab9e5169b850789862fcefdc64fd72792"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:22",
+      "sequence": 13887,
+      "chapter_label": "JOB 40",
+      "verse_label": "22",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 22
+        }
+      ],
+      "en": "The lotuses cover him with their shade. The willows of the brook surround him.",
+      "ko": "연 그늘이 덮으며 시내 버들이 둘렀구나",
+      "source_text_hash": "6ce5d33b3dfeb5aba6c6038edc0be6bdf580f5da90981c31b890230a98e5ab59",
+      "translation_text_hash": "e118995e5cdef0b83e539771f3220b94f40ec91bfb0097dacd3a9a94ee08505f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "연 그늘이 덮으며 시내 버들이 둘렀구나"
+      ],
+      "raw_text_hashes": [
+        "e118995e5cdef0b83e539771f3220b94f40ec91bfb0097dacd3a9a94ee08505f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:23",
+      "sequence": 13888,
+      "chapter_label": "JOB 40",
+      "verse_label": "23",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 23
+        }
+      ],
+      "en": "Behold, if a river overflows, he doesn’t tremble. He is confident, though the Jordan swells even to his mouth.",
+      "ko": "하수가 창일한다 할찌라도 그것이 놀라지 않고 요단강이 불어 그 입에 미칠찌라도 자약하니",
+      "source_text_hash": "1551df8470eb3796d0d1bb51f01a7faecd26c92a6dcbfc1e94786d73e7778da0",
+      "translation_text_hash": "7cff5b19d2743c4758fda35c8ebdadccda17a184363bc0f33235b78bfca69c48",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하수가 창일한다 할찌라도 그것이 놀라지 않고 요단강이 불어 그 입에 미칠찌라도 자약하니"
+      ],
+      "raw_text_hashes": [
+        "7cff5b19d2743c4758fda35c8ebdadccda17a184363bc0f33235b78bfca69c48"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JOB:40:24",
+      "sequence": 13889,
+      "chapter_label": "JOB 40",
+      "verse_label": "24",
+      "locator": {
+        "book": "JOB",
+        "chapter": 40,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JOB",
+          "chapter": 40,
+          "verse": 24
+        }
+      ],
+      "en": "Shall any take him when he is on the watch, or pierce through his nose with a snare?",
+      "ko": "그것이 정신 차리고 있을 때에 누가 능히 잡을 수 있겠으며 갈고리로 그 코를 꿸 수 있겠느냐",
+      "source_text_hash": "fe2b8cc2f5cb77f1ab1b890e6d2072c1132ea550e598834731b3b06cf185e937",
+      "translation_text_hash": "8efe6eec2db68a3d3615b29184183efe059d6650637e319caba6b3919347ce2b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 정신 차리고 있을 때에 누가 능히 잡을 수 있겠으며 갈고리로 그 코를 꿸 수 있겠느냐"
+      ],
+      "raw_text_hashes": [
+        "8efe6eec2db68a3d3615b29184183efe059d6650637e319caba6b3919347ce2b"
+      ]
+    }
+  ]
+}

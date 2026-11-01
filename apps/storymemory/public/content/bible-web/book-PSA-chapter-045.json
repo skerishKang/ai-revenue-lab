@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:045",
+  "unit_ordinal": 523,
+  "unit_label": "PSA 45",
+  "book_code": "PSA",
+  "chapter_number": 45,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:45:1",
+      "sequence": 14599,
+      "chapter_label": "PSA 45",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 1
+        }
+      ],
+      "en": "My heart overflows with a noble theme. I recite my verses for the king. My tongue is like the pen of a skillful writer.",
+      "ko": "내 마음에서 좋은 말이 넘쳐 왕에 대하여 지은 것을 말하리니 내 혀는 필객의 붓과 같도다",
+      "source_text_hash": "9f6956f654f07d0836280e2d1117eaed67129fe1a857036bcbef19a6966bd8f7",
+      "translation_text_hash": "7383e82245d3320baea196f780b1f1d78324237e88d10f776bc6eb4d2ffba72f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음에서 좋은 말이 넘쳐 왕에 대하여 지은 것을 말하리니 내 혀는 필객의 붓과 같도다"
+      ],
+      "raw_text_hashes": [
+        "7383e82245d3320baea196f780b1f1d78324237e88d10f776bc6eb4d2ffba72f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:2",
+      "sequence": 14600,
+      "chapter_label": "PSA 45",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 2
+        }
+      ],
+      "en": "You are the most excellent of the sons of men. Grace has anointed your lips, therefore God has blessed you forever.",
+      "ko": "왕은 인생보다 아름다워 은혜를 입술에 머금으니 그러므로 하나님이 왕에게 영영히 복을 주시도다",
+      "source_text_hash": "720e34faac0e3ab19f62d9f1ca3504db23e997c554a707acd7b400be4f95bb9f",
+      "translation_text_hash": "511aebfa437f0c204097b4e5171a27a5a1b6927c5939564dba46c4e1422de251",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 인생보다 아름다워 은혜를 입술에 머금으니 그러므로 하나님이 왕에게 영영히 복을 주시도다"
+      ],
+      "raw_text_hashes": [
+        "511aebfa437f0c204097b4e5171a27a5a1b6927c5939564dba46c4e1422de251"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:3",
+      "sequence": 14601,
+      "chapter_label": "PSA 45",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 3
+        }
+      ],
+      "en": "Strap your sword on your thigh, O mighty one, in your splendor and your majesty.",
+      "ko": "능한 자여 칼을 허리에 차고 왕의 영화와 위엄을 입으소서",
+      "source_text_hash": "d14e169f81ee7746354926294903b8a9fcb1ec17ae9fcc782544cb8c10380988",
+      "translation_text_hash": "ac337595e28e5e324a0de97c4990053bd87a4a03ad044052a7e7430093579447",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "능한 자여 칼을 허리에 차고 왕의 영화와 위엄을 입으소서"
+      ],
+      "raw_text_hashes": [
+        "ac337595e28e5e324a0de97c4990053bd87a4a03ad044052a7e7430093579447"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:4",
+      "sequence": 14602,
+      "chapter_label": "PSA 45",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 4
+        }
+      ],
+      "en": "In your majesty ride on victoriously on behalf of truth, humility, and righteousness. Let your right hand display awesome deeds.",
+      "ko": "왕은 진리와 온유와 공의를 위하여 위엄있게 타고 승전하소서 왕의 오른손이 왕에게 두려운 일을 가르치리이다",
+      "source_text_hash": "4447d3ebed8418a3991e2727ab4c5265d1a4fbf6c19765159db58fa05e678b9d",
+      "translation_text_hash": "09d9bcc6788a468eb07f9c209eeb81cfe1ecae541b0a7776dd89007fa1ebdfc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕은 진리와 온유와 공의를 위하여 위엄있게 타고 승전하소서 왕의 오른손이 왕에게 두려운 일을 가르치리이다"
+      ],
+      "raw_text_hashes": [
+        "09d9bcc6788a468eb07f9c209eeb81cfe1ecae541b0a7776dd89007fa1ebdfc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:5",
+      "sequence": 14603,
+      "chapter_label": "PSA 45",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 5
+        }
+      ],
+      "en": "Your arrows are sharp. The nations fall under you, with arrows in the heart of the king’s enemies.",
+      "ko": "왕의 살이 날카로워 왕의 원수의 염통을 뚫으니 만민이 왕의 앞에 엎드러지는도다",
+      "source_text_hash": "4356f64fdad48c90a69afaf85626d9b81881259254ee02a9c55439e1a8e26162",
+      "translation_text_hash": "c45e12f1b98bff3fdd0a72d05a305d3f3b4a2745fc773700ed6372f1f9c32d34",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 살이 날카로워 왕의 원수의 염통을 뚫으니 만민이 왕의 앞에 엎드러지는도다"
+      ],
+      "raw_text_hashes": [
+        "c45e12f1b98bff3fdd0a72d05a305d3f3b4a2745fc773700ed6372f1f9c32d34"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:6",
+      "sequence": 14604,
+      "chapter_label": "PSA 45",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 6
+        }
+      ],
+      "en": "Your throne, God, is forever and ever. A scepter of equity is the scepter of your kingdom.",
+      "ko": "하나님이여 주의 보좌가 영영하며 주의 나라의 홀은 공평한 홀이니이다",
+      "source_text_hash": "9aca7134d86508c053dd277361b179ca1c09e9b79f390a80cccb5f8eddf12927",
+      "translation_text_hash": "20e34dc9d9605cb86946f025d8030db89c485e86254df7806cd814a6cd07aadf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님이여 주의 보좌가 영영하며 주의 나라의 홀은 공평한 홀이니이다"
+      ],
+      "raw_text_hashes": [
+        "20e34dc9d9605cb86946f025d8030db89c485e86254df7806cd814a6cd07aadf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:7",
+      "sequence": 14605,
+      "chapter_label": "PSA 45",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 7
+        }
+      ],
+      "en": "You have loved righteousness, and hated wickedness. Therefore God, your God, has anointed you with the oil of gladness above your fellows.",
+      "ko": "왕이 정의를 사랑하고 악을 미워하시니 그러므로 하나님 곧 왕의 하나님이 즐거움의 기름으로 왕에게 부어 왕의 동류보다 승하게 하셨나이다",
+      "source_text_hash": "e36c499f4f1c3c9ff8e9ec7c0474abe747dedd97b3b3af7789551924798f2351",
+      "translation_text_hash": "7167bbf4f070c445dd78ef283cdbbae5cfd2b22e66c7c6f00aaaf308258c8aa0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 정의를 사랑하고 악을 미워하시니 그러므로 하나님 곧 왕의 하나님이 즐거움의 기름으로 왕에게 부어 왕의 동류보다 승하게 하셨나이다"
+      ],
+      "raw_text_hashes": [
+        "7167bbf4f070c445dd78ef283cdbbae5cfd2b22e66c7c6f00aaaf308258c8aa0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:8",
+      "sequence": 14606,
+      "chapter_label": "PSA 45",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 8
+        }
+      ],
+      "en": "All your garments smell like myrrh, aloes, and cassia. Out of ivory palaces stringed instruments have made you glad.",
+      "ko": "왕의 모든 옷은 몰약과 침향과 육계의 향기가 있으며 상아궁에서 나오는 현악은 왕을 즐겁게 하도다",
+      "source_text_hash": "c15698881488285e1273b7f49504587178f4ab29757dab95ad9d1aa75bf3e99f",
+      "translation_text_hash": "a2b6b9879598a754668b552c75efb8d44725b05b40cf1472130c0be4708ca932",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 모든 옷은 몰약과 침향과 육계의 향기가 있으며 상아궁에서 나오는 현악은 왕을 즐겁게 하도다"
+      ],
+      "raw_text_hashes": [
+        "a2b6b9879598a754668b552c75efb8d44725b05b40cf1472130c0be4708ca932"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:9",
+      "sequence": 14607,
+      "chapter_label": "PSA 45",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 9
+        }
+      ],
+      "en": "Kings’ daughters are among your honorable women. At your right hand the queen stands in gold of Ophir.",
+      "ko": "왕의 귀비 중에는 열왕의 딸이 있으며 왕후는 오빌의 금으로 꾸미고 왕의 우편에 서도다",
+      "source_text_hash": "59a1e8c2346b273cc96c19f42612f9fc20c13004d9b032682381a4a9a6019d48",
+      "translation_text_hash": "d50e9e00d800123fb31dc214cdebef5400fa993afac341bd153aca2cf4a888f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 귀비 중에는 열왕의 딸이 있으며 왕후는 오빌의 금으로 꾸미고 왕의 우편에 서도다"
+      ],
+      "raw_text_hashes": [
+        "d50e9e00d800123fb31dc214cdebef5400fa993afac341bd153aca2cf4a888f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:10",
+      "sequence": 14608,
+      "chapter_label": "PSA 45",
+      "verse_label": "10",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 10
+        }
+      ],
+      "en": "Listen, daughter, consider, and turn your ear. Forget your own people, and also your father’s house.",
+      "ko": "딸이여 듣고 생각하고 귀를 기울일찌어다 네 백성과 아비 집을 잊어버릴찌어다",
+      "source_text_hash": "3890911333e01ec95ead5b2e72f9dab201f2746928885c8bab20e03470601afa",
+      "translation_text_hash": "90716059ae56698e2681d84095675b6b86c81636d5713457d854f78ebcaa06a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸이여 듣고 생각하고 귀를 기울일찌어다 네 백성과 아비 집을 잊어버릴찌어다"
+      ],
+      "raw_text_hashes": [
+        "90716059ae56698e2681d84095675b6b86c81636d5713457d854f78ebcaa06a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:11",
+      "sequence": 14609,
+      "chapter_label": "PSA 45",
+      "verse_label": "11",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 11
+        }
+      ],
+      "en": "So the king will desire your beauty, honor him, for he is your lord.",
+      "ko": "그러하면 왕이 너의 아름다움을 사모하실찌라 저는 너의 주시니 너는 저를 경배할찌어다",
+      "source_text_hash": "76fc91a9365c77c86a22b8e69223875b8a56620bac11b1ff5dc61391b9e23133",
+      "translation_text_hash": "19d8e93eed6865cef7b51f652ce32a0eb71538f07220a5574ceade95d7e84935",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러하면 왕이 너의 아름다움을 사모하실찌라 저는 너의 주시니 너는 저를 경배할찌어다"
+      ],
+      "raw_text_hashes": [
+        "19d8e93eed6865cef7b51f652ce32a0eb71538f07220a5574ceade95d7e84935"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:12",
+      "sequence": 14610,
+      "chapter_label": "PSA 45",
+      "verse_label": "12",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 12
+        }
+      ],
+      "en": "The daughter of Tyre comes with a gift. The rich among the people entreat your favor.",
+      "ko": "두로의 딸이 예물을 드리고 백성 중 부한 자도 네 은혜를 구하리로다",
+      "source_text_hash": "1f8d71776804094fa9d630b8b012148182ca7da1a54487d2d10cdbe622fafada",
+      "translation_text_hash": "e0f2cad25e98c468ffdca41ecf758b000a76afea3eeb1c485a7eda95b80fa41c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두로의 딸이 예물을 드리고 백성 중 부한 자도 네 은혜를 구하리로다"
+      ],
+      "raw_text_hashes": [
+        "e0f2cad25e98c468ffdca41ecf758b000a76afea3eeb1c485a7eda95b80fa41c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:13",
+      "sequence": 14611,
+      "chapter_label": "PSA 45",
+      "verse_label": "13",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 13
+        }
+      ],
+      "en": "The princess inside is all glorious. Her clothing is interwoven with gold.",
+      "ko": "왕의 딸이 궁중에서 모든 영화를 누리니 그 옷은 금으로 수 놓았도다",
+      "source_text_hash": "138b8f0f62ee0483cd7f00d2460bb5b9bbc19d602c3daa6fabe7d882e07ac022",
+      "translation_text_hash": "d75bba70154961da94c227325897f7e21b00250447ff1450d83683ea45b5383f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 딸이 궁중에서 모든 영화를 누리니 그 옷은 금으로 수 놓았도다"
+      ],
+      "raw_text_hashes": [
+        "d75bba70154961da94c227325897f7e21b00250447ff1450d83683ea45b5383f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:14",
+      "sequence": 14612,
+      "chapter_label": "PSA 45",
+      "verse_label": "14",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 14
+        }
+      ],
+      "en": "She shall be led to the king in embroidered work. The virgins, her companions who follow her, shall be brought to you.",
+      "ko": "수 놓은 옷을 입은 저가 왕께로 인도함을 받으며 시종하는 동무 처녀들도 왕께로 이끌려 갈 것이라",
+      "source_text_hash": "bac698897bf5a0e4d4d62ea6ea9e48e267861af8ce2adf4ff30ca6b3bcde888e",
+      "translation_text_hash": "1174e3b3b7752fa5aebe27cb98b850bff37ed2484647d8fcd957fc23118cdb7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "수 놓은 옷을 입은 저가 왕께로 인도함을 받으며 시종하는 동무 처녀들도 왕께로 이끌려 갈 것이라"
+      ],
+      "raw_text_hashes": [
+        "1174e3b3b7752fa5aebe27cb98b850bff37ed2484647d8fcd957fc23118cdb7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:15",
+      "sequence": 14613,
+      "chapter_label": "PSA 45",
+      "verse_label": "15",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 15
+        }
+      ],
+      "en": "With gladness and rejoicing they shall be led. They shall enter into the king’s palace.",
+      "ko": "저희가 기쁨과 즐거움으로 인도함을 받고 왕궁에 들어가리로다",
+      "source_text_hash": "377b0917ba561129ef343e699646459002a516109ef881b620f363513cb93fb7",
+      "translation_text_hash": "898c009e1da6bc18e1676af3f4995311ed816d07b0e2f3b56aa338f033bf734f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 기쁨과 즐거움으로 인도함을 받고 왕궁에 들어가리로다"
+      ],
+      "raw_text_hashes": [
+        "898c009e1da6bc18e1676af3f4995311ed816d07b0e2f3b56aa338f033bf734f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:16",
+      "sequence": 14614,
+      "chapter_label": "PSA 45",
+      "verse_label": "16",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 16
+        }
+      ],
+      "en": "Your sons will take the place of your fathers. You shall make them princes in all the earth.",
+      "ko": "왕의 아들들이 왕의 열조를 계승할 것이라 왕이 저희로 온 세계의 군왕을 삼으리로다",
+      "source_text_hash": "48dbe89fa770ad9d8e37b5691ddd05fb4bc61c7b1398395a71363804112ef220",
+      "translation_text_hash": "1ba74ca47629af8cb5a4747ea367294a6eee4a6227f89296c0d5afc12ca7858b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕의 아들들이 왕의 열조를 계승할 것이라 왕이 저희로 온 세계의 군왕을 삼으리로다"
+      ],
+      "raw_text_hashes": [
+        "1ba74ca47629af8cb5a4747ea367294a6eee4a6227f89296c0d5afc12ca7858b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:45:17",
+      "sequence": 14615,
+      "chapter_label": "PSA 45",
+      "verse_label": "17",
+      "locator": {
+        "book": "PSA",
+        "chapter": 45,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 45,
+          "verse": 17
+        }
+      ],
+      "en": "I will make your name to be remembered in all generations. Therefore the peoples shall give you thanks forever and ever.",
+      "ko": "내가 왕의 이름을 만세에 기억케 하리니 그러므로 만민이 왕을 영영히 찬송하리로다",
+      "source_text_hash": "8dfbd5e8dacb99dd21d00aafe9bd103ad72a7821a86c8bf85dec54b8dade87ab",
+      "translation_text_hash": "b83760d4763b88b99e9735b65cd265dbdbc2467e94aebf270a47b4241355c873",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 왕의 이름을 만세에 기억케 하리니 그러므로 만민이 왕을 영영히 찬송하리로다"
+      ],
+      "raw_text_hashes": [
+        "b83760d4763b88b99e9735b65cd265dbdbc2467e94aebf270a47b4241355c873"
+      ]
+    }
+  ]
+}

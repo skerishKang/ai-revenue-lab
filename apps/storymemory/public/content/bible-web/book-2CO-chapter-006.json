@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2CO:chapter:006",
+  "unit_ordinal": 1084,
+  "unit_label": "2CO 6",
+  "book_code": "2CO",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2CO:6:1",
+      "sequence": 28896,
+      "chapter_label": "2CO 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "Working together, we entreat also that you do not receive the grace of God in vain.",
+      "ko": "우리가 하나님과 함께 일하는 자로서 너희를 권하노니 하나님의 은혜를 헛되이 받지 말라",
+      "source_text_hash": "e42ca1c06a346446fa3cf8acd5a5e08d04fb7e686c15154c1e609adba0a8d400",
+      "translation_text_hash": "3fe45d9d5943a2219de1cb6e9e6477370f9f834c3fccc8c40a1b4988c76d9602",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 하나님과 함께 일하는 자로서 너희를 권하노니 하나님의 은혜를 헛되이 받지 말라"
+      ],
+      "raw_text_hashes": [
+        "3fe45d9d5943a2219de1cb6e9e6477370f9f834c3fccc8c40a1b4988c76d9602"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:2",
+      "sequence": 28897,
+      "chapter_label": "2CO 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "For he says, “At an acceptable time I listened to you. In a day of salvation I helped you.” Behold, now is the acceptable time. Behold, now is the day of salvation.",
+      "ko": "가라사대 내가 은혜 베풀 때에 너를 듣고 구원의 날에 너를 도왔다 하셨으니 보라 지금은 은혜 받을만한 때요 보라 지금은 구원의 날이로다",
+      "source_text_hash": "3c5e748c722b6bb88e1c57ff1cfa87626ab6895b8ae7bdbbb896bbec013399f8",
+      "translation_text_hash": "ec82c826135ec8457df19d651f3d89df88532ef42de5a8cfb2b29011264f7776",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가라사대 내가 은혜 베풀 때에 너를 듣고 구원의 날에 너를 도왔다 하셨으니 보라 지금은 은혜 받을만한 때요 보라 지금은 구원의 날이로다"
+      ],
+      "raw_text_hashes": [
+        "ec82c826135ec8457df19d651f3d89df88532ef42de5a8cfb2b29011264f7776"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:3",
+      "sequence": 28898,
+      "chapter_label": "2CO 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "We give no occasion of stumbling in anything, that our service may not be blamed,",
+      "ko": "우리가 이 직책이 훼방을 받지 않게 하려고 무엇에든지 아무에게도 거리끼지 않게 하고",
+      "source_text_hash": "255cd559511903084fa501d74fcb0b5f693bb10c946ecc9f533d31eb2e87323b",
+      "translation_text_hash": "9d745fc1a34350348f08df92189f40757937226495f4bb2de535a953b472607e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 이 직책이 훼방을 받지 않게 하려고 무엇에든지 아무에게도 거리끼지 않게 하고"
+      ],
+      "raw_text_hashes": [
+        "9d745fc1a34350348f08df92189f40757937226495f4bb2de535a953b472607e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:4",
+      "sequence": 28899,
+      "chapter_label": "2CO 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "but in everything commending ourselves as servants of God: in great endurance, in afflictions, in hardships, in distresses,",
+      "ko": "오직 모든 일에 하나님의 일군으로 자천하여 많이 견디는 것과 환난과 궁핍과 곤난과",
+      "source_text_hash": "6fe7d51a8380d1b77f7b45d5255b9732acff59cb26b67558ec80926efe14bdbd",
+      "translation_text_hash": "36ce27ab99be3388b6e0812b9ecae699cd02e7147455d4457b0c2be6e06b1d3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 모든 일에 하나님의 일군으로 자천하여 많이 견디는 것과 환난과 궁핍과 곤난과"
+      ],
+      "raw_text_hashes": [
+        "36ce27ab99be3388b6e0812b9ecae699cd02e7147455d4457b0c2be6e06b1d3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:5",
+      "sequence": 28900,
+      "chapter_label": "2CO 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "in beatings, in imprisonments, in riots, in labors, in watchings, in fastings,",
+      "ko": "매 맞음과 갇힘과 요란한 것과 수고로움과 자지 못함과 먹지 못함과",
+      "source_text_hash": "b33ff74b1a5c91fff33e8555a450b0e2b4643819b64985f5f1b94b23c799e02f",
+      "translation_text_hash": "e39a8678231f7d18e5e2c2dbaa4c29b2094fa5612b15fc3568caf9db6bd544a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매 맞음과 갇힘과 요란한 것과 수고로움과 자지 못함과 먹지 못함과"
+      ],
+      "raw_text_hashes": [
+        "e39a8678231f7d18e5e2c2dbaa4c29b2094fa5612b15fc3568caf9db6bd544a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:6",
+      "sequence": 28901,
+      "chapter_label": "2CO 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "in pureness, in knowledge, in perseverance, in kindness, in the Holy Spirit, in sincere love,",
+      "ko": "깨끗함과 지식과 오래 참음과 자비함과 성령의 감화와 거짓이 없는 사랑과",
+      "source_text_hash": "3c2ca944071d1b31bcdf36e9ac79ed264886dd757d482c340bcc6dc396111df4",
+      "translation_text_hash": "d2969a2b2369748b1bf118ee6536b3c7955f6ebd6f16ecd829ee8e9d1facc05f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨끗함과 지식과 오래 참음과 자비함과 성령의 감화와 거짓이 없는 사랑과"
+      ],
+      "raw_text_hashes": [
+        "d2969a2b2369748b1bf118ee6536b3c7955f6ebd6f16ecd829ee8e9d1facc05f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:7",
+      "sequence": 28902,
+      "chapter_label": "2CO 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "in the word of truth, in the power of God, by the armor of righteousness on the right hand and on the left,",
+      "ko": "진리의 말씀과 하나님의 능력 안에 있어 의의 병기로 좌우하고",
+      "source_text_hash": "5330d2486fffe6c9c827eb109707f7a91f53ecc9f8f7e991003c7ffd78e1e617",
+      "translation_text_hash": "7daf016acbb398b2916e29ba151eb78bf4dfd12d54b88615173a3fb648c1f202",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리의 말씀과 하나님의 능력 안에 있어 의의 병기로 좌우하고"
+      ],
+      "raw_text_hashes": [
+        "7daf016acbb398b2916e29ba151eb78bf4dfd12d54b88615173a3fb648c1f202"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:8",
+      "sequence": 28903,
+      "chapter_label": "2CO 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "by glory and dishonor, by evil report and good report, as deceivers and yet true,",
+      "ko": "영광과 욕됨으로 말미암으며 악한 이름과 아름다운 이름으로 말미암으며 속이는 자 같으나 참되고",
+      "source_text_hash": "8fb40a8e522a32b8e8b4dff6785000ccf4ead0011de4b927208a69cc67746aab",
+      "translation_text_hash": "bc7c61def5c52abe8dc1d9e8ec506997fa12ef2a31254f44caa335a9e9b6592f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "영광과 욕됨으로 말미암으며 악한 이름과 아름다운 이름으로 말미암으며 속이는 자 같으나 참되고"
+      ],
+      "raw_text_hashes": [
+        "bc7c61def5c52abe8dc1d9e8ec506997fa12ef2a31254f44caa335a9e9b6592f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:9",
+      "sequence": 28904,
+      "chapter_label": "2CO 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "as unknown and yet well known, as dying and behold—we live, as punished and not killed,",
+      "ko": "무명한 자 같으나 유명한 자요 죽은 자 같으나 보라 우리가 살고 징계를 받는 자 같으나 죽임을 당하지 아니하고",
+      "source_text_hash": "47c1a91c91dbd9151583c38160c35b93f30c76bbc3cd9b44c66c011013af0726",
+      "translation_text_hash": "db62eb1931e14e4039c39c85951f66b3d69cad9c62423a386a02e4b9f007b339",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무명한 자 같으나 유명한 자요 죽은 자 같으나 보라 우리가 살고 징계를 받는 자 같으나 죽임을 당하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "db62eb1931e14e4039c39c85951f66b3d69cad9c62423a386a02e4b9f007b339"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:10",
+      "sequence": 28905,
+      "chapter_label": "2CO 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "as sorrowful yet always rejoicing, as poor yet making many rich, as having nothing and yet possessing all things.",
+      "ko": "근심하는 자 같으나 항상 기뻐하고 가난한 자 같으나 많은 사람을 부요하게 하고 아무 것도 없는 자 같으나 모든 것을 가진 자로다",
+      "source_text_hash": "7a53d82ec78d8483eab1a54978d79b1c12c4709d4388de9bed3ce36b68372424",
+      "translation_text_hash": "d8ee366ad104a5053f17ae036e63f5e2f624e2107d972cff3ec3cef8ff06b31d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "근심하는 자 같으나 항상 기뻐하고 가난한 자 같으나 많은 사람을 부요하게 하고 아무 것도 없는 자 같으나 모든 것을 가진 자로다"
+      ],
+      "raw_text_hashes": [
+        "d8ee366ad104a5053f17ae036e63f5e2f624e2107d972cff3ec3cef8ff06b31d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:11",
+      "sequence": 28906,
+      "chapter_label": "2CO 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Our mouth is open to you, Corinthians. Our heart is enlarged.",
+      "ko": "고린도인들이여 너희를 향하여 우리의 입이 열리고 우리의 마음이 넓었으니",
+      "source_text_hash": "7299ffe47bbb3168fca99b0ea1c985907392c7647e5c6ffc50ce1c78a4631baa",
+      "translation_text_hash": "465748cb1dd0969da31fc6a6f6da236f945c8ef4809d20f698723f7fcea45cf4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고린도인들이여 너희를 향하여 우리의 입이 열리고 우리의 마음이 넓었으니"
+      ],
+      "raw_text_hashes": [
+        "465748cb1dd0969da31fc6a6f6da236f945c8ef4809d20f698723f7fcea45cf4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:12",
+      "sequence": 28907,
+      "chapter_label": "2CO 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "You are not restricted by us, but you are restricted by your own affections.",
+      "ko": "너희가 우리 안에서 좁아진 것이 아니라 오직 너희 심정에서 좁아진것이니라",
+      "source_text_hash": "690ea797eed6886d2773020c8674e3799450c345c9ab7d08b7487312e2dd69f6",
+      "translation_text_hash": "232a16650576f4aaf54dc659aadcc560df10957911d8fc76b956727eccb792dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 우리 안에서 좁아진 것이 아니라 오직 너희 심정에서 좁아진것이니라"
+      ],
+      "raw_text_hashes": [
+        "232a16650576f4aaf54dc659aadcc560df10957911d8fc76b956727eccb792dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:13",
+      "sequence": 28908,
+      "chapter_label": "2CO 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Now in return—I speak as to my children—you also open your hearts.",
+      "ko": "내가 자녀에게 말하듯 하노니 보답하는 양으로 너희도 마음을 넓히라",
+      "source_text_hash": "475546ad377a7d32a669a33041aa2f3439a56215bda683d7c819a24cf6b936d2",
+      "translation_text_hash": "d80290c2784e877d79a669eafbf0a9dd5a5dd0ad4ab2a456fec58118f83dc91e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 자녀에게 말하듯 하노니 보답하는 양으로 너희도 마음을 넓히라"
+      ],
+      "raw_text_hashes": [
+        "d80290c2784e877d79a669eafbf0a9dd5a5dd0ad4ab2a456fec58118f83dc91e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:14",
+      "sequence": 28909,
+      "chapter_label": "2CO 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Don’t be unequally yoked with unbelievers, for what fellowship do righteousness and iniquity have? Or what fellowship does light have with darkness?",
+      "ko": "너희는 믿지 않는 자와 멍에를 같이 하지 말라 의와 불법이 어찌 함께하며 빛과 어두움이 어찌 사귀며",
+      "source_text_hash": "37e5a164daa290151d2d76b109eb9f63357b61e8b8e9aab7f29f09123657dde5",
+      "translation_text_hash": "0591a8a0563be6668cacdee535cff0f3f852494570cc14a4201d12cda93e3a24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 믿지 않는 자와 멍에를 같이 하지 말라 의와 불법이 어찌 함께하며 빛과 어두움이 어찌 사귀며"
+      ],
+      "raw_text_hashes": [
+        "0591a8a0563be6668cacdee535cff0f3f852494570cc14a4201d12cda93e3a24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:15",
+      "sequence": 28910,
+      "chapter_label": "2CO 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "What agreement does Christ have with Belial? Or what portion does a believer have with an unbeliever?",
+      "ko": "그리스도와 벨리알이 어찌 조화되며 믿는 자와 믿지 않는 자가 어찌 상관하며",
+      "source_text_hash": "035441e99c026c816ad4be7ebe2bf09762ba88c8ef4e091684019242ba1c456a",
+      "translation_text_hash": "58faefa304c93ebca891826966b4519ad919de12f8132d0c51041749bc5dc9d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도와 벨리알이 어찌 조화되며 믿는 자와 믿지 않는 자가 어찌 상관하며"
+      ],
+      "raw_text_hashes": [
+        "58faefa304c93ebca891826966b4519ad919de12f8132d0c51041749bc5dc9d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:16",
+      "sequence": 28911,
+      "chapter_label": "2CO 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "What agreement does a temple of God have with idols? For you are a temple of the living God. Even as God said, “I will dwell in them and walk in them. I will be their God and they will be my people.”",
+      "ko": "하나님의 성전과 우상이 어찌 일치가 되리요 우리는 살아 계신 하나님의 성전이라 이와 같이 하나님께서 가라사대 내가 저희 가운데 거하며 두루 행하여 나는 저희 하나님이 되고 저희는 나의 백성이 되리라 하셨느니라",
+      "source_text_hash": "fba842b6d23f0391d3506e8f96252abdadc45647f97e27ec81c55635f621d637",
+      "translation_text_hash": "119a2c0b970ca482aa31db598b648b20ccc716aa7bf9152c7ee34e7c0feaf620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 성전과 우상이 어찌 일치가 되리요 우리는 살아 계신 하나님의 성전이라 이와 같이 하나님께서 가라사대 내가 저희 가운데 거하며 두루 행하여 나는 저희 하나님이 되고 저희는 나의 백성이 되리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "119a2c0b970ca482aa31db598b648b20ccc716aa7bf9152c7ee34e7c0feaf620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:17",
+      "sequence": 28912,
+      "chapter_label": "2CO 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore “‘Come out from among them, and be separate,’ says the Lord. ‘Touch no unclean thing. I will receive you.",
+      "ko": "그러므로 주께서 말씀하시기를 너희는 저희 중에서 나와서 따로 있고 부정한 것을 만지지 말라 내가 너희를 영접하여",
+      "source_text_hash": "215759ae8c32ec8cc4455430d8b8675929dbf182ef5ca41ada3e0ba0d9ed9dc6",
+      "translation_text_hash": "87fa626b251d68e9d144904cb9d17bab0dbe94fd2e3bc77cfff03b0c39a6e94b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주께서 말씀하시기를 너희는 저희 중에서 나와서 따로 있고 부정한 것을 만지지 말라 내가 너희를 영접하여"
+      ],
+      "raw_text_hashes": [
+        "87fa626b251d68e9d144904cb9d17bab0dbe94fd2e3bc77cfff03b0c39a6e94b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2CO:6:18",
+      "sequence": 28913,
+      "chapter_label": "2CO 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "2CO",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2CO",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "I will be to you a Father. You will be to me sons and daughters,’ says the Lord Almighty.”",
+      "ko": "너희에게 아버지가 되고 너희는 내게 자녀가 되리라 전능하신 주의 말씀이니라 하셨느니라",
+      "source_text_hash": "fdd30f2d5b15d2257e2b299ba56347ff2ae618a75ee9acdcb878412415a73196",
+      "translation_text_hash": "b13f0cdd5330b9b9ac37522277c63e8cb26fbc7d4e0c3b8ca2cc7f1851f044b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희에게 아버지가 되고 너희는 내게 자녀가 되리라 전능하신 주의 말씀이니라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "b13f0cdd5330b9b9ac37522277c63e8cb26fbc7d4e0c3b8ca2cc7f1851f044b5"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1133 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:006",
+  "unit_ordinal": 634,
+  "unit_label": "PRO 6",
+  "book_code": "PRO",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:6:1",
+      "sequence": 16542,
+      "chapter_label": "PRO 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "My son, if you have become collateral for your neighbor, if you have struck your hands in pledge for a stranger,",
+      "ko": "내 아들아 네가 만일 이웃을 위하여 담보하며 타인을 위하여 보증하였으면",
+      "source_text_hash": "1a7b3ba0928a0d09a03367fca4ef0b4d9b1100252021ea8e5273c233be93c672",
+      "translation_text_hash": "f2d48b7dd18b1b021fc635b4d0187d01935c5e1a33fd44fd11f9d4c0cb6b18df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 네가 만일 이웃을 위하여 담보하며 타인을 위하여 보증하였으면"
+      ],
+      "raw_text_hashes": [
+        "f2d48b7dd18b1b021fc635b4d0187d01935c5e1a33fd44fd11f9d4c0cb6b18df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:2",
+      "sequence": 16543,
+      "chapter_label": "PRO 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "you are trapped by the words of your mouth; you are ensnared with the words of your mouth.",
+      "ko": "네 입의 말로 네가 얽혔으며 네 입의 말로 인하여 잡히게 되었느니라",
+      "source_text_hash": "52aa31b00a5d19adf85da69e27b92e94f7724939b443456e9397e3798a35c178",
+      "translation_text_hash": "da5fc3329009f02052ebf1eb938a92be6f7d0ccd942fef34e162e8933862bb22",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 입의 말로 네가 얽혔으며 네 입의 말로 인하여 잡히게 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "da5fc3329009f02052ebf1eb938a92be6f7d0ccd942fef34e162e8933862bb22"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:3",
+      "sequence": 16544,
+      "chapter_label": "PRO 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Do this now, my son, and deliver yourself, since you have come into the hand of your neighbor. Go, humble yourself. Press your plea with your neighbor.",
+      "ko": "내 아들아 네가 네 이웃의 손에 빠졌은즉 이같이 하라 너는 곧 가서 겸손히 네 이웃에게 간구하여 스스로 구원하되",
+      "source_text_hash": "742226ab26c18229af2a83c97fa4e7b21521db58284c027eb37122bed40b21d8",
+      "translation_text_hash": "ebb7d4fbef5f7d2c17f8f795bac6d93cf95f270b909d735d583baca12fc106c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 네가 네 이웃의 손에 빠졌은즉 이같이 하라 너는 곧 가서 겸손히 네 이웃에게 간구하여 스스로 구원하되"
+      ],
+      "raw_text_hashes": [
+        "ebb7d4fbef5f7d2c17f8f795bac6d93cf95f270b909d735d583baca12fc106c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:4",
+      "sequence": 16545,
+      "chapter_label": "PRO 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Give no sleep to your eyes, nor slumber to your eyelids.",
+      "ko": "네 눈으로 잠들게 하지 말며 눈꺼풀로 감기게 하지 말고",
+      "source_text_hash": "0c547e0825c6551abac4ac1fd4a96588e7eae592e7bd6107a65db832c8abd7d7",
+      "translation_text_hash": "fa6e30f4102e4f2229d57344b4f3c3c9b1c5a580aae6e4f3131c1a4a9dcf6827",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 눈으로 잠들게 하지 말며 눈꺼풀로 감기게 하지 말고"
+      ],
+      "raw_text_hashes": [
+        "fa6e30f4102e4f2229d57344b4f3c3c9b1c5a580aae6e4f3131c1a4a9dcf6827"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:5",
+      "sequence": 16546,
+      "chapter_label": "PRO 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Free yourself, like a gazelle from the hand of the hunter, like a bird from the snare of the fowler.",
+      "ko": "노루가 사냥군의 손에서 벗어나는 것 같이, 새가 그물 치는 자의 손에서 벗어나는 것 같이 스스로 구원하라",
+      "source_text_hash": "e503343fe9ba1940ef92567d712eeecaefb224fd409c5f15ffdbcf7cf403729c",
+      "translation_text_hash": "2b3aba9ef8aeb121a0521ce9a246995d4a91266222ca6268d07f610d9895f5cc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노루가 사냥군의 손에서 벗어나는 것 같이, 새가 그물 치는 자의 손에서 벗어나는 것 같이 스스로 구원하라"
+      ],
+      "raw_text_hashes": [
+        "2b3aba9ef8aeb121a0521ce9a246995d4a91266222ca6268d07f610d9895f5cc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:6",
+      "sequence": 16547,
+      "chapter_label": "PRO 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Go to the ant, you sluggard. Consider her ways, and be wise;",
+      "ko": "게으른 자여 개미에게로 가서 그 하는 것을 보고 지혜를 얻으라",
+      "source_text_hash": "db4b7f3bb42bb89e172774c9218b9fcc3d75ddc367ba2c585a8e0278f2e2be17",
+      "translation_text_hash": "cb63acb2689527a6305537920875a693259ed9dd72d73d1e022af996ca376500",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자여 개미에게로 가서 그 하는 것을 보고 지혜를 얻으라"
+      ],
+      "raw_text_hashes": [
+        "cb63acb2689527a6305537920875a693259ed9dd72d73d1e022af996ca376500"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:7",
+      "sequence": 16548,
+      "chapter_label": "PRO 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "which having no chief, overseer, or ruler,",
+      "ko": "개미는 두령도 없고 간역자도 없고 주권자도 없으되",
+      "source_text_hash": "51caec5b47a660826d05793cc0b0f50756be4f07a5d3de7e24571cb7517b2b43",
+      "translation_text_hash": "49c413af0ee3396be44a178209ac7b0c76a17a6cdd576a5ab95962e2177c7f8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "개미는 두령도 없고 간역자도 없고 주권자도 없으되"
+      ],
+      "raw_text_hashes": [
+        "49c413af0ee3396be44a178209ac7b0c76a17a6cdd576a5ab95962e2177c7f8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:8",
+      "sequence": 16549,
+      "chapter_label": "PRO 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "provides her bread in the summer, and gathers her food in the harvest.",
+      "ko": "먹을 것을 여름 동안에 예비하며 추수 때에 양식을 모으느니라",
+      "source_text_hash": "7c26a4a5e28e67a18a447346b606b2eef3e7973141784af2fb633eb5a20ede54",
+      "translation_text_hash": "a1c015817ac886ec2d0c5119f0fac64461c381642188c84ecc513fd2d8324f0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "먹을 것을 여름 동안에 예비하며 추수 때에 양식을 모으느니라"
+      ],
+      "raw_text_hashes": [
+        "a1c015817ac886ec2d0c5119f0fac64461c381642188c84ecc513fd2d8324f0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:9",
+      "sequence": 16550,
+      "chapter_label": "PRO 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "How long will you sleep, sluggard? When will you arise out of your sleep?",
+      "ko": "게으른 자여 네가 어느 때까지 눕겠느냐 네가 어느 때에 잠이 깨어 일어나겠느냐",
+      "source_text_hash": "35e2d8c2ebdb06eac1bade86abe37c34d26d6a4f328d2915bd542eac4de44b11",
+      "translation_text_hash": "7f0fcbdf0f6aab62913f49710316a8fa56c4a0aa0ac30210818023906f5613dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "게으른 자여 네가 어느 때까지 눕겠느냐 네가 어느 때에 잠이 깨어 일어나겠느냐"
+      ],
+      "raw_text_hashes": [
+        "7f0fcbdf0f6aab62913f49710316a8fa56c4a0aa0ac30210818023906f5613dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:10",
+      "sequence": 16551,
+      "chapter_label": "PRO 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "A little sleep, a little slumber, a little folding of the hands to sleep—",
+      "ko": "좀더 자자, 좀더 졸자, 손을 모으고 좀더 눕자 하면",
+      "source_text_hash": "1043e1d3cb4c33cfc824cc76e889403d595c4b4e9276ec7101c3e633528fca14",
+      "translation_text_hash": "ee2705e9b844068c0e1877de3f2828d873c94059e5af252e9a6bf43f4ff6146b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "좀더 자자, 좀더 졸자, 손을 모으고 좀더 눕자 하면"
+      ],
+      "raw_text_hashes": [
+        "ee2705e9b844068c0e1877de3f2828d873c94059e5af252e9a6bf43f4ff6146b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:11",
+      "sequence": 16552,
+      "chapter_label": "PRO 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "so your poverty will come as a robber, and your scarcity as an armed man.",
+      "ko": "네 빈궁이 강도 같이 오며 네 곤핍이 군사 같이 이르리라",
+      "source_text_hash": "278c5aa3106a8c7ddfb96db2f002d6ddab239ba72588bcc3df6c37e68d15cb7e",
+      "translation_text_hash": "04b07fdfe7ad8afde5da231ac243d64dc27103d0074f5b4d59936e3421631f49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 빈궁이 강도 같이 오며 네 곤핍이 군사 같이 이르리라"
+      ],
+      "raw_text_hashes": [
+        "04b07fdfe7ad8afde5da231ac243d64dc27103d0074f5b4d59936e3421631f49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:12",
+      "sequence": 16553,
+      "chapter_label": "PRO 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "A worthless person, a man of iniquity, is he who walks with a perverse mouth,",
+      "ko": "불량하고 악한 자는 그 행동에 궤휼한 입을 벌리며",
+      "source_text_hash": "431fa9082e1e541f0a4f0cbcb6ef276e84f6e3b2d07c74904ba460996f9bb48e",
+      "translation_text_hash": "224fe107aed4a7f74a9fab9477872befa6016e27b836b432188586469efefb7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불량하고 악한 자는 그 행동에 궤휼한 입을 벌리며"
+      ],
+      "raw_text_hashes": [
+        "224fe107aed4a7f74a9fab9477872befa6016e27b836b432188586469efefb7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:13",
+      "sequence": 16554,
+      "chapter_label": "PRO 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "who winks with his eyes, who signals with his feet, who motions with his fingers,",
+      "ko": "눈짓을 하며 발로 뜻을 보이며 손가락질로 알게 하며",
+      "source_text_hash": "93d3cdc8b15e6f644332a6b12cde014304c056de216ae53c079e181a7850539e",
+      "translation_text_hash": "4deb5ecd8c68b6235d9f6f099874f70b335ba410a92dd8a26f40ed2445a14dfe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈짓을 하며 발로 뜻을 보이며 손가락질로 알게 하며"
+      ],
+      "raw_text_hashes": [
+        "4deb5ecd8c68b6235d9f6f099874f70b335ba410a92dd8a26f40ed2445a14dfe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:14",
+      "sequence": 16555,
+      "chapter_label": "PRO 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "in whose heart is perverseness, who devises evil continually, who always sows discord.",
+      "ko": "그 마음에 패역을 품으며 항상 악을 꾀하여 다툼을 일으키는 자라",
+      "source_text_hash": "298468da8dd5df1bbc0201981378940305c7fba94652fccca02c7ef50aaf7c43",
+      "translation_text_hash": "c601527afa5c2d7b40370cc39c5baec3632bc9d8b627ba45f778401d5e82db89",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 마음에 패역을 품으며 항상 악을 꾀하여 다툼을 일으키는 자라"
+      ],
+      "raw_text_hashes": [
+        "c601527afa5c2d7b40370cc39c5baec3632bc9d8b627ba45f778401d5e82db89"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:15",
+      "sequence": 16556,
+      "chapter_label": "PRO 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Therefore his calamity will come suddenly. He will be broken suddenly, and that without remedy.",
+      "ko": "그러므로 그 재앙이 갑자기 임한즉 도움을 얻지 못하고 당장에 패망하리라",
+      "source_text_hash": "2d5afbe5d232830c69175b13edf68f0ec1e41afcb31359c7069789a88b888087",
+      "translation_text_hash": "f6bbf8afd5c8dcd3f652ac3e87c63e0939023996d3cd6af19d9fa14a7110c775",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 그 재앙이 갑자기 임한즉 도움을 얻지 못하고 당장에 패망하리라"
+      ],
+      "raw_text_hashes": [
+        "f6bbf8afd5c8dcd3f652ac3e87c63e0939023996d3cd6af19d9fa14a7110c775"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:16",
+      "sequence": 16557,
+      "chapter_label": "PRO 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "There are six things which the LORD hates; yes, seven which are an abomination to him:",
+      "ko": "여호와의 미워하시는 것 곧 그 마음에 싫어하시는 것이 육 칠 가지니",
+      "source_text_hash": "ed27b089d035b71edf3c7a434067cdbdab3158653be901e31522d032d3e0a8a1",
+      "translation_text_hash": "fd1c0bd8a6b42202960c4c7d87e5cae8401027022d20b7fa3ef0e14b2c77402e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 미워하시는 것 곧 그 마음에 싫어하시는 것이 육 칠 가지니"
+      ],
+      "raw_text_hashes": [
+        "fd1c0bd8a6b42202960c4c7d87e5cae8401027022d20b7fa3ef0e14b2c77402e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:17",
+      "sequence": 16558,
+      "chapter_label": "PRO 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "arrogant eyes, a lying tongue, hands that shed innocent blood,",
+      "ko": "곧 교만한 눈과 거짓된 혀와 무죄한 자의 피를 흘리는 손과",
+      "source_text_hash": "95c77c8f6faddb2ea940133bcf264d87da4d09e353bd4db8ea4322e524705a83",
+      "translation_text_hash": "ca9a777b5c51e141e070dcdefbfc0b9d966344bf823fa26cc4f515269567423f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 교만한 눈과 거짓된 혀와 무죄한 자의 피를 흘리는 손과"
+      ],
+      "raw_text_hashes": [
+        "ca9a777b5c51e141e070dcdefbfc0b9d966344bf823fa26cc4f515269567423f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:18",
+      "sequence": 16559,
+      "chapter_label": "PRO 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "a heart that devises wicked schemes, feet that are swift in running to mischief,",
+      "ko": "악한 계교를 꾀하는 마음과 빨리 악으로 달려가는 발과",
+      "source_text_hash": "251b17b826fdfff6c60ce15264c348708862785dad44144e80f45f5b3f24099a",
+      "translation_text_hash": "9e38219dc494e2d1e60c458ca27031a7399e38a937ae9db2958e06fa2daca2f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "악한 계교를 꾀하는 마음과 빨리 악으로 달려가는 발과"
+      ],
+      "raw_text_hashes": [
+        "9e38219dc494e2d1e60c458ca27031a7399e38a937ae9db2958e06fa2daca2f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:19",
+      "sequence": 16560,
+      "chapter_label": "PRO 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "a false witness who utters lies, and he who sows discord among brothers.",
+      "ko": "거짓을 말하는 망령된 증인과 및 형제 사이를 이간하는 자니라",
+      "source_text_hash": "e2fb3e0b86e70a74068fe8fff967383d62e428570b9c7d1c58aeee50fe936b60",
+      "translation_text_hash": "57a9544ff0d18d891afe554091d4c9d0ccb9a8af0a349ce4f527f434b4d0f17d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓을 말하는 망령된 증인과 및 형제 사이를 이간하는 자니라"
+      ],
+      "raw_text_hashes": [
+        "57a9544ff0d18d891afe554091d4c9d0ccb9a8af0a349ce4f527f434b4d0f17d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:20",
+      "sequence": 16561,
+      "chapter_label": "PRO 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "My son, keep your father’s commandment, and don’t forsake your mother’s teaching.",
+      "ko": "내 아들아 네 아비의 명령을 지키며 네 어미의 법을 떠나지 말고",
+      "source_text_hash": "33f47bd6d948fe3dca7813fc143e72bc2eed78b44a1872d9937eed797c7cf59c",
+      "translation_text_hash": "c8799d1b13a9ff168358eab18e71c03ded496da5d841ebc4b7e2a246f5aab29f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 아들아 네 아비의 명령을 지키며 네 어미의 법을 떠나지 말고"
+      ],
+      "raw_text_hashes": [
+        "c8799d1b13a9ff168358eab18e71c03ded496da5d841ebc4b7e2a246f5aab29f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:21",
+      "sequence": 16562,
+      "chapter_label": "PRO 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Bind them continually on your heart. Tie them around your neck.",
+      "ko": "그것을 항상 네 마음에 새기며 네 목에 매라",
+      "source_text_hash": "feb639a9f10e92fd48726a74294cfeebaae85490314bc57d3fc72d007390d4a9",
+      "translation_text_hash": "6514fb1126b95d95bbdd73c337d51c53dc93adab45fc5a84e8a8a00346c56bd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것을 항상 네 마음에 새기며 네 목에 매라"
+      ],
+      "raw_text_hashes": [
+        "6514fb1126b95d95bbdd73c337d51c53dc93adab45fc5a84e8a8a00346c56bd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:22",
+      "sequence": 16563,
+      "chapter_label": "PRO 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "When you walk, it will lead you. When you sleep, it will watch over you. When you awake, it will talk with you.",
+      "ko": "그것이 너의 다닐 때에 너를 인도하며 너의 잘 때에 너를 보호하며 너의 깰 때에 너로 더불어 말하리니",
+      "source_text_hash": "2ef5c37804b76a5339289e685d7ba6b19636d7f0bd2807f56ef8b75dd7a0220c",
+      "translation_text_hash": "a377de2f82eb51d8f27573a54108e92818f059851676fd1a9eed3a1fc847aa7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그것이 너의 다닐 때에 너를 인도하며 너의 잘 때에 너를 보호하며 너의 깰 때에 너로 더불어 말하리니"
+      ],
+      "raw_text_hashes": [
+        "a377de2f82eb51d8f27573a54108e92818f059851676fd1a9eed3a1fc847aa7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:23",
+      "sequence": 16564,
+      "chapter_label": "PRO 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "For the commandment is a lamp, and the law is light. Reproofs of instruction are the way of life,",
+      "ko": "대저 명령은 등불이요 법은 빛이요 훈계의 책망은 곧 생명의 길이라",
+      "source_text_hash": "242184082feeec5e9302085c75fbb46dd9fa11435ca5f7a1a4d15efa87d26ba2",
+      "translation_text_hash": "48cd6423073c2868b5cfbf20759b688903cacab590826e1794ac98d189127ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 명령은 등불이요 법은 빛이요 훈계의 책망은 곧 생명의 길이라"
+      ],
+      "raw_text_hashes": [
+        "48cd6423073c2868b5cfbf20759b688903cacab590826e1794ac98d189127ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:24",
+      "sequence": 16565,
+      "chapter_label": "PRO 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "to keep you from the immoral woman, from the flattery of the wayward wife’s tongue.",
+      "ko": "이것이 너를 지켜서 악한 계집에게, 이방 계집의 혀로 호리는 말에 빠지지 않게 하리라",
+      "source_text_hash": "0579d9c8e62fdd9229d79125e893bbff1f6b98ddc6b55643c510edd16447cc40",
+      "translation_text_hash": "bd31c06c8a33e22ce91fb2d19d90251f1acdacad22927072c42c56bc72b83dac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것이 너를 지켜서 악한 계집에게, 이방 계집의 혀로 호리는 말에 빠지지 않게 하리라"
+      ],
+      "raw_text_hashes": [
+        "bd31c06c8a33e22ce91fb2d19d90251f1acdacad22927072c42c56bc72b83dac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:25",
+      "sequence": 16566,
+      "chapter_label": "PRO 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "Don’t lust after her beauty in your heart, neither let her captivate you with her eyelids.",
+      "ko": "네 마음에 그 아름다운 색을 탐하지 말며 그 눈꺼풀에 홀리지 말라",
+      "source_text_hash": "0437ff192e1e81e40a202652f9d70c703851ed76f7b10e430e637e631df979bc",
+      "translation_text_hash": "7ce89b8ee4d395da024eab81b988b2cb9f994ba0ac2fb4cb94da81c8cad143d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음에 그 아름다운 색을 탐하지 말며 그 눈꺼풀에 홀리지 말라"
+      ],
+      "raw_text_hashes": [
+        "7ce89b8ee4d395da024eab81b988b2cb9f994ba0ac2fb4cb94da81c8cad143d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:26",
+      "sequence": 16567,
+      "chapter_label": "PRO 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "For a prostitute reduces you to a piece of bread. The adulteress hunts for your precious life.",
+      "ko": "음녀로 인하여 사람이 한 조각 떡만 남게 됨이며 음란한 계집은 귀한 생명을 사냥함이니라",
+      "source_text_hash": "4408895db937f8364c2474a974467fcf022e3a32d57c177f4202b426c1aeed5c",
+      "translation_text_hash": "781931be3c9d5560ecbd24e2cc5fded548d00987db797ff11cc7076312c1aab1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음녀로 인하여 사람이 한 조각 떡만 남게 됨이며 음란한 계집은 귀한 생명을 사냥함이니라"
+      ],
+      "raw_text_hashes": [
+        "781931be3c9d5560ecbd24e2cc5fded548d00987db797ff11cc7076312c1aab1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:27",
+      "sequence": 16568,
+      "chapter_label": "PRO 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "Can a man scoop fire into his lap, and his clothes not be burned?",
+      "ko": "사람이 불을 품에 품고야 어찌 그 옷이 타지 아니하겠으며",
+      "source_text_hash": "6e16751cc34b3fd6e89e3039d3e699a1398f888d15d6f0c8f6995b09cca238b7",
+      "translation_text_hash": "59537d5fbcd018ca9325a1b28c5d495cca736b2aafaac3af1d2b9d8f2dbc3473",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 불을 품에 품고야 어찌 그 옷이 타지 아니하겠으며"
+      ],
+      "raw_text_hashes": [
+        "59537d5fbcd018ca9325a1b28c5d495cca736b2aafaac3af1d2b9d8f2dbc3473"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:28",
+      "sequence": 16569,
+      "chapter_label": "PRO 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "Or can one walk on hot coals, and his feet not be scorched?",
+      "ko": "사람이 숯불을 밟고야 어찌 그 발이 데지 아니하겠느냐",
+      "source_text_hash": "77ff109452a3fb5ebe957648d70c3d2def393c8337e55b21e6e70986e1b1bf77",
+      "translation_text_hash": "da8d29ee6c3112a4f24fc02262592258089158c29b41c5c735ee602f2b0bed0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 숯불을 밟고야 어찌 그 발이 데지 아니하겠느냐"
+      ],
+      "raw_text_hashes": [
+        "da8d29ee6c3112a4f24fc02262592258089158c29b41c5c735ee602f2b0bed0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:29",
+      "sequence": 16570,
+      "chapter_label": "PRO 6",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 29
+        }
+      ],
+      "en": "So is he who goes in to his neighbor’s wife. Whoever touches her will not be unpunished.",
+      "ko": "남의 아내와 통간하는 자도 이와 같을 것이라 무릇 그를 만지기만 하는 자도 죄 없게 되지 아니하리라",
+      "source_text_hash": "257e751281af9b923cd8f6dc16ea3c8bf43460339ec3064634ff32b11598b777",
+      "translation_text_hash": "618e47459252b5578dc63deb2ac301d35f92ed0ff4c7f4b1b6cea65c68035d4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남의 아내와 통간하는 자도 이와 같을 것이라 무릇 그를 만지기만 하는 자도 죄 없게 되지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "618e47459252b5578dc63deb2ac301d35f92ed0ff4c7f4b1b6cea65c68035d4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:30",
+      "sequence": 16571,
+      "chapter_label": "PRO 6",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 30
+        }
+      ],
+      "en": "Men don’t despise a thief if he steals to satisfy himself when he is hungry,",
+      "ko": "도적이 만일 주릴 때에 배를 채우려고 도적질하면 사람이 그를 멸시치는 아니하려니와",
+      "source_text_hash": "d166b2fc905445ced41566406208248ce7a2cb79c99fb11426a41f39eb007251",
+      "translation_text_hash": "e50f4daba24366e4ba96a9e197e94187225de07c4ccef860e71c8e94ef15e662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이 만일 주릴 때에 배를 채우려고 도적질하면 사람이 그를 멸시치는 아니하려니와"
+      ],
+      "raw_text_hashes": [
+        "e50f4daba24366e4ba96a9e197e94187225de07c4ccef860e71c8e94ef15e662"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:31",
+      "sequence": 16572,
+      "chapter_label": "PRO 6",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 31
+        }
+      ],
+      "en": "but if he is found, he shall restore seven times. He shall give all the wealth of his house.",
+      "ko": "들키면 칠배를 갚아야 하리니 심지어 자기 집에 있는 것을 다 내어 주게 되리라",
+      "source_text_hash": "45e6ae3da3400f864682a2c128c8249e5576a572e8da71d483c96851cc854df3",
+      "translation_text_hash": "d1d85f861e6697b8d4b343eab1f5a7a34c179425a7d0f01cfbb1d7187e36f9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "들키면 칠배를 갚아야 하리니 심지어 자기 집에 있는 것을 다 내어 주게 되리라"
+      ],
+      "raw_text_hashes": [
+        "d1d85f861e6697b8d4b343eab1f5a7a34c179425a7d0f01cfbb1d7187e36f9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:32",
+      "sequence": 16573,
+      "chapter_label": "PRO 6",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 32
+        }
+      ],
+      "en": "He who commits adultery with a woman is void of understanding. He who does it destroys his own soul.",
+      "ko": "부녀와 간음하는 자는 무지한 자라 이것을 행하는 자는 자기의 영혼을 망하게 하며",
+      "source_text_hash": "c28feb36aa7a3e83bb444e71c48c50e9cd285b4a31b6afbddf4fb0c8daa0d7a8",
+      "translation_text_hash": "d43ee25bce6b7050eb3dda8ecede719c56dec46a13be931e921f01c06a47301c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "부녀와 간음하는 자는 무지한 자라 이것을 행하는 자는 자기의 영혼을 망하게 하며"
+      ],
+      "raw_text_hashes": [
+        "d43ee25bce6b7050eb3dda8ecede719c56dec46a13be931e921f01c06a47301c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:33",
+      "sequence": 16574,
+      "chapter_label": "PRO 6",
+      "verse_label": "33",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 33
+        }
+      ],
+      "en": "He will get wounds and dishonor. His reproach will not be wiped away.",
+      "ko": "상함과 능욕을 받고 부끄러움을 씻을 수 없게 되나니",
+      "source_text_hash": "eb3e82e83453b790137c6aaca52adc275f3be3166459c360eaa7e6176e84aee3",
+      "translation_text_hash": "9d98e51bcdb724b5ee0eb39ef6680f57779df7eb1c07be3edfa552f0b135af9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "상함과 능욕을 받고 부끄러움을 씻을 수 없게 되나니"
+      ],
+      "raw_text_hashes": [
+        "9d98e51bcdb724b5ee0eb39ef6680f57779df7eb1c07be3edfa552f0b135af9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:34",
+      "sequence": 16575,
+      "chapter_label": "PRO 6",
+      "verse_label": "34",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 34
+        }
+      ],
+      "en": "For jealousy arouses the fury of the husband. He won’t spare in the day of vengeance.",
+      "ko": "그 남편이 투기함으로 분노하여 원수를 갚는 날에 용서하지 아니하고",
+      "source_text_hash": "62019f12d1b7d0150ffa2e54a0b7d3a25bb15855cee5991ac9a49ee03c6f5021",
+      "translation_text_hash": "859515bab6c4c7bc855d8a5690becaa67429985a5e1a486c7310b3a6ae3c258b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 남편이 투기함으로 분노하여 원수를 갚는 날에 용서하지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "859515bab6c4c7bc855d8a5690becaa67429985a5e1a486c7310b3a6ae3c258b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:6:35",
+      "sequence": 16576,
+      "chapter_label": "PRO 6",
+      "verse_label": "35",
+      "locator": {
+        "book": "PRO",
+        "chapter": 6,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 6,
+          "verse": 35
+        }
+      ],
+      "en": "He won’t regard any ransom, neither will he rest content, though you give many gifts.",
+      "ko": "아무 벌금도 돌아 보지 아니하며 많은 선물을 줄지라도 듣지 아니하리라",
+      "source_text_hash": "81c0a7918df9f2c23c7d57d016ff128056cfb1f732b5f394180896b036c20006",
+      "translation_text_hash": "005ec5cbb3d42d39efbd7e127f56a8a10ffa478873a92d8740a27d2b52edb12c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 벌금도 돌아 보지 아니하며 많은 선물을 줄지라도 듣지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "005ec5cbb3d42d39efbd7e127f56a8a10ffa478873a92d8740a27d2b52edb12c"
+      ]
+    }
+  ]
+}

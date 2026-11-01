@@ -1,0 +1,269 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:129",
+  "unit_ordinal": 607,
+  "unit_label": "PSA 129",
+  "book_code": "PSA",
+  "chapter_number": 129,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:129:1",
+      "sequence": 16134,
+      "chapter_label": "PSA 129",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 1
+        }
+      ],
+      "en": "Many times they have afflicted me from my youth up. Let Israel now say:",
+      "ko": "이스라엘은 이제 말하기를 저희가 나의 소시부터 여러번 나를 괴롭게 하였도다",
+      "source_text_hash": "b50b240e9a2d350c52d875b04d89f8f784ebd9c29aae9bc899a0e85ea7dc2dc7",
+      "translation_text_hash": "78e7b8b65fe363e4e66375253da5607fff2a908abac436db526d940f4403f61f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘은 이제 말하기를 저희가 나의 소시부터 여러번 나를 괴롭게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "78e7b8b65fe363e4e66375253da5607fff2a908abac436db526d940f4403f61f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:2",
+      "sequence": 16135,
+      "chapter_label": "PSA 129",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 2
+        }
+      ],
+      "en": "many times they have afflicted me from my youth up, yet they have not prevailed against me.",
+      "ko": "저희가 나의 소시부터 여러번 나를 괴롭게 하였으나 나를 이기지 못하였도다",
+      "source_text_hash": "7c380ed77a9d38c07f5126fc42db20cc0e78b22a036ddaf43f7c71b5c1ae48d2",
+      "translation_text_hash": "51feca2299ab0b2d9d48ccb1dbb3e932054be00d2f58b4adbc1296e549c7b0d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 나의 소시부터 여러번 나를 괴롭게 하였으나 나를 이기지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "51feca2299ab0b2d9d48ccb1dbb3e932054be00d2f58b4adbc1296e549c7b0d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:3",
+      "sequence": 16136,
+      "chapter_label": "PSA 129",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 3
+        }
+      ],
+      "en": "The plowers plowed on my back. They made their furrows long.",
+      "ko": "밭 가는 자가 내 등에 갈아 그 고랑을 길게 지었도다",
+      "source_text_hash": "9a968b9463dd77c56406273791a1a516e383f3c77115624065b6305c3fbede8c",
+      "translation_text_hash": "9299fa0d26240f7cb868462d52daa81035ceb21db7defea39feab6c98902f33a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭 가는 자가 내 등에 갈아 그 고랑을 길게 지었도다"
+      ],
+      "raw_text_hashes": [
+        "9299fa0d26240f7cb868462d52daa81035ceb21db7defea39feab6c98902f33a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:4",
+      "sequence": 16137,
+      "chapter_label": "PSA 129",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD is righteous. He has cut apart the cords of the wicked.",
+      "ko": "여호와께서는 의로우사 악인의 줄을 끊으셨도다",
+      "source_text_hash": "ad3064be19cb0452fc259688af991c53934c360ddfe68223248c30d3814e4dfd",
+      "translation_text_hash": "e2082299007e0ac1ef51391d3c4c8d3f345ab3f9f19818c3e3b4fca4a5321db6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 의로우사 악인의 줄을 끊으셨도다"
+      ],
+      "raw_text_hashes": [
+        "e2082299007e0ac1ef51391d3c4c8d3f345ab3f9f19818c3e3b4fca4a5321db6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:5",
+      "sequence": 16138,
+      "chapter_label": "PSA 129",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 5
+        }
+      ],
+      "en": "Let them be disappointed and turned backward, all those who hate Zion.",
+      "ko": "무릇 시온을 미워하는 자는 수치를 당하여 물러갈찌어다",
+      "source_text_hash": "0c1daefc4d13d0cec64b906b2510d156a6be44151e6f156c660897a6f2f6825d",
+      "translation_text_hash": "8e40bacf904cbf62d1613b9461b3be65d69efccb42e5abad240618437c435d0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 시온을 미워하는 자는 수치를 당하여 물러갈찌어다"
+      ],
+      "raw_text_hashes": [
+        "8e40bacf904cbf62d1613b9461b3be65d69efccb42e5abad240618437c435d0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:6",
+      "sequence": 16139,
+      "chapter_label": "PSA 129",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 6
+        }
+      ],
+      "en": "Let them be as the grass on the housetops, which withers before it grows up,",
+      "ko": "저희는 지붕의 풀과 같을찌어다 그것은 자라기 전에 마르는 것이라",
+      "source_text_hash": "4d632fd026abe0eb7fd61f6b6f0aa8aac10132df8d798f03c491a58a5e7858f3",
+      "translation_text_hash": "a7179231b77408bf498451c81a69f844e22db8bf7fb005d827349a024630f597",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 지붕의 풀과 같을찌어다 그것은 자라기 전에 마르는 것이라"
+      ],
+      "raw_text_hashes": [
+        "a7179231b77408bf498451c81a69f844e22db8bf7fb005d827349a024630f597"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:7",
+      "sequence": 16140,
+      "chapter_label": "PSA 129",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 7
+        }
+      ],
+      "en": "with which the reaper doesn’t fill his hand, nor he who binds sheaves, his bosom.",
+      "ko": "이런 것은 베는 자의 줌과 묶는 자의 품에 차지 아니하나니",
+      "source_text_hash": "627eaea53d36ef435ec8cbb7dd4726b6727647b66e91af9bc6565d8434b20d26",
+      "translation_text_hash": "e52d07be8a727c964ba6136d01a928ee4fca5c5a4ad3e34be8c7d77399697b30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이런 것은 베는 자의 줌과 묶는 자의 품에 차지 아니하나니"
+      ],
+      "raw_text_hashes": [
+        "e52d07be8a727c964ba6136d01a928ee4fca5c5a4ad3e34be8c7d77399697b30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:129:8",
+      "sequence": 16141,
+      "chapter_label": "PSA 129",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 129,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 129,
+          "verse": 8
+        }
+      ],
+      "en": "Neither do those who go by say, “The blessing of the LORD be on you. We bless you in the LORD’s name.”",
+      "ko": "지나가는 자도 여호와의 복이 너희에게 있을찌어다 하거나 우리가 여호와의 이름으로 너희에게 축복한다 하지 아니하느니라",
+      "source_text_hash": "46aa161595e7e38499a2f4e7b3e8a2c129ff4cfe4c05528142f1a429d57cac7e",
+      "translation_text_hash": "c15e760b54d6db75ba453db5f3fc0a4beb1987ccded3184c684619a5a9f8dbf6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지나가는 자도 여호와의 복이 너희에게 있을찌어다 하거나 우리가 여호와의 이름으로 너희에게 축복한다 하지 아니하느니라"
+      ],
+      "raw_text_hashes": [
+        "c15e760b54d6db75ba453db5f3fc0a4beb1987ccded3184c684619a5a9f8dbf6"
+      ]
+    }
+  ]
+}

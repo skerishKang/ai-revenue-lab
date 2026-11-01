@@ -1,0 +1,1421 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:LEV:chapter:023",
+  "unit_ordinal": 113,
+  "unit_label": "LEV 23",
+  "book_code": "LEV",
+  "chapter_number": 23,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:LEV:23:1",
+      "sequence": 3404,
+      "chapter_label": "LEV 23",
+      "verse_label": "1",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:2",
+      "sequence": 3405,
+      "chapter_label": "LEV 23",
+      "verse_label": "2",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 2
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘The set feasts of the LORD, which you shall proclaim to be holy convocations, even these are my set feasts.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희가 공포하여 성회를 삼을 여호와의 절기는 이러하니라",
+      "source_text_hash": "bdcb9c06e26c5ce7da2886bdb16c6fe400bbe315e07dd24c80673e9bfb7e1793",
+      "translation_text_hash": "e66e0b4eab26e4413e11a9d4ce1cb0dc453a0aa70aeeb595605197a449ce16f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희가 공포하여 성회를 삼을 여호와의 절기는 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "e66e0b4eab26e4413e11a9d4ce1cb0dc453a0aa70aeeb595605197a449ce16f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:3",
+      "sequence": 3406,
+      "chapter_label": "LEV 23",
+      "verse_label": "3",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 3
+        }
+      ],
+      "en": "“‘Six days shall work be done, but on the seventh day is a Sabbath of solemn rest, a holy convocation; you shall do no kind of work. It is a Sabbath to the LORD in all your dwellings.",
+      "ko": "엿새 동안은 일할 것이요 일곱째 날은 쉴 안식일이니 성회라 너희는 무슨 일이든지 하지 말라 이는 너희 거하는 각처에서 지킬 여호와의 안식일이니라",
+      "source_text_hash": "dad50dc5398c5c50ee39a3e90deb2a6547200866a83ef70735eae8799ab34725",
+      "translation_text_hash": "32c4eba3e9836f220ea5d1599712cb4e3c01cb8d95066f99c19cbbb989bfac36",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엿새 동안은 일할 것이요 일곱째 날은 쉴 안식일이니 성회라 너희는 무슨 일이든지 하지 말라 이는 너희 거하는 각처에서 지킬 여호와의 안식일이니라"
+      ],
+      "raw_text_hashes": [
+        "32c4eba3e9836f220ea5d1599712cb4e3c01cb8d95066f99c19cbbb989bfac36"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:4",
+      "sequence": 3407,
+      "chapter_label": "LEV 23",
+      "verse_label": "4",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 4
+        }
+      ],
+      "en": "“‘These are the set feasts of the LORD, even holy convocations, which you shall proclaim in their appointed season.",
+      "ko": "기한에 미쳐 너희가 공포하여 성회로 삼을 여호와의 절기는 이러하니라",
+      "source_text_hash": "4fb63e56394fa9e0675d4b4d8cda0d4156631bdeb7ddd421e7fe814315606a21",
+      "translation_text_hash": "7ca29222cf4cfa7ae68512fc79cd30d34ae3ca38ff6422a91cdc4778bff3ef99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기한에 미쳐 너희가 공포하여 성회로 삼을 여호와의 절기는 이러하니라"
+      ],
+      "raw_text_hashes": [
+        "7ca29222cf4cfa7ae68512fc79cd30d34ae3ca38ff6422a91cdc4778bff3ef99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:5",
+      "sequence": 3408,
+      "chapter_label": "LEV 23",
+      "verse_label": "5",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 5
+        }
+      ],
+      "en": "In the first month, on the fourteenth day of the month in the evening, is the LORD’s Passover.",
+      "ko": "정월 십사일 저녁은 여호와의 유월절이요",
+      "source_text_hash": "2db2b37dd294f1e04a437555d9270609163d9905744ae4a10b3ac03461b8a65b",
+      "translation_text_hash": "291e89089d9c1e4407b7830008ceb7a70d26c9fd6d7832f08d378955072f6e11",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "정월 십사일 저녁은 여호와의 유월절이요"
+      ],
+      "raw_text_hashes": [
+        "291e89089d9c1e4407b7830008ceb7a70d26c9fd6d7832f08d378955072f6e11"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:6",
+      "sequence": 3409,
+      "chapter_label": "LEV 23",
+      "verse_label": "6",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 6
+        }
+      ],
+      "en": "On the fifteenth day of the same month is the feast of unleavened bread to the LORD. Seven days you shall eat unleavened bread.",
+      "ko": "이 달 십오일은 여호와의 무교절이니 칠일 동안 너희는 무교병을 먹을 것이요",
+      "source_text_hash": "a3b5efaa9349287359309e22942cdd7ef523e4a1365dd85e90bbb31951d39646",
+      "translation_text_hash": "57a06bae721734a9615db125aec2988b7ef7bb6f3a59958ff92468fbbe7052fc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 달 십오일은 여호와의 무교절이니 칠일 동안 너희는 무교병을 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "57a06bae721734a9615db125aec2988b7ef7bb6f3a59958ff92468fbbe7052fc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:7",
+      "sequence": 3410,
+      "chapter_label": "LEV 23",
+      "verse_label": "7",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 7
+        }
+      ],
+      "en": "In the first day you shall have a holy convocation. You shall do no regular work.",
+      "ko": "그 첫날에는 너희가 성회로 모이고 아무 노동도 하지 말찌며",
+      "source_text_hash": "5afa85c36d4970efed0a2a9bdd4e626436680c0ecd207811f9db2bae0ae3d83a",
+      "translation_text_hash": "33b3ea46a72a13618804f65c1daa0a885647f4828c7f71980c94310cd1ff1da4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 첫날에는 너희가 성회로 모이고 아무 노동도 하지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "33b3ea46a72a13618804f65c1daa0a885647f4828c7f71980c94310cd1ff1da4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:8",
+      "sequence": 3411,
+      "chapter_label": "LEV 23",
+      "verse_label": "8",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 8
+        }
+      ],
+      "en": "But you shall offer an offering made by fire to the LORD seven days. In the seventh day is a holy convocation. You shall do no regular work.’”",
+      "ko": "너희는 칠일 동안 여호와께 화제를 드릴 것이요 제 칠일에도 성회로 모이고 아무 노동도 하지 말찌니라",
+      "source_text_hash": "054862773d50bc584258cdf3f6302232c9df760f6f3a4f4d6b1dd02dc5e01253",
+      "translation_text_hash": "ac2f4d1f1d89a411eb49eb85ace69d92bd0c949dde08b76ca62613b10fa34c78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칠일 동안 여호와께 화제를 드릴 것이요 제 칠일에도 성회로 모이고 아무 노동도 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "ac2f4d1f1d89a411eb49eb85ace69d92bd0c949dde08b76ca62613b10fa34c78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:9",
+      "sequence": 3412,
+      "chapter_label": "LEV 23",
+      "verse_label": "9",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 9
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:10",
+      "sequence": 3413,
+      "chapter_label": "LEV 23",
+      "verse_label": "10",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 10
+        }
+      ],
+      "en": "“Speak to the children of Israel, and tell them, ‘When you have come into the land which I give to you, and shall reap its harvest, then you shall bring the sheaf of the first fruits of your harvest to the priest.",
+      "ko": "이스라엘 자손에게 고하여 이르라 너희는 내가 너희에게 주는 땅에 들어가서 너희의 곡물을 거둘 때에 위선 너희의 곡물의 첫 이삭 한 단을 제사장에게로 가져갈 것이요",
+      "source_text_hash": "1f1e59f19f585dd17db59b775ce3eda04457e59e053be8e3a3fc7dafa2546cc9",
+      "translation_text_hash": "6c73bc754fcb658e9519ea37a147c231853548e0de7aa72f83e620e1077ec0d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 너희는 내가 너희에게 주는 땅에 들어가서 너희의 곡물을 거둘 때에 위선 너희의 곡물의 첫 이삭 한 단을 제사장에게로 가져갈 것이요"
+      ],
+      "raw_text_hashes": [
+        "6c73bc754fcb658e9519ea37a147c231853548e0de7aa72f83e620e1077ec0d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:11",
+      "sequence": 3414,
+      "chapter_label": "LEV 23",
+      "verse_label": "11",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 11
+        }
+      ],
+      "en": "He shall wave the sheaf before the LORD, to be accepted for you. On the next day after the Sabbath the priest shall wave it.",
+      "ko": "제사장은 너희를 위하여 그 단을 여호와 앞에 열납되도록 흔들되 안식일 이튿날에 흔들 것이며",
+      "source_text_hash": "2e3de2f05bc596688b1ac430a0302bcd60e1e7d63c3754243eba5b698fd90888",
+      "translation_text_hash": "ecaa7c782755ae47a8dcc02f21602157ee749839d837d2f3cbfa3e2d0aca5fe5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 너희를 위하여 그 단을 여호와 앞에 열납되도록 흔들되 안식일 이튿날에 흔들 것이며"
+      ],
+      "raw_text_hashes": [
+        "ecaa7c782755ae47a8dcc02f21602157ee749839d837d2f3cbfa3e2d0aca5fe5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:12",
+      "sequence": 3415,
+      "chapter_label": "LEV 23",
+      "verse_label": "12",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 12
+        }
+      ],
+      "en": "On the day when you wave the sheaf, you shall offer a male lamb without defect a year old for a burnt offering to the LORD.",
+      "ko": "너희가 그 단을 흔드는 날에 일년 되고 흠 없는 수양을 번제로 여호와께 드리고",
+      "source_text_hash": "624706816fe2cf3297749ef98881a80a94fa5c15c0aa11787ef903604f1e191b",
+      "translation_text_hash": "3ad5bea5e6ba3fa9ab0cc38063fdab5d13f48ecf8501ffcd0319823b16826300",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 그 단을 흔드는 날에 일년 되고 흠 없는 수양을 번제로 여호와께 드리고"
+      ],
+      "raw_text_hashes": [
+        "3ad5bea5e6ba3fa9ab0cc38063fdab5d13f48ecf8501ffcd0319823b16826300"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:13",
+      "sequence": 3416,
+      "chapter_label": "LEV 23",
+      "verse_label": "13",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 13
+        }
+      ],
+      "en": "The meal offering with it shall be two tenths of an ephah of fine flour mixed with oil, an offering made by fire to the LORD for a pleasant aroma; and the drink offering with it shall be of wine, the fourth part of a hin.",
+      "ko": "그 소제로는 기름 섞은 고운 가루 에바 십분 이를 여호와께 드려 화제를 삼아 향기로운 냄새가 되게 하고 전제로는 포도주 힌 사분 일을 쓸 것이며",
+      "source_text_hash": "997b111bc95421850e20d97588e4fc25f9fbbecc5934f985a5047aeef90ea493",
+      "translation_text_hash": "b340c64413766e5e85a702a341a3c321d9f6135f18c25772d122171649dfe8a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 소제로는 기름 섞은 고운 가루 에바 십분 이를 여호와께 드려 화제를 삼아 향기로운 냄새가 되게 하고 전제로는 포도주 힌 사분 일을 쓸 것이며"
+      ],
+      "raw_text_hashes": [
+        "b340c64413766e5e85a702a341a3c321d9f6135f18c25772d122171649dfe8a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:14",
+      "sequence": 3417,
+      "chapter_label": "LEV 23",
+      "verse_label": "14",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 14
+        }
+      ],
+      "en": "You must not eat bread, or roasted grain, or fresh grain, until this same day, until you have brought the offering of your God. This is a statute forever throughout your generations in all your dwellings.",
+      "ko": "너희는 너희 하나님께 예물을 가져오는 그날까지 떡이든지 볶은 곡식이든지 생 이삭이든지 먹지 말찌니 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라",
+      "source_text_hash": "398b7e4009b4b0623fb4b27936865de6e90bd59a4382fc7a1172ea4a096cefca",
+      "translation_text_hash": "9ede688f31ab1fc5725e97062f72cbba78102d709128b1a9b04fdd41256ed344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 하나님께 예물을 가져오는 그날까지 떡이든지 볶은 곡식이든지 생 이삭이든지 먹지 말찌니 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "9ede688f31ab1fc5725e97062f72cbba78102d709128b1a9b04fdd41256ed344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:15",
+      "sequence": 3418,
+      "chapter_label": "LEV 23",
+      "verse_label": "15",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 15
+        }
+      ],
+      "en": "“‘You shall count from the next day after the Sabbath, from the day that you brought the sheaf of the wave offering: seven Sabbaths shall be completed.",
+      "ko": "안식일 이튿날 곧 너희가 요제로 단을 가져온 날부터 세어서 칠 안식일의 수효를 채우고",
+      "source_text_hash": "e53906fdf8920ae492879493754a11718712e505582bd0e532940aecc6eeccae",
+      "translation_text_hash": "9f717209d452fb0cc4ec93c13a440f8c38cfa1787cff4b2ea86075314f8ac3ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "안식일 이튿날 곧 너희가 요제로 단을 가져온 날부터 세어서 칠 안식일의 수효를 채우고"
+      ],
+      "raw_text_hashes": [
+        "9f717209d452fb0cc4ec93c13a440f8c38cfa1787cff4b2ea86075314f8ac3ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:16",
+      "sequence": 3419,
+      "chapter_label": "LEV 23",
+      "verse_label": "16",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 16
+        }
+      ],
+      "en": "The next day after the seventh Sabbath you shall count fifty days; and you shall offer a new meal offering to the LORD.",
+      "ko": "제 칠 안식일 이튿날까지 합 오십일을 계수하여 새 소제를 여호와께 드리되",
+      "source_text_hash": "765b474829cadba30e199ed6d97464ed1976e11751f2f6681568e660e89dbdc8",
+      "translation_text_hash": "051b7f89303f4ef2505fc453d6fdcae77b45ebc2bc6f12a39f2a26151a59cd61",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제 칠 안식일 이튿날까지 합 오십일을 계수하여 새 소제를 여호와께 드리되"
+      ],
+      "raw_text_hashes": [
+        "051b7f89303f4ef2505fc453d6fdcae77b45ebc2bc6f12a39f2a26151a59cd61"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:17",
+      "sequence": 3420,
+      "chapter_label": "LEV 23",
+      "verse_label": "17",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 17
+        }
+      ],
+      "en": "You shall bring out of your habitations two loaves of bread for a wave offering made of two tenths of an ephah of fine flour. They shall be baked with yeast, for first fruits to the LORD.",
+      "ko": "너희 처소에서 에바 십분 이로 만든 떡 두개를 가져다가 흔들찌니 이는 고운 가루에 누룩을 넣어서 구운 것이요 이는 첫 요제로 여호와께 드리는 것이며",
+      "source_text_hash": "b67fcc73a074c24ca8b4aedad02d8cfa3c8198d50d202e015142418a2cdfb580",
+      "translation_text_hash": "b23d147cffef62ac9cf6d41dabfeeff8673904ea39aa9150ae4fe8b7d9fb38cd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 처소에서 에바 십분 이로 만든 떡 두개를 가져다가 흔들찌니 이는 고운 가루에 누룩을 넣어서 구운 것이요 이는 첫 요제로 여호와께 드리는 것이며"
+      ],
+      "raw_text_hashes": [
+        "b23d147cffef62ac9cf6d41dabfeeff8673904ea39aa9150ae4fe8b7d9fb38cd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:18",
+      "sequence": 3421,
+      "chapter_label": "LEV 23",
+      "verse_label": "18",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 18
+        }
+      ],
+      "en": "You shall present with the bread seven lambs without defect a year old, one young bull, and two rams. They shall be a burnt offering to the LORD, with their meal offering and their drink offerings, even an offering made by fire, of a sweet aroma to the LORD.",
+      "ko": "너희는 또 이 떡과 함께 일년 되고 흠 없는 어린 양 일곱과 젊은 수소 하나와 수양 둘을 드리되 이들을 그 소제와 그 전제와 함께 여호와께 드려서 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새며",
+      "source_text_hash": "cef4c85e1fea612a1383cb888538246fb6ba12b7fc6d014658f65ec0238c0088",
+      "translation_text_hash": "c2ae3f2541b9a03aeb87b955f58483af9e31a71b6686cf17e5e9c4069ade2155",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 또 이 떡과 함께 일년 되고 흠 없는 어린 양 일곱과 젊은 수소 하나와 수양 둘을 드리되 이들을 그 소제와 그 전제와 함께 여호와께 드려서 번제를 삼을찌니 이는 화제라 여호와께 향기로운 냄새며"
+      ],
+      "raw_text_hashes": [
+        "c2ae3f2541b9a03aeb87b955f58483af9e31a71b6686cf17e5e9c4069ade2155"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:19",
+      "sequence": 3422,
+      "chapter_label": "LEV 23",
+      "verse_label": "19",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 19
+        }
+      ],
+      "en": "You shall offer one male goat for a sin offering, and two male lambs a year old for a sacrifice of peace offerings.",
+      "ko": "또 수염소 하나로 속죄제를 드리며 일년 된 어린 수양 둘을 화목제 희생으로 드릴 것이요",
+      "source_text_hash": "e8db7d7461c2a1a39a2093c1d8c8dd0f4645bc92cf0aada6590b1a9bf83fc6be",
+      "translation_text_hash": "c82120cf55c1057b9189a3f1dbdf7aaca0f641d56a8019812a56cb8616b90d29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 수염소 하나로 속죄제를 드리며 일년 된 어린 수양 둘을 화목제 희생으로 드릴 것이요"
+      ],
+      "raw_text_hashes": [
+        "c82120cf55c1057b9189a3f1dbdf7aaca0f641d56a8019812a56cb8616b90d29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:20",
+      "sequence": 3423,
+      "chapter_label": "LEV 23",
+      "verse_label": "20",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 20
+        }
+      ],
+      "en": "The priest shall wave them with the bread of the first fruits for a wave offering before the LORD, with the two lambs. They shall be holy to the LORD for the priest.",
+      "ko": "제사장은 그 첫이삭의 떡과 함께 그 두 어린 양을 여호와 앞에 흔들어 요제를 삼을 것이요 이것들은 여호와께 드리는 성물인즉 제사장에게 돌릴 것이며",
+      "source_text_hash": "bf4a0a165906ca45e806e9fcc7647bb695252d2541bc443d390ec1896463d754",
+      "translation_text_hash": "81a1373415367b81498b8556b8d29f47baf4b5fb7dfc8e23a6c922d4e3eeab54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장은 그 첫이삭의 떡과 함께 그 두 어린 양을 여호와 앞에 흔들어 요제를 삼을 것이요 이것들은 여호와께 드리는 성물인즉 제사장에게 돌릴 것이며"
+      ],
+      "raw_text_hashes": [
+        "81a1373415367b81498b8556b8d29f47baf4b5fb7dfc8e23a6c922d4e3eeab54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:21",
+      "sequence": 3424,
+      "chapter_label": "LEV 23",
+      "verse_label": "21",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 21
+        }
+      ],
+      "en": "You shall make proclamation on the same day that there shall be a holy convocation to you. You shall do no regular work. This is a statute forever in all your dwellings throughout your generations.",
+      "ko": "이 날에 너희는 너희 중에 성회를 공포하고 아무 노동도 하지 말찌니 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라",
+      "source_text_hash": "8857341c95da4d015ade4dc220f26e6fb9a380ce9574d46607a77cff27786803",
+      "translation_text_hash": "2702b3a65fa55ee18b59ab7ffb1898a0f2abbfe1e4268d87d24f9fdd66fde423",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 너희는 너희 중에 성회를 공포하고 아무 노동도 하지 말찌니 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "2702b3a65fa55ee18b59ab7ffb1898a0f2abbfe1e4268d87d24f9fdd66fde423"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:22",
+      "sequence": 3425,
+      "chapter_label": "LEV 23",
+      "verse_label": "22",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 22
+        }
+      ],
+      "en": "“‘When you reap the harvest of your land, you must not wholly reap into the corners of your field. You must not gather the gleanings of your harvest. You must leave them for the poor and for the foreigner. I am the LORD your God.’”",
+      "ko": "너희 땅의 곡물을 벨 때에 밭 모퉁이까지 다 베지 말며 떨어진 것을 줍지 말고 너는 그것을 가난한 자와 객을 위하여 버려 두라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "74881fe381c58d1eea75e42093085c8a89f9b46b3a934685cbaedaf59b6f25c6",
+      "translation_text_hash": "5a399e6bc7242fff2a1e16ad9cd37ee82da44b7a1b0f8e993df429b64f69eb30",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 땅의 곡물을 벨 때에 밭 모퉁이까지 다 베지 말며 떨어진 것을 줍지 말고 너는 그것을 가난한 자와 객을 위하여 버려 두라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "5a399e6bc7242fff2a1e16ad9cd37ee82da44b7a1b0f8e993df429b64f69eb30"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:23",
+      "sequence": 3426,
+      "chapter_label": "LEV 23",
+      "verse_label": "23",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 23
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:24",
+      "sequence": 3427,
+      "chapter_label": "LEV 23",
+      "verse_label": "24",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 24
+        }
+      ],
+      "en": "“Speak to the children of Israel, saying, ‘In the seventh month, on the first day of the month, there shall be a solemn rest for you, a memorial of blowing of trumpets, a holy convocation.",
+      "ko": "이스라엘 자손에게 고하여 이르라 칠월 곧 그 달 일일로 안식일을 삼을찌니 이는 나팔을 불어 기념할 날이요 성회라",
+      "source_text_hash": "6f40d1b6cbed03d04b4649635890bc734642dbba264ac28500c9465a91661595",
+      "translation_text_hash": "f4d17180c6694e1f05bd2e449f829ce064f5dbd5ae1f11a8ef2912b2035149b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 칠월 곧 그 달 일일로 안식일을 삼을찌니 이는 나팔을 불어 기념할 날이요 성회라"
+      ],
+      "raw_text_hashes": [
+        "f4d17180c6694e1f05bd2e449f829ce064f5dbd5ae1f11a8ef2912b2035149b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:25",
+      "sequence": 3428,
+      "chapter_label": "LEV 23",
+      "verse_label": "25",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 25
+        }
+      ],
+      "en": "You shall do no regular work. You shall offer an offering made by fire to the LORD.’”",
+      "ko": "아무 노동도 하지 말고 여호와께 화제를 드릴찌니라",
+      "source_text_hash": "de2373faf02efc3d5e2488a5c036d6be87a38e858ec62856085e6065a0c64330",
+      "translation_text_hash": "77c05ab6e00b34d576944f0c70baf1708ae365ad45b2e70daee723e655c3ac13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무 노동도 하지 말고 여호와께 화제를 드릴찌니라"
+      ],
+      "raw_text_hashes": [
+        "77c05ab6e00b34d576944f0c70baf1708ae365ad45b2e70daee723e655c3ac13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:26",
+      "sequence": 3429,
+      "chapter_label": "LEV 23",
+      "verse_label": "26",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 26
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:27",
+      "sequence": 3430,
+      "chapter_label": "LEV 23",
+      "verse_label": "27",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 27
+        }
+      ],
+      "en": "“However on the tenth day of this seventh month is the day of atonement. It shall be a holy convocation to you. You shall afflict yourselves and you shall offer an offering made by fire to the LORD.",
+      "ko": "칠월 십일은 속죄일이니 너희에게 성회라 너희는 스스로 괴롭게 하며 여호와께 화제를 드리고",
+      "source_text_hash": "5d687c42b6da6ea4ed2da730da923494652aaa963bdf2f0d2e2c5fb16209fce2",
+      "translation_text_hash": "402558c1be155c369ddf3c01ef46dcc40e8f2e16f76319a9155855e93d0c6cb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠월 십일은 속죄일이니 너희에게 성회라 너희는 스스로 괴롭게 하며 여호와께 화제를 드리고"
+      ],
+      "raw_text_hashes": [
+        "402558c1be155c369ddf3c01ef46dcc40e8f2e16f76319a9155855e93d0c6cb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:28",
+      "sequence": 3431,
+      "chapter_label": "LEV 23",
+      "verse_label": "28",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 28
+        }
+      ],
+      "en": "You shall do no kind of work in that same day, for it is a day of atonement, to make atonement for you before the LORD your God.",
+      "ko": "이 날에는 아무 일도 하지 말것은 너희를 위하여 너희 하나님 여호와 앞에 속죄할 속죄일이 됨이니라",
+      "source_text_hash": "3b1c7a70aa231eefe4ee7ec7c98f3cec18cfa26d1db7ea9243749ba4ee8def11",
+      "translation_text_hash": "84182b9d79ab9f49b2c90f00ef97ba3e8a616331ec364cf92551d2a1069184c2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에는 아무 일도 하지 말것은 너희를 위하여 너희 하나님 여호와 앞에 속죄할 속죄일이 됨이니라"
+      ],
+      "raw_text_hashes": [
+        "84182b9d79ab9f49b2c90f00ef97ba3e8a616331ec364cf92551d2a1069184c2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:29",
+      "sequence": 3432,
+      "chapter_label": "LEV 23",
+      "verse_label": "29",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 29
+        }
+      ],
+      "en": "For whoever it is who shall not deny himself in that same day shall be cut off from his people.",
+      "ko": "이 날에 스스로 괴롭게 하지 아니하는 자는 그 백성 중에서 끊쳐질 것이라",
+      "source_text_hash": "791d1d412bbca7b25d40a94edcd55d91f1a0e15a936fa0a175f28d06a667f39e",
+      "translation_text_hash": "1fa4f6b506b39418c9876e8dc86a4a5af42c5b45046bac35361762c1af0c4d01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 스스로 괴롭게 하지 아니하는 자는 그 백성 중에서 끊쳐질 것이라"
+      ],
+      "raw_text_hashes": [
+        "1fa4f6b506b39418c9876e8dc86a4a5af42c5b45046bac35361762c1af0c4d01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:30",
+      "sequence": 3433,
+      "chapter_label": "LEV 23",
+      "verse_label": "30",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 30
+        }
+      ],
+      "en": "Whoever does any kind of work in that same day, I will destroy that person from among his people.",
+      "ko": "이 날에 누구든지 아무 일이나 하는 자는 내가 백성 중에서 멸절시키리니",
+      "source_text_hash": "3c6c5930c5434f2b5a9b029469788652edfbc9f04b6ea438e15f448b693db2da",
+      "translation_text_hash": "05ae7db001be46c2defd55257cf06079710276c8c5d64149bdadbf337d35d6e9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 날에 누구든지 아무 일이나 하는 자는 내가 백성 중에서 멸절시키리니"
+      ],
+      "raw_text_hashes": [
+        "05ae7db001be46c2defd55257cf06079710276c8c5d64149bdadbf337d35d6e9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:31",
+      "sequence": 3434,
+      "chapter_label": "LEV 23",
+      "verse_label": "31",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 31
+        }
+      ],
+      "en": "You shall do no kind of work: it is a statute forever throughout your generations in all your dwellings.",
+      "ko": "너희는 아무 일이든지 하지 말라 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라",
+      "source_text_hash": "2c8965febc312a3f31d939fcb3b96ceb8df14d5d7f6946dc891f9243fc1e972d",
+      "translation_text_hash": "71c254df15064a0759d70aa6067a675b3376dc965207943a332aba87f44faee8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 아무 일이든지 하지 말라 이는 너희가 그 거하는 각처에서 대대로 지킬 영원한 규례니라"
+      ],
+      "raw_text_hashes": [
+        "71c254df15064a0759d70aa6067a675b3376dc965207943a332aba87f44faee8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:32",
+      "sequence": 3435,
+      "chapter_label": "LEV 23",
+      "verse_label": "32",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 32
+        }
+      ],
+      "en": "It shall be a Sabbath of solemn rest for you, and you shall deny yourselves. In the ninth day of the month at evening, from evening to evening, you shall keep your Sabbath.”",
+      "ko": "이는 너희의 쉴 안식일이라 너희는 스스로 괴롭게 하고 이 달 구일 저녁 곧 그 저녁부터 이튿날 저녁까지 안식을 지킬찌니라",
+      "source_text_hash": "8bfcaeab2d76570d2a078d6562e3c9b26e3490ae747343148c880d5807fde03b",
+      "translation_text_hash": "664ebd1737d4913e3a50ef6a990dab9876a8c90a62d2d90b24ef539483773be1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 너희의 쉴 안식일이라 너희는 스스로 괴롭게 하고 이 달 구일 저녁 곧 그 저녁부터 이튿날 저녁까지 안식을 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "664ebd1737d4913e3a50ef6a990dab9876a8c90a62d2d90b24ef539483773be1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:33",
+      "sequence": 3436,
+      "chapter_label": "LEV 23",
+      "verse_label": "33",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 33
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:34",
+      "sequence": 3437,
+      "chapter_label": "LEV 23",
+      "verse_label": "34",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 34
+        }
+      ],
+      "en": "“Speak to the children of Israel, and say, ‘On the fifteenth day of this seventh month is the feast of booths for seven days to the LORD.",
+      "ko": "이스라엘 자손에게 고하여 이르라 칠월 십오일은 초막절이니 여호와를 위하여 칠일 동안 지킬 것이라",
+      "source_text_hash": "1e2095e42f499f2e31f9ee90fa46a4cc3cffe9aa5dccb6d26f764f101669f867",
+      "translation_text_hash": "52c081467da3362a825651f6abad09f1681c4879c66ef64c804727492be57e0a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손에게 고하여 이르라 칠월 십오일은 초막절이니 여호와를 위하여 칠일 동안 지킬 것이라"
+      ],
+      "raw_text_hashes": [
+        "52c081467da3362a825651f6abad09f1681c4879c66ef64c804727492be57e0a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:35",
+      "sequence": 3438,
+      "chapter_label": "LEV 23",
+      "verse_label": "35",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 35
+        }
+      ],
+      "en": "On the first day shall be a holy convocation. You shall do no regular work.",
+      "ko": "첫날에는 성회가 있을찌니 너희는 아무 노동도 하지 말찌며",
+      "source_text_hash": "f9eda60ff6f1568ae87e28f06150b3412f4e52ef39d13a657d8fb7a20c2a2a46",
+      "translation_text_hash": "e426394c1be373371894d7550474d850b9fa5a7a5903d6daff94180fee8ebb82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫날에는 성회가 있을찌니 너희는 아무 노동도 하지 말찌며"
+      ],
+      "raw_text_hashes": [
+        "e426394c1be373371894d7550474d850b9fa5a7a5903d6daff94180fee8ebb82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:36",
+      "sequence": 3439,
+      "chapter_label": "LEV 23",
+      "verse_label": "36",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 36
+        }
+      ],
+      "en": "Seven days you shall offer an offering made by fire to the LORD. On the eighth day shall be a holy convocation to you. You shall offer an offering made by fire to the LORD. It is a solemn assembly; you shall do no regular work.",
+      "ko": "칠일 동안에 너희는 화제를 여호와께 드릴 것이요 제 팔일에도 너희에게 성회가 될것이며 화제를 여호와께 드릴찌니 이는 거룩한 대회라 너희는 아무 노동도 하지 말찌니라",
+      "source_text_hash": "66976650cb1a5bac25a971c5b539136025124df64c243ffb89cb839f6addcdf2",
+      "translation_text_hash": "31d9057df1ad23b42ad2432fdc7f5d7e98f55e1b4b9b2406b2ca14b8437efccb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "칠일 동안에 너희는 화제를 여호와께 드릴 것이요 제 팔일에도 너희에게 성회가 될것이며 화제를 여호와께 드릴찌니 이는 거룩한 대회라 너희는 아무 노동도 하지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "31d9057df1ad23b42ad2432fdc7f5d7e98f55e1b4b9b2406b2ca14b8437efccb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:37",
+      "sequence": 3440,
+      "chapter_label": "LEV 23",
+      "verse_label": "37",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 37
+        }
+      ],
+      "en": "“‘These are the appointed feasts of the LORD which you shall proclaim to be holy convocations, to offer an offering made by fire to the LORD, a burnt offering, a meal offering, a sacrifice, and drink offerings, each on its own day—",
+      "ko": "이것들은 여호와의 절기라 너희는 공포하여 성회를 삼고 번제와 소제와 희생과 전제를 각각 그 날에 여호와께 화제로 드릴찌니",
+      "source_text_hash": "a224b453f344c02d10914c3296744fc8d39c261d7bd30685418afc7442db773d",
+      "translation_text_hash": "9d24d47fa26b32db818b1e542c766dfc1eb0cbe5cd42daa3f088ec38ee04656e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것들은 여호와의 절기라 너희는 공포하여 성회를 삼고 번제와 소제와 희생과 전제를 각각 그 날에 여호와께 화제로 드릴찌니"
+      ],
+      "raw_text_hashes": [
+        "9d24d47fa26b32db818b1e542c766dfc1eb0cbe5cd42daa3f088ec38ee04656e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:38",
+      "sequence": 3441,
+      "chapter_label": "LEV 23",
+      "verse_label": "38",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 38
+        }
+      ],
+      "en": "in addition to the Sabbaths of the LORD, and in addition to your gifts, and in addition to all your vows, and in addition to all your free will offerings, which you give to the LORD.",
+      "ko": "이는 여호와의 안식일 외에, 너희의 헌물 외에, 너희의 모든 서원 예물 외에, 너희의 모든 낙헌 예물 외에 너희가 여호와께 드리는 것이니라",
+      "source_text_hash": "1bb0a88bec2dcdbfa18feef8fe0e22b92c07f499521690cb4839dd29c2f1499b",
+      "translation_text_hash": "bee72a7e056448bb27ea8f9792c743f12d3c7881365b74f154ef7f47dccbb406",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 여호와의 안식일 외에, 너희의 헌물 외에, 너희의 모든 서원 예물 외에, 너희의 모든 낙헌 예물 외에 너희가 여호와께 드리는 것이니라"
+      ],
+      "raw_text_hashes": [
+        "bee72a7e056448bb27ea8f9792c743f12d3c7881365b74f154ef7f47dccbb406"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:39",
+      "sequence": 3442,
+      "chapter_label": "LEV 23",
+      "verse_label": "39",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 39
+        }
+      ],
+      "en": "“‘So on the fifteenth day of the seventh month, when you have gathered in the fruits of the land, you shall keep the feast of the LORD seven days. On the first day shall be a solemn rest, and on the eighth day shall be a solemn rest.",
+      "ko": "너희가 토지 소산 거두기를 마치거든 칠월 십오일부터 칠일 동안 여호와의 절기를 지키되 첫날에도 안식하고 제 팔일에도 안식할 것이요",
+      "source_text_hash": "4810239d34d6cf87122eadb74367f29ca1e7873f5daa0b1013807ea98e5ffdbd",
+      "translation_text_hash": "99631ae5aa739b94324005f11bc8c09873920b49916f2eff3cccfddb18e8705e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 토지 소산 거두기를 마치거든 칠월 십오일부터 칠일 동안 여호와의 절기를 지키되 첫날에도 안식하고 제 팔일에도 안식할 것이요"
+      ],
+      "raw_text_hashes": [
+        "99631ae5aa739b94324005f11bc8c09873920b49916f2eff3cccfddb18e8705e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:40",
+      "sequence": 3443,
+      "chapter_label": "LEV 23",
+      "verse_label": "40",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 40
+        }
+      ],
+      "en": "You shall take on the first day the fruit of majestic trees, branches of palm trees, and boughs of thick trees, and willows of the brook; and you shall rejoice before the LORD your God seven days.",
+      "ko": "첫날에는 너희가 아름다운 나무 실과와 종려 가지와 무성한 가지와 시내 버들을 취하여 너희 하나님 여호와 앞에서 칠일 동안 즐거워할 것이라",
+      "source_text_hash": "ed31cffe32781b1c56fb9b01ffcb9f8cad2428544572ea40ac402fa96ff134a9",
+      "translation_text_hash": "c784f639fbacd2cfe8be7ecfa0d9460a5857a540964a879c4fa8c2955b8795bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "첫날에는 너희가 아름다운 나무 실과와 종려 가지와 무성한 가지와 시내 버들을 취하여 너희 하나님 여호와 앞에서 칠일 동안 즐거워할 것이라"
+      ],
+      "raw_text_hashes": [
+        "c784f639fbacd2cfe8be7ecfa0d9460a5857a540964a879c4fa8c2955b8795bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:41",
+      "sequence": 3444,
+      "chapter_label": "LEV 23",
+      "verse_label": "41",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 41
+        }
+      ],
+      "en": "You shall keep it as a feast to the LORD seven days in the year. It is a statute forever throughout your generations. You shall keep it in the seventh month.",
+      "ko": "너희는 매년에 칠일 동안 여호와께 이 절기를 지킬찌니 너희 대대로의 영원한 규례라 너희는 칠월에 이를 지킬찌니라",
+      "source_text_hash": "fefb2568d316605ec0395e74a5b317cc71b1c2cf76b82b673b0218d4f34c7fe8",
+      "translation_text_hash": "f4486497a495bd98f75c47e52d485f94b33e07b57c617d6fef84f9f09116adcd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 매년에 칠일 동안 여호와께 이 절기를 지킬찌니 너희 대대로의 영원한 규례라 너희는 칠월에 이를 지킬찌니라"
+      ],
+      "raw_text_hashes": [
+        "f4486497a495bd98f75c47e52d485f94b33e07b57c617d6fef84f9f09116adcd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:42",
+      "sequence": 3445,
+      "chapter_label": "LEV 23",
+      "verse_label": "42",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 42
+        }
+      ],
+      "en": "You shall dwell in temporary shelters for seven days. All who are native-born in Israel shall dwell in temporary shelters,",
+      "ko": "너희는 칠일 동안 초막에 거하되 이스라엘에서 난 자는 다 초막에 거할찌니",
+      "source_text_hash": "ee6669873b4f7bc13b6b5b617f2ae35f6932718b3751e70dff4ba555fe6b919f",
+      "translation_text_hash": "4731c8bd223bf0674e9eeff455ad1ff617917055aa87fecd5ea83e18f1915c70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 칠일 동안 초막에 거하되 이스라엘에서 난 자는 다 초막에 거할찌니"
+      ],
+      "raw_text_hashes": [
+        "4731c8bd223bf0674e9eeff455ad1ff617917055aa87fecd5ea83e18f1915c70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:43",
+      "sequence": 3446,
+      "chapter_label": "LEV 23",
+      "verse_label": "43",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 43
+        }
+      ],
+      "en": "that your generations may know that I made the children of Israel to dwell in temporary shelters when I brought them out of the land of Egypt. I am the LORD your God.’”",
+      "ko": "이는 내가 이스라엘 자손을 애굽 땅에서 인도하여 내던 때에 초막에 거하게 한줄을 너희 대대로 알게 함이니라 나는 너희 하나님 여호와니라",
+      "source_text_hash": "862a4ee8ee1a5a58daf0f5c725dbd9213992a43b005ccede1dedee15a1527409",
+      "translation_text_hash": "8a2957049d143e55138afef7056f204a581433c918fc6f8fd858bb756a95e017",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 내가 이스라엘 자손을 애굽 땅에서 인도하여 내던 때에 초막에 거하게 한줄을 너희 대대로 알게 함이니라 나는 너희 하나님 여호와니라"
+      ],
+      "raw_text_hashes": [
+        "8a2957049d143e55138afef7056f204a581433c918fc6f8fd858bb756a95e017"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:LEV:23:44",
+      "sequence": 3447,
+      "chapter_label": "LEV 23",
+      "verse_label": "44",
+      "locator": {
+        "book": "LEV",
+        "chapter": 23,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "LEV",
+          "chapter": 23,
+          "verse": 44
+        }
+      ],
+      "en": "So Moses declared to the children of Israel the appointed feasts of the LORD.",
+      "ko": "모세가 여호와의 절기를 이스라엘 자손에게 공포하였더라",
+      "source_text_hash": "efaacfdb7b4f8c366a148acb70bbe85afb3d602b5022a5f25a99d3cfdbfcbed2",
+      "translation_text_hash": "61c6ef23b6e012dc467b9a98cf67ce010a31ef89eebc9fa9b122439ffd683eb2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 여호와의 절기를 이스라엘 자손에게 공포하였더라"
+      ],
+      "raw_text_hashes": [
+        "61c6ef23b6e012dc467b9a98cf67ce010a31ef89eebc9fa9b122439ffd683eb2"
+      ]
+    }
+  ]
+}

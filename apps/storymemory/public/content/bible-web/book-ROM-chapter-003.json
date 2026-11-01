@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ROM:chapter:003",
+  "unit_ordinal": 1049,
+  "unit_label": "ROM 3",
+  "book_code": "ROM",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ROM:3:1",
+      "sequence": 27989,
+      "chapter_label": "ROM 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Then what advantage does the Jew have? Or what is the profit of circumcision?",
+      "ko": "그런즉 유대인의 나음이 무엇이며 할례의 유익이 무엇이뇨",
+      "source_text_hash": "01b27ee9b75264bf6a3121223a14bcac9aa2ea82b1f89fa1045d6bac992cdfa0",
+      "translation_text_hash": "ea8f632b2156dd29dc1c8cd8d9c30d96ba9bdf31717cddf64a22775d0bf24f13",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 유대인의 나음이 무엇이며 할례의 유익이 무엇이뇨"
+      ],
+      "raw_text_hashes": [
+        "ea8f632b2156dd29dc1c8cd8d9c30d96ba9bdf31717cddf64a22775d0bf24f13"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:2",
+      "sequence": 27990,
+      "chapter_label": "ROM 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "Much in every way! Because first of all, they were entrusted with the revelations of God.",
+      "ko": "범사에 많으니 첫째는 저희가 하나님의 말씀을 맡았음이니라",
+      "source_text_hash": "49e722f36a27b7160aa1e8b33bb5bfc581fc04117e12e434cb2e6cc3efed728a",
+      "translation_text_hash": "6056addef08c16f48062d7990f1d6715384b886bfede47f9ac4f2c77972c63ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "범사에 많으니 첫째는 저희가 하나님의 말씀을 맡았음이니라"
+      ],
+      "raw_text_hashes": [
+        "6056addef08c16f48062d7990f1d6715384b886bfede47f9ac4f2c77972c63ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:3",
+      "sequence": 27991,
+      "chapter_label": "ROM 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "For what if some were without faith? Will their lack of faith nullify the faithfulness of God?",
+      "ko": "어떤 자들이 믿지 아니하였으면 어찌하리요 그 믿지 아니함이 하나님의 미쁘심을 폐하겠느뇨",
+      "source_text_hash": "b4e092fa80127e97750a06eb06d9db7f10aa900b060610cb0ae47ad8413424b4",
+      "translation_text_hash": "68a3c7ed261789b763e69b13ba90aa5a80155d8450aec332bdfd36bc103c4a5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 자들이 믿지 아니하였으면 어찌하리요 그 믿지 아니함이 하나님의 미쁘심을 폐하겠느뇨"
+      ],
+      "raw_text_hashes": [
+        "68a3c7ed261789b763e69b13ba90aa5a80155d8450aec332bdfd36bc103c4a5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:4",
+      "sequence": 27992,
+      "chapter_label": "ROM 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "May it never be! Yes, let God be found true, but every man a liar. As it is written, “that you might be justified in your words, and might prevail when you come into judgment.”",
+      "ko": "그럴 수 없느니라 사람은 다 거짓되되 오직 하나님은 참되시다 할찌어다 기록된바 주께서 주의 말씀에 의롭다 함을 얻으시고 판단 받으실 때에 이기려 하심이라 함과 같으니라",
+      "source_text_hash": "2a5c8804e43b9710ab8191ae09a075b334ddb6e4530709ad652342fe0eb4406f",
+      "translation_text_hash": "cddf352180338a3a34fe005be2ac8f77476b3dfe5b838366b815b5884ad2e2b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그럴 수 없느니라 사람은 다 거짓되되 오직 하나님은 참되시다 할찌어다 기록된바 주께서 주의 말씀에 의롭다 함을 얻으시고 판단 받으실 때에 이기려 하심이라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "cddf352180338a3a34fe005be2ac8f77476b3dfe5b838366b815b5884ad2e2b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:5",
+      "sequence": 27993,
+      "chapter_label": "ROM 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "But if our unrighteousness commends the righteousness of God, what will we say? Is God unrighteous who inflicts wrath? I speak like men do.",
+      "ko": "그러나 우리 불의가 하나님의 의를 드러나게 하면 무슨 말 하리요 내가 사람의 말하는대로 말하노니 진노를 내리시는 하나님이 불의하시냐",
+      "source_text_hash": "913805a10e0a202b8e7884b164bf41c66231d6d72f6f572571db373edd1ad5b4",
+      "translation_text_hash": "7de15ce8fdd8e3f1877a6fb8aad2dd217fbf0ca5cb13430ec6fc8c32d64e1d2e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 우리 불의가 하나님의 의를 드러나게 하면 무슨 말 하리요 내가 사람의 말하는대로 말하노니 진노를 내리시는 하나님이 불의하시냐"
+      ],
+      "raw_text_hashes": [
+        "7de15ce8fdd8e3f1877a6fb8aad2dd217fbf0ca5cb13430ec6fc8c32d64e1d2e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:6",
+      "sequence": 27994,
+      "chapter_label": "ROM 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "May it never be! For then how will God judge the world?",
+      "ko": "결코 그렇지 아니하니라 만일 그러하면 하나님께서 어찌 세상을 심판하시리요",
+      "source_text_hash": "dba841150582f8526459d95ff60295350d868b7a02d6c5f9feeaa8b540d28135",
+      "translation_text_hash": "d9430c5e7a8b6868262daf067cdc421689b45703da03c7a16a27a594300d1100",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "결코 그렇지 아니하니라 만일 그러하면 하나님께서 어찌 세상을 심판하시리요"
+      ],
+      "raw_text_hashes": [
+        "d9430c5e7a8b6868262daf067cdc421689b45703da03c7a16a27a594300d1100"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:7",
+      "sequence": 27995,
+      "chapter_label": "ROM 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "For if the truth of God through my lie abounded to his glory, why am I also still judged as a sinner?",
+      "ko": "그러나 나의 거짓말로 하나님의 참되심이 더 풍성하여 그의 영광이 되었으면 어찌 나도 죄인처럼 심판을 받으리요",
+      "source_text_hash": "e08d3dd8f1bbfb4d387f0fa5cfbdd7092aaa47e58d8ad9d168f6599ce5cc6f6f",
+      "translation_text_hash": "a4de7b2c6f841e0b8e6ad4c1bae7b61d95e05d48f9712c15c8a7f73769c0834b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 나의 거짓말로 하나님의 참되심이 더 풍성하여 그의 영광이 되었으면 어찌 나도 죄인처럼 심판을 받으리요"
+      ],
+      "raw_text_hashes": [
+        "a4de7b2c6f841e0b8e6ad4c1bae7b61d95e05d48f9712c15c8a7f73769c0834b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:8",
+      "sequence": 27996,
+      "chapter_label": "ROM 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Why not (as we are slanderously reported, and as some affirm that we say), “Let’s do evil, that good may come?” Those who say so are justly condemned.",
+      "ko": "또는 그러면 선을 이루기 위하여 악을 행하자 하지 않겠느냐 [어떤이들이 이렇게 비방하여 우리가 이런 말을 한다고 하니] 저희가 정죄 받는 것이 옳으니라",
+      "source_text_hash": "70e4190b6189772c61413910b0e7b39e6fe09aedbf15f2131fa2da388e84777c",
+      "translation_text_hash": "0de01820845b02e821c9ee4e8b26619b044aa664e49af6f7b8ceaf14bdfee0e4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또는 그러면 선을 이루기 위하여 악을 행하자 하지 않겠느냐 [어떤이들이 이렇게 비방하여 우리가 이런 말을 한다고 하니] 저희가 정죄 받는 것이 옳으니라"
+      ],
+      "raw_text_hashes": [
+        "0de01820845b02e821c9ee4e8b26619b044aa664e49af6f7b8ceaf14bdfee0e4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:9",
+      "sequence": 27997,
+      "chapter_label": "ROM 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "What then? Are we better than they? No, in no way. For we previously warned both Jews and Greeks that they are all under sin.",
+      "ko": "그러면 어떠하뇨 우리는 나으뇨 결코 아니라 유대인이나 헬라인이나 다 죄 아래 있다고 우리가 이미 선언하였느니라",
+      "source_text_hash": "1fef557f17a15143ed7ef8f40bdeb49f48797aef552fe7e428e982de305285b2",
+      "translation_text_hash": "455fcae700324c915f90370dd2d8cebb19f53afe8f4cc6f9c400f62ed2b9b3e2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 어떠하뇨 우리는 나으뇨 결코 아니라 유대인이나 헬라인이나 다 죄 아래 있다고 우리가 이미 선언하였느니라"
+      ],
+      "raw_text_hashes": [
+        "455fcae700324c915f90370dd2d8cebb19f53afe8f4cc6f9c400f62ed2b9b3e2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:10",
+      "sequence": 27998,
+      "chapter_label": "ROM 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "As it is written, “There is no one righteous; no, not one.",
+      "ko": "기록한바 의인은 없나니 하나도 없으며",
+      "source_text_hash": "e8c661b9fa2a92a4d637899f630f9cdc97f7f797561ef612031f7a40d2448b57",
+      "translation_text_hash": "aa46d1c79dcfba95ddddd53dd9326770e421d20857787b0b833a9be773ef97d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기록한바 의인은 없나니 하나도 없으며"
+      ],
+      "raw_text_hashes": [
+        "aa46d1c79dcfba95ddddd53dd9326770e421d20857787b0b833a9be773ef97d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:11",
+      "sequence": 27999,
+      "chapter_label": "ROM 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "There is no one who understands. There is no one who seeks after God.",
+      "ko": "깨닫는 자도 없고 하나님을 찾는 자도 없고",
+      "source_text_hash": "79f2cf6e2ba240ff39a6c29ae21d942983e50cb1ce91f51973896f4829162c33",
+      "translation_text_hash": "21e6e2e2a3eed7fa9e14b1b53a0a089d60d733e6aefdcb4de04c23c450374198",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "깨닫는 자도 없고 하나님을 찾는 자도 없고"
+      ],
+      "raw_text_hashes": [
+        "21e6e2e2a3eed7fa9e14b1b53a0a089d60d733e6aefdcb4de04c23c450374198"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:12",
+      "sequence": 28000,
+      "chapter_label": "ROM 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "They have all turned away. They have together become unprofitable. There is no one who does good, no, not so much as one.”",
+      "ko": "다 치우쳐 한가지로 무익하게 되고 선을 행하는 자는 없나니 하나도 없도다",
+      "source_text_hash": "d97ce2cdea818b90d441a680afd8ea248402293df8a88a4ee532f4cd9e94d680",
+      "translation_text_hash": "a3b7c98e53cc53283099d73c692ded7bfde0cb5f325996183553022b4fe5b571",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다 치우쳐 한가지로 무익하게 되고 선을 행하는 자는 없나니 하나도 없도다"
+      ],
+      "raw_text_hashes": [
+        "a3b7c98e53cc53283099d73c692ded7bfde0cb5f325996183553022b4fe5b571"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:13",
+      "sequence": 28001,
+      "chapter_label": "ROM 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "“Their throat is an open tomb. With their tongues they have used deceit.” “The poison of vipers is under their lips.”",
+      "ko": "저희 목구멍은 열린 무덤이요 그 혀로는 속임을 베풀며 그 입술에는 독사의 독이 있고",
+      "source_text_hash": "1e8d2a09f044d6e44d5ea3da0229aca4a8e3f79b793f42cadc7a21c101f95eaf",
+      "translation_text_hash": "3aa3d97a981f55c0d3c9f2a0ecb93530f26f477e226cab86c8dbdc416063b9f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 목구멍은 열린 무덤이요 그 혀로는 속임을 베풀며 그 입술에는 독사의 독이 있고"
+      ],
+      "raw_text_hashes": [
+        "3aa3d97a981f55c0d3c9f2a0ecb93530f26f477e226cab86c8dbdc416063b9f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:14",
+      "sequence": 28002,
+      "chapter_label": "ROM 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "“Their mouth is full of cursing and bitterness.”",
+      "ko": "그 입에는 저주와 악독이 가득하고",
+      "source_text_hash": "82df21500d625eb6b79672f2fccf498fc71a2bc8b8219b63b25ec7c867e31c72",
+      "translation_text_hash": "dc9637ccec6e05e50b850f789535bbd0ec18fcef01d3ea84d618aefc12225563",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 입에는 저주와 악독이 가득하고"
+      ],
+      "raw_text_hashes": [
+        "dc9637ccec6e05e50b850f789535bbd0ec18fcef01d3ea84d618aefc12225563"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:15",
+      "sequence": 28003,
+      "chapter_label": "ROM 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "“Their feet are swift to shed blood.",
+      "ko": "그 발은 피 흘리는데 빠른지라",
+      "source_text_hash": "dd258c2942f30dde38c6a90196a3ef125e76f89f9c2190890ed33b4228d97478",
+      "translation_text_hash": "6efe27968709238864504bad4b5497882728bc9c2deacac4b96b9d1095ca995d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 발은 피 흘리는데 빠른지라"
+      ],
+      "raw_text_hashes": [
+        "6efe27968709238864504bad4b5497882728bc9c2deacac4b96b9d1095ca995d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:16",
+      "sequence": 28004,
+      "chapter_label": "ROM 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Destruction and misery are in their ways.",
+      "ko": "파멸과 고생이 그 길에 있어",
+      "source_text_hash": "982ab2c381468203bbb8ecf6a50b6cda8d85e436d48d097673769cecf92a1fb1",
+      "translation_text_hash": "5c9e93d139ec3a1bca1fcb46a5b3b53c748e0f3a7c5783ae86558a85d66933ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "파멸과 고생이 그 길에 있어"
+      ],
+      "raw_text_hashes": [
+        "5c9e93d139ec3a1bca1fcb46a5b3b53c748e0f3a7c5783ae86558a85d66933ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:17",
+      "sequence": 28005,
+      "chapter_label": "ROM 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "The way of peace, they haven’t known.”",
+      "ko": "평강의 길을 알지 못하였고",
+      "source_text_hash": "99ba153584478760923b718bb827b80c05c51ba4ab7e3bf4b040537b7e866c3e",
+      "translation_text_hash": "76280a8875edbd33a67a3fa253ac340eae769666f5c47b4de4f0d69d8aaf9495",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "평강의 길을 알지 못하였고"
+      ],
+      "raw_text_hashes": [
+        "76280a8875edbd33a67a3fa253ac340eae769666f5c47b4de4f0d69d8aaf9495"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:18",
+      "sequence": 28006,
+      "chapter_label": "ROM 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "“There is no fear of God before their eyes.”",
+      "ko": "저희 눈앞에 하나님을 두려워함이 없느니라 함과 같으니라",
+      "source_text_hash": "57b2b1c8467c52280951a28fc96b86ef268ae5261447d49dd67d436a67192207",
+      "translation_text_hash": "7780136e3706e03b2192c8acfbfd38928aae01af4af5af93faadfafe9f5336af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희 눈앞에 하나님을 두려워함이 없느니라 함과 같으니라"
+      ],
+      "raw_text_hashes": [
+        "7780136e3706e03b2192c8acfbfd38928aae01af4af5af93faadfafe9f5336af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:19",
+      "sequence": 28007,
+      "chapter_label": "ROM 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "Now we know that whatever things the law says, it speaks to those who are under the law, that every mouth may be closed, and all the world may be brought under the judgment of God.",
+      "ko": "우리가 알거니와 무릇 율법이 말하는 바는 율법 아래 있는 자들에게 말하는 것이니 이는 모든 입을 막고 온 세상으로 하나님의 심판 아래 있게 하려 함이니라",
+      "source_text_hash": "38ccf1bb82fb43d845b5dfac7cf465dc52a954899af17a0c93f910a58d286641",
+      "translation_text_hash": "32555e669d8dd94f0dddb26b40cf5fd099c11433c31454154f76b240130419c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 알거니와 무릇 율법이 말하는 바는 율법 아래 있는 자들에게 말하는 것이니 이는 모든 입을 막고 온 세상으로 하나님의 심판 아래 있게 하려 함이니라"
+      ],
+      "raw_text_hashes": [
+        "32555e669d8dd94f0dddb26b40cf5fd099c11433c31454154f76b240130419c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:20",
+      "sequence": 28008,
+      "chapter_label": "ROM 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "Because by the works of the law, no flesh will be justified in his sight; for through the law comes the knowledge of sin.",
+      "ko": "그러므로 율법의 행위로 그의 앞에 의롭다 하심을 얻을 육체가 없나니 율법으로는 죄를 깨달음이니라",
+      "source_text_hash": "8db63d38db6ae446b173c531c41fbd61cd9b6060e6c947a8da3620c52f408232",
+      "translation_text_hash": "8d1a30bd272b64f4439b1a80938514c2c1b0ab27f32048b3e0a890ec9b49e728",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 율법의 행위로 그의 앞에 의롭다 하심을 얻을 육체가 없나니 율법으로는 죄를 깨달음이니라"
+      ],
+      "raw_text_hashes": [
+        "8d1a30bd272b64f4439b1a80938514c2c1b0ab27f32048b3e0a890ec9b49e728"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:21",
+      "sequence": 28009,
+      "chapter_label": "ROM 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "But now apart from the law, a righteousness of God has been revealed, being testified by the law and the prophets;",
+      "ko": "이제는 율법 외에 하나님의 한 의가 나타났으니 율법과 선지자들에게 증거를 받은 것이라",
+      "source_text_hash": "a4e8ded2d3a1d8dacef524f509f099fd15f78e4d1871971e01f239f9b8f06caa",
+      "translation_text_hash": "2b1729c93a21ad7d539d1b67b5c8b4b544a4196fdd436a32447b9a2bd9bf2974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제는 율법 외에 하나님의 한 의가 나타났으니 율법과 선지자들에게 증거를 받은 것이라"
+      ],
+      "raw_text_hashes": [
+        "2b1729c93a21ad7d539d1b67b5c8b4b544a4196fdd436a32447b9a2bd9bf2974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:22",
+      "sequence": 28010,
+      "chapter_label": "ROM 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "even the righteousness of God through faith in Jesus Christ to all and on all those who believe. For there is no distinction,",
+      "ko": "곧 예수 그리스도를 믿음으로 말미암아 모든 믿는 자에게 미치는 하나님의 의니 차별이 없느니라",
+      "source_text_hash": "b61c3db3122ba7beb5660a3f1e25a4a8cac4de422fc4bd1e783ff502f2b62674",
+      "translation_text_hash": "8a00bfa9a62f41e6ead00827c4a67b94d3b9eef452b3510f7a753e2a822ce4d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 예수 그리스도를 믿음으로 말미암아 모든 믿는 자에게 미치는 하나님의 의니 차별이 없느니라"
+      ],
+      "raw_text_hashes": [
+        "8a00bfa9a62f41e6ead00827c4a67b94d3b9eef452b3510f7a753e2a822ce4d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:23",
+      "sequence": 28011,
+      "chapter_label": "ROM 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "for all have sinned, and fall short of the glory of God;",
+      "ko": "모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니",
+      "source_text_hash": "a809151177577b93932953227a315c6cb75e69da71c9b930dbd3f58511937c7c",
+      "translation_text_hash": "387c30849bc2b04cbdd7bdb12b829d49a867174035a33cf7fc6484e9ebff406d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니"
+      ],
+      "raw_text_hashes": [
+        "387c30849bc2b04cbdd7bdb12b829d49a867174035a33cf7fc6484e9ebff406d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:24",
+      "sequence": 28012,
+      "chapter_label": "ROM 3",
+      "verse_label": "24",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 24
+        }
+      ],
+      "en": "being justified freely by his grace through the redemption that is in Christ Jesus,",
+      "ko": "그리스도 예수 안에 있는 구속으로 말미암아 하나님의 은혜로 값 없이 의롭다 하심을 얻은 자 되었느니라",
+      "source_text_hash": "37b51cef048a3c29e894124dbaf452dab3b16a430bb7271fe44848eaaffb90a1",
+      "translation_text_hash": "5f5a3f63608f73603ebce10a3506b16b732d8a58b2f87fc3987668fa62fdd4b7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리스도 예수 안에 있는 구속으로 말미암아 하나님의 은혜로 값 없이 의롭다 하심을 얻은 자 되었느니라"
+      ],
+      "raw_text_hashes": [
+        "5f5a3f63608f73603ebce10a3506b16b732d8a58b2f87fc3987668fa62fdd4b7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:25",
+      "sequence": 28013,
+      "chapter_label": "ROM 3",
+      "verse_label": "25",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 25
+        }
+      ],
+      "en": "whom God sent to be an atoning sacrifice through faith in his blood, for a demonstration of his righteousness through the passing over of prior sins, in God’s forbearance;",
+      "ko": "이 예수를 하나님이 그의 피로 인하여 믿음으로 말미암는 화목 제물로 세우셨으니 이는 하나님께서 길이 참으시는 중에 전에 지은 죄를 간과하심으로 자기의 의로우심을 나타내려 하심이니",
+      "source_text_hash": "036e3a09d418e99808fb780b59abf9fe1bd45cb0aa62424b5ce3ca0b10ba480c",
+      "translation_text_hash": "8e78b062a5c86752dda0252dab3b55a379430419bf77df7fe97c35e069ed6950",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 예수를 하나님이 그의 피로 인하여 믿음으로 말미암는 화목 제물로 세우셨으니 이는 하나님께서 길이 참으시는 중에 전에 지은 죄를 간과하심으로 자기의 의로우심을 나타내려 하심이니"
+      ],
+      "raw_text_hashes": [
+        "8e78b062a5c86752dda0252dab3b55a379430419bf77df7fe97c35e069ed6950"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:26",
+      "sequence": 28014,
+      "chapter_label": "ROM 3",
+      "verse_label": "26",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 26
+        }
+      ],
+      "en": "to demonstrate his righteousness at this present time, that he might himself be just and the justifier of him who has faith in Jesus.",
+      "ko": "곧 이 때에 자기의 의로우심을 나타내사 자기도 의로우시며 또한 예수 믿는 자를 의롭다 하려 하심이니라",
+      "source_text_hash": "ea01308ea653bd4198027cad6fc03cc1731c8e8179a4e2f030d1295895794918",
+      "translation_text_hash": "eb81d17a60417664c372b6057f7fa535045d2c85e634e691279ad7098f7e156a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 이 때에 자기의 의로우심을 나타내사 자기도 의로우시며 또한 예수 믿는 자를 의롭다 하려 하심이니라"
+      ],
+      "raw_text_hashes": [
+        "eb81d17a60417664c372b6057f7fa535045d2c85e634e691279ad7098f7e156a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:27",
+      "sequence": 28015,
+      "chapter_label": "ROM 3",
+      "verse_label": "27",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 27
+        }
+      ],
+      "en": "Where then is the boasting? It is excluded. By what kind of law? Of works? No, but by a law of faith.",
+      "ko": "그런즉 자랑할 데가 어디뇨 있을 수가 없느니라 무슨 법으로냐 행위로냐 아니라 오직 믿음의 법으로니라",
+      "source_text_hash": "c87ee9b6d8cc1ecd4dcc9e8e4bd161d21d6a1372cdf3b42067e7e674a6550876",
+      "translation_text_hash": "57fa4fffeeeafbea22c4f1dcc8225498e65df0730b39c5623f46629742eea3e7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 자랑할 데가 어디뇨 있을 수가 없느니라 무슨 법으로냐 행위로냐 아니라 오직 믿음의 법으로니라"
+      ],
+      "raw_text_hashes": [
+        "57fa4fffeeeafbea22c4f1dcc8225498e65df0730b39c5623f46629742eea3e7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:28",
+      "sequence": 28016,
+      "chapter_label": "ROM 3",
+      "verse_label": "28",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 28
+        }
+      ],
+      "en": "We maintain therefore that a man is justified by faith apart from the works of the law.",
+      "ko": "그러므로 사람이 의롭다 하심을 얻는 것은 율법의 행위에 있지 않고 믿음으로 되는줄 우리가 인정하노라",
+      "source_text_hash": "b020f0835105e625d1ae3e2f03d7de254740b52772e287e7802883703443a803",
+      "translation_text_hash": "6e498c181d0b20552d9b02b30579110e6eadcd737f8cf90ef1405cbbc5594189",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 사람이 의롭다 하심을 얻는 것은 율법의 행위에 있지 않고 믿음으로 되는줄 우리가 인정하노라"
+      ],
+      "raw_text_hashes": [
+        "6e498c181d0b20552d9b02b30579110e6eadcd737f8cf90ef1405cbbc5594189"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:29",
+      "sequence": 28017,
+      "chapter_label": "ROM 3",
+      "verse_label": "29",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 29
+        }
+      ],
+      "en": "Or is God the God of Jews only? Isn’t he the God of Gentiles also? Yes, of Gentiles also,",
+      "ko": "하나님은 홀로 유대인의 하나님 뿐이시뇨 또 이방인의 하나님은 아니시뇨 진실로 이방인의 하나님도 되시느니라",
+      "source_text_hash": "58444a1714e2f09b9414e59f84bbe423ddfcbb553b01c56790aa81f5412ba904",
+      "translation_text_hash": "b85842f0c61f1774c48248ae950db67312d2dbb563ff31961cac662525cfac7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님은 홀로 유대인의 하나님 뿐이시뇨 또 이방인의 하나님은 아니시뇨 진실로 이방인의 하나님도 되시느니라"
+      ],
+      "raw_text_hashes": [
+        "b85842f0c61f1774c48248ae950db67312d2dbb563ff31961cac662525cfac7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:30",
+      "sequence": 28018,
+      "chapter_label": "ROM 3",
+      "verse_label": "30",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 30
+        }
+      ],
+      "en": "since indeed there is one God who will justify the circumcised by faith and the uncircumcised through faith.",
+      "ko": "할례자도 믿음으로 말미암아 또는 무할례자도 믿음으로 말미암아 의롭다 하실 하나님은 한 분이시니라",
+      "source_text_hash": "b619e6cfa677eded22466f87efd80c4260a38409c0a39aa82e0b6ac7528355b4",
+      "translation_text_hash": "4b96022a1c019fc1ca99a6d106e942c3a18262aaa42e6d927055851ffd6c01ef",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할례자도 믿음으로 말미암아 또는 무할례자도 믿음으로 말미암아 의롭다 하실 하나님은 한 분이시니라"
+      ],
+      "raw_text_hashes": [
+        "4b96022a1c019fc1ca99a6d106e942c3a18262aaa42e6d927055851ffd6c01ef"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ROM:3:31",
+      "sequence": 28019,
+      "chapter_label": "ROM 3",
+      "verse_label": "31",
+      "locator": {
+        "book": "ROM",
+        "chapter": 3,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ROM",
+          "chapter": 3,
+          "verse": 31
+        }
+      ],
+      "en": "Do we then nullify the law through faith? May it never be! No, we establish the law.",
+      "ko": "그런즉 우리가 믿음으로 말미암아 율법을 폐하느뇨 그럴 수 없느니라 도리어 율법을 굳게 세우느니라",
+      "source_text_hash": "b8c3d9dc253fc3beb120662c152fdd780f63a58074bfd1260c7ad2957fa11e09",
+      "translation_text_hash": "667254a37f8d49fa89160b83ccfad13f94e679fc8c45dbdaf878e8be14b6d429",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 우리가 믿음으로 말미암아 율법을 폐하느뇨 그럴 수 없느니라 도리어 율법을 굳게 세우느니라"
+      ],
+      "raw_text_hashes": [
+        "667254a37f8d49fa89160b83ccfad13f94e679fc8c45dbdaf878e8be14b6d429"
+      ]
+    }
+  ]
+}

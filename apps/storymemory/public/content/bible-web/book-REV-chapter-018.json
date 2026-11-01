@@ -1,0 +1,781 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:REV:chapter:018",
+  "unit_ordinal": 1185,
+  "unit_label": "REV 18",
+  "book_code": "REV",
+  "chapter_number": 18,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:REV:18:1",
+      "sequence": 30991,
+      "chapter_label": "REV 18",
+      "verse_label": "1",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 1
+        }
+      ],
+      "en": "After these things, I saw another angel coming down out of the sky, having great authority. The earth was illuminated with his glory.",
+      "ko": "이 일 후에 다른 천사가 하늘에서 내려오는 것을 보니 큰 권세를 가졌는데 그의 영광으로 땅이 환하여지더라",
+      "source_text_hash": "7031881369005686f2bcb07e1c95b1b3594eba66f90ef9ef84c45af6bf3d1cee",
+      "translation_text_hash": "7948f31622db9923cba6590d4cb45c220ac6aec17e0436c029ebf7a6f53adc5d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 일 후에 다른 천사가 하늘에서 내려오는 것을 보니 큰 권세를 가졌는데 그의 영광으로 땅이 환하여지더라"
+      ],
+      "raw_text_hashes": [
+        "7948f31622db9923cba6590d4cb45c220ac6aec17e0436c029ebf7a6f53adc5d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:2",
+      "sequence": 30992,
+      "chapter_label": "REV 18",
+      "verse_label": "2",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 2
+        }
+      ],
+      "en": "He cried with a mighty voice, saying, “Fallen, fallen is Babylon the great, and she has become a habitation of demons, a prison of every unclean spirit, and a prison of every unclean and hated bird!",
+      "ko": "힘센 음성으로 외쳐 가로되 무너졌도다 무너졌도다 큰 성 바벨론이여 귀신의 처소와 각종 더러운 영의 모이는 곳과 각종 더럽고 가증한 새의 모이는 곳이 되었도다",
+      "source_text_hash": "6561282ef34f059de5f941bce6bab46ee4cfa38074a1babc65a3e7edc81e880e",
+      "translation_text_hash": "c69a2bf923fca805984cf1c2b306685d1039aab131957ba52e6f34276a3d11de",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "힘센 음성으로 외쳐 가로되 무너졌도다 무너졌도다 큰 성 바벨론이여 귀신의 처소와 각종 더러운 영의 모이는 곳과 각종 더럽고 가증한 새의 모이는 곳이 되었도다"
+      ],
+      "raw_text_hashes": [
+        "c69a2bf923fca805984cf1c2b306685d1039aab131957ba52e6f34276a3d11de"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:3",
+      "sequence": 30993,
+      "chapter_label": "REV 18",
+      "verse_label": "3",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 3
+        }
+      ],
+      "en": "For all the nations have drunk of the wine of the wrath of her sexual immorality, the kings of the earth committed sexual immorality with her, and the merchants of the earth grew rich from the abundance of her luxury.”",
+      "ko": "그 음행의 진노의 포도주를 인하여 만국이 무너졌으며 또 땅의 왕들이 그로 더불어 음행하였으며 땅의 상고들도 그 사치의 세력을 인하여 치부하였도다 하더라",
+      "source_text_hash": "e20b80197bd292fcfa4b674035f990a06e01a4f4b83b8c1af0ed74389a1b6a4d",
+      "translation_text_hash": "6af8da2609761fee5a52f3b52a51cee6f3932ce12719b30628dab20ebd61546d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 음행의 진노의 포도주를 인하여 만국이 무너졌으며 또 땅의 왕들이 그로 더불어 음행하였으며 땅의 상고들도 그 사치의 세력을 인하여 치부하였도다 하더라"
+      ],
+      "raw_text_hashes": [
+        "6af8da2609761fee5a52f3b52a51cee6f3932ce12719b30628dab20ebd61546d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:4",
+      "sequence": 30994,
+      "chapter_label": "REV 18",
+      "verse_label": "4",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 4
+        }
+      ],
+      "en": "I heard another voice from heaven, saying, “Come out of her, my people, that you have no participation in her sins, and that you don’t receive of her plagues,",
+      "ko": "또 내가 들으니 하늘로서 다른 음성이 나서 가로되 내 백성아, 거기서 나와 그의 죄에 참예하지 말고 그의 받을 재앙들을 받지 말라",
+      "source_text_hash": "9da357f2ec96383d7e1fe4c3902493fd7c954a684eade19f7b54b711aae886c1",
+      "translation_text_hash": "6064e8e5d582e28faa0296dbfda90f48a9097dba55964598d0f5fd934c9f9e8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내가 들으니 하늘로서 다른 음성이 나서 가로되 내 백성아, 거기서 나와 그의 죄에 참예하지 말고 그의 받을 재앙들을 받지 말라"
+      ],
+      "raw_text_hashes": [
+        "6064e8e5d582e28faa0296dbfda90f48a9097dba55964598d0f5fd934c9f9e8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:5",
+      "sequence": 30995,
+      "chapter_label": "REV 18",
+      "verse_label": "5",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 5
+        }
+      ],
+      "en": "for her sins have reached to the sky, and God has remembered her iniquities.",
+      "ko": "그 죄는 하늘에 사무쳤으며 하나님은 그의 불의한 일을 기억하신지라",
+      "source_text_hash": "b9fb111db0e70ab6a205180e76de6a423afbc5184b6ead70ee3ba9d6795974f6",
+      "translation_text_hash": "a624999a6aeb6a4834e4cd504dd7a1fa758c4f5f418201d38fe0020893b3877e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 죄는 하늘에 사무쳤으며 하나님은 그의 불의한 일을 기억하신지라"
+      ],
+      "raw_text_hashes": [
+        "a624999a6aeb6a4834e4cd504dd7a1fa758c4f5f418201d38fe0020893b3877e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:6",
+      "sequence": 30996,
+      "chapter_label": "REV 18",
+      "verse_label": "6",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 6
+        }
+      ],
+      "en": "Return to her just as she returned, and repay her double as she did, and according to her works. In the cup which she mixed, mix to her double.",
+      "ko": "그가 준 그대로 그에게 주고 그의 행위대로 갑절을 갚아주고 그의 섞은 잔에도 갑절이나 섞어 그에게 주라",
+      "source_text_hash": "72d20945ca6158eea9a597a551116904d191235745f4b3532380d8416fa5e0d8",
+      "translation_text_hash": "46a7a4e87af3619f7dfe31ef8d94c428245a34baf81069e8138c0185fb1a431a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 준 그대로 그에게 주고 그의 행위대로 갑절을 갚아주고 그의 섞은 잔에도 갑절이나 섞어 그에게 주라"
+      ],
+      "raw_text_hashes": [
+        "46a7a4e87af3619f7dfe31ef8d94c428245a34baf81069e8138c0185fb1a431a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:7",
+      "sequence": 30997,
+      "chapter_label": "REV 18",
+      "verse_label": "7",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 7
+        }
+      ],
+      "en": "However much she glorified herself and grew wanton, so much give her of torment and mourning. For she says in her heart, ‘I sit a queen, and am no widow, and will in no way see mourning.’",
+      "ko": "그가 어떻게 자기를 영화롭게 하였으며 사치하였든지 그만큼 고난과 애통으로 갚아 주라 그가 마음에 말하기를 나는 여황으로 앉은 자요 과부가 아니라 결단코 애통을 당하지 아니하리라 하니",
+      "source_text_hash": "2abf6784cb191f6bf9498f8e949e2a41413694a7d3a7134ef0595502e5edc77e",
+      "translation_text_hash": "ebe8b53dbb3cb1cf150dc38e2fc9b4a7284e42b93291829ec4568673febffae7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 어떻게 자기를 영화롭게 하였으며 사치하였든지 그만큼 고난과 애통으로 갚아 주라 그가 마음에 말하기를 나는 여황으로 앉은 자요 과부가 아니라 결단코 애통을 당하지 아니하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "ebe8b53dbb3cb1cf150dc38e2fc9b4a7284e42b93291829ec4568673febffae7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:8",
+      "sequence": 30998,
+      "chapter_label": "REV 18",
+      "verse_label": "8",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 8
+        }
+      ],
+      "en": "Therefore in one day her plagues will come: death, mourning, and famine; and she will be utterly burned with fire, for the Lord God who has judged her is strong.",
+      "ko": "그러므로 하루 동안에 그 재앙들이 이르리니 곧 사망과 애통과 흉년이라 그가 또한 불에 살라지리니 그를 심판하신 주 하나님은 강하신 자이심이니라",
+      "source_text_hash": "4f591aa07a90614b29b363920d477e0871a232d059358ecd61548e17c0105a0e",
+      "translation_text_hash": "2c1e08e919b239dbe4bf9b4434b5c1541e6682299eeaad0f24e4d98220d56afd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 하루 동안에 그 재앙들이 이르리니 곧 사망과 애통과 흉년이라 그가 또한 불에 살라지리니 그를 심판하신 주 하나님은 강하신 자이심이니라"
+      ],
+      "raw_text_hashes": [
+        "2c1e08e919b239dbe4bf9b4434b5c1541e6682299eeaad0f24e4d98220d56afd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:9",
+      "sequence": 30999,
+      "chapter_label": "REV 18",
+      "verse_label": "9",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 9
+        }
+      ],
+      "en": "The kings of the earth who committed sexual immorality and lived wantonly with her will weep and wail over her, when they look at the smoke of her burning,",
+      "ko": "그와 함께 음행하고 사치하던 땅의 왕들이 그 불붙는 연기를 보고 위하여 울고 가슴을 치며",
+      "source_text_hash": "b730ef26023a010e4b53633eda87aa0d3cf3131d50e4932c89d66e98bd162603",
+      "translation_text_hash": "152621860682e20af00fd8a114801cda735e793e021c6fc5c68e4fdf40e16395",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 함께 음행하고 사치하던 땅의 왕들이 그 불붙는 연기를 보고 위하여 울고 가슴을 치며"
+      ],
+      "raw_text_hashes": [
+        "152621860682e20af00fd8a114801cda735e793e021c6fc5c68e4fdf40e16395"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:10",
+      "sequence": 31000,
+      "chapter_label": "REV 18",
+      "verse_label": "10",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 10
+        }
+      ],
+      "en": "standing far away for the fear of her torment, saying, ‘Woe, woe, the great city, Babylon, the strong city! For your judgment has come in one hour.’",
+      "ko": "그 고난을 무서워하여 멀리 서서 가로되 화 있도다 화 있도다 큰 성, 견고한 성 바벨론이여 일시간에 네 심판이 이르렀다 하리로다",
+      "source_text_hash": "7fee465c30158c9968e91ee9b647766057c318da7520ab7d3c133fcdd24de1a5",
+      "translation_text_hash": "4b239932f4edc1ed982fd6c83492e09aed8c55dbfaad9dcc621adbc22eea8758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 고난을 무서워하여 멀리 서서 가로되 화 있도다 화 있도다 큰 성, 견고한 성 바벨론이여 일시간에 네 심판이 이르렀다 하리로다"
+      ],
+      "raw_text_hashes": [
+        "4b239932f4edc1ed982fd6c83492e09aed8c55dbfaad9dcc621adbc22eea8758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:11",
+      "sequence": 31001,
+      "chapter_label": "REV 18",
+      "verse_label": "11",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 11
+        }
+      ],
+      "en": "The merchants of the earth weep and mourn over her, for no one buys their merchandise any more:",
+      "ko": "땅의 상고들이 그를 위하여 울고 애통하는 것은 다시 그 상품을 사는 자가 없음이라",
+      "source_text_hash": "de54778f2da6cb66756be75ddb6488dbcf2b4e56ba0884df7f467b20aef5cd15",
+      "translation_text_hash": "28b1f6fbcaa39589795c245aa89cd399ab893bf0018ba50f563835e7d76300f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅의 상고들이 그를 위하여 울고 애통하는 것은 다시 그 상품을 사는 자가 없음이라"
+      ],
+      "raw_text_hashes": [
+        "28b1f6fbcaa39589795c245aa89cd399ab893bf0018ba50f563835e7d76300f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:12",
+      "sequence": 31002,
+      "chapter_label": "REV 18",
+      "verse_label": "12",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 12
+        }
+      ],
+      "en": "merchandise of gold, silver, precious stones, pearls, fine linen, purple, silk, scarlet, all expensive wood, every vessel of ivory, every vessel made of most precious wood, and of brass, and iron, and marble;",
+      "ko": "그 상품은 금과 은과 보석과 진주와 세마포와 자주 옷감과 비단과 붉은 옷감이요 각종 향목과 각종 상아 기명이요 값진 나무와 진유와 철과 옥석으로 만든 각종 기명이요",
+      "source_text_hash": "fd1c74045cbf698858f18a3862a404aa9568063f08a6eb83a3f59b937b7bcab9",
+      "translation_text_hash": "3e3ace2ff80e846a61a1441b21314bf3d25ab3feb44e7905a2efe852bcfde5ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 상품은 금과 은과 보석과 진주와 세마포와 자주 옷감과 비단과 붉은 옷감이요 각종 향목과 각종 상아 기명이요 값진 나무와 진유와 철과 옥석으로 만든 각종 기명이요"
+      ],
+      "raw_text_hashes": [
+        "3e3ace2ff80e846a61a1441b21314bf3d25ab3feb44e7905a2efe852bcfde5ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:13",
+      "sequence": 31003,
+      "chapter_label": "REV 18",
+      "verse_label": "13",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 13
+        }
+      ],
+      "en": "and cinnamon, incense, perfume, frankincense, wine, olive oil, fine flour, wheat, cattle, sheep, horses, chariots, and people’s bodies and souls.",
+      "ko": "계피와 향료와 향과 향유와 유향과 포도주와 감람유와 고운 밀가루와 밀과 소와 양과 말과 수레와 종들과 사람의 영혼들이라",
+      "source_text_hash": "5b0464e9208e043461ce07d361f1428f2b4076f5e9b3e88828631a33cf14e5e4",
+      "translation_text_hash": "6a8db06d8c0a9e931fcccbd2cbf2eb91599eddb87ef8323e77dbeadb2263e0b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "계피와 향료와 향과 향유와 유향과 포도주와 감람유와 고운 밀가루와 밀과 소와 양과 말과 수레와 종들과 사람의 영혼들이라"
+      ],
+      "raw_text_hashes": [
+        "6a8db06d8c0a9e931fcccbd2cbf2eb91599eddb87ef8323e77dbeadb2263e0b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:14",
+      "sequence": 31004,
+      "chapter_label": "REV 18",
+      "verse_label": "14",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 14
+        }
+      ],
+      "en": "The fruits which your soul lusted after have been lost to you. All things that were dainty and sumptuous have perished from you, and you will find them no more at all.",
+      "ko": "바벨론아 네 영혼의 탐하던 과실이 네게서 떠났으며 맛 있는 것들과 빛난 것들이 다 없어졌으니 사람들이 결코 이것들을 다시 보지 못하리로다",
+      "source_text_hash": "e084ade886c4b01ea050d6229b61af52d04dd7ce67794aaf9c1c0ba5ba2d1fc4",
+      "translation_text_hash": "b45a038d60cd59569016d98d60a63806363d50c73a15b8f77dd5195b55a3898a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론아 네 영혼의 탐하던 과실이 네게서 떠났으며 맛 있는 것들과 빛난 것들이 다 없어졌으니 사람들이 결코 이것들을 다시 보지 못하리로다"
+      ],
+      "raw_text_hashes": [
+        "b45a038d60cd59569016d98d60a63806363d50c73a15b8f77dd5195b55a3898a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:15",
+      "sequence": 31005,
+      "chapter_label": "REV 18",
+      "verse_label": "15",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 15
+        }
+      ],
+      "en": "The merchants of these things, who were made rich by her, will stand far away for the fear of her torment, weeping and mourning,",
+      "ko": "바벨론을 인하여 치부한 이 상품의 상고들이 그 고난을 무서워하여 멀리 서서 울고 애통하여",
+      "source_text_hash": "c26689f9ffd584e8a5daea935c068d7bbf54e4bd6fd1c9567aed26db5db3bbca",
+      "translation_text_hash": "acea67448f4fc1b649100c493c86572cca152841f96fd5b2a21430010d19dd41",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론을 인하여 치부한 이 상품의 상고들이 그 고난을 무서워하여 멀리 서서 울고 애통하여"
+      ],
+      "raw_text_hashes": [
+        "acea67448f4fc1b649100c493c86572cca152841f96fd5b2a21430010d19dd41"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:16",
+      "sequence": 31006,
+      "chapter_label": "REV 18",
+      "verse_label": "16",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 16
+        }
+      ],
+      "en": "saying, ‘Woe, woe, the great city, she who was dressed in fine linen, purple, and scarlet, and decked with gold and precious stones and pearls!",
+      "ko": "가로되 화 있도다 화 있도다 큰 성이여 세마포와 자주와 붉은 옷을 입고 금과 보석과 진주로 꾸민 것인데",
+      "source_text_hash": "fa8581a9fe34f07adb5bcce296d072ceeb3ea78ae65c98161fdc5eea8fb63be7",
+      "translation_text_hash": "27514efcc441d9de55bc2bae0f36af9f8039485ce961f3b5e095a123a1dff952",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 화 있도다 화 있도다 큰 성이여 세마포와 자주와 붉은 옷을 입고 금과 보석과 진주로 꾸민 것인데"
+      ],
+      "raw_text_hashes": [
+        "27514efcc441d9de55bc2bae0f36af9f8039485ce961f3b5e095a123a1dff952"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:17",
+      "sequence": 31007,
+      "chapter_label": "REV 18",
+      "verse_label": "17",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 17
+        }
+      ],
+      "en": "For in an hour such great riches are made desolate.’ Every ship master, and everyone who sails anywhere, and mariners, and as many as gain their living by sea, stood far away,",
+      "ko": "그러한 부가 일시간에 망하였도다 각 선장과 각처를 다니는 선객들과 선인들과 바다에서 일하는 자들이 멀리 서서",
+      "source_text_hash": "131506493d7db3190339760abccde4e443ef13b857163fef2cd69fc7189e050a",
+      "translation_text_hash": "5cbfe6e7389b9d5b90546963539fd0de2bac2faba603fef0b5fe6d843b12c4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러한 부가 일시간에 망하였도다 각 선장과 각처를 다니는 선객들과 선인들과 바다에서 일하는 자들이 멀리 서서"
+      ],
+      "raw_text_hashes": [
+        "5cbfe6e7389b9d5b90546963539fd0de2bac2faba603fef0b5fe6d843b12c4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:18",
+      "sequence": 31008,
+      "chapter_label": "REV 18",
+      "verse_label": "18",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 18
+        }
+      ],
+      "en": "and cried out as they looked at the smoke of her burning, saying, ‘What is like the great city?’",
+      "ko": "그 불붙는 연기를 보고 외쳐 가로되 이 큰 성과 같은 성이 어디 있느뇨 하며",
+      "source_text_hash": "6b2caedd8e3cee1cd312f63392e667e9bde1e200fd9aa6b8b04e09b72471d5aa",
+      "translation_text_hash": "628e614672527e276d78f99df2380b218e05a3bc0be30aaf20ed0cb9264a027e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 불붙는 연기를 보고 외쳐 가로되 이 큰 성과 같은 성이 어디 있느뇨 하며"
+      ],
+      "raw_text_hashes": [
+        "628e614672527e276d78f99df2380b218e05a3bc0be30aaf20ed0cb9264a027e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:19",
+      "sequence": 31009,
+      "chapter_label": "REV 18",
+      "verse_label": "19",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 19
+        }
+      ],
+      "en": "They cast dust on their heads, and cried, weeping and mourning, saying, ‘Woe, woe, the great city, in which all who had their ships in the sea were made rich by reason of her great wealth!’ For she is made desolate in one hour.",
+      "ko": "티끌을 자기 머리에 뿌리고 울고 애통하여 외쳐 가로되 화 있도다 화 있도다 이 큰 성이여 바다에서 배 부리는 모든 자들이 너의 보배로운 상품을 인하여 치부하였더니 일시간에 망하였도다",
+      "source_text_hash": "55263e1c411503837f810ee411bb3a76fa935f9169547ecf4600996bfd59225e",
+      "translation_text_hash": "d99861b0517969769199e8b63ba6a29595ddfcce32bc72bce558807d0f52f8d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "티끌을 자기 머리에 뿌리고 울고 애통하여 외쳐 가로되 화 있도다 화 있도다 이 큰 성이여 바다에서 배 부리는 모든 자들이 너의 보배로운 상품을 인하여 치부하였더니 일시간에 망하였도다"
+      ],
+      "raw_text_hashes": [
+        "d99861b0517969769199e8b63ba6a29595ddfcce32bc72bce558807d0f52f8d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:20",
+      "sequence": 31010,
+      "chapter_label": "REV 18",
+      "verse_label": "20",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 20
+        }
+      ],
+      "en": "“Rejoice over her, O heaven, you saints, apostles, and prophets, for God has judged your judgment on her.”",
+      "ko": "하늘과 성도들과 사도들과 선지자들아 그를 인하여 즐거워하라 하나님이 너희를 신원하시는 심판을 그에게 하셨음이라 하더라",
+      "source_text_hash": "189719c5b6852909e112ca54e3c46cbf3244caac3a4e8a08c62c3a40e48f0db3",
+      "translation_text_hash": "c0369d657bd18d694b4b93ddc2066324d56d55efb6646c141dfd57f4bc262195",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘과 성도들과 사도들과 선지자들아 그를 인하여 즐거워하라 하나님이 너희를 신원하시는 심판을 그에게 하셨음이라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c0369d657bd18d694b4b93ddc2066324d56d55efb6646c141dfd57f4bc262195"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:21",
+      "sequence": 31011,
+      "chapter_label": "REV 18",
+      "verse_label": "21",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 21
+        }
+      ],
+      "en": "A mighty angel took up a stone like a great millstone and cast it into the sea, saying, “Thus with violence will Babylon, the great city, be thrown down, and will be found no more at all.",
+      "ko": "이에 한 힘센 천사가 큰 맷돌 같은 돌을 들어 바다에 던져 가로되 큰 성 바벨론이 이같이 몹시 떨어져 결코 다시 보이지 아니하리로다",
+      "source_text_hash": "7ba71d2dbfc1d3e65c8a2cd5b05f69ebc5821e0d3aca327e28e9cf9d3d0f822e",
+      "translation_text_hash": "2983ab6523df8a42255c627696594a8f40c359fe8f01c73635d59c82b9e36c62",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 한 힘센 천사가 큰 맷돌 같은 돌을 들어 바다에 던져 가로되 큰 성 바벨론이 이같이 몹시 떨어져 결코 다시 보이지 아니하리로다"
+      ],
+      "raw_text_hashes": [
+        "2983ab6523df8a42255c627696594a8f40c359fe8f01c73635d59c82b9e36c62"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:22",
+      "sequence": 31012,
+      "chapter_label": "REV 18",
+      "verse_label": "22",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 22
+        }
+      ],
+      "en": "The voice of harpists, minstrels, flute players, and trumpeters will be heard no more at all in you. No craftsman of whatever craft will be found any more at all in you. The sound of a mill will be heard no more at all in you.",
+      "ko": "또 거문고 타는 자와 풍류하는 자와 퉁소 부는 자와 나팔 부는 자들의 소리가 결코 다시 네 가운데서 들리지 아니하고 물론 어떠한 세공업자든지 결코 다시 네 가운데서 보이지 아니하고 또 맷돌 소리가 결코 다시 네 가운데서 들리지 아니하고",
+      "source_text_hash": "81bfaa932a563dfe6c61387607e20578cf10de3dd53af86f1b409538b160f1fe",
+      "translation_text_hash": "b52f3616a075db679d3e08e109fb42adb3aa944fb2122652d13c885a24692945",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 거문고 타는 자와 풍류하는 자와 퉁소 부는 자와 나팔 부는 자들의 소리가 결코 다시 네 가운데서 들리지 아니하고 물론 어떠한 세공업자든지 결코 다시 네 가운데서 보이지 아니하고 또 맷돌 소리가 결코 다시 네 가운데서 들리지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "b52f3616a075db679d3e08e109fb42adb3aa944fb2122652d13c885a24692945"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:23",
+      "sequence": 31013,
+      "chapter_label": "REV 18",
+      "verse_label": "23",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 23
+        }
+      ],
+      "en": "The light of a lamp will shine no more at all in you. The voice of the bridegroom and of the bride will be heard no more at all in you, for your merchants were the princes of the earth; for with your sorcery all the nations were deceived.",
+      "ko": "등불 빛이 결코 다시 네 가운데서 비취지 아니하고 신랑과 신부의 음성이 결코 다시 네 가운데서 들리지 아니하리로다 너의 상고들은 땅의 왕족들이라 네 복술을 인하여 만국이 미혹되었도다",
+      "source_text_hash": "16b485e60e1bbd7c4691f91cf13cadf8075f80fd6eeb20607636b31c729570e0",
+      "translation_text_hash": "78ecfa336353b8fac994b1208a1f282e396c39c26f4dc8ecca3726158a0f90c1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "등불 빛이 결코 다시 네 가운데서 비취지 아니하고 신랑과 신부의 음성이 결코 다시 네 가운데서 들리지 아니하리로다 너의 상고들은 땅의 왕족들이라 네 복술을 인하여 만국이 미혹되었도다"
+      ],
+      "raw_text_hashes": [
+        "78ecfa336353b8fac994b1208a1f282e396c39c26f4dc8ecca3726158a0f90c1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:REV:18:24",
+      "sequence": 31014,
+      "chapter_label": "REV 18",
+      "verse_label": "24",
+      "locator": {
+        "book": "REV",
+        "chapter": 18,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "REV",
+          "chapter": 18,
+          "verse": 24
+        }
+      ],
+      "en": "In her was found the blood of prophets and of saints, and of all who have been slain on the earth.”",
+      "ko": "선지자들과 성도들과 및 땅 위에서 죽임을 당한 모든 자의 피가 이 성중에서 보였느니라 하더라",
+      "source_text_hash": "330244103791ba0d9a1b38b5668da6dae2e19c4298f9b6527b3672ac7ed900be",
+      "translation_text_hash": "2023bce4402569745202825ab354bbbe601f0a07165e1f37ba5777aa8a67281e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선지자들과 성도들과 및 땅 위에서 죽임을 당한 모든 자의 피가 이 성중에서 보였느니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "2023bce4402569745202825ab354bbbe601f0a07165e1f37ba5777aa8a67281e"
+      ]
+    }
+  ]
+}

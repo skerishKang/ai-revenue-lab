@@ -357,7 +357,7 @@ check(htmlSource.indexOf('id="templateClonerPanel"') !== -1 &&
       htmlSource.indexOf('id="templateReviewCancel"') !== -1 &&
       htmlSource.indexOf('id="templateCloneFile"') !== -1,
   "TEMPLATE_CANDIDATE_REVIEW_UI=PASS: the review surface exists");
-check(htmlSource.indexOf(".pdf,.docx,.pptx,.xlsx,.hwpx,.jpg,.jpeg,.png,.webp") !== -1,
+check(htmlSource.indexOf(".pdf,.docx,.pptx,.xlsx,.hwp,.hwpx,.jpg,.jpeg,.png,.webp") !== -1,
   "the cloner file chooser keeps the bounded type list");
 
 const uiSource = readSource("quote-template-ui.js");

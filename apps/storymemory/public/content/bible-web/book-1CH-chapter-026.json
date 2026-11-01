@@ -1,0 +1,1037 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CH:chapter:026",
+  "unit_ordinal": 364,
+  "unit_label": "1CH 26",
+  "book_code": "1CH",
+  "chapter_number": 26,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CH:26:1",
+      "sequence": 11079,
+      "chapter_label": "1CH 26",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 1
+        }
+      ],
+      "en": "For the divisions of the doorkeepers: of the Korahites, Meshelemiah the son of Kore, of the sons of Asaph.",
+      "ko": "문지기의 반차가 이러하니라 고라 족속 아삽의 자손 중에 고레의 아들 므셀레먀와",
+      "source_text_hash": "6d40bcb7e520328406ec7060d160ae8c3d2fd4e4320105ff3e1739be51809647",
+      "translation_text_hash": "ff053c98dcbd2a20de26482e0c6d5a4c6bb3b8c8ec37e565e1d73408dae9142d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문지기의 반차가 이러하니라 고라 족속 아삽의 자손 중에 고레의 아들 므셀레먀와"
+      ],
+      "raw_text_hashes": [
+        "ff053c98dcbd2a20de26482e0c6d5a4c6bb3b8c8ec37e565e1d73408dae9142d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:2",
+      "sequence": 11080,
+      "chapter_label": "1CH 26",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 2
+        }
+      ],
+      "en": "Meshelemiah had sons: Zechariah the firstborn, Jediael the second, Zebadiah the third, Jathniel the fourth,",
+      "ko": "므셀레먀의 아들들 맏아들 스가랴와 둘째 여디야엘과 세째 스바댜와 네째 야드니엘과",
+      "source_text_hash": "26aa3cc86318afc6582bf6f973c88442e5c977a65d3362e0c0efc73c24ee407c",
+      "translation_text_hash": "77c9c706b7fbb2ca73db77adba3e3584bf031cee3f3e31b46b566a2605feddf1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므셀레먀의 아들들 맏아들 스가랴와 둘째 여디야엘과 세째 스바댜와 네째 야드니엘과"
+      ],
+      "raw_text_hashes": [
+        "77c9c706b7fbb2ca73db77adba3e3584bf031cee3f3e31b46b566a2605feddf1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:3",
+      "sequence": 11081,
+      "chapter_label": "1CH 26",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 3
+        }
+      ],
+      "en": "Elam the fifth, Jehohanan the sixth, and Eliehoenai the seventh.",
+      "ko": "다섯째 엘람과 여섯째 여호하난과 일곱째 엘여호에내며",
+      "source_text_hash": "08c1e7ce90152b718d98b188f7cb6bea809bf84a92b73fb7b146364a7cc8793b",
+      "translation_text_hash": "87e37c5b384abd27d77f0b63274c379af5dd641a5c4b151677b22956ffe776f8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다섯째 엘람과 여섯째 여호하난과 일곱째 엘여호에내며"
+      ],
+      "raw_text_hashes": [
+        "87e37c5b384abd27d77f0b63274c379af5dd641a5c4b151677b22956ffe776f8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:4",
+      "sequence": 11082,
+      "chapter_label": "1CH 26",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 4
+        }
+      ],
+      "en": "Obed-Edom had sons: Shemaiah the firstborn, Jehozabad the second, Joah the third, Sacar the fourth, Nethanel the fifth,",
+      "ko": "오벧에돔의 아들들 맏아들 스마야와 둘째 여호사밧과 세째 요아와 네째 사갈과 다섯째 느다넬과",
+      "source_text_hash": "1657a1a224493d1b5dd8d39b0297a023c875c6eb1d1a53b3b1af917a45727047",
+      "translation_text_hash": "f7c2c484a9d31dcd5c58584ed9069b16b7bc59bf3a2204edbfa30a773625e974",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오벧에돔의 아들들 맏아들 스마야와 둘째 여호사밧과 세째 요아와 네째 사갈과 다섯째 느다넬과"
+      ],
+      "raw_text_hashes": [
+        "f7c2c484a9d31dcd5c58584ed9069b16b7bc59bf3a2204edbfa30a773625e974"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:5",
+      "sequence": 11083,
+      "chapter_label": "1CH 26",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 5
+        }
+      ],
+      "en": "Ammiel the sixth, Issachar the seventh, and Peullethai the eighth; for God blessed him.",
+      "ko": "여섯째 암미엘과 일곱째 잇사갈과 여덟째 브울래대니 이는 하나님이 오벧에돔에게 복을 주셨음이며",
+      "source_text_hash": "61a23c3f163cbeedddb0da6f98fb658c2ec6e07eb0c68784e14ce99e6ff7be97",
+      "translation_text_hash": "3e741e42ec5bf341a8ce2de628409e64f7fb97d558936de0bc52292ac6605bda",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여섯째 암미엘과 일곱째 잇사갈과 여덟째 브울래대니 이는 하나님이 오벧에돔에게 복을 주셨음이며"
+      ],
+      "raw_text_hashes": [
+        "3e741e42ec5bf341a8ce2de628409e64f7fb97d558936de0bc52292ac6605bda"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:6",
+      "sequence": 11084,
+      "chapter_label": "1CH 26",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 6
+        }
+      ],
+      "en": "Sons were also born to Shemaiah his son, who ruled over the house of their father; for they were mighty men of valor.",
+      "ko": "그 아들 스마야도 두어 아들을 낳았으니 저희의 족속을 다스리는 자요 큰 용사라",
+      "source_text_hash": "86ddaa618b9475c9a051419c33cd970b6bfde219fcbd0f1636b939cdb76b5425",
+      "translation_text_hash": "a371d79d263fbb4527b0fa8c6121cf2425a3f64ce97fb5fbc4b42541d3241bf5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 아들 스마야도 두어 아들을 낳았으니 저희의 족속을 다스리는 자요 큰 용사라"
+      ],
+      "raw_text_hashes": [
+        "a371d79d263fbb4527b0fa8c6121cf2425a3f64ce97fb5fbc4b42541d3241bf5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:7",
+      "sequence": 11085,
+      "chapter_label": "1CH 26",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 7
+        }
+      ],
+      "en": "The sons of Shemaiah: Othni, Rephael, Obed, and Elzabad, whose relatives were valiant men, Elihu, and Semachiah.",
+      "ko": "스마야의 아들들은 오드니와 르바엘과 오벳과 엘사밧이며 엘사밧의 형제 엘리후와 스마갸는 능력이 있는 자니",
+      "source_text_hash": "af5bfd4c1b9dc1aa95027f88c68312d2e5e7e878e23aaf9d0c2cad1f9cd26e57",
+      "translation_text_hash": "5347523e9ca5cdd80ea266db431fc0195cf96df8e0536fdeb7e256d0bbdb22a8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스마야의 아들들은 오드니와 르바엘과 오벳과 엘사밧이며 엘사밧의 형제 엘리후와 스마갸는 능력이 있는 자니"
+      ],
+      "raw_text_hashes": [
+        "5347523e9ca5cdd80ea266db431fc0195cf96df8e0536fdeb7e256d0bbdb22a8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:8",
+      "sequence": 11086,
+      "chapter_label": "1CH 26",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 8
+        }
+      ],
+      "en": "All these were of the sons of Obed-Edom with their sons and their brothers, able men in strength for the service: sixty-two of Obed-Edom.",
+      "ko": "이는 다 오벧에돔의 자손이라 저희와 그 아들들과 그 형제들은 다 능력이 있어 그 직무를 잘하는 자니 오벧에돔에게서 난 자가 육십 이명이며",
+      "source_text_hash": "fd3753b928ba92d91f09206d1267f31d1ea70c41f7e479674cec2f90b01e88f6",
+      "translation_text_hash": "3ae35be1388f5e0fe44ddea36ab86825808bb2f79e5c21fe022de3035ba8116c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 다 오벧에돔의 자손이라 저희와 그 아들들과 그 형제들은 다 능력이 있어 그 직무를 잘하는 자니 오벧에돔에게서 난 자가 육십 이명이며"
+      ],
+      "raw_text_hashes": [
+        "3ae35be1388f5e0fe44ddea36ab86825808bb2f79e5c21fe022de3035ba8116c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:9",
+      "sequence": 11087,
+      "chapter_label": "1CH 26",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 9
+        }
+      ],
+      "en": "Meshelemiah had sons and brothers, eighteen valiant men.",
+      "ko": "또 므셀레먀의 아들과 형제 십 팔인은 능력이 있는 자며",
+      "source_text_hash": "414be09532b2272ab0a39a23fb659d7e5a6b1a94d95b7c559ec6b1d876123d39",
+      "translation_text_hash": "dbac49780b21ac6e2ea4050be74dc09308ea1a170ec1bd561a7dd1101bb43b93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 므셀레먀의 아들과 형제 십 팔인은 능력이 있는 자며"
+      ],
+      "raw_text_hashes": [
+        "dbac49780b21ac6e2ea4050be74dc09308ea1a170ec1bd561a7dd1101bb43b93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:10",
+      "sequence": 11088,
+      "chapter_label": "1CH 26",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 10
+        }
+      ],
+      "en": "Also Hosah, of the children of Merari, had sons: Shimri the chief (for though he was not the firstborn, yet his father made him chief),",
+      "ko": "므라리 자손 중 호사가 아들들이 있으니 그 장자는 시므리라 시므리는 본래 맏아들이 아니나 그 아비가 장자를 삼았고",
+      "source_text_hash": "125d062d9df7586ddbd26881de8de80e8ab53b55e0801375d75ed356005ebd3d",
+      "translation_text_hash": "7c2390004a2a889c532def34f63e70e706317c397696676cff4167b54ebe1ed8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "므라리 자손 중 호사가 아들들이 있으니 그 장자는 시므리라 시므리는 본래 맏아들이 아니나 그 아비가 장자를 삼았고"
+      ],
+      "raw_text_hashes": [
+        "7c2390004a2a889c532def34f63e70e706317c397696676cff4167b54ebe1ed8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:11",
+      "sequence": 11089,
+      "chapter_label": "1CH 26",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 11
+        }
+      ],
+      "en": "Hilkiah the second, Tebaliah the third, and Zechariah the fourth. All the sons and brothers of Hosah were thirteen.",
+      "ko": "둘째는 힐기야요 세째는 드발리야요 네째는 스가랴니 호사의 아들과 형제가 십 삼인이더라",
+      "source_text_hash": "5efbec0f261e395bbb70e003123480ecb3aaa6cc7435231c40345736da8689c1",
+      "translation_text_hash": "1580e2c88e1efe40c5048a17c5cea3787ffb0b35a808e0654b238332ca29d99d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "둘째는 힐기야요 세째는 드발리야요 네째는 스가랴니 호사의 아들과 형제가 십 삼인이더라"
+      ],
+      "raw_text_hashes": [
+        "1580e2c88e1efe40c5048a17c5cea3787ffb0b35a808e0654b238332ca29d99d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:12",
+      "sequence": 11090,
+      "chapter_label": "1CH 26",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 12
+        }
+      ],
+      "en": "Of these were the divisions of the doorkeepers, even of the chief men, having offices like their brothers, to minister in the LORD’s house.",
+      "ko": "이상은 다 문지기의 반장으로서 그 형제처럼 직임을 얻어 여호와의 전에서 섬기는 자라",
+      "source_text_hash": "8a4962833e79239df31348df89a4c956fb1c900348905db6542cd49747e4b074",
+      "translation_text_hash": "717692a09f37b9995918c8035cad89b95d3612719114e95c21b14193e3fdde12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이상은 다 문지기의 반장으로서 그 형제처럼 직임을 얻어 여호와의 전에서 섬기는 자라"
+      ],
+      "raw_text_hashes": [
+        "717692a09f37b9995918c8035cad89b95d3612719114e95c21b14193e3fdde12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:13",
+      "sequence": 11091,
+      "chapter_label": "1CH 26",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 13
+        }
+      ],
+      "en": "They cast lots, the small as well as the great, according to their fathers’ houses, for every gate.",
+      "ko": "각 문을 지키기 위하여 그 종족을 따라 무론대소하고 다 제비 뽑혔으니",
+      "source_text_hash": "32623c7a588699bd1361615bf703744d3f29c6f424fc6354ef486e0b38d924ca",
+      "translation_text_hash": "07a26599a83f9d6e68ee0c27956d15da71e98ce828fb2d33e9acd826615553f4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각 문을 지키기 위하여 그 종족을 따라 무론대소하고 다 제비 뽑혔으니"
+      ],
+      "raw_text_hashes": [
+        "07a26599a83f9d6e68ee0c27956d15da71e98ce828fb2d33e9acd826615553f4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:14",
+      "sequence": 11092,
+      "chapter_label": "1CH 26",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 14
+        }
+      ],
+      "en": "The lot eastward fell to Shelemiah. Then for Zechariah his son, a wise counselor, they cast lots; and his lot came out northward.",
+      "ko": "셀레먀는 동방에 당첨되었고 그 아들 스가랴는 명철한 의사라 저를 위하여 제비 뽑으니 북방에 당첨되었고",
+      "source_text_hash": "72b9da26d28339a645b863287df8fdfe74667976a9ff4e794021e388cdad29ff",
+      "translation_text_hash": "191e5f4ca935802cb46426cf1a8da0ef73a8c571150afb1b216312ac23f010d4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "셀레먀는 동방에 당첨되었고 그 아들 스가랴는 명철한 의사라 저를 위하여 제비 뽑으니 북방에 당첨되었고"
+      ],
+      "raw_text_hashes": [
+        "191e5f4ca935802cb46426cf1a8da0ef73a8c571150afb1b216312ac23f010d4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:15",
+      "sequence": 11093,
+      "chapter_label": "1CH 26",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 15
+        }
+      ],
+      "en": "To Obed-Edom southward; and to his sons the storehouse.",
+      "ko": "오벧에돔은 남방에 당첨되었고 그 아들들은 곳간에 당첨되었으며",
+      "source_text_hash": "a8802c95a9fce33b46c3a708305acbc597c703ef5f1e079e4ed7bd7461bcea62",
+      "translation_text_hash": "fec2cd00f085b598739a11abd696c66a6999589658ffed5136532d33345baed0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오벧에돔은 남방에 당첨되었고 그 아들들은 곳간에 당첨되었으며"
+      ],
+      "raw_text_hashes": [
+        "fec2cd00f085b598739a11abd696c66a6999589658ffed5136532d33345baed0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:16",
+      "sequence": 11094,
+      "chapter_label": "1CH 26",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 16
+        }
+      ],
+      "en": "To Shuppim and Hosah westward, by the gate of Shallecheth, at the causeway that goes up, watchman opposite watchman.",
+      "ko": "숩빔과 호사는 서방에 당첨되어 큰 길로 통한 살래겟 문 곁에 있어 서로 대하여 파수하였으니",
+      "source_text_hash": "14bfb1a7d601620b4f90234dd8368af6c69da391df99108a92bb4612350eed1b",
+      "translation_text_hash": "d89accc18e335272ed482a35b5e0f63402da2d940ce386f85ebbba2895bac5e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "숩빔과 호사는 서방에 당첨되어 큰 길로 통한 살래겟 문 곁에 있어 서로 대하여 파수하였으니"
+      ],
+      "raw_text_hashes": [
+        "d89accc18e335272ed482a35b5e0f63402da2d940ce386f85ebbba2895bac5e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:17",
+      "sequence": 11095,
+      "chapter_label": "1CH 26",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 17
+        }
+      ],
+      "en": "Eastward were six Levites, northward four a day, southward four a day, and for the storehouse two and two.",
+      "ko": "동방에 레위 사람이 여섯이요 북방에 매일 네 사람이요 남방에 매일 네 사람이요 곳간에는 둘씩이며",
+      "source_text_hash": "59be8b603ea78f2bc93aeed0fd7098ef1cc1602d587096545c9f9004e5bd8088",
+      "translation_text_hash": "a0bae21df658b6849f7372f0b7759408b97d318aded7daa9805c1e31a775a77b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동방에 레위 사람이 여섯이요 북방에 매일 네 사람이요 남방에 매일 네 사람이요 곳간에는 둘씩이며"
+      ],
+      "raw_text_hashes": [
+        "a0bae21df658b6849f7372f0b7759408b97d318aded7daa9805c1e31a775a77b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:18",
+      "sequence": 11096,
+      "chapter_label": "1CH 26",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 18
+        }
+      ],
+      "en": "For Parbar westward, four at the causeway, and two at Parbar.",
+      "ko": "낭실 서편 큰 길에 네 사람이요 낭실에 두 사람이니",
+      "source_text_hash": "3726ce898e7d8a6861b16b2e56e58eced2064326c9c91bd7a24c03a0f7992667",
+      "translation_text_hash": "433b24731c2d23a6b80206e8415b1ccb5e2029cffdb12d0b15defcd0768d39cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "낭실 서편 큰 길에 네 사람이요 낭실에 두 사람이니"
+      ],
+      "raw_text_hashes": [
+        "433b24731c2d23a6b80206e8415b1ccb5e2029cffdb12d0b15defcd0768d39cf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:19",
+      "sequence": 11097,
+      "chapter_label": "1CH 26",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 19
+        }
+      ],
+      "en": "These were the divisions of the doorkeepers; of the sons of the Korahites, and of the sons of Merari.",
+      "ko": "고라와 므라리 자손의 문지기의 반차가 이러하였더라",
+      "source_text_hash": "23634dce1981b6d49d3ba8de98f5cfefd622c3b174814ab138834c84d79163a1",
+      "translation_text_hash": "24a7117f530e1adc390f42299b7d6852a2eef0d85581f72ab247d3fdf6c2b068",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "고라와 므라리 자손의 문지기의 반차가 이러하였더라"
+      ],
+      "raw_text_hashes": [
+        "24a7117f530e1adc390f42299b7d6852a2eef0d85581f72ab247d3fdf6c2b068"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:20",
+      "sequence": 11098,
+      "chapter_label": "1CH 26",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 20
+        }
+      ],
+      "en": "Of the Levites, Ahijah was over the treasures of God’s house and over the treasures of the dedicated things.",
+      "ko": "레위 사람 중에 아히야는 하나님의 전 곳간과 성물 곳간을 맡았으며",
+      "source_text_hash": "4cc734481350de5894f75dfd27f5d70de3600bc60677fb1d13f632ac45bfc2bd",
+      "translation_text_hash": "7f8f40f8e345cf64815b9685b084f8c1dde29f00f1b0270d97dccc03efefe488",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 사람 중에 아히야는 하나님의 전 곳간과 성물 곳간을 맡았으며"
+      ],
+      "raw_text_hashes": [
+        "7f8f40f8e345cf64815b9685b084f8c1dde29f00f1b0270d97dccc03efefe488"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:21",
+      "sequence": 11099,
+      "chapter_label": "1CH 26",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 21
+        }
+      ],
+      "en": "The sons of Ladan, the sons of the Gershonites belonging to Ladan, the heads of the fathers’ households belonging to Ladan the Gershonite: Jehieli.",
+      "ko": "라단의 자손은 곧 라단에게 속한 게르손 사람의 자손이니 게르손 사람 라단에게 속한 족장은 여히엘리라",
+      "source_text_hash": "ae10a7ac35e7976ba28b1e3a19582069ee10cf36ed40ea41c1c61b3a1e9ebc26",
+      "translation_text_hash": "20da42111d6e780b4c6604a87875095b9821c001a1c1a5cb951e432b430bcaf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "라단의 자손은 곧 라단에게 속한 게르손 사람의 자손이니 게르손 사람 라단에게 속한 족장은 여히엘리라"
+      ],
+      "raw_text_hashes": [
+        "20da42111d6e780b4c6604a87875095b9821c001a1c1a5cb951e432b430bcaf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:22",
+      "sequence": 11100,
+      "chapter_label": "1CH 26",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 22
+        }
+      ],
+      "en": "The sons of Jehieli: Zetham, and Joel his brother, over the treasures of the LORD’s house.",
+      "ko": "여히엘리의 아들은 스담과 그 아우 요엘이니 여호와의 전 곳간을 맡았고",
+      "source_text_hash": "d36a5f4337bd672d5fbbdad8a20b74e479503f56d1d8f6d8b063f85087221f3d",
+      "translation_text_hash": "1a4a41d34688d363f221895b7300a5e6ea0f837b36504a212ebe7409fd1c40b3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여히엘리의 아들은 스담과 그 아우 요엘이니 여호와의 전 곳간을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "1a4a41d34688d363f221895b7300a5e6ea0f837b36504a212ebe7409fd1c40b3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:23",
+      "sequence": 11101,
+      "chapter_label": "1CH 26",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 23
+        }
+      ],
+      "en": "Of the Amramites, of the Izharites, of the Hebronites, of the Uzzielites:",
+      "ko": "아므람 자손과 이스할 자손과 헤브론 자손과 웃시엘 자손 중에",
+      "source_text_hash": "2a6c8db76e5e34bcdf127344d1ff7731a79a3eeae0926545061db7b319b212a4",
+      "translation_text_hash": "c189bf19d3d43583ec889f9bad15627d2dc3fe96cc0013c41e7c698db9f20f1f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아므람 자손과 이스할 자손과 헤브론 자손과 웃시엘 자손 중에"
+      ],
+      "raw_text_hashes": [
+        "c189bf19d3d43583ec889f9bad15627d2dc3fe96cc0013c41e7c698db9f20f1f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:24",
+      "sequence": 11102,
+      "chapter_label": "1CH 26",
+      "verse_label": "24",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 24
+        }
+      ],
+      "en": "Shebuel the son of Gershom, the son of Moses, was ruler over the treasuries.",
+      "ko": "모세의 아들 게르솜의 자손 스브엘은 곳간을 맡았고",
+      "source_text_hash": "619d2b9492c73b03479fb0aa1e8c2bab89d207f2f04301def25c5a3526ecf3aa",
+      "translation_text_hash": "ae5685e5cabdbf754b3e7249a62c00783425b71f984173f77a10b00ed1bd5bac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세의 아들 게르솜의 자손 스브엘은 곳간을 맡았고"
+      ],
+      "raw_text_hashes": [
+        "ae5685e5cabdbf754b3e7249a62c00783425b71f984173f77a10b00ed1bd5bac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:25",
+      "sequence": 11103,
+      "chapter_label": "1CH 26",
+      "verse_label": "25",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 25
+        }
+      ],
+      "en": "His brothers: of Eliezer, Rehabiah his son, and Jeshaiah his son, and Joram his son, and Zichri his son, and Shelomoth his son.",
+      "ko": "그 형제 곧 엘리에셀에게서 난 자는 그 아들 르하뱌와 그 아들 여사야와 그 아들 요람과 그 아들 시그리와 그 아들 슬로못이라",
+      "source_text_hash": "f9bd15e33d7a737f2e10386d62c5a7f11d587f7f7d12cac946d13e676f955e3e",
+      "translation_text_hash": "771a6410f5024e50fb7e3652a3e14fbcd6d4e867709e102fd2aeda5c9524b400",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제 곧 엘리에셀에게서 난 자는 그 아들 르하뱌와 그 아들 여사야와 그 아들 요람과 그 아들 시그리와 그 아들 슬로못이라"
+      ],
+      "raw_text_hashes": [
+        "771a6410f5024e50fb7e3652a3e14fbcd6d4e867709e102fd2aeda5c9524b400"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:26",
+      "sequence": 11104,
+      "chapter_label": "1CH 26",
+      "verse_label": "26",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 26
+        }
+      ],
+      "en": "This Shelomoth and his brothers were over all the treasuries of the dedicated things, which David the king, and the heads of the fathers’ households, the captains over thousands and hundreds, and the captains of the army, had dedicated.",
+      "ko": "이 슬로못과 그 형제는 성물의 모든 곳간을 맡았으니 곧 다윗왕과 족장과 천부장과 백부장과 군대의 모든 장관이 구별하여 드린 성물이라",
+      "source_text_hash": "e14a11ee149baeb56fea985c99711427898babe6ec4d9a517a78798312c891b3",
+      "translation_text_hash": "12222c0573b7c13cd6aeb7972178a3927ff5cbd3960d57b23d5f5e21576b035a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 슬로못과 그 형제는 성물의 모든 곳간을 맡았으니 곧 다윗왕과 족장과 천부장과 백부장과 군대의 모든 장관이 구별하여 드린 성물이라"
+      ],
+      "raw_text_hashes": [
+        "12222c0573b7c13cd6aeb7972178a3927ff5cbd3960d57b23d5f5e21576b035a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:27",
+      "sequence": 11105,
+      "chapter_label": "1CH 26",
+      "verse_label": "27",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 27
+        }
+      ],
+      "en": "They dedicated some of the plunder won in battles to repair the LORD’s house.",
+      "ko": "저희가 싸울 때에 노략하여 얻은 물건 중에서 구별하여 드려 여호와의 전을 중수하게 한 것이며",
+      "source_text_hash": "5807e8a6cba547f1e35551e88cf1cfd7d44b338abbd3e451297828234202ced1",
+      "translation_text_hash": "4658cca655f827a7aa1311307e62cba8c4beede96a8b74444398adc786b66965",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 싸울 때에 노략하여 얻은 물건 중에서 구별하여 드려 여호와의 전을 중수하게 한 것이며"
+      ],
+      "raw_text_hashes": [
+        "4658cca655f827a7aa1311307e62cba8c4beede96a8b74444398adc786b66965"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:28",
+      "sequence": 11106,
+      "chapter_label": "1CH 26",
+      "verse_label": "28",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 28
+        }
+      ],
+      "en": "All that Samuel the seer, Saul the son of Kish, Abner the son of Ner, and Joab the son of Zeruiah had dedicated, whoever had dedicated anything, it was under the hand of Shelomoth and of his brothers.",
+      "ko": "선견자 사무엘과 기스의 아들 사울과 넬의 아들 아브넬과 스루야의 아들 요압이 무론 무엇이든지 구별하여 드린 성물은 다 슬로못과 그 형제의 수하에 있었더라",
+      "source_text_hash": "6b2e10ace1e4e25e34b43bb5a8b23ceb6d1f9c260073a3c199b4d1f8905f4bd6",
+      "translation_text_hash": "97649d389121056fd60dfd5e673d4a4f840a88987ab7d60da3e1b37857d17d47",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선견자 사무엘과 기스의 아들 사울과 넬의 아들 아브넬과 스루야의 아들 요압이 무론 무엇이든지 구별하여 드린 성물은 다 슬로못과 그 형제의 수하에 있었더라"
+      ],
+      "raw_text_hashes": [
+        "97649d389121056fd60dfd5e673d4a4f840a88987ab7d60da3e1b37857d17d47"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:29",
+      "sequence": 11107,
+      "chapter_label": "1CH 26",
+      "verse_label": "29",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 29
+        }
+      ],
+      "en": "Of the Izharites, Chenaniah and his sons were appointed to the outward business over Israel, for officers and judges.",
+      "ko": "이스할 자손 중에 그나냐와 그 아들들은 이스라엘 바깥 일을 다스리는 유사와 재판관이 되었고",
+      "source_text_hash": "c1b0178b5799ed0257c491325cce4b485a1fb14030ab6198d9430a9dbabab6e8",
+      "translation_text_hash": "d24107d4dea650a2dcb71819fa4aca8b49f76dc82e244d0d5730904fe153e3f2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스할 자손 중에 그나냐와 그 아들들은 이스라엘 바깥 일을 다스리는 유사와 재판관이 되었고"
+      ],
+      "raw_text_hashes": [
+        "d24107d4dea650a2dcb71819fa4aca8b49f76dc82e244d0d5730904fe153e3f2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:30",
+      "sequence": 11108,
+      "chapter_label": "1CH 26",
+      "verse_label": "30",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 30
+        }
+      ],
+      "en": "Of the Hebronites, Hashabiah and his brothers, one thousand seven hundred men of valor, had the oversight of Israel beyond the Jordan westward, for all the business of the LORD and for the service of the king.",
+      "ko": "헤브론 자손 중에 하사뱌와 그 동족 용사 일천 칠백인은 요단 서편에서 이스라엘을 주관하여 여호와의 모든 일과 왕을 섬기는 직임을 맡았으며",
+      "source_text_hash": "aac5e981f30a7b65a8c8ad21b9fb0ca2c4c378b2812a4b311eab91db0ce8ddc8",
+      "translation_text_hash": "cc79f5535bd680dfe822ad4a4f6392de15c155d965a430a4612ed87dadf725e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론 자손 중에 하사뱌와 그 동족 용사 일천 칠백인은 요단 서편에서 이스라엘을 주관하여 여호와의 모든 일과 왕을 섬기는 직임을 맡았으며"
+      ],
+      "raw_text_hashes": [
+        "cc79f5535bd680dfe822ad4a4f6392de15c155d965a430a4612ed87dadf725e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:31",
+      "sequence": 11109,
+      "chapter_label": "1CH 26",
+      "verse_label": "31",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 31
+        }
+      ],
+      "en": "Of the Hebronites, Jerijah was the chief of the Hebronites, according to their generations by fathers’ households. They were sought for in the fortieth year of the reign of David, and mighty men of valor were found among them at Jazer of Gilead.",
+      "ko": "헤브론 자손 중에 여리야가 그 세계와 종족대로 헤브론 자손의 족장이 되었더라 다윗이 위에 있은지 사십년에 길르앗 야셀에서 그 족속 중에 구하여 큰 용사를 얻었으니",
+      "source_text_hash": "0e6e8d473e71de16d21726098f2bd2f58acc8c8d68a6c112ba38592367f9d1f0",
+      "translation_text_hash": "621f3a81785fccb66c982e40850d1961f851b48398f808dd46d0a635e8cdd66e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헤브론 자손 중에 여리야가 그 세계와 종족대로 헤브론 자손의 족장이 되었더라 다윗이 위에 있은지 사십년에 길르앗 야셀에서 그 족속 중에 구하여 큰 용사를 얻었으니"
+      ],
+      "raw_text_hashes": [
+        "621f3a81785fccb66c982e40850d1961f851b48398f808dd46d0a635e8cdd66e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CH:26:32",
+      "sequence": 11110,
+      "chapter_label": "1CH 26",
+      "verse_label": "32",
+      "locator": {
+        "book": "1CH",
+        "chapter": 26,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "1CH",
+          "chapter": 26,
+          "verse": 32
+        }
+      ],
+      "en": "His relatives, men of valor, were two thousand seven hundred, heads of fathers’ households, whom King David made overseers over the Reubenites, the Gadites, and the half-tribe of the Manassites, for every matter pertaining to God and for the affairs of the king.",
+      "ko": "그 형제 중 이천 칠백명이 다 용사요 족장이라 다윗왕이 저희로 르우벤과 갓과 므낫세 반 지파를 주관하여 하나님의 모든 일과 왕의 일을 다스리게 하였더라",
+      "source_text_hash": "0af297a157e8a073e5cc5b1e764edbc6d9c11826c8b24760786d59ebb4d96ec8",
+      "translation_text_hash": "6e06e5d36f15bf9f712877fa9bf7923ab7fd6c7b8549ce7164c5914518012a54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 형제 중 이천 칠백명이 다 용사요 족장이라 다윗왕이 저희로 르우벤과 갓과 므낫세 반 지파를 주관하여 하나님의 모든 일과 왕의 일을 다스리게 하였더라"
+      ],
+      "raw_text_hashes": [
+        "6e06e5d36f15bf9f712877fa9bf7923ab7fd6c7b8549ce7164c5914518012a54"
+      ]
+    }
+  ]
+}

@@ -597,16 +597,9 @@ def test_2645_canonical_app_authority_contract() -> None:
     assert helper.CALLER_ID == "b54-p01-overlay-20260914-a1"
     parsed = identity.parse_caller_registry_v1_overlay(overlay_text)
     assert parsed.caller_id == helper.CALLER_ID
-    assert parsed.allowed_app_ids == (
-        CLAW_APP_ID,
-        DRIVE_APP_ID,
-        TELEGRAM_APP_ID,
-        CALENDAR_APP_ID,
-        XLSX_READ_APP_ID,
-        XLSX_WRITE_APP_ID,
-    )
-    assert len(parsed.allowed_app_ids) == 6
-    assert len(set(parsed.allowed_app_ids)) == 6
+    assert parsed.allowed_app_ids == CANONICAL_APP_IDS
+    assert len(parsed.allowed_app_ids) == len(CANONICAL_APP_IDS)
+    assert len(set(parsed.allowed_app_ids)) == len(CANONICAL_APP_IDS)
 
     base_registry = {
         "version": 1,

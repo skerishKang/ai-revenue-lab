@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PRO:chapter:030",
+  "unit_ordinal": 658,
+  "unit_label": "PRO 30",
+  "book_code": "PRO",
+  "chapter_number": 30,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PRO:30:1",
+      "sequence": 17253,
+      "chapter_label": "PRO 30",
+      "verse_label": "1",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 1
+        }
+      ],
+      "en": "The words of Agur the son of Jakeh, the revelation: the man says to Ithiel, to Ithiel and Ucal:",
+      "ko": "이 말씀은 야게의 아들 아굴의 잠언이니 그가 이디엘과 우갈에게 이른 것이니라",
+      "source_text_hash": "27a35f825cd3d6f9154d6b660ef51757a15bad146bc849b702d0f604bb7075ee",
+      "translation_text_hash": "91561872b419cab23265ff93ad696e04efd8df6dfe1b10574892d1e8b6f06b72",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀은 야게의 아들 아굴의 잠언이니 그가 이디엘과 우갈에게 이른 것이니라"
+      ],
+      "raw_text_hashes": [
+        "91561872b419cab23265ff93ad696e04efd8df6dfe1b10574892d1e8b6f06b72"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:2",
+      "sequence": 17254,
+      "chapter_label": "PRO 30",
+      "verse_label": "2",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 2
+        }
+      ],
+      "en": "“Surely I am the most ignorant man, and don’t have a man’s understanding.",
+      "ko": "나는 다른 사람에게 비하면 짐승이라 내게는 사람의 총명이 있지 아니하니라",
+      "source_text_hash": "347aebdd818e424e6e8296bbc9610e06feff95430bcfdcaeb889864f9876db36",
+      "translation_text_hash": "a623ef061c4838d824730fce5971a747752493af3043f97f504e84cfba9a6b9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 다른 사람에게 비하면 짐승이라 내게는 사람의 총명이 있지 아니하니라"
+      ],
+      "raw_text_hashes": [
+        "a623ef061c4838d824730fce5971a747752493af3043f97f504e84cfba9a6b9a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:3",
+      "sequence": 17255,
+      "chapter_label": "PRO 30",
+      "verse_label": "3",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 3
+        }
+      ],
+      "en": "I have not learned wisdom, neither do I have the knowledge of the Holy One.",
+      "ko": "나는 지혜를 배우지 못하였고 또 거룩하신 자를 아는 지식이 없거니와",
+      "source_text_hash": "b9eaccfdf9b5ef20b4cc5260e595a790d558cecf27468847e1a8d906f8789f8e",
+      "translation_text_hash": "e6f15297c6614a7ef90fd80edc44a2b53511bb012284372c076f8815404e5897",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 지혜를 배우지 못하였고 또 거룩하신 자를 아는 지식이 없거니와"
+      ],
+      "raw_text_hashes": [
+        "e6f15297c6614a7ef90fd80edc44a2b53511bb012284372c076f8815404e5897"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:4",
+      "sequence": 17256,
+      "chapter_label": "PRO 30",
+      "verse_label": "4",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 4
+        }
+      ],
+      "en": "Who has ascended up into heaven, and descended? Who has gathered the wind in his fists? Who has bound the waters in his garment? Who has established all the ends of the earth? What is his name, and what is his son’s name, if you know?",
+      "ko": "하늘에 올라갔다가 내려온 자가 누구인지, 바람을 그 장중에 모은 자가 누구인지, 물을 옷에 싼 자가 누구인지, 땅의 모든 끝을 정한 자가 누구인지, 그 이름이 무엇인지, 그 아들의 이름이 무엇인지 너는 아느냐",
+      "source_text_hash": "ce11887505d157108a4a11e599f80aeb71886b084727c6c8f4baf9e09a78a857",
+      "translation_text_hash": "fad9e623721ccd1ee61619888c02e386bbc3261b150d357d6f80292b1c377cc5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘에 올라갔다가 내려온 자가 누구인지, 바람을 그 장중에 모은 자가 누구인지, 물을 옷에 싼 자가 누구인지, 땅의 모든 끝을 정한 자가 누구인지, 그 이름이 무엇인지, 그 아들의 이름이 무엇인지 너는 아느냐"
+      ],
+      "raw_text_hashes": [
+        "fad9e623721ccd1ee61619888c02e386bbc3261b150d357d6f80292b1c377cc5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:5",
+      "sequence": 17257,
+      "chapter_label": "PRO 30",
+      "verse_label": "5",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 5
+        }
+      ],
+      "en": "“Every word of God is flawless. He is a shield to those who take refuge in him.",
+      "ko": "하나님의 말씀은 다 순전하며 하나님은 그를 의지하는 자의 방패시니라",
+      "source_text_hash": "eb274d81f0df39af41930da87a9695285bf8263376bcef2c886c189d10c9a5a3",
+      "translation_text_hash": "a35e59566e0fee3659bcafebd691d77d147b9e1495bfe5cbd112a49bc5207a79",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님의 말씀은 다 순전하며 하나님은 그를 의지하는 자의 방패시니라"
+      ],
+      "raw_text_hashes": [
+        "a35e59566e0fee3659bcafebd691d77d147b9e1495bfe5cbd112a49bc5207a79"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:6",
+      "sequence": 17258,
+      "chapter_label": "PRO 30",
+      "verse_label": "6",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 6
+        }
+      ],
+      "en": "Don’t you add to his words, lest he reprove you, and you be found a liar.",
+      "ko": "너는 그 말씀에 더하지 말라 그가 너를 책망하시겠고 너는 거짓말 하는 자가 될까 두려우니라",
+      "source_text_hash": "64c9f2c41b2aa1670e7092322fda26efdf2f6607788bba71371ed9fa645ee653",
+      "translation_text_hash": "a919c622e3023146cbc2253a001bb692b42c76bd31f50da0acb2f3f2b3b612b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 그 말씀에 더하지 말라 그가 너를 책망하시겠고 너는 거짓말 하는 자가 될까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "a919c622e3023146cbc2253a001bb692b42c76bd31f50da0acb2f3f2b3b612b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:7",
+      "sequence": 17259,
+      "chapter_label": "PRO 30",
+      "verse_label": "7",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 7
+        }
+      ],
+      "en": "“Two things I have asked of you. Don’t deny me before I die.",
+      "ko": "내가 두가지 일을 주께 구하였사오니 나의 죽기 전에 주시옵소서",
+      "source_text_hash": "f80dd9941e5fe52febeb359eef2d7918ab7040cad9ad8135584d555b129644fc",
+      "translation_text_hash": "f2b0072e2d53d6603d86f5031535c906e800d082c16f5a1947ef0c0dad03ad83",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 두가지 일을 주께 구하였사오니 나의 죽기 전에 주시옵소서"
+      ],
+      "raw_text_hashes": [
+        "f2b0072e2d53d6603d86f5031535c906e800d082c16f5a1947ef0c0dad03ad83"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:8",
+      "sequence": 17260,
+      "chapter_label": "PRO 30",
+      "verse_label": "8",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 8
+        }
+      ],
+      "en": "Remove far from me falsehood and lies. Give me neither poverty nor riches. Feed me with the food that is needful for me,",
+      "ko": "곧 허탄과 거짓말을 내게서 멀리 하옵시며 나로 가난하게도 마옵시고 부하게도 마옵시고 오직 필요한 양식으로 내게 먹이시옵소서",
+      "source_text_hash": "e7c63fcf2cde39a22b251ade322d6b00a4b8dad94b546276825307c50e6caf66",
+      "translation_text_hash": "dd6b058d10638a4cbe3079c362623ce1fff7074dc58e90403b3f7b9bf97a8d99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 허탄과 거짓말을 내게서 멀리 하옵시며 나로 가난하게도 마옵시고 부하게도 마옵시고 오직 필요한 양식으로 내게 먹이시옵소서"
+      ],
+      "raw_text_hashes": [
+        "dd6b058d10638a4cbe3079c362623ce1fff7074dc58e90403b3f7b9bf97a8d99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:9",
+      "sequence": 17261,
+      "chapter_label": "PRO 30",
+      "verse_label": "9",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 9
+        }
+      ],
+      "en": "lest I be full, deny you, and say, ‘Who is the LORD?’ or lest I be poor, and steal, and so dishonor the name of my God.",
+      "ko": "혹 내가 배불러서 하나님을 모른다 여호와가 누구냐 할까 하오며 혹 내가 가난하여 도적질하고 내 하나님의 이름을 욕되게 할까 두려워함이니이다",
+      "source_text_hash": "96df76a45c29a4be099b722abfa95560d44fff2c04fa036c7b3a63f89ee47af9",
+      "translation_text_hash": "3b7a5ad4baf0e7b2df3c23d13183cc474f10f9bb18b1b537374a96fee07d0b3a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹 내가 배불러서 하나님을 모른다 여호와가 누구냐 할까 하오며 혹 내가 가난하여 도적질하고 내 하나님의 이름을 욕되게 할까 두려워함이니이다"
+      ],
+      "raw_text_hashes": [
+        "3b7a5ad4baf0e7b2df3c23d13183cc474f10f9bb18b1b537374a96fee07d0b3a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:10",
+      "sequence": 17262,
+      "chapter_label": "PRO 30",
+      "verse_label": "10",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 10
+        }
+      ],
+      "en": "“Don’t slander a servant to his master, lest he curse you, and you be held guilty.",
+      "ko": "너는 종을 그 상전에게 훼방하지 말라 그가 너를 저주하겠고 너는 죄책을 당할까 두려우니라",
+      "source_text_hash": "e11f15657c6f61da3e18f6fd09b5ce8fcd003df012eb518bd77e65d39970add4",
+      "translation_text_hash": "9f61aadb6302467ef6ca7a1f6d1b8289686e1158288df2239761cb81b67ea37f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 종을 그 상전에게 훼방하지 말라 그가 너를 저주하겠고 너는 죄책을 당할까 두려우니라"
+      ],
+      "raw_text_hashes": [
+        "9f61aadb6302467ef6ca7a1f6d1b8289686e1158288df2239761cb81b67ea37f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:11",
+      "sequence": 17263,
+      "chapter_label": "PRO 30",
+      "verse_label": "11",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 11
+        }
+      ],
+      "en": "There is a generation that curses their father, and doesn’t bless their mother.",
+      "ko": "아비를 저주하며 어미를 축복하지 아니하는 무리가 있느니라",
+      "source_text_hash": "3809bdaa2e55d4da7e61034b92726eb340bba20b0c0ae9c1ce20164fbf5e6e1f",
+      "translation_text_hash": "d07ba6e7a0dc88b8e55ecdb16d1ce1ae6b12a90067e9cd7ca6e5328c41aeeddf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비를 저주하며 어미를 축복하지 아니하는 무리가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "d07ba6e7a0dc88b8e55ecdb16d1ce1ae6b12a90067e9cd7ca6e5328c41aeeddf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:12",
+      "sequence": 17264,
+      "chapter_label": "PRO 30",
+      "verse_label": "12",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 12
+        }
+      ],
+      "en": "There is a generation that is pure in their own eyes, yet are not washed from their filthiness.",
+      "ko": "스스로 깨끗한 자로 여기면서 오히려 그 더러운 것을 씻지 아니하는 무리가 있느니라",
+      "source_text_hash": "7b6c6417bb818135f5389cadc3b565139a746335e3149e087afdcf07d4f5df5b",
+      "translation_text_hash": "9e337373a3de83e5f9fb73351b8b8c108aa352b2130add9edb4c94c06ae6e9b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 깨끗한 자로 여기면서 오히려 그 더러운 것을 씻지 아니하는 무리가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "9e337373a3de83e5f9fb73351b8b8c108aa352b2130add9edb4c94c06ae6e9b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:13",
+      "sequence": 17265,
+      "chapter_label": "PRO 30",
+      "verse_label": "13",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 13
+        }
+      ],
+      "en": "There is a generation, oh how lofty are their eyes! Their eyelids are lifted up.",
+      "ko": "눈이 심히 높으며 그 눈꺼풀이 높이 들린 무리가 있느니라",
+      "source_text_hash": "83462ba1e940a4fb9cc0f459d8f81ff70e8fe88676d5f96d7a36846e869d56f4",
+      "translation_text_hash": "e12bfa99ed81a6f875a4cd12ea2e5b365e038688af5ee2f29c2126c7994ef6a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "눈이 심히 높으며 그 눈꺼풀이 높이 들린 무리가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "e12bfa99ed81a6f875a4cd12ea2e5b365e038688af5ee2f29c2126c7994ef6a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:14",
+      "sequence": 17266,
+      "chapter_label": "PRO 30",
+      "verse_label": "14",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 14
+        }
+      ],
+      "en": "There is a generation whose teeth are like swords, and their jaws like knives, to devour the poor from the earth, and the needy from among men.",
+      "ko": "앞니는 장검 같고 어금니는 군도 같아서 가난한 자를 땅에서 삼키며 궁핍한 자를 사람 중에서 삼키는 무리가 있느니라",
+      "source_text_hash": "63d335aff9194821d3b6309dfa42f176d90fc62c2d5c350b81da344bc448d3db",
+      "translation_text_hash": "6e99d025f41918aecb89902df41d6be50f0b8732fd3be01e075dd23520b73fd8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞니는 장검 같고 어금니는 군도 같아서 가난한 자를 땅에서 삼키며 궁핍한 자를 사람 중에서 삼키는 무리가 있느니라"
+      ],
+      "raw_text_hashes": [
+        "6e99d025f41918aecb89902df41d6be50f0b8732fd3be01e075dd23520b73fd8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:15",
+      "sequence": 17267,
+      "chapter_label": "PRO 30",
+      "verse_label": "15",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 15
+        }
+      ],
+      "en": "“The leech has two daughters: ‘Give, give.’ “There are three things that are never satisfied; four that don’t say, ‘Enough!’:",
+      "ko": "거머리에게는 두 딸이 있어 다고 다고 하느니라 족한 줄을 알지 못하여 족하다 하지 아니하는것 서넛이 있나니",
+      "source_text_hash": "63aa65e9eb2cb7c6f9ec34c979aec2db148ec48251a6ac389d5da7176ad0b5d2",
+      "translation_text_hash": "44f7f9c39c60f1d02596a1f3c1381fe079b49522db19bc6bcee42b6cbfa8d877",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거머리에게는 두 딸이 있어 다고 다고 하느니라 족한 줄을 알지 못하여 족하다 하지 아니하는것 서넛이 있나니"
+      ],
+      "raw_text_hashes": [
+        "44f7f9c39c60f1d02596a1f3c1381fe079b49522db19bc6bcee42b6cbfa8d877"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:16",
+      "sequence": 17268,
+      "chapter_label": "PRO 30",
+      "verse_label": "16",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 16
+        }
+      ],
+      "en": "Sheol, the barren womb, the earth that is not satisfied with water, and the fire that doesn’t say, ‘Enough!’",
+      "ko": "곧 음부와 아이 배지 못하는 태와 물로 채울 수 없는 땅과 족하다 하지 아니하는 불이니라",
+      "source_text_hash": "f85f8fa5c2307f3e4db51d3735cfe354692e11360238a43ddb37d1fab0f269ec",
+      "translation_text_hash": "eb1065c11a97e71befc590d5bee14845e7192bd735a563b198f1a35f805fc84d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 음부와 아이 배지 못하는 태와 물로 채울 수 없는 땅과 족하다 하지 아니하는 불이니라"
+      ],
+      "raw_text_hashes": [
+        "eb1065c11a97e71befc590d5bee14845e7192bd735a563b198f1a35f805fc84d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:17",
+      "sequence": 17269,
+      "chapter_label": "PRO 30",
+      "verse_label": "17",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 17
+        }
+      ],
+      "en": "“The eye that mocks at his father, and scorns obedience to his mother, the ravens of the valley shall pick it out, the young eagles shall eat it.",
+      "ko": "아비를 조롱하며 어미 순종하기를 싫어하는 자의 눈은 골짜기의 까마귀에게 쪼이고 독수리 새끼에게 먹히리라",
+      "source_text_hash": "1202bfa7033e9b4994dfc36e035d9f7da5c44feee37f784969c0d3876c56668e",
+      "translation_text_hash": "3c34a1f2b4ad38229b8182d0b2c98758667772f97c5a0a29c850d4913ba6ec75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아비를 조롱하며 어미 순종하기를 싫어하는 자의 눈은 골짜기의 까마귀에게 쪼이고 독수리 새끼에게 먹히리라"
+      ],
+      "raw_text_hashes": [
+        "3c34a1f2b4ad38229b8182d0b2c98758667772f97c5a0a29c850d4913ba6ec75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:18",
+      "sequence": 17270,
+      "chapter_label": "PRO 30",
+      "verse_label": "18",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 18
+        }
+      ],
+      "en": "“There are three things which are too amazing for me, four which I don’t understand:",
+      "ko": "내가 심히 기이히 여기고도 깨닫지 못하는 것 서넛이 있나니",
+      "source_text_hash": "f2d280ce2efc654e57abde2656dfbb3a8619096eb38b09617a6020cf5192c390",
+      "translation_text_hash": "2c9298dbf8070a94cc4493b130ce88f99658dbcbe4a94e148183eb24c209adbe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 심히 기이히 여기고도 깨닫지 못하는 것 서넛이 있나니"
+      ],
+      "raw_text_hashes": [
+        "2c9298dbf8070a94cc4493b130ce88f99658dbcbe4a94e148183eb24c209adbe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:19",
+      "sequence": 17271,
+      "chapter_label": "PRO 30",
+      "verse_label": "19",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 19
+        }
+      ],
+      "en": "The way of an eagle in the air, the way of a serpent on a rock, the way of a ship in the middle of the sea, and the way of a man with a maiden.",
+      "ko": "곧 공중에 날아 다니는 독수리의 자취와 반석 위로 기어다니는 뱀의 자취와 바다로 지나다니는 배의 자취와 남자가 여자와 함께 한 자취며",
+      "source_text_hash": "84822baaabf53bed6d8c32283b2ac2f36bcdb0f1996ba42c907bbf261f6d6f8c",
+      "translation_text_hash": "76280ee7755147091ac149ab2c94b44fe3b3f28abddfc64a86829349fa4f4d8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 공중에 날아 다니는 독수리의 자취와 반석 위로 기어다니는 뱀의 자취와 바다로 지나다니는 배의 자취와 남자가 여자와 함께 한 자취며"
+      ],
+      "raw_text_hashes": [
+        "76280ee7755147091ac149ab2c94b44fe3b3f28abddfc64a86829349fa4f4d8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:20",
+      "sequence": 17272,
+      "chapter_label": "PRO 30",
+      "verse_label": "20",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 20
+        }
+      ],
+      "en": "“So is the way of an adulterous woman: She eats and wipes her mouth, and says, ‘I have done nothing wrong.’",
+      "ko": "음녀의 자취도 그러하니라 그가 먹고 그 입을 씻음 같이 말하기를 내가 악을 행치 아니하였다 하느니라",
+      "source_text_hash": "92d3729b7f26fb7de7730d339d85af922603ed7f76c5b3abff008d16c371bb6c",
+      "translation_text_hash": "506f0f4f78f55f35ee03a005afa245e7777551e1cc99d4e09124c30727c281e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "음녀의 자취도 그러하니라 그가 먹고 그 입을 씻음 같이 말하기를 내가 악을 행치 아니하였다 하느니라"
+      ],
+      "raw_text_hashes": [
+        "506f0f4f78f55f35ee03a005afa245e7777551e1cc99d4e09124c30727c281e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:21",
+      "sequence": 17273,
+      "chapter_label": "PRO 30",
+      "verse_label": "21",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 21
+        }
+      ],
+      "en": "“For three things the earth trembles, and under four, it can’t bear up:",
+      "ko": "세상을 진동시키며 세상으로 견딜 수 없게 하는 것 서넛이 있나니",
+      "source_text_hash": "beb3329886b950461f0d199d51d76f5fd6051d179621706fd9df30525408b880",
+      "translation_text_hash": "9a7bf21ba7246b29ac69fff70ebda8932be200288848f50f218c09698ef5bc51",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "세상을 진동시키며 세상으로 견딜 수 없게 하는 것 서넛이 있나니"
+      ],
+      "raw_text_hashes": [
+        "9a7bf21ba7246b29ac69fff70ebda8932be200288848f50f218c09698ef5bc51"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:22",
+      "sequence": 17274,
+      "chapter_label": "PRO 30",
+      "verse_label": "22",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 22
+        }
+      ],
+      "en": "For a servant when he is king, a fool when he is filled with food,",
+      "ko": "곧 종이 임금된 것과 미련한 자가 배부른 것과",
+      "source_text_hash": "75950f075a6eba95518cb8a5a89dec252749ec7893b0589b6989319297657407",
+      "translation_text_hash": "2b209fbcbe07bd57b00a9bb072c4b891f53617155b80bf36e87196032a7e3096",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 종이 임금된 것과 미련한 자가 배부른 것과"
+      ],
+      "raw_text_hashes": [
+        "2b209fbcbe07bd57b00a9bb072c4b891f53617155b80bf36e87196032a7e3096"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:23",
+      "sequence": 17275,
+      "chapter_label": "PRO 30",
+      "verse_label": "23",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 23
+        }
+      ],
+      "en": "for an unloved woman when she is married, and a servant who is heir to her mistress.",
+      "ko": "꺼림을 받는 계집이 시집간 것과 계집 종이 주모를 이은 것이니라",
+      "source_text_hash": "270816eef3e3728f8471094c28fb429e19cb8efd1ad07976903d4f672ebd8925",
+      "translation_text_hash": "7797a320ecf55de097cf5d9fc423a9dcad5b6d3e51c2f5f22ab168f50e189163",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "꺼림을 받는 계집이 시집간 것과 계집 종이 주모를 이은 것이니라"
+      ],
+      "raw_text_hashes": [
+        "7797a320ecf55de097cf5d9fc423a9dcad5b6d3e51c2f5f22ab168f50e189163"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:24",
+      "sequence": 17276,
+      "chapter_label": "PRO 30",
+      "verse_label": "24",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 24
+        }
+      ],
+      "en": "“There are four things which are little on the earth, but they are exceedingly wise:",
+      "ko": "땅에 작고도 가장 지혜로운 것 넷이 있나니",
+      "source_text_hash": "1d30faba35b80b289e2124acc8d44b04392b656b728f12ca23a821db2bb28581",
+      "translation_text_hash": "da6240a87d8b5e0888ca3934e36835c0d0f45c858e64c23e4c8db71cedb16639",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "땅에 작고도 가장 지혜로운 것 넷이 있나니"
+      ],
+      "raw_text_hashes": [
+        "da6240a87d8b5e0888ca3934e36835c0d0f45c858e64c23e4c8db71cedb16639"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:25",
+      "sequence": 17277,
+      "chapter_label": "PRO 30",
+      "verse_label": "25",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 25
+        }
+      ],
+      "en": "The ants are not a strong people, yet they provide their food in the summer.",
+      "ko": "곧 힘이 없는 종류로되 먹을 것을 여름에 예비하는 개미와",
+      "source_text_hash": "5a275a02d95323a9a453b03b86336dc0e7a936384884e89e4edae1c0b78dadce",
+      "translation_text_hash": "78e0388b7bc2c0f56095723f2de80e335c0fb4e63c808e85d6bb55a853d3b742",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 힘이 없는 종류로되 먹을 것을 여름에 예비하는 개미와"
+      ],
+      "raw_text_hashes": [
+        "78e0388b7bc2c0f56095723f2de80e335c0fb4e63c808e85d6bb55a853d3b742"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:26",
+      "sequence": 17278,
+      "chapter_label": "PRO 30",
+      "verse_label": "26",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 26
+        }
+      ],
+      "en": "The hyraxes are but a feeble folk, yet make they their houses in the rocks.",
+      "ko": "약한 종류로되 집을 바위 사이에 짓는 사반과",
+      "source_text_hash": "bff8cc586744f35d531a0924a7a903fdd0ca8d6bb53a3219056dc9baeae5e4bb",
+      "translation_text_hash": "09e3551279d33c3d2e0614cde3ae21971c0961d1c5799b15bbd4c2b05c6e91f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "약한 종류로되 집을 바위 사이에 짓는 사반과"
+      ],
+      "raw_text_hashes": [
+        "09e3551279d33c3d2e0614cde3ae21971c0961d1c5799b15bbd4c2b05c6e91f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:27",
+      "sequence": 17279,
+      "chapter_label": "PRO 30",
+      "verse_label": "27",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 27
+        }
+      ],
+      "en": "The locusts have no king, yet they advance in ranks.",
+      "ko": "임군이 없으되 다 떼를 지어 나아가는 메뚜기와",
+      "source_text_hash": "7e074c936766439f19f24f947b19e67477915454f5d6b4f61a775138663af16c",
+      "translation_text_hash": "0eb85f43e27e96221bd347f2af350af650b4bbf4ddc057a8ff2ee17193178445",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "임군이 없으되 다 떼를 지어 나아가는 메뚜기와"
+      ],
+      "raw_text_hashes": [
+        "0eb85f43e27e96221bd347f2af350af650b4bbf4ddc057a8ff2ee17193178445"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:28",
+      "sequence": 17280,
+      "chapter_label": "PRO 30",
+      "verse_label": "28",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 28
+        }
+      ],
+      "en": "You can catch a lizard with your hands, yet it is in kings’ palaces.",
+      "ko": "손에 잡힐만하여도 왕궁에 있는 도마뱀이니라",
+      "source_text_hash": "7c7a530208ffc620d136ba456d8f6ec09ef06180a8f42726f2773b364781ca51",
+      "translation_text_hash": "045cd6ece4f8f79805a99bbc08b8078dc979e189513c5efd183373f1c60301c9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "손에 잡힐만하여도 왕궁에 있는 도마뱀이니라"
+      ],
+      "raw_text_hashes": [
+        "045cd6ece4f8f79805a99bbc08b8078dc979e189513c5efd183373f1c60301c9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:29",
+      "sequence": 17281,
+      "chapter_label": "PRO 30",
+      "verse_label": "29",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 29
+        }
+      ],
+      "en": "“There are three things which are stately in their march, four which are stately in going:",
+      "ko": "잘 걸으며 위풍 있게 다니는 것 서넛이 있나니",
+      "source_text_hash": "4d4767e0d25666e9d63f7109f780f41fb130b80d2554618c02a901392f610a4d",
+      "translation_text_hash": "479313e6cb7f6c8f3e8815987278b7fc0537ab7e5a596cfd933175f4ea74e03a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "잘 걸으며 위풍 있게 다니는 것 서넛이 있나니"
+      ],
+      "raw_text_hashes": [
+        "479313e6cb7f6c8f3e8815987278b7fc0537ab7e5a596cfd933175f4ea74e03a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:30",
+      "sequence": 17282,
+      "chapter_label": "PRO 30",
+      "verse_label": "30",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 30
+        }
+      ],
+      "en": "The lion, which is mightiest among animals, and doesn’t turn away for any;",
+      "ko": "곧 짐승 중에 가장 강하여 아무 짐승 앞에서도 물러가지 아니하는 사자와",
+      "source_text_hash": "b4380fa67082b309b4504fb72483dd6bad204450be98dc7742ea527bc2a0cb1d",
+      "translation_text_hash": "f9f569d4e6a3bc151e050f7fec2d2a025d91dcd2603ae3559483c94ef8d2bc85",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "곧 짐승 중에 가장 강하여 아무 짐승 앞에서도 물러가지 아니하는 사자와"
+      ],
+      "raw_text_hashes": [
+        "f9f569d4e6a3bc151e050f7fec2d2a025d91dcd2603ae3559483c94ef8d2bc85"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:31",
+      "sequence": 17283,
+      "chapter_label": "PRO 30",
+      "verse_label": "31",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 31
+        }
+      ],
+      "en": "the greyhound; the male goat; and the king against whom there is no rising up.",
+      "ko": "사냥개와 수염소와 및 당할 수 없는 왕이니라",
+      "source_text_hash": "bee24382c1a2ea7493bf5bfae07182d01f43ff0f733b398dee3cfd9782e4ad4b",
+      "translation_text_hash": "6b80615263b8169a0d1148fb972d14f26d03797a34aa21428c643a27e33a6849",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사냥개와 수염소와 및 당할 수 없는 왕이니라"
+      ],
+      "raw_text_hashes": [
+        "6b80615263b8169a0d1148fb972d14f26d03797a34aa21428c643a27e33a6849"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:32",
+      "sequence": 17284,
+      "chapter_label": "PRO 30",
+      "verse_label": "32",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 32
+        }
+      ],
+      "en": "“If you have done foolishly in lifting up yourself, or if you have thought evil, put your hand over your mouth.",
+      "ko": "만일 네가 미련하여 스스로 높은체 하였거나 혹 악한 일을 도모하였거든 네 손으로 입을 막으라",
+      "source_text_hash": "9f81103819b7e7e2c81e01d42ac5a77998b154ff5e3f4b15eaf122389c3f7321",
+      "translation_text_hash": "4f7b90439e1cf04cec2b5e0ac6e9fc835b1befe33ba30e1099923eab15040bc3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 네가 미련하여 스스로 높은체 하였거나 혹 악한 일을 도모하였거든 네 손으로 입을 막으라"
+      ],
+      "raw_text_hashes": [
+        "4f7b90439e1cf04cec2b5e0ac6e9fc835b1befe33ba30e1099923eab15040bc3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PRO:30:33",
+      "sequence": 17285,
+      "chapter_label": "PRO 30",
+      "verse_label": "33",
+      "locator": {
+        "book": "PRO",
+        "chapter": 30,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "PRO",
+          "chapter": 30,
+          "verse": 33
+        }
+      ],
+      "en": "For as the churning of milk produces butter, and the wringing of the nose produces blood, so the forcing of wrath produces strife.”",
+      "ko": "대저 젖을 저으면 뻐터가 되고 코를 비틀면 피가 나는 것 같이 노를 격동하면 다툼이 남이니라",
+      "source_text_hash": "7769e31ab352e7875c4b36f3483b85e58d3345f2d061be87fbad2e7a7747e6b4",
+      "translation_text_hash": "f37b9d3ffdc4e66d9fa8bd158eef1222ce2e0f1c45456b6ba9bbb07daa7d9547",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대저 젖을 저으면 뻐터가 되고 코를 비틀면 피가 나는 것 같이 노를 격동하면 다툼이 남이니라"
+      ],
+      "raw_text_hashes": [
+        "f37b9d3ffdc4e66d9fa8bd158eef1222ce2e0f1c45456b6ba9bbb07daa7d9547"
+      ]
+    }
+  ]
+}

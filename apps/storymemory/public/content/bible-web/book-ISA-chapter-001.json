@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ISA:chapter:001",
+  "unit_ordinal": 680,
+  "unit_label": "ISA 1",
+  "book_code": "ISA",
+  "chapter_number": 1,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ISA:1:1",
+      "sequence": 17656,
+      "chapter_label": "ISA 1",
+      "verse_label": "1",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 1
+        }
+      ],
+      "en": "The vision of Isaiah the son of Amoz, which he saw concerning Judah and Jerusalem, in the days of Uzziah, Jotham, Ahaz, and Hezekiah, kings of Judah.",
+      "ko": "유다 왕 웃시야와 요담과 아하스와 히스기야 시대에 아모스의 아들 이사야가 유다와 예루살렘에 대하여 본 이상이라",
+      "source_text_hash": "a9ea9ad19fe160d42b393cbc7f9c53a54aed2370d7f4750217b6980cea0b6f90",
+      "translation_text_hash": "36a4293d0ab27f42d77de8ef950bbe6b4676666be702ad3a941026490f820141",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 웃시야와 요담과 아하스와 히스기야 시대에 아모스의 아들 이사야가 유다와 예루살렘에 대하여 본 이상이라"
+      ],
+      "raw_text_hashes": [
+        "36a4293d0ab27f42d77de8ef950bbe6b4676666be702ad3a941026490f820141"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:2",
+      "sequence": 17657,
+      "chapter_label": "ISA 1",
+      "verse_label": "2",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 2
+        }
+      ],
+      "en": "Hear, heavens, and listen, earth; for the LORD has spoken: “I have nourished and brought up children and they have rebelled against me.",
+      "ko": "하늘이여 들으라 땅이여 귀를 기울이라 여호와께서 말씀하시기를 내가 자식을 양육하였거늘 그들이 나를 거역하였도다",
+      "source_text_hash": "a2b57adeda0eb327c0cb65d819dc33d6b3363e7ff1b28fb6bbb5e3484bcaf795",
+      "translation_text_hash": "bec8388a53b19cd43f015cd73f3e42d21f7e8d490692312cf09e839bea4051ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하늘이여 들으라 땅이여 귀를 기울이라 여호와께서 말씀하시기를 내가 자식을 양육하였거늘 그들이 나를 거역하였도다"
+      ],
+      "raw_text_hashes": [
+        "bec8388a53b19cd43f015cd73f3e42d21f7e8d490692312cf09e839bea4051ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:3",
+      "sequence": 17658,
+      "chapter_label": "ISA 1",
+      "verse_label": "3",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 3
+        }
+      ],
+      "en": "The ox knows his owner, and the donkey his master’s crib; but Israel doesn’t know. My people don’t consider.”",
+      "ko": "소는 그 임자를 알고 나귀는 주인의 구유를 알건마는 이스라엘은 알지 못하고 나의 백성은 깨닫지 못하는도다 하셨도다",
+      "source_text_hash": "9d22ce25ab3400a674f563947312a4ed20ae5ae876942e92cd5a68125ce075b5",
+      "translation_text_hash": "4b02cf210dd4cd36137d5ed0232faf5ec2ba06ddd936de67d5fbeb8576ac1b40",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "소는 그 임자를 알고 나귀는 주인의 구유를 알건마는 이스라엘은 알지 못하고 나의 백성은 깨닫지 못하는도다 하셨도다"
+      ],
+      "raw_text_hashes": [
+        "4b02cf210dd4cd36137d5ed0232faf5ec2ba06ddd936de67d5fbeb8576ac1b40"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:4",
+      "sequence": 17659,
+      "chapter_label": "ISA 1",
+      "verse_label": "4",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 4
+        }
+      ],
+      "en": "Ah sinful nation, a people loaded with iniquity, offspring of evildoers, children who deal corruptly! They have forsaken the LORD. They have despised the Holy One of Israel. They are estranged and backward.",
+      "ko": "슬프다 범죄한 나라요 허물 진 백성이요 행악의 종자요 행위가 부패한 자식이로다 그들이 여호와를 버리며 이스라엘의 거룩한 자를 만홀히 여겨 멀리하고 물러갔도다",
+      "source_text_hash": "7723624c2f11ac09e6c8d37eb0bf11018fb2313810ad1a17904eaffb38bd2802",
+      "translation_text_hash": "cee1477d50418862eac97b6aeb4018d9b0bda10f342cc46c1c17b91557234b21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "슬프다 범죄한 나라요 허물 진 백성이요 행악의 종자요 행위가 부패한 자식이로다 그들이 여호와를 버리며 이스라엘의 거룩한 자를 만홀히 여겨 멀리하고 물러갔도다"
+      ],
+      "raw_text_hashes": [
+        "cee1477d50418862eac97b6aeb4018d9b0bda10f342cc46c1c17b91557234b21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:5",
+      "sequence": 17660,
+      "chapter_label": "ISA 1",
+      "verse_label": "5",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 5
+        }
+      ],
+      "en": "Why should you be beaten more, that you revolt more and more? The whole head is sick, and the whole heart faint.",
+      "ko": "너희가 어찌하여 매를 더 맞으려고 더욱 더욱 패역하느냐 온 머리는 병 들었고 온 마음은 피곤하였으며",
+      "source_text_hash": "e6e4069deedca628367226b7c022099ef84c0d1c37b1a1661ab186f3965685c5",
+      "translation_text_hash": "579842d46b462214b68edc9bddee419719180ce9787d19acc40fc2e5d8646006",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 어찌하여 매를 더 맞으려고 더욱 더욱 패역하느냐 온 머리는 병 들었고 온 마음은 피곤하였으며"
+      ],
+      "raw_text_hashes": [
+        "579842d46b462214b68edc9bddee419719180ce9787d19acc40fc2e5d8646006"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:6",
+      "sequence": 17661,
+      "chapter_label": "ISA 1",
+      "verse_label": "6",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 6
+        }
+      ],
+      "en": "From the sole of the foot even to the head there is no soundness in it, but wounds, welts, and open sores. They haven’t been closed, bandaged, or soothed with oil.",
+      "ko": "발바닥에서 머리까지 성한 곳이 없이 상한 것과 터진 것과 새로 맞은 흔적 뿐이어늘 그것을 짜며 싸매며 기름으로 유하게 함을 받지 못하였도다",
+      "source_text_hash": "68b9f2eb1017860bd7cb03fa13b00fbc0c67b59d65e4353b4390dc8cfaa2640c",
+      "translation_text_hash": "6f139d5cb4db10302ec5d19ef489c20e029017cb60288ac242dcfa41a3e97410",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "발바닥에서 머리까지 성한 곳이 없이 상한 것과 터진 것과 새로 맞은 흔적 뿐이어늘 그것을 짜며 싸매며 기름으로 유하게 함을 받지 못하였도다"
+      ],
+      "raw_text_hashes": [
+        "6f139d5cb4db10302ec5d19ef489c20e029017cb60288ac242dcfa41a3e97410"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:7",
+      "sequence": 17662,
+      "chapter_label": "ISA 1",
+      "verse_label": "7",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 7
+        }
+      ],
+      "en": "Your country is desolate. Your cities are burned with fire. Strangers devour your land in your presence and it is desolate, as overthrown by strangers.",
+      "ko": "너희 땅은 황무하였고 너희 성읍들은 불에 탔고 너희 토지는 너희 목전에 이방인에게 삼키웠으며 이방인에게 파괴됨 같이 황무하였고",
+      "source_text_hash": "5ae01ffbb78364c7ceb4b4db73264343f04a842f1b259436dd6398789c719d49",
+      "translation_text_hash": "d1f1896003fb518b5fbc806c0beee4a2a9b4a73d67df47f39d881570926ad4b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 땅은 황무하였고 너희 성읍들은 불에 탔고 너희 토지는 너희 목전에 이방인에게 삼키웠으며 이방인에게 파괴됨 같이 황무하였고"
+      ],
+      "raw_text_hashes": [
+        "d1f1896003fb518b5fbc806c0beee4a2a9b4a73d67df47f39d881570926ad4b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:8",
+      "sequence": 17663,
+      "chapter_label": "ISA 1",
+      "verse_label": "8",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 8
+        }
+      ],
+      "en": "The daughter of Zion is left like a shelter in a vineyard, like a hut in a field of melons, like a besieged city.",
+      "ko": "딸 시온은 포도원의 망대 같이, 원두밭의 상직막 같이, 에워싸인 성읍 같이 겨우 남았도다",
+      "source_text_hash": "cdd9c4d166f43f2974ab2a28c321599b7597c56df4753605db561b74fcb5e2cb",
+      "translation_text_hash": "325b1adab1f853f5ba8cb131c35b704cb85fcc1f9957426bcb8161e18a011eb6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "딸 시온은 포도원의 망대 같이, 원두밭의 상직막 같이, 에워싸인 성읍 같이 겨우 남았도다"
+      ],
+      "raw_text_hashes": [
+        "325b1adab1f853f5ba8cb131c35b704cb85fcc1f9957426bcb8161e18a011eb6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:9",
+      "sequence": 17664,
+      "chapter_label": "ISA 1",
+      "verse_label": "9",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 9
+        }
+      ],
+      "en": "Unless the LORD of Armies had left to us a very small remnant, we would have been as Sodom. We would have been like Gomorrah.",
+      "ko": "만군의 여호와께서 우리를 위하여 조금 남겨 두지 아니하셨더면 우리가 소돔 같고 고모라 같았었으리로다",
+      "source_text_hash": "07c4849ec500ef07295b940a2defa5705ccb093498d897a7bb53cfd616c6ccb8",
+      "translation_text_hash": "1853a2f979df67c582ab7678bd174a2b1015db6340a2a1224f4ad7985fb6d0ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 우리를 위하여 조금 남겨 두지 아니하셨더면 우리가 소돔 같고 고모라 같았었으리로다"
+      ],
+      "raw_text_hashes": [
+        "1853a2f979df67c582ab7678bd174a2b1015db6340a2a1224f4ad7985fb6d0ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:10",
+      "sequence": 17665,
+      "chapter_label": "ISA 1",
+      "verse_label": "10",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 10
+        }
+      ],
+      "en": "Hear the LORD’s word, you rulers of Sodom! Listen to the law of our God, you people of Gomorrah!",
+      "ko": "너희 소돔의 관원들아 여호와의 말씀을 들을찌어다 너희 고모라의 백성아 우리 하나님의 법에 귀를 기울일찌어다",
+      "source_text_hash": "38693cb78fdf4a74829d6cb9d3c2f8a111559be78b6ad56f19f2c9490c23a02b",
+      "translation_text_hash": "c0e1ecc62d6543c267abf4d60c0b2bbbf82ebe2db13ddf7329b1471c287fb486",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 소돔의 관원들아 여호와의 말씀을 들을찌어다 너희 고모라의 백성아 우리 하나님의 법에 귀를 기울일찌어다"
+      ],
+      "raw_text_hashes": [
+        "c0e1ecc62d6543c267abf4d60c0b2bbbf82ebe2db13ddf7329b1471c287fb486"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:11",
+      "sequence": 17666,
+      "chapter_label": "ISA 1",
+      "verse_label": "11",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 11
+        }
+      ],
+      "en": "“What are the multitude of your sacrifices to me?”, says the LORD. “I have had enough of the burnt offerings of rams and the fat of fed animals. I don’t delight in the blood of bulls, or of lambs, or of male goats.",
+      "ko": "여호와께서 말씀하시되 너희의 무수한 제물이 내게 무엇이 유익하뇨 나는 수양의 번제와 살진 짐승의 기름에 배불렀고 나는 수송아지나 어린 양이나 수염소의 피를 기뻐하지 아니하노라",
+      "source_text_hash": "2fe9afed2f5a961454641ed2d18f9ab1a5d33f5e88f8371fbb9702ac9004845f",
+      "translation_text_hash": "aa70b9400d153c61cdbf98b8d054f0518b9d1058527eda9a15c4e743bc21d5bc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 너희의 무수한 제물이 내게 무엇이 유익하뇨 나는 수양의 번제와 살진 짐승의 기름에 배불렀고 나는 수송아지나 어린 양이나 수염소의 피를 기뻐하지 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "aa70b9400d153c61cdbf98b8d054f0518b9d1058527eda9a15c4e743bc21d5bc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:12",
+      "sequence": 17667,
+      "chapter_label": "ISA 1",
+      "verse_label": "12",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 12
+        }
+      ],
+      "en": "When you come to appear before me, who has required this at your hand, to trample my courts?",
+      "ko": "너희가 내 앞에 보이러 오니 그것을 누가 너희에게 요구하였느뇨 내 마당만 밟을 뿐이니라",
+      "source_text_hash": "4ac5a81d26e47980224a4cae46fa9f827816d6f156bbe371a63f60dd2cf8eb6a",
+      "translation_text_hash": "097b04812a9581cceecf9d5c45f5584264ea2b094838eef59d1817f02cbcc22c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 내 앞에 보이러 오니 그것을 누가 너희에게 요구하였느뇨 내 마당만 밟을 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "097b04812a9581cceecf9d5c45f5584264ea2b094838eef59d1817f02cbcc22c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:13",
+      "sequence": 17668,
+      "chapter_label": "ISA 1",
+      "verse_label": "13",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 13
+        }
+      ],
+      "en": "Bring no more vain offerings. Incense is an abomination to me. New moons, Sabbaths, and convocations— I can’t stand evil assemblies.",
+      "ko": "헛된 제물을 다시 가져오지 말라 분향은 나의 가증히 여기는바요 월삭과 안식일과 대회로 모이는 것도 그러하니 성회와 아울러 악을 행하는 것을 내가 견디지 못하겠노라",
+      "source_text_hash": "e6122b3d1aab4f536ab10a915013740ef970a3334ecc4136052294b625286221",
+      "translation_text_hash": "5f5e0cbff34cda6d1555f9eaf2d836a4898ad2ac0e57556905ad6e34f0ab876a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "헛된 제물을 다시 가져오지 말라 분향은 나의 가증히 여기는바요 월삭과 안식일과 대회로 모이는 것도 그러하니 성회와 아울러 악을 행하는 것을 내가 견디지 못하겠노라"
+      ],
+      "raw_text_hashes": [
+        "5f5e0cbff34cda6d1555f9eaf2d836a4898ad2ac0e57556905ad6e34f0ab876a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:14",
+      "sequence": 17669,
+      "chapter_label": "ISA 1",
+      "verse_label": "14",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 14
+        }
+      ],
+      "en": "My soul hates your New Moons and your appointed feasts. They are a burden to me. I am weary of bearing them.",
+      "ko": "내 마음이 너희의 월삭과 정한 절기를 싫어하나니 그것이 내게 무거운 짐이라 내가 지기에 곤비하였느니라",
+      "source_text_hash": "6fe64337463f3539743b565aa31fc3301c67dc37077db8bba3d857c8162101f8",
+      "translation_text_hash": "c7b221c725d28dd3e123b6408facfa176e0e65711f861ead6cfc9287aaa6e8d1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 마음이 너희의 월삭과 정한 절기를 싫어하나니 그것이 내게 무거운 짐이라 내가 지기에 곤비하였느니라"
+      ],
+      "raw_text_hashes": [
+        "c7b221c725d28dd3e123b6408facfa176e0e65711f861ead6cfc9287aaa6e8d1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:15",
+      "sequence": 17670,
+      "chapter_label": "ISA 1",
+      "verse_label": "15",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 15
+        }
+      ],
+      "en": "When you spread out your hands, I will hide my eyes from you. Yes, when you make many prayers, I will not hear. Your hands are full of blood.",
+      "ko": "너희가 손을 펼 때에 내가 눈을 가리우고 너희가 많이 기도할찌라도 내가 듣지 아니하리니 이는 너희의 손에 피가 가득함이니라",
+      "source_text_hash": "13b839d894cd4f64c95fb17fe998c98d6f9672e0ca5f3bfafa024c83f341e101",
+      "translation_text_hash": "00a251223295280a27b9feb1205d2345be64a631d844ef2b47d864435c1148e0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 손을 펼 때에 내가 눈을 가리우고 너희가 많이 기도할찌라도 내가 듣지 아니하리니 이는 너희의 손에 피가 가득함이니라"
+      ],
+      "raw_text_hashes": [
+        "00a251223295280a27b9feb1205d2345be64a631d844ef2b47d864435c1148e0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:16",
+      "sequence": 17671,
+      "chapter_label": "ISA 1",
+      "verse_label": "16",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 16
+        }
+      ],
+      "en": "Wash yourselves. Make yourself clean. Put away the evil of your doings from before my eyes. Cease to do evil.",
+      "ko": "너희는 스스로 씻으며 스스로 깨끗케 하여 내 목전에서 너희 악업을 버리며 악행을 그치고",
+      "source_text_hash": "e6699e17102c2224e6c18b071200001fb5fe8da356c95b8427f13e8efd5a7e95",
+      "translation_text_hash": "a5836fc0892eca64d0af71faac3fa7fba589a2193ec7a5015d769681282323bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 스스로 씻으며 스스로 깨끗케 하여 내 목전에서 너희 악업을 버리며 악행을 그치고"
+      ],
+      "raw_text_hashes": [
+        "a5836fc0892eca64d0af71faac3fa7fba589a2193ec7a5015d769681282323bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:17",
+      "sequence": 17672,
+      "chapter_label": "ISA 1",
+      "verse_label": "17",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 17
+        }
+      ],
+      "en": "Learn to do well. Seek justice. Relieve the oppressed. Defend the fatherless. Plead for the widow.”",
+      "ko": "선행을 배우며 공의를 구하며 학대 받는 자를 도와주며 고아를 위하여 신원하며 과부를 위하여 변호하라 하셨느니라",
+      "source_text_hash": "6380b847ebbda5e3c2bf489f13a86d46ebf007e1cb17bff43c540b3eece553d6",
+      "translation_text_hash": "ef2705396ad38edb34223ba72700d73ddb34e1500f340a4a04578b3b7fa11c27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "선행을 배우며 공의를 구하며 학대 받는 자를 도와주며 고아를 위하여 신원하며 과부를 위하여 변호하라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "ef2705396ad38edb34223ba72700d73ddb34e1500f340a4a04578b3b7fa11c27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:18",
+      "sequence": 17673,
+      "chapter_label": "ISA 1",
+      "verse_label": "18",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 18
+        }
+      ],
+      "en": "“Come now, and let’s reason together,” says the LORD: “Though your sins are as scarlet, they shall be as white as snow. Though they are red like crimson, they shall be as wool.",
+      "ko": "여호와께서 말씀하시되 오라 우리가 서로 변론하자 너희 죄가 주홍 같을찌라도 눈과 같이 희어질 것이요 진홍 같이 붉을찌라도 양털 같이 되리라",
+      "source_text_hash": "94122358e158d52854b3ac1490cc232d4784e5295c51b300c7c1651f1439e543",
+      "translation_text_hash": "58b7cf81b01d2c63162e61745a948d7034a79de524f5d1e5080d1df5d7fcf7d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시되 오라 우리가 서로 변론하자 너희 죄가 주홍 같을찌라도 눈과 같이 희어질 것이요 진홍 같이 붉을찌라도 양털 같이 되리라"
+      ],
+      "raw_text_hashes": [
+        "58b7cf81b01d2c63162e61745a948d7034a79de524f5d1e5080d1df5d7fcf7d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:19",
+      "sequence": 17674,
+      "chapter_label": "ISA 1",
+      "verse_label": "19",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 19
+        }
+      ],
+      "en": "If you are willing and obedient, you will eat the good of the land;",
+      "ko": "너희가 즐겨 순종하면 땅의 아름다운 소산을 먹을 것이요",
+      "source_text_hash": "3eb29bfb8fd18d8f7c537636fdc5b9a10529bc96da02f5c88eabcada1bbb4386",
+      "translation_text_hash": "6bd3b44e20c5625aa8edb78638830caba7c3e900186c20af1256db3075f2d6d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 즐겨 순종하면 땅의 아름다운 소산을 먹을 것이요"
+      ],
+      "raw_text_hashes": [
+        "6bd3b44e20c5625aa8edb78638830caba7c3e900186c20af1256db3075f2d6d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:20",
+      "sequence": 17675,
+      "chapter_label": "ISA 1",
+      "verse_label": "20",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 20
+        }
+      ],
+      "en": "but if you refuse and rebel, you will be devoured with the sword; for the LORD’s mouth has spoken it.”",
+      "ko": "너희가 거절하여 배반하면 칼에 삼키우리라 여호와의 입의 말씀이니라",
+      "source_text_hash": "ca855bb22046cb46fa830057bd684c655f8fd3264edfcb1e56e830fc59d9b4b6",
+      "translation_text_hash": "2769f31665423f2888705279986f4d735fd21b7e77c0a7ae8d3c5981d5add6a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 거절하여 배반하면 칼에 삼키우리라 여호와의 입의 말씀이니라"
+      ],
+      "raw_text_hashes": [
+        "2769f31665423f2888705279986f4d735fd21b7e77c0a7ae8d3c5981d5add6a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:21",
+      "sequence": 17676,
+      "chapter_label": "ISA 1",
+      "verse_label": "21",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 21
+        }
+      ],
+      "en": "How the faithful city has become a prostitute! She was full of justice. Righteousness lodged in her, but now there are murderers.",
+      "ko": "신실하던 성읍이 어찌하여 창기가 되었는고 공평이 거기 충만하였고 의리가 그 가운데 거하였었더니 이제는 살인자들 뿐이었도다",
+      "source_text_hash": "837566eaa0aa727d14466209506a5dc72063c6c733dcdaf8ef44299a2eb68f78",
+      "translation_text_hash": "c164dca1df394c68c35103aa9144abcb6e902d1a995e9bfb12748a85521e71a9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "신실하던 성읍이 어찌하여 창기가 되었는고 공평이 거기 충만하였고 의리가 그 가운데 거하였었더니 이제는 살인자들 뿐이었도다"
+      ],
+      "raw_text_hashes": [
+        "c164dca1df394c68c35103aa9144abcb6e902d1a995e9bfb12748a85521e71a9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:22",
+      "sequence": 17677,
+      "chapter_label": "ISA 1",
+      "verse_label": "22",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 22
+        }
+      ],
+      "en": "Your silver has become dross, your wine mixed with water.",
+      "ko": "네 은은 찌끼가 되었고 너의 포도주에는 물이 섞였도다",
+      "source_text_hash": "bcd7b08b6da21cae953bf0281bc29834da817673291baf9b782901635bbdfb97",
+      "translation_text_hash": "c900d5fc38b515484a7698bbac858ccecc8e1726b15ac4f2fde2a109c4203155",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 은은 찌끼가 되었고 너의 포도주에는 물이 섞였도다"
+      ],
+      "raw_text_hashes": [
+        "c900d5fc38b515484a7698bbac858ccecc8e1726b15ac4f2fde2a109c4203155"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:23",
+      "sequence": 17678,
+      "chapter_label": "ISA 1",
+      "verse_label": "23",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 23
+        }
+      ],
+      "en": "Your princes are rebellious and companions of thieves. Everyone loves bribes and follows after rewards. They don’t defend the fatherless, neither does the cause of the widow come to them.",
+      "ko": "네 방백들은 패역하여 도적과 짝하며 다 뇌물을 사랑하며 사례물을 구하며 고아를 위하여 신원치 아니하며 과부의 송사를 수리치 아니하는도다",
+      "source_text_hash": "f5747a5e4ededf9a0b8e5937246c24e2084a1a84c82f79cb61eaa4c9be06d184",
+      "translation_text_hash": "fccdc7cb5a0220cfb333e4b3dbd394563d1ce5969ed181bc1ef1ecb5b931ff1d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 방백들은 패역하여 도적과 짝하며 다 뇌물을 사랑하며 사례물을 구하며 고아를 위하여 신원치 아니하며 과부의 송사를 수리치 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "fccdc7cb5a0220cfb333e4b3dbd394563d1ce5969ed181bc1ef1ecb5b931ff1d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:24",
+      "sequence": 17679,
+      "chapter_label": "ISA 1",
+      "verse_label": "24",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore the Lord, GOD of Armies, the Mighty One of Israel, says: “Ah, I will get relief from my adversaries, and avenge myself on my enemies.",
+      "ko": "그러므로 주 만군의 여호와 이스라엘의 전능자가 말씀하시되 슬프다 내가 장차 내 대적에게 보응하여 내 마음을 편케 하겠고 내 원수에게 보수하겠으며",
+      "source_text_hash": "8893b375984730238bfa3ed42c1733861d7429f3d5d3ff33385faf03ba026f91",
+      "translation_text_hash": "f7a965f4644c1b733e271f927f30ca14636ea080d99a8ce9f1b38bf84558dbcc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 주 만군의 여호와 이스라엘의 전능자가 말씀하시되 슬프다 내가 장차 내 대적에게 보응하여 내 마음을 편케 하겠고 내 원수에게 보수하겠으며"
+      ],
+      "raw_text_hashes": [
+        "f7a965f4644c1b733e271f927f30ca14636ea080d99a8ce9f1b38bf84558dbcc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:25",
+      "sequence": 17680,
+      "chapter_label": "ISA 1",
+      "verse_label": "25",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 25
+        }
+      ],
+      "en": "I will turn my hand on you, thoroughly purge away your dross, and will take away all your tin.",
+      "ko": "내가 또 나의 손을 네게 돌려 너의 찌끼를 온전히 청결하여 버리며 너의 혼잡물을 다 제하여 버리고",
+      "source_text_hash": "814144eda017d0ba95f50fcaf762dfc22c16786c7762dade2479bc350f5ef18d",
+      "translation_text_hash": "94e98883836c7238059884bd1160f21577efe7878dc8d02521c68193b34b71af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 나의 손을 네게 돌려 너의 찌끼를 온전히 청결하여 버리며 너의 혼잡물을 다 제하여 버리고"
+      ],
+      "raw_text_hashes": [
+        "94e98883836c7238059884bd1160f21577efe7878dc8d02521c68193b34b71af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:26",
+      "sequence": 17681,
+      "chapter_label": "ISA 1",
+      "verse_label": "26",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 26
+        }
+      ],
+      "en": "I will restore your judges as at the first, and your counselors as at the beginning. Afterward you shall be called ‘The city of righteousness, a faithful town.’",
+      "ko": "내가 너의 사사들을 처음과 같이, 너의 모사들을 본래와 같이 회복할 것이라 그리한 후에야 네가 의의 성읍이라, 신실한 고을이라 칭함이 되리라 하셨나니",
+      "source_text_hash": "ba72436837c8c35e9b72e8127105ffbae8b28e172336b688b0dfc9015102e52c",
+      "translation_text_hash": "3f8d2fc7d8fca01afa0b6c0652ebc6ff05083ece8844110875ba7d3e715baae6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너의 사사들을 처음과 같이, 너의 모사들을 본래와 같이 회복할 것이라 그리한 후에야 네가 의의 성읍이라, 신실한 고을이라 칭함이 되리라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "3f8d2fc7d8fca01afa0b6c0652ebc6ff05083ece8844110875ba7d3e715baae6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:27",
+      "sequence": 17682,
+      "chapter_label": "ISA 1",
+      "verse_label": "27",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 27
+        }
+      ],
+      "en": "Zion shall be redeemed with justice, and her converts with righteousness.",
+      "ko": "시온은 공평으로 구속이 되고 그 귀정한 자는 의로 구속이 되리라",
+      "source_text_hash": "695a0b73198af0906ef1810725b41ddc8ed21f37bebacccba7e15e614123e6a9",
+      "translation_text_hash": "ca461ceca5daa482067d9423bece0ee9b334d017ff048288b34523514225d52e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "시온은 공평으로 구속이 되고 그 귀정한 자는 의로 구속이 되리라"
+      ],
+      "raw_text_hashes": [
+        "ca461ceca5daa482067d9423bece0ee9b334d017ff048288b34523514225d52e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:28",
+      "sequence": 17683,
+      "chapter_label": "ISA 1",
+      "verse_label": "28",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 28
+        }
+      ],
+      "en": "But the destruction of transgressors and sinners shall be together, and those who forsake the LORD shall be consumed.",
+      "ko": "그러나 패역한 자와 죄인은 함께 패망하고 여호와를 버린 자도 멸망할 것이라",
+      "source_text_hash": "bcb9d18912680f79a021f7042dfa1bb513f28c79e76efae9934333f30416a528",
+      "translation_text_hash": "a8faab7626dd6f595f69949ab028a58972c5b7b8f71636bc74ca015436670f18",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 패역한 자와 죄인은 함께 패망하고 여호와를 버린 자도 멸망할 것이라"
+      ],
+      "raw_text_hashes": [
+        "a8faab7626dd6f595f69949ab028a58972c5b7b8f71636bc74ca015436670f18"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:29",
+      "sequence": 17684,
+      "chapter_label": "ISA 1",
+      "verse_label": "29",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 29
+        }
+      ],
+      "en": "For they shall be ashamed of the oaks which you have desired, and you shall be confounded for the gardens that you have chosen.",
+      "ko": "너희가 너희의 기뻐하던 상수리나무로 인하여 부끄러움을 당할 것이요 너희가 너희의 택한 동산으로 인하여 수치를 당할 것이며",
+      "source_text_hash": "b59de2042c0d67972ae8b14f1b2a398414bd058031eed09631903e5fee0cba5a",
+      "translation_text_hash": "2f5912e02f5ac27ce808d06b4031ee887793e837870e26cea5aa234a81ebeb54",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 너희의 기뻐하던 상수리나무로 인하여 부끄러움을 당할 것이요 너희가 너희의 택한 동산으로 인하여 수치를 당할 것이며"
+      ],
+      "raw_text_hashes": [
+        "2f5912e02f5ac27ce808d06b4031ee887793e837870e26cea5aa234a81ebeb54"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:30",
+      "sequence": 17685,
+      "chapter_label": "ISA 1",
+      "verse_label": "30",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 30
+        }
+      ],
+      "en": "For you shall be as an oak whose leaf fades, and as a garden that has no water.",
+      "ko": "너희는 잎사귀 마른 상수리나무 같을 것이요 물 없는 동산 같으리니",
+      "source_text_hash": "4c917d6c672cf00d0c8262403ac355e71ccf501b990edbb7339739a4613280cf",
+      "translation_text_hash": "a4b78c150bad89a2cffa54d5b6a7d48e3780becec2b28e3f646663299a8b4a99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 잎사귀 마른 상수리나무 같을 것이요 물 없는 동산 같으리니"
+      ],
+      "raw_text_hashes": [
+        "a4b78c150bad89a2cffa54d5b6a7d48e3780becec2b28e3f646663299a8b4a99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ISA:1:31",
+      "sequence": 17686,
+      "chapter_label": "ISA 1",
+      "verse_label": "31",
+      "locator": {
+        "book": "ISA",
+        "chapter": 1,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "ISA",
+          "chapter": 1,
+          "verse": 31
+        }
+      ],
+      "en": "The strong will be like tinder, and his work like a spark. They will both burn together, and no one will quench them.”",
+      "ko": "강한 자는 삼오라기 같고 그의 행위는 불티 같아서 함께 탈 것이나 끌 사람이 없으리라",
+      "source_text_hash": "0797eab1ba535ec163eb79db462c55d9dc0e299e389c5152af0f7c5a0cba1566",
+      "translation_text_hash": "911e257f52061f75a5b7e717a7d51c7518e6474e0a698a8bda8e4f062563676d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "강한 자는 삼오라기 같고 그의 행위는 불티 같아서 함께 탈 것이나 끌 사람이 없으리라"
+      ],
+      "raw_text_hashes": [
+        "911e257f52061f75a5b7e717a7d51c7518e6474e0a698a8bda8e4f062563676d"
+      ]
+    }
+  ]
+}

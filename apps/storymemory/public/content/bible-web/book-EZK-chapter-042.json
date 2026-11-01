@@ -1,0 +1,653 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EZK:chapter:042",
+  "unit_ordinal": 844,
+  "unit_label": "EZK 42",
+  "book_code": "EZK",
+  "chapter_number": 42,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EZK:42:1",
+      "sequence": 21554,
+      "chapter_label": "EZK 42",
+      "verse_label": "1",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 1
+        }
+      ],
+      "en": "Then he brought me out into the outer court, the way toward the north. Then he brought me into the room that was opposite the separate place, and which was opposite the building toward the north.",
+      "ko": "그가 나를 데리고 밖으로 나가 북편 뜰로 가서 두 방에 이르니 그 두 방의 하나는 골방 앞 뜰을 향하였고 하나는 북편 건물을 향하였는데",
+      "source_text_hash": "6d361a89f0f536df45ec9269341e99649f6853b143891877c10dd687a1c2576d",
+      "translation_text_hash": "bcfcd38da5fba60792dde18ce9066c8927bfda96269763dba800ff74d4143a50",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 나를 데리고 밖으로 나가 북편 뜰로 가서 두 방에 이르니 그 두 방의 하나는 골방 앞 뜰을 향하였고 하나는 북편 건물을 향하였는데"
+      ],
+      "raw_text_hashes": [
+        "bcfcd38da5fba60792dde18ce9066c8927bfda96269763dba800ff74d4143a50"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:2",
+      "sequence": 21555,
+      "chapter_label": "EZK 42",
+      "verse_label": "2",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 2
+        }
+      ],
+      "en": "Facing the length of one hundred cubits was the north door, and the width was fifty cubits.",
+      "ko": "그 방들의 자리의 장이 일백척이요 광이 오십척이며 그 문은 북을 향하였고",
+      "source_text_hash": "56548561c7a5111d1b66da47653ee23dcf0dee5de04ea51b36ef7ac7991e0d55",
+      "translation_text_hash": "10964421f9c741d87928d6a4469ce4b29c1f9afd0a74ad292cc98f4d1b5cda95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 방들의 자리의 장이 일백척이요 광이 오십척이며 그 문은 북을 향하였고"
+      ],
+      "raw_text_hashes": [
+        "10964421f9c741d87928d6a4469ce4b29c1f9afd0a74ad292cc98f4d1b5cda95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:3",
+      "sequence": 21556,
+      "chapter_label": "EZK 42",
+      "verse_label": "3",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 3
+        }
+      ],
+      "en": "Opposite the twenty cubits which belonged to the inner court, and opposite the pavement which belonged to the outer court, was gallery against gallery in the three stories.",
+      "ko": "그 방 삼층에 툇마루들이 있는데 한 방의 툇마루는 이십척 되는 안 뜰과 마주 대하였고 한 방의 툇마루는 바깥 뜰 박석 깔린 곳과 마주 대하였으며",
+      "source_text_hash": "f97b7cc435aa6a250ff3eac519e67e90a71d2cfb4ac7e8894519d8ce7a111013",
+      "translation_text_hash": "d2122ad03ba37687a640fa3d4bbee21ad28dd2ce2b7bb9643a88aa02b018a168",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 방 삼층에 툇마루들이 있는데 한 방의 툇마루는 이십척 되는 안 뜰과 마주 대하였고 한 방의 툇마루는 바깥 뜰 박석 깔린 곳과 마주 대하였으며"
+      ],
+      "raw_text_hashes": [
+        "d2122ad03ba37687a640fa3d4bbee21ad28dd2ce2b7bb9643a88aa02b018a168"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:4",
+      "sequence": 21557,
+      "chapter_label": "EZK 42",
+      "verse_label": "4",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 4
+        }
+      ],
+      "en": "Before the rooms was a walk of ten cubits’ width inward, a way of one cubit; and their doors were toward the north.",
+      "ko": "그 두 방 사이에 통한 길이 있어 광이 십척이요 장이 일백척이며 그 문들은 북을 향하였으며",
+      "source_text_hash": "42f7b22506ab3647a7286700cde55d0f99c0ac7fa6048f23e1ed08605df240d5",
+      "translation_text_hash": "72cb66d03450249c35e70334c26a8e634e2b14ccf4bbfc199fa5cb91edbef5a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 방 사이에 통한 길이 있어 광이 십척이요 장이 일백척이며 그 문들은 북을 향하였으며"
+      ],
+      "raw_text_hashes": [
+        "72cb66d03450249c35e70334c26a8e634e2b14ccf4bbfc199fa5cb91edbef5a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:5",
+      "sequence": 21558,
+      "chapter_label": "EZK 42",
+      "verse_label": "5",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 5
+        }
+      ],
+      "en": "Now the upper rooms were shorter; for the galleries took away from these more than from the lower and the middle in the building.",
+      "ko": "그 상층의 방은 제일 좁으니 이는 툇마루들을 인하여 하층과 중층보다 상층이 더 줄어짐이라",
+      "source_text_hash": "7dc2446cb73e96fe6671c316316585348be42ca3ba7fc15d1c38f7b82a886b13",
+      "translation_text_hash": "051d49199fef66eacc2e833476a62422496860915cd72f14b46d441249227116",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 상층의 방은 제일 좁으니 이는 툇마루들을 인하여 하층과 중층보다 상층이 더 줄어짐이라"
+      ],
+      "raw_text_hashes": [
+        "051d49199fef66eacc2e833476a62422496860915cd72f14b46d441249227116"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:6",
+      "sequence": 21559,
+      "chapter_label": "EZK 42",
+      "verse_label": "6",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 6
+        }
+      ],
+      "en": "For they were in three stories, and they didn’t have pillars as the pillars of the courts. Therefore the uppermost was set back more than the lowest and the middle from the ground.",
+      "ko": "그 방이 삼층이라도 뜰의 기둥 같은 기둥이 없으므로 그 상층이 하층과 중층보다 더욱 좁아짐이더라",
+      "source_text_hash": "591d222a8754ea98af87b28dd731839e992b00ec09d976ca8db0769eff8d9553",
+      "translation_text_hash": "e57095af5c3989032d9360ebf24bd12360faa420df04b5156dbb75eed6188d9c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 방이 삼층이라도 뜰의 기둥 같은 기둥이 없으므로 그 상층이 하층과 중층보다 더욱 좁아짐이더라"
+      ],
+      "raw_text_hashes": [
+        "e57095af5c3989032d9360ebf24bd12360faa420df04b5156dbb75eed6188d9c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:7",
+      "sequence": 21560,
+      "chapter_label": "EZK 42",
+      "verse_label": "7",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 7
+        }
+      ],
+      "en": "The wall that was outside by the side of the rooms, toward the outer court before the rooms, was fifty cubits long.",
+      "ko": "그 한 방의 바깥 담 곧 뜰의 담과 마주 대한 담의 장이 오십척이니",
+      "source_text_hash": "856317bde4758d02cacf3da64b62f256764301a7b25739a8956806b8b016e908",
+      "translation_text_hash": "3ba6f4998e18b9fc8245d9043977a8b06fba9da1a2ba30198bdb95175a95cefe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 한 방의 바깥 담 곧 뜰의 담과 마주 대한 담의 장이 오십척이니"
+      ],
+      "raw_text_hashes": [
+        "3ba6f4998e18b9fc8245d9043977a8b06fba9da1a2ba30198bdb95175a95cefe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:8",
+      "sequence": 21561,
+      "chapter_label": "EZK 42",
+      "verse_label": "8",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 8
+        }
+      ],
+      "en": "For the length of the rooms that were in the outer court was fifty cubits. Behold, those facing the temple were one hundred cubits.",
+      "ko": "바깥 뜰로 향한 방의 장이 오십척임이며 성전 앞을 향한 방은 일백척이며",
+      "source_text_hash": "b8128fc983354c18be286c4626dab759cbab8394e04fe40286cf4c392e6fd7eb",
+      "translation_text_hash": "eab5329257de065db28a589e3aec276c0339e2f42414d7a79f91c904f8fc1acf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바깥 뜰로 향한 방의 장이 오십척임이며 성전 앞을 향한 방은 일백척이며"
+      ],
+      "raw_text_hashes": [
+        "eab5329257de065db28a589e3aec276c0339e2f42414d7a79f91c904f8fc1acf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:9",
+      "sequence": 21562,
+      "chapter_label": "EZK 42",
+      "verse_label": "9",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 9
+        }
+      ],
+      "en": "From under these rooms was the entry on the east side, as one goes into them from the outer court.",
+      "ko": "이 방들 아래에 동편에서 들어가는 통행구가 있으니 곧 바깥 뜰에서 들어가는 통행구더라",
+      "source_text_hash": "9d7fb82f7b0bf3b380ff82cbc69b7c0413ba90ea503055f1b46072a888c1fe37",
+      "translation_text_hash": "4c60492ca0831e97b270f692038df1532af968e2a0f97b6ce708d2e16e054810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 방들 아래에 동편에서 들어가는 통행구가 있으니 곧 바깥 뜰에서 들어가는 통행구더라"
+      ],
+      "raw_text_hashes": [
+        "4c60492ca0831e97b270f692038df1532af968e2a0f97b6ce708d2e16e054810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:10",
+      "sequence": 21563,
+      "chapter_label": "EZK 42",
+      "verse_label": "10",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 10
+        }
+      ],
+      "en": "In the thickness of the wall of the court toward the east, before the separate place, and before the building, there were rooms.",
+      "ko": "남편 골방 뜰 맞은편과 남편 건물 맞은편에도 방 둘이 있는데",
+      "source_text_hash": "0872c20b21b368a486973487e5a90cbe3ea5444d5588a3a1288ebb33faa435a5",
+      "translation_text_hash": "0d4d9663e28ea7e67e552d4b36367f9bfc84c329b2d0e81007a3ef517e1ee785",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "남편 골방 뜰 맞은편과 남편 건물 맞은편에도 방 둘이 있는데"
+      ],
+      "raw_text_hashes": [
+        "0d4d9663e28ea7e67e552d4b36367f9bfc84c329b2d0e81007a3ef517e1ee785"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:11",
+      "sequence": 21564,
+      "chapter_label": "EZK 42",
+      "verse_label": "11",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 11
+        }
+      ],
+      "en": "The way before them was like the appearance of the rooms which were toward the north. Their length and width were the same. All their exits had the same arrangement and doors.",
+      "ko": "그 두 방 사이에 길이 있고 그 방들의 모양은 북편 방 같고 그 장광도 같으며 그 출입구와 문도 그와 같으며",
+      "source_text_hash": "297e96309a7874bbe73a5e2f335f31c1e9748537be2e237a8a53dcb871af2362",
+      "translation_text_hash": "f45cb97c2077e8ff022eaa11f0999b56a794cd45f30af394fe3074fc4cba42c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 두 방 사이에 길이 있고 그 방들의 모양은 북편 방 같고 그 장광도 같으며 그 출입구와 문도 그와 같으며"
+      ],
+      "raw_text_hashes": [
+        "f45cb97c2077e8ff022eaa11f0999b56a794cd45f30af394fe3074fc4cba42c6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:12",
+      "sequence": 21565,
+      "chapter_label": "EZK 42",
+      "verse_label": "12",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 12
+        }
+      ],
+      "en": "Like the doors of the rooms that were toward the south was a door at the head of the way, even the way directly before the wall toward the east, as one enters into them.",
+      "ko": "이 남편 방에 출입하는 문이 있는데 담 동편 길머리에 있더라",
+      "source_text_hash": "7f2bb4fae070a1405d58033ec800cf37fb9eeeba965ef4687eb0375c14fef956",
+      "translation_text_hash": "478138e575511ca5425547734cc1770a9564e3be136c737b5427b467b411df92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 남편 방에 출입하는 문이 있는데 담 동편 길머리에 있더라"
+      ],
+      "raw_text_hashes": [
+        "478138e575511ca5425547734cc1770a9564e3be136c737b5427b467b411df92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:13",
+      "sequence": 21566,
+      "chapter_label": "EZK 42",
+      "verse_label": "13",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 13
+        }
+      ],
+      "en": "Then he said to me, “The north rooms and the south rooms, which are opposite the separate place, are the holy rooms, where the priests who are near to the LORD shall eat the most holy things. There they shall lay the most holy things, with the meal offering, the sin offering, and the trespass offering; for the place is holy.",
+      "ko": "그가 내게 이르되 좌우 골방 뜰 앞 곧 북편 남편에 있는 방들은 거룩한 방이라 여호와를 가까이 하는 제사장들이 지성물을 거기서 먹을 것이며 지성물 곧 소제와 속죄제와 속건제의 제물을 거기 둘 것이며 이는 거룩한 곳이라",
+      "source_text_hash": "1bd76699d00e04e60db06c70836002ac11e7105c100eae8b94cd6f18e9b45190",
+      "translation_text_hash": "2643f5ac657f7525700f53f8e45a1a71f696877328c27f62f34842500b3705b4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 내게 이르되 좌우 골방 뜰 앞 곧 북편 남편에 있는 방들은 거룩한 방이라 여호와를 가까이 하는 제사장들이 지성물을 거기서 먹을 것이며 지성물 곧 소제와 속죄제와 속건제의 제물을 거기 둘 것이며 이는 거룩한 곳이라"
+      ],
+      "raw_text_hashes": [
+        "2643f5ac657f7525700f53f8e45a1a71f696877328c27f62f34842500b3705b4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:14",
+      "sequence": 21567,
+      "chapter_label": "EZK 42",
+      "verse_label": "14",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 14
+        }
+      ],
+      "en": "When the priests enter in, then they shall not go out of the holy place into the outer court until they lay their garments in which they minister there; for they are holy. Then they shall put on other garments, and shall approach that which is for the people.”",
+      "ko": "제사장의 의복은 거룩하므로 제사장이 성소에 들어갔다가 나올 때에 바로 바깥 뜰로 가지 못하고 수종드는 그 의복을 그 방에 두고 다른 옷을 입고 백성의 뜰로 나갈 것이니라 하더라",
+      "source_text_hash": "955d994b1988604abf34c922362121a07e88b4190fa1ce1e26752db0fc7361e2",
+      "translation_text_hash": "c9ba71f11abd6adc956524bb4edd51df61c8b32e98017b3f2bdc55ffe024ee8d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장의 의복은 거룩하므로 제사장이 성소에 들어갔다가 나올 때에 바로 바깥 뜰로 가지 못하고 수종드는 그 의복을 그 방에 두고 다른 옷을 입고 백성의 뜰로 나갈 것이니라 하더라"
+      ],
+      "raw_text_hashes": [
+        "c9ba71f11abd6adc956524bb4edd51df61c8b32e98017b3f2bdc55ffe024ee8d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:15",
+      "sequence": 21568,
+      "chapter_label": "EZK 42",
+      "verse_label": "15",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 15
+        }
+      ],
+      "en": "Now when he had finished measuring the inner house, he brought me out by the way of the gate which faces toward the east, and measured it all around.",
+      "ko": "그가 안에 있는 전 척량하기를 마친 후에 나를 데리고 동향한 문 길로 나가서 사면 담을 척량하는데",
+      "source_text_hash": "3ab5d63a6d4b388e0a7de341deb6af7bec12860923db3e6d359af2e4438d2ca2",
+      "translation_text_hash": "41afcfff64560c1383262b8f9ba87bddcf7f35f9cab0d2d8e03af34907c5a1fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 안에 있는 전 척량하기를 마친 후에 나를 데리고 동향한 문 길로 나가서 사면 담을 척량하는데"
+      ],
+      "raw_text_hashes": [
+        "41afcfff64560c1383262b8f9ba87bddcf7f35f9cab0d2d8e03af34907c5a1fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:16",
+      "sequence": 21569,
+      "chapter_label": "EZK 42",
+      "verse_label": "16",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 16
+        }
+      ],
+      "en": "He measured on the east side with the measuring reed five hundred reeds, with the measuring reed all around.",
+      "ko": "그가 척량하는 장대 곧 그 장대로 동편을 척량하니 오백척이요",
+      "source_text_hash": "5f2c13a4e5c760ad9c16674696495fc5918d0624e64c3e683a90226205c7d9ee",
+      "translation_text_hash": "1a375408a94bf64d521a7428468a72d60d5cb293aab5ee7423df88fb561fb285",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 척량하는 장대 곧 그 장대로 동편을 척량하니 오백척이요"
+      ],
+      "raw_text_hashes": [
+        "1a375408a94bf64d521a7428468a72d60d5cb293aab5ee7423df88fb561fb285"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:17",
+      "sequence": 21570,
+      "chapter_label": "EZK 42",
+      "verse_label": "17",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 17
+        }
+      ],
+      "en": "He measured on the north side five hundred reeds with the measuring reed all around.",
+      "ko": "그 장대로 북편을 척량하니 오백척이요",
+      "source_text_hash": "dc5cf9a8dd0e5c100cb84114a07206f3086fa2d83f0d4c159c6e86118e8b95cc",
+      "translation_text_hash": "18ffe9dc91708208101e1f9b3761b88bcb54070db7b038f3612e7f83ebce9049",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장대로 북편을 척량하니 오백척이요"
+      ],
+      "raw_text_hashes": [
+        "18ffe9dc91708208101e1f9b3761b88bcb54070db7b038f3612e7f83ebce9049"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:18",
+      "sequence": 21571,
+      "chapter_label": "EZK 42",
+      "verse_label": "18",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 18
+        }
+      ],
+      "en": "He measured on the south side five hundred reeds with the measuring reed.",
+      "ko": "그 장대로 남편을 척량하니 오백척이요",
+      "source_text_hash": "da1ecc817f3bba6f3be52e4b206cc5df5fcc90cdcf448de0ebd0314950a5e695",
+      "translation_text_hash": "2ec1fc198983bd29676feb276685e57b15a551352ed599bda312b9d8d8ed6f81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 장대로 남편을 척량하니 오백척이요"
+      ],
+      "raw_text_hashes": [
+        "2ec1fc198983bd29676feb276685e57b15a551352ed599bda312b9d8d8ed6f81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:19",
+      "sequence": 21572,
+      "chapter_label": "EZK 42",
+      "verse_label": "19",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 19
+        }
+      ],
+      "en": "He turned about to the west side, and measured five hundred reeds with the measuring reed.",
+      "ko": "서편으로 돌이켜 그 장대로 척량하니 오백척이라",
+      "source_text_hash": "2b7f3872812aa0040eff7418a9e891e068ad30ed4e4f0595580f74d0b20275f8",
+      "translation_text_hash": "04681eb0cad30b30203f9ec8d016ade0b8cb5964fa70b32087703d4a67a59544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편으로 돌이켜 그 장대로 척량하니 오백척이라"
+      ],
+      "raw_text_hashes": [
+        "04681eb0cad30b30203f9ec8d016ade0b8cb5964fa70b32087703d4a67a59544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EZK:42:20",
+      "sequence": 21573,
+      "chapter_label": "EZK 42",
+      "verse_label": "20",
+      "locator": {
+        "book": "EZK",
+        "chapter": 42,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EZK",
+          "chapter": 42,
+          "verse": 20
+        }
+      ],
+      "en": "He measured it on the four sides. It had a wall around it, the length five hundred cubits, and the width five hundred cubits, to make a separation between that which was holy and that which was common.",
+      "ko": "그가 이와 같이 그 사방을 척량하니 그 사방 담 안 마당의 장과 광이 오백척씩이라 그 담은 거룩한 것과 속된 것을 구별하는 것이더라",
+      "source_text_hash": "54611d4bd92c66add80fd2c78702b9570eea0f27a3cd2663e03248fc9a13226b",
+      "translation_text_hash": "311e8e4a4f47058b71fb256dae01f9b40740885e29612d03794797519f282f9a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 이와 같이 그 사방을 척량하니 그 사방 담 안 마당의 장과 광이 오백척씩이라 그 담은 거룩한 것과 속된 것을 구별하는 것이더라"
+      ],
+      "raw_text_hashes": [
+        "311e8e4a4f47058b71fb256dae01f9b40740885e29612d03794797519f282f9a"
+      ]
+    }
+  ]
+}

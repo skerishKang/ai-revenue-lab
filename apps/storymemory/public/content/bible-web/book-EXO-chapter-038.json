@@ -1,0 +1,1005 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:EXO:chapter:038",
+  "unit_ordinal": 88,
+  "unit_label": "EXO 38",
+  "book_code": "EXO",
+  "chapter_number": 38,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:EXO:38:1",
+      "sequence": 2635,
+      "chapter_label": "EXO 38",
+      "verse_label": "1",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 1
+        }
+      ],
+      "en": "He made the altar of burnt offering of acacia wood. It was square. Its length was five cubits, its width was five cubits, and its height was three cubits.",
+      "ko": "그가 또 조각목으로 번제단을 만들었으니 장이 오 규빗이요 광이 오 규빗이라 네모 반듯하고 고는 삼 규빗이며",
+      "source_text_hash": "ffa0cd845baaab3e8b16b9cd850239b96014ac92231dc64674a081794d139dfb",
+      "translation_text_hash": "7fe13814efbe7a80fa62689bf5a4ef51df478dfc4fa6548c9446ca33f223b968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 조각목으로 번제단을 만들었으니 장이 오 규빗이요 광이 오 규빗이라 네모 반듯하고 고는 삼 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "7fe13814efbe7a80fa62689bf5a4ef51df478dfc4fa6548c9446ca33f223b968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:2",
+      "sequence": 2636,
+      "chapter_label": "EXO 38",
+      "verse_label": "2",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 2
+        }
+      ],
+      "en": "He made its horns on its four corners. Its horns were of one piece with it, and he overlaid it with bronze.",
+      "ko": "그 네 모퉁이 위에 그 뿔을 만들되 그 뿔을 단과 연하게 하고 단을 놋으로 쌌으며",
+      "source_text_hash": "40c0d2073f3265d764eeefacf1983ac952dfb39d35194fd68e02fddc147ef3f6",
+      "translation_text_hash": "01479b6c5734e7ec0dddc68a53cd23124937a50ed7308e0c67d80d620f943e6b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 네 모퉁이 위에 그 뿔을 만들되 그 뿔을 단과 연하게 하고 단을 놋으로 쌌으며"
+      ],
+      "raw_text_hashes": [
+        "01479b6c5734e7ec0dddc68a53cd23124937a50ed7308e0c67d80d620f943e6b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:3",
+      "sequence": 2637,
+      "chapter_label": "EXO 38",
+      "verse_label": "3",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 3
+        }
+      ],
+      "en": "He made all the vessels of the altar: the pots, the shovels, the basins, the forks, and the fire pans. He made all its vessels of bronze.",
+      "ko": "단의 모든 기구 곧 통과 부삽과 대야와 고기 갈고리와 불 옮기는 그릇을 다 놋으로 만들고",
+      "source_text_hash": "59ffb4ef72fff5ec5a3a42618157112fd6cd3304199ac5c68ae361637f45c7c2",
+      "translation_text_hash": "a5aa4ff05dfcb50ba7e3fed8c401d4c5238592cc0d1c780c6068c749e9f8dac8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단의 모든 기구 곧 통과 부삽과 대야와 고기 갈고리와 불 옮기는 그릇을 다 놋으로 만들고"
+      ],
+      "raw_text_hashes": [
+        "a5aa4ff05dfcb50ba7e3fed8c401d4c5238592cc0d1c780c6068c749e9f8dac8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:4",
+      "sequence": 2638,
+      "chapter_label": "EXO 38",
+      "verse_label": "4",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 4
+        }
+      ],
+      "en": "He made for the altar a grating of a network of bronze, under the ledge around it beneath, reaching halfway up.",
+      "ko": "단을 위하여 놋 그물을 만들어 단 사면 가장자리 아래 두되 단 절반에 오르게 하고",
+      "source_text_hash": "b0e0a17238248a3ccd119784cb0b53f76fb9a264bb70a99522bd5ff51499086a",
+      "translation_text_hash": "55ce06311254f11b15bfe74846743c6702d690a14e7c1143b325b5c847535b17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단을 위하여 놋 그물을 만들어 단 사면 가장자리 아래 두되 단 절반에 오르게 하고"
+      ],
+      "raw_text_hashes": [
+        "55ce06311254f11b15bfe74846743c6702d690a14e7c1143b325b5c847535b17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:5",
+      "sequence": 2639,
+      "chapter_label": "EXO 38",
+      "verse_label": "5",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 5
+        }
+      ],
+      "en": "He cast four rings for the four corners of bronze grating, to be places for the poles.",
+      "ko": "그 놋 그물 네 모퉁이에 채를 꿸 고리 넷을 부어 만들었으며",
+      "source_text_hash": "b27b3c56f15857de53bb37cd7fd7ade288054581d6a2e676efad416e46d7dbb5",
+      "translation_text_hash": "12078e810c41a6813df75152bf1fa5bfc0f998b5eee2b3db4cfbbbe7caf4b74d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 놋 그물 네 모퉁이에 채를 꿸 고리 넷을 부어 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "12078e810c41a6813df75152bf1fa5bfc0f998b5eee2b3db4cfbbbe7caf4b74d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:6",
+      "sequence": 2640,
+      "chapter_label": "EXO 38",
+      "verse_label": "6",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 6
+        }
+      ],
+      "en": "He made the poles of acacia wood, and overlaid them with bronze.",
+      "ko": "채를 조각목으로 만들어 놋으로 싸고",
+      "source_text_hash": "7280abf38f73a6f960a17018ae934378de1d39646bdcd90ed3d892d59b1ef4e3",
+      "translation_text_hash": "00c3b4da1f03447c2e7cb304ac376548e87309435a1edb570f538b39acd15224",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "채를 조각목으로 만들어 놋으로 싸고"
+      ],
+      "raw_text_hashes": [
+        "00c3b4da1f03447c2e7cb304ac376548e87309435a1edb570f538b39acd15224"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:7",
+      "sequence": 2641,
+      "chapter_label": "EXO 38",
+      "verse_label": "7",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 7
+        }
+      ],
+      "en": "He put the poles into the rings on the sides of the altar, with which to carry it. He made it hollow with planks.",
+      "ko": "단 양편 고리에 그 채를 꿰어 메게 하였으며 단은 널판으로 비게 만들었더라",
+      "source_text_hash": "9ef9c7a402c34780f42e27512f83b9dacbabbd1b6fe44f8f7ea3267636d3b5cc",
+      "translation_text_hash": "4c9b1bd41a87fc792170d3f1139b972e700cf5c942216cba840c6d5604fd1ef4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 양편 고리에 그 채를 꿰어 메게 하였으며 단은 널판으로 비게 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "4c9b1bd41a87fc792170d3f1139b972e700cf5c942216cba840c6d5604fd1ef4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:8",
+      "sequence": 2642,
+      "chapter_label": "EXO 38",
+      "verse_label": "8",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 8
+        }
+      ],
+      "en": "He made the basin of bronze, and its base of bronze, out of the mirrors of the ministering women who ministered at the door of the Tent of Meeting.",
+      "ko": "그가 놋으로 물두멍을 만들고 그 받침도 놋으로 하였으니 곧 회막문에서 수종드는 여인들의 거울로 만들었더라",
+      "source_text_hash": "b76965f7855bc1f9c235dcf24d428af12fdf42b16c8c8d6a397c48c032e62f19",
+      "translation_text_hash": "af7c335f4214bad56ac91a9a5c7fdf9cdd62044f7a2ee258c4aeb07a5e86e830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 놋으로 물두멍을 만들고 그 받침도 놋으로 하였으니 곧 회막문에서 수종드는 여인들의 거울로 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "af7c335f4214bad56ac91a9a5c7fdf9cdd62044f7a2ee258c4aeb07a5e86e830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:9",
+      "sequence": 2643,
+      "chapter_label": "EXO 38",
+      "verse_label": "9",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 9
+        }
+      ],
+      "en": "He made the court: for the south side southward the hangings of the court were of fine twined linen, one hundred cubits;",
+      "ko": "그가 또 뜰을 만들었으니 남으로 뜰의 남편에는 세마포 포장이 백 규빗이라",
+      "source_text_hash": "bf5f6f17a6133d2ed3f33eed0dc0c1c0fd8fff668b4a639678bc9e3b31a734d0",
+      "translation_text_hash": "e6831a72d299c96e476050ebc356c99a1b769abbae14d47534d9b56e0cbb1edf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그가 또 뜰을 만들었으니 남으로 뜰의 남편에는 세마포 포장이 백 규빗이라"
+      ],
+      "raw_text_hashes": [
+        "e6831a72d299c96e476050ebc356c99a1b769abbae14d47534d9b56e0cbb1edf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:10",
+      "sequence": 2644,
+      "chapter_label": "EXO 38",
+      "verse_label": "10",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 10
+        }
+      ],
+      "en": "their pillars were twenty, and their sockets twenty, of bronze; the hooks of the pillars and their fillets were of silver.",
+      "ko": "그 기둥이 스물이며 그 받침이 스물이니 놋이요 기둥의 갈고리와 가름대는 은이며",
+      "source_text_hash": "5d4f9b83e4f03fc65f8b9ed25ab2a142434a077566860ad5f58c16948cd21dc7",
+      "translation_text_hash": "351a19b70d908687c9347ad635f6635593b825b8dc6a89680b00b2357933f820",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기둥이 스물이며 그 받침이 스물이니 놋이요 기둥의 갈고리와 가름대는 은이며"
+      ],
+      "raw_text_hashes": [
+        "351a19b70d908687c9347ad635f6635593b825b8dc6a89680b00b2357933f820"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:11",
+      "sequence": 2645,
+      "chapter_label": "EXO 38",
+      "verse_label": "11",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 11
+        }
+      ],
+      "en": "For the north side one hundred cubits, their pillars twenty, and their sockets twenty, of bronze; the hooks of the pillars, and their fillets, of silver.",
+      "ko": "그 북편에도 백 규빗이라 그 기둥이 스물이며 그 받침이 스물이니 놋이요 기둥의 갈고리와 가름대는 은이며",
+      "source_text_hash": "b56a8c038c5d9d56ba9560b7ed1078e8016d049ffa39255a11908ff252d49d9e",
+      "translation_text_hash": "9200f3f0d0db8489a07314c4e5c098315c20ab70ecdf5e2c9617db01c887087a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 북편에도 백 규빗이라 그 기둥이 스물이며 그 받침이 스물이니 놋이요 기둥의 갈고리와 가름대는 은이며"
+      ],
+      "raw_text_hashes": [
+        "9200f3f0d0db8489a07314c4e5c098315c20ab70ecdf5e2c9617db01c887087a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:12",
+      "sequence": 2646,
+      "chapter_label": "EXO 38",
+      "verse_label": "12",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 12
+        }
+      ],
+      "en": "For the west side were hangings of fifty cubits, their pillars ten, and their sockets ten; the hooks of the pillars, and their fillets, of silver.",
+      "ko": "서편에 포장은 오십 규빗이라 그 기둥이 열이요 받침이 열이며 기둥의 갈고리와 가름대는 은이며",
+      "source_text_hash": "01fb90825575c40da7cda178779f00de3be62b4ab58ffb3ab54981001559c003",
+      "translation_text_hash": "1842be0d33593bd6b7d1e896e75d255e29da0fdf6af27fe4e088f7df18f15770",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서편에 포장은 오십 규빗이라 그 기둥이 열이요 받침이 열이며 기둥의 갈고리와 가름대는 은이며"
+      ],
+      "raw_text_hashes": [
+        "1842be0d33593bd6b7d1e896e75d255e29da0fdf6af27fe4e088f7df18f15770"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:13",
+      "sequence": 2647,
+      "chapter_label": "EXO 38",
+      "verse_label": "13",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 13
+        }
+      ],
+      "en": "For the east side eastward fifty cubits,",
+      "ko": "동으로 동편에도 오십 규빗이라",
+      "source_text_hash": "9cf29eaf9a3a006d7c8607b10dcd6abac0c1b680ee26c5f3b9de2e09ecbbf2ef",
+      "translation_text_hash": "432769c90bcb877f591677ffc5bef9c5ca4511b6b3a7cdc6e37c851f29617528",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동으로 동편에도 오십 규빗이라"
+      ],
+      "raw_text_hashes": [
+        "432769c90bcb877f591677ffc5bef9c5ca4511b6b3a7cdc6e37c851f29617528"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:14",
+      "sequence": 2648,
+      "chapter_label": "EXO 38",
+      "verse_label": "14",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 14
+        }
+      ],
+      "en": "the hangings for the one side were fifteen cubits; their pillars three, and their sockets three;",
+      "ko": "문 이편의 포장이 십 오 규빗이요 그 기둥이 셋이요 받침이 셋이며",
+      "source_text_hash": "7e919c3d8155f57734e9769754527867165d90905cd8d08a14c3909aa52b9a8a",
+      "translation_text_hash": "f25deed17a744c36ec95e06a66dbc8860b1702d7d21d6d6ef98add7e1fd4ce0b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문 이편의 포장이 십 오 규빗이요 그 기둥이 셋이요 받침이 셋이며"
+      ],
+      "raw_text_hashes": [
+        "f25deed17a744c36ec95e06a66dbc8860b1702d7d21d6d6ef98add7e1fd4ce0b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:15",
+      "sequence": 2649,
+      "chapter_label": "EXO 38",
+      "verse_label": "15",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 15
+        }
+      ],
+      "en": "and so for the other side: on this hand and that hand by the gate of the court were hangings of fifteen cubits; their pillars three, and their sockets three.",
+      "ko": "문 저편도 그와 같으니 뜰문 이편, 저편의 포장이 십 오 규빗씩이요 그 기둥이 셋씩, 받침이 셋씩이라",
+      "source_text_hash": "d509868d8f85441c33b51a3ba672ca3be4f7ed3affe88b377e2a59bec3c22ef2",
+      "translation_text_hash": "bc0d30b0bc51cc932f38678975c27a3ccad88d4bc4afaebcf8a5ee1263fb24d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "문 저편도 그와 같으니 뜰문 이편, 저편의 포장이 십 오 규빗씩이요 그 기둥이 셋씩, 받침이 셋씩이라"
+      ],
+      "raw_text_hashes": [
+        "bc0d30b0bc51cc932f38678975c27a3ccad88d4bc4afaebcf8a5ee1263fb24d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:16",
+      "sequence": 2650,
+      "chapter_label": "EXO 38",
+      "verse_label": "16",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 16
+        }
+      ],
+      "en": "All the hangings around the court were of fine twined linen.",
+      "ko": "뜰 사면의 포장은 세마포요",
+      "source_text_hash": "521c9d140555ca8625c8fdc0186bca03046bc4d9d1b6f58aac1a9713248c2158",
+      "translation_text_hash": "3a5533b807418643707ef1bdba01b78b6ce8fb4e93daf448cf81acede7f02d95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 사면의 포장은 세마포요"
+      ],
+      "raw_text_hashes": [
+        "3a5533b807418643707ef1bdba01b78b6ce8fb4e93daf448cf81acede7f02d95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:17",
+      "sequence": 2651,
+      "chapter_label": "EXO 38",
+      "verse_label": "17",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 17
+        }
+      ],
+      "en": "The sockets for the pillars were of bronze. The hooks of the pillars and their fillets were of silver. Their capitals were overlaid with silver. All the pillars of the court had silver bands.",
+      "ko": "기둥 받침은 놋이요 기둥의 갈고리와 가름대는 은이요 기둥머리 싸개는 은이며 뜰의 모든 기둥에 은 가름대를 꿰었으며",
+      "source_text_hash": "2817542a05eea263a5cedb53ee5727f74803a27e613135deec5738ad2d07d37e",
+      "translation_text_hash": "ff202f0cca3c287340e18dc592afe74f321e2187ee5412ee43651c1eb0dd2378",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "기둥 받침은 놋이요 기둥의 갈고리와 가름대는 은이요 기둥머리 싸개는 은이며 뜰의 모든 기둥에 은 가름대를 꿰었으며"
+      ],
+      "raw_text_hashes": [
+        "ff202f0cca3c287340e18dc592afe74f321e2187ee5412ee43651c1eb0dd2378"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:18",
+      "sequence": 2652,
+      "chapter_label": "EXO 38",
+      "verse_label": "18",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 18
+        }
+      ],
+      "en": "The screen for the gate of the court was the work of the embroiderer, of blue, purple, scarlet, and fine twined linen. Twenty cubits was the length, and the height along the width was five cubits, like the hangings of the court.",
+      "ko": "뜰의 문장을 청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짰으니 장은 이십 규빗이요 광 곧 고는 뜰의 포장과 같이 오 규빗이며",
+      "source_text_hash": "7e0d6471e0c298cdbebb26d8f9bc82865e5830b420f37b9a32b1af4d105c58ac",
+      "translation_text_hash": "5198bfe16ac4011118709aadfc75fc25dbd5fac86d5b2dc8fc4b5b45f0142284",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰의 문장을 청색 자색 홍색실과 가늘게 꼰 베실로 수 놓아 짰으니 장은 이십 규빗이요 광 곧 고는 뜰의 포장과 같이 오 규빗이며"
+      ],
+      "raw_text_hashes": [
+        "5198bfe16ac4011118709aadfc75fc25dbd5fac86d5b2dc8fc4b5b45f0142284"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:19",
+      "sequence": 2653,
+      "chapter_label": "EXO 38",
+      "verse_label": "19",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 19
+        }
+      ],
+      "en": "Their pillars were four, and their sockets four, of bronze; their hooks of silver, and the overlaying of their capitals, and their fillets, of silver.",
+      "ko": "그 기둥은 넷인데 그 받침 넷은 놋이요 그 갈고리는 은이요 그 머리 싸개와 가름대도 은이며",
+      "source_text_hash": "da99faa150f966d8ffb83b3afffc1ee0c2da598917d394e42a1d048b78bc1442",
+      "translation_text_hash": "10cdbe45982cedd7809160d2eef8c737fbea50237f47ac7b98c372ebfb11d4ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 기둥은 넷인데 그 받침 넷은 놋이요 그 갈고리는 은이요 그 머리 싸개와 가름대도 은이며"
+      ],
+      "raw_text_hashes": [
+        "10cdbe45982cedd7809160d2eef8c737fbea50237f47ac7b98c372ebfb11d4ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:20",
+      "sequence": 2654,
+      "chapter_label": "EXO 38",
+      "verse_label": "20",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 20
+        }
+      ],
+      "en": "All the pins of the tabernacle, and around the court, were of bronze.",
+      "ko": "성막 말뚝과 뜰의 사면 포장 말뚝은 다 놋이더라",
+      "source_text_hash": "ba1cebd4267b09f0fc159a5f6f924ebf51c3056f00cfcb61fb1ca1b7e7767e75",
+      "translation_text_hash": "93c908c147b2789a4e21e7a79577230f83123dd27c2507ce06a4d208cf2f0480",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 말뚝과 뜰의 사면 포장 말뚝은 다 놋이더라"
+      ],
+      "raw_text_hashes": [
+        "93c908c147b2789a4e21e7a79577230f83123dd27c2507ce06a4d208cf2f0480"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:21",
+      "sequence": 2655,
+      "chapter_label": "EXO 38",
+      "verse_label": "21",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 21
+        }
+      ],
+      "en": "These are the amounts of materials used for the tabernacle, even the Tabernacle of the Testimony, as they were counted, according to the commandment of Moses, for the service of the Levites, by the hand of Ithamar, the son of Aaron the priest.",
+      "ko": "성막 곧 증거막을 위하여 레위 사람의 쓴 재료의 물목은 제사장 아론의 아들 이다말이 모세의 명대로 계산하였으며",
+      "source_text_hash": "5eeb78c823bbc6cf2e7a9cbbcb1e68298a006f253bb90c710ca256b59a626aa0",
+      "translation_text_hash": "6481c3539402a1ba82cba835b77bff91d2d06ab7f1f8897239ad9caf0383ba95",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성막 곧 증거막을 위하여 레위 사람의 쓴 재료의 물목은 제사장 아론의 아들 이다말이 모세의 명대로 계산하였으며"
+      ],
+      "raw_text_hashes": [
+        "6481c3539402a1ba82cba835b77bff91d2d06ab7f1f8897239ad9caf0383ba95"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:22",
+      "sequence": 2656,
+      "chapter_label": "EXO 38",
+      "verse_label": "22",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 22
+        }
+      ],
+      "en": "Bezalel the son of Uri, the son of Hur, of the tribe of Judah, made all that the LORD commanded Moses.",
+      "ko": "유다 지파 훌의 손자요 우리의 아들인 브살렐은 여호와께서 모세에게 명하신 모든 것을 만들었고",
+      "source_text_hash": "fde4aa5397302b0055390829f526ece05cebb81fe6169a7f4d10b49c0e548387",
+      "translation_text_hash": "ed2c45408f9f79947fd8b6b8031a118756cea160d7cae3fb38e3b6318e4ee97b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 지파 훌의 손자요 우리의 아들인 브살렐은 여호와께서 모세에게 명하신 모든 것을 만들었고"
+      ],
+      "raw_text_hashes": [
+        "ed2c45408f9f79947fd8b6b8031a118756cea160d7cae3fb38e3b6318e4ee97b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:23",
+      "sequence": 2657,
+      "chapter_label": "EXO 38",
+      "verse_label": "23",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 23
+        }
+      ],
+      "en": "With him was Oholiab, the son of Ahisamach, of the tribe of Dan, an engraver, and a skillful workman, and an embroiderer in blue, in purple, in scarlet, and in fine linen.",
+      "ko": "단 지파 아히사막의 아들 오홀리압은 그와 함께 하였으니 오홀리압은 재능이 있어서 조각하며 또 청색 자색 홍색실과 가는 베실로 수 놓은 자더라",
+      "source_text_hash": "1d8dc9d3b74501ab1ecac5ae688fd08718914a1a936a6aad94536d6e8f66017f",
+      "translation_text_hash": "bf5ef8ced0e12912b825353040a3e643798f54698e768e9e761e537610bf02f9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "단 지파 아히사막의 아들 오홀리압은 그와 함께 하였으니 오홀리압은 재능이 있어서 조각하며 또 청색 자색 홍색실과 가는 베실로 수 놓은 자더라"
+      ],
+      "raw_text_hashes": [
+        "bf5ef8ced0e12912b825353040a3e643798f54698e768e9e761e537610bf02f9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:24",
+      "sequence": 2658,
+      "chapter_label": "EXO 38",
+      "verse_label": "24",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 24
+        }
+      ],
+      "en": "All the gold that was used for the work in all the work of the sanctuary, even the gold of the offering, was twenty-nine talents and seven hundred thirty shekels, according to the shekel of the sanctuary.",
+      "ko": "성소 건축 비용으로 드린 금은 성소의 세겔대로 이십 구 달란트와 칠백 삼십 세겔이며",
+      "source_text_hash": "4e2a5837404ff81a7be4b57d16a41b8dfbc3e122ce93227933ec686c97d29fa3",
+      "translation_text_hash": "4e577a99ddccee06310221cb55cd058e9cbfcb12286a1752d9ad9e55d15d0972",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소 건축 비용으로 드린 금은 성소의 세겔대로 이십 구 달란트와 칠백 삼십 세겔이며"
+      ],
+      "raw_text_hashes": [
+        "4e577a99ddccee06310221cb55cd058e9cbfcb12286a1752d9ad9e55d15d0972"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:25",
+      "sequence": 2659,
+      "chapter_label": "EXO 38",
+      "verse_label": "25",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 25
+        }
+      ],
+      "en": "The silver of those who were counted of the congregation was one hundred talents and one thousand seven hundred seventy-five shekels, according to the shekel of the sanctuary:",
+      "ko": "조사를 받은 회중의 드린 은은 성소의 세겔대로 일백 달란트와 일천 칠백 칠십 오 세겔이니",
+      "source_text_hash": "19644ff4d9c533ee58a03175c6c7571ca37d2300c3854a9c1b14076fc9b2bef4",
+      "translation_text_hash": "5d91b4d6ecd559fe08de1d28ba09dfae6bf3c5834dc97ba8fec3aa7a58502ea9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조사를 받은 회중의 드린 은은 성소의 세겔대로 일백 달란트와 일천 칠백 칠십 오 세겔이니"
+      ],
+      "raw_text_hashes": [
+        "5d91b4d6ecd559fe08de1d28ba09dfae6bf3c5834dc97ba8fec3aa7a58502ea9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:26",
+      "sequence": 2660,
+      "chapter_label": "EXO 38",
+      "verse_label": "26",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 26
+        }
+      ],
+      "en": "a beka a head, that is, half a shekel, according to the shekel of the sanctuary, for everyone who passed over to those who were counted, from twenty years old and upward, for six hundred three thousand five hundred fifty men.",
+      "ko": "조사를 받은 자가 이십세 이상으로 육십만 삼천 오백 오십명인즉 성소의 세겔대로 매인에게 은 한 베가 곧 반 세겔씩이라",
+      "source_text_hash": "295e9d72280f71b2860186e790ffb4668d5f5c93d088069f6b6adc2f916c9112",
+      "translation_text_hash": "2bc2285a1940d6de08e1ea97505273e6ca856a7ed10e69f3f93078ee0506b412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "조사를 받은 자가 이십세 이상으로 육십만 삼천 오백 오십명인즉 성소의 세겔대로 매인에게 은 한 베가 곧 반 세겔씩이라"
+      ],
+      "raw_text_hashes": [
+        "2bc2285a1940d6de08e1ea97505273e6ca856a7ed10e69f3f93078ee0506b412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:27",
+      "sequence": 2661,
+      "chapter_label": "EXO 38",
+      "verse_label": "27",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 27
+        }
+      ],
+      "en": "The one hundred talents of silver were for casting the sockets of the sanctuary and the sockets of the veil: one hundred sockets for the one hundred talents, one talent per socket.",
+      "ko": "은 일백 달란트로 성소의 판장 받침과 문장 기둥 받침 합 일백을 부어 만들었으니 매 받침에 한 달란트씩 합 일백 달란트요",
+      "source_text_hash": "2cb2e43bec3a42d18af05f5ecbc3630de62d3fa77bcdf43f68b57b139c989212",
+      "translation_text_hash": "8b64bdbdd90c5bb458f967e52c8aaae75357647c3970e8b6fbee939e44c0719a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "은 일백 달란트로 성소의 판장 받침과 문장 기둥 받침 합 일백을 부어 만들었으니 매 받침에 한 달란트씩 합 일백 달란트요"
+      ],
+      "raw_text_hashes": [
+        "8b64bdbdd90c5bb458f967e52c8aaae75357647c3970e8b6fbee939e44c0719a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:28",
+      "sequence": 2662,
+      "chapter_label": "EXO 38",
+      "verse_label": "28",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 28
+        }
+      ],
+      "en": "From the one thousand seven hundred seventy-five shekels he made hooks for the pillars, overlaid their capitals, and made fillets for them.",
+      "ko": "일천 칠백 칠십 오 세겔로 기둥 갈고리를 만들고 기둥머리를 싸고 기둥 가름대를 만들었으며",
+      "source_text_hash": "ea1077dc83d96a390661b46668253172dadd6ddf7c58cd6379b9a04108ca3513",
+      "translation_text_hash": "834b7fc4098f75ce6379ccdc03d71057cb06699b85d6ed56687471f79770cc4f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "일천 칠백 칠십 오 세겔로 기둥 갈고리를 만들고 기둥머리를 싸고 기둥 가름대를 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "834b7fc4098f75ce6379ccdc03d71057cb06699b85d6ed56687471f79770cc4f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:29",
+      "sequence": 2663,
+      "chapter_label": "EXO 38",
+      "verse_label": "29",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 29
+        }
+      ],
+      "en": "The bronze of the offering was seventy talents and two thousand four hundred shekels.",
+      "ko": "드린 놋은 칠십 달란트와 이천 사백 세겔이라",
+      "source_text_hash": "7e9f553394a802c4ec53fb23b2db5d1d83ed103744b9f751f9a57ea8d3073773",
+      "translation_text_hash": "727990a175cde6924b9a761f98308652924c5e4ec1ac1dee25a86d73a21580ab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "드린 놋은 칠십 달란트와 이천 사백 세겔이라"
+      ],
+      "raw_text_hashes": [
+        "727990a175cde6924b9a761f98308652924c5e4ec1ac1dee25a86d73a21580ab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:30",
+      "sequence": 2664,
+      "chapter_label": "EXO 38",
+      "verse_label": "30",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 30
+        }
+      ],
+      "en": "With this he made the sockets to the door of the Tent of Meeting, the bronze altar, the bronze grating for it, all the vessels of the altar,",
+      "ko": "이것으로 회막 문 기둥 받침과 놋 단과 놋그물과 단의 모든 기구를 만들었으며",
+      "source_text_hash": "36d2b758b166823bdd83fbd6a60c591034292441e0863dc5bea35918c9b5028a",
+      "translation_text_hash": "00a9e03d47e46aef68d19bd468601b893dc1514966ce42bf0cc52a6364cca234",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이것으로 회막 문 기둥 받침과 놋 단과 놋그물과 단의 모든 기구를 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "00a9e03d47e46aef68d19bd468601b893dc1514966ce42bf0cc52a6364cca234"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:EXO:38:31",
+      "sequence": 2665,
+      "chapter_label": "EXO 38",
+      "verse_label": "31",
+      "locator": {
+        "book": "EXO",
+        "chapter": 38,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "EXO",
+          "chapter": 38,
+          "verse": 31
+        }
+      ],
+      "en": "the sockets around the court, the sockets of the gate of the court, all the pins of the tabernacle, and all the pins around the court.",
+      "ko": "뜰 사면의 기둥 받침과 그 문장 기둥 받침이며 성막의 모든 말뚝과 뜰 사면의 모든 말뚝을 만들었더라",
+      "source_text_hash": "c9cb0e5ca2a83aee664569263cd3f511785ff601857c80f0ea4e276d78f55927",
+      "translation_text_hash": "10972107e13e9fcee387047100726006ae7179863515fa0c4551339291f02662",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "뜰 사면의 기둥 받침과 그 문장 기둥 받침이며 성막의 모든 말뚝과 뜰 사면의 모든 말뚝을 만들었더라"
+      ],
+      "raw_text_hashes": [
+        "10972107e13e9fcee387047100726006ae7179863515fa0c4551339291f02662"
+      ]
+    }
+  ]
+}

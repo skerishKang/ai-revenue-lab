@@ -1,0 +1,1645 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MAT:chapter:024",
+  "unit_ordinal": 953,
+  "unit_label": "MAT 24",
+  "book_code": "MAT",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MAT:24:1",
+      "sequence": 23959,
+      "chapter_label": "MAT 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "Jesus went out from the temple, and was going on his way. His disciples came to him to show him the buildings of the temple.",
+      "ko": "예수께서 성전에서 나와서 가실 때에 제자들이 성전 건물들을 가리켜 보이려고 나아오니",
+      "source_text_hash": "695ab662c04ced58f109265c01ba27180e8ff58ed54d9ee22d6734d46417acdd",
+      "translation_text_hash": "c72f67eb1f1fb8b289aae0ceed86a12e15612da5fb52ed0e77927cea09f564bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 성전에서 나와서 가실 때에 제자들이 성전 건물들을 가리켜 보이려고 나아오니"
+      ],
+      "raw_text_hashes": [
+        "c72f67eb1f1fb8b289aae0ceed86a12e15612da5fb52ed0e77927cea09f564bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:2",
+      "sequence": 23960,
+      "chapter_label": "MAT 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "But he answered them, “You see all of these things, don’t you? Most certainly I tell you, there will not be left here one stone on another, that will not be thrown down.”",
+      "ko": "대답하여 가라사대 너희가 이 모든 것을 보지 못하느냐 내가 진실로 너희에게 이르노니 돌 하나도 돌 위에 남지 않고 다 무너뜨리우리라",
+      "source_text_hash": "44d0ed8fb0afe237c8437ec88c307066c0eae27ed89cd8843e4638eadd8abd9a",
+      "translation_text_hash": "50ccd4a458589ea08f89340a18d8d624ce5626e483beca41d55f0a067d0f1414",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가라사대 너희가 이 모든 것을 보지 못하느냐 내가 진실로 너희에게 이르노니 돌 하나도 돌 위에 남지 않고 다 무너뜨리우리라"
+      ],
+      "raw_text_hashes": [
+        "50ccd4a458589ea08f89340a18d8d624ce5626e483beca41d55f0a067d0f1414"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:3",
+      "sequence": 23961,
+      "chapter_label": "MAT 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "As he sat on the Mount of Olives, the disciples came to him privately, saying, “Tell us, when will these things be? What is the sign of your coming, and of the end of the age?”",
+      "ko": "예수께서 감람산 위에 앉으셨을 때에 제자들이 종용히 와서 가로되 우리에게 이르소서 어느 때에 이런 일이 있겠사오며 또 주의 임하심과 세상 끝에는 무슨 징조가 있사오리이까",
+      "source_text_hash": "5c4f31fcdf0efd27c3ede4440fc03de08938fadfea2cc12c4f75512892d271b5",
+      "translation_text_hash": "55de56b8cf603f4fddf9f50c9d8e2086954455e809bdacba9616dcaabd99ea06",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 감람산 위에 앉으셨을 때에 제자들이 종용히 와서 가로되 우리에게 이르소서 어느 때에 이런 일이 있겠사오며 또 주의 임하심과 세상 끝에는 무슨 징조가 있사오리이까"
+      ],
+      "raw_text_hashes": [
+        "55de56b8cf603f4fddf9f50c9d8e2086954455e809bdacba9616dcaabd99ea06"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:4",
+      "sequence": 23962,
+      "chapter_label": "MAT 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "Jesus answered them, “Be careful that no one leads you astray.",
+      "ko": "예수께서 대답하여 가라사대 너희가 사람의 미혹을 받지 않도록 주의하라",
+      "source_text_hash": "4324fcde4e77bd2e4f6bff8655097b4621559c9708f079a82c8757691099a688",
+      "translation_text_hash": "694dbd0c95748e00e30205523963376c5330de9816ae3de2f7a22d71c6f8c464",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 너희가 사람의 미혹을 받지 않도록 주의하라"
+      ],
+      "raw_text_hashes": [
+        "694dbd0c95748e00e30205523963376c5330de9816ae3de2f7a22d71c6f8c464"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:5",
+      "sequence": 23963,
+      "chapter_label": "MAT 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "For many will come in my name, saying, ‘I am the Christ,’ and will lead many astray.",
+      "ko": "많은 사람이 내 이름으로 와서 이르되 나는 그리스도라 하여 많은 사람을 미혹케 하리라",
+      "source_text_hash": "89b27f29c37dfa3f2931051f7494463b7e25222578e922a937d3f8787c18af1b",
+      "translation_text_hash": "a0423f20434b2a0dd8ef3d13470162e876f7394be42cbaf6c622cba8ab688095",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람이 내 이름으로 와서 이르되 나는 그리스도라 하여 많은 사람을 미혹케 하리라"
+      ],
+      "raw_text_hashes": [
+        "a0423f20434b2a0dd8ef3d13470162e876f7394be42cbaf6c622cba8ab688095"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:6",
+      "sequence": 23964,
+      "chapter_label": "MAT 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "You will hear of wars and rumors of wars. See that you aren’t troubled, for all this must happen, but the end is not yet.",
+      "ko": "난리와 난리 소문을 듣겠으나 너희는 삼가 두려워 말라 이런 일이 있어야 하되 끝은 아직 아니니라",
+      "source_text_hash": "59eb05f82479714e8bfee6642644275650ab5ce75dcdc1080f94e73f1f7c064a",
+      "translation_text_hash": "14c8157174ac66c1a67981eb52cfde90e42cc0db9fab04f1d8fa4a2ab0b52ee4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "난리와 난리 소문을 듣겠으나 너희는 삼가 두려워 말라 이런 일이 있어야 하되 끝은 아직 아니니라"
+      ],
+      "raw_text_hashes": [
+        "14c8157174ac66c1a67981eb52cfde90e42cc0db9fab04f1d8fa4a2ab0b52ee4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:7",
+      "sequence": 23965,
+      "chapter_label": "MAT 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "For nation will rise against nation, and kingdom against kingdom; and there will be famines, plagues, and earthquakes in various places.",
+      "ko": "민족이 민족을, 나라가 나라를 대적하여 일어나겠고 처처에 기근과 지진이 있으리니",
+      "source_text_hash": "f684ef04954a8a3f785d6056a867f3294172af039a8f53b75d7bca8d61da7d17",
+      "translation_text_hash": "68404739bda60454a81804b7d4557e9b65093fb23fe2685affd5f251d5788b12",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "민족이 민족을, 나라가 나라를 대적하여 일어나겠고 처처에 기근과 지진이 있으리니"
+      ],
+      "raw_text_hashes": [
+        "68404739bda60454a81804b7d4557e9b65093fb23fe2685affd5f251d5788b12"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:8",
+      "sequence": 23966,
+      "chapter_label": "MAT 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "But all these things are the beginning of birth pains.",
+      "ko": "이 모든 것이 재난의 시작이니라",
+      "source_text_hash": "25a1f92d5ce8be6b361cacf6f727f17868e63d3e6f2ac5ef256a6b4d8ebe46f4",
+      "translation_text_hash": "412784d51bc011c8bf2e1e1d3c4416b8130e0f53efb80068b5b3d607479dcb9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 모든 것이 재난의 시작이니라"
+      ],
+      "raw_text_hashes": [
+        "412784d51bc011c8bf2e1e1d3c4416b8130e0f53efb80068b5b3d607479dcb9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:9",
+      "sequence": 23967,
+      "chapter_label": "MAT 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "“Then they will deliver you up to oppression and will kill you. You will be hated by all of the nations for my name’s sake.",
+      "ko": "그 때에 사람들이 너희를 환난에 넘겨주겠으며 너희를 죽이리니 너희가 내 이름을 위하여 모든 민족에게 미움을 받으리라",
+      "source_text_hash": "62fc56a8ed6d4e7f14c68471e192d44eb97bb0b9740584343071e2b95995b5a3",
+      "translation_text_hash": "766ab2e92f86c824924e6a267ce1d08249d6237407c0ec2b4957e76c657f4246",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람들이 너희를 환난에 넘겨주겠으며 너희를 죽이리니 너희가 내 이름을 위하여 모든 민족에게 미움을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "766ab2e92f86c824924e6a267ce1d08249d6237407c0ec2b4957e76c657f4246"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:10",
+      "sequence": 23968,
+      "chapter_label": "MAT 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Then many will stumble, and will deliver up one another, and will hate one another.",
+      "ko": "그 때에 많은 사람이 시험에 빠져 서로 잡아 주고 서로 미워하겠으며",
+      "source_text_hash": "429978db7a564063d05c364affea667d2db95374e5eff9ac500b2c31b29883e0",
+      "translation_text_hash": "b97c9965c8e79eaf77ca68558213fcb634405233d30a1104710ae243ece63984",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 많은 사람이 시험에 빠져 서로 잡아 주고 서로 미워하겠으며"
+      ],
+      "raw_text_hashes": [
+        "b97c9965c8e79eaf77ca68558213fcb634405233d30a1104710ae243ece63984"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:11",
+      "sequence": 23969,
+      "chapter_label": "MAT 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Many false prophets will arise and will lead many astray.",
+      "ko": "거짓 선지자가 많이 일어나 많은 사람을 미혹하게 하겠으며",
+      "source_text_hash": "108bee8a6db3113a5f7cae3a1f64106ddbb29ed29ef3b43a3916d30441ac253d",
+      "translation_text_hash": "6dbf9b9e7f0a484ad6335dd45bbaeaaa9941a5df7660c58420182a8481a3e55a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 선지자가 많이 일어나 많은 사람을 미혹하게 하겠으며"
+      ],
+      "raw_text_hashes": [
+        "6dbf9b9e7f0a484ad6335dd45bbaeaaa9941a5df7660c58420182a8481a3e55a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:12",
+      "sequence": 23970,
+      "chapter_label": "MAT 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "Because iniquity will be multiplied, the love of many will grow cold.",
+      "ko": "불법이 성하므로 많은 사람의 사랑이 식어지리라",
+      "source_text_hash": "65d67d995f464f4bf55e9efbafdf872d961cccfa455db78d271208b6cbf9a88a",
+      "translation_text_hash": "fa98695e072ef8f6a229e96671ca1a437500cf2880345427b0a220474118ba69",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "불법이 성하므로 많은 사람의 사랑이 식어지리라"
+      ],
+      "raw_text_hashes": [
+        "fa98695e072ef8f6a229e96671ca1a437500cf2880345427b0a220474118ba69"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:13",
+      "sequence": 23971,
+      "chapter_label": "MAT 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "But he who endures to the end will be saved.",
+      "ko": "그러나 끝까지 견디는 자는 구원을 얻으리라",
+      "source_text_hash": "fca1a3de28549649ec98be05269540529627c141bcb3ff1623ec165bc7c04a0c",
+      "translation_text_hash": "eb7506cc1b60ac7f0b8bdb079f98c4711f73ded5e8588b08a35ed7549e5e80aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 끝까지 견디는 자는 구원을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "eb7506cc1b60ac7f0b8bdb079f98c4711f73ded5e8588b08a35ed7549e5e80aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:14",
+      "sequence": 23972,
+      "chapter_label": "MAT 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "This Good News of the Kingdom will be preached in the whole world for a testimony to all the nations, and then the end will come.",
+      "ko": "이 천국 복음이 모든 민족에게 증거되기 위하여 온 세상에 전파되리니 그제야 끝이 오리라",
+      "source_text_hash": "295b812d21d379cd4ceee8488d0aad651ebb805061a1e5358d8cfcc03ce1d9e4",
+      "translation_text_hash": "92afbc45384e3003b294706cb844f8e7b99756f804c73fa7bb3c939827d8d6b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 천국 복음이 모든 민족에게 증거되기 위하여 온 세상에 전파되리니 그제야 끝이 오리라"
+      ],
+      "raw_text_hashes": [
+        "92afbc45384e3003b294706cb844f8e7b99756f804c73fa7bb3c939827d8d6b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:15",
+      "sequence": 23973,
+      "chapter_label": "MAT 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "“When, therefore, you see the abomination of desolation,which was spoken of through Daniel the prophet, standing in the holy place (let the reader understand),",
+      "ko": "그러므로 너희가 선지자 다니엘의 말한바 멸망의 가증한 것이 거룩한 곳에 선 것을 보거든 (읽는 자는 깨달을찐저)",
+      "source_text_hash": "c0d4708c766730b3f11f92729cb7bfcedec73ec00f3b5721f1d5cba6aa636298",
+      "translation_text_hash": "52212850dc5105c28764f389243e1ba2118b660b39abe4c01bc7623123b30204",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 너희가 선지자 다니엘의 말한바 멸망의 가증한 것이 거룩한 곳에 선 것을 보거든 (읽는 자는 깨달을찐저)"
+      ],
+      "raw_text_hashes": [
+        "52212850dc5105c28764f389243e1ba2118b660b39abe4c01bc7623123b30204"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:16",
+      "sequence": 23974,
+      "chapter_label": "MAT 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "then let those who are in Judea flee to the mountains.",
+      "ko": "그 때에 유대에 있는 자들은 산으로 도망할찌어다",
+      "source_text_hash": "869adca8e0285537d49d5e2098e4ab6b7b19bceb7a3ac37655c6894104ee8844",
+      "translation_text_hash": "0323b053c27e3c78133603c88d233befd1fdd27d773693970b03e4228963b830",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 유대에 있는 자들은 산으로 도망할찌어다"
+      ],
+      "raw_text_hashes": [
+        "0323b053c27e3c78133603c88d233befd1fdd27d773693970b03e4228963b830"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:17",
+      "sequence": 23975,
+      "chapter_label": "MAT 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "Let him who is on the housetop not go down to take out the things that are in his house.",
+      "ko": "지붕 위에 있는 자는 집안에 있는 물건을 가질러 내려 가지 말며",
+      "source_text_hash": "371a7aafd90317b7cdd76389981be7fa337f90a79618a8a849a34a9868d2ce44",
+      "translation_text_hash": "a08b74ab557f9f19d4fe363544204b650ea635b84151b488b06b9e968bbd3559",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지붕 위에 있는 자는 집안에 있는 물건을 가질러 내려 가지 말며"
+      ],
+      "raw_text_hashes": [
+        "a08b74ab557f9f19d4fe363544204b650ea635b84151b488b06b9e968bbd3559"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:18",
+      "sequence": 23976,
+      "chapter_label": "MAT 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "Let him who is in the field not return back to get his clothes.",
+      "ko": "밭에 있는 자는 겉옷을 가질러 뒤로 돌이키지 말찌어다",
+      "source_text_hash": "2dbb462ddf97075ca867254fff6906c2b73adad78dc128bfa7a5781eaadacb21",
+      "translation_text_hash": "0dfc1c9a9bddb118d040cf5dbc49f8560b09d106c0d77f8f43dcae8f77287ecc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "밭에 있는 자는 겉옷을 가질러 뒤로 돌이키지 말찌어다"
+      ],
+      "raw_text_hashes": [
+        "0dfc1c9a9bddb118d040cf5dbc49f8560b09d106c0d77f8f43dcae8f77287ecc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:19",
+      "sequence": 23977,
+      "chapter_label": "MAT 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "But woe to those who are with child and to nursing mothers in those days!",
+      "ko": "그 날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리로다",
+      "source_text_hash": "98b1d44384576344265af5378bd66c24a2b0511fdc27e68be0cb629c231f434c",
+      "translation_text_hash": "1a1947a75fafc5995da5d32d29edc53952f7fb05da289f8b6f04eb8c4bc5b2a2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에는 아이 밴 자들과 젖먹이는 자들에게 화가 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "1a1947a75fafc5995da5d32d29edc53952f7fb05da289f8b6f04eb8c4bc5b2a2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:20",
+      "sequence": 23978,
+      "chapter_label": "MAT 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "Pray that your flight will not be in the winter nor on a Sabbath,",
+      "ko": "너희의 도망하는 일이 겨울에나 안식일에 되지 않도록 기도하라",
+      "source_text_hash": "eabf4a695992467c31829da696864a57715d51dca560891533017be45e4c583c",
+      "translation_text_hash": "3146c99440a7ea16de0ba0bd5902811ee255056ecd741059cbeb2d32e51732ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희의 도망하는 일이 겨울에나 안식일에 되지 않도록 기도하라"
+      ],
+      "raw_text_hashes": [
+        "3146c99440a7ea16de0ba0bd5902811ee255056ecd741059cbeb2d32e51732ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:21",
+      "sequence": 23979,
+      "chapter_label": "MAT 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "for then there will be great suffering,such as has not been from the beginning of the world until now, no, nor ever will be.",
+      "ko": "이는 그 때에 큰 환난이 있겠음이라 창세로부터 지금까지 이런 환난이 없었고 후에도 없으리라",
+      "source_text_hash": "12657a6520c0b3ec4f8651349dc32e1e458a4b42aadc2e9d9689ad940872c3ce",
+      "translation_text_hash": "6964d142ae7af24c8cd16a57ede492315b293fa02345f39e541bc659001aa184",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그 때에 큰 환난이 있겠음이라 창세로부터 지금까지 이런 환난이 없었고 후에도 없으리라"
+      ],
+      "raw_text_hashes": [
+        "6964d142ae7af24c8cd16a57ede492315b293fa02345f39e541bc659001aa184"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:22",
+      "sequence": 23980,
+      "chapter_label": "MAT 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "Unless those days had been shortened, no flesh would have been saved. But for the sake of the chosen ones, those days will be shortened.",
+      "ko": "그 날들을 감하지 아니할 것이면 모든 육체가 구원을 얻지 못할 것이나 그러나 택하신 자들을 위하여 그 날들을 감하시리라",
+      "source_text_hash": "8c9281c80e8f454755073372fe7b8adb3efa73f7993e08da8ffb0d8ee34d5b6d",
+      "translation_text_hash": "f2aac107838b8b9f846fa3d507e7081c5bd8c13cf05b60f125393688a775ab8c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날들을 감하지 아니할 것이면 모든 육체가 구원을 얻지 못할 것이나 그러나 택하신 자들을 위하여 그 날들을 감하시리라"
+      ],
+      "raw_text_hashes": [
+        "f2aac107838b8b9f846fa3d507e7081c5bd8c13cf05b60f125393688a775ab8c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:23",
+      "sequence": 23981,
+      "chapter_label": "MAT 24",
+      "verse_label": "23",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 23
+        }
+      ],
+      "en": "“Then if any man tells you, ‘Behold, here is the Christ!’ or, ‘There!’ don’t believe it.",
+      "ko": "그 때에 사람이 너희에게 말하되 보라 그리스도가 여기 있다 혹 저기 있다 하여도 믿지 말라",
+      "source_text_hash": "0018bfd9c8e1c55a01f7fa8bb1eacc1b9def9c93da0284b695ac386223183550",
+      "translation_text_hash": "c1fd701fe4a3392182fadff6102bb2ef6750720fbcd8ad748e5ed9ac052a9a81",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 사람이 너희에게 말하되 보라 그리스도가 여기 있다 혹 저기 있다 하여도 믿지 말라"
+      ],
+      "raw_text_hashes": [
+        "c1fd701fe4a3392182fadff6102bb2ef6750720fbcd8ad748e5ed9ac052a9a81"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:24",
+      "sequence": 23982,
+      "chapter_label": "MAT 24",
+      "verse_label": "24",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 24
+        }
+      ],
+      "en": "For false christs and false prophets will arise, and they will show great signs and wonders, so as to lead astray, if possible, even the chosen ones.",
+      "ko": "거짓 그리스도들과 거짓 선지자들이 일어나 큰 표적과 기사를 보이어 할 수만 있으면 택하신 자들도 미혹하게 하리라",
+      "source_text_hash": "f48cb5e4eb7b77fa9f25129c4ea9cde1e86048027269627a72a4ddde05984fd5",
+      "translation_text_hash": "0bc1d72b0025cce09b46037371529e9de7497e4a8a0e71daec676f5f15d31510",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거짓 그리스도들과 거짓 선지자들이 일어나 큰 표적과 기사를 보이어 할 수만 있으면 택하신 자들도 미혹하게 하리라"
+      ],
+      "raw_text_hashes": [
+        "0bc1d72b0025cce09b46037371529e9de7497e4a8a0e71daec676f5f15d31510"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:25",
+      "sequence": 23983,
+      "chapter_label": "MAT 24",
+      "verse_label": "25",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 25
+        }
+      ],
+      "en": "“Behold, I have told you beforehand.",
+      "ko": "보라 내가 너희에게 미리 말하였노라",
+      "source_text_hash": "8a2577a2f34fdc489b49052270661c11340b4848fe1804793b3226140aff6717",
+      "translation_text_hash": "94166d10403f699be6782b23f9b9b211cd9a1b3cf0fad739fc16cf670049a0a5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 내가 너희에게 미리 말하였노라"
+      ],
+      "raw_text_hashes": [
+        "94166d10403f699be6782b23f9b9b211cd9a1b3cf0fad739fc16cf670049a0a5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:26",
+      "sequence": 23984,
+      "chapter_label": "MAT 24",
+      "verse_label": "26",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 26
+        }
+      ],
+      "en": "“If therefore they tell you, ‘Behold, he is in the wilderness,’ don’t go out; or ‘Behold, he is in the inner rooms,’ don’t believe it.",
+      "ko": "그러면 사람들이 너희에게 말하되 보라 그리스도가 광야에 있다 하여도 나가지 말고 보라 골방에 있다 하여도 믿지 말라",
+      "source_text_hash": "018cf2aed0563077d9797d4e0563c198f0c9192b00ba0ea51c1e21914f5222d7",
+      "translation_text_hash": "9ba4a04b98de6bf9901e18fe7972b71d1820616a0b3e73f875b15b458c45ce52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 사람들이 너희에게 말하되 보라 그리스도가 광야에 있다 하여도 나가지 말고 보라 골방에 있다 하여도 믿지 말라"
+      ],
+      "raw_text_hashes": [
+        "9ba4a04b98de6bf9901e18fe7972b71d1820616a0b3e73f875b15b458c45ce52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:27",
+      "sequence": 23985,
+      "chapter_label": "MAT 24",
+      "verse_label": "27",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 27
+        }
+      ],
+      "en": "For as the lightning flashes from the east, and is seen even to the west, so will the coming of the Son of Man be.",
+      "ko": "번개가 동편에서 나서 서편까지 번쩍임 같이 인자의 임함도 그러하리라",
+      "source_text_hash": "d77e7d966176f4c6556e3cf0aeacd7e4a8ebf7aa86cdcfbfbb28004ee72cc4c4",
+      "translation_text_hash": "145d28a4554ee4116817cb9833699430b8706af704a6eea91418801a2ed2c254",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "번개가 동편에서 나서 서편까지 번쩍임 같이 인자의 임함도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "145d28a4554ee4116817cb9833699430b8706af704a6eea91418801a2ed2c254"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:28",
+      "sequence": 23986,
+      "chapter_label": "MAT 24",
+      "verse_label": "28",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 28
+        }
+      ],
+      "en": "For wherever the carcass is, that is where the vulturesgather together.",
+      "ko": "주검이 있는 곳에는 독수리들이 모일찌니라",
+      "source_text_hash": "225766696b99c734ae7bda9dd3ecc59f260456657c75c8f35a0043b7715938a1",
+      "translation_text_hash": "0db12b108be3da1860820e94c4b9da467b572345ec5afe2c8f784c1924368a09",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주검이 있는 곳에는 독수리들이 모일찌니라"
+      ],
+      "raw_text_hashes": [
+        "0db12b108be3da1860820e94c4b9da467b572345ec5afe2c8f784c1924368a09"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:29",
+      "sequence": 23987,
+      "chapter_label": "MAT 24",
+      "verse_label": "29",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 29
+        }
+      ],
+      "en": "“But immediately after the sufferingof those days, the sun will be darkened, the moon will not give its light, the stars will fall from the sky, and the powers of the heavens will be shaken;",
+      "ko": "그 날 환난 후에 즉시 해가 어두워지며 달이 빛을 내지 아니하며 별들이 하늘에서 떨어지며 하늘의 권능들이 흔들리리라",
+      "source_text_hash": "e1e8916fe4e8ca5ee00b2082098142f341c4a0679c0a4ed05e1f9536cca4a824",
+      "translation_text_hash": "3d9a2801673a10b8690a7d0b6d6f7b4ca15137d88932b02d0606f33d28e94759",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날 환난 후에 즉시 해가 어두워지며 달이 빛을 내지 아니하며 별들이 하늘에서 떨어지며 하늘의 권능들이 흔들리리라"
+      ],
+      "raw_text_hashes": [
+        "3d9a2801673a10b8690a7d0b6d6f7b4ca15137d88932b02d0606f33d28e94759"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:30",
+      "sequence": 23988,
+      "chapter_label": "MAT 24",
+      "verse_label": "30",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 30
+        }
+      ],
+      "en": "and then the sign of the Son of Man will appear in the sky. Then all the tribes of the earth will mourn, and they will see the Son of Man coming on the clouds of the sky with power and great glory.",
+      "ko": "그 때에 인자의 징조가 하늘에서 보이겠고 그 때에 땅의 모든 족속들이 통곡하며 그들이 인자가 구름을 타고 능력과 큰 영광으로 오는 것을 보리라",
+      "source_text_hash": "840aac1ac872f44c72a82ca2f91b0d4cec8612a3cbd5ef500982cb382a333a25",
+      "translation_text_hash": "021b4770ab86763082a53ec4ec0ffdf95ea641cfa95f8a2c60ef80234e6ad35a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 인자의 징조가 하늘에서 보이겠고 그 때에 땅의 모든 족속들이 통곡하며 그들이 인자가 구름을 타고 능력과 큰 영광으로 오는 것을 보리라"
+      ],
+      "raw_text_hashes": [
+        "021b4770ab86763082a53ec4ec0ffdf95ea641cfa95f8a2c60ef80234e6ad35a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:31",
+      "sequence": 23989,
+      "chapter_label": "MAT 24",
+      "verse_label": "31",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 31
+        }
+      ],
+      "en": "He will send out his angels with a great sound of a trumpet, and they will gather together his chosen ones from the four winds, from one end of the sky to the other.",
+      "ko": "저가 큰 나팔소리와 함께 천사들을 보내리니 저희가 그 택하신 자들을 하늘 이 끝에서 저 끝까지 사방에서 모으리라",
+      "source_text_hash": "da0e21215d721a40ce0a5e81164324272d91a7c283420d726039069fd1e29243",
+      "translation_text_hash": "9204198884715726c53b775e4ab5dab47b3499c23c5206ea2185955e7d230859",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저가 큰 나팔소리와 함께 천사들을 보내리니 저희가 그 택하신 자들을 하늘 이 끝에서 저 끝까지 사방에서 모으리라"
+      ],
+      "raw_text_hashes": [
+        "9204198884715726c53b775e4ab5dab47b3499c23c5206ea2185955e7d230859"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:32",
+      "sequence": 23990,
+      "chapter_label": "MAT 24",
+      "verse_label": "32",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 32
+        }
+      ],
+      "en": "“Now from the fig tree learn this parable: When its branch has now become tender and produces its leaves, you know that the summer is near.",
+      "ko": "무화과나무의 비유를 배우라 그 가지가 연하여지고 잎사귀를 내면 여름이 가까운 줄을 아나니",
+      "source_text_hash": "ba2528e26774981621fc93466b7b1c87e4a5d42d79bc0af3bed296ccf831cbcb",
+      "translation_text_hash": "80134b5f2cd7445e9e794f1e02fc4c09b14aefbbb2e8c879e59a843253405ddd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무화과나무의 비유를 배우라 그 가지가 연하여지고 잎사귀를 내면 여름이 가까운 줄을 아나니"
+      ],
+      "raw_text_hashes": [
+        "80134b5f2cd7445e9e794f1e02fc4c09b14aefbbb2e8c879e59a843253405ddd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:33",
+      "sequence": 23991,
+      "chapter_label": "MAT 24",
+      "verse_label": "33",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 33
+        }
+      ],
+      "en": "Even so you also, when you see all these things, know that he is near, even at the doors.",
+      "ko": "이와 같이 너희도 이 모든 일을 보거든 인자가 가까이 곧 문앞에 이른줄 알라",
+      "source_text_hash": "2f1b45fc6770668968f656860c01bd5dfbb1c050842374a295b37d35bc6223ca",
+      "translation_text_hash": "6ec2a2cd01770bda2897c5ae5d80460967afeff25d6a8db9664c799bb30a26b8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이와 같이 너희도 이 모든 일을 보거든 인자가 가까이 곧 문앞에 이른줄 알라"
+      ],
+      "raw_text_hashes": [
+        "6ec2a2cd01770bda2897c5ae5d80460967afeff25d6a8db9664c799bb30a26b8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:34",
+      "sequence": 23992,
+      "chapter_label": "MAT 24",
+      "verse_label": "34",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 34
+        }
+      ],
+      "en": "Most certainly I tell you, this generationwill not pass away until all these things are accomplished.",
+      "ko": "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 이 일이 다 이루리라",
+      "source_text_hash": "3ed82523031c0abcad159b03408807e2c9314af443e8cf41e0623f0422cd2af6",
+      "translation_text_hash": "1f2513f7a6964690a6c3894d0f81bdcdddce3f8ff318e93d5eaf7dc2c208d68f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 말하노니 이 세대가 지나가기 전에 이 일이 다 이루리라"
+      ],
+      "raw_text_hashes": [
+        "1f2513f7a6964690a6c3894d0f81bdcdddce3f8ff318e93d5eaf7dc2c208d68f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:35",
+      "sequence": 23993,
+      "chapter_label": "MAT 24",
+      "verse_label": "35",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 35
+        }
+      ],
+      "en": "Heaven and earth will pass away, but my words will not pass away.",
+      "ko": "천지는 없어지겠으나 내 말은 없어지지 아니하리라",
+      "source_text_hash": "fe13b24407f9557d38f3911b82f393c4c44542baa28833b956d4a6d3c6cc539d",
+      "translation_text_hash": "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "천지는 없어지겠으나 내 말은 없어지지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "d7eef571d9b38b9347521e8ce0657fc0a64dec4c9928d1de7a811b0cc31b529f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:36",
+      "sequence": 23994,
+      "chapter_label": "MAT 24",
+      "verse_label": "36",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 36
+        }
+      ],
+      "en": "“But no one knows of that day and hour, not even the angels of heaven,but my Father only.",
+      "ko": "그러나 그 날과 그 때는 아무도 모르나니 하늘의 천사들도, 아들도 모르고 오직 아버지만 아시느니라",
+      "source_text_hash": "460e7b32920bcc0ffca99a711db0966a5ebf3f86ce86be687b204a9d0ac492b0",
+      "translation_text_hash": "427dd8e2eeefc9e427ab17308ed1072f145694bea18a1aba9360b64bf8fd36b5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 그 날과 그 때는 아무도 모르나니 하늘의 천사들도, 아들도 모르고 오직 아버지만 아시느니라"
+      ],
+      "raw_text_hashes": [
+        "427dd8e2eeefc9e427ab17308ed1072f145694bea18a1aba9360b64bf8fd36b5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:37",
+      "sequence": 23995,
+      "chapter_label": "MAT 24",
+      "verse_label": "37",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 37
+        }
+      ],
+      "en": "As the days of Noah were, so will the coming of the Son of Man be.",
+      "ko": "노아의 때와 같이 인자의 임함도 그러하리라",
+      "source_text_hash": "616420e3b2e305b3d142d9aa0ba8c8923280f563ec5c552adccfc75d15f78a82",
+      "translation_text_hash": "8080bcf67476152e97a1590bfc11b05562eb4372856c990c3f44e1590a39f369",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "노아의 때와 같이 인자의 임함도 그러하리라"
+      ],
+      "raw_text_hashes": [
+        "8080bcf67476152e97a1590bfc11b05562eb4372856c990c3f44e1590a39f369"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:38",
+      "sequence": 23996,
+      "chapter_label": "MAT 24",
+      "verse_label": "38",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 38
+        }
+      ],
+      "en": "For as in those days which were before the flood they were eating and drinking, marrying and giving in marriage, until the day that Noah entered into the ship,",
+      "ko": "홍수 전에 노아가 방주에 들어가던 날까지 사람들이 먹고 마시고 장가 들고 시집 가고 있으면서",
+      "source_text_hash": "556b107749fa5ad10ad56de9e1b57fbc8950b0b6d925e39b82380cf3146d5732",
+      "translation_text_hash": "62bc7e34967aa6ab8393e085bfab68f203cd1e3647f111300bb3385241a2bff6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍수 전에 노아가 방주에 들어가던 날까지 사람들이 먹고 마시고 장가 들고 시집 가고 있으면서"
+      ],
+      "raw_text_hashes": [
+        "62bc7e34967aa6ab8393e085bfab68f203cd1e3647f111300bb3385241a2bff6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:39",
+      "sequence": 23997,
+      "chapter_label": "MAT 24",
+      "verse_label": "39",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 39
+        }
+      ],
+      "en": "and they didn’t know until the flood came and took them all away, so will the coming of the Son of Man be.",
+      "ko": "홍수가 나서 저희를 다 멸하기까지 깨닫지 못하였으니 인자의 임함도 이와 같으리라",
+      "source_text_hash": "c64e5123b466edfea322223596a6cf5050348589911daceb68679983e96fd3ed",
+      "translation_text_hash": "49c0a0806bcc70930162164e030a1b402110d9fcc857009561974d0e9d27a7ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "홍수가 나서 저희를 다 멸하기까지 깨닫지 못하였으니 인자의 임함도 이와 같으리라"
+      ],
+      "raw_text_hashes": [
+        "49c0a0806bcc70930162164e030a1b402110d9fcc857009561974d0e9d27a7ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:40",
+      "sequence": 23998,
+      "chapter_label": "MAT 24",
+      "verse_label": "40",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 40
+        }
+      ],
+      "en": "Then two men will be in the field: one will be taken and one will be left.",
+      "ko": "그때에 두 사람이 밭에 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이요",
+      "source_text_hash": "fb70e228e41e0cb3c1ce8aff6df8ec8b8a41cd7258ff2e8b1912e632bdb76fdf",
+      "translation_text_hash": "b644e8d7e18b9704ed75c845b8641ca9c006c06c81fd634a22ee52b2f9334620",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그때에 두 사람이 밭에 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이요"
+      ],
+      "raw_text_hashes": [
+        "b644e8d7e18b9704ed75c845b8641ca9c006c06c81fd634a22ee52b2f9334620"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:41",
+      "sequence": 23999,
+      "chapter_label": "MAT 24",
+      "verse_label": "41",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 41
+        }
+      ],
+      "en": "Two women will be grinding at the mill: one will be taken and one will be left.",
+      "ko": "두 여자가 매를 갈고 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이니라",
+      "source_text_hash": "b876b6dd68a8e1179617810f94547fbaeacd0d23c00f6bba03bfdcb205d24db2",
+      "translation_text_hash": "3c1f48004cc9d1b9ea3527d60ddf449a7a8b30d035c4c01a2c87e70f7f12db2c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "두 여자가 매를 갈고 있으매 하나는 데려감을 당하고 하나는 버려둠을 당할 것이니라"
+      ],
+      "raw_text_hashes": [
+        "3c1f48004cc9d1b9ea3527d60ddf449a7a8b30d035c4c01a2c87e70f7f12db2c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:42",
+      "sequence": 24000,
+      "chapter_label": "MAT 24",
+      "verse_label": "42",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 42
+        }
+      ],
+      "en": "Watch therefore, for you don’t know in what hour your Lord comes.",
+      "ko": "그러므로 깨어 있으라 어느 날에 너희 주가 임할는지",
+      "source_text_hash": "2e79196c94663a76ab9103b60dffa01bb38914f9eec76f6a1109a23667d32b3a",
+      "translation_text_hash": "7abd242c0d9d657c86684031e5d27b1267add9f437ad7aa11f2328f49e749aaf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 깨어 있으라 어느 날에 너희 주가 임할는지"
+      ],
+      "raw_text_hashes": [
+        "7abd242c0d9d657c86684031e5d27b1267add9f437ad7aa11f2328f49e749aaf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:43",
+      "sequence": 24001,
+      "chapter_label": "MAT 24",
+      "verse_label": "43",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 43
+        }
+      ],
+      "en": "But know this, that if the master of the house had known in what watch of the night the thief was coming, he would have watched, and would not have allowed his house to be broken into.",
+      "ko": "너희가 알지 못함이니라 너희도 아는바니 만일 집 주인이 도적이 어느 경점에 올 줄을 알았더면 깨어 있어 그 집을 뚫지 못하게 하였으리라",
+      "source_text_hash": "2d5006ea96637e71fe92a4cea4b5ad6ecf3a075e3ed805410afefd2ec7fe7769",
+      "translation_text_hash": "00b40efa2e26ee58bad81f3c3d1b83654d1e2098fa3f4bb0a0c29052f499cf4b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 알지 못함이니라 너희도 아는바니 만일 집 주인이 도적이 어느 경점에 올 줄을 알았더면 깨어 있어 그 집을 뚫지 못하게 하였으리라"
+      ],
+      "raw_text_hashes": [
+        "00b40efa2e26ee58bad81f3c3d1b83654d1e2098fa3f4bb0a0c29052f499cf4b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:44",
+      "sequence": 24002,
+      "chapter_label": "MAT 24",
+      "verse_label": "44",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 44
+        }
+      ],
+      "en": "Therefore also be ready, for in an hour that you don’t expect, the Son of Man will come.",
+      "ko": "이러므로 너희도 예비하고 있으라 생각지 않은 때에 인자가 오리라",
+      "source_text_hash": "5d1fb26eefe2ffffe135f8ebaa7005fc086421f74f2d788ca766a5e6e16aec51",
+      "translation_text_hash": "9232923e875342f29992a5d66226f8b1e5eb91df3cea8b6fe46c8d372be67e5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 너희도 예비하고 있으라 생각지 않은 때에 인자가 오리라"
+      ],
+      "raw_text_hashes": [
+        "9232923e875342f29992a5d66226f8b1e5eb91df3cea8b6fe46c8d372be67e5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:45",
+      "sequence": 24003,
+      "chapter_label": "MAT 24",
+      "verse_label": "45",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 45
+        }
+      ],
+      "en": "“Who then is the faithful and wise servant, whom his lord has set over his household, to give them their food in due season?",
+      "ko": "충성되고 지혜 있는 종이 되어 주인에게 그 집 사람들을 맡아 때를 따라 양식을 나눠 줄 자가 누구뇨",
+      "source_text_hash": "f838596090c7588ec1a83b1cc284b378d8848c746dbd311efe948d2db2575959",
+      "translation_text_hash": "d65e19352d7aef769a11b63fc090da7afd1d49d03042cb78d089d66fc8486968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "충성되고 지혜 있는 종이 되어 주인에게 그 집 사람들을 맡아 때를 따라 양식을 나눠 줄 자가 누구뇨"
+      ],
+      "raw_text_hashes": [
+        "d65e19352d7aef769a11b63fc090da7afd1d49d03042cb78d089d66fc8486968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:46",
+      "sequence": 24004,
+      "chapter_label": "MAT 24",
+      "verse_label": "46",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 46
+        }
+      ],
+      "en": "Blessed is that servant whom his lord finds doing so when he comes.",
+      "ko": "주인이 올 때에 그 종의 이렇게 하는 것을 보면 그 종이 복이 있으리로다",
+      "source_text_hash": "d7eda5f6f4a5d136a097fbf22974457b002e2fbfb1662ebaa7d157d7dc45726d",
+      "translation_text_hash": "26c8828517892aa5aebb753f85a313b839d8261553bd4dde72d0102e3badeb0d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주인이 올 때에 그 종의 이렇게 하는 것을 보면 그 종이 복이 있으리로다"
+      ],
+      "raw_text_hashes": [
+        "26c8828517892aa5aebb753f85a313b839d8261553bd4dde72d0102e3badeb0d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:47",
+      "sequence": 24005,
+      "chapter_label": "MAT 24",
+      "verse_label": "47",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 47
+        }
+      ],
+      "en": "Most certainly I tell you that he will set him over all that he has.",
+      "ko": "내가 진실로 너희에게 이르노니 주인이 그 모든 소유를 저에게 맡기리라",
+      "source_text_hash": "4fc69caec2d0c827c8fb458561421d29de7d84b51a37d4269dc81a47ed629afb",
+      "translation_text_hash": "3c891a844f48e593fad2c286f1ab7130f3bd8884c47dedc64d19b78677521fdd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 주인이 그 모든 소유를 저에게 맡기리라"
+      ],
+      "raw_text_hashes": [
+        "3c891a844f48e593fad2c286f1ab7130f3bd8884c47dedc64d19b78677521fdd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:48",
+      "sequence": 24006,
+      "chapter_label": "MAT 24",
+      "verse_label": "48",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 48
+        }
+      ],
+      "en": "But if that evil servant should say in his heart, ‘My lord is delaying his coming,’",
+      "ko": "만일 그 악한 종이 마음에 생각하기를 주인이 더디 오리라 하여",
+      "source_text_hash": "22bef95cc4813867fd4e768ed41b45f416c13a651540337b09cca70b8bf561d4",
+      "translation_text_hash": "ac85d776bb6e4fead459fd59a56adb81b2d1660e949c9891449ee39ab5060c0c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 그 악한 종이 마음에 생각하기를 주인이 더디 오리라 하여"
+      ],
+      "raw_text_hashes": [
+        "ac85d776bb6e4fead459fd59a56adb81b2d1660e949c9891449ee39ab5060c0c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:49",
+      "sequence": 24007,
+      "chapter_label": "MAT 24",
+      "verse_label": "49",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 49
+        }
+      ],
+      "en": "and begins to beat his fellow servants, and eat and drink with the drunkards,",
+      "ko": "동무들을 때리며 술친구들로 더불어 먹고 마시게 되면",
+      "source_text_hash": "e9dacf86848fa68aed4c25bc73b2554a173804a908eff6fdb5117126ca3e3e31",
+      "translation_text_hash": "3cb968c8d905cf7138dc99dec93ad6bc7764a7b2985330b447d9281d8f87d517",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "동무들을 때리며 술친구들로 더불어 먹고 마시게 되면"
+      ],
+      "raw_text_hashes": [
+        "3cb968c8d905cf7138dc99dec93ad6bc7764a7b2985330b447d9281d8f87d517"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:50",
+      "sequence": 24008,
+      "chapter_label": "MAT 24",
+      "verse_label": "50",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 50
+        }
+      ],
+      "en": "the lord of that servant will come in a day when he doesn’t expect it and in an hour when he doesn’t know it,",
+      "ko": "생각지 않은 날 알지 못하는 시간에 그 종의 주인이 이르러",
+      "source_text_hash": "4e75b61594b0237d9bd43b4ce5177999f1e9700deeac3bc17bf0fb6930e8b59e",
+      "translation_text_hash": "720b7da85be178f0ccc4af08eb8385f9f6220e875cce3e5a321f6acc79172daf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "생각지 않은 날 알지 못하는 시간에 그 종의 주인이 이르러"
+      ],
+      "raw_text_hashes": [
+        "720b7da85be178f0ccc4af08eb8385f9f6220e875cce3e5a321f6acc79172daf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MAT:24:51",
+      "sequence": 24009,
+      "chapter_label": "MAT 24",
+      "verse_label": "51",
+      "locator": {
+        "book": "MAT",
+        "chapter": 24,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "MAT",
+          "chapter": 24,
+          "verse": 51
+        }
+      ],
+      "en": "and will cut him in pieces and appoint his portion with the hypocrites. That is where the weeping and grinding of teeth will be.",
+      "ko": "엄히 때리고 외식하는 자의 받는 율에 처하리니 거기서 슬피 울며 이를 갊이 있으리라",
+      "source_text_hash": "4623ad51fbc090cfa9e9cd061180ee3ca37078060fb6df142581f6d48255ab1d",
+      "translation_text_hash": "eaf00b1dd3f36b5a85057e9a9282bad4d138385b38b1a723e7c755cdbbc1d577",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "엄히 때리고 외식하는 자의 받는 율에 처하리니 거기서 슬피 울며 이를 갊이 있으리라"
+      ],
+      "raw_text_hashes": [
+        "eaf00b1dd3f36b5a85057e9a9282bad4d138385b38b1a723e7c755cdbbc1d577"
+      ]
+    }
+  ]
+}

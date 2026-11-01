@@ -1,0 +1,717 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1SA:chapter:024",
+  "unit_ordinal": 260,
+  "unit_label": "1SA 24",
+  "book_code": "1SA",
+  "chapter_number": 24,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1SA:24:1",
+      "sequence": 7841,
+      "chapter_label": "1SA 24",
+      "verse_label": "1",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 1
+        }
+      ],
+      "en": "When Saul had returned from following the Philistines, he was told, “Behold, David is in the wilderness of En Gedi.”",
+      "ko": "사울이 블레셋 사람을 따르다가 돌아오매 혹이 그에게 고하여 가로되 보소서 다윗이 엔게디 황무지에 있더이다",
+      "source_text_hash": "18e5d6ea57361b59865af8eb68e9aaea762b457ada37e6bf02b2b6e3e99db25f",
+      "translation_text_hash": "f96c02524f3667e980ffca517c9b7b92b945aa8f8158fe7a1f2ec6bc472568d2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 블레셋 사람을 따르다가 돌아오매 혹이 그에게 고하여 가로되 보소서 다윗이 엔게디 황무지에 있더이다"
+      ],
+      "raw_text_hashes": [
+        "f96c02524f3667e980ffca517c9b7b92b945aa8f8158fe7a1f2ec6bc472568d2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:2",
+      "sequence": 7842,
+      "chapter_label": "1SA 24",
+      "verse_label": "2",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 2
+        }
+      ],
+      "en": "Then Saul took three thousand chosen men out of all Israel, and went to seek David and his men on the rocks of the wild goats.",
+      "ko": "사울이 온 이스라엘에서 택한 사람 삼천을 거느리고 다윗과 그의 사람들을 찾으러 들염소 바위로 갈쌔",
+      "source_text_hash": "5a0777d5aeea91b35ad554c705c5fe21d1e089066682c8448ce7a8b3aece2f27",
+      "translation_text_hash": "83dab175c580f4cdf1be562559d1beef8ce207f6228246098fb4607eb03fca49",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울이 온 이스라엘에서 택한 사람 삼천을 거느리고 다윗과 그의 사람들을 찾으러 들염소 바위로 갈쌔"
+      ],
+      "raw_text_hashes": [
+        "83dab175c580f4cdf1be562559d1beef8ce207f6228246098fb4607eb03fca49"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:3",
+      "sequence": 7843,
+      "chapter_label": "1SA 24",
+      "verse_label": "3",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 3
+        }
+      ],
+      "en": "He came to the sheep pens by the way, where there was a cave; and Saul went in to relieve himself. Now David and his men were staying in the innermost parts of the cave.",
+      "ko": "길 가 양의 우리에 이른즉 굴이 있는지라 사울이 그 발을 가리우러 들어가니라 다윗과 그의 사람들이 그 굴 깊은 곳에 있더니",
+      "source_text_hash": "c05822c76ca288b19c4e37bf29b28c71830e9f940d4860f8a96c7ca50f994a44",
+      "translation_text_hash": "e977061b2dc7ee5cdb6642ba40da00181d4f75d9ac07cf45ff3a3bcfa824192f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "길 가 양의 우리에 이른즉 굴이 있는지라 사울이 그 발을 가리우러 들어가니라 다윗과 그의 사람들이 그 굴 깊은 곳에 있더니"
+      ],
+      "raw_text_hashes": [
+        "e977061b2dc7ee5cdb6642ba40da00181d4f75d9ac07cf45ff3a3bcfa824192f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:4",
+      "sequence": 7844,
+      "chapter_label": "1SA 24",
+      "verse_label": "4",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 4
+        }
+      ],
+      "en": "David’s men said to him, “Behold, the day of which the LORD said to you, ‘Behold, I will deliver your enemy into your hand, and you shall do to him as it shall seem good to you.’” Then David arose and cut off the skirt of Saul’s robe secretly.",
+      "ko": "다윗의 사람들이 가로되 보소서 여호와께서 당신에게 이르시기를 내가 원수를 네 손에 붙이리니 네 소견에 선한대로 그에게 행하라 하시더니 이것이 그 날이니이다 다윗이 일어나서 사울의 겉옷자락을 가만히 베니라",
+      "source_text_hash": "7e2552d8f8b3bc1d2ed8acf519cb36ba8927e2bfd17bb4a5770d5e5eaa8bea91",
+      "translation_text_hash": "5e4cadbd5e2d1c0bb05b1d7623c3f8d5109e1266441eca8a17f9281e38d5497c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗의 사람들이 가로되 보소서 여호와께서 당신에게 이르시기를 내가 원수를 네 손에 붙이리니 네 소견에 선한대로 그에게 행하라 하시더니 이것이 그 날이니이다 다윗이 일어나서 사울의 겉옷자락을 가만히 베니라"
+      ],
+      "raw_text_hashes": [
+        "5e4cadbd5e2d1c0bb05b1d7623c3f8d5109e1266441eca8a17f9281e38d5497c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:5",
+      "sequence": 7845,
+      "chapter_label": "1SA 24",
+      "verse_label": "5",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 5
+        }
+      ],
+      "en": "Afterward, David’s heart struck him because he had cut off Saul’s skirt.",
+      "ko": "그리한 후에 사울의 옷자락 벰을 인하여 다윗의 마음이 찔려",
+      "source_text_hash": "6ee747ccd695c146ba4fd2e704069edb3be8b27433e2e89b97536d654fd5b43d",
+      "translation_text_hash": "e4ea5dc5cbe70f3e1db0098db7152d79760968bb2bedb0ae47d906692ab0d634",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그리한 후에 사울의 옷자락 벰을 인하여 다윗의 마음이 찔려"
+      ],
+      "raw_text_hashes": [
+        "e4ea5dc5cbe70f3e1db0098db7152d79760968bb2bedb0ae47d906692ab0d634"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:6",
+      "sequence": 7846,
+      "chapter_label": "1SA 24",
+      "verse_label": "6",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 6
+        }
+      ],
+      "en": "He said to his men, “The LORD forbid that I should do this thing to my lord, the LORD’s anointed, to stretch out my hand against him, since he is the LORD’s anointed.”",
+      "ko": "자기 사람들에게 이르되 내가 손을 들어 여호와의 기름 부음을 받은 내 주를 치는 것은 여호와의 금하시는 것이니 그는 여호와의 기름 부음을 받은 자가 됨이니라 하고",
+      "source_text_hash": "7f5700c9420c00f16b986592663ede188aecbcfc67fdad05fb7c78730f949516",
+      "translation_text_hash": "ee8fd71e8e229baf48e4b05e3394ca4d0fe94555cd1d5f7095e2ce234765fca2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기 사람들에게 이르되 내가 손을 들어 여호와의 기름 부음을 받은 내 주를 치는 것은 여호와의 금하시는 것이니 그는 여호와의 기름 부음을 받은 자가 됨이니라 하고"
+      ],
+      "raw_text_hashes": [
+        "ee8fd71e8e229baf48e4b05e3394ca4d0fe94555cd1d5f7095e2ce234765fca2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:7",
+      "sequence": 7847,
+      "chapter_label": "1SA 24",
+      "verse_label": "7",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 7
+        }
+      ],
+      "en": "So David checked his men with these words, and didn’t allow them to rise against Saul. Saul rose up out of the cave, and went on his way.",
+      "ko": "다윗이 이 말로 자기 사람들을 금하여 사울을 해하지 못하게 하니라 사울이 일어나 굴에서 나가 자기 길을 가니라",
+      "source_text_hash": "b75a0db9274b52cadbac49b8368b99e0910a050d044b71ce8955c49d4e2a0052",
+      "translation_text_hash": "9e24d2572c8cf03ac76c67874cd8252c11bc3fcf5e7b9c4f7bf7a49295a8af3c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 이 말로 자기 사람들을 금하여 사울을 해하지 못하게 하니라 사울이 일어나 굴에서 나가 자기 길을 가니라"
+      ],
+      "raw_text_hashes": [
+        "9e24d2572c8cf03ac76c67874cd8252c11bc3fcf5e7b9c4f7bf7a49295a8af3c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:8",
+      "sequence": 7848,
+      "chapter_label": "1SA 24",
+      "verse_label": "8",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 8
+        }
+      ],
+      "en": "David also arose afterward, and went out of the cave and cried after Saul, saying, “My lord the king!” When Saul looked behind him, David bowed with his face to the earth, and showed respect.",
+      "ko": "그 후에 다윗도 일어나 굴에서 나가 사울의 뒤에서 외쳐 가로되 내 주 왕이여 하매 사울이 돌아보는지라 다윗이 땅에 엎드려 절하고",
+      "source_text_hash": "9287210d18285ae4f7f5a4a351c973b6ececa35002e28a2a347c811756fe4e95",
+      "translation_text_hash": "19d57f67c2c7c72b1173107049263604eae460f2372e4df57c4c681d48b36876",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 다윗도 일어나 굴에서 나가 사울의 뒤에서 외쳐 가로되 내 주 왕이여 하매 사울이 돌아보는지라 다윗이 땅에 엎드려 절하고"
+      ],
+      "raw_text_hashes": [
+        "19d57f67c2c7c72b1173107049263604eae460f2372e4df57c4c681d48b36876"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:9",
+      "sequence": 7849,
+      "chapter_label": "1SA 24",
+      "verse_label": "9",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 9
+        }
+      ],
+      "en": "David said to Saul, “Why do you listen to men’s words, saying, ‘Behold, David seeks to harm you’?",
+      "ko": "사울에게 이르되 다윗이 왕을 해하려 한다고 하는 사람들의 말을 왕은 어찌하여 들으시나이까",
+      "source_text_hash": "b620cc53870a160e33e1c7f5303ab2b41554328714ed7379e7619b3754c7e8f7",
+      "translation_text_hash": "ed979bc202d588c8f9a4d29d200dc0b2241e857a3f4cb406dd205d862aad55df",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사울에게 이르되 다윗이 왕을 해하려 한다고 하는 사람들의 말을 왕은 어찌하여 들으시나이까"
+      ],
+      "raw_text_hashes": [
+        "ed979bc202d588c8f9a4d29d200dc0b2241e857a3f4cb406dd205d862aad55df"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:10",
+      "sequence": 7850,
+      "chapter_label": "1SA 24",
+      "verse_label": "10",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 10
+        }
+      ],
+      "en": "Behold, today your eyes have seen how the LORD had delivered you today into my hand in the cave. Some urged me to kill you, but I spared you. I said, ‘I will not stretch out my hand against my lord, for he is the LORD’s anointed.’",
+      "ko": "오늘 여호와께서 굴에서 왕을 내 손에 붙이신 것을 왕이 아셨을 것이니이다 혹이 나를 권하여 왕을 죽이라 하였으나 내가 왕을 아껴 말하기를 나는 내 손을 들어 내 주를 해치 아니하리니 그는 여호와의 기름 부음을 받은 자가 됨이니라 하였나이다",
+      "source_text_hash": "ea6aa1bf0707ceb65a305deaf51598df8df3f462961a49e6f1f43e1e3c77ce7e",
+      "translation_text_hash": "f021cf48a2d547adc632476cfeef6b4fb15a6d671ce3a8dc53118b7b6f93ff07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오늘 여호와께서 굴에서 왕을 내 손에 붙이신 것을 왕이 아셨을 것이니이다 혹이 나를 권하여 왕을 죽이라 하였으나 내가 왕을 아껴 말하기를 나는 내 손을 들어 내 주를 해치 아니하리니 그는 여호와의 기름 부음을 받은 자가 됨이니라 하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f021cf48a2d547adc632476cfeef6b4fb15a6d671ce3a8dc53118b7b6f93ff07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:11",
+      "sequence": 7851,
+      "chapter_label": "1SA 24",
+      "verse_label": "11",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 11
+        }
+      ],
+      "en": "Moreover, my father, behold, yes, see the skirt of your robe in my hand; for in that I cut off the skirt of your robe and didn’t kill you, know and see that there is neither evil nor disobedience in my hand. I have not sinned against you, though you hunt for my life to take it.",
+      "ko": "나의 아버지여 보소서 내 손에 있는 왕의 옷자락을 보소서 내가 왕을 죽이지 아니하고 겉옷자락만 베었은즉 나의 손에 악이나 죄과가 없는 줄을 아실찌니이다 왕은 내 생명을 찾아 해하려 하시나 나는 왕에게 범죄한 일이 없나이다",
+      "source_text_hash": "7bc297859355c29ce2349bfb2245cada0c4d4fdf2902daadb9414d77ef95efeb",
+      "translation_text_hash": "335e25335e59ec8bde850c5b67b72144839f344551aed74420131d4b9d7f63ce",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 아버지여 보소서 내 손에 있는 왕의 옷자락을 보소서 내가 왕을 죽이지 아니하고 겉옷자락만 베었은즉 나의 손에 악이나 죄과가 없는 줄을 아실찌니이다 왕은 내 생명을 찾아 해하려 하시나 나는 왕에게 범죄한 일이 없나이다"
+      ],
+      "raw_text_hashes": [
+        "335e25335e59ec8bde850c5b67b72144839f344551aed74420131d4b9d7f63ce"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:12",
+      "sequence": 7852,
+      "chapter_label": "1SA 24",
+      "verse_label": "12",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 12
+        }
+      ],
+      "en": "May the LORD judge between me and you, and may the LORD avenge me of you; but my hand will not be on you.",
+      "ko": "여호와께서는 나와 왕 사이를 판단하사 나를 위하여 왕에게 보복하시려니와 내 손으로는 왕을 해하지 않겠나이다",
+      "source_text_hash": "d90d562d425414c590fda1d5b48fbb4a9fbd8d3a635967c02d2e7f9dfe42e689",
+      "translation_text_hash": "d7814ddf59555b5c7a5c6de19b80d1f500e1d66942683d661eb1737fdc3bad82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서는 나와 왕 사이를 판단하사 나를 위하여 왕에게 보복하시려니와 내 손으로는 왕을 해하지 않겠나이다"
+      ],
+      "raw_text_hashes": [
+        "d7814ddf59555b5c7a5c6de19b80d1f500e1d66942683d661eb1737fdc3bad82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:13",
+      "sequence": 7853,
+      "chapter_label": "1SA 24",
+      "verse_label": "13",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 13
+        }
+      ],
+      "en": "As the proverb of the ancients says, ‘Out of the wicked comes wickedness;’ but my hand will not be on you.",
+      "ko": "옛 속담에 말하기를 악은 악인에게서 난다 하였으니 내 손이 왕을 해하지 아니하리이다",
+      "source_text_hash": "da597b2098984846c44996ddd16344fcb729a58760baa2a9ea001fb226482057",
+      "translation_text_hash": "9b029bb8543e4a5b28a83c350dca45888ba4862ae22e1e45066f37a0116c6f99",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "옛 속담에 말하기를 악은 악인에게서 난다 하였으니 내 손이 왕을 해하지 아니하리이다"
+      ],
+      "raw_text_hashes": [
+        "9b029bb8543e4a5b28a83c350dca45888ba4862ae22e1e45066f37a0116c6f99"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:14",
+      "sequence": 7854,
+      "chapter_label": "1SA 24",
+      "verse_label": "14",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 14
+        }
+      ],
+      "en": "Against whom has the king of Israel come out? Whom do you pursue? A dead dog? A flea?",
+      "ko": "이스라엘 왕이 누구를 따라 나왔으며 누구를 쫓나이까 죽은 개나 벼룩을 쫓음이니이다",
+      "source_text_hash": "9684939e0966317734b784d376c33d036d50a57344b6801009a63f8929020f02",
+      "translation_text_hash": "008385a074ca45a10d12b62c701729dda4003a20102ea8cb85a2e9a1bd7c2863",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 왕이 누구를 따라 나왔으며 누구를 쫓나이까 죽은 개나 벼룩을 쫓음이니이다"
+      ],
+      "raw_text_hashes": [
+        "008385a074ca45a10d12b62c701729dda4003a20102ea8cb85a2e9a1bd7c2863"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:15",
+      "sequence": 7855,
+      "chapter_label": "1SA 24",
+      "verse_label": "15",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 15
+        }
+      ],
+      "en": "May the LORD therefore be judge, and give sentence between me and you, and see, and plead my cause, and deliver me out of your hand.”",
+      "ko": "그런즉 여호와께서 재판장이 되어 나와 왕 사이에 판결하사 나의 사정을 살펴 신원하시고 나를 왕의 손에서 건지시기를 원하나이다",
+      "source_text_hash": "8f026a59bb4e8b17521112aac57acdd1996091cfed49035d9197bb38c485cccc",
+      "translation_text_hash": "2955d8a2458f7a16db136f68c7be2bbf0bdf7708401ce9e3eb693c9c1e625502",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 여호와께서 재판장이 되어 나와 왕 사이에 판결하사 나의 사정을 살펴 신원하시고 나를 왕의 손에서 건지시기를 원하나이다"
+      ],
+      "raw_text_hashes": [
+        "2955d8a2458f7a16db136f68c7be2bbf0bdf7708401ce9e3eb693c9c1e625502"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:16",
+      "sequence": 7856,
+      "chapter_label": "1SA 24",
+      "verse_label": "16",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 16
+        }
+      ],
+      "en": "It came to pass, when David had finished speaking these words to Saul, that Saul said, “Is that your voice, my son David?” Saul lifted up his voice and wept.",
+      "ko": "다윗이 사울에게 이같이 말하기를 마치매 사울이 가로되 내 아들 다윗아 이것이 네 목소리냐 하고 소리를 높여 울며",
+      "source_text_hash": "d0708c995691227fe001ab953194ff49c10adf25db856b6cd087e8e9a5da4aea",
+      "translation_text_hash": "30188e71f80c4a38fd2762bc2efaa77d23e644c6453c3a0f085bb7a56ca03c3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울에게 이같이 말하기를 마치매 사울이 가로되 내 아들 다윗아 이것이 네 목소리냐 하고 소리를 높여 울며"
+      ],
+      "raw_text_hashes": [
+        "30188e71f80c4a38fd2762bc2efaa77d23e644c6453c3a0f085bb7a56ca03c3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:17",
+      "sequence": 7857,
+      "chapter_label": "1SA 24",
+      "verse_label": "17",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 17
+        }
+      ],
+      "en": "He said to David, “You are more righteous than I; for you have done good to me, whereas I have done evil to you.",
+      "ko": "다윗에게 이르되 나는 너를 학대하되 너는 나를 선대하니 너는 나보다 의롭도다",
+      "source_text_hash": "d8c52cfaa59d8df6a69cc1fa0d1dbf7ef5a29d73d43fabd1f1424983e309aa97",
+      "translation_text_hash": "e0ac9ec7ac7e8e46ccebb4c4cd523d0ea21e59d18d1260b5ba8e7d39ec52f02c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗에게 이르되 나는 너를 학대하되 너는 나를 선대하니 너는 나보다 의롭도다"
+      ],
+      "raw_text_hashes": [
+        "e0ac9ec7ac7e8e46ccebb4c4cd523d0ea21e59d18d1260b5ba8e7d39ec52f02c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:18",
+      "sequence": 7858,
+      "chapter_label": "1SA 24",
+      "verse_label": "18",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 18
+        }
+      ],
+      "en": "You have declared today how you have dealt well with me, because when the LORD had delivered me up into your hand, you didn’t kill me.",
+      "ko": "네가 나 선대한 것을 오늘 나타내었나니 여호와께서 나를 네 손에 붙이셨으나 네가 나를 죽이지 아니하였도다",
+      "source_text_hash": "120a72aa0b4a586c8157794d646b155d13be8225ed631397adab13c6fd79ceaf",
+      "translation_text_hash": "78e198012ae4dfcad3a139527e0794de495e7eecb16efe4f3aaf98538ba835f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나 선대한 것을 오늘 나타내었나니 여호와께서 나를 네 손에 붙이셨으나 네가 나를 죽이지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "78e198012ae4dfcad3a139527e0794de495e7eecb16efe4f3aaf98538ba835f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:19",
+      "sequence": 7859,
+      "chapter_label": "1SA 24",
+      "verse_label": "19",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 19
+        }
+      ],
+      "en": "For if a man finds his enemy, will he let him go away unharmed? Therefore may the LORD reward you good for that which you have done to me today.",
+      "ko": "사람이 그 원수를 만나면 그를 평안히 가게 하겠느냐 네가 오늘날 내게 행한 일을 인하여 여호와께서 네게 선으로 갚으시기를 원하노라",
+      "source_text_hash": "bbc42575ef7fecdf923dddf3d4a6a6b142992d343785952549ced8f056ce6a6b",
+      "translation_text_hash": "1954c94d00663eb815e6f4fe5c000063a34acaee2e352648b9c435052d5ef758",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 그 원수를 만나면 그를 평안히 가게 하겠느냐 네가 오늘날 내게 행한 일을 인하여 여호와께서 네게 선으로 갚으시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "1954c94d00663eb815e6f4fe5c000063a34acaee2e352648b9c435052d5ef758"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:20",
+      "sequence": 7860,
+      "chapter_label": "1SA 24",
+      "verse_label": "20",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 20
+        }
+      ],
+      "en": "Now, behold, I know that you will surely be king, and that the kingdom of Israel will be established in your hand.",
+      "ko": "보라 나는 네가 반드시 왕이 될것을 알고 이스라엘 나라가 네 손에 견고히 설 것을 아노니",
+      "source_text_hash": "c354ed041febfc6dffe2eb6d48a3b5e77bd101f5e2fa5ccd49e0c3a692b44881",
+      "translation_text_hash": "19deb552cb1c5ce374700dddc3c85c59899459f2e612aeeeb8d93414d89874f3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "보라 나는 네가 반드시 왕이 될것을 알고 이스라엘 나라가 네 손에 견고히 설 것을 아노니"
+      ],
+      "raw_text_hashes": [
+        "19deb552cb1c5ce374700dddc3c85c59899459f2e612aeeeb8d93414d89874f3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:21",
+      "sequence": 7861,
+      "chapter_label": "1SA 24",
+      "verse_label": "21",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 21
+        }
+      ],
+      "en": "Swear now therefore to me by the LORD that you will not cut off my offspring after me, and that you will not destroy my name out of my father’s house.”",
+      "ko": "그런즉 너는 내 후손을 끊지 아니하며 내 아비의 집에서 내 이름을 멸하지 아니할 것을 이제 여호와로 내게 맹세하라",
+      "source_text_hash": "7cba0dd08963a7f40658d3076575c52e226f170836d7aca604472dfa5f3b65c5",
+      "translation_text_hash": "267157c9f914e21e440ebf8a3e1746dd7cb84ca1468f8679bf41ed6102424bab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 너는 내 후손을 끊지 아니하며 내 아비의 집에서 내 이름을 멸하지 아니할 것을 이제 여호와로 내게 맹세하라"
+      ],
+      "raw_text_hashes": [
+        "267157c9f914e21e440ebf8a3e1746dd7cb84ca1468f8679bf41ed6102424bab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1SA:24:22",
+      "sequence": 7862,
+      "chapter_label": "1SA 24",
+      "verse_label": "22",
+      "locator": {
+        "book": "1SA",
+        "chapter": 24,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1SA",
+          "chapter": 24,
+          "verse": 22
+        }
+      ],
+      "en": "David swore to Saul. Saul went home, but David and his men went up to the stronghold.",
+      "ko": "다윗이 사울에게 맹세하매 사울은 집으로 돌아가고 다윗과 그의 사람들은 요새로 올라가니라",
+      "source_text_hash": "97706608e690419e9a3ef9ba810a4a5aaf0a1daeb8f42c52b4054b4befd51144",
+      "translation_text_hash": "d9c22b0e70782a227fe36b4b5cdf33c0bf45c061903a0a0d8d5bed3770d4a2fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다윗이 사울에게 맹세하매 사울은 집으로 돌아가고 다윗과 그의 사람들은 요새로 올라가니라"
+      ],
+      "raw_text_hashes": [
+        "d9c22b0e70782a227fe36b4b5cdf33c0bf45c061903a0a0d8d5bed3770d4a2fe"
+      ]
+    }
+  ]
+}

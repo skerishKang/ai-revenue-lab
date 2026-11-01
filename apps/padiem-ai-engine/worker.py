@@ -10,6 +10,8 @@ from __future__ import annotations
 from app.pc_tools_turn import CatalogToolCapabilities
 
 import json
+import logging
+import re
 from typing import Any, Callable
 from urllib.parse import urlparse
 
@@ -266,6 +268,40 @@ def _error_response(code: str, message: str, status_code: int) -> Response:
             },
         )
     )
+
+
+def _log_orchestration_refusal(body: bytes, code: str) -> None:
+    """Log bounded correlation fields without exposing the request or run ID."""
+    from app.pc_correlation import run_hash
+
+    payload = {}
+    try:
+        parsed = json.loads(body.decode("utf-8"))
+        if isinstance(parsed, dict):
+            payload = parsed
+    except (UnicodeDecodeError, json.JSONDecodeError, AttributeError):
+        pass
+    token = run_hash(payload.get("session_id")) or "none"
+    context = payload.get("execution_context")
+    trace = payload.get("trace_id")
+    if trace is None and isinstance(context, dict):
+        trace = context.get("trace_id")
+    if not isinstance(trace, str) or not re.fullmatch(r"tr_[A-Za-z0-9_.:-]{1,125}", trace) or "chat_pcq_" in trace:
+        trace = "none"
+    if not isinstance(code, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,127}", code):
+        code = "unknown"
+    logging.getLogger(__name__).warning(
+        "pc_engine stage=refused run_hash=%s dispatch_id=none trace_id=%s code=%s",
+        token, trace, code,
+    )
+
+
+def _log_orchestration_service_refusal(body: bytes, result: ServiceResponse) -> None:
+    if result.status_code < 400:
+        return
+    error = result.body.get("error") if isinstance(result.body, dict) else None
+    code = error.get("code") if isinstance(error, dict) else None
+    _log_orchestration_refusal(body, code)
 
 
 def _read_requested_app_id(body: bytes) -> str | None:
@@ -728,6 +764,8 @@ class Default(WorkerEntrypoint):
                     max_bytes=max_body_bytes,
                 )
             except RequestBodyTooLarge:
+                if path in orchestration_paths:
+                    _log_orchestration_refusal(b"", "request_too_large")
                 message = (
                     "Request body exceeds the safety limit."
                     if path in orchestration_paths or path in tool_paths
@@ -735,6 +773,8 @@ class Default(WorkerEntrypoint):
                 )
                 return _error_response("request_too_large", message, 413)
             except RequestBodyReadError:
+                if path in orchestration_paths:
+                    _log_orchestration_refusal(b"", "invalid_request")
                 return _error_response(
                     "invalid_request",
                     "Request body could not be read.",
@@ -744,6 +784,12 @@ class Default(WorkerEntrypoint):
         if path != HEALTH_PATH:
             auth_error = _authenticate_non_health_request(self.env, headers, body)
             if auth_error is not None:
+                if path in orchestration_paths:
+                    code = {401: "service_authentication_failed",
+                            403: "service_app_not_authorized",
+                            503: "service_identity_unavailable"}.get(
+                                getattr(auth_error, "status", 0), "unknown")
+                    _log_orchestration_refusal(body, code)
                 return auth_error
 
         if path == B67_CASE_PDF_BINARY_PATH:
@@ -766,6 +812,7 @@ class Default(WorkerEntrypoint):
                 **progress_options,
             )
             if isinstance(prepared, ServiceResponse):
+                _log_orchestration_service_refusal(body, prepared)
                 return _json_response(prepared)
             return _ndjson_response(services.orchestration, prepared)
 
@@ -776,6 +823,7 @@ class Default(WorkerEntrypoint):
                 content_type=content_type,
                 body=body,
             )
+            _log_orchestration_service_refusal(body, result)
             return _json_response(result)
 
         if path in idempotency_paths:

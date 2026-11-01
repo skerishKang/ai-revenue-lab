@@ -53,7 +53,7 @@ def test_cp_admission_keeps_other_readiness_checks_and_no_mutation() -> None:
     assert '".result.bindings"' not in run  # YAML jq expressions are single-quoted text.
     assert ".result.bindings" in run
     assert "CONTROL_PLANE_IDENTITY" in run
-    assert ".result.enabled == false" in run
+    assert ".result.enabled == true" in run
     assert "curl -fsS" in run
     assert "-X POST" not in run
     assert "-X PUT" not in run

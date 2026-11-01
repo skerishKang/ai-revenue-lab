@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:113",
+  "unit_ordinal": 591,
+  "unit_label": "PSA 113",
+  "book_code": "PSA",
+  "chapter_number": 113,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:113:1",
+      "sequence": 15815,
+      "chapter_label": "PSA 113",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 1
+        }
+      ],
+      "en": "Praise the LORD! Praise, you servants of the LORD, praise the LORD’s name.",
+      "ko": "할렐루야, 여호와의 종들아 찬양하라 여호와의 이름을 찬양하라",
+      "source_text_hash": "d280f99d95bbc8eb8f52cb92d8aa5887f0f88726912a93a8ca9e9c41d7be79a8",
+      "translation_text_hash": "d78853174e9c371e1c4b0214457c90e4f4c148a9cfbb178e98f20ff245a1b866",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "할렐루야, 여호와의 종들아 찬양하라 여호와의 이름을 찬양하라"
+      ],
+      "raw_text_hashes": [
+        "d78853174e9c371e1c4b0214457c90e4f4c148a9cfbb178e98f20ff245a1b866"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:2",
+      "sequence": 15816,
+      "chapter_label": "PSA 113",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 2
+        }
+      ],
+      "en": "Blessed be the LORD’s name, from this time forward and forever more.",
+      "ko": "이제부터 영원까지 여호와의 이름을 찬송할찌로다",
+      "source_text_hash": "00ec14fcde26f0b5b861615f8a1344b833cecd9a34c4734aa9eaa3583f5cbaa0",
+      "translation_text_hash": "cd4b6f3d2bc45f5d7d9798d96e90bf520bdcdf08dbd121b318b77cb816a1068d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제부터 영원까지 여호와의 이름을 찬송할찌로다"
+      ],
+      "raw_text_hashes": [
+        "cd4b6f3d2bc45f5d7d9798d96e90bf520bdcdf08dbd121b318b77cb816a1068d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:3",
+      "sequence": 15817,
+      "chapter_label": "PSA 113",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 3
+        }
+      ],
+      "en": "From the rising of the sun to its going down, the LORD’s name is to be praised.",
+      "ko": "해 돋는데서부터 해 지는데까지 여호와의 이름이 찬양을 받으시리로다",
+      "source_text_hash": "e64cf0a6fc598afc91dfd993a81d5c5247e95515c1bdf94d1a4b7f1e08bac3c1",
+      "translation_text_hash": "d426ad58563ea58b195b801504a9946a9b2e032a88556c2e3dea8fbc703fc8fe",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "해 돋는데서부터 해 지는데까지 여호와의 이름이 찬양을 받으시리로다"
+      ],
+      "raw_text_hashes": [
+        "d426ad58563ea58b195b801504a9946a9b2e032a88556c2e3dea8fbc703fc8fe"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:4",
+      "sequence": 15818,
+      "chapter_label": "PSA 113",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD is high above all nations, his glory above the heavens.",
+      "ko": "여호와는 모든 나라 위에 높으시며 그 영광은 하늘 위에 높으시도다",
+      "source_text_hash": "9d07146597f8c29a4704be019e6146e2f69f01248fc3b0e49292eaa0519afe71",
+      "translation_text_hash": "507cf997fb43091c47d0899ee7e1604672004b6bc5a568d17cc543118e0789d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와는 모든 나라 위에 높으시며 그 영광은 하늘 위에 높으시도다"
+      ],
+      "raw_text_hashes": [
+        "507cf997fb43091c47d0899ee7e1604672004b6bc5a568d17cc543118e0789d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:5",
+      "sequence": 15819,
+      "chapter_label": "PSA 113",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 5
+        }
+      ],
+      "en": "Who is like the LORD, our God, who has his seat on high,",
+      "ko": "여호와 우리 하나님과 같은 자 누구리요 높은 위에 앉으셨으나",
+      "source_text_hash": "7e150a497226bbb4c5c3a4b84abe9ce4faef9b63196fc09a68cf7175ae0bcf29",
+      "translation_text_hash": "00a1528a7b379ec12bbf19213faef34ef5c7857a5dca21a338d81dfbdcbbd870",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와 우리 하나님과 같은 자 누구리요 높은 위에 앉으셨으나"
+      ],
+      "raw_text_hashes": [
+        "00a1528a7b379ec12bbf19213faef34ef5c7857a5dca21a338d81dfbdcbbd870"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:6",
+      "sequence": 15820,
+      "chapter_label": "PSA 113",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 6
+        }
+      ],
+      "en": "who stoops down to see in heaven and on the earth?",
+      "ko": "스스로 낮추사 천지를 살피시고",
+      "source_text_hash": "e04364bc8942a13afebef8f86e61042ce5beea3846ff743318cd03c615d5fd2d",
+      "translation_text_hash": "a7767c6c437091a3c6a4fda7a587178e7e81624856d598f2499dc17160d40a21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "스스로 낮추사 천지를 살피시고"
+      ],
+      "raw_text_hashes": [
+        "a7767c6c437091a3c6a4fda7a587178e7e81624856d598f2499dc17160d40a21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:7",
+      "sequence": 15821,
+      "chapter_label": "PSA 113",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 7
+        }
+      ],
+      "en": "He raises up the poor out of the dust, and lifts up the needy from the ash heap,",
+      "ko": "가난한 자를 진토에서 일으키시며 궁핍한 자를 거름 무더기에서 드셔서",
+      "source_text_hash": "033d32cdb4ef7059d0d29cf6819a5aac41a38bfd3b0a14ceebffdaacc30dedb8",
+      "translation_text_hash": "44323b744e53f36b9ffc92c853a058c7c97b1463c5396e46ed9183b8654162a7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가난한 자를 진토에서 일으키시며 궁핍한 자를 거름 무더기에서 드셔서"
+      ],
+      "raw_text_hashes": [
+        "44323b744e53f36b9ffc92c853a058c7c97b1463c5396e46ed9183b8654162a7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:8",
+      "sequence": 15822,
+      "chapter_label": "PSA 113",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 8
+        }
+      ],
+      "en": "that he may set him with princes, even with the princes of his people.",
+      "ko": "방백들 곧 그 백성의 방백들과 함께 세우시며",
+      "source_text_hash": "66af33f2ff72ac2212f320d0a43705fe211cc9bd6b35ce0c63036a2fde9d8450",
+      "translation_text_hash": "3c99e90ca187f56d2550105f3eccda5537bb4d6b3605eed8baf0e5776eba9b3d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "방백들 곧 그 백성의 방백들과 함께 세우시며"
+      ],
+      "raw_text_hashes": [
+        "3c99e90ca187f56d2550105f3eccda5537bb4d6b3605eed8baf0e5776eba9b3d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:113:9",
+      "sequence": 15823,
+      "chapter_label": "PSA 113",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 113,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 113,
+          "verse": 9
+        }
+      ],
+      "en": "He settles the barren woman in her home as a joyful mother of children. Praise the LORD!",
+      "ko": "또 잉태하지 못하던 여자로 집에 거하게 하사 자녀의 즐거운 어미가 되게 하시는도다 할렐루야",
+      "source_text_hash": "e00a43cf3d01d95ba7abf8f791a10007d1e83fe23f49a10eb4d766050ec1e8a4",
+      "translation_text_hash": "6b9d0a8ccd66ca3501955bb069e86b8b5b20d7a9c035f4b5a4b88562f73bc3e3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 잉태하지 못하던 여자로 집에 거하게 하사 자녀의 즐거운 어미가 되게 하시는도다 할렐루야"
+      ],
+      "raw_text_hashes": [
+        "6b9d0a8ccd66ca3501955bb069e86b8b5b20d7a9c035f4b5a4b88562f73bc3e3"
+      ]
+    }
+  ]
+}

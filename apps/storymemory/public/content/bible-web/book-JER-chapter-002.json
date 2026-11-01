@@ -1,0 +1,1197 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JER:chapter:002",
+  "unit_ordinal": 747,
+  "unit_label": "JER 2",
+  "book_code": "JER",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JER:2:1",
+      "sequence": 18967,
+      "chapter_label": "JER 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "The LORD’s word came to me, saying,",
+      "ko": "여호와의 말씀이 내게 임하니라 이르시되",
+      "source_text_hash": "9896c4581212f69b0f4adc87dc02e9102477b3f2cc043645fc2c8a0c2e7ce852",
+      "translation_text_hash": "c10961067badc4e6053f89b63d34f264023d34a1f79f584a4129d4c822688852",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀이 내게 임하니라 이르시되"
+      ],
+      "raw_text_hashes": [
+        "c10961067badc4e6053f89b63d34f264023d34a1f79f584a4129d4c822688852"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:2",
+      "sequence": 18968,
+      "chapter_label": "JER 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "“Go and proclaim in the ears of Jerusalem, saying, ‘The LORD says, “I remember for you the kindness of your youth, your love as a bride, how you went after me in the wilderness, in a land that was not sown.",
+      "ko": "가서 예루살렘 거민의 귀에 외쳐 말할찌니라 여호와께서 이같이 말씀하시기를 네 소년 때의 우의와 네 결혼 때의 사랑 곧 씨 뿌리지 못하는 땅, 광야에서 어떻게 나를 좇았음을 내가 너를 위하여 기억하노라",
+      "source_text_hash": "45e5cd4391a4f4ad2602fd0f5252c34e3ea791aea901da0f674d4cd67a8a4702",
+      "translation_text_hash": "3094f2b1b44da3fe7401b0a40f67b0607a6fa5ccd84c2c740041351cef8172b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가서 예루살렘 거민의 귀에 외쳐 말할찌니라 여호와께서 이같이 말씀하시기를 네 소년 때의 우의와 네 결혼 때의 사랑 곧 씨 뿌리지 못하는 땅, 광야에서 어떻게 나를 좇았음을 내가 너를 위하여 기억하노라"
+      ],
+      "raw_text_hashes": [
+        "3094f2b1b44da3fe7401b0a40f67b0607a6fa5ccd84c2c740041351cef8172b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:3",
+      "sequence": 18969,
+      "chapter_label": "JER 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Israel was holiness to the LORD, the first fruits of his increase. All who devour him will be held guilty. Evil will come on them,”’ says the LORD.”",
+      "ko": "그 때에 이스라엘은 나 여호와의 성물 곧 나의 소산 중 처음 열매가 되었나니 그를 삼키는 자면 다 벌을 받아 재앙을 만났으리라 여호와의 말이니라",
+      "source_text_hash": "0a3141edcc879bc136306649a4996eb1763ba23771f8e0246408f0ffb7365b2e",
+      "translation_text_hash": "2369c422ec3930004200b1ddcb0534eb0627639090c3573970f1b42741596e7f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 때에 이스라엘은 나 여호와의 성물 곧 나의 소산 중 처음 열매가 되었나니 그를 삼키는 자면 다 벌을 받아 재앙을 만났으리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "2369c422ec3930004200b1ddcb0534eb0627639090c3573970f1b42741596e7f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:4",
+      "sequence": 18970,
+      "chapter_label": "JER 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "Hear the LORD’s word, O house of Jacob, and all the families of the house of Israel!",
+      "ko": "야곱 집과 이스라엘 집 모든 가족아 나 여호와의 말을 들으라",
+      "source_text_hash": "0e517d9c7455f989096c968952410ff568bfe8c89dec9007374411ee79195e2c",
+      "translation_text_hash": "100db088eeceeb50860fa0143636d90e22a964f9ff8f009b94537cb6d37c3cd7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "야곱 집과 이스라엘 집 모든 가족아 나 여호와의 말을 들으라"
+      ],
+      "raw_text_hashes": [
+        "100db088eeceeb50860fa0143636d90e22a964f9ff8f009b94537cb6d37c3cd7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:5",
+      "sequence": 18971,
+      "chapter_label": "JER 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "The LORD says, “What unrighteousness have your fathers found in me, that they have gone far from me, and have walked after worthless vanity, and have become worthless?",
+      "ko": "나 여호와가 이같이 말하노라 너희 열조가 내게서 무슨 불의함을 보았관대 나를 멀리하고 허탄한 것을 따라 헛되이 행하였느냐",
+      "source_text_hash": "c007dcd48aaabad89479ab3c5d6012de0eee44a59e813676a76ad1c247a862af",
+      "translation_text_hash": "7561be04ce46f52c1fc699521cb281552db91ed174b0079d65f4660673c2c929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 이같이 말하노라 너희 열조가 내게서 무슨 불의함을 보았관대 나를 멀리하고 허탄한 것을 따라 헛되이 행하였느냐"
+      ],
+      "raw_text_hashes": [
+        "7561be04ce46f52c1fc699521cb281552db91ed174b0079d65f4660673c2c929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:6",
+      "sequence": 18972,
+      "chapter_label": "JER 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "They didn’t say, ‘Where is the LORD who brought us up out of the land of Egypt, who led us through the wilderness, through a land of deserts and of pits, through a land of drought and of the shadow of death, through a land that no one passed through, and where no man lived?’",
+      "ko": "그들이 우리를 애굽 땅에서 인도하여 내시고 광야 곧 사막과 구덩이 땅, 간조하고 사망의 음침한 땅, 사람이 다니지 아니하고 거주하지 아니하는 땅을 통과케 하시던 여호와께서 어디 계시냐 말하지 아니하였도다",
+      "source_text_hash": "3c9be4f41c3729710ebc39de03cf129564321adef12b8b7beff491dd7a3894b8",
+      "translation_text_hash": "5b0bacc180962c00134e994ea60dfbaa0df3a20f76d2877371f374ed7283828a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 우리를 애굽 땅에서 인도하여 내시고 광야 곧 사막과 구덩이 땅, 간조하고 사망의 음침한 땅, 사람이 다니지 아니하고 거주하지 아니하는 땅을 통과케 하시던 여호와께서 어디 계시냐 말하지 아니하였도다"
+      ],
+      "raw_text_hashes": [
+        "5b0bacc180962c00134e994ea60dfbaa0df3a20f76d2877371f374ed7283828a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:7",
+      "sequence": 18973,
+      "chapter_label": "JER 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "I brought you into a plentiful land to eat its fruit and its goodness; but when you entered, you defiled my land, and made my heritage an abomination.",
+      "ko": "내가 너희를 인도하여 기름진 땅에 들여 그 과실과 그 아름다운 것을 먹게 하였거늘 너희가 이리로 들어와서는 내 땅을 더럽히고 내 기업을 가증히 만들었으며",
+      "source_text_hash": "3847aa210469a4c19453e7a18188a40f862c6b190118e3c1de87f51df7b36025",
+      "translation_text_hash": "9553f21903e945853c9857bbe8562523b8d6bb1d4ae97c5ef9da401a56533b17",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 인도하여 기름진 땅에 들여 그 과실과 그 아름다운 것을 먹게 하였거늘 너희가 이리로 들어와서는 내 땅을 더럽히고 내 기업을 가증히 만들었으며"
+      ],
+      "raw_text_hashes": [
+        "9553f21903e945853c9857bbe8562523b8d6bb1d4ae97c5ef9da401a56533b17"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:8",
+      "sequence": 18974,
+      "chapter_label": "JER 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "The priests didn’t say, ‘Where is the LORD?’ and those who handle the law didn’t know me. The rulers also transgressed against me, and the prophets prophesied by Baal and followed things that do not profit.",
+      "ko": "제사장들은 여호와께서 어디 계시냐 하지 아니하며 법 잡은 자들은 나를 알지 못하며 관리들도 나를 항거하며 선지자들은 바알의 이름으로 예언하고 무익한 것을 좇았느니라",
+      "source_text_hash": "870edfd19c25dc9fda3409b61cd919057e9c6f9eabd30234e838e1b4b8560b86",
+      "translation_text_hash": "daeeadf04ec81f3150ba2b7b6bac83086fa354beb064357ca93b06f835d51cc0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들은 여호와께서 어디 계시냐 하지 아니하며 법 잡은 자들은 나를 알지 못하며 관리들도 나를 항거하며 선지자들은 바알의 이름으로 예언하고 무익한 것을 좇았느니라"
+      ],
+      "raw_text_hashes": [
+        "daeeadf04ec81f3150ba2b7b6bac83086fa354beb064357ca93b06f835d51cc0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:9",
+      "sequence": 18975,
+      "chapter_label": "JER 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "“Therefore I will yet contend with you,” says the LORD, “and I will contend with your children’s children.",
+      "ko": "그러므로 내가 여전히 너희와 다투고 너희 후손과도 다투리라 여호와의 말이니라",
+      "source_text_hash": "6b6329114aa8342dec7e2b659e139d9840cfb63da02debd2f637bc9c7eb063a7",
+      "translation_text_hash": "f514047de437323caaa0e5a743a394b2f0166eaa7e72a14099ea0f2e8c2f11a6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 여전히 너희와 다투고 너희 후손과도 다투리라 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "f514047de437323caaa0e5a743a394b2f0166eaa7e72a14099ea0f2e8c2f11a6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:10",
+      "sequence": 18976,
+      "chapter_label": "JER 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "For pass over to the islands of Kittim, and see. Send to Kedar, and consider diligently, and see if there has been such a thing.",
+      "ko": "너희는 깃딤 섬들에 건너가 보며 게달에도 사람을 보내어 이같은 일의 유무를 자세히 살펴보라",
+      "source_text_hash": "a9d613aa186ae80681961eef7ec44ef0fbc98ddfbda0def0dc2795fbef6ecf6c",
+      "translation_text_hash": "b32a292c33c2e1fdd389d6e8ef5d68089b2b98a5f875aff356046ded30e06cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 깃딤 섬들에 건너가 보며 게달에도 사람을 보내어 이같은 일의 유무를 자세히 살펴보라"
+      ],
+      "raw_text_hashes": [
+        "b32a292c33c2e1fdd389d6e8ef5d68089b2b98a5f875aff356046ded30e06cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:11",
+      "sequence": 18977,
+      "chapter_label": "JER 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Has a nation changed its gods, which really are no gods? But my people have changed their glory for that which doesn’t profit.",
+      "ko": "어느 나라가 그 신을 신 아닌 것과 바꾼 일이 있느냐 그러나 나의 백성은 그 영광을 무익한 것과 바꾸었도다",
+      "source_text_hash": "b01e6aae2e6e56a2c1ecba6fd931e0efa9826e5458a92b839de7c4364f83f3d8",
+      "translation_text_hash": "88ab1066e2d4a94bb83564201aa4aa767a315955edcba0908a85524c5848e971",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어느 나라가 그 신을 신 아닌 것과 바꾼 일이 있느냐 그러나 나의 백성은 그 영광을 무익한 것과 바꾸었도다"
+      ],
+      "raw_text_hashes": [
+        "88ab1066e2d4a94bb83564201aa4aa767a315955edcba0908a85524c5848e971"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:12",
+      "sequence": 18978,
+      "chapter_label": "JER 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "“Be astonished, you heavens, at this and be horribly afraid. Be very desolate,” says the LORD.",
+      "ko": "너 하늘아 이 일을 인하여 놀랄찌어다 심히 떨찌어다 두려워할찌어다 여호와의 말이니라",
+      "source_text_hash": "27da6fafac2cbd61573b0542614dce75eeee55e722e0c1017a37260be4112b2f",
+      "translation_text_hash": "1741ab26a0ee1ca33dc20852bbed9025ed1349df126c94aae0ae2cb43c5af471",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너 하늘아 이 일을 인하여 놀랄찌어다 심히 떨찌어다 두려워할찌어다 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "1741ab26a0ee1ca33dc20852bbed9025ed1349df126c94aae0ae2cb43c5af471"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:13",
+      "sequence": 18979,
+      "chapter_label": "JER 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "“For my people have committed two evils: they have forsaken me, the spring of living waters, and cut out cisterns for themselves: broken cisterns that can’t hold water.",
+      "ko": "내 백성이 두가지 악을 행하였나니 곧 생수의 근원되는 나를 버린 것과 스스로 웅덩이를 판 것인데 그것은 물을 저축지 못할 터진 웅덩이니라",
+      "source_text_hash": "87bf61101797d49e14e71d79aad05a54486ff204c523d1ac9b4977413065e63a",
+      "translation_text_hash": "3e82bd3ef89d67c95b755aca26de93830d6c7bfe57f61f689fb48ceb1c95f810",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내 백성이 두가지 악을 행하였나니 곧 생수의 근원되는 나를 버린 것과 스스로 웅덩이를 판 것인데 그것은 물을 저축지 못할 터진 웅덩이니라"
+      ],
+      "raw_text_hashes": [
+        "3e82bd3ef89d67c95b755aca26de93830d6c7bfe57f61f689fb48ceb1c95f810"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:14",
+      "sequence": 18980,
+      "chapter_label": "JER 2",
+      "verse_label": "14",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 14
+        }
+      ],
+      "en": "Is Israel a slave? Is he born into slavery? Why has he become a captive?",
+      "ko": "이스라엘이 종이냐 씨종이냐 어찌하여 포로가 되었느냐",
+      "source_text_hash": "4538a809345244fabd215e958c7ab68033214259c7175ed2354178ea038eeb74",
+      "translation_text_hash": "30acdcfdec4a3bceb50757a72fd2f1e1fb3be0c22263c9cfb1421b9ec5bc0980",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 종이냐 씨종이냐 어찌하여 포로가 되었느냐"
+      ],
+      "raw_text_hashes": [
+        "30acdcfdec4a3bceb50757a72fd2f1e1fb3be0c22263c9cfb1421b9ec5bc0980"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:15",
+      "sequence": 18981,
+      "chapter_label": "JER 2",
+      "verse_label": "15",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 15
+        }
+      ],
+      "en": "The young lions have roared at him and raised their voices. They have made his land waste. His cities are burned up, without inhabitant.",
+      "ko": "어린 사자들이 너를 향하여 부르짖으며 소리를 날려 네 땅을 황무케 하였으며 네 성읍들은 불타서 거민이 없게 되었으며",
+      "source_text_hash": "011823a9c219a4fe2593133a321aff61bab08f64dd38a5dad39750bf39db0b1b",
+      "translation_text_hash": "0b8a1f45fdeeb6b3a412f686d29ee5e5f3cc2c7697b9def60d820338ebb72044",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어린 사자들이 너를 향하여 부르짖으며 소리를 날려 네 땅을 황무케 하였으며 네 성읍들은 불타서 거민이 없게 되었으며"
+      ],
+      "raw_text_hashes": [
+        "0b8a1f45fdeeb6b3a412f686d29ee5e5f3cc2c7697b9def60d820338ebb72044"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:16",
+      "sequence": 18982,
+      "chapter_label": "JER 2",
+      "verse_label": "16",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 16
+        }
+      ],
+      "en": "The children also of Memphis and Tahpanhes have broken the crown of your head.",
+      "ko": "놉과 다바네스의 자손도 네 정수리를 상하였으니",
+      "source_text_hash": "c340a5c5dad5da22169ab9bd174153ee698c9fce9f7e4799e9e53e95adbb4319",
+      "translation_text_hash": "9266c4a5dbc6367ab2f6c36b7aa95f989964b3eaa789fde76e8d9a658fa8146d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "놉과 다바네스의 자손도 네 정수리를 상하였으니"
+      ],
+      "raw_text_hashes": [
+        "9266c4a5dbc6367ab2f6c36b7aa95f989964b3eaa789fde76e8d9a658fa8146d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:17",
+      "sequence": 18983,
+      "chapter_label": "JER 2",
+      "verse_label": "17",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 17
+        }
+      ],
+      "en": "“Haven’t you brought this on yourself, in that you have forsaken the LORD your God, when he led you by the way?",
+      "ko": "네 하나님 여호와가 너를 길로 인도할 때에 네가 나를 떠남으로 이를 자취함이 아니냐",
+      "source_text_hash": "19f4a1adfe616378f7bba5984829ffa1599092321fd7de7b38e6af40f5e6d451",
+      "translation_text_hash": "134d23f1df9558f2e101a9e1bf3ef09059f8149a05c3ef05dd96a2fa8aa3904b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와가 너를 길로 인도할 때에 네가 나를 떠남으로 이를 자취함이 아니냐"
+      ],
+      "raw_text_hashes": [
+        "134d23f1df9558f2e101a9e1bf3ef09059f8149a05c3ef05dd96a2fa8aa3904b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:18",
+      "sequence": 18984,
+      "chapter_label": "JER 2",
+      "verse_label": "18",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 18
+        }
+      ],
+      "en": "Now what do you gain by going to Egypt, to drink the waters of the Shihor? Or why do you go on the way to Assyria, to drink the waters of the River?",
+      "ko": "네가 시홀의 물을 마시려고 애굽 길에 있음은 어찜이며 또 그 하수를 마시려고 앗수르 길에 있음은 어찜이뇨",
+      "source_text_hash": "4b4dae2a870a0dc04f787aa9473cdbfe067a5552bb6ffd0ba1119b88a0b72023",
+      "translation_text_hash": "389fa8b14213e2cf7a0257becc60e0adfe83987f293d3d6896a5a2b737ab8e21",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 시홀의 물을 마시려고 애굽 길에 있음은 어찜이며 또 그 하수를 마시려고 앗수르 길에 있음은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "389fa8b14213e2cf7a0257becc60e0adfe83987f293d3d6896a5a2b737ab8e21"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:19",
+      "sequence": 18985,
+      "chapter_label": "JER 2",
+      "verse_label": "19",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 19
+        }
+      ],
+      "en": "“Your own wickedness will correct you, and your backsliding will rebuke you. Know therefore and see that it is an evil and bitter thing, that you have forsaken the LORD your God, and that my fear is not in you,” says the Lord, GOD of Armies.",
+      "ko": "네 악이 너를 징계하겠고 네 패역이 너를 책할 것이라 그런즉 네 하나님 여호와를 버림과 네 속에 나를 경외함이 없는 것이 악이요 고통인줄 알라 주 만군의 여호와의 말이니라",
+      "source_text_hash": "8bf6baac6d19750ef2ecfcbaf981d25bc807cebbd824d8ca74a642d6437e2743",
+      "translation_text_hash": "26cc8930009094bb320db558be1d75bcd031ef51e1f1d226f9bd72c8388fa39c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 악이 너를 징계하겠고 네 패역이 너를 책할 것이라 그런즉 네 하나님 여호와를 버림과 네 속에 나를 경외함이 없는 것이 악이요 고통인줄 알라 주 만군의 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "26cc8930009094bb320db558be1d75bcd031ef51e1f1d226f9bd72c8388fa39c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:20",
+      "sequence": 18986,
+      "chapter_label": "JER 2",
+      "verse_label": "20",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 20
+        }
+      ],
+      "en": "“For long ago I broke off your yoke, and burst your bonds. You said, ‘I will not serve;’ for on every high hill and under every green tree you bowed yourself, playing the prostitute.",
+      "ko": "네가 옛적부터 네 멍에를 꺾고 네 결박을 끊으며 말하기를 나는 순복지 아니하리라 하고 모든 높은 산 위와 모든 푸른 나무 아래서 몸을 굽혀 행음하도다",
+      "source_text_hash": "a21ae1ef34e83141f14a50506e7e700ab5c82be5c6a194384d1e93bf99305296",
+      "translation_text_hash": "df21dc3b53776080b11f108145800df120b0b243053eb0bd9fac9a4f90db20d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 옛적부터 네 멍에를 꺾고 네 결박을 끊으며 말하기를 나는 순복지 아니하리라 하고 모든 높은 산 위와 모든 푸른 나무 아래서 몸을 굽혀 행음하도다"
+      ],
+      "raw_text_hashes": [
+        "df21dc3b53776080b11f108145800df120b0b243053eb0bd9fac9a4f90db20d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:21",
+      "sequence": 18987,
+      "chapter_label": "JER 2",
+      "verse_label": "21",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 21
+        }
+      ],
+      "en": "Yet I had planted you a noble vine, a pure and faithful seed. How then have you turned into the degenerate branches of a foreign vine to me?",
+      "ko": "내가 너를 순전한 참 종자 곧 귀한 포도나무로 심었거늘 내게 대하여 이방 포도나무의 악한 가지가 됨은 어찜이뇨",
+      "source_text_hash": "09a87f1b691b3b43882c63a9475dad276ef07908b51b6360b944fe6229a09158",
+      "translation_text_hash": "49a011593f321f2886bb2f493607a66b6d73344c0e676d64894893f60e0707f0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너를 순전한 참 종자 곧 귀한 포도나무로 심었거늘 내게 대하여 이방 포도나무의 악한 가지가 됨은 어찜이뇨"
+      ],
+      "raw_text_hashes": [
+        "49a011593f321f2886bb2f493607a66b6d73344c0e676d64894893f60e0707f0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:22",
+      "sequence": 18988,
+      "chapter_label": "JER 2",
+      "verse_label": "22",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 22
+        }
+      ],
+      "en": "For though you wash yourself with lye, and use much soap, yet your iniquity is marked before me,” says the Lord GOD.",
+      "ko": "주 여호와 내가 말하노라 네가 잿물로 스스로 씻으며 수다한 비누를 쓸찌라도 네 죄악이 오히려 내 앞에 그저 있으리니",
+      "source_text_hash": "c1429a5d3e516773034452ee3b48eabbb979180482cdf1586c0fcf431532287b",
+      "translation_text_hash": "bb08c62ac8afc862654681725355fafe8ff343db482796a2313400dcd7dcae24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와 내가 말하노라 네가 잿물로 스스로 씻으며 수다한 비누를 쓸찌라도 네 죄악이 오히려 내 앞에 그저 있으리니"
+      ],
+      "raw_text_hashes": [
+        "bb08c62ac8afc862654681725355fafe8ff343db482796a2313400dcd7dcae24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:23",
+      "sequence": 18989,
+      "chapter_label": "JER 2",
+      "verse_label": "23",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 23
+        }
+      ],
+      "en": "“How can you say, ‘I am not defiled. I have not gone after the Baals’? See your way in the valley. Know what you have done. You are a swift dromedary traversing her ways,",
+      "ko": "네가 어찌 말하기를 나는 더럽히지 아니하였다 바알들을 좇지 아니하였다 하겠느냐 골짜기 속에 있는 네 길을 보라 네 행한바를 알것이니라 너는 발이 빠른 젊은 암약대가 그 길에 어지러이 달림 같았으며",
+      "source_text_hash": "b4c58fc068c76fb5ca0dd6516e800ad5352cf969e9cd2a4d7b2d94d2dff9f50c",
+      "translation_text_hash": "65459c7cc596a3daab44392cbea0246ec1d87b5dcc3488d6bfd28e329da47263",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 말하기를 나는 더럽히지 아니하였다 바알들을 좇지 아니하였다 하겠느냐 골짜기 속에 있는 네 길을 보라 네 행한바를 알것이니라 너는 발이 빠른 젊은 암약대가 그 길에 어지러이 달림 같았으며"
+      ],
+      "raw_text_hashes": [
+        "65459c7cc596a3daab44392cbea0246ec1d87b5dcc3488d6bfd28e329da47263"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:24",
+      "sequence": 18990,
+      "chapter_label": "JER 2",
+      "verse_label": "24",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 24
+        }
+      ],
+      "en": "a wild donkey used to the wilderness, that sniffs the wind in her craving. When she is in heat, who can turn her away? All those who seek her will not weary themselves. In her month, they will find her.",
+      "ko": "너는 광야에 익숙한 들 암나귀가 그 성욕이 동하므로 헐떡거림 같았도다 그 성욕의 때에 누가 그것을 막으리요 그것을 찾는 자들이 수고치 아니하고 그것의 달에 만나리라",
+      "source_text_hash": "bb3c3246bd8b1bbceb5d10d9c46f68fdc33ea4d03d5312076dcae2c535ba3f7e",
+      "translation_text_hash": "a2662659a52c3d1f2e105ab14c7d4b373cbbbf3e573007a40a73397f13ca13bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 광야에 익숙한 들 암나귀가 그 성욕이 동하므로 헐떡거림 같았도다 그 성욕의 때에 누가 그것을 막으리요 그것을 찾는 자들이 수고치 아니하고 그것의 달에 만나리라"
+      ],
+      "raw_text_hashes": [
+        "a2662659a52c3d1f2e105ab14c7d4b373cbbbf3e573007a40a73397f13ca13bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:25",
+      "sequence": 18991,
+      "chapter_label": "JER 2",
+      "verse_label": "25",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 25
+        }
+      ],
+      "en": "“Keep your feet from being bare, and your throat from thirst. But you said, ‘It is in vain. No, for I have loved strangers, and I will go after them.’",
+      "ko": "내가 또 말하기를 네 발을 제어하여 벗은 발이 되게 말며 목을 갈하게 말라 하였으나 오직 너는 말하기를 아니라 이는 헛된 말이라 내가 이방 신을 사랑하였은즉 그를 따라 가겠노라 하도다",
+      "source_text_hash": "a4fb83028cce41843a283355e7fbcc18a6361c021fa63db248595af686d97e5b",
+      "translation_text_hash": "ff8b3835ac9d3a84a8d75f35ed6c115d6576dd3228f9a05684e928492acb9f6e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 말하기를 네 발을 제어하여 벗은 발이 되게 말며 목을 갈하게 말라 하였으나 오직 너는 말하기를 아니라 이는 헛된 말이라 내가 이방 신을 사랑하였은즉 그를 따라 가겠노라 하도다"
+      ],
+      "raw_text_hashes": [
+        "ff8b3835ac9d3a84a8d75f35ed6c115d6576dd3228f9a05684e928492acb9f6e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:26",
+      "sequence": 18992,
+      "chapter_label": "JER 2",
+      "verse_label": "26",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 26
+        }
+      ],
+      "en": "As the thief is ashamed when he is found, so the house of Israel is ashamed— they, their kings, their princes, their priests, and their prophets,",
+      "ko": "도적이 붙들리면 수치를 당함 같이 이스라엘 집 곧 그 왕들과 족장들과 제사장들과 선지자들이 수치를 당하였느니라",
+      "source_text_hash": "d8f7e339197ac2076a3fc9b570026b240abb63813e1e2334f54e8dce4aaa6e17",
+      "translation_text_hash": "ac603e379538cd3c05043649a18d931679714993a9843bc042749d41d211fa93",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "도적이 붙들리면 수치를 당함 같이 이스라엘 집 곧 그 왕들과 족장들과 제사장들과 선지자들이 수치를 당하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ac603e379538cd3c05043649a18d931679714993a9843bc042749d41d211fa93"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:27",
+      "sequence": 18993,
+      "chapter_label": "JER 2",
+      "verse_label": "27",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 27
+        }
+      ],
+      "en": "who tell wood, ‘You are my father,’ and a stone, ‘You have given birth to me,’ for they have turned their back to me, and not their face, but in the time of their trouble they will say, ‘Arise, and save us!’",
+      "ko": "그들이 나무를 향하여 너는 나의 아비라 하며 돌을 향하여 너는 나를 낳았다 하고 그 등을 내게로 향하고 그 얼굴은 내게로 향치 아니하다가 환난을 당할 때에는 이르기를 일어나 우리를 구원하소서 하리라",
+      "source_text_hash": "9a07296fd48552e5cb263aa8b056a77eb8e99ac92f8b680cbc5f0fd55e57b70d",
+      "translation_text_hash": "1461b89eed598d8f10149a0d2e0d8bcd96a81d4900f15831a12847549f7e4399",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 나무를 향하여 너는 나의 아비라 하며 돌을 향하여 너는 나를 낳았다 하고 그 등을 내게로 향하고 그 얼굴은 내게로 향치 아니하다가 환난을 당할 때에는 이르기를 일어나 우리를 구원하소서 하리라"
+      ],
+      "raw_text_hashes": [
+        "1461b89eed598d8f10149a0d2e0d8bcd96a81d4900f15831a12847549f7e4399"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:28",
+      "sequence": 18994,
+      "chapter_label": "JER 2",
+      "verse_label": "28",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 28
+        }
+      ],
+      "en": "“But where are your gods that you have made for yourselves? Let them arise, if they can save you in the time of your trouble, for you have as many gods as you have towns, O Judah.",
+      "ko": "네가 만든 네 신들이 어디 있느뇨 그들이 너의 환난을 당할 때에 구원할 수 있으면 일어날 것이니라 유다여 너의 신들이 너의 성읍 수와 같도다",
+      "source_text_hash": "4dcc5e70ce47e30cbc5020afc8a5e5dc84b008fe8dca82f3f5c20e9dd1cfbad1",
+      "translation_text_hash": "d45180b6ba4fc3aba9c3a41301ae4e136d05ed7f6fac75fa7cdc3f8e947c2716",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만든 네 신들이 어디 있느뇨 그들이 너의 환난을 당할 때에 구원할 수 있으면 일어날 것이니라 유다여 너의 신들이 너의 성읍 수와 같도다"
+      ],
+      "raw_text_hashes": [
+        "d45180b6ba4fc3aba9c3a41301ae4e136d05ed7f6fac75fa7cdc3f8e947c2716"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:29",
+      "sequence": 18995,
+      "chapter_label": "JER 2",
+      "verse_label": "29",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 29
+        }
+      ],
+      "en": "“Why will you contend with me? You all have transgressed against me,” says the LORD.",
+      "ko": "나 여호와가 말하노라 너희가 나와 다툼은 어찜이뇨 너희가 다 내게 범과하였느니라",
+      "source_text_hash": "0c4bbc50f3b24a09be1ae628b8f1c904913c5df9699b26377a11b58855247e3b",
+      "translation_text_hash": "87fb3dbd75cd294a7a4388415f89a0aaca8a252042ee82120df872ba03e8ecb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나 여호와가 말하노라 너희가 나와 다툼은 어찜이뇨 너희가 다 내게 범과하였느니라"
+      ],
+      "raw_text_hashes": [
+        "87fb3dbd75cd294a7a4388415f89a0aaca8a252042ee82120df872ba03e8ecb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:30",
+      "sequence": 18996,
+      "chapter_label": "JER 2",
+      "verse_label": "30",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 30
+        }
+      ],
+      "en": "“I have struck your children in vain. They received no correction. Your own sword has devoured your prophets, like a destroying lion.",
+      "ko": "내가 너희 자녀를 때림도 무익함은 그들도 징책을 받지 아니함이라 너희 칼이 사나운 사자 같이 너희 선지자들을 삼켰느니라",
+      "source_text_hash": "a46a03a3b06e5bf8a0779b91b5497e82629522cd6e45b7eec5aff3da3854ff7e",
+      "translation_text_hash": "6db603d8c2367c7668d432326866b29628443bde662dd022e0d24e1790c2dfa8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희 자녀를 때림도 무익함은 그들도 징책을 받지 아니함이라 너희 칼이 사나운 사자 같이 너희 선지자들을 삼켰느니라"
+      ],
+      "raw_text_hashes": [
+        "6db603d8c2367c7668d432326866b29628443bde662dd022e0d24e1790c2dfa8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:31",
+      "sequence": 18997,
+      "chapter_label": "JER 2",
+      "verse_label": "31",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 31
+        }
+      ],
+      "en": "Generation, consider the LORD’s word. Have I been a wilderness to Israel? Or a land of thick darkness? Why do my people say, ‘We have broken loose. We will come to you no more’?",
+      "ko": "너희 이 세대여 여호와의 말을 들어 보라 내가 이스라엘에게 광야가 되었었느냐 흑암한 땅이 되었었느냐 무슨 연고로 내 백성이 말하기를 우리는 놓였으니 다시 주께로 가지 않겠다 하느냐",
+      "source_text_hash": "85d40f02ae0290ba7946bf4f90017c46b93e54c7acb8ea246d85d63c506c2efe",
+      "translation_text_hash": "5f4629bdf960b788b1229006641a93a12f70319f304ca56ddd288d1a6bd45926",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 이 세대여 여호와의 말을 들어 보라 내가 이스라엘에게 광야가 되었었느냐 흑암한 땅이 되었었느냐 무슨 연고로 내 백성이 말하기를 우리는 놓였으니 다시 주께로 가지 않겠다 하느냐"
+      ],
+      "raw_text_hashes": [
+        "5f4629bdf960b788b1229006641a93a12f70319f304ca56ddd288d1a6bd45926"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:32",
+      "sequence": 18998,
+      "chapter_label": "JER 2",
+      "verse_label": "32",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 32
+        }
+      ],
+      "en": "“Can a virgin forget her ornaments, or a bride her attire? Yet my people have forgotten me for days without number.",
+      "ko": "처녀가 어찌 그 패물을 잊겠느냐 신부가 어찌 그 고운 옷을 잊겠느냐 오직 내 백성은 나를 잊었나니 그 날 수는 계수할 수 없거늘",
+      "source_text_hash": "a2cc506f717f42b4fd965bbd7e983df663b109eca450e59c4293361231ba2293",
+      "translation_text_hash": "5cab1aac714b2d0ea04fee7b97f83e1b3b91810560532d3429c1f8f8b496e5d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "처녀가 어찌 그 패물을 잊겠느냐 신부가 어찌 그 고운 옷을 잊겠느냐 오직 내 백성은 나를 잊었나니 그 날 수는 계수할 수 없거늘"
+      ],
+      "raw_text_hashes": [
+        "5cab1aac714b2d0ea04fee7b97f83e1b3b91810560532d3429c1f8f8b496e5d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:33",
+      "sequence": 18999,
+      "chapter_label": "JER 2",
+      "verse_label": "33",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 33
+        }
+      ],
+      "en": "How well you prepare your way to seek love! Therefore you have even taught the wicked women your ways.",
+      "ko": "네가 어찌 사랑을 얻으려고 네 행위를 아름답게 꾸미느냐 그러므로 네 행위를 악한 여자들에게까지 가르쳤으며",
+      "source_text_hash": "7e7c4d6de5db6adff35ca9591fd7f373146985b9f96d22fe33b12a8369c322cb",
+      "translation_text_hash": "dcc03ecfdd6b8d01c6eae0421b8e4248851df104c7d3efdf2169d794d92934d3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌 사랑을 얻으려고 네 행위를 아름답게 꾸미느냐 그러므로 네 행위를 악한 여자들에게까지 가르쳤으며"
+      ],
+      "raw_text_hashes": [
+        "dcc03ecfdd6b8d01c6eae0421b8e4248851df104c7d3efdf2169d794d92934d3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:34",
+      "sequence": 19000,
+      "chapter_label": "JER 2",
+      "verse_label": "34",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 34
+        }
+      ],
+      "en": "Also the blood of the souls of the innocent poor is found in your skirts. You didn’t find them breaking in, but it is because of all these things.",
+      "ko": "또 네 옷단에 죄 없는 가난한 자를 죽인 피가 묻었나니 그들이 담 구멍을 뚫음을 인함이 아니라 오직 이 모든 일로 너를 책망함을 인함이니라",
+      "source_text_hash": "244902dddedf96101c2aa20a9af74ed60ab9597a52255b1838463b7114384884",
+      "translation_text_hash": "a39276a5266bd90c0b1ea76b240414184a55de25960a4af45e13557c15de64c5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 네 옷단에 죄 없는 가난한 자를 죽인 피가 묻었나니 그들이 담 구멍을 뚫음을 인함이 아니라 오직 이 모든 일로 너를 책망함을 인함이니라"
+      ],
+      "raw_text_hashes": [
+        "a39276a5266bd90c0b1ea76b240414184a55de25960a4af45e13557c15de64c5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:35",
+      "sequence": 19001,
+      "chapter_label": "JER 2",
+      "verse_label": "35",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 35
+        }
+      ],
+      "en": "“Yet you said, ‘I am innocent. Surely his anger has turned away from me.’ “Behold, I will judge you, because you say, ‘I have not sinned.’",
+      "ko": "그러나 너는 말하기를 나는 무죄하니 그 진노가 참으로 내게서 떠났다 하거니와 보라 네 말이 나는 죄를 범치 아니하였다 함을 인하여 내가 너를 심판하리라",
+      "source_text_hash": "6c1b12e2ce4177603b0ddbcb700e6de69e9fa21e32b303fdfe34faa8810c4747",
+      "translation_text_hash": "7ff21682c2cf22ea04c739637680cdd8669dd5fc36106133254ad7897c4d230a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러나 너는 말하기를 나는 무죄하니 그 진노가 참으로 내게서 떠났다 하거니와 보라 네 말이 나는 죄를 범치 아니하였다 함을 인하여 내가 너를 심판하리라"
+      ],
+      "raw_text_hashes": [
+        "7ff21682c2cf22ea04c739637680cdd8669dd5fc36106133254ad7897c4d230a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:36",
+      "sequence": 19002,
+      "chapter_label": "JER 2",
+      "verse_label": "36",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 36
+        }
+      ],
+      "en": "Why do you go about so much to change your ways? You will be ashamed of Egypt also, as you were ashamed of Assyria.",
+      "ko": "네가 어찌하여 네 길을 바꾸어 부지런히 돌아다니느뇨 네가 앗수르로 인하여 수치를 당함 같이 애굽으로 인하여 수치를 당할 것이라",
+      "source_text_hash": "98989d6d5388287fa3983e1552b7273ace3215f3f5f82ea03fa2649026c69453",
+      "translation_text_hash": "d2efd12a8932b699d02db259e40bed8eea0b2a49543a56c559b14e51ae204fbf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어찌하여 네 길을 바꾸어 부지런히 돌아다니느뇨 네가 앗수르로 인하여 수치를 당함 같이 애굽으로 인하여 수치를 당할 것이라"
+      ],
+      "raw_text_hashes": [
+        "d2efd12a8932b699d02db259e40bed8eea0b2a49543a56c559b14e51ae204fbf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JER:2:37",
+      "sequence": 19003,
+      "chapter_label": "JER 2",
+      "verse_label": "37",
+      "locator": {
+        "book": "JER",
+        "chapter": 2,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JER",
+          "chapter": 2,
+          "verse": 37
+        }
+      ],
+      "en": "You will also leave that place with your hands on your head; for the LORD has rejected those in whom you trust, and you won’t prosper with them.",
+      "ko": "네가 두 손으로 네 머리를 싸고 거기서도 나가리니 이는 네가 의지하는 자들을 나 여호와가 버렸으므로 네가 그들을 인하여 형통치 못할 것임이니라",
+      "source_text_hash": "ab8adf3a0206100b8d04d153031fa39e2ac54e5432e8cf24b1e304a76ecd458d",
+      "translation_text_hash": "21fa0a79345dee7f5976ed9569deb438696a277a9a9b4d04d7421433ac6457a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 두 손으로 네 머리를 싸고 거기서도 나가리니 이는 네가 의지하는 자들을 나 여호와가 버렸으므로 네가 그들을 인하여 형통치 못할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "21fa0a79345dee7f5976ed9569deb438696a277a9a9b4d04d7421433ac6457a0"
+      ]
+    }
+  ]
+}

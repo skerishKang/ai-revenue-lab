@@ -1,0 +1,1069 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:MRK:chapter:011",
+  "unit_ordinal": 968,
+  "unit_label": "MRK 11",
+  "book_code": "MRK",
+  "chapter_number": 11,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:MRK:11:1",
+      "sequence": 24642,
+      "chapter_label": "MRK 11",
+      "verse_label": "1",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 1
+        }
+      ],
+      "en": "When they came near to Jerusalem, to Bethsphage and Bethany, at the Mount of Olives, he sent two of his disciples",
+      "ko": "저희가 예루살렘에 가까이 와서 감람산 벳바게와 베다니에 이르렀을 때에 예수께서 제자 중 둘을 보내시며",
+      "source_text_hash": "ac28911d606ad19f339578fe15743451f29b8281daec929ce8c19cc16a016283",
+      "translation_text_hash": "b6349c5aff0187aca8c1f681ce97f8e7327032982e7e27cf60369b62b9dd3a52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예루살렘에 가까이 와서 감람산 벳바게와 베다니에 이르렀을 때에 예수께서 제자 중 둘을 보내시며"
+      ],
+      "raw_text_hashes": [
+        "b6349c5aff0187aca8c1f681ce97f8e7327032982e7e27cf60369b62b9dd3a52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:2",
+      "sequence": 24643,
+      "chapter_label": "MRK 11",
+      "verse_label": "2",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 2
+        }
+      ],
+      "en": "and said to them, “Go your way into the village that is opposite you. Immediately as you enter into it, you will find a young donkey tied, on which no one has sat. Untie him and bring him.",
+      "ko": "이르시되 너희 맞은편 마을로 가라 그리로 들어가면 곧 아직 아무 사람도 타 보지 않은 나귀 새끼의 매여 있는 것을 보리니 풀어 끌고 오너라",
+      "source_text_hash": "742240c6fa8d6e2f5ddd703c4145356924f7c2a5882da0540d2a0300d3211794",
+      "translation_text_hash": "de6fa18dc376a7eb649eaec1e2b9296dd8458db7dccae18c6479ac65aa0fbc68",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르시되 너희 맞은편 마을로 가라 그리로 들어가면 곧 아직 아무 사람도 타 보지 않은 나귀 새끼의 매여 있는 것을 보리니 풀어 끌고 오너라"
+      ],
+      "raw_text_hashes": [
+        "de6fa18dc376a7eb649eaec1e2b9296dd8458db7dccae18c6479ac65aa0fbc68"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:3",
+      "sequence": 24644,
+      "chapter_label": "MRK 11",
+      "verse_label": "3",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 3
+        }
+      ],
+      "en": "If anyone asks you, ‘Why are you doing this?’ say, ‘The Lord needs him;’ and immediately he will send him back here.”",
+      "ko": "만일 누가 너희에게 왜 이리 하느냐 묻거든 주가 쓰시겠다 하라 그리하면 즉시 이리로 보내리라 하시니",
+      "source_text_hash": "59d2e540464a00a11137720f0c9ab8de2feb959b2271557f5471354d61f4e7de",
+      "translation_text_hash": "cd542952a53ede97a81c1234b78e544878209ebbdc14c81317cd9f7108dc4d53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누가 너희에게 왜 이리 하느냐 묻거든 주가 쓰시겠다 하라 그리하면 즉시 이리로 보내리라 하시니"
+      ],
+      "raw_text_hashes": [
+        "cd542952a53ede97a81c1234b78e544878209ebbdc14c81317cd9f7108dc4d53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:4",
+      "sequence": 24645,
+      "chapter_label": "MRK 11",
+      "verse_label": "4",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 4
+        }
+      ],
+      "en": "They went away, and found a young donkey tied at the door outside in the open street, and they untied him.",
+      "ko": "제자들이 가서 본즉 나귀 새끼가 문앞 거리에 매여 있는지라 그것을 푸니",
+      "source_text_hash": "562d632b0b7c4c158a4a364af66adb5c7446ab4329e4e5288b2657318bf48351",
+      "translation_text_hash": "e55dfdeaadda1a166ca5f40cd677750ccfa4990c9b7df1cab39083e3747f6013",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 가서 본즉 나귀 새끼가 문앞 거리에 매여 있는지라 그것을 푸니"
+      ],
+      "raw_text_hashes": [
+        "e55dfdeaadda1a166ca5f40cd677750ccfa4990c9b7df1cab39083e3747f6013"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:5",
+      "sequence": 24646,
+      "chapter_label": "MRK 11",
+      "verse_label": "5",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 5
+        }
+      ],
+      "en": "Some of those who stood there asked them, “What are you doing, untying the young donkey?”",
+      "ko": "거기 섰는 사람 중 어떤이들이 가로되 나귀 새끼를 풀어 무엇하려느냐 하매",
+      "source_text_hash": "eaa25ade2d661a5b721d5756eb733b13b7bef89841b6777f85d98dea38440c0b",
+      "translation_text_hash": "29dca0fe427b58c4370f66346b9670f96e3af9fe08607d6ed6bf62f52dc9167c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "거기 섰는 사람 중 어떤이들이 가로되 나귀 새끼를 풀어 무엇하려느냐 하매"
+      ],
+      "raw_text_hashes": [
+        "29dca0fe427b58c4370f66346b9670f96e3af9fe08607d6ed6bf62f52dc9167c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:6",
+      "sequence": 24647,
+      "chapter_label": "MRK 11",
+      "verse_label": "6",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 6
+        }
+      ],
+      "en": "They said to them just as Jesus had said, and they let them go.",
+      "ko": "제자들이 예수의 이르신대로 말한대 이에 허락하는지라",
+      "source_text_hash": "eaf2c7f7f92dc5c2ad87588bc1be24b325eef52a5ff1e1647fd12ac0faae1f38",
+      "translation_text_hash": "9d1f9727a7b6e9596d21e378cf20f2aecd78df17818caec6663b6e93baad1929",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제자들이 예수의 이르신대로 말한대 이에 허락하는지라"
+      ],
+      "raw_text_hashes": [
+        "9d1f9727a7b6e9596d21e378cf20f2aecd78df17818caec6663b6e93baad1929"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:7",
+      "sequence": 24648,
+      "chapter_label": "MRK 11",
+      "verse_label": "7",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 7
+        }
+      ],
+      "en": "They brought the young donkey to Jesus and threw their garments on it, and Jesus sat on it.",
+      "ko": "나귀 새끼를 예수께로 끌고 와서 자기들의 겉옷을 그 위에 걸쳐두매 예수께서 타시니",
+      "source_text_hash": "0b7b1d1704bae1e0789d7954ceffe55991b892619fcdb8226b9968e8b1329dcf",
+      "translation_text_hash": "60ef0856074afe1a8f40a32cf3e5ed492b22917eca3f48374fe2ee0e54576be9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나귀 새끼를 예수께로 끌고 와서 자기들의 겉옷을 그 위에 걸쳐두매 예수께서 타시니"
+      ],
+      "raw_text_hashes": [
+        "60ef0856074afe1a8f40a32cf3e5ed492b22917eca3f48374fe2ee0e54576be9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:8",
+      "sequence": 24649,
+      "chapter_label": "MRK 11",
+      "verse_label": "8",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 8
+        }
+      ],
+      "en": "Many spread their garments on the way, and others were cutting down branches from the trees and spreading them on the road.",
+      "ko": "많은 사람은 자기 겉옷과 다른이들은 밭에서 벤 나무가지를 길에 펴며",
+      "source_text_hash": "e37005ff3eee311db3d4f49d6e910f8fd75b1bc1dd24584d8c78ac08807ae3df",
+      "translation_text_hash": "9e656f47df998dc78c760f6d07b141018083c8a50f5c12e58de79be143d6a2f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "많은 사람은 자기 겉옷과 다른이들은 밭에서 벤 나무가지를 길에 펴며"
+      ],
+      "raw_text_hashes": [
+        "9e656f47df998dc78c760f6d07b141018083c8a50f5c12e58de79be143d6a2f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:9",
+      "sequence": 24650,
+      "chapter_label": "MRK 11",
+      "verse_label": "9",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 9
+        }
+      ],
+      "en": "Those who went in front and those who followed cried out, “Hosanna! Blessed is he who comes in the name of the Lord!",
+      "ko": "앞에서 가고 뒤에서 따르는 자들이 소리지르되 호산나 찬송하리로다 주의 이름으로 오시는이여",
+      "source_text_hash": "af729320cbc29db61b0f23b13d8ba1d68fc84475e189d7404bd9c3262615af74",
+      "translation_text_hash": "871fe5df9a9578d55bc7b4fd14f4aba2975edf108080ad74ed489cb9527ec344",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "앞에서 가고 뒤에서 따르는 자들이 소리지르되 호산나 찬송하리로다 주의 이름으로 오시는이여"
+      ],
+      "raw_text_hashes": [
+        "871fe5df9a9578d55bc7b4fd14f4aba2975edf108080ad74ed489cb9527ec344"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:10",
+      "sequence": 24651,
+      "chapter_label": "MRK 11",
+      "verse_label": "10",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 10
+        }
+      ],
+      "en": "Blessed is the kingdom of our father David that is coming in the name of the Lord! Hosanna in the highest!”",
+      "ko": "찬송하리로다 오는 우리 조상 다윗의 나라여 가장 높은 곳에서 호산나 하더라",
+      "source_text_hash": "e5a8f48fbaa55fe6671018339f4bfb746faa09d73562faeb22da4fb3e2012192",
+      "translation_text_hash": "878ae0640547f11d46afd7c91929d74c2a7483b06f85165e74659a5c010a03e5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "찬송하리로다 오는 우리 조상 다윗의 나라여 가장 높은 곳에서 호산나 하더라"
+      ],
+      "raw_text_hashes": [
+        "878ae0640547f11d46afd7c91929d74c2a7483b06f85165e74659a5c010a03e5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:11",
+      "sequence": 24652,
+      "chapter_label": "MRK 11",
+      "verse_label": "11",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 11
+        }
+      ],
+      "en": "Jesus entered into the temple in Jerusalem. When he had looked around at everything, it being now evening, he went out to Bethany with the twelve.",
+      "ko": "예수께서 예루살렘에 이르러 성전에 들어가사 모든 것을 둘러 보시고 때가 이미 저물매 열 두 제자를 데리시고 베다니에 나가시다",
+      "source_text_hash": "769748ffdbe8e8db8b5c199d3b28fb425cce5bfbb24acc7a364418e618d45fdb",
+      "translation_text_hash": "2b7749abcd6c9d5192bc9a7d8293c83c66061a02f23a60c638905d47b1dcee52",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 예루살렘에 이르러 성전에 들어가사 모든 것을 둘러 보시고 때가 이미 저물매 열 두 제자를 데리시고 베다니에 나가시다"
+      ],
+      "raw_text_hashes": [
+        "2b7749abcd6c9d5192bc9a7d8293c83c66061a02f23a60c638905d47b1dcee52"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:12",
+      "sequence": 24653,
+      "chapter_label": "MRK 11",
+      "verse_label": "12",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 12
+        }
+      ],
+      "en": "The next day, when they had come out from Bethany, he was hungry.",
+      "ko": "이튿날 저희가 베다니에서 나왔을 때에 예수께서 시장하신지라",
+      "source_text_hash": "542ecf9cb35541f6c93b6186e776f21e25712f9c318444b7e1cb80a932fc50e0",
+      "translation_text_hash": "98a609422f928847a0cbb462963b6dab742f2885b8244600c474fbe680f6727f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날 저희가 베다니에서 나왔을 때에 예수께서 시장하신지라"
+      ],
+      "raw_text_hashes": [
+        "98a609422f928847a0cbb462963b6dab742f2885b8244600c474fbe680f6727f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:13",
+      "sequence": 24654,
+      "chapter_label": "MRK 11",
+      "verse_label": "13",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 13
+        }
+      ],
+      "en": "Seeing a fig tree afar off having leaves, he came to see if perhaps he might find anything on it. When he came to it, he found nothing but leaves, for it was not the season for figs.",
+      "ko": "멀리서 잎사귀 있는 한 무화과나무를 보시고 혹 그 나무에 무엇이 있을까 하여 가셨더니 가서 보신즉 잎사귀 외에 아무 것도 없더라 이는 무화과의 때가 아님이라",
+      "source_text_hash": "27aa0237cc8f43ea42ff5f7f82cdd77896f34150f1003a35268b506cc9885e5f",
+      "translation_text_hash": "04f89f5f947472f187b68f00655422f40a326d14ac50b14818f702b36c4c6821",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "멀리서 잎사귀 있는 한 무화과나무를 보시고 혹 그 나무에 무엇이 있을까 하여 가셨더니 가서 보신즉 잎사귀 외에 아무 것도 없더라 이는 무화과의 때가 아님이라"
+      ],
+      "raw_text_hashes": [
+        "04f89f5f947472f187b68f00655422f40a326d14ac50b14818f702b36c4c6821"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:14",
+      "sequence": 24655,
+      "chapter_label": "MRK 11",
+      "verse_label": "14",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 14
+        }
+      ],
+      "en": "Jesus told it, “May no one ever eat fruit from you again!” and his disciples heard it.",
+      "ko": "예수께서 나무에게 일러 가라사대 이제부터 영원토록 사람이 네게서 열매를 따 먹지 못하리라 하시니 제자들이 이를 듣더라",
+      "source_text_hash": "ccd2aa9b1ca6965c2d3895daa1a7d9b4f2c8168c709f574fe12a4367022fae7f",
+      "translation_text_hash": "7aebdc7a29989788286dde661b7a6fef28dfff24ae39417e3b3bc106cc136a92",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 나무에게 일러 가라사대 이제부터 영원토록 사람이 네게서 열매를 따 먹지 못하리라 하시니 제자들이 이를 듣더라"
+      ],
+      "raw_text_hashes": [
+        "7aebdc7a29989788286dde661b7a6fef28dfff24ae39417e3b3bc106cc136a92"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:15",
+      "sequence": 24656,
+      "chapter_label": "MRK 11",
+      "verse_label": "15",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 15
+        }
+      ],
+      "en": "They came to Jerusalem, and Jesus entered into the temple and began to throw out those who sold and those who bought in the temple, and overthrew the money changers’ tables and the seats of those who sold the doves.",
+      "ko": "저희가 예루살렘에 들어가니라 예수께서 성전에 들어가사 성전 안에서 매매하는 자들을 내어쫓으시며 돈 바꾸는 자들의 상과 비둘기 파는 자들의 의자를 둘러 엎으시며",
+      "source_text_hash": "c180e3851972717fd014f94e039a019f5443c591e1c54620c47117279a71f06a",
+      "translation_text_hash": "1740da03f2fbd7237c34f206868e3e19dff06182f77e330903dfddda85e18a9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 예루살렘에 들어가니라 예수께서 성전에 들어가사 성전 안에서 매매하는 자들을 내어쫓으시며 돈 바꾸는 자들의 상과 비둘기 파는 자들의 의자를 둘러 엎으시며"
+      ],
+      "raw_text_hashes": [
+        "1740da03f2fbd7237c34f206868e3e19dff06182f77e330903dfddda85e18a9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:16",
+      "sequence": 24657,
+      "chapter_label": "MRK 11",
+      "verse_label": "16",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 16
+        }
+      ],
+      "en": "He would not allow anyone to carry a container through the temple.",
+      "ko": "아무나 기구를 가지고 성전 안으로 지나다님을 허치 아니하시고",
+      "source_text_hash": "6b60cb418e289d778b06cceda2a928df2f53964307b8783f60e67bf65774d756",
+      "translation_text_hash": "0436d5bde905ada3bf4ece0057f265ba77d75ee3ed1725bf2d52cb2813a69903",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무나 기구를 가지고 성전 안으로 지나다님을 허치 아니하시고"
+      ],
+      "raw_text_hashes": [
+        "0436d5bde905ada3bf4ece0057f265ba77d75ee3ed1725bf2d52cb2813a69903"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:17",
+      "sequence": 24658,
+      "chapter_label": "MRK 11",
+      "verse_label": "17",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 17
+        }
+      ],
+      "en": "He taught, saying to them, “Isn’t it written, ‘My house will be called a house of prayer for all the nations’?But you have made it a den of robbers!”",
+      "ko": "이에 가르쳐 이르시되 기록된바 내 집은 만민의 기도하는 집이라 칭함을 받으리라고 하지 아니하였느냐 너희는 강도의 굴혈을 만들었도다 하시매",
+      "source_text_hash": "a7e0fe19c6ae940547b6e7d8420135015f00be43edc5b5310ecaa802952853cf",
+      "translation_text_hash": "b024f02ed6d699cb328b78e5b15d3c636f239868e8afbe53058c6956d980d412",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 가르쳐 이르시되 기록된바 내 집은 만민의 기도하는 집이라 칭함을 받으리라고 하지 아니하였느냐 너희는 강도의 굴혈을 만들었도다 하시매"
+      ],
+      "raw_text_hashes": [
+        "b024f02ed6d699cb328b78e5b15d3c636f239868e8afbe53058c6956d980d412"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:18",
+      "sequence": 24659,
+      "chapter_label": "MRK 11",
+      "verse_label": "18",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 18
+        }
+      ],
+      "en": "The chief priests and the scribes heard it, and sought how they might destroy him. For they feared him, because all the multitude was astonished at his teaching.",
+      "ko": "대제사장들과 서기관들이 듣고 예수를 어떻게 멸할까 하고 꾀하니 이는 무리가 다 그의 교훈을 기이히 여기므로 그를 두려워함일러라",
+      "source_text_hash": "bd93ca0a6518ea3ac78221144bd1360c5fff81e653d4de2762768c8b853b0e0d",
+      "translation_text_hash": "feb7750beb4485dc4b8f01c4e0607eead86ba3f7d4e898ad866ecd57c4beacd2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대제사장들과 서기관들이 듣고 예수를 어떻게 멸할까 하고 꾀하니 이는 무리가 다 그의 교훈을 기이히 여기므로 그를 두려워함일러라"
+      ],
+      "raw_text_hashes": [
+        "feb7750beb4485dc4b8f01c4e0607eead86ba3f7d4e898ad866ecd57c4beacd2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:19",
+      "sequence": 24660,
+      "chapter_label": "MRK 11",
+      "verse_label": "19",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 19
+        }
+      ],
+      "en": "When evening came, he went out of the city.",
+      "ko": "매양 저물매 저희가 성밖으로 나가더라",
+      "source_text_hash": "1563229af062932d9db351f4c6f228ec782fb8fdba827ee7ebed49279b49edd0",
+      "translation_text_hash": "8c04cb0fd650a8a31faee1a34dc991ae8f02c1a96569b3ac270d8f1c9c0b8b4a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "매양 저물매 저희가 성밖으로 나가더라"
+      ],
+      "raw_text_hashes": [
+        "8c04cb0fd650a8a31faee1a34dc991ae8f02c1a96569b3ac270d8f1c9c0b8b4a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:20",
+      "sequence": 24661,
+      "chapter_label": "MRK 11",
+      "verse_label": "20",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 20
+        }
+      ],
+      "en": "As they passed by in the morning, they saw the fig tree withered away from the roots.",
+      "ko": "저희가 아침에 지나갈 때에 무화과나무가 뿌리로부터 마른 것을 보고",
+      "source_text_hash": "be989d07e3c7d95a56606902b728ab51a4036a475b1939adf925a590cc877d14",
+      "translation_text_hash": "051cbda559692cde93d99c1338b352c2b19dac8da3bf931794fd585c0397a332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 아침에 지나갈 때에 무화과나무가 뿌리로부터 마른 것을 보고"
+      ],
+      "raw_text_hashes": [
+        "051cbda559692cde93d99c1338b352c2b19dac8da3bf931794fd585c0397a332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:21",
+      "sequence": 24662,
+      "chapter_label": "MRK 11",
+      "verse_label": "21",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 21
+        }
+      ],
+      "en": "Peter, remembering, said to him, “Rabbi, look! The fig tree which you cursed has withered away.”",
+      "ko": "베드로가 생각이 나서 여짜오되 랍비여 보소서 저주하신 무화과나무가 말랐나이다",
+      "source_text_hash": "f9f2c52070fb4a2374b5b88ef426eb5c70cc72d87b8b1c56409ba5166db80d45",
+      "translation_text_hash": "61474eda77952a7e0cb87a47220069fe00d56f3410a12d9f47bc12294797063d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "베드로가 생각이 나서 여짜오되 랍비여 보소서 저주하신 무화과나무가 말랐나이다"
+      ],
+      "raw_text_hashes": [
+        "61474eda77952a7e0cb87a47220069fe00d56f3410a12d9f47bc12294797063d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:22",
+      "sequence": 24663,
+      "chapter_label": "MRK 11",
+      "verse_label": "22",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 22
+        }
+      ],
+      "en": "Jesus answered them, “Have faith in God.",
+      "ko": "예수께서 대답하여 저희에게 이르시되 하나님을 믿으라",
+      "source_text_hash": "1fdc19f0fa69dc6173a8fb177e2748824f5da86a8374a46e9a78ef9d1a8bcf25",
+      "translation_text_hash": "f586849a807441e1953325f22992353cf084334f8fc039f19ef059f89063753c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 저희에게 이르시되 하나님을 믿으라"
+      ],
+      "raw_text_hashes": [
+        "f586849a807441e1953325f22992353cf084334f8fc039f19ef059f89063753c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:23",
+      "sequence": 24664,
+      "chapter_label": "MRK 11",
+      "verse_label": "23",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 23
+        }
+      ],
+      "en": "For most certainly I tell you, whoever may tell this mountain, ‘Be taken up and cast into the sea,’ and doesn’t doubt in his heart, but believes that what he says is happening, he shall have whatever he says.",
+      "ko": "내가 진실로 너희에게 이르노니 누구든지 이 산더러 들리어 바다에 던지우라 하며 그 말하는 것이 이룰줄 믿고 마음에 의심치 아니하면 그대로 되리라",
+      "source_text_hash": "63271442972a7603157bd957f9e2849e7de884fa293729725b91835b55c45346",
+      "translation_text_hash": "a2183ebe27b546a8ba60d5033f2560dad0923f1ce7eaf28de2f4f7030befe924",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진실로 너희에게 이르노니 누구든지 이 산더러 들리어 바다에 던지우라 하며 그 말하는 것이 이룰줄 믿고 마음에 의심치 아니하면 그대로 되리라"
+      ],
+      "raw_text_hashes": [
+        "a2183ebe27b546a8ba60d5033f2560dad0923f1ce7eaf28de2f4f7030befe924"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:24",
+      "sequence": 24665,
+      "chapter_label": "MRK 11",
+      "verse_label": "24",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 24
+        }
+      ],
+      "en": "Therefore I tell you, all things whatever you pray and ask for, believe that you have received them, and you shall have them.",
+      "ko": "그러므로 내가 너희에게 말하노니 무엇이든지 기도하고 구하는 것은 받은 줄로 믿으라 그리하면 너희에게 그대로 되리라",
+      "source_text_hash": "3830269132b4dc2e5f0a0fd0544fad8ed0453678053c9dd37304953a5485893c",
+      "translation_text_hash": "785a9f3fb58326b2f2c11849e2ef55f0656a22af5de058b5ccca020c0ee347ee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 내가 너희에게 말하노니 무엇이든지 기도하고 구하는 것은 받은 줄로 믿으라 그리하면 너희에게 그대로 되리라"
+      ],
+      "raw_text_hashes": [
+        "785a9f3fb58326b2f2c11849e2ef55f0656a22af5de058b5ccca020c0ee347ee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:25",
+      "sequence": 24666,
+      "chapter_label": "MRK 11",
+      "verse_label": "25",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 25
+        }
+      ],
+      "en": "Whenever you stand praying, forgive, if you have anything against anyone; so that your Father, who is in heaven, may also forgive you your transgressions.",
+      "ko": "서서 기도할 때에 아무에게나 혐의가 있거든 용서하라 그리하여야 하늘에 계신 너희 아버지도 너희 허물을 사하여 주시리라 하셨더라",
+      "source_text_hash": "029cc6c8594794ba56ce40940046c4a0c2b5efa2e16d75b71c429faf64c0fbb2",
+      "translation_text_hash": "118dc48f7aee15065808634d7a4b237fb6eef23a667d35cb1049ab7ed5008cdf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서서 기도할 때에 아무에게나 혐의가 있거든 용서하라 그리하여야 하늘에 계신 너희 아버지도 너희 허물을 사하여 주시리라 하셨더라"
+      ],
+      "raw_text_hashes": [
+        "118dc48f7aee15065808634d7a4b237fb6eef23a667d35cb1049ab7ed5008cdf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:26",
+      "sequence": 24667,
+      "chapter_label": "MRK 11",
+      "verse_label": "26",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 26
+        }
+      ],
+      "en": "But if you do not forgive, neither will your Father in heaven forgive your transgressions.”",
+      "ko": "(없음)",
+      "source_text_hash": "9af0c1bc78de77775230c78f5fa63133ba427f290bed2f7a1f139e6feee10674",
+      "translation_text_hash": "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "(없음)"
+      ],
+      "raw_text_hashes": [
+        "2c5539adbf825ee1c84f495c41d2e3ab18f6627a722578a5aea4ff650909eec7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:27",
+      "sequence": 24668,
+      "chapter_label": "MRK 11",
+      "verse_label": "27",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 27
+        }
+      ],
+      "en": "They came again to Jerusalem, and as he was walking in the temple, the chief priests, the scribes, and the elders came to him,",
+      "ko": "저희가 다시 예루살렘에 들어가니라 예수께서 성전에서 걸어다니실 때에 대제사장들과 서기관들과 장로들이 나아와",
+      "source_text_hash": "ae4c2c58c1119190f38c6b47820c3e166176fcabf339e7cb0eab0251d40902fe",
+      "translation_text_hash": "843cc464414d59c9951600d32d34bde795b5c97e55c8212ddaf4b8977a00a24e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 다시 예루살렘에 들어가니라 예수께서 성전에서 걸어다니실 때에 대제사장들과 서기관들과 장로들이 나아와"
+      ],
+      "raw_text_hashes": [
+        "843cc464414d59c9951600d32d34bde795b5c97e55c8212ddaf4b8977a00a24e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:28",
+      "sequence": 24669,
+      "chapter_label": "MRK 11",
+      "verse_label": "28",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 28
+        }
+      ],
+      "en": "and they began saying to him, “By what authority do you do these things? Or who gave you this authority to do these things?”",
+      "ko": "가로되 무슨 권세로 이런 일을 하느뇨 누가 이런 일 할 이 권세를 주었느뇨",
+      "source_text_hash": "f7641be97f875609c8168df223f79cc29c819d196ac99117e3a7c40eb08cddc5",
+      "translation_text_hash": "2923255e68fdf6ebac1bdbb95914d4a30caf732628d7d4ce3d0520057c5fcdab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "가로되 무슨 권세로 이런 일을 하느뇨 누가 이런 일 할 이 권세를 주었느뇨"
+      ],
+      "raw_text_hashes": [
+        "2923255e68fdf6ebac1bdbb95914d4a30caf732628d7d4ce3d0520057c5fcdab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:29",
+      "sequence": 24670,
+      "chapter_label": "MRK 11",
+      "verse_label": "29",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 29
+        }
+      ],
+      "en": "Jesus said to them, “I will ask you one question. Answer me, and I will tell you by what authority I do these things.",
+      "ko": "예수께서 가라사대 나도 한 말을 너희에게 물으리니 대답하라 그리하면 나도 무슨 권세로 이런 일을 하는지 이르리라",
+      "source_text_hash": "c082bd7049cc711cd137f5969069442996275383f05924ad92344ec1f959bb58",
+      "translation_text_hash": "3e647e8acdcb394ca1266b31adb150a3cfde1fd4d5d5a971f2e1ac5d5c22fb7a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 나도 한 말을 너희에게 물으리니 대답하라 그리하면 나도 무슨 권세로 이런 일을 하는지 이르리라"
+      ],
+      "raw_text_hashes": [
+        "3e647e8acdcb394ca1266b31adb150a3cfde1fd4d5d5a971f2e1ac5d5c22fb7a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:30",
+      "sequence": 24671,
+      "chapter_label": "MRK 11",
+      "verse_label": "30",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 30
+        }
+      ],
+      "en": "The baptism of John—was it from heaven, or from men? Answer me.”",
+      "ko": "요한의 세례가 하늘로서냐 사람에게로서냐 내게 대답하라",
+      "source_text_hash": "3fe907394e0bf2fdd5643bed79086992cd53f5185b82f323ec2fe3974b34b79b",
+      "translation_text_hash": "e4bebcef412c21ca0cfee10f0c918554645f5118d56147f1f9d37cbe129ef59a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요한의 세례가 하늘로서냐 사람에게로서냐 내게 대답하라"
+      ],
+      "raw_text_hashes": [
+        "e4bebcef412c21ca0cfee10f0c918554645f5118d56147f1f9d37cbe129ef59a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:31",
+      "sequence": 24672,
+      "chapter_label": "MRK 11",
+      "verse_label": "31",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 31
+        }
+      ],
+      "en": "They reasoned with themselves, saying, “If we should say, ‘From heaven;’ he will say, ‘Why then did you not believe him?’",
+      "ko": "저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할것이니",
+      "source_text_hash": "4662dc4791a301d777c6f13500123e75b32c2563283bfb0821dc6719fdf4b880",
+      "translation_text_hash": "df6f23f743ab307cd01da6349335f83eef5c2527afe557b94a7d1fa9de33bbe1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 서로 의논하여 가로되 만일 하늘로서라 하면 어찌하여 저를 믿지 아니하였느냐 할것이니"
+      ],
+      "raw_text_hashes": [
+        "df6f23f743ab307cd01da6349335f83eef5c2527afe557b94a7d1fa9de33bbe1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:32",
+      "sequence": 24673,
+      "chapter_label": "MRK 11",
+      "verse_label": "32",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 32
+        }
+      ],
+      "en": "If we should say, ‘From men’”—they feared the people, for all held John to really be a prophet.",
+      "ko": "그러면 사람에게로서라 할까 하였으나 모든 사람이 요한을 참 선지자로 여기므로 저희가 백성을 무서워하는지라",
+      "source_text_hash": "89260cab9374cd6551a0883cc832e0e5fae7a43d7220dc6c8ef0e5a79130df8e",
+      "translation_text_hash": "43a8de7cadd7149395fb10e73b0f00b7f09912df222ef11fe79e3467c17efffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러면 사람에게로서라 할까 하였으나 모든 사람이 요한을 참 선지자로 여기므로 저희가 백성을 무서워하는지라"
+      ],
+      "raw_text_hashes": [
+        "43a8de7cadd7149395fb10e73b0f00b7f09912df222ef11fe79e3467c17efffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:MRK:11:33",
+      "sequence": 24674,
+      "chapter_label": "MRK 11",
+      "verse_label": "33",
+      "locator": {
+        "book": "MRK",
+        "chapter": 11,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "MRK",
+          "chapter": 11,
+          "verse": 33
+        }
+      ],
+      "en": "They answered Jesus, “We don’t know.” Jesus said to them, “Neither will I tell you by what authority I do these things.”",
+      "ko": "이에 예수께 대답하여 가로되 우리가 알지 못하노라 하니 예수께서 가라사대 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라 하시니라",
+      "source_text_hash": "77e0cbfd5ec933d3e83b6a41262210a2f307129e20dfa911ce97d20eb253d578",
+      "translation_text_hash": "8f02c6f364d2249f3b4709d01fe72542de709faf7b1f3095187b2bb460f8efbc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께 대답하여 가로되 우리가 알지 못하노라 하니 예수께서 가라사대 나도 무슨 권세로 이런 일을 하는지 너희에게 이르지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8f02c6f364d2249f3b4709d01fe72542de709faf7b1f3095187b2bb460f8efbc"
+      ]
+    }
+  ]
+}

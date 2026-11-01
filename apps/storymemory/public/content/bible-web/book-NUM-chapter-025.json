@@ -1,0 +1,589 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:NUM:chapter:025",
+  "unit_ordinal": 142,
+  "unit_label": "NUM 25",
+  "book_code": "NUM",
+  "chapter_number": 25,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:NUM:25:1",
+      "sequence": 4473,
+      "chapter_label": "NUM 25",
+      "verse_label": "1",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 1
+        }
+      ],
+      "en": "Israel stayed in Shittim; and the people began to play the prostitute with the daughters of Moab;",
+      "ko": "이스라엘이 싯딤에 머물러 있더니 그 백성이 모압 여자들과 음행하기를 시작하니라",
+      "source_text_hash": "9b6ad12e51b4ce8c0f733c4348f998d9863e2f3d2869b70ef1badb6f17c810dc",
+      "translation_text_hash": "3f1f44393f68075395a98d32a7159e86285d4372a071fb705ce42c8ff613564f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 싯딤에 머물러 있더니 그 백성이 모압 여자들과 음행하기를 시작하니라"
+      ],
+      "raw_text_hashes": [
+        "3f1f44393f68075395a98d32a7159e86285d4372a071fb705ce42c8ff613564f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:2",
+      "sequence": 4474,
+      "chapter_label": "NUM 25",
+      "verse_label": "2",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 2
+        }
+      ],
+      "en": "for they called the people to the sacrifices of their gods. The people ate and bowed down to their gods.",
+      "ko": "그 여자들이 그 신들에게 제사할 때에 백성을 청하매 백성이 먹고 그들의 신들에게 절하므로",
+      "source_text_hash": "37ad390873c0c9a4c72c8c5ee38e309fa42cc9315b50fc55a7dc1d3061cee040",
+      "translation_text_hash": "6b8c6a0c1449c93e09b94a8fcdaac1aca03546f99a63ecc526517e03674f9f86",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 여자들이 그 신들에게 제사할 때에 백성을 청하매 백성이 먹고 그들의 신들에게 절하므로"
+      ],
+      "raw_text_hashes": [
+        "6b8c6a0c1449c93e09b94a8fcdaac1aca03546f99a63ecc526517e03674f9f86"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:3",
+      "sequence": 4475,
+      "chapter_label": "NUM 25",
+      "verse_label": "3",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 3
+        }
+      ],
+      "en": "Israel joined himself to Baal Peor, and the LORD’s anger burned against Israel.",
+      "ko": "이스라엘이 바알브올에게 부속된지라 여호와께서 이스라엘에게 진노하시니라",
+      "source_text_hash": "fde4e3c74a60473501dbd04ddb962703537908b1d00d755bfc32723f659f986f",
+      "translation_text_hash": "8f865ff9acf1fe36b096fa0293debef9c0bff9734da49677d186dfd61e155dff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘이 바알브올에게 부속된지라 여호와께서 이스라엘에게 진노하시니라"
+      ],
+      "raw_text_hashes": [
+        "8f865ff9acf1fe36b096fa0293debef9c0bff9734da49677d186dfd61e155dff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:4",
+      "sequence": 4476,
+      "chapter_label": "NUM 25",
+      "verse_label": "4",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 4
+        }
+      ],
+      "en": "The LORD said to Moses, “Take all the chiefs of the people, and hang them up to the LORD before the sun, that the fierce anger of the LORD may turn away from Israel.”",
+      "ko": "여호와께서 모세에게 이르시되 백성의 두령들을 잡아 태양을 향하여 여호와 앞에 목매어 달라 그리하면 여호와의 진노가 이스라엘에게서 떠나리라",
+      "source_text_hash": "cdcd79d8c7ef5b78255b6b6ce5312c7e24f375480fbd16b89b843d33b7a67df2",
+      "translation_text_hash": "1718f0c6b5ce55990201e3fd6bcca18380fedfa510ee6d1d15a8538ddb437572",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 이르시되 백성의 두령들을 잡아 태양을 향하여 여호와 앞에 목매어 달라 그리하면 여호와의 진노가 이스라엘에게서 떠나리라"
+      ],
+      "raw_text_hashes": [
+        "1718f0c6b5ce55990201e3fd6bcca18380fedfa510ee6d1d15a8538ddb437572"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:5",
+      "sequence": 4477,
+      "chapter_label": "NUM 25",
+      "verse_label": "5",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 5
+        }
+      ],
+      "en": "Moses said to the judges of Israel, “Everyone kill his men who have joined themselves to Baal Peor.”",
+      "ko": "모세가 이스라엘 사사들에게 이르되 너희는 각기 관할하는 자 중에 바알브올에게 부속한 사람들을 죽이라 하니라",
+      "source_text_hash": "8ef8305dff35bc4d15a6ee69b1dcb004d62a14112c0d795d4bac354d9198ee33",
+      "translation_text_hash": "faa5d70976bd34f6e1d2c0cc8b905a4164956380374c3ac4c60e73a33513d5b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세가 이스라엘 사사들에게 이르되 너희는 각기 관할하는 자 중에 바알브올에게 부속한 사람들을 죽이라 하니라"
+      ],
+      "raw_text_hashes": [
+        "faa5d70976bd34f6e1d2c0cc8b905a4164956380374c3ac4c60e73a33513d5b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:6",
+      "sequence": 4478,
+      "chapter_label": "NUM 25",
+      "verse_label": "6",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 6
+        }
+      ],
+      "en": "Behold, one of the children of Israel came and brought to his brothers a Midianite woman in the sight of Moses, and in the sight of all the congregation of the children of Israel, while they were weeping at the door of the Tent of Meeting.",
+      "ko": "이스라엘 자손의 온 회중이 회막 문에서 울 때에 이스라엘 자손 한 사람이 모세와 온 회중의 목전에 미디안의 한 여인을 데리고 그 형제에게로 온지라",
+      "source_text_hash": "ddd1d8f25836ab54bc33ed208ef71a3be3b29fa17945cdca5423bcb28c31fa15",
+      "translation_text_hash": "e0bfc1688cc37c4e6e175d9ad9cf8c47abbf14a353b79b7f4350b8f21cd1d968",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이스라엘 자손의 온 회중이 회막 문에서 울 때에 이스라엘 자손 한 사람이 모세와 온 회중의 목전에 미디안의 한 여인을 데리고 그 형제에게로 온지라"
+      ],
+      "raw_text_hashes": [
+        "e0bfc1688cc37c4e6e175d9ad9cf8c47abbf14a353b79b7f4350b8f21cd1d968"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:7",
+      "sequence": 4479,
+      "chapter_label": "NUM 25",
+      "verse_label": "7",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 7
+        }
+      ],
+      "en": "When Phinehas, the son of Eleazar, the son of Aaron the priest, saw it, he rose up from the middle of the congregation, and took a spear in his hand.",
+      "ko": "제사장 아론의 손자 엘르아살의 아들 비느하스가 보고 회중의 가운데서 일어나 손에 창을 들고",
+      "source_text_hash": "8ff0523552388ad1ebd248ec76be953f55f0c1dc8e410d7fee9ea5c0d7aa3cb3",
+      "translation_text_hash": "85b4fd3d66eb3f0c534568b457d96f9c5fd8ff40150f020f382e9c740a66d8d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 손자 엘르아살의 아들 비느하스가 보고 회중의 가운데서 일어나 손에 창을 들고"
+      ],
+      "raw_text_hashes": [
+        "85b4fd3d66eb3f0c534568b457d96f9c5fd8ff40150f020f382e9c740a66d8d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:8",
+      "sequence": 4480,
+      "chapter_label": "NUM 25",
+      "verse_label": "8",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 8
+        }
+      ],
+      "en": "He went after the man of Israel into the pavilion, and thrust both of them through, the man of Israel, and the woman through her body. So the plague was stopped among the children of Israel.",
+      "ko": "그 이스라엘 남자를 따라 그의 막에 들어가서 이스라엘 남자와 그 여인의 배를 꿰뚫어서 두 사람을 죽이니 염병이 이스라엘 자손에게서 그쳤더라",
+      "source_text_hash": "ac2ad1f734bc274728126395bfa4b5917bf2232c9f6ed22fb4b6d66c0ed2f074",
+      "translation_text_hash": "3e890936340931e90c1d3bc9c44ca48821f09a4e8c3a78845c52313336429d91",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 이스라엘 남자를 따라 그의 막에 들어가서 이스라엘 남자와 그 여인의 배를 꿰뚫어서 두 사람을 죽이니 염병이 이스라엘 자손에게서 그쳤더라"
+      ],
+      "raw_text_hashes": [
+        "3e890936340931e90c1d3bc9c44ca48821f09a4e8c3a78845c52313336429d91"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:9",
+      "sequence": 4481,
+      "chapter_label": "NUM 25",
+      "verse_label": "9",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 9
+        }
+      ],
+      "en": "Those who died by the plague were twenty-four thousand.",
+      "ko": "그 염병으로 죽은 자가 이만 사천명이었더라",
+      "source_text_hash": "b735bf727c5786c55af956ece5c498d60bce1130417391fff4eb6327a2fd5488",
+      "translation_text_hash": "403aa87079154e4406619c9b5424d723db3f2c40884ff236859e33fd5441236b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 염병으로 죽은 자가 이만 사천명이었더라"
+      ],
+      "raw_text_hashes": [
+        "403aa87079154e4406619c9b5424d723db3f2c40884ff236859e33fd5441236b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:10",
+      "sequence": 4482,
+      "chapter_label": "NUM 25",
+      "verse_label": "10",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 10
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:11",
+      "sequence": 4483,
+      "chapter_label": "NUM 25",
+      "verse_label": "11",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 11
+        }
+      ],
+      "en": "“Phinehas, the son of Eleazar, the son of Aaron the priest, has turned my wrath away from the children of Israel, in that he was jealous with my jealousy among them, so that I didn’t consume the children of Israel in my jealousy.",
+      "ko": "제사장 아론의 손자 엘르아살의 아들 비느하스가 나의 질투심으로 질투하여 이스라엘 자손 중에서 나의 노를 돌이켜서 나의 질투심으로 그들을 진멸하지 않게 하였도다",
+      "source_text_hash": "24fbb3d0f9a5a3608117343fa355204130eb2f4e133af3564032d7e7bae0b42f",
+      "translation_text_hash": "5257698dc367d5819881bd247ece3fc03e144d4edeecf13031cd9c6a5a9a9222",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 아론의 손자 엘르아살의 아들 비느하스가 나의 질투심으로 질투하여 이스라엘 자손 중에서 나의 노를 돌이켜서 나의 질투심으로 그들을 진멸하지 않게 하였도다"
+      ],
+      "raw_text_hashes": [
+        "5257698dc367d5819881bd247ece3fc03e144d4edeecf13031cd9c6a5a9a9222"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:12",
+      "sequence": 4484,
+      "chapter_label": "NUM 25",
+      "verse_label": "12",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 12
+        }
+      ],
+      "en": "Therefore say, ‘Behold, I give to him my covenant of peace.",
+      "ko": "그러므로 말하라 내가 그에게 나의 평화의 언약을 주리니",
+      "source_text_hash": "679e51fd78f7108f5c69d9cd647893aff2c4669b2eb0193b7fdb931f1d8833f3",
+      "translation_text_hash": "c4e4037f8e73b9de05da35f26eb8e6c817c9b8b63b099872aff73cf543431540",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 말하라 내가 그에게 나의 평화의 언약을 주리니"
+      ],
+      "raw_text_hashes": [
+        "c4e4037f8e73b9de05da35f26eb8e6c817c9b8b63b099872aff73cf543431540"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:13",
+      "sequence": 4485,
+      "chapter_label": "NUM 25",
+      "verse_label": "13",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 13
+        }
+      ],
+      "en": "It shall be to him, and to his offspring after him, the covenant of an everlasting priesthood, because he was jealous for his God, and made atonement for the children of Israel.’”",
+      "ko": "그와 그 후손에게 영원한 제사장 직분의 언약이라 그가 그 하나님을 위하여 질투하여 이스라엘 자손을 속죄하였음이니라",
+      "source_text_hash": "43257cbcfd38c7de9836772d24960bdc0723d2c986e92263b5a33940475368b5",
+      "translation_text_hash": "8de5c8dea5c0c4417bf28e2c4e2dfd04ee68c5d85f93118424b0b543b7cee88e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그와 그 후손에게 영원한 제사장 직분의 언약이라 그가 그 하나님을 위하여 질투하여 이스라엘 자손을 속죄하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "8de5c8dea5c0c4417bf28e2c4e2dfd04ee68c5d85f93118424b0b543b7cee88e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:14",
+      "sequence": 4486,
+      "chapter_label": "NUM 25",
+      "verse_label": "14",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 14
+        }
+      ],
+      "en": "Now the name of the man of Israel that was slain, who was slain with the Midianite woman, was Zimri, the son of Salu, a prince of a fathers’ house among the Simeonites.",
+      "ko": "죽임을 당한 이스라엘 남자 곧 미디안 여인과 함께 죽임을 당한 자의 이름은 시므리니 살루의 아들이요 시므온인의 종족 중 한 족장이며",
+      "source_text_hash": "f02ace67c9a666eeb116e5ae3e06add5ec1e3aa822eab92760179c69aed5c78e",
+      "translation_text_hash": "63f7764b13cb89941c73dfaad2df74bb59486a828026301a3b8cf3d6c8fd94be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽임을 당한 이스라엘 남자 곧 미디안 여인과 함께 죽임을 당한 자의 이름은 시므리니 살루의 아들이요 시므온인의 종족 중 한 족장이며"
+      ],
+      "raw_text_hashes": [
+        "63f7764b13cb89941c73dfaad2df74bb59486a828026301a3b8cf3d6c8fd94be"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:15",
+      "sequence": 4487,
+      "chapter_label": "NUM 25",
+      "verse_label": "15",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 15
+        }
+      ],
+      "en": "The name of the Midianite woman who was slain was Cozbi, the daughter of Zur. He was head of the people of a fathers’ house in Midian.",
+      "ko": "죽임을 당한 미디안 여인의 이름은 고스비니 수르의 딸이라 수르는 미디안 백성 한 종족의 두령이었더라",
+      "source_text_hash": "a2481b6e410abe4996519853a2e2fc371e5276362bcfd9626d32779da858f4f5",
+      "translation_text_hash": "23bfcce0f5e806c9b3cd82963fbf648e555528234b630f4c18fbb03ad14d285f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "죽임을 당한 미디안 여인의 이름은 고스비니 수르의 딸이라 수르는 미디안 백성 한 종족의 두령이었더라"
+      ],
+      "raw_text_hashes": [
+        "23bfcce0f5e806c9b3cd82963fbf648e555528234b630f4c18fbb03ad14d285f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:16",
+      "sequence": 4488,
+      "chapter_label": "NUM 25",
+      "verse_label": "16",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 16
+        }
+      ],
+      "en": "The LORD spoke to Moses, saying,",
+      "ko": "여호와께서 모세에게 일러 가라사대",
+      "source_text_hash": "28219e5da0d26514843495c6edb280f326aa0ccffb0d2bb642d0e1b0f4478ca1",
+      "translation_text_hash": "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 모세에게 일러 가라사대"
+      ],
+      "raw_text_hashes": [
+        "1213bc72e4be9e9f17f4b9129e3f0d4cbde2d4cf24000ea629c6671d78ca8075"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:17",
+      "sequence": 4489,
+      "chapter_label": "NUM 25",
+      "verse_label": "17",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 17
+        }
+      ],
+      "en": "“Harass the Midianites, and strike them;",
+      "ko": "미디안인들을 박해하며 그들을 치라",
+      "source_text_hash": "5bd8828957149ec915b4dd7fc2da5f268dd91d6ddce29e2507dde0ba8ed99966",
+      "translation_text_hash": "2ed23cd017d254eb8c2834a5dd3ac6f9aee7f612415f22271b110efa2edacd5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "미디안인들을 박해하며 그들을 치라"
+      ],
+      "raw_text_hashes": [
+        "2ed23cd017d254eb8c2834a5dd3ac6f9aee7f612415f22271b110efa2edacd5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:NUM:25:18",
+      "sequence": 4490,
+      "chapter_label": "NUM 25",
+      "verse_label": "18",
+      "locator": {
+        "book": "NUM",
+        "chapter": 25,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "NUM",
+          "chapter": 25,
+          "verse": 18
+        }
+      ],
+      "en": "for they harassed you with their wiles, wherein they have deceived you in the matter of Peor, and in the incident regarding Cozbi, the daughter of the prince of Midian, their sister, who was slain on the day of the plague in the matter of Peor.”",
+      "ko": "이는 그들이 궤계로 너희를 박해하되 브올의 일과 미디안 족장의 딸 곧 브올의 일로 염병이 일어난 날에 죽임을 당한 그들의 자매 고스비의 사건으로 너희를 유혹하였음이니라",
+      "source_text_hash": "bcee35221aa8502a22b477646f4673260c087f8605f8c8d0e5cf048efa2c1597",
+      "translation_text_hash": "645444849108ee022cfa50236a7e17e0e26ebe1fe50ae1643c267c8c798291be",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이는 그들이 궤계로 너희를 박해하되 브올의 일과 미디안 족장의 딸 곧 브올의 일로 염병이 일어난 날에 죽임을 당한 그들의 자매 고스비의 사건으로 너희를 유혹하였음이니라"
+      ],
+      "raw_text_hashes": [
+        "645444849108ee022cfa50236a7e17e0e26ebe1fe50ae1643c267c8c798291be"
+      ]
+    }
+  ]
+}

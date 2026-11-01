@@ -1,0 +1,1901 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:JHN:chapter:008",
+  "unit_ordinal": 1005,
+  "unit_label": "JHN 8",
+  "book_code": "JHN",
+  "chapter_number": 8,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:JHN:8:1",
+      "sequence": 26382,
+      "chapter_label": "JHN 8",
+      "verse_label": "1",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 1
+        }
+      ],
+      "en": "but Jesus went to the Mount of Olives.",
+      "ko": "예수는 감람산으로 가시다",
+      "source_text_hash": "5947a424d1a9f0cf715b0539df7d981720247a14a3e3d04b6426ddd16992a2b4",
+      "translation_text_hash": "a015510c807322378d8deb694065ea896f51ee9a38bb295deba68be372c4379b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수는 감람산으로 가시다"
+      ],
+      "raw_text_hashes": [
+        "a015510c807322378d8deb694065ea896f51ee9a38bb295deba68be372c4379b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:2",
+      "sequence": 26383,
+      "chapter_label": "JHN 8",
+      "verse_label": "2",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 2
+        }
+      ],
+      "en": "Now very early in the morning, he came again into the temple, and all the people came to him. He sat down and taught them.",
+      "ko": "아침에 다시 성전으로 들어오시니 백성이 다 나아오는지라 앉으사 저희를 가르치시더니",
+      "source_text_hash": "99d66add2c45132d837bfaaeff6e5746a26a85b4bd90b91068fb79c2ab8dfa2b",
+      "translation_text_hash": "3adaf49e9fa04ff9dc07dabd4f474325a64a35e6ce9dd3538e14fe06f099461f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아침에 다시 성전으로 들어오시니 백성이 다 나아오는지라 앉으사 저희를 가르치시더니"
+      ],
+      "raw_text_hashes": [
+        "3adaf49e9fa04ff9dc07dabd4f474325a64a35e6ce9dd3538e14fe06f099461f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:3",
+      "sequence": 26384,
+      "chapter_label": "JHN 8",
+      "verse_label": "3",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 3
+        }
+      ],
+      "en": "The scribes and the Pharisees brought a woman taken in adultery. Having set her in the middle,",
+      "ko": "서기관들과 바리새인들이 간음 중에 잡힌 여자를 끌고 와서 가운데 세우고",
+      "source_text_hash": "1e7be82d7981593cc7673dbe47f3c3a30b3e3595ff906c9a2c81763215729ead",
+      "translation_text_hash": "562bd1734683632cfabd286fc073bcc484475635dbb42524c44cec8d8a603f24",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "서기관들과 바리새인들이 간음 중에 잡힌 여자를 끌고 와서 가운데 세우고"
+      ],
+      "raw_text_hashes": [
+        "562bd1734683632cfabd286fc073bcc484475635dbb42524c44cec8d8a603f24"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:4",
+      "sequence": 26385,
+      "chapter_label": "JHN 8",
+      "verse_label": "4",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 4
+        }
+      ],
+      "en": "they told him, “Teacher, we found this woman in adultery, in the very act.",
+      "ko": "예수께 말하되 선생이여 이 여자가 간음하다가 현장에서 잡혔나이다",
+      "source_text_hash": "9bb35c53ee8fdf586bd1a3da95917ec26e6a2ec280b42c4dfc806fa899a6499d",
+      "translation_text_hash": "c812ec5af52a52074c67d176d4cd310ae3a5ed5490e194745c1ec68f1800710f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께 말하되 선생이여 이 여자가 간음하다가 현장에서 잡혔나이다"
+      ],
+      "raw_text_hashes": [
+        "c812ec5af52a52074c67d176d4cd310ae3a5ed5490e194745c1ec68f1800710f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:5",
+      "sequence": 26386,
+      "chapter_label": "JHN 8",
+      "verse_label": "5",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 5
+        }
+      ],
+      "en": "Now in our law, Moses commanded us to stone such women. What then do you say about her?”",
+      "ko": "모세는 율법에 이러한 여자를 돌로 치라 명하였거니와 선생은 어떻게 말하겠나이까",
+      "source_text_hash": "8d12a55c579c279e37007c7f33de51a210377a0f27df178bfee1215f1f4b1458",
+      "translation_text_hash": "c9558036c8125ed25df00d31391956877917215a30533170f629bd09e5001d7d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "모세는 율법에 이러한 여자를 돌로 치라 명하였거니와 선생은 어떻게 말하겠나이까"
+      ],
+      "raw_text_hashes": [
+        "c9558036c8125ed25df00d31391956877917215a30533170f629bd09e5001d7d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:6",
+      "sequence": 26387,
+      "chapter_label": "JHN 8",
+      "verse_label": "6",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 6
+        }
+      ],
+      "en": "They said this testing him, that they might have something to accuse him of. But Jesus stooped down and wrote on the ground with his finger.",
+      "ko": "저희가 이렇게 말함은 고소할 조건을 얻고자하여 예수를 시험함이러라 예수께서 몸을 굽히사 손가락으로 땅에 쓰시니",
+      "source_text_hash": "e7bf12a6cc6ff9c22e9d8d1f1a2101bbd1373095403f0051d2c68c772da2826e",
+      "translation_text_hash": "94f3ce7f3e3e7bd9f0e3daa8fbcb6ad67a6c069cb09b0d123e3b33c9d5e9c5ff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이렇게 말함은 고소할 조건을 얻고자하여 예수를 시험함이러라 예수께서 몸을 굽히사 손가락으로 땅에 쓰시니"
+      ],
+      "raw_text_hashes": [
+        "94f3ce7f3e3e7bd9f0e3daa8fbcb6ad67a6c069cb09b0d123e3b33c9d5e9c5ff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:7",
+      "sequence": 26388,
+      "chapter_label": "JHN 8",
+      "verse_label": "7",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 7
+        }
+      ],
+      "en": "But when they continued asking him, he looked up and said to them, “He who is without sin among you, let him throw the first stone at her.”",
+      "ko": "저희가 묻기를 마지 아니하는지라 이에 일어나 가라사대 너희 중에 죄 없는 자가 먼저 돌로 치라 하시고",
+      "source_text_hash": "23914de33282fa65436a7208b827b2a19138156934d2da3987028b42abc09899",
+      "translation_text_hash": "115f7ddd7b6c0c5a51af10675b358fffdab303e50fde6495e8fc4124231a8f7c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 묻기를 마지 아니하는지라 이에 일어나 가라사대 너희 중에 죄 없는 자가 먼저 돌로 치라 하시고"
+      ],
+      "raw_text_hashes": [
+        "115f7ddd7b6c0c5a51af10675b358fffdab303e50fde6495e8fc4124231a8f7c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:8",
+      "sequence": 26389,
+      "chapter_label": "JHN 8",
+      "verse_label": "8",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 8
+        }
+      ],
+      "en": "Again he stooped down and wrote on the ground with his finger.",
+      "ko": "다시 몸을 굽히사 손가락으로 땅에 쓰시니",
+      "source_text_hash": "6beaad40a87482a896c379e62f4be4a476913c21afb2a79a7f7cca4e173ccbf2",
+      "translation_text_hash": "852c53e0c87005fe4d7e2afabc61428d15f7abb01677b484874dc6f3b387a467",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 몸을 굽히사 손가락으로 땅에 쓰시니"
+      ],
+      "raw_text_hashes": [
+        "852c53e0c87005fe4d7e2afabc61428d15f7abb01677b484874dc6f3b387a467"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:9",
+      "sequence": 26390,
+      "chapter_label": "JHN 8",
+      "verse_label": "9",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 9
+        }
+      ],
+      "en": "They, when they heard it, being convicted by their conscience, went out one by one, beginning from the oldest, even to the last. Jesus was left alone with the woman where she was, in the middle.",
+      "ko": "저희가 이 말씀을 듣고 양심의 가책을 받아 어른으로 시작하여 젊은이까지 하나씩 하나씩 나가고 오직 예수와 그 가운데 섰는 여자만 남았더라",
+      "source_text_hash": "d6031cd6835a8c14e8b31d7862f14ffc9b3dbf1ba6cc09a76757bbba0ea0c6d1",
+      "translation_text_hash": "563a6775869d28d8c6bb4d4cc05ab9e1772cda14f244b1fd6bb7356ab4c47e4e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 이 말씀을 듣고 양심의 가책을 받아 어른으로 시작하여 젊은이까지 하나씩 하나씩 나가고 오직 예수와 그 가운데 섰는 여자만 남았더라"
+      ],
+      "raw_text_hashes": [
+        "563a6775869d28d8c6bb4d4cc05ab9e1772cda14f244b1fd6bb7356ab4c47e4e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:10",
+      "sequence": 26391,
+      "chapter_label": "JHN 8",
+      "verse_label": "10",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 10
+        }
+      ],
+      "en": "Jesus, standing up, saw her and said, “Woman, where are your accusers? Did no one condemn you?”",
+      "ko": "예수께서 일어나사 여자 외에 아무도 없는 것을 보시고 이르시되 여자여 너를 고소하던 그들이 어디 있느냐 너를 정죄한 자가 없느냐",
+      "source_text_hash": "6ff094ef24594e1c829ae625749b6a85f0a08ae5cfc776ff58c1a5d8dfc1bfff",
+      "translation_text_hash": "194b77c6b33fa3f5ffcf25a2c3eff260a484a668d2257037fc9c66a485bca2d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 일어나사 여자 외에 아무도 없는 것을 보시고 이르시되 여자여 너를 고소하던 그들이 어디 있느냐 너를 정죄한 자가 없느냐"
+      ],
+      "raw_text_hashes": [
+        "194b77c6b33fa3f5ffcf25a2c3eff260a484a668d2257037fc9c66a485bca2d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:11",
+      "sequence": 26392,
+      "chapter_label": "JHN 8",
+      "verse_label": "11",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 11
+        }
+      ],
+      "en": "She said, “No one, Lord.” Jesus said, “Neither do I condemn you. Go your way. From now on, sin no more.”",
+      "ko": "대답하되 주여 없나이다 예수께서 가라사대 나도 너를 정죄하지 아니하노니 가서 다시는 죄를 범치 말라 하시니라]",
+      "source_text_hash": "a011f87aa37b148407ee3453e350353def1ac709f0110aa508635d4336dc9807",
+      "translation_text_hash": "598dac74581de377e9a928b7ef2177efdccbb79f4449910ef77ae12d348190f1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하되 주여 없나이다 예수께서 가라사대 나도 너를 정죄하지 아니하노니 가서 다시는 죄를 범치 말라 하시니라]"
+      ],
+      "raw_text_hashes": [
+        "598dac74581de377e9a928b7ef2177efdccbb79f4449910ef77ae12d348190f1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:12",
+      "sequence": 26393,
+      "chapter_label": "JHN 8",
+      "verse_label": "12",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 12
+        }
+      ],
+      "en": "Again, therefore, Jesus spoke to them, saying, “I am the light of the world.He who follows me will not walk in the darkness, but will have the light of life.”",
+      "ko": "예수께서 또 일러 가라사대 나는 세상의 빛이니 나를 따르는 자는 어두움에 다니지 아니하고 생명의 빛을 얻으리라",
+      "source_text_hash": "4b8b41d39979ef915251b662678bcc9e577b085383da0fa46564027859a768b2",
+      "translation_text_hash": "07e98897f4f21039fa2439bf6c52766165fecfa6208f683ea4c8b3687bcc08ea",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 또 일러 가라사대 나는 세상의 빛이니 나를 따르는 자는 어두움에 다니지 아니하고 생명의 빛을 얻으리라"
+      ],
+      "raw_text_hashes": [
+        "07e98897f4f21039fa2439bf6c52766165fecfa6208f683ea4c8b3687bcc08ea"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:13",
+      "sequence": 26394,
+      "chapter_label": "JHN 8",
+      "verse_label": "13",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 13
+        }
+      ],
+      "en": "The Pharisees therefore said to him, “You testify about yourself. Your testimony is not valid.”",
+      "ko": "바리새인들이 가로되 네가 너를 위하여 증거하니 네 증거는 참되지 아니하도다",
+      "source_text_hash": "39fcd07e9acff42e297f4e9d4c107cc21d37e5188d6f0016c5fc54635247cbed",
+      "translation_text_hash": "0018b55a99b5a805aa068e9b645933ab0d5900357f8cda4d1e01356803dfe612",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바리새인들이 가로되 네가 너를 위하여 증거하니 네 증거는 참되지 아니하도다"
+      ],
+      "raw_text_hashes": [
+        "0018b55a99b5a805aa068e9b645933ab0d5900357f8cda4d1e01356803dfe612"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:14",
+      "sequence": 26395,
+      "chapter_label": "JHN 8",
+      "verse_label": "14",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 14
+        }
+      ],
+      "en": "Jesus answered them, “Even if I testify about myself, my testimony is true, for I know where I came from, and where I am going; but you don’t know where I came from, or where I am going.",
+      "ko": "예수께서 대답하여 가라사대 내가 나를 위하여 증거하여도 내 증거가 참되니 나는 내가 어디서 오며 어디로 가는 것을 앎이어니와 너희는 내가 어디서 오며 어디로 가는 것을 알지 못하느니라",
+      "source_text_hash": "c676a2135faf9670cda6f61fcd16c63fd700698236370d29d1b891185f4593b1",
+      "translation_text_hash": "1e88b8ef3cb040a9bbec0056c9a5db5b730bbe56333d5c2accc295121d69a8b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하여 가라사대 내가 나를 위하여 증거하여도 내 증거가 참되니 나는 내가 어디서 오며 어디로 가는 것을 앎이어니와 너희는 내가 어디서 오며 어디로 가는 것을 알지 못하느니라"
+      ],
+      "raw_text_hashes": [
+        "1e88b8ef3cb040a9bbec0056c9a5db5b730bbe56333d5c2accc295121d69a8b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:15",
+      "sequence": 26396,
+      "chapter_label": "JHN 8",
+      "verse_label": "15",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 15
+        }
+      ],
+      "en": "You judge according to the flesh. I judge no one.",
+      "ko": "너희는 육체를 따라 판단하나 나는 아무도 판단치 아니하노라",
+      "source_text_hash": "e7b83bd58dad5fe9bb65b740bebda43afb8f742639558ac93f2832f09ccb97b0",
+      "translation_text_hash": "9539aa5a932adf3b5fee9399a5cb10b96c52b7ea905847c6681749381e74b51d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 육체를 따라 판단하나 나는 아무도 판단치 아니하노라"
+      ],
+      "raw_text_hashes": [
+        "9539aa5a932adf3b5fee9399a5cb10b96c52b7ea905847c6681749381e74b51d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:16",
+      "sequence": 26397,
+      "chapter_label": "JHN 8",
+      "verse_label": "16",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 16
+        }
+      ],
+      "en": "Even if I do judge, my judgment is true, for I am not alone, but I am with the Father who sent me.",
+      "ko": "만일 내가 판단하여도 내 판단이 참되니 이는 내가 혼자 있는 것이 아니요 나를 보내신 이가 나와 함께 계심이라",
+      "source_text_hash": "b4190fe2caa87c0c974af7f8388e3148089100c9ce04e5833a22039f4802152a",
+      "translation_text_hash": "5e784e87617085bba9f6b0eac3e5190b9f707fbbb9c62073a6bc1128736c1fab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 내가 판단하여도 내 판단이 참되니 이는 내가 혼자 있는 것이 아니요 나를 보내신 이가 나와 함께 계심이라"
+      ],
+      "raw_text_hashes": [
+        "5e784e87617085bba9f6b0eac3e5190b9f707fbbb9c62073a6bc1128736c1fab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:17",
+      "sequence": 26398,
+      "chapter_label": "JHN 8",
+      "verse_label": "17",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 17
+        }
+      ],
+      "en": "It’s also written in your law that the testimony of two people is valid.",
+      "ko": "너희 율법에도 두 사람의 증거가 참되다 기록하였으니",
+      "source_text_hash": "188ed667192481b358c20f65df991ef5b14482a70d6eca764754ae8c4d5e8ff2",
+      "translation_text_hash": "ab08d6a390f11d803fa4b772df840541e4b09a49a27b0dfcdac5890802e96715",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 율법에도 두 사람의 증거가 참되다 기록하였으니"
+      ],
+      "raw_text_hashes": [
+        "ab08d6a390f11d803fa4b772df840541e4b09a49a27b0dfcdac5890802e96715"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:18",
+      "sequence": 26399,
+      "chapter_label": "JHN 8",
+      "verse_label": "18",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 18
+        }
+      ],
+      "en": "I am one who testifies about myself, and the Father who sent me testifies about me.”",
+      "ko": "내가 나를 위하여 증거하는 자가 되고 나를 보내신 아버지도 나를 위하여 증거하시느니라",
+      "source_text_hash": "cdc5f132025ce99b5567ea89f0ea2e8e043b3863f4423a2c6e87de75f14f0fa4",
+      "translation_text_hash": "52ef20e2c09af34b3b94cc666147e92a74c4d4010ae011eda547c1ec80dc42f5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 나를 위하여 증거하는 자가 되고 나를 보내신 아버지도 나를 위하여 증거하시느니라"
+      ],
+      "raw_text_hashes": [
+        "52ef20e2c09af34b3b94cc666147e92a74c4d4010ae011eda547c1ec80dc42f5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:19",
+      "sequence": 26400,
+      "chapter_label": "JHN 8",
+      "verse_label": "19",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 19
+        }
+      ],
+      "en": "They said therefore to him, “Where is your Father?” Jesus answered, “You know neither me nor my Father. If you knew me, you would know my Father also.”",
+      "ko": "이에 저희가 묻되 네 아버지가 어디 있느냐 예수께서 대답하시되 너희는 나를 알지 못하고 내 아버지도 알지 못하는도다 나를 알았더면 내 아버지도 알았으리라",
+      "source_text_hash": "93e7b75d2c69523ff732e0d9f21e6138f8c81097a713a6be5cf0e1a1790656a2",
+      "translation_text_hash": "407059bba4ab20f9b59b2e7b9be32e644be99fd52b62e1033d5401dfb47cc018",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 저희가 묻되 네 아버지가 어디 있느냐 예수께서 대답하시되 너희는 나를 알지 못하고 내 아버지도 알지 못하는도다 나를 알았더면 내 아버지도 알았으리라"
+      ],
+      "raw_text_hashes": [
+        "407059bba4ab20f9b59b2e7b9be32e644be99fd52b62e1033d5401dfb47cc018"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:20",
+      "sequence": 26401,
+      "chapter_label": "JHN 8",
+      "verse_label": "20",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 20
+        }
+      ],
+      "en": "Jesus spoke these words in the treasury, as he taught in the temple. Yet no one arrested him, because his hour had not yet come.",
+      "ko": "이 말씀은 성전에서 가르치실 때에 연보 궤 앞에서 하셨으나 잡는 사람이 없으니 이는 그의 때가 아직 이르지 아니하였음이러라",
+      "source_text_hash": "42f0dae633edc91f4e904703deafa43c3d30b7ae38af78f797fa00a888c20bb3",
+      "translation_text_hash": "09ccfc3318721f61655115df4fa3250e74d3807ab4fefdc4945c0f6dceea4565",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀은 성전에서 가르치실 때에 연보 궤 앞에서 하셨으나 잡는 사람이 없으니 이는 그의 때가 아직 이르지 아니하였음이러라"
+      ],
+      "raw_text_hashes": [
+        "09ccfc3318721f61655115df4fa3250e74d3807ab4fefdc4945c0f6dceea4565"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:21",
+      "sequence": 26402,
+      "chapter_label": "JHN 8",
+      "verse_label": "21",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 21
+        }
+      ],
+      "en": "Jesus said therefore again to them, “I am going away, and you will seek me, and you will die in your sins. Where I go, you can’t come.”",
+      "ko": "다시 이르시되 내가 가리니 너희가 나를 찾다가 너희 죄 가운데서 죽겠고 나의 가는 곳에는 너희가 오지 못하리라",
+      "source_text_hash": "996c6a75d5ec12f1e9b59909d31ef74665279703933f902329e1ad2976eee1a0",
+      "translation_text_hash": "6c31d60895cc9cee44c9af4066150916559d451b3ad7066e5396ac6cd228479b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시 이르시되 내가 가리니 너희가 나를 찾다가 너희 죄 가운데서 죽겠고 나의 가는 곳에는 너희가 오지 못하리라"
+      ],
+      "raw_text_hashes": [
+        "6c31d60895cc9cee44c9af4066150916559d451b3ad7066e5396ac6cd228479b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:22",
+      "sequence": 26403,
+      "chapter_label": "JHN 8",
+      "verse_label": "22",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 22
+        }
+      ],
+      "en": "The Jews therefore said, “Will he kill himself, because he says, ‘Where I am going, you can’t come’?”",
+      "ko": "유대인들이 가로되 저가 나의 가는 곳에는 너희가 오지 못하리라 하니 저가 자결하려는가",
+      "source_text_hash": "40be18702e875af8afc19d997ad92df5c220a89e8bfbe0c5920b3bf332a28417",
+      "translation_text_hash": "61f5315830fb0cfb0a9b0c356110c172b5d9ac04049c1e67f857f95d78877264",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 가로되 저가 나의 가는 곳에는 너희가 오지 못하리라 하니 저가 자결하려는가"
+      ],
+      "raw_text_hashes": [
+        "61f5315830fb0cfb0a9b0c356110c172b5d9ac04049c1e67f857f95d78877264"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:23",
+      "sequence": 26404,
+      "chapter_label": "JHN 8",
+      "verse_label": "23",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 23
+        }
+      ],
+      "en": "He said to them, “You are from beneath. I am from above. You are of this world. I am not of this world.",
+      "ko": "예수께서 가라사대 너희는 아래서 났고 나는 위에서 났으며 너희는 이 세상에 속하였고 나는 이 세상에 속하지 아니하였느니라",
+      "source_text_hash": "8a1d71f68e362371d22e30d8367a571cff7b6d4903bc64c032f0ae867630b584",
+      "translation_text_hash": "cbcba22ea9a4028f7bef689520c94326c4fb462085956d10e86a1d58dc8d34d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 너희는 아래서 났고 나는 위에서 났으며 너희는 이 세상에 속하였고 나는 이 세상에 속하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "cbcba22ea9a4028f7bef689520c94326c4fb462085956d10e86a1d58dc8d34d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:24",
+      "sequence": 26405,
+      "chapter_label": "JHN 8",
+      "verse_label": "24",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 24
+        }
+      ],
+      "en": "I said therefore to you that you will die in your sins; for unless you believe that I amhe, you will die in your sins.”",
+      "ko": "이러므로 내가 너희에게 말하기를 너희가 너희 죄 가운데서 죽으리라 하였노라 너희가 만일 내가 그인줄 믿지 아니하면 너희 죄 가운데서 죽으리라",
+      "source_text_hash": "12c016519ddd265ae721666994d4043d22d7776f0a7c8f691b894a830171c7af",
+      "translation_text_hash": "89b3d2e851993563a65daeeb3eed96ddfb53e9604aa20eafd15cd7bc6a458cf8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이러므로 내가 너희에게 말하기를 너희가 너희 죄 가운데서 죽으리라 하였노라 너희가 만일 내가 그인줄 믿지 아니하면 너희 죄 가운데서 죽으리라"
+      ],
+      "raw_text_hashes": [
+        "89b3d2e851993563a65daeeb3eed96ddfb53e9604aa20eafd15cd7bc6a458cf8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:25",
+      "sequence": 26406,
+      "chapter_label": "JHN 8",
+      "verse_label": "25",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 25
+        }
+      ],
+      "en": "They said therefore to him, “Who are you?” Jesus said to them, “Just what I have been saying to you from the beginning.",
+      "ko": "저희가 말하되 네가 누구냐 예수께서 가라사대 나는 처음부터 너희에게 말하여 온 자니라",
+      "source_text_hash": "264eabbc59e7d17aff1615e2cda6e974b8ea8e7c9fa30be8eaafaa4678e0cde9",
+      "translation_text_hash": "4f949401a6e3ca61e461dfc8c184851ad19b40346a631aca8182aeb2b5f1102d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 말하되 네가 누구냐 예수께서 가라사대 나는 처음부터 너희에게 말하여 온 자니라"
+      ],
+      "raw_text_hashes": [
+        "4f949401a6e3ca61e461dfc8c184851ad19b40346a631aca8182aeb2b5f1102d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:26",
+      "sequence": 26407,
+      "chapter_label": "JHN 8",
+      "verse_label": "26",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 26
+        }
+      ],
+      "en": "I have many things to speak and to judge concerning you. However, he who sent me is true; and the things which I heard from him, these I say to the world.”",
+      "ko": "내가 너희를 대하여 말하고 판단할 것이 많으나 나를 보내신 이가 참되시매 내가 그에게 들은 그것을 세상에게 말하노라 하시되",
+      "source_text_hash": "cb09d8ed377a54b323c94796975c5a99af010686b15b4289c39b50011ddbda71",
+      "translation_text_hash": "f831291e7953083d77d1c05b75d1cc78471e5f2d21379f55564b740447f493bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 대하여 말하고 판단할 것이 많으나 나를 보내신 이가 참되시매 내가 그에게 들은 그것을 세상에게 말하노라 하시되"
+      ],
+      "raw_text_hashes": [
+        "f831291e7953083d77d1c05b75d1cc78471e5f2d21379f55564b740447f493bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:27",
+      "sequence": 26408,
+      "chapter_label": "JHN 8",
+      "verse_label": "27",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 27
+        }
+      ],
+      "en": "They didn’t understand that he spoke to them about the Father.",
+      "ko": "저희는 아버지를 가리켜 말씀하신 줄을 깨닫지 못하더라",
+      "source_text_hash": "4c8520b5c1333e0b9b27f0aaa83a14633fd4bfe3a14a742ad28f9bea60c350d4",
+      "translation_text_hash": "c298a7f359899842d5e4214db0fde237ef7b5a2e45bd6499713c71f3efa33b53",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 아버지를 가리켜 말씀하신 줄을 깨닫지 못하더라"
+      ],
+      "raw_text_hashes": [
+        "c298a7f359899842d5e4214db0fde237ef7b5a2e45bd6499713c71f3efa33b53"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:28",
+      "sequence": 26409,
+      "chapter_label": "JHN 8",
+      "verse_label": "28",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 28
+        }
+      ],
+      "en": "Jesus therefore said to them, “When you have lifted up the Son of Man, then you will know that I am he, and I do nothing of myself, but as my Father taught me, I say these things.",
+      "ko": "이에 예수께서 가라사대 너희는 인자를 든 후에 내가 그인 줄을 알고 또 내가 스스로 아무 것도 하지 아니하고 오직 아버지께서 가르치신대로 이런 것을 말하는 줄도 알리라",
+      "source_text_hash": "f063984b6c032a881dee89ad8e33a78238d830919c21af4c29dc144372ebf699",
+      "translation_text_hash": "8ac5dd5c832960fa631f531fd70afd8544196d78e2a4ddfd2df913dff1eb8d56",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 예수께서 가라사대 너희는 인자를 든 후에 내가 그인 줄을 알고 또 내가 스스로 아무 것도 하지 아니하고 오직 아버지께서 가르치신대로 이런 것을 말하는 줄도 알리라"
+      ],
+      "raw_text_hashes": [
+        "8ac5dd5c832960fa631f531fd70afd8544196d78e2a4ddfd2df913dff1eb8d56"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:29",
+      "sequence": 26410,
+      "chapter_label": "JHN 8",
+      "verse_label": "29",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 29
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 29
+        }
+      ],
+      "en": "He who sent me is with me. The Father hasn’t left me alone, for I always do the things that are pleasing to him.”",
+      "ko": "나를 보내신 이가 나와 함께 하시도다 내가 항상 그의 기뻐하시는 일을 행하므로 나를 혼자 두지 아니하셨느니라",
+      "source_text_hash": "72760d7d1fe577c37cdce9a2f029440bb6c6b10dde041aa81f58e0d665f5d3b2",
+      "translation_text_hash": "701e0026255165e5f4f12b48346f290fd2a985dda81b349371d7cebf1d711020",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나를 보내신 이가 나와 함께 하시도다 내가 항상 그의 기뻐하시는 일을 행하므로 나를 혼자 두지 아니하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "701e0026255165e5f4f12b48346f290fd2a985dda81b349371d7cebf1d711020"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:30",
+      "sequence": 26411,
+      "chapter_label": "JHN 8",
+      "verse_label": "30",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 30
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 30
+        }
+      ],
+      "en": "As he spoke these things, many believed in him.",
+      "ko": "이 말씀을 하시매 많은 사람이 믿더라",
+      "source_text_hash": "c7e2559d89eccc7dc8b68e0123a878850ac5b97682cfec43612062cfa0dc84bd",
+      "translation_text_hash": "bc0147eec217a1e814df1b2756bc00d20a4f124115b3a59b784e8a1cfcf98973",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 말씀을 하시매 많은 사람이 믿더라"
+      ],
+      "raw_text_hashes": [
+        "bc0147eec217a1e814df1b2756bc00d20a4f124115b3a59b784e8a1cfcf98973"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:31",
+      "sequence": 26412,
+      "chapter_label": "JHN 8",
+      "verse_label": "31",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 31
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 31
+        }
+      ],
+      "en": "Jesus therefore said to those Jews who had believed him, “If you remain in my word, then you are truly my disciples.",
+      "ko": "그러므로 예수께서 자기를 믿은 유대인들에게 이르시되 너희가 내 말에 거하면 참 내 제자가 되고",
+      "source_text_hash": "3d9efe1739f691348bca9b19a91c3fc144e4669a38a0dcaaba99239ff16cbac4",
+      "translation_text_hash": "146a75f4074c0ce2e852e190b1aade8f6df18843658cecc070cbdf823b174153",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 예수께서 자기를 믿은 유대인들에게 이르시되 너희가 내 말에 거하면 참 내 제자가 되고"
+      ],
+      "raw_text_hashes": [
+        "146a75f4074c0ce2e852e190b1aade8f6df18843658cecc070cbdf823b174153"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:32",
+      "sequence": 26413,
+      "chapter_label": "JHN 8",
+      "verse_label": "32",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 32
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 32
+        }
+      ],
+      "en": "You will know the truth, and the truth will make you free.”",
+      "ko": "진리를 알찌니 진리가 너희를 자유케 하리라",
+      "source_text_hash": "cee8c30c41ac755518c8931ff730ca6e194c53a2044bfe6554148d383f92de63",
+      "translation_text_hash": "df5f11404b365abac7e880ad5217ba6002ffc3dad5ad346f4fea5e50b0a2ddbd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진리를 알찌니 진리가 너희를 자유케 하리라"
+      ],
+      "raw_text_hashes": [
+        "df5f11404b365abac7e880ad5217ba6002ffc3dad5ad346f4fea5e50b0a2ddbd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:33",
+      "sequence": 26414,
+      "chapter_label": "JHN 8",
+      "verse_label": "33",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 33
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 33
+        }
+      ],
+      "en": "They answered him, “We are Abraham’s offspring, and have never been in bondage to anyone. How do you say, ‘You will be made free’?”",
+      "ko": "저희가 대답하되 우리가 아브라함의 자손이라 남의 종이 된 적이 없거늘 어찌하여 우리가 자유케 되리라 하느냐",
+      "source_text_hash": "768874ea876fd9a4fd7a0e0b45434ba29ccc0938496e12f08f6c16bfd277df35",
+      "translation_text_hash": "dcd9207522256a7b06deeee76f3e83b636bddb5965b34a53ef2fffa27e240a19",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 대답하되 우리가 아브라함의 자손이라 남의 종이 된 적이 없거늘 어찌하여 우리가 자유케 되리라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "dcd9207522256a7b06deeee76f3e83b636bddb5965b34a53ef2fffa27e240a19"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:34",
+      "sequence": 26415,
+      "chapter_label": "JHN 8",
+      "verse_label": "34",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 34
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 34
+        }
+      ],
+      "en": "Jesus answered them, “Most certainly I tell you, everyone who commits sin is the bondservant of sin.",
+      "ko": "예수께서 대답하시되 진실로 진실로 너희에게 이르노니 죄를 범하는 자마다 죄의 종이라",
+      "source_text_hash": "cacc8c55f9fa4f62d82e3aec8dd1a576cdcf237542e10c131284a0e780e1e591",
+      "translation_text_hash": "6fb6a739a247990ee39503ffd8592d5ffe53c5a362b5f3f817aa49df0e7de1ec",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 진실로 진실로 너희에게 이르노니 죄를 범하는 자마다 죄의 종이라"
+      ],
+      "raw_text_hashes": [
+        "6fb6a739a247990ee39503ffd8592d5ffe53c5a362b5f3f817aa49df0e7de1ec"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:35",
+      "sequence": 26416,
+      "chapter_label": "JHN 8",
+      "verse_label": "35",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 35
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 35
+        }
+      ],
+      "en": "A bondservant doesn’t live in the house forever. A son remains forever.",
+      "ko": "종은 영원히 집에 거하지 못하되 아들은 영원히 거하나니",
+      "source_text_hash": "1e0dbee0c85fbd49d0e80a482ab21488fc07e4b7800df9a4d684379deb8378df",
+      "translation_text_hash": "e528464441ee761fc8c3c8986430efa40c70ee7c048f669f67e07f64df32583b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "종은 영원히 집에 거하지 못하되 아들은 영원히 거하나니"
+      ],
+      "raw_text_hashes": [
+        "e528464441ee761fc8c3c8986430efa40c70ee7c048f669f67e07f64df32583b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:36",
+      "sequence": 26417,
+      "chapter_label": "JHN 8",
+      "verse_label": "36",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 36
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 36
+        }
+      ],
+      "en": "If therefore the Son makes you free, you will be free indeed.",
+      "ko": "그러므로 아들이 너희를 자유케 하면 너희가 참으로 자유하리라",
+      "source_text_hash": "92df836f45239e6c5b06d115a19809f68c72a613055d0139421281e6af4d0689",
+      "translation_text_hash": "bd2c95b8e7e6f21145ea8066a98a9bfd1c515a70fb182ced899438725c8473a0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그러므로 아들이 너희를 자유케 하면 너희가 참으로 자유하리라"
+      ],
+      "raw_text_hashes": [
+        "bd2c95b8e7e6f21145ea8066a98a9bfd1c515a70fb182ced899438725c8473a0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:37",
+      "sequence": 26418,
+      "chapter_label": "JHN 8",
+      "verse_label": "37",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 37
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 37
+        }
+      ],
+      "en": "I know that you are Abraham’s offspring, yet you seek to kill me, because my word finds no place in you.",
+      "ko": "나도 너희가 아브라함의 자손인줄 아노라 그러나 내 말이 너희 속에 있을 곳이 없으므로 나를 죽이려 하는도다",
+      "source_text_hash": "fa1f6b39798f609e00db04d1b81730ec4e255825433dec5c8db6394e9919d3fb",
+      "translation_text_hash": "dbb64b450e0d44ca69d5f03094e1acd231887fcabea386d666b2d8aa8d54ca3b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나도 너희가 아브라함의 자손인줄 아노라 그러나 내 말이 너희 속에 있을 곳이 없으므로 나를 죽이려 하는도다"
+      ],
+      "raw_text_hashes": [
+        "dbb64b450e0d44ca69d5f03094e1acd231887fcabea386d666b2d8aa8d54ca3b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:38",
+      "sequence": 26419,
+      "chapter_label": "JHN 8",
+      "verse_label": "38",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 38
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 38
+        }
+      ],
+      "en": "I say the things which I have seen with my Father; and you also do the things which you have seen with your father.”",
+      "ko": "나는 내 아버지에게서 본 것을 말하고 너희는 너희 아비에게서 들은 것을 행하느니라",
+      "source_text_hash": "8576f89a1e5276591f2d5018f4444e711df1ef6ac398010a5e155348186d8deb",
+      "translation_text_hash": "631f5e13524cdbaef2f921b9c0552e2bbadecfb021fd9d70055a579420beaaa3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 아버지에게서 본 것을 말하고 너희는 너희 아비에게서 들은 것을 행하느니라"
+      ],
+      "raw_text_hashes": [
+        "631f5e13524cdbaef2f921b9c0552e2bbadecfb021fd9d70055a579420beaaa3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:39",
+      "sequence": 26420,
+      "chapter_label": "JHN 8",
+      "verse_label": "39",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 39
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 39
+        }
+      ],
+      "en": "They answered him, “Our father is Abraham.” Jesus said to them, “If you were Abraham’s children, you would do the works of Abraham.",
+      "ko": "대답하여 가로되 우리 아버지는 아브라함이라 하니 예수께서 가라사대 너희가 아브라함의 자손이면 아브라함의 행사를 할것이어늘",
+      "source_text_hash": "3c777344b1b40a4c046fa1d814c51d78697362f57307c95748d3bb35d46253f3",
+      "translation_text_hash": "3fd2bbe109d0593ceeed1847af060a03d8de5d98f03a6456ba992ee023a2c61c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "대답하여 가로되 우리 아버지는 아브라함이라 하니 예수께서 가라사대 너희가 아브라함의 자손이면 아브라함의 행사를 할것이어늘"
+      ],
+      "raw_text_hashes": [
+        "3fd2bbe109d0593ceeed1847af060a03d8de5d98f03a6456ba992ee023a2c61c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:40",
+      "sequence": 26421,
+      "chapter_label": "JHN 8",
+      "verse_label": "40",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 40
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 40
+        }
+      ],
+      "en": "But now you seek to kill me, a man who has told you the truth which I heard from God. Abraham didn’t do this.",
+      "ko": "지금 하나님께 들은 진리를 너희에게 말한 사람인 나를 죽이려 하는도다 아브라함은 이렇게 하지 아니하였느니라",
+      "source_text_hash": "01c34eb2edfbcaba7e8573b972ecb470943f7c6b04cae764242e30b03bc3d037",
+      "translation_text_hash": "ae9cabce0c26a35d4a66f2865c2a09c69dd91026c54d00aa30cc49d0ef142343",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "지금 하나님께 들은 진리를 너희에게 말한 사람인 나를 죽이려 하는도다 아브라함은 이렇게 하지 아니하였느니라"
+      ],
+      "raw_text_hashes": [
+        "ae9cabce0c26a35d4a66f2865c2a09c69dd91026c54d00aa30cc49d0ef142343"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:41",
+      "sequence": 26422,
+      "chapter_label": "JHN 8",
+      "verse_label": "41",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 41
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 41
+        }
+      ],
+      "en": "You do the works of your father.”They said to him, “We were not born of sexual immorality. We have one Father, God.”",
+      "ko": "너희는 너희 아비의 행사를 하는도다 대답하되 우리가 음란한데서 나지 아니하였고 아버지는 한분 뿐이시니 곧 하나님이시로다",
+      "source_text_hash": "183f35fa27f6674a075d5ed7cb56370e1a622497b17dbb70df6e069e593b0a16",
+      "translation_text_hash": "c041cb82e945f678eabb76868d539cdfa2528d4286aa48c2f5730cdfa496974d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 아비의 행사를 하는도다 대답하되 우리가 음란한데서 나지 아니하였고 아버지는 한분 뿐이시니 곧 하나님이시로다"
+      ],
+      "raw_text_hashes": [
+        "c041cb82e945f678eabb76868d539cdfa2528d4286aa48c2f5730cdfa496974d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:42",
+      "sequence": 26423,
+      "chapter_label": "JHN 8",
+      "verse_label": "42",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 42
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 42
+        }
+      ],
+      "en": "Therefore Jesus said to them, “If God were your father, you would love me, for I came out and have come from God. For I haven’t come of myself, but he sent me.",
+      "ko": "예수께서 가라사대 하나님이 너희 아버지였으면 너희가 나를 사랑하였으리니 이는 내가 하나님께로 나서 왔음이라 나는 스스로 온 것이 아니요 아버지께서 나를 보내신 것이니라",
+      "source_text_hash": "d498569f95a9173d98c89a470c80d8c51bc3f4b07377b5037cb5ddbf3a5bc4b3",
+      "translation_text_hash": "63a5f949aa8fcbcafa7c48029d2d2342f0b25ba27b9d076ba78df02d492e2a07",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 하나님이 너희 아버지였으면 너희가 나를 사랑하였으리니 이는 내가 하나님께로 나서 왔음이라 나는 스스로 온 것이 아니요 아버지께서 나를 보내신 것이니라"
+      ],
+      "raw_text_hashes": [
+        "63a5f949aa8fcbcafa7c48029d2d2342f0b25ba27b9d076ba78df02d492e2a07"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:43",
+      "sequence": 26424,
+      "chapter_label": "JHN 8",
+      "verse_label": "43",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 43
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 43
+        }
+      ],
+      "en": "Why don’t you understand my speech? Because you can’t hear my word.",
+      "ko": "어찌하여 내 말을 깨닫지 못하느냐 이는 내 말을 들을줄 알지 못함이로다",
+      "source_text_hash": "a13df0de06cd1b2a2d96c56484c5c6a3be888f2e5c0c3343b620870b13e460f3",
+      "translation_text_hash": "3e39590cd809fc7076a9b913189a82c7de27a0e0e0f5578205bfb8c50d9aa4ae",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어찌하여 내 말을 깨닫지 못하느냐 이는 내 말을 들을줄 알지 못함이로다"
+      ],
+      "raw_text_hashes": [
+        "3e39590cd809fc7076a9b913189a82c7de27a0e0e0f5578205bfb8c50d9aa4ae"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:44",
+      "sequence": 26425,
+      "chapter_label": "JHN 8",
+      "verse_label": "44",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 44
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 44
+        }
+      ],
+      "en": "You are of your father the devil, and you want to do the desires of your father. He was a murderer from the beginning, and doesn’t stand in the truth, because there is no truth in him. When he speaks a lie, he speaks on his own; for he is a liar, and the father of lies.",
+      "ko": "너희는 너희 아비 마귀에게서 났으니 너희 아비의 욕심을 너희도 행하고자 하느니라 저는 처음부터 살인한 자요 진리가 그 속에 없으므로 진리에 서지 못하고 거짓을 말할 때마다 제 것으로 말하나니 이는 저가 거짓말장이요 거짓의 아비가 되었음이니라",
+      "source_text_hash": "5bd1c959dd019f57b4abd632a596a86a1744a1c04fe660d5f2635e5ca3683c0c",
+      "translation_text_hash": "be616cda8833ad7cfa4c9d3dd061e3ee74ab3263cc5fda1b4ba825283613ecc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 너희 아비 마귀에게서 났으니 너희 아비의 욕심을 너희도 행하고자 하느니라 저는 처음부터 살인한 자요 진리가 그 속에 없으므로 진리에 서지 못하고 거짓을 말할 때마다 제 것으로 말하나니 이는 저가 거짓말장이요 거짓의 아비가 되었음이니라"
+      ],
+      "raw_text_hashes": [
+        "be616cda8833ad7cfa4c9d3dd061e3ee74ab3263cc5fda1b4ba825283613ecc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:45",
+      "sequence": 26426,
+      "chapter_label": "JHN 8",
+      "verse_label": "45",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 45
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 45
+        }
+      ],
+      "en": "But because I tell the truth, you don’t believe me.",
+      "ko": "내가 진리를 말하므로 너희가 나를 믿지 아니하는도다",
+      "source_text_hash": "fd9a04f6a5f33cbc621f166a72dc58cc50c58f713ced3f04cfd5765440088b1b",
+      "translation_text_hash": "a6fc75af5586bdda4b6c71407c3874def09d19f989ce2b97a34fe3bca55fadb1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 진리를 말하므로 너희가 나를 믿지 아니하는도다"
+      ],
+      "raw_text_hashes": [
+        "a6fc75af5586bdda4b6c71407c3874def09d19f989ce2b97a34fe3bca55fadb1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:46",
+      "sequence": 26427,
+      "chapter_label": "JHN 8",
+      "verse_label": "46",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 46
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 46
+        }
+      ],
+      "en": "Which of you convicts me of sin? If I tell the truth, why do you not believe me?",
+      "ko": "너희 중에 누가 나를 죄로 책잡겠느냐 내가 진리를 말하매 어찌하여 나를 믿지 아니하느냐",
+      "source_text_hash": "4e7e83793bb92b22e80361480e52d01e62709615d7711180b933e8a0680cf962",
+      "translation_text_hash": "e333850a74620b7b2be09e9653125b641452420533813b23bec01087741b73e1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 중에 누가 나를 죄로 책잡겠느냐 내가 진리를 말하매 어찌하여 나를 믿지 아니하느냐"
+      ],
+      "raw_text_hashes": [
+        "e333850a74620b7b2be09e9653125b641452420533813b23bec01087741b73e1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:47",
+      "sequence": 26428,
+      "chapter_label": "JHN 8",
+      "verse_label": "47",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 47
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 47
+        }
+      ],
+      "en": "He who is of God hears the words of God. For this cause you don’t hear, because you are not of God.”",
+      "ko": "하나님께 속한 자는 하나님의 말씀을 듣나니 너희가 듣지 아니함은 하나님께 속하지 아니하였음이로다",
+      "source_text_hash": "31725c9b1ffdd5af10d6d23b108369727cbbdae9bab990dcec881719a2dcdd21",
+      "translation_text_hash": "78eb77cf251b28a57b179d6e050a8c8b2d74599e4180ca188c93eb037e0d193a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "하나님께 속한 자는 하나님의 말씀을 듣나니 너희가 듣지 아니함은 하나님께 속하지 아니하였음이로다"
+      ],
+      "raw_text_hashes": [
+        "78eb77cf251b28a57b179d6e050a8c8b2d74599e4180ca188c93eb037e0d193a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:48",
+      "sequence": 26429,
+      "chapter_label": "JHN 8",
+      "verse_label": "48",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 48
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 48
+        }
+      ],
+      "en": "Then the Jews answered him, “Don’t we say well that you are a Samaritan, and have a demon?”",
+      "ko": "유대인들이 대답하여 가로되 우리가 너를 사마리아 사람이라 또는 귀신이 들렸다 하는 말이 옳지 아니하냐",
+      "source_text_hash": "27f25cb7469ef23688a75c4175322dc5b95c5e1d8bd7211956790a219b55af3a",
+      "translation_text_hash": "23a9064330b75bd3df57ced70f5536e637629a933b267cb0f045eeb927088eab",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 대답하여 가로되 우리가 너를 사마리아 사람이라 또는 귀신이 들렸다 하는 말이 옳지 아니하냐"
+      ],
+      "raw_text_hashes": [
+        "23a9064330b75bd3df57ced70f5536e637629a933b267cb0f045eeb927088eab"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:49",
+      "sequence": 26430,
+      "chapter_label": "JHN 8",
+      "verse_label": "49",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 49
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 49
+        }
+      ],
+      "en": "Jesus answered, “I don’t have a demon, but I honor my Father and you dishonor me.",
+      "ko": "예수께서 대답하시되 나는 귀신 들린 것이 아니라 오직 내 아버지를 공경함이어늘 너희가 나를 무시하는도다",
+      "source_text_hash": "8801b9bcf1142463b1e49e6e91943ea79bfd6255e83bb30249cbd3c249b744a4",
+      "translation_text_hash": "43917c928ac0c2abf35eabef909e62081199df81225add553059e47dd8741e9b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 나는 귀신 들린 것이 아니라 오직 내 아버지를 공경함이어늘 너희가 나를 무시하는도다"
+      ],
+      "raw_text_hashes": [
+        "43917c928ac0c2abf35eabef909e62081199df81225add553059e47dd8741e9b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:50",
+      "sequence": 26431,
+      "chapter_label": "JHN 8",
+      "verse_label": "50",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 50
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 50
+        }
+      ],
+      "en": "But I don’t seek my own glory. There is one who seeks and judges.",
+      "ko": "나는 내 영광을 구치 아니하나 구하고 판단하시는 이가 계시니라",
+      "source_text_hash": "73cb6dc608605179bca1136ab5708308906305ba3acda594cdb19989a2f8b2b5",
+      "translation_text_hash": "a990ed64b59d7e76770b216bbacbaf56f8beead6fc47bc17c68b66188197008c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 내 영광을 구치 아니하나 구하고 판단하시는 이가 계시니라"
+      ],
+      "raw_text_hashes": [
+        "a990ed64b59d7e76770b216bbacbaf56f8beead6fc47bc17c68b66188197008c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:51",
+      "sequence": 26432,
+      "chapter_label": "JHN 8",
+      "verse_label": "51",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 51
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 51
+        }
+      ],
+      "en": "Most certainly, I tell you, if a person keeps my word, he will never see death.”",
+      "ko": "진실로 진실로 너희에게 이르노니 사람이 내 말을 지키면 죽음을 영원히 보지 아니하리라",
+      "source_text_hash": "eed0f6cb07952d09028bc61c42b08c8298ad4599ee4ff1c1db4ebc0b80c0bdea",
+      "translation_text_hash": "97af80cce25d1c87403a2a282851d59d335ab6e87cf27b4c60c4dfe8605d0eb5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "진실로 진실로 너희에게 이르노니 사람이 내 말을 지키면 죽음을 영원히 보지 아니하리라"
+      ],
+      "raw_text_hashes": [
+        "97af80cce25d1c87403a2a282851d59d335ab6e87cf27b4c60c4dfe8605d0eb5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:52",
+      "sequence": 26433,
+      "chapter_label": "JHN 8",
+      "verse_label": "52",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 52
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 52
+        }
+      ],
+      "en": "Then the Jews said to him, “Now we know that you have a demon. Abraham died, as did the prophets; and you say, ‘If a man keeps my word, he will never taste of death.’",
+      "ko": "유대인들이 가로되 지금 네가 귀신 들린 줄을 아노라 아브라함과 선지자들도 죽었거늘 네 말은 사람이 내 말을 지키면 죽음을 영원히 맛보지 아니하리라 하니",
+      "source_text_hash": "2a11a4608a978716138dcc6cf1c0178b143229c801f93279af5c82507dd7c811",
+      "translation_text_hash": "da3abc54d42d1e9a933f7c6af713cddca43c7a6b16b97b12dcd5695ad9507718",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 가로되 지금 네가 귀신 들린 줄을 아노라 아브라함과 선지자들도 죽었거늘 네 말은 사람이 내 말을 지키면 죽음을 영원히 맛보지 아니하리라 하니"
+      ],
+      "raw_text_hashes": [
+        "da3abc54d42d1e9a933f7c6af713cddca43c7a6b16b97b12dcd5695ad9507718"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:53",
+      "sequence": 26434,
+      "chapter_label": "JHN 8",
+      "verse_label": "53",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 53
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 53
+        }
+      ],
+      "en": "Are you greater than our father Abraham, who died? The prophets died. Who do you make yourself out to be?”",
+      "ko": "너는 이미 죽은 우리 조상 아브라함보다 크냐 또 선지자들도 죽었거늘 너는 너를 누구라 하느냐",
+      "source_text_hash": "0757b0b69cb0a8b5292cb39076fdbbe0abae14596fab223403771682bcf1ae6b",
+      "translation_text_hash": "a74b94d3d0c1f38efd9dac16716b924047c5a3202ad3467709afb1b1758c3d9f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이미 죽은 우리 조상 아브라함보다 크냐 또 선지자들도 죽었거늘 너는 너를 누구라 하느냐"
+      ],
+      "raw_text_hashes": [
+        "a74b94d3d0c1f38efd9dac16716b924047c5a3202ad3467709afb1b1758c3d9f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:54",
+      "sequence": 26435,
+      "chapter_label": "JHN 8",
+      "verse_label": "54",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 54
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 54
+        }
+      ],
+      "en": "Jesus answered, “If I glorify myself, my glory is nothing. It is my Father who glorifies me, of whom you say that he is our God.",
+      "ko": "예수께서 대답하시되 내가 내게 영광을 돌리면 내 영광이 아무 것도 아니어니와 내게 영광을 돌리시는 이는 내 아버지시니 곧 너희가 너희 하나님이라 칭하는 그이시라",
+      "source_text_hash": "4f8e99b495fcc23723a653c7b973a12d9d6ce00d704233ff9684b1d75b00fd17",
+      "translation_text_hash": "6ff8a445904366599ca8cabc9ed998516842a27b1671a97ca1e47b005310133a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 대답하시되 내가 내게 영광을 돌리면 내 영광이 아무 것도 아니어니와 내게 영광을 돌리시는 이는 내 아버지시니 곧 너희가 너희 하나님이라 칭하는 그이시라"
+      ],
+      "raw_text_hashes": [
+        "6ff8a445904366599ca8cabc9ed998516842a27b1671a97ca1e47b005310133a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:55",
+      "sequence": 26436,
+      "chapter_label": "JHN 8",
+      "verse_label": "55",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 55
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 55
+        }
+      ],
+      "en": "You have not known him, but I know him. If I said, ‘I don’t know him,’ I would be like you, a liar. But I know him and keep his word.",
+      "ko": "너희는 그를 알지 못하되 나는 아노니 만일 내가 알지 못한다 하면 나도 너희 같이 거짓말장이가 되리라 나는 그를 알고 또 그의 말씀을 지키노라",
+      "source_text_hash": "b511d5269020f6357b2fbb717925b713193f78e082c6e0582de8264eb1a79a93",
+      "translation_text_hash": "37d68b9c5fe977e798285c230c8a02c8d3ec46be1097c287c610036f7a50c131",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그를 알지 못하되 나는 아노니 만일 내가 알지 못한다 하면 나도 너희 같이 거짓말장이가 되리라 나는 그를 알고 또 그의 말씀을 지키노라"
+      ],
+      "raw_text_hashes": [
+        "37d68b9c5fe977e798285c230c8a02c8d3ec46be1097c287c610036f7a50c131"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:56",
+      "sequence": 26437,
+      "chapter_label": "JHN 8",
+      "verse_label": "56",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 56
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 56
+        }
+      ],
+      "en": "Your father Abraham rejoiced to see my day. He saw it and was glad.”",
+      "ko": "너희 조상 아브라함은 나의 때 볼 것을 즐거워하다가 보고 기뻐하였느니라",
+      "source_text_hash": "e5ce366ac1207a1b4c9037094fbe58de4f813b2d947e8625e54ddd655671b760",
+      "translation_text_hash": "5013c67cbd2e4a8dabaafc26430aa86f72babbcae17180c1d448cafac7ece648",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희 조상 아브라함은 나의 때 볼 것을 즐거워하다가 보고 기뻐하였느니라"
+      ],
+      "raw_text_hashes": [
+        "5013c67cbd2e4a8dabaafc26430aa86f72babbcae17180c1d448cafac7ece648"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:57",
+      "sequence": 26438,
+      "chapter_label": "JHN 8",
+      "verse_label": "57",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 57
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 57
+        }
+      ],
+      "en": "The Jews therefore said to him, “You are not yet fifty years old! Have you seen Abraham?”",
+      "ko": "유대인들이 가로되 네가 아직 오십도 못되었는데 아브라함을 보았느냐",
+      "source_text_hash": "15306efda18cbb802d4c174580ddc20c8c10bc9cc82a42f1624fea79c0986496",
+      "translation_text_hash": "15814ffc9072862653dec4f00f1aafea5f160c770c62a6fe2c19f835cea5f36c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유대인들이 가로되 네가 아직 오십도 못되었는데 아브라함을 보았느냐"
+      ],
+      "raw_text_hashes": [
+        "15814ffc9072862653dec4f00f1aafea5f160c770c62a6fe2c19f835cea5f36c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:58",
+      "sequence": 26439,
+      "chapter_label": "JHN 8",
+      "verse_label": "58",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 58
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 58
+        }
+      ],
+      "en": "Jesus said to them, “Most certainly, I tell you, before Abraham came into existence, I AM.”",
+      "ko": "예수께서 가라사대 진실로 진실로 너희에게 이르노니 아브라함이 나기 전부터 내가 있느니라 하시니",
+      "source_text_hash": "144336f9109327c501e8bef757d5a8dc8d0c4f577c5c4366437f796e997ce53a",
+      "translation_text_hash": "983ce97771f2d9fae9c851ff08687805f1e94482ff76911f22014d77081df64c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예수께서 가라사대 진실로 진실로 너희에게 이르노니 아브라함이 나기 전부터 내가 있느니라 하시니"
+      ],
+      "raw_text_hashes": [
+        "983ce97771f2d9fae9c851ff08687805f1e94482ff76911f22014d77081df64c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:JHN:8:59",
+      "sequence": 26440,
+      "chapter_label": "JHN 8",
+      "verse_label": "59",
+      "locator": {
+        "book": "JHN",
+        "chapter": 8,
+        "verse": 59
+      },
+      "raw_locator": [
+        {
+          "book": "JHN",
+          "chapter": 8,
+          "verse": 59
+        }
+      ],
+      "en": "Therefore they took up stones to throw at him, but Jesus hid himself and went out of the temple, having gone through the middle of them, and so passed by.",
+      "ko": "저희가 돌을 들어 치려하거늘 예수께서 숨어 성전에서 나가시니라",
+      "source_text_hash": "8aaea1cb3277d35d51f17dca00b12abefbeef16a8268b2a551fb537b9acdae72",
+      "translation_text_hash": "6efac0efbeaa6009ff61b74ec7abacde69702a34697d06e1325cfbcedd038308",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희가 돌을 들어 치려하거늘 예수께서 숨어 성전에서 나가시니라"
+      ],
+      "raw_text_hashes": [
+        "6efac0efbeaa6009ff61b74ec7abacde69702a34697d06e1325cfbcedd038308"
+      ]
+    }
+  ]
+}

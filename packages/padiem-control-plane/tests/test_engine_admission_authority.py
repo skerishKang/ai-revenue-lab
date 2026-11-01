@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 import sqlite3
+import json
 
 import pytest
 
@@ -590,10 +591,10 @@ def test_engine_private_gateway_cannot_install_entitlement_truth():
             "*.engine-admission-authority.jsonc"
         )
     )
-    config = config_path.read_text(
-        encoding="utf-8"
-    )
-    assert '"workers_dev": false' in config
-    assert '"preview_urls": false' in config
-    assert '"routes"' not in config
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    assert config["workers_dev"] is True
+    assert config["preview_urls"] is False
+    assert config["env"]["staging"]["workers_dev"] is True
+    assert config["env"]["staging"]["preview_urls"] is False
+    assert "routes" not in config and "route" not in config
 

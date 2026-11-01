@@ -1,0 +1,17 @@
+(function(root){
+  'use strict';
+  if(!root.document||!root.storyMemoryPackVerification)return;
+  const d=root.document,verify=root.storyMemoryPackVerification,market=root.storyMemoryPackMarketplace,rt=root.storyMemoryUniversalSource;
+  const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function storedUserId(){try{return JSON.parse(root.localStorage?.getItem('storymemory.authBridgeState.v1')||'null')?.user?.id||null}catch(_){return null}}
+  root.storyMemoryEnableNeonPackVerification=async function(){
+    if(!root.storyMemoryRemote||!root.createStoryMemoryNeonPackVerificationProvider)return false;
+    const provider=root.createStoryMemoryNeonPackVerificationProvider({remoteAdapter:root.storyMemoryRemote});verify.setRegistryProvider(provider);
+    try{await verify.refresh();return true}catch(error){console.warn('StoryMemory Pack verification program unavailable',error);return false}
+  };
+  async function currentSource(){let sid=rt?.status?.().activeSourceId||null;if(!sid&&root.storyMemoryUniversalEnsureCurrentBookSource){try{sid=(await root.storyMemoryUniversalEnsureCurrentBookSource())?.source?.sourceId||null}catch(_){}}return sid?rt.getSource(sid):null}
+  function formatStatus(s){if(!s?.trusted)return '<span class="pack-verification-chip">UNVERIFIED</span>';const tier=String(s.effectiveTrustTier||'').toUpperCase();return `<span class="pack-verification-chip ok">${esc(tier)} VERIFIED</span>`}
+  async function render(){const host=d.getElementById('packVerificationList');if(!host)return;const source=await currentSource();let packs=[];try{packs=source?rt.listAttachedPacks(source.sourceId):[]}catch(_){}if(!packs.length){host.innerHTML='<div class="pack-verification-empty">연결된 Pack이 없습니다.</div>';return;}host.innerHTML=packs.map(p=>{const s=verify.getStatus(p.id,p.version,source);return `<article class="pack-verification-card"><div><strong>${esc(p.name)}</strong> <small>${esc(p.version)}</small></div>${formatStatus(s)}<p>${s.trusted?`검증자: ${esc(s.verifiedBy||'')}`:'평점·설치수·자기선언만으로 VERIFIED가 되지 않습니다.'}</p>${s.trusted?`<small>범위 ${esc(s.verificationScope||'{}')} · 만료 ${esc(s.expiresAt||'')}</small>`:''}</article>`}).join('')}
+  function mount(){const host=d.getElementById('sourceTrustControl')||d.querySelector('#reader .ai-panel');if(!host||d.getElementById('packVerificationLaunch'))return;const btn=d.createElement('button');btn.type='button';btn.id='packVerificationLaunch';btn.className='pack-verification-launch';btn.textContent='VERIFY · 검증 정보';host.appendChild(btn);const panel=d.createElement('section');panel.id='packVerificationPanel';panel.className='pack-verification-panel';panel.hidden=true;panel.innerHTML='<div class="pack-verification-head"><strong>PACK VERIFICATION</strong><small>버전·Source fingerprint·검증 범위 고정</small></div><div id="packVerificationList"></div><div class="pack-verification-note">EXPERT / OFFICIAL은 검증자 신원·유효 자격·승인 요청·유효기간이 모두 맞아야 합니다. 새 버전과 Fork는 검증을 상속하지 않습니다.</div>';host.appendChild(panel);btn.addEventListener('click',async()=>{panel.hidden=!panel.hidden;if(!panel.hidden)await render()});root.storyMemoryRefreshPackVerification=render;Promise.resolve().then(async()=>{try{if(storedUserId())await root.storyMemoryEnableNeonPackVerification()}catch(_){}})}
+  if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})(typeof globalThis!=='undefined'?globalThis:this);

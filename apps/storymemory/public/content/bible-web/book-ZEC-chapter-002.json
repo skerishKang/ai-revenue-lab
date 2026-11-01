@@ -1,0 +1,429 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:ZEC:chapter:002",
+  "unit_ordinal": 913,
+  "unit_label": "ZEC 2",
+  "book_code": "ZEC",
+  "chapter_number": 2,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:ZEC:2:1",
+      "sequence": 22901,
+      "chapter_label": "ZEC 2",
+      "verse_label": "1",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 1
+        }
+      ],
+      "en": "I lifted up my eyes, and saw, and behold, a man with a measuring line in his hand.",
+      "ko": "내가 또 눈을 들어 본즉 한 사람이 척량 줄을 그 손에 잡았기로",
+      "source_text_hash": "ce96e5979934fc27a74721d9e23f93803ef7fa6b7c3725670a473dff1bbc748d",
+      "translation_text_hash": "a94db9dcdd46ae40b86b57466bbe26887ce7671bddc9465238f635a360fd1ab0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 또 눈을 들어 본즉 한 사람이 척량 줄을 그 손에 잡았기로"
+      ],
+      "raw_text_hashes": [
+        "a94db9dcdd46ae40b86b57466bbe26887ce7671bddc9465238f635a360fd1ab0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:2",
+      "sequence": 22902,
+      "chapter_label": "ZEC 2",
+      "verse_label": "2",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 2
+        }
+      ],
+      "en": "Then I asked, “Where are you going?” He said to me, “To measure Jerusalem, to see what is its width and what is its length.”",
+      "ko": "네가 어디로 가느냐 물은즉 내게 대답하되 예루살렘을 척량하여 그 장광을 보고자 하노라 할 때에",
+      "source_text_hash": "7ef53585b16a3756fba729462891314c45f4c3f045a4deace7a6b586fc02ba45",
+      "translation_text_hash": "4ecf5cb2928512296b685cc4f08d46793114ae02cfbabeb38cc05cde64b3532c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 어디로 가느냐 물은즉 내게 대답하되 예루살렘을 척량하여 그 장광을 보고자 하노라 할 때에"
+      ],
+      "raw_text_hashes": [
+        "4ecf5cb2928512296b685cc4f08d46793114ae02cfbabeb38cc05cde64b3532c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:3",
+      "sequence": 22903,
+      "chapter_label": "ZEC 2",
+      "verse_label": "3",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 3
+        }
+      ],
+      "en": "Behold, the angel who talked with me went out, and another angel went out to meet him,",
+      "ko": "내게 말하는 천사가 나가매 다른 천사가 나와서 그를 맞으며",
+      "source_text_hash": "8e237d678b59470edcf533856708eb9d206dbdc1a972aac62ff4f35b40cc99c7",
+      "translation_text_hash": "b6661862744ab0d0852c52669c5a11852ad1a8254dcca43fcb83abf582c992aa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 말하는 천사가 나가매 다른 천사가 나와서 그를 맞으며"
+      ],
+      "raw_text_hashes": [
+        "b6661862744ab0d0852c52669c5a11852ad1a8254dcca43fcb83abf582c992aa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:4",
+      "sequence": 22904,
+      "chapter_label": "ZEC 2",
+      "verse_label": "4",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 4
+        }
+      ],
+      "en": "and said to him, “Run, speak to this young man, saying, ‘Jerusalem will be inhabited as villages without walls, because of the multitude of men and livestock in it.",
+      "ko": "이르되 너는 달려가서 그 소년에게 고하여 이르기를 예루살렘에 사람이 거하리니 그 가운데 사람과 육축이 많으므로 그것이 성곽 없는 촌락과 같으리라",
+      "source_text_hash": "066d036e022e8719b0ab1e112d7c47172a344363636ad310f28b6d5f626859dc",
+      "translation_text_hash": "41ff4b9d7abe9bb86bb44093cc5ff2dfc05d027658fe1aba258d55d3b74c683a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이르되 너는 달려가서 그 소년에게 고하여 이르기를 예루살렘에 사람이 거하리니 그 가운데 사람과 육축이 많으므로 그것이 성곽 없는 촌락과 같으리라"
+      ],
+      "raw_text_hashes": [
+        "41ff4b9d7abe9bb86bb44093cc5ff2dfc05d027658fe1aba258d55d3b74c683a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:5",
+      "sequence": 22905,
+      "chapter_label": "ZEC 2",
+      "verse_label": "5",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 5
+        }
+      ],
+      "en": "For I,’ says the LORD, ‘will be to her a wall of fire around it, and I will be the glory in the middle of her.",
+      "ko": "여호와의 말씀에 내가 그 사면에서 불 성곽이 되며 그 가운데서 영광이 되리라",
+      "source_text_hash": "95696160ef8a8164036122a1f8942f36aa22699626cd8abbc4503e8ddfe5d7e7",
+      "translation_text_hash": "b6a6d1d0df52e855552b32358f32f9ac85cd900c42dd3d1dba9323f0691a61d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 내가 그 사면에서 불 성곽이 되며 그 가운데서 영광이 되리라"
+      ],
+      "raw_text_hashes": [
+        "b6a6d1d0df52e855552b32358f32f9ac85cd900c42dd3d1dba9323f0691a61d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:6",
+      "sequence": 22906,
+      "chapter_label": "ZEC 2",
+      "verse_label": "6",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 6
+        }
+      ],
+      "en": "Come! Come! Flee from the land of the north,’ says the LORD; ‘for I have spread you abroad as the four winds of the sky,’ says the LORD.",
+      "ko": "여호와의 말씀에 내가 너를 하늘의 사방 바람 같이 흩어지게 하였거니와 이제 너희는 북방 땅에서 도망할찌니라 나 여호와의 말이니라",
+      "source_text_hash": "2ba7d569c1c338ef7919f39317ce1190f0c04feba0b838f8a450769ccaef10c7",
+      "translation_text_hash": "59a0a6569b949a6c189af313e4d8d594da542299feff68dde38ba6ce30e07a73",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 내가 너를 하늘의 사방 바람 같이 흩어지게 하였거니와 이제 너희는 북방 땅에서 도망할찌니라 나 여호와의 말이니라"
+      ],
+      "raw_text_hashes": [
+        "59a0a6569b949a6c189af313e4d8d594da542299feff68dde38ba6ce30e07a73"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:7",
+      "sequence": 22907,
+      "chapter_label": "ZEC 2",
+      "verse_label": "7",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 7
+        }
+      ],
+      "en": "‘Come, Zion! Escape, you who dwell with the daughter of Babylon.’",
+      "ko": "바벨론 성에 거하는 시온아 이제 너는 피할찌니라",
+      "source_text_hash": "84ebaa415181d112f078136c7667b291e1f1456c4bfab1017728c838afd96636",
+      "translation_text_hash": "2829db85adcf86886ac25036d29b3e5920f730b64e480224050f9ab20933d908",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바벨론 성에 거하는 시온아 이제 너는 피할찌니라"
+      ],
+      "raw_text_hashes": [
+        "2829db85adcf86886ac25036d29b3e5920f730b64e480224050f9ab20933d908"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:8",
+      "sequence": 22908,
+      "chapter_label": "ZEC 2",
+      "verse_label": "8",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 8
+        }
+      ],
+      "en": "For the LORD of Armies says: ‘For honor he has sent me to the nations which plundered you; for he who touches you touches the apple of his eye.",
+      "ko": "만군의 여호와께서 이같이 말씀하시되 너희를 노략한 열국으로 영광을 위하여 나를 보내셨나니 무릇 너희를 범하는 자는 그의 눈동자를 범하는 것이라",
+      "source_text_hash": "5626f553403e02c14c3fe9b15f6220be7456f571ccd2005df6d9d3fafce083cf",
+      "translation_text_hash": "876e0944196721d5256590218f94ad7663f8caea44ccdd63525d672ac1030f4c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만군의 여호와께서 이같이 말씀하시되 너희를 노략한 열국으로 영광을 위하여 나를 보내셨나니 무릇 너희를 범하는 자는 그의 눈동자를 범하는 것이라"
+      ],
+      "raw_text_hashes": [
+        "876e0944196721d5256590218f94ad7663f8caea44ccdd63525d672ac1030f4c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:9",
+      "sequence": 22909,
+      "chapter_label": "ZEC 2",
+      "verse_label": "9",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 9
+        }
+      ],
+      "en": "For, behold, I will shake my hand over them, and they will be a plunder to those who served them; and you will know that the LORD of Armies has sent me.",
+      "ko": "내가 손을 그들 위에 움직인즉 그들이 자기를 섬기던 자에게 노략거리가 되리라 하셨나니 너희가 만군의 여호와께서 나를 보내신줄 알리라",
+      "source_text_hash": "6f8a0b22ca7d3d9f75964ad398f79cf041ed252893046085d46911afdb6dac67",
+      "translation_text_hash": "b8307ceefc86cc7f65fba1125200060fd0ebe5e9a6fdb92f2a4c25246816c02c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 손을 그들 위에 움직인즉 그들이 자기를 섬기던 자에게 노략거리가 되리라 하셨나니 너희가 만군의 여호와께서 나를 보내신줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "b8307ceefc86cc7f65fba1125200060fd0ebe5e9a6fdb92f2a4c25246816c02c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:10",
+      "sequence": 22910,
+      "chapter_label": "ZEC 2",
+      "verse_label": "10",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 10
+        }
+      ],
+      "en": "Sing and rejoice, daughter of Zion! For behold, I come and I will dwell within you,’ says the LORD.",
+      "ko": "여호와의 말씀에 시온의 딸아 노래하고 기뻐하라 이는 내가 임하여 네 가운데 거할 것임이니라",
+      "source_text_hash": "d87963fc877ef00cc0ad88827435828081cc4e8e17b1c708cf6d5629932a6c81",
+      "translation_text_hash": "b5f952349901eafd0bd6f9ffb5905b6e7eb9fa0e0b5a1f3bb9aaa3d724fd17d6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 말씀에 시온의 딸아 노래하고 기뻐하라 이는 내가 임하여 네 가운데 거할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "b5f952349901eafd0bd6f9ffb5905b6e7eb9fa0e0b5a1f3bb9aaa3d724fd17d6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:11",
+      "sequence": 22911,
+      "chapter_label": "ZEC 2",
+      "verse_label": "11",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 11
+        }
+      ],
+      "en": "Many nations shall join themselves to the LORD in that day, and shall be my people; and I will dwell among you, and you shall know that the LORD of Armies has sent me to you.",
+      "ko": "그 날에 많은 나라가 여호와께 속하여 내 백성이 될 것이요 나는 네 가운데 거하리라 네가 만군의 여호와께서 나를 네게 보내신줄 알리라",
+      "source_text_hash": "5cc523f3f78bab923d854a52decd7ee23844dd949e0cea55fa5258845ee17b71",
+      "translation_text_hash": "541e4b54e0d91cca027bec67e6eca84685623b363ca79542a8d99cefd09f4a78",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 날에 많은 나라가 여호와께 속하여 내 백성이 될 것이요 나는 네 가운데 거하리라 네가 만군의 여호와께서 나를 네게 보내신줄 알리라"
+      ],
+      "raw_text_hashes": [
+        "541e4b54e0d91cca027bec67e6eca84685623b363ca79542a8d99cefd09f4a78"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:12",
+      "sequence": 22912,
+      "chapter_label": "ZEC 2",
+      "verse_label": "12",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 12
+        }
+      ],
+      "en": "The LORD will inherit Judah as his portion in the holy land, and will again choose Jerusalem.",
+      "ko": "여호와께서 장차 유다를 취하여 거룩한 땅에서 자기 소유를 삼으시고 다시 예루살렘을 택하시리니",
+      "source_text_hash": "b8b41b41c92141e8af6d82d3d05ff59c10d8fc4c3b74daa5dc53169600b0fd57",
+      "translation_text_hash": "2890cde57d8dc38912d5c698903197b3706ed3c9014ba8cf32ccf8be7bf21d44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 장차 유다를 취하여 거룩한 땅에서 자기 소유를 삼으시고 다시 예루살렘을 택하시리니"
+      ],
+      "raw_text_hashes": [
+        "2890cde57d8dc38912d5c698903197b3706ed3c9014ba8cf32ccf8be7bf21d44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:ZEC:2:13",
+      "sequence": 22913,
+      "chapter_label": "ZEC 2",
+      "verse_label": "13",
+      "locator": {
+        "book": "ZEC",
+        "chapter": 2,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "ZEC",
+          "chapter": 2,
+          "verse": 13
+        }
+      ],
+      "en": "Be silent, all flesh, before the LORD; for he has roused himself from his holy habitation!”",
+      "ko": "무릇 혈기 있는 자들이 여호와 앞에서 잠잠할 것은 여호와께서 그 성소에서 일어나심이니라 하라 하더라",
+      "source_text_hash": "e7161b4b637e50efd53829253ddc5eea67bc095ee4ae5b7f6bfce5d81f585b34",
+      "translation_text_hash": "11a10f1907b253683ac1b47b4fd034004894642e09dd66d1a16327ec9d550abf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "무릇 혈기 있는 자들이 여호와 앞에서 잠잠할 것은 여호와께서 그 성소에서 일어나심이니라 하라 하더라"
+      ],
+      "raw_text_hashes": [
+        "11a10f1907b253683ac1b47b4fd034004894642e09dd66d1a16327ec9d550abf"
+      ]
+    }
+  ]
+}

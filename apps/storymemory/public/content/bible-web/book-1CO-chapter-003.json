@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:1CO:chapter:003",
+  "unit_ordinal": 1065,
+  "unit_label": "1CO 3",
+  "book_code": "1CO",
+  "chapter_number": 3,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:1CO:3:1",
+      "sequence": 28408,
+      "chapter_label": "1CO 3",
+      "verse_label": "1",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 1
+        }
+      ],
+      "en": "Brothers, I couldn’t speak to you as to spiritual, but as to fleshly, as to babies in Christ.",
+      "ko": "형제들아 내가 신령한 자들을 대함과 같이 너희에게 말할 수 없어서 육신에 속한 자 곧 그리스도 안에서 어린 아이들을 대함과 같이 하노라",
+      "source_text_hash": "efcff1e9f79c724e7c22c585400c09a0e97ac2b86aca33100882d65d3dd97f24",
+      "translation_text_hash": "74ffe748bbf7b2aac38d59e56b38432e4e4aeee207e5e0e6cee3b8270a3dabc1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "형제들아 내가 신령한 자들을 대함과 같이 너희에게 말할 수 없어서 육신에 속한 자 곧 그리스도 안에서 어린 아이들을 대함과 같이 하노라"
+      ],
+      "raw_text_hashes": [
+        "74ffe748bbf7b2aac38d59e56b38432e4e4aeee207e5e0e6cee3b8270a3dabc1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:2",
+      "sequence": 28409,
+      "chapter_label": "1CO 3",
+      "verse_label": "2",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 2
+        }
+      ],
+      "en": "I fed you with milk, not with solid food, for you weren’t yet ready. Indeed, you aren’t ready even now,",
+      "ko": "내가 너희를 젖으로 먹이고 밥으로 아니하였노니 이는 너희가 감당치 못하였음이거니와 지금도 못하리라",
+      "source_text_hash": "01db9e3c1e5d72044b80e787d964da48daf7b250d8562ef54d5a0fb7b4750db0",
+      "translation_text_hash": "a111bbe458194a7655e49b15b341ca587e02ca3f5f8093be3b99e98ed852a21c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 너희를 젖으로 먹이고 밥으로 아니하였노니 이는 너희가 감당치 못하였음이거니와 지금도 못하리라"
+      ],
+      "raw_text_hashes": [
+        "a111bbe458194a7655e49b15b341ca587e02ca3f5f8093be3b99e98ed852a21c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:3",
+      "sequence": 28410,
+      "chapter_label": "1CO 3",
+      "verse_label": "3",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 3
+        }
+      ],
+      "en": "for you are still fleshly. For insofar as there is jealousy, strife, and factions among you, aren’t you fleshly, and don’t you walk in the ways of men?",
+      "ko": "너희가 아직도 육신에 속한 자로다 너희 가운데 시기와 분쟁이 있으니 어찌 육신에 속하여 사람을 따라 행함이 아니리요",
+      "source_text_hash": "7961bdcde57e789d0060e588c867405101532cf8283a93202186fd114c4e0a79",
+      "translation_text_hash": "931bd6d5ef24ff44a40c5e824f21beaf791bcc0e4b8aaf1239b1714e790d17bb",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 아직도 육신에 속한 자로다 너희 가운데 시기와 분쟁이 있으니 어찌 육신에 속하여 사람을 따라 행함이 아니리요"
+      ],
+      "raw_text_hashes": [
+        "931bd6d5ef24ff44a40c5e824f21beaf791bcc0e4b8aaf1239b1714e790d17bb"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:4",
+      "sequence": 28411,
+      "chapter_label": "1CO 3",
+      "verse_label": "4",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 4
+        }
+      ],
+      "en": "For when one says, “I follow Paul,” and another, “I follow Apollos,” aren’t you fleshly?",
+      "ko": "어떤이는 말하되 나는 바울에게라 하고 다른이는 나는 아볼로에게라 하니 너희가 사람이 아니리요",
+      "source_text_hash": "d3618835fc46dd5d59e82a8c52b170b95c4890c9f409570159d9a9aa657220fc",
+      "translation_text_hash": "63188b0a1ef28a233501c4a6664a7d17fd889b99f04e5ca2f3ae7c6a9e392499",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤이는 말하되 나는 바울에게라 하고 다른이는 나는 아볼로에게라 하니 너희가 사람이 아니리요"
+      ],
+      "raw_text_hashes": [
+        "63188b0a1ef28a233501c4a6664a7d17fd889b99f04e5ca2f3ae7c6a9e392499"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:5",
+      "sequence": 28412,
+      "chapter_label": "1CO 3",
+      "verse_label": "5",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 5
+        }
+      ],
+      "en": "Who then is Apollos, and who is Paul, but servants through whom you believed, and each as the Lord gave to him?",
+      "ko": "그런즉 아볼로는 무엇이며 바울은 무엇이뇨 저희는 주께서 각각 주신대로 너희로 하여금 믿게 한 사역자들이니라",
+      "source_text_hash": "fec67bdea4e586476a67035fecea9c461a13f95bce71bcae63f7a1d2ee718d73",
+      "translation_text_hash": "3abbc9e8d0b312b06fe366c5ea4e5ba41418e81cdd9bb13e07f819f22e2aca70",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 아볼로는 무엇이며 바울은 무엇이뇨 저희는 주께서 각각 주신대로 너희로 하여금 믿게 한 사역자들이니라"
+      ],
+      "raw_text_hashes": [
+        "3abbc9e8d0b312b06fe366c5ea4e5ba41418e81cdd9bb13e07f819f22e2aca70"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:6",
+      "sequence": 28413,
+      "chapter_label": "1CO 3",
+      "verse_label": "6",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 6
+        }
+      ],
+      "en": "I planted. Apollos watered. But God gave the increase.",
+      "ko": "나는 심었고 아볼로는 물을 주었으되 오직 하나님은 자라나게 하셨나니",
+      "source_text_hash": "cd34c740cec2ef2b80a99eabeafb1a0041c525da479031b55bbed34deaa63979",
+      "translation_text_hash": "abe51e8654fd07561750076f9edbab2b112c13c35f2ee2f98cf2b9dcd9c5c22d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나는 심었고 아볼로는 물을 주었으되 오직 하나님은 자라나게 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "abe51e8654fd07561750076f9edbab2b112c13c35f2ee2f98cf2b9dcd9c5c22d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:7",
+      "sequence": 28414,
+      "chapter_label": "1CO 3",
+      "verse_label": "7",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 7
+        }
+      ],
+      "en": "So then neither he who plants is anything, nor he who waters, but God who gives the increase.",
+      "ko": "그런즉 심는 이나 물주는 이는 아무 것도 아니로되 오직 자라나게 하시는 하나님 뿐이니라",
+      "source_text_hash": "27ccf9d363a1ec5d486638908b7dab40e0b0298c9309784dda05939c4f8f419c",
+      "translation_text_hash": "e57ecd08831e71b99c61105f2cc242f7b96b823ba38dcc528fe0b2f0ad30a9d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 심는 이나 물주는 이는 아무 것도 아니로되 오직 자라나게 하시는 하나님 뿐이니라"
+      ],
+      "raw_text_hashes": [
+        "e57ecd08831e71b99c61105f2cc242f7b96b823ba38dcc528fe0b2f0ad30a9d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:8",
+      "sequence": 28415,
+      "chapter_label": "1CO 3",
+      "verse_label": "8",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 8
+        }
+      ],
+      "en": "Now he who plants and he who waters are the same, but each will receive his own reward according to his own labor.",
+      "ko": "심는 이와 물주는 이가 일반이나 각각 자기의 일하는대로 자기의 상을 받으리라",
+      "source_text_hash": "c48f2975ddb5924ada84809d30c69784fd2785c3fc7bfca669609f1a27aa4a58",
+      "translation_text_hash": "cc664b6355c9376cb4e117419044d92aa5179e1940d7f40a7dbaca581fe30787",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "심는 이와 물주는 이가 일반이나 각각 자기의 일하는대로 자기의 상을 받으리라"
+      ],
+      "raw_text_hashes": [
+        "cc664b6355c9376cb4e117419044d92aa5179e1940d7f40a7dbaca581fe30787"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:9",
+      "sequence": 28416,
+      "chapter_label": "1CO 3",
+      "verse_label": "9",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 9
+        }
+      ],
+      "en": "For we are God’s fellow workers. You are God’s farming, God’s building.",
+      "ko": "우리는 하나님의 동역자들이요 너희는 하나님의 밭이요 하나님의 집이니라",
+      "source_text_hash": "f6f457bdf49d5e2c59307cf6b7e9c5d494a660dd1ff57c670acb22377d3b9988",
+      "translation_text_hash": "5cfa1858ec27f935f43d922d6ef4f37d42d67121794943eb4aa38958e896cffd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리는 하나님의 동역자들이요 너희는 하나님의 밭이요 하나님의 집이니라"
+      ],
+      "raw_text_hashes": [
+        "5cfa1858ec27f935f43d922d6ef4f37d42d67121794943eb4aa38958e896cffd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:10",
+      "sequence": 28417,
+      "chapter_label": "1CO 3",
+      "verse_label": "10",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 10
+        }
+      ],
+      "en": "According to the grace of God which was given to me, as a wise master builder I laid a foundation, and another builds on it. But let each man be careful how he builds on it.",
+      "ko": "내게 주신 하나님의 은혜를 따라 내가 지혜로운 건축자와 같이 터를 닦아 두매 다른이가 그 위에 세우나 그러나 각각 어떻게 그 위에 세우기를 조심할찌니라",
+      "source_text_hash": "332291a2950d3baee4e38aba2bbee2e97775d326fa08019139f08ef04663c409",
+      "translation_text_hash": "6f6debbfc0ce67d56fe0f08a00220ca503bdcd568c925eda9646c71b012add0f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 주신 하나님의 은혜를 따라 내가 지혜로운 건축자와 같이 터를 닦아 두매 다른이가 그 위에 세우나 그러나 각각 어떻게 그 위에 세우기를 조심할찌니라"
+      ],
+      "raw_text_hashes": [
+        "6f6debbfc0ce67d56fe0f08a00220ca503bdcd568c925eda9646c71b012add0f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:11",
+      "sequence": 28418,
+      "chapter_label": "1CO 3",
+      "verse_label": "11",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 11
+        }
+      ],
+      "en": "For no one can lay any other foundation than that which has been laid, which is Jesus Christ.",
+      "ko": "이 닦아 둔것 외에 능히 다른 터를 닦아 둘 자가 없으니 이 터는 곧 예수 그리스도라",
+      "source_text_hash": "6e753b4d477086cbf697f0a78fa5d77a0f9157265ce8ba94bdf4c117406f3d9e",
+      "translation_text_hash": "31bbaaeffec74da0cbd0b22ff84f2045558a1978b11959e6e4b2fda96661f588",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 닦아 둔것 외에 능히 다른 터를 닦아 둘 자가 없으니 이 터는 곧 예수 그리스도라"
+      ],
+      "raw_text_hashes": [
+        "31bbaaeffec74da0cbd0b22ff84f2045558a1978b11959e6e4b2fda96661f588"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:12",
+      "sequence": 28419,
+      "chapter_label": "1CO 3",
+      "verse_label": "12",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 12
+        }
+      ],
+      "en": "But if anyone builds on the foundation with gold, silver, costly stones, wood, hay, or straw,",
+      "ko": "만일 누구든지 금이나 은이나 보석이나 나무나 풀이나 짚으로 이 터 위에 세우면",
+      "source_text_hash": "77941b4079d7e53225a85d62b3f5b205adfb5ea29b3bf7b131e0d9c0c3dbf35e",
+      "translation_text_hash": "cc8da368d2646d6062bdcbd5fa6f56209018d30cb783577ea9c9960de9489332",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 금이나 은이나 보석이나 나무나 풀이나 짚으로 이 터 위에 세우면"
+      ],
+      "raw_text_hashes": [
+        "cc8da368d2646d6062bdcbd5fa6f56209018d30cb783577ea9c9960de9489332"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:13",
+      "sequence": 28420,
+      "chapter_label": "1CO 3",
+      "verse_label": "13",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 13
+        }
+      ],
+      "en": "each man’s work will be revealed. For the Day will declare it, because it is revealed in fire; and the fire itself will test what sort of work each man’s work is.",
+      "ko": "각각 공력이 나타날 터인데 그 날이 공력을 밝히리니 이는 불로 나타내고 그 불이 각 사람의 공력이 어떠한 것을 시험할 것임이니라",
+      "source_text_hash": "db06fc6050fd5dd868470b2357142b7c9543082cac4516bfff0115ba59139aa7",
+      "translation_text_hash": "d8791b2927f3cd2a8485988e03b4a195ef9bc0600a67bcbb5ca39629442db84b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "각각 공력이 나타날 터인데 그 날이 공력을 밝히리니 이는 불로 나타내고 그 불이 각 사람의 공력이 어떠한 것을 시험할 것임이니라"
+      ],
+      "raw_text_hashes": [
+        "d8791b2927f3cd2a8485988e03b4a195ef9bc0600a67bcbb5ca39629442db84b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:14",
+      "sequence": 28421,
+      "chapter_label": "1CO 3",
+      "verse_label": "14",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 14
+        }
+      ],
+      "en": "If any man’s work remains which he built on it, he will receive a reward.",
+      "ko": "만일 누구든지 그 위에 세운 공력이 그대로 있으면 상을 받고",
+      "source_text_hash": "308dc31cc02dee06c7d34c223a8c7099252fb3927fe7667eb938bda93ef735ef",
+      "translation_text_hash": "88b5fbece25de2c00428b6cc051d9e959051cb14414454d57ec1c95afcfb0242",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "만일 누구든지 그 위에 세운 공력이 그대로 있으면 상을 받고"
+      ],
+      "raw_text_hashes": [
+        "88b5fbece25de2c00428b6cc051d9e959051cb14414454d57ec1c95afcfb0242"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:15",
+      "sequence": 28422,
+      "chapter_label": "1CO 3",
+      "verse_label": "15",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 15
+        }
+      ],
+      "en": "If any man’s work is burned, he will suffer loss, but he himself will be saved, but as through fire.",
+      "ko": "누구든지 공력이 불타면 해를 받으리니 그러나 자기는 구원을 얻되 불 가운데서 얻은 것 같으리라",
+      "source_text_hash": "6dbfbcb53d37b4b0185ba91fffdd5a60cd1947e76649d01114ce933749b306e5",
+      "translation_text_hash": "89a9a1b95eab6ccb54e09f9ffd02405addf02fef001dc9a79ff7ddd8d9d19cd4",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 공력이 불타면 해를 받으리니 그러나 자기는 구원을 얻되 불 가운데서 얻은 것 같으리라"
+      ],
+      "raw_text_hashes": [
+        "89a9a1b95eab6ccb54e09f9ffd02405addf02fef001dc9a79ff7ddd8d9d19cd4"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:16",
+      "sequence": 28423,
+      "chapter_label": "1CO 3",
+      "verse_label": "16",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 16
+        }
+      ],
+      "en": "Don’t you know that you are God’s temple and that God’s Spirit lives in you?",
+      "ko": "너희가 하나님의 성전인 것과 하나님의 성령이 너희 안에 거하시는 것을 알지 못하느뇨",
+      "source_text_hash": "f1fae08b9ca3f235ded4e5561e9bac303ded578fc2d79d714dd3447ed53123fa",
+      "translation_text_hash": "2dbf2db19d837003fe4e61e95df8380da7bb3247fa6b04720b10d6d47cf58614",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희가 하나님의 성전인 것과 하나님의 성령이 너희 안에 거하시는 것을 알지 못하느뇨"
+      ],
+      "raw_text_hashes": [
+        "2dbf2db19d837003fe4e61e95df8380da7bb3247fa6b04720b10d6d47cf58614"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:17",
+      "sequence": 28424,
+      "chapter_label": "1CO 3",
+      "verse_label": "17",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 17
+        }
+      ],
+      "en": "If anyone destroys God’s temple, God will destroy him; for God’s temple is holy, which you are.",
+      "ko": "누구든지 하나님의 성전을 더럽히면 하나님이 그 사람을 멸하시리라 하나님의 성전은 거룩하니 너희도 그러하니라",
+      "source_text_hash": "fbaba39fdb1d195117c328938ecf199ef4805f8fa906e0aa419983c4a75d5006",
+      "translation_text_hash": "b6d6ed819d54e32a5b5a9031952b971a2cf33a755e1a8c66d0a761073420709e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "누구든지 하나님의 성전을 더럽히면 하나님이 그 사람을 멸하시리라 하나님의 성전은 거룩하니 너희도 그러하니라"
+      ],
+      "raw_text_hashes": [
+        "b6d6ed819d54e32a5b5a9031952b971a2cf33a755e1a8c66d0a761073420709e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:18",
+      "sequence": 28425,
+      "chapter_label": "1CO 3",
+      "verse_label": "18",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 18
+        }
+      ],
+      "en": "Let no one deceive himself. If anyone thinks that he is wise among you in this world, let him become a fool that he may become wise.",
+      "ko": "아무도 자기를 속이지 말라 너희 중에 누구든지 이 세상에서 지혜 있는 줄로 생각하거든 미련한 자가 되어라 그리하여야 지혜로운 자가 되리라",
+      "source_text_hash": "c6f5b55a3e34838f2e35137b075a4cdbd48f71d4eef35ece24875a635c3e2119",
+      "translation_text_hash": "50d3e670420749a2653b1f87eb9bac27bd4c1098af728b88c864b2d3e1418ac2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아무도 자기를 속이지 말라 너희 중에 누구든지 이 세상에서 지혜 있는 줄로 생각하거든 미련한 자가 되어라 그리하여야 지혜로운 자가 되리라"
+      ],
+      "raw_text_hashes": [
+        "50d3e670420749a2653b1f87eb9bac27bd4c1098af728b88c864b2d3e1418ac2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:19",
+      "sequence": 28426,
+      "chapter_label": "1CO 3",
+      "verse_label": "19",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 19
+        }
+      ],
+      "en": "For the wisdom of this world is foolishness with God. For it is written, “He has taken the wise in their craftiness.”",
+      "ko": "이 세상 지혜는 하나님께 미련한 것이니 기록된바 지혜 있는 자들로 하여금 자기 궤휼에 빠지게 하시는 이라 하였고",
+      "source_text_hash": "122b9e5ec34d5607ef1d4247bc90e58ff3ace997fbfebd2134baf94b2afee18d",
+      "translation_text_hash": "e96b3ccf40b09c3cd62760d4dcb580c5e9b848f8b5709eaec07ff425560615fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 세상 지혜는 하나님께 미련한 것이니 기록된바 지혜 있는 자들로 하여금 자기 궤휼에 빠지게 하시는 이라 하였고"
+      ],
+      "raw_text_hashes": [
+        "e96b3ccf40b09c3cd62760d4dcb580c5e9b848f8b5709eaec07ff425560615fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:20",
+      "sequence": 28427,
+      "chapter_label": "1CO 3",
+      "verse_label": "20",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 20
+        }
+      ],
+      "en": "And again, “The Lord knows the reasoning of the wise, that it is worthless.”",
+      "ko": "또 주께서 지혜 있는 자들의 생각을 헛것으로 아신다 하셨느니라",
+      "source_text_hash": "b43d272fd69b970540661206ddd72d4ce68cc898edc06f08e7987b2576f20e8d",
+      "translation_text_hash": "0fd371782253d98fd4bdfa3ddf0df02e842777e33fdd3803804939d9f9199f32",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 주께서 지혜 있는 자들의 생각을 헛것으로 아신다 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "0fd371782253d98fd4bdfa3ddf0df02e842777e33fdd3803804939d9f9199f32"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:21",
+      "sequence": 28428,
+      "chapter_label": "1CO 3",
+      "verse_label": "21",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 21
+        }
+      ],
+      "en": "Therefore let no one boast in men. For all things are yours,",
+      "ko": "그런즉 누구든지 사람을 자랑하지 말라 만물이 다 너희 것임이라",
+      "source_text_hash": "a5c38905856bc3140f6a2080f512c9770857f583026852a638b5af183c6c4972",
+      "translation_text_hash": "5bc3efd2e5cef6f1af92782d2a09da5356e34c7a684f9bc3afd4875946b923d9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 누구든지 사람을 자랑하지 말라 만물이 다 너희 것임이라"
+      ],
+      "raw_text_hashes": [
+        "5bc3efd2e5cef6f1af92782d2a09da5356e34c7a684f9bc3afd4875946b923d9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:22",
+      "sequence": 28429,
+      "chapter_label": "1CO 3",
+      "verse_label": "22",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 22
+        }
+      ],
+      "en": "whether Paul, or Apollos, or Cephas, or the world, or life, or death, or things present, or things to come. All are yours,",
+      "ko": "바울이나 아볼로나 게바나 세계나 생명이나 사망이나 지금 것이나 장래 것이나 다 너희의 것이요",
+      "source_text_hash": "6af02e4307e1b03287361d2982542d5a0011c08e8de55fac7365ef863f30bbc5",
+      "translation_text_hash": "2194f26f862b8c219eb8fbacd06e72ff67d86725dd039ba8485ef49f30412ed7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "바울이나 아볼로나 게바나 세계나 생명이나 사망이나 지금 것이나 장래 것이나 다 너희의 것이요"
+      ],
+      "raw_text_hashes": [
+        "2194f26f862b8c219eb8fbacd06e72ff67d86725dd039ba8485ef49f30412ed7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:1CO:3:23",
+      "sequence": 28430,
+      "chapter_label": "1CO 3",
+      "verse_label": "23",
+      "locator": {
+        "book": "1CO",
+        "chapter": 3,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "1CO",
+          "chapter": 3,
+          "verse": 23
+        }
+      ],
+      "en": "and you are Christ’s, and Christ is God’s.",
+      "ko": "너희는 그리스도의 것이요 그리스도는 하나님의 것이니라",
+      "source_text_hash": "c5693786cb6f7eb476ac164453fe0b0aa41430328fe0eb89b476e6e084def86d",
+      "translation_text_hash": "f9b8ae6298cc12e0919722b595d856b9ec177b6a755d924336b10e8e500750cf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너희는 그리스도의 것이요 그리스도는 하나님의 것이니라"
+      ],
+      "raw_text_hashes": [
+        "f9b8ae6298cc12e0919722b595d856b9ec177b6a755d924336b10e8e500750cf"
+      ]
+    }
+  ]
+}

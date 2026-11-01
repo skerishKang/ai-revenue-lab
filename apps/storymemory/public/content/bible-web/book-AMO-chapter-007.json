@@ -1,0 +1,557 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:AMO:chapter:007",
+  "unit_ordinal": 886,
+  "unit_label": "AMO 7",
+  "book_code": "AMO",
+  "chapter_number": 7,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:AMO:7:1",
+      "sequence": 22466,
+      "chapter_label": "AMO 7",
+      "verse_label": "1",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 1
+        }
+      ],
+      "en": "Thus the Lord GOD showed me: behold, he formed locusts in the beginning of the shooting up of the latter growth; and behold, it was the latter growth after the king’s harvest.",
+      "ko": "주 여호와께서 내게 보이신 것이 이러하니라 왕이 풀을 벤 후 풀이 다시 움돋기 시작할 때에 주께서 황충을 지으시매",
+      "source_text_hash": "82e165e1242574ecc6859098b35208c2344627b213b686c2887b6a7cc2d328d1",
+      "translation_text_hash": "dac7fa9a84cfa679408bf55eff60f9fa5441d0d3523f6bb9ccd3e38165eca79d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 내게 보이신 것이 이러하니라 왕이 풀을 벤 후 풀이 다시 움돋기 시작할 때에 주께서 황충을 지으시매"
+      ],
+      "raw_text_hashes": [
+        "dac7fa9a84cfa679408bf55eff60f9fa5441d0d3523f6bb9ccd3e38165eca79d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:2",
+      "sequence": 22467,
+      "chapter_label": "AMO 7",
+      "verse_label": "2",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 2
+        }
+      ],
+      "en": "When they finished eating the grass of the land, then I said, “Lord GOD, forgive, I beg you! How could Jacob stand? For he is small.”",
+      "ko": "황충이 땅의 풀을 다 먹은지라 내가 가로되 주 여호와여 청컨대 사하소서 야곱이 미약하오니 어떻게 서리이까 하매",
+      "source_text_hash": "625880297d831f759173939b9e1468cf97cad4fa616f6f1314e4ff7bb0db733b",
+      "translation_text_hash": "4debd465a489b1d6afad593d4273f27a4e600b69a1eb6410eb97b5c6f1d87c5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "황충이 땅의 풀을 다 먹은지라 내가 가로되 주 여호와여 청컨대 사하소서 야곱이 미약하오니 어떻게 서리이까 하매"
+      ],
+      "raw_text_hashes": [
+        "4debd465a489b1d6afad593d4273f27a4e600b69a1eb6410eb97b5c6f1d87c5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:3",
+      "sequence": 22468,
+      "chapter_label": "AMO 7",
+      "verse_label": "3",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 3
+        }
+      ],
+      "en": "The LORD relented concerning this. “It shall not be,” says the LORD.",
+      "ko": "여호와께서 이에 대하여 뜻을 돌이켜 가라사대 이것이 이루지 아니하리라 하시니라",
+      "source_text_hash": "7bc178f5dc826f27374a3cc1953babacc17fd85653980b381ddde72c92176327",
+      "translation_text_hash": "8be50d7ef07a2c95cd26b6d6bcd6ca7ccdea3172998ff1a882c010ff6414bd5a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 이에 대하여 뜻을 돌이켜 가라사대 이것이 이루지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "8be50d7ef07a2c95cd26b6d6bcd6ca7ccdea3172998ff1a882c010ff6414bd5a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:4",
+      "sequence": 22469,
+      "chapter_label": "AMO 7",
+      "verse_label": "4",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 4
+        }
+      ],
+      "en": "Thus the Lord GOD showed me: behold, the Lord GOD called for judgment by fire; and it dried up the great deep, and would have devoured the land.",
+      "ko": "주 여호와께서 또 내게 보이신 것이 이러하니라 주 여호와께서 명하여 불로 징벌하게 하시니 불이 큰 바다를 삼키고 육지까지 먹으려 하는지라",
+      "source_text_hash": "4af702603a873be64add83b4a8b8db430c592bd2bb98fe61999b5a573a246a52",
+      "translation_text_hash": "8344c5409b3b33f59888afd7aabed62caa46486467376c470323f2d38f3eeb5f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 또 내게 보이신 것이 이러하니라 주 여호와께서 명하여 불로 징벌하게 하시니 불이 큰 바다를 삼키고 육지까지 먹으려 하는지라"
+      ],
+      "raw_text_hashes": [
+        "8344c5409b3b33f59888afd7aabed62caa46486467376c470323f2d38f3eeb5f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:5",
+      "sequence": 22470,
+      "chapter_label": "AMO 7",
+      "verse_label": "5",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 5
+        }
+      ],
+      "en": "Then I said, “Lord GOD, stop, I beg you! How could Jacob stand? For he is small.”",
+      "ko": "이에 내가 가로되 주 여호와여 청컨대 그치소서 야곱이 미약하오니 어떻게 서리이까 하매",
+      "source_text_hash": "52b2557d21236bb888995a873d52b8308da9a400b0180547791ecce26d3a4a85",
+      "translation_text_hash": "79b5a1452fc394601d7c03e2cfc37dcd58299a4feddc83e0104063cb3145b1b1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 내가 가로되 주 여호와여 청컨대 그치소서 야곱이 미약하오니 어떻게 서리이까 하매"
+      ],
+      "raw_text_hashes": [
+        "79b5a1452fc394601d7c03e2cfc37dcd58299a4feddc83e0104063cb3145b1b1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:6",
+      "sequence": 22471,
+      "chapter_label": "AMO 7",
+      "verse_label": "6",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 6
+        }
+      ],
+      "en": "The LORD relented concerning this. “This also shall not be,” says the Lord GOD.",
+      "ko": "주 여호와께서 이에 대하여 뜻을 돌이켜 가라사대 이것도 이루지 아니하리라 하시니라",
+      "source_text_hash": "b7bce356ca020a7d5d0a70418df332132e01bd31d72a8a86edd43fbb66a98913",
+      "translation_text_hash": "59dfa435699ae87ffcd95b820a2083f78aaf9d335fd83b0e9f030e4a61c89a44",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "주 여호와께서 이에 대하여 뜻을 돌이켜 가라사대 이것도 이루지 아니하리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "59dfa435699ae87ffcd95b820a2083f78aaf9d335fd83b0e9f030e4a61c89a44"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:7",
+      "sequence": 22472,
+      "chapter_label": "AMO 7",
+      "verse_label": "7",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 7
+        }
+      ],
+      "en": "Thus he showed me: behold, the Lord stood beside a wall made by a plumb line, with a plumb line in his hand.",
+      "ko": "또 내게 보이신 것이 이러하니라 다림줄을 띄우고 쌓은 담 곁에 주께서 손에 다림줄을 잡고 서셨더니",
+      "source_text_hash": "54d792c81d35f3e1a010ae33efd622e81b882aedf51a140eb38575a2d84a4290",
+      "translation_text_hash": "b3d1a2159ff9de89ac055e199ede23f9c16241e016d56d5576202cc97852e6ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 내게 보이신 것이 이러하니라 다림줄을 띄우고 쌓은 담 곁에 주께서 손에 다림줄을 잡고 서셨더니"
+      ],
+      "raw_text_hashes": [
+        "b3d1a2159ff9de89ac055e199ede23f9c16241e016d56d5576202cc97852e6ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:8",
+      "sequence": 22473,
+      "chapter_label": "AMO 7",
+      "verse_label": "8",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 8
+        }
+      ],
+      "en": "The LORD said to me, “Amos, what do you see?” I said, “A plumb line.” Then the Lord said, “Behold, I will set a plumb line in the middle of my people Israel. I will not again pass by them any more.",
+      "ko": "내게 이르시되 아모스야 네가 무엇을 보느냐 내가 대답하되 다림줄이니이다 주께서 가라사대 내가 다림줄을 내 백성 이스라엘 가운데 베풀고 다시는 용서치 아니하리니",
+      "source_text_hash": "26fae7c93aec0ebedbf96d8d48d967430f5d921f109768fbdcbc17245ae3fa28",
+      "translation_text_hash": "6685c03c8fe5aa8717361b0bc561ceb5b0bb6ae6d82557bea7a2b24a9781f843",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내게 이르시되 아모스야 네가 무엇을 보느냐 내가 대답하되 다림줄이니이다 주께서 가라사대 내가 다림줄을 내 백성 이스라엘 가운데 베풀고 다시는 용서치 아니하리니"
+      ],
+      "raw_text_hashes": [
+        "6685c03c8fe5aa8717361b0bc561ceb5b0bb6ae6d82557bea7a2b24a9781f843"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:9",
+      "sequence": 22474,
+      "chapter_label": "AMO 7",
+      "verse_label": "9",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 9
+        }
+      ],
+      "en": "The high places of Isaac will be desolate, the sanctuaries of Israel will be laid waste; and I will rise against the house of Jeroboam with the sword.”",
+      "ko": "이삭의 산당들이 황폐되며 이스라엘의 성소들이 훼파될 것이라 내가 일어나 칼로 여로보암의 집을 치리라 하시니라",
+      "source_text_hash": "25cca0894336f535af7773d5c19632f145f1064b2f6169b96b62a77f8c16657e",
+      "translation_text_hash": "68d9620fee1a268f3aac5ca7115f9908d0d53c3d87c8632a750e9f0d517fa24d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이삭의 산당들이 황폐되며 이스라엘의 성소들이 훼파될 것이라 내가 일어나 칼로 여로보암의 집을 치리라 하시니라"
+      ],
+      "raw_text_hashes": [
+        "68d9620fee1a268f3aac5ca7115f9908d0d53c3d87c8632a750e9f0d517fa24d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:10",
+      "sequence": 22475,
+      "chapter_label": "AMO 7",
+      "verse_label": "10",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 10
+        }
+      ],
+      "en": "Then Amaziah the priest of Bethel sent to Jeroboam king of Israel, saying, “Amos has conspired against you in the middle of the house of Israel. The land is not able to bear all his words.",
+      "ko": "때에 벧엘의 제사장 아마샤가 이스라엘 왕 여로보암에게 기별하여 가로되 이스라엘 족속 중에 아모스가 왕을 모반하나니 그 모든 말을 이 땅이 견딜 수 없나이다",
+      "source_text_hash": "342e7b38c87c8e88b465ba3de168fde09e46e7c1045b40263fed9411fdbe4b4b",
+      "translation_text_hash": "4824848cf16c76c9f097db4c5e95876cd11e7d3f1a4ccfedf0941802a53d504e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 벧엘의 제사장 아마샤가 이스라엘 왕 여로보암에게 기별하여 가로되 이스라엘 족속 중에 아모스가 왕을 모반하나니 그 모든 말을 이 땅이 견딜 수 없나이다"
+      ],
+      "raw_text_hashes": [
+        "4824848cf16c76c9f097db4c5e95876cd11e7d3f1a4ccfedf0941802a53d504e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:11",
+      "sequence": 22476,
+      "chapter_label": "AMO 7",
+      "verse_label": "11",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 11
+        }
+      ],
+      "en": "For Amos says, ‘Jeroboam will die by the sword, and Israel shall surely be led away captive out of his land.’”",
+      "ko": "아모스가 말하기를 여로보암은 칼에 죽겠고 이스라엘은 정녕 사로잡혀 그 땅에서 떠나겠다 하나이다 하고",
+      "source_text_hash": "c4f21471e8038871c840a21a48c5e9b98e162950da0b25cd4d972fd649bfd93b",
+      "translation_text_hash": "e5664bc8fa4d75d80ae15b076ccffc0c2b37eb8a1a07bda83fa0613ab0da6a1c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모스가 말하기를 여로보암은 칼에 죽겠고 이스라엘은 정녕 사로잡혀 그 땅에서 떠나겠다 하나이다 하고"
+      ],
+      "raw_text_hashes": [
+        "e5664bc8fa4d75d80ae15b076ccffc0c2b37eb8a1a07bda83fa0613ab0da6a1c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:12",
+      "sequence": 22477,
+      "chapter_label": "AMO 7",
+      "verse_label": "12",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 12
+        }
+      ],
+      "en": "Amaziah also said to Amos, “You seer, go, flee away into the land of Judah, and there eat bread, and prophesy there,",
+      "ko": "아마샤가 또 아모스에게 이르되 선견자야 너는 유다 땅으로 도망하여 가서 거기서나 떡을 먹으며 거기서나 예언하고",
+      "source_text_hash": "02964b69900b07e515ce14ddc34b96ef9e2c8c1c9249e964b0166cbb24c4cfce",
+      "translation_text_hash": "7bad52f1120d4df7e15f65f703938442acfa82b36365525ceff7fb62493eaaa5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아마샤가 또 아모스에게 이르되 선견자야 너는 유다 땅으로 도망하여 가서 거기서나 떡을 먹으며 거기서나 예언하고"
+      ],
+      "raw_text_hashes": [
+        "7bad52f1120d4df7e15f65f703938442acfa82b36365525ceff7fb62493eaaa5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:13",
+      "sequence": 22478,
+      "chapter_label": "AMO 7",
+      "verse_label": "13",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 13
+        }
+      ],
+      "en": "but don’t prophesy again any more at Bethel; for it is the king’s sanctuary, and it is a royal house!”",
+      "ko": "다시는 벧엘에서 예언하지 말라 이는 왕의 성소요 왕의 궁임이니라",
+      "source_text_hash": "262f2d19ff0058bb02ca424a329753113233cf5201cbb54d86890e4b492bc4ab",
+      "translation_text_hash": "dbaa923aaca1aaf569d1c4867f65c402c0aeef60add20ba639bf0c05cf26f192",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다시는 벧엘에서 예언하지 말라 이는 왕의 성소요 왕의 궁임이니라"
+      ],
+      "raw_text_hashes": [
+        "dbaa923aaca1aaf569d1c4867f65c402c0aeef60add20ba639bf0c05cf26f192"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:14",
+      "sequence": 22479,
+      "chapter_label": "AMO 7",
+      "verse_label": "14",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 14
+        }
+      ],
+      "en": "Then Amos answered Amaziah, “I was no prophet, neither was I a prophet’s son, but I was a herdsman, and a farmer of sycamore figs;",
+      "ko": "아모스가 아마샤에게 대답하여 가로되 나는 선지자가 아니며 선지자의 아들도 아니요 나는 목자요 뽕나무를 배양하는 자로서",
+      "source_text_hash": "862284ef67f45ec62612293da162bf241b6bfe621c8e0cf359ce043526450331",
+      "translation_text_hash": "ff6f505f850182fe6d62cdfccaed640ee53db459583d8a8846cafcd9021f8841",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "아모스가 아마샤에게 대답하여 가로되 나는 선지자가 아니며 선지자의 아들도 아니요 나는 목자요 뽕나무를 배양하는 자로서"
+      ],
+      "raw_text_hashes": [
+        "ff6f505f850182fe6d62cdfccaed640ee53db459583d8a8846cafcd9021f8841"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:15",
+      "sequence": 22480,
+      "chapter_label": "AMO 7",
+      "verse_label": "15",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 15
+        }
+      ],
+      "en": "and the LORD took me from following the flock, and the LORD said to me, ‘Go, prophesy to my people Israel.’",
+      "ko": "양떼를 따를 때에 여호와께서 나를 데려다가 내게 이르시기를 가서 내 백성 이스라엘에게 예언하라 하셨나니",
+      "source_text_hash": "bcf299f797466a9163248f6e63a8b2cd56795a6f59dc5a36242f9afdbf0a366a",
+      "translation_text_hash": "84dd98848c02e37a15b912e92efaebae785229b0e04e174c4fafd1c535576d29",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "양떼를 따를 때에 여호와께서 나를 데려다가 내게 이르시기를 가서 내 백성 이스라엘에게 예언하라 하셨나니"
+      ],
+      "raw_text_hashes": [
+        "84dd98848c02e37a15b912e92efaebae785229b0e04e174c4fafd1c535576d29"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:16",
+      "sequence": 22481,
+      "chapter_label": "AMO 7",
+      "verse_label": "16",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 16
+        }
+      ],
+      "en": "Now therefore listen to the LORD’s word: ‘You say, Don’t prophesy against Israel, and don’t preach against the house of Isaac.’",
+      "ko": "이제 너는 여호와의 말씀을 들을찌니라 네가 이르기를 이스라엘에 대하여 예언하지 말며 이삭의 집을 향하여 경계하지 말라 하므로",
+      "source_text_hash": "f2065c9904d6f7f1abac6ed74f48d448e1b44906c82aff07f9889043fcd6d951",
+      "translation_text_hash": "b82bfac687b788ef2e57ed196352517a455fdb8c208e30f6541ec6f65a34c324",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이제 너는 여호와의 말씀을 들을찌니라 네가 이르기를 이스라엘에 대하여 예언하지 말며 이삭의 집을 향하여 경계하지 말라 하므로"
+      ],
+      "raw_text_hashes": [
+        "b82bfac687b788ef2e57ed196352517a455fdb8c208e30f6541ec6f65a34c324"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:AMO:7:17",
+      "sequence": 22482,
+      "chapter_label": "AMO 7",
+      "verse_label": "17",
+      "locator": {
+        "book": "AMO",
+        "chapter": 7,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "AMO",
+          "chapter": 7,
+          "verse": 17
+        }
+      ],
+      "en": "Therefore the LORD says: ‘Your wife shall be a prostitute in the city, and your sons and your daughters shall fall by the sword, and your land shall be divided by line; and you yourself shall die in a land that is unclean, and Israel shall surely be led away captive out of his land.’”",
+      "ko": "여호와께서 말씀하시기를 네 아내는 성읍 중에서 창기가 될 것이요 네 자녀들은 칼에 엎드러지며 네 땅은 줄띄워 나누일 것이며 너는 더러운 땅에서 죽을 것이요 이스라엘은 정녕 사로잡혀 그 본토에서 떠나리라 하셨느니라",
+      "source_text_hash": "253753cd2af7c0c99288bae3deab3a6577124bdfa6984a62cfea59a6d6a87c59",
+      "translation_text_hash": "89cf32833f4b814e10131e388bcc1b701d690a411032f4d6a618ad0b143a837b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 말씀하시기를 네 아내는 성읍 중에서 창기가 될 것이요 네 자녀들은 칼에 엎드러지며 네 땅은 줄띄워 나누일 것이며 너는 더러운 땅에서 죽을 것이요 이스라엘은 정녕 사로잡혀 그 본토에서 떠나리라 하셨느니라"
+      ],
+      "raw_text_hashes": [
+        "89cf32833f4b814e10131e388bcc1b701d690a411032f4d6a618ad0b143a837b"
+      ]
+    }
+  ]
+}

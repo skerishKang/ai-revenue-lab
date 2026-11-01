@@ -747,9 +747,9 @@
   const FAILURE_CODE_PATTERN = /^[a-z][a-z0-9_]{0,63}$/;
   function failureCodeNote(errorCode, label) {
     if (typeof errorCode !== "string" || !FAILURE_CODE_PATTERN.test(errorCode)) return null;
-    const note = document.createElement("p");
+    const note = document.createElement("small");
     note.className = "error-code";
-    note.textContent = `${label} (${errorCode})`;
+    note.textContent = uiT("error-code-reference") + ": " + errorCode;
     return note;
   }
   function failureStatusLabel(lifecycle) {
@@ -3176,9 +3176,7 @@
             : null;
           const message = clawGeneralRequest
             ? clawFailure.message
-            : data && data.error && typeof data.error.message === "string"
-              && data.error.message.trim()
-              ? data.error.message : chatTransport.streamErrorMessage(data);
+            : chatTransport.streamErrorMessage(data);
           if (clawGeneralRequest && !paragraph) throw chatTransport.errorFor(data, message);
           // #5895: on the PC lane a cut stream is not a refusal. The run keeps
           // executing on the server and its answer is persisted, so keep this

@@ -1,0 +1,909 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DAN:chapter:006",
+  "unit_ordinal": 856,
+  "unit_label": "DAN 6",
+  "book_code": "DAN",
+  "chapter_number": 6,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DAN:6:1",
+      "sequence": 21907,
+      "chapter_label": "DAN 6",
+      "verse_label": "1",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 1
+        }
+      ],
+      "en": "It pleased Darius to set over the kingdom one hundred twenty local governors, who should be throughout the whole kingdom;",
+      "ko": "다리오가 자기의 심원대로 방백 일백 이십명을 세워 전국을 통치하게 하고",
+      "source_text_hash": "08b08cbbf4c3e27b1190dd6f3961142a78c9c9d20c6d8156a243bad6db7cbcad",
+      "translation_text_hash": "55434ee90913432cdc341375f0e4d19f43f06c48de0570c271e2a44b22a6b8bf",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다리오가 자기의 심원대로 방백 일백 이십명을 세워 전국을 통치하게 하고"
+      ],
+      "raw_text_hashes": [
+        "55434ee90913432cdc341375f0e4d19f43f06c48de0570c271e2a44b22a6b8bf"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:2",
+      "sequence": 21908,
+      "chapter_label": "DAN 6",
+      "verse_label": "2",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 2
+        }
+      ],
+      "en": "and over them three presidents, of whom Daniel was one, that these local governors might give account to them, and that the king should suffer no loss.",
+      "ko": "또 그들 위에 총리 셋을 두었으니 다니엘이 그 중에 하나이라 이는 방백들로 총리에게 자기의 직무를 보고하게 하여 왕에게 손해가 없게 하려함이었더라",
+      "source_text_hash": "0de97dbf4d51e6c428d47b103a621998886ea1b78416b7a034e4ef80241f28c8",
+      "translation_text_hash": "4ffd38c283283f0fb5e915dc9c95f29389290c53e6207c3ca6e1c60989fe274c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그들 위에 총리 셋을 두었으니 다니엘이 그 중에 하나이라 이는 방백들로 총리에게 자기의 직무를 보고하게 하여 왕에게 손해가 없게 하려함이었더라"
+      ],
+      "raw_text_hashes": [
+        "4ffd38c283283f0fb5e915dc9c95f29389290c53e6207c3ca6e1c60989fe274c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:3",
+      "sequence": 21909,
+      "chapter_label": "DAN 6",
+      "verse_label": "3",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 3
+        }
+      ],
+      "en": "Then this Daniel was distinguished above the presidents and the local governors, because an excellent spirit was in him; and the king thought to set him over the whole realm.",
+      "ko": "다니엘은 마음이 민첩하여 총리들과 방백들 위에 뛰어나므로 왕이 그를 세워 전국을 다스리게 하고자 한지라",
+      "source_text_hash": "b919aee3382330c0cdffae1a7e4c5fcf816d69cd660fa3fde768e782bdff5c67",
+      "translation_text_hash": "47a01aec8b35e05bb7987b19033c8ffc900852d59a08eb905a5964edfd5dd786",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘은 마음이 민첩하여 총리들과 방백들 위에 뛰어나므로 왕이 그를 세워 전국을 다스리게 하고자 한지라"
+      ],
+      "raw_text_hashes": [
+        "47a01aec8b35e05bb7987b19033c8ffc900852d59a08eb905a5964edfd5dd786"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:4",
+      "sequence": 21910,
+      "chapter_label": "DAN 6",
+      "verse_label": "4",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 4
+        }
+      ],
+      "en": "Then the presidents and the local governors sought to find occasion against Daniel as touching the kingdom; but they could find no occasion or fault, because he was faithful. There wasn’t any error or fault found in him.",
+      "ko": "이에 총리들과 방백들이 국사에 대하여 다니엘을 고소할 틈을 얻고자 하였으나 능히 아무 틈, 아무 허물을 얻지 못하였으니 이는 그가 충성되어 아무 그릇함도 없고 아무 허물도 없음이었더라",
+      "source_text_hash": "7f578d5427b8be4107326201af9ccd22020c335957db31ba4c6fa31445369f64",
+      "translation_text_hash": "156b3f4ac3348089a02f6973d48c1efde8039d3bdddf45a3c867f09dda515489",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 총리들과 방백들이 국사에 대하여 다니엘을 고소할 틈을 얻고자 하였으나 능히 아무 틈, 아무 허물을 얻지 못하였으니 이는 그가 충성되어 아무 그릇함도 없고 아무 허물도 없음이었더라"
+      ],
+      "raw_text_hashes": [
+        "156b3f4ac3348089a02f6973d48c1efde8039d3bdddf45a3c867f09dda515489"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:5",
+      "sequence": 21911,
+      "chapter_label": "DAN 6",
+      "verse_label": "5",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 5
+        }
+      ],
+      "en": "Then these men said, “We won’t find any occasion against this Daniel, unless we find it against him concerning the law of his God.”",
+      "ko": "그 사람들이 가로되 이 다니엘은 그 하나님의 율법에 대하여 그 틈을 얻지 못하면 그를 고소할 수 없으리라 하고",
+      "source_text_hash": "06ef31764e1408dc78bc7cf46d6a23078f72f495860f8d2ac6787299b5c9c713",
+      "translation_text_hash": "9e3978a3330e18ae07b238947084152633aa05d8dba306e11125a1d9bda53d39",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 사람들이 가로되 이 다니엘은 그 하나님의 율법에 대하여 그 틈을 얻지 못하면 그를 고소할 수 없으리라 하고"
+      ],
+      "raw_text_hashes": [
+        "9e3978a3330e18ae07b238947084152633aa05d8dba306e11125a1d9bda53d39"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:6",
+      "sequence": 21912,
+      "chapter_label": "DAN 6",
+      "verse_label": "6",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 6
+        }
+      ],
+      "en": "Then these presidents and local governors assembled together to the king, and said this to him, “King Darius, live forever!",
+      "ko": "이에 총리들과 방백들이 모여 왕에게 나아가서 그에게 말하되 다리오왕이여 만세수를 하옵소서",
+      "source_text_hash": "47b43ac3942359170a37b0141e9c30a1c302f1c7c1b71ba83a173b9f47ca1efb",
+      "translation_text_hash": "729ee8fbe0e77948df8fa87d1eb87a3e50c4f720da9b8991918d27629451e60d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 총리들과 방백들이 모여 왕에게 나아가서 그에게 말하되 다리오왕이여 만세수를 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "729ee8fbe0e77948df8fa87d1eb87a3e50c4f720da9b8991918d27629451e60d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:7",
+      "sequence": 21913,
+      "chapter_label": "DAN 6",
+      "verse_label": "7",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 7
+        }
+      ],
+      "en": "All the presidents of the kingdom, the deputies and the local governors, the counselors and the governors, have consulted together to establish a royal statute and to make a strong decree, that whoever asks a petition of any god or man for thirty days, except of you, O king, he shall be cast into the den of lions.",
+      "ko": "나라의 모든 총리와 수령과 방백과 모사와 관원이 의논하고 왕에게 한 율법을 세우며 한 금령을 정하실 것을 구하려 하였는데 왕이여 그것은 곧 이제부터 삼십일 동안에 누구든지 왕 외에 어느 신에게나 사람에게 무엇을 구하면 사자굴에 던져 넣기로 한 것이니이다",
+      "source_text_hash": "7b2a6043618ec143fc46fcd9a0e5f733d2f3b28dc443543934c5367e4afc9ad1",
+      "translation_text_hash": "3fdad70a251d41c14c918f95c7ac7e99234fda6340b5caee905f6bcbd3f3352b",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나라의 모든 총리와 수령과 방백과 모사와 관원이 의논하고 왕에게 한 율법을 세우며 한 금령을 정하실 것을 구하려 하였는데 왕이여 그것은 곧 이제부터 삼십일 동안에 누구든지 왕 외에 어느 신에게나 사람에게 무엇을 구하면 사자굴에 던져 넣기로 한 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "3fdad70a251d41c14c918f95c7ac7e99234fda6340b5caee905f6bcbd3f3352b"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:8",
+      "sequence": 21914,
+      "chapter_label": "DAN 6",
+      "verse_label": "8",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 8
+        }
+      ],
+      "en": "Now, O king, establish the decree and sign the writing, that it not be changed, according to the law of the Medes and Persians, which doesn’t alter.”",
+      "ko": "그런즉 왕이여 원컨대 금령을 세우시고 그 조서에 어인을 찍어서 메대와 바사의 변개치 아니하는 규례를 따라 그것을 다시 고치지 못하게 하옵소서 하매",
+      "source_text_hash": "6f88a5d7adb8ccecd46c2612104919b59973438fc460257ff8473a190cbf5367",
+      "translation_text_hash": "935ac4aa0e4a299f9fd628c70909078b3944c2a6db162f3ff9554c9ab58973b2",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그런즉 왕이여 원컨대 금령을 세우시고 그 조서에 어인을 찍어서 메대와 바사의 변개치 아니하는 규례를 따라 그것을 다시 고치지 못하게 하옵소서 하매"
+      ],
+      "raw_text_hashes": [
+        "935ac4aa0e4a299f9fd628c70909078b3944c2a6db162f3ff9554c9ab58973b2"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:9",
+      "sequence": 21915,
+      "chapter_label": "DAN 6",
+      "verse_label": "9",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 9
+        }
+      ],
+      "en": "Therefore King Darius signed the writing and the decree.",
+      "ko": "이에 다리오왕이 조서에 어인을 찍어 금령을 내니라",
+      "source_text_hash": "441a51ea5d8d4f5b0d03d0efb0eda64465567d837d456161587b84ba3fc6f289",
+      "translation_text_hash": "429abd0cf2c787d489bab3195f019012ee42cf9f3b5eb4fc96b1ba0d276cc613",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다리오왕이 조서에 어인을 찍어 금령을 내니라"
+      ],
+      "raw_text_hashes": [
+        "429abd0cf2c787d489bab3195f019012ee42cf9f3b5eb4fc96b1ba0d276cc613"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:10",
+      "sequence": 21916,
+      "chapter_label": "DAN 6",
+      "verse_label": "10",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 10
+        }
+      ],
+      "en": "When Daniel knew that the writing was signed, he went into his house (now his windows were open in his room toward Jerusalem) and he kneeled on his knees three times a day, and prayed, and gave thanks before his God, as he did before.",
+      "ko": "다니엘이 이 조서에 어인이 찍힌 것을 알고도 자기 집에 돌아가서는 그 방의 예루살렘으로 향하여 열린 창에서 전에 행하던대로 하루 세번씩 무릎을 꿇고 기도하며 그 하나님께 감사하였더라",
+      "source_text_hash": "7b0a184085620e76ab7cf760b098546278e2d4920e5b819dca2f56a97ec6bc2d",
+      "translation_text_hash": "e60627768b4b68074c5703e3d719c977c5d2b8c82a72c7c92b6d7aa849b2335f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 이 조서에 어인이 찍힌 것을 알고도 자기 집에 돌아가서는 그 방의 예루살렘으로 향하여 열린 창에서 전에 행하던대로 하루 세번씩 무릎을 꿇고 기도하며 그 하나님께 감사하였더라"
+      ],
+      "raw_text_hashes": [
+        "e60627768b4b68074c5703e3d719c977c5d2b8c82a72c7c92b6d7aa849b2335f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:11",
+      "sequence": 21917,
+      "chapter_label": "DAN 6",
+      "verse_label": "11",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 11
+        }
+      ],
+      "en": "Then these men assembled together, and found Daniel making petition and supplication before his God.",
+      "ko": "그 무리들이 모여서 다니엘이 자기 하나님 앞에 기도하며 간구하는 것을 발견하고",
+      "source_text_hash": "c80c79e8583da1b8e6490296d40a0cd03bed1cb2b007518ae74286a43ac4b15f",
+      "translation_text_hash": "f07e6e9aeb686cbc3276050edae4b438391fa0351ab016900392bfb921feae60",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무리들이 모여서 다니엘이 자기 하나님 앞에 기도하며 간구하는 것을 발견하고"
+      ],
+      "raw_text_hashes": [
+        "f07e6e9aeb686cbc3276050edae4b438391fa0351ab016900392bfb921feae60"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:12",
+      "sequence": 21918,
+      "chapter_label": "DAN 6",
+      "verse_label": "12",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 12
+        }
+      ],
+      "en": "Then they came near, and spoke before the king concerning the king’s decree: “Haven’t you signed a decree that every man who makes a petition to any god or man within thirty days, except to you, O king, shall be cast into the den of lions?” The king answered, “This thing is true, according to the law of the Medes and Persians, which doesn’t alter.”",
+      "ko": "이에 그들이 나아가서 왕의 금령에 대하여 왕께 아뢰되 왕이여 왕이 이미 금령에 어인을 찍어서 이제부터 삼십일 동안에 누구든지 왕 외에 어느 신에게나 사람에게 구하면 사자 굴에 던져 넣기로 하지 아니하였나이까 왕이 대답하여 가로되 이 일이 적실하니 메대와 바사의 변개치 아니하는 규례대로 된 것이니라",
+      "source_text_hash": "d68058af4ee7762f3b9a4fa7325300767418fe72e577b8167bdc3114bd239995",
+      "translation_text_hash": "c10e66b12a02382f044f501904a273790781012aa87cd2b7bcfacbe5cbb695d7",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그들이 나아가서 왕의 금령에 대하여 왕께 아뢰되 왕이여 왕이 이미 금령에 어인을 찍어서 이제부터 삼십일 동안에 누구든지 왕 외에 어느 신에게나 사람에게 구하면 사자 굴에 던져 넣기로 하지 아니하였나이까 왕이 대답하여 가로되 이 일이 적실하니 메대와 바사의 변개치 아니하는 규례대로 된 것이니라"
+      ],
+      "raw_text_hashes": [
+        "c10e66b12a02382f044f501904a273790781012aa87cd2b7bcfacbe5cbb695d7"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:13",
+      "sequence": 21919,
+      "chapter_label": "DAN 6",
+      "verse_label": "13",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 13
+        }
+      ],
+      "en": "Then they answered and said before the king, “That Daniel, who is of the children of the captivity of Judah, doesn’t respect you, O king, nor the decree that you have signed, but makes his petition three times a day.”",
+      "ko": "그들이 왕 앞에서 대답하여 가로되 왕이여 사로잡혀 온 유다 자손 중에 그 다니엘이 왕과 왕의 어인이 찍힌 금령을 돌아보지 아니하고 하루 세번씩 기도하나이다",
+      "source_text_hash": "94de7da3468ff9759e6bc6968ddcaa130bec72284c492e7b9462d31ce0e09928",
+      "translation_text_hash": "799b479fae6d10b37e35f4b647c1892b8316d0e974b4e33c324b0878a1581dd1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그들이 왕 앞에서 대답하여 가로되 왕이여 사로잡혀 온 유다 자손 중에 그 다니엘이 왕과 왕의 어인이 찍힌 금령을 돌아보지 아니하고 하루 세번씩 기도하나이다"
+      ],
+      "raw_text_hashes": [
+        "799b479fae6d10b37e35f4b647c1892b8316d0e974b4e33c324b0878a1581dd1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:14",
+      "sequence": 21920,
+      "chapter_label": "DAN 6",
+      "verse_label": "14",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 14
+        }
+      ],
+      "en": "Then the king, when he heard these words, was very displeased, and set his heart on Daniel to deliver him; and he labored until the going down of the sun to rescue him.",
+      "ko": "왕이 이 말을 듣고 그로 인하여 심히 근심하여 다니엘을 구원하려고 마음을 쓰며 그를 건져 내려고 힘을 다하여 해가 질 때까지 이르매",
+      "source_text_hash": "b3f879893a38cabe84c693bd5a984ac2ab2eb7db17da801550951e03b9c81174",
+      "translation_text_hash": "02904f6f82ce20539caa166b39e4d113c6b8337fa5920563129a747e72dd80b9",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 이 말을 듣고 그로 인하여 심히 근심하여 다니엘을 구원하려고 마음을 쓰며 그를 건져 내려고 힘을 다하여 해가 질 때까지 이르매"
+      ],
+      "raw_text_hashes": [
+        "02904f6f82ce20539caa166b39e4d113c6b8337fa5920563129a747e72dd80b9"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:15",
+      "sequence": 21921,
+      "chapter_label": "DAN 6",
+      "verse_label": "15",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 15
+        }
+      ],
+      "en": "Then these men assembled together to the king, and said to the king, “Know, O king, that it is a law of the Medes and Persians, that no decree nor statute which the king establishes may be changed.”",
+      "ko": "그 무리들이 또 모여 왕에게로 나아와서 왕께 말씀하되 왕이여 메대와 바사의 규례를 아시거니와 왕의 세우신 금령과 법도는 변개하지 못할 것이니이다",
+      "source_text_hash": "76da10a95aedcb0b4ff74a399730536a911a0a093e9c4d483420b9260b6fa3b3",
+      "translation_text_hash": "8fd6cf9da751b5cf0dcd2858c3674d72d2c276e35f454923548759c98ef0563d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 무리들이 또 모여 왕에게로 나아와서 왕께 말씀하되 왕이여 메대와 바사의 규례를 아시거니와 왕의 세우신 금령과 법도는 변개하지 못할 것이니이다"
+      ],
+      "raw_text_hashes": [
+        "8fd6cf9da751b5cf0dcd2858c3674d72d2c276e35f454923548759c98ef0563d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:16",
+      "sequence": 21922,
+      "chapter_label": "DAN 6",
+      "verse_label": "16",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 16
+        }
+      ],
+      "en": "Then the king commanded, and they brought Daniel and cast him into the den of lions. The king spoke and said to Daniel, “Your God whom you serve continually, he will deliver you.”",
+      "ko": "이에 왕이 명하매 다니엘을 끌어다가 사자 굴에 던져 넣는지라 왕이 다니엘에게 일러 가로되 너의 항상 섬기는 네 하나님이 너를 구원하시리라 하니라",
+      "source_text_hash": "43cc4c2e21e776ea47b8d3b47af8b4413862dc1d4817b48fd46181c1c67d89a4",
+      "translation_text_hash": "aa2e9054f635003e2995dcf33668aaed88abedfc8ffec2ad21660efaa78612fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 왕이 명하매 다니엘을 끌어다가 사자 굴에 던져 넣는지라 왕이 다니엘에게 일러 가로되 너의 항상 섬기는 네 하나님이 너를 구원하시리라 하니라"
+      ],
+      "raw_text_hashes": [
+        "aa2e9054f635003e2995dcf33668aaed88abedfc8ffec2ad21660efaa78612fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:17",
+      "sequence": 21923,
+      "chapter_label": "DAN 6",
+      "verse_label": "17",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 17
+        }
+      ],
+      "en": "A stone was brought, and laid on the mouth of the den; and the king sealed it with his own signet, and with the signet of his lords; that nothing might be changed concerning Daniel.",
+      "ko": "이에 돌을 굴려다가 굴 아구를 막으매 왕이 어인과 귀인들의 인을 쳐서 봉하였으니 이는 다니엘 처치한 것을 변개함이 없게 하려함이었더라",
+      "source_text_hash": "fce4b78aa0beacf51f3e93eebbaccf36661d7123e6d67399e61cbe78f6f84611",
+      "translation_text_hash": "2b0da60f84b814e60105ffade2b10b7a1bd5cc6c726798d5b7f05035360c6350",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 돌을 굴려다가 굴 아구를 막으매 왕이 어인과 귀인들의 인을 쳐서 봉하였으니 이는 다니엘 처치한 것을 변개함이 없게 하려함이었더라"
+      ],
+      "raw_text_hashes": [
+        "2b0da60f84b814e60105ffade2b10b7a1bd5cc6c726798d5b7f05035360c6350"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:18",
+      "sequence": 21924,
+      "chapter_label": "DAN 6",
+      "verse_label": "18",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 18
+        }
+      ],
+      "en": "Then the king went to his palace, and passed the night fasting. No musical instruments were brought before him; and his sleep fled from him.",
+      "ko": "왕이 궁에 돌아가서는 밤이 맟도록 금식하고 그 앞에 기악을 그치고 침수를 폐하니라",
+      "source_text_hash": "f3f33183461e050d4315875c690e3347c7150ec8805c763059c4ca4db9dfb9dd",
+      "translation_text_hash": "3cc6e1fcbdee4257b78eebe221fa208b4ced18c16c9000123e1fa33c23fd6763",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 궁에 돌아가서는 밤이 맟도록 금식하고 그 앞에 기악을 그치고 침수를 폐하니라"
+      ],
+      "raw_text_hashes": [
+        "3cc6e1fcbdee4257b78eebe221fa208b4ced18c16c9000123e1fa33c23fd6763"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:19",
+      "sequence": 21925,
+      "chapter_label": "DAN 6",
+      "verse_label": "19",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 19
+        }
+      ],
+      "en": "Then the king arose very early in the morning, and went in haste to the den of lions.",
+      "ko": "이튿날에 왕이 새벽에 일어나 급히 사자굴로 가서",
+      "source_text_hash": "7ca167d713cacaa8ba7d4df8558ef31525695eb39fad61d9b32d0c75bef77810",
+      "translation_text_hash": "f5bb7e807ae3b9111e68b2bac28b14a925670449f2bef647bbb70e97d7a63922",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이튿날에 왕이 새벽에 일어나 급히 사자굴로 가서"
+      ],
+      "raw_text_hashes": [
+        "f5bb7e807ae3b9111e68b2bac28b14a925670449f2bef647bbb70e97d7a63922"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:20",
+      "sequence": 21926,
+      "chapter_label": "DAN 6",
+      "verse_label": "20",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 20
+        }
+      ],
+      "en": "When he came near to Daniel in the den, he cried with a troubled voice. The king spoke and said to Daniel, “Daniel, servant of the living God, is your God, whom you serve continually, able to deliver you from the lions?”",
+      "ko": "다니엘의 든 굴에 가까이 이르러는 슬피 소리질러 다니엘에게 물어 가로되 사시는 하나님의 종 다니엘아 너의 항상 섬기는 네 하나님이 사자에게서 너를 구원하시기에 능하셨느냐",
+      "source_text_hash": "231a4ab350b19ba69370d53464b761abd4e3cee25fcfefcddef61ddd207874eb",
+      "translation_text_hash": "89c27c0a37a38ac7fcc6271966c36add7805b6e7c66b18840106a5ec8896eb27",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘의 든 굴에 가까이 이르러는 슬피 소리질러 다니엘에게 물어 가로되 사시는 하나님의 종 다니엘아 너의 항상 섬기는 네 하나님이 사자에게서 너를 구원하시기에 능하셨느냐"
+      ],
+      "raw_text_hashes": [
+        "89c27c0a37a38ac7fcc6271966c36add7805b6e7c66b18840106a5ec8896eb27"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:21",
+      "sequence": 21927,
+      "chapter_label": "DAN 6",
+      "verse_label": "21",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 21
+        }
+      ],
+      "en": "Then Daniel said to the king, “O king, live forever!",
+      "ko": "다니엘이 왕에게 고하되 왕이여 원컨대 왕은 만세수를 하옵소서",
+      "source_text_hash": "96d8c16f8fc35294b932b25f27365ae2c43e924632528f8f473139139151b1d6",
+      "translation_text_hash": "6cb83af02a69e4708c51d291182ac7c72f33894233c18879221c06cc503386dd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "다니엘이 왕에게 고하되 왕이여 원컨대 왕은 만세수를 하옵소서"
+      ],
+      "raw_text_hashes": [
+        "6cb83af02a69e4708c51d291182ac7c72f33894233c18879221c06cc503386dd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:22",
+      "sequence": 21928,
+      "chapter_label": "DAN 6",
+      "verse_label": "22",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 22
+        }
+      ],
+      "en": "My God has sent his angel, and has shut the lions’ mouths, and they have not hurt me, because innocence was found in me before him; and also before you, O king, I have done no harm.”",
+      "ko": "나의 하나님이 이미 그 천사를 보내어 사자들의 입을 봉하셨으므로 사자들이 나를 상해치 아니하였사오니 이는 나의 무죄함이 그 앞에 명백함이오며 또 왕이여 나는 왕의 앞에도 해를 끼치지 아니하였나이다",
+      "source_text_hash": "88d9e473c9e19438963d00366b7368f749fdcf4d7c829df53d53c35fd69594a0",
+      "translation_text_hash": "e59d7fb27d570fd093dc2d78694fba9dbd460745c73bc58898ad9451bea732fd",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "나의 하나님이 이미 그 천사를 보내어 사자들의 입을 봉하셨으므로 사자들이 나를 상해치 아니하였사오니 이는 나의 무죄함이 그 앞에 명백함이오며 또 왕이여 나는 왕의 앞에도 해를 끼치지 아니하였나이다"
+      ],
+      "raw_text_hashes": [
+        "e59d7fb27d570fd093dc2d78694fba9dbd460745c73bc58898ad9451bea732fd"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:23",
+      "sequence": 21929,
+      "chapter_label": "DAN 6",
+      "verse_label": "23",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 23
+        }
+      ],
+      "en": "Then the king was exceedingly glad, and commanded that they should take Daniel up out of the den. So Daniel was taken up out of the den, and no kind of harm was found on him, because he had trusted in his God.",
+      "ko": "왕이 심히 기뻐서 명하여 다니엘을 굴에서 올리라 하매 그들이 다니엘을 굴에서 올린즉 그 몸이 조금도 상하지 아니하였으니 이는 그가 자기 하나님을 의뢰함이었더라",
+      "source_text_hash": "3f0632eb6b2a6789e63ecd82d69f6de185edcc92139c8dd0204d14fccd377993",
+      "translation_text_hash": "cff0c96e3b9227c81a045d5350a3c8926daa894754ac5997effb8ce804e7a20a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 심히 기뻐서 명하여 다니엘을 굴에서 올리라 하매 그들이 다니엘을 굴에서 올린즉 그 몸이 조금도 상하지 아니하였으니 이는 그가 자기 하나님을 의뢰함이었더라"
+      ],
+      "raw_text_hashes": [
+        "cff0c96e3b9227c81a045d5350a3c8926daa894754ac5997effb8ce804e7a20a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:24",
+      "sequence": 21930,
+      "chapter_label": "DAN 6",
+      "verse_label": "24",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 24
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 24
+        }
+      ],
+      "en": "The king commanded, and they brought those men who had accused Daniel, and they cast them into the den of lions—them, their children, and their wives; and the lions mauled them, and broke all their bones in pieces before they came to the bottom of the den.",
+      "ko": "왕이 명을 내려 다니엘을 참소한 사람들을 끌어오게 하고 그들을 그 처자들과 함께 사자 굴에 던져 넣게 하였더니 그들이 굴 밑에 닿기 전에 사자가 곧 그들을 움켜서 그 뼈까지도 부숴뜨렸더라",
+      "source_text_hash": "b5bb2f5231291f4580a3d2a5d382f4013afe95d298d24f9a812af12734963abc",
+      "translation_text_hash": "02fba7dbefe145cd0aebf3bf9fba4b83d247e9a5f8988b77484aafb01b45101d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "왕이 명을 내려 다니엘을 참소한 사람들을 끌어오게 하고 그들을 그 처자들과 함께 사자 굴에 던져 넣게 하였더니 그들이 굴 밑에 닿기 전에 사자가 곧 그들을 움켜서 그 뼈까지도 부숴뜨렸더라"
+      ],
+      "raw_text_hashes": [
+        "02fba7dbefe145cd0aebf3bf9fba4b83d247e9a5f8988b77484aafb01b45101d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:25",
+      "sequence": 21931,
+      "chapter_label": "DAN 6",
+      "verse_label": "25",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 25
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 25
+        }
+      ],
+      "en": "Then King Darius wrote to all the peoples, nations, and languages who dwell in all the earth: i1 “Peace be multiplied to you. i1",
+      "ko": "이에 다리오왕이 온 땅에 있는 모든 백성과 나라들과 각 방언하는 자들에게 조서를 내려 가로되 원컨대 많은 평강이 너희에게 있을찌어다",
+      "source_text_hash": "bd255774d39274c5eb2c191e0b8fd219f02421337c5287693bc859813810c5db",
+      "translation_text_hash": "f46588f84065b3687629ac64eaa82bcf8022175aa072e56f3d56772478df5356",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 다리오왕이 온 땅에 있는 모든 백성과 나라들과 각 방언하는 자들에게 조서를 내려 가로되 원컨대 많은 평강이 너희에게 있을찌어다"
+      ],
+      "raw_text_hashes": [
+        "f46588f84065b3687629ac64eaa82bcf8022175aa072e56f3d56772478df5356"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:26",
+      "sequence": 21932,
+      "chapter_label": "DAN 6",
+      "verse_label": "26",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 26
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 26
+        }
+      ],
+      "en": "“I make a decree that in all the dominion of my kingdom men tremble and fear before the God of Daniel. “For he is the living God, and steadfast forever. His kingdom is that which will not be destroyed. His dominion will be even to the end.",
+      "ko": "내가 이제 조서를 내리노라 내 나라 관할 아래 있는 사람들은 다 다니엘의 하나님 앞에서 떨며 두려워할찌니 그는 사시는 하나님이시요 영원히 변치 않으실 자시며 그 나라는 망하지 아니할 것이요 그 권세는 무궁할 것이며",
+      "source_text_hash": "5ab7956e58b9313d2029e4116147a4ea723764a4baaf3a8bac2a1d1bee1be317",
+      "translation_text_hash": "e57852962361d374d61f8a497ca1181de1f2084b334931b55baffa22ecb8239f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "내가 이제 조서를 내리노라 내 나라 관할 아래 있는 사람들은 다 다니엘의 하나님 앞에서 떨며 두려워할찌니 그는 사시는 하나님이시요 영원히 변치 않으실 자시며 그 나라는 망하지 아니할 것이요 그 권세는 무궁할 것이며"
+      ],
+      "raw_text_hashes": [
+        "e57852962361d374d61f8a497ca1181de1f2084b334931b55baffa22ecb8239f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:27",
+      "sequence": 21933,
+      "chapter_label": "DAN 6",
+      "verse_label": "27",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 27
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 27
+        }
+      ],
+      "en": "He delivers and rescues. He works signs and wonders in heaven and in earth, who has delivered Daniel from the power of the lions.”",
+      "ko": "그는 구원도 하시며 건져내기도 하시며 하늘에서든지 땅에서든지 이적과 기사를 행하시는 자로서 다니엘을 구원하여 사자의 입에서 벗어나게 하셨음이니라 하였더라",
+      "source_text_hash": "dfa83c8dbe9968951a0e475f0c85a2d757cbf2696e67b2f384f4fd18739240ef",
+      "translation_text_hash": "b7912dfe12351d154b2f18d54085bff49a3e597764ff0066695603cc7b6e5b28",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그는 구원도 하시며 건져내기도 하시며 하늘에서든지 땅에서든지 이적과 기사를 행하시는 자로서 다니엘을 구원하여 사자의 입에서 벗어나게 하셨음이니라 하였더라"
+      ],
+      "raw_text_hashes": [
+        "b7912dfe12351d154b2f18d54085bff49a3e597764ff0066695603cc7b6e5b28"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DAN:6:28",
+      "sequence": 21934,
+      "chapter_label": "DAN 6",
+      "verse_label": "28",
+      "locator": {
+        "book": "DAN",
+        "chapter": 6,
+        "verse": 28
+      },
+      "raw_locator": [
+        {
+          "book": "DAN",
+          "chapter": 6,
+          "verse": 28
+        }
+      ],
+      "en": "So this Daniel prospered in the reign of Darius and in the reign of Cyrus the Persian.",
+      "ko": "이 다니엘이 다리오왕의 시대와 바사 사람 고레스왕의 시대에 형통하였더라",
+      "source_text_hash": "5d370cf09b62c2625054eca33dc62ceb80619ca637ada5c5ad64f62380ac5ee5",
+      "translation_text_hash": "cc87a3b47acb2880e6a05c68efa59cba8f015c45272e7d0f8a04ac9d256022c6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이 다니엘이 다리오왕의 시대와 바사 사람 고레스왕의 시대에 형통하였더라"
+      ],
+      "raw_text_hashes": [
+        "cc87a3b47acb2880e6a05c68efa59cba8f015c45272e7d0f8a04ac9d256022c6"
+      ]
+    }
+  ]
+}

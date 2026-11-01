@@ -1,0 +1,685 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:2KI:chapter:012",
+  "unit_ordinal": 325,
+  "unit_label": "2KI 12",
+  "book_code": "2KI",
+  "chapter_number": 12,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:2KI:12:1",
+      "sequence": 9852,
+      "chapter_label": "2KI 12",
+      "verse_label": "1",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 1
+        }
+      ],
+      "en": "Jehoash began to reign in the seventh year of Jehu, and he reigned forty years in Jerusalem. His mother’s name was Zibiah of Beersheba.",
+      "ko": "예후의 칠년에 요아스가 위에 올라 예루살렘에서 사십년을 치리하니라 그 모친의 이름은 시비아라 브엘세바 사람이더라",
+      "source_text_hash": "e293fe0091885b070d9ad2f0f4024a6ff082c6a2c045e7e7b0852bb7eaebc760",
+      "translation_text_hash": "b5eb0afb57bb39f0eb909b24a3c0bcab769ce0c0585a385424347dfb7a784001",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "예후의 칠년에 요아스가 위에 올라 예루살렘에서 사십년을 치리하니라 그 모친의 이름은 시비아라 브엘세바 사람이더라"
+      ],
+      "raw_text_hashes": [
+        "b5eb0afb57bb39f0eb909b24a3c0bcab769ce0c0585a385424347dfb7a784001"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:2",
+      "sequence": 9853,
+      "chapter_label": "2KI 12",
+      "verse_label": "2",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 2
+        }
+      ],
+      "en": "Jehoash did that which was right in the LORD’s eyes all his days in which Jehoiada the priest instructed him.",
+      "ko": "요아스가 제사장 여호야다의 교훈을 받을 동안에 여호와 보시기에 정직히 행하였으되",
+      "source_text_hash": "25364a42ee9bf98692e8731606d2c2b3876e52fa8fc638c7d43374f814a098ad",
+      "translation_text_hash": "9c47984b9eb3fe0e02866545dca5cb7471b036d24fd7096888436981b395ef74",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 제사장 여호야다의 교훈을 받을 동안에 여호와 보시기에 정직히 행하였으되"
+      ],
+      "raw_text_hashes": [
+        "9c47984b9eb3fe0e02866545dca5cb7471b036d24fd7096888436981b395ef74"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:3",
+      "sequence": 9854,
+      "chapter_label": "2KI 12",
+      "verse_label": "3",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 3
+        }
+      ],
+      "en": "However, the high places were not taken away. The people still sacrificed and burned incense in the high places.",
+      "ko": "오직 산당을 제하지 아니하였으므로 백성이 오히려 산당에서 제사하며 분향하였더라",
+      "source_text_hash": "759351a55363dc62783d705704d23ced6745532817f85b30f7221d08bd61f5cd",
+      "translation_text_hash": "0786beeec0876d9ccd74727d7186bbce4d0135afe3cafe1c167adbe400eef15a",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 산당을 제하지 아니하였으므로 백성이 오히려 산당에서 제사하며 분향하였더라"
+      ],
+      "raw_text_hashes": [
+        "0786beeec0876d9ccd74727d7186bbce4d0135afe3cafe1c167adbe400eef15a"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:4",
+      "sequence": 9855,
+      "chapter_label": "2KI 12",
+      "verse_label": "4",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 4
+        }
+      ],
+      "en": "Jehoash said to the priests, “All the money of the holy things that is brought into the LORD’s house, in current money, the money of the people for whom each man is evaluated, and all the money that it comes into any man’s heart to bring into the LORD’s house,",
+      "ko": "요아스가 제사장들에게 이르되 무릇 여호와의 전에 거룩하게 하여 드리는 은 곧 사람의 통용하는 은이나 각 사람의 몸값으로 드리는 은이나 자원하여 여호와의 전에 드리는 모든 은을",
+      "source_text_hash": "4ce844f7076e42949549f153e72c0ab82e77b7f72097c0d81f7f09a3134c2f45",
+      "translation_text_hash": "12ad2dc04783733e4213165aae7babc19ce9c7a5838fa14f8d225ecb19770958",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스가 제사장들에게 이르되 무릇 여호와의 전에 거룩하게 하여 드리는 은 곧 사람의 통용하는 은이나 각 사람의 몸값으로 드리는 은이나 자원하여 여호와의 전에 드리는 모든 은을"
+      ],
+      "raw_text_hashes": [
+        "12ad2dc04783733e4213165aae7babc19ce9c7a5838fa14f8d225ecb19770958"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:5",
+      "sequence": 9856,
+      "chapter_label": "2KI 12",
+      "verse_label": "5",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 5
+        }
+      ],
+      "en": "let the priests take it to them, each man from his donor; and they shall repair the damage to the house, wherever any damage is found.”",
+      "ko": "제사장들이 각각 아는 자에게서 받아 들여서 전의 어느 곳이든지 퇴락한 것을 보거든 그것으로 수리하라 하였더니",
+      "source_text_hash": "1817f101725ec59e150fac804767e2c47cbcbdee557d02780cdcb91b743e3ef6",
+      "translation_text_hash": "8238757bd2f5a1b34a0864d62fe3051ddbad8cef9dd3b682db31dba2d89cc7d0",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들이 각각 아는 자에게서 받아 들여서 전의 어느 곳이든지 퇴락한 것을 보거든 그것으로 수리하라 하였더니"
+      ],
+      "raw_text_hashes": [
+        "8238757bd2f5a1b34a0864d62fe3051ddbad8cef9dd3b682db31dba2d89cc7d0"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:6",
+      "sequence": 9857,
+      "chapter_label": "2KI 12",
+      "verse_label": "6",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 6
+        }
+      ],
+      "en": "But it was so, that in the twenty-third year of King Jehoash the priests had not repaired the damage to the house.",
+      "ko": "요아스왕 이십 삼년에 이르도록 제사장들이 오히려 전의 퇴락한 데를 수리하지 아니하였는지라",
+      "source_text_hash": "3388e2a438092e9c4ea228f744cbb6b42e00ed5538deb67a332ce258f396be2b",
+      "translation_text_hash": "46e7ba275e61b0934e8c8f359cd365c74b7bcee768ffc24de9a09adaba636b37",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스왕 이십 삼년에 이르도록 제사장들이 오히려 전의 퇴락한 데를 수리하지 아니하였는지라"
+      ],
+      "raw_text_hashes": [
+        "46e7ba275e61b0934e8c8f359cd365c74b7bcee768ffc24de9a09adaba636b37"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:7",
+      "sequence": 9858,
+      "chapter_label": "2KI 12",
+      "verse_label": "7",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 7
+        }
+      ],
+      "en": "Then King Jehoash called for Jehoiada the priest, and for the other priests, and said to them, “Why aren’t you repairing the damage to the house? Now therefore take no more money from your treasurers, but deliver it for repair of the damage to the house.”",
+      "ko": "요아스왕이 대제사장 여호야다와 제사장들을 불러서 이르되 너희가 어찌하여 전의 퇴락한 데를 수리하지 아니하였느냐 이제부터는 너희 아는 사람에게서 은을 받지 말고 저희로 전 퇴락한 데를 위하여 드리게 하라",
+      "source_text_hash": "fe75691de69d5f5d25b5bf5f89dde090c07a59bd61bfe2c527fc7a4c74df6934",
+      "translation_text_hash": "417be033f719abff748a1f8f13633c501550ccd250dd531af6e8181b70e57d75",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스왕이 대제사장 여호야다와 제사장들을 불러서 이르되 너희가 어찌하여 전의 퇴락한 데를 수리하지 아니하였느냐 이제부터는 너희 아는 사람에게서 은을 받지 말고 저희로 전 퇴락한 데를 위하여 드리게 하라"
+      ],
+      "raw_text_hashes": [
+        "417be033f719abff748a1f8f13633c501550ccd250dd531af6e8181b70e57d75"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:8",
+      "sequence": 9859,
+      "chapter_label": "2KI 12",
+      "verse_label": "8",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 8
+        }
+      ],
+      "en": "The priests consented that they should take no more money from the people, and not repair the damage to the house.",
+      "ko": "제사장들이 다시는 백성에게 은을 받지도 아니하고 전 퇴락한 것을 수리하지도 아니하기로 응락하니라",
+      "source_text_hash": "05f16d3af734749b441372422188dd5650bb86c5666c223c93ca5ea334830823",
+      "translation_text_hash": "959012fb0be42b7af35ea06efdf0c8cce921a100304a87c9d34ad1ae29e9a06c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장들이 다시는 백성에게 은을 받지도 아니하고 전 퇴락한 것을 수리하지도 아니하기로 응락하니라"
+      ],
+      "raw_text_hashes": [
+        "959012fb0be42b7af35ea06efdf0c8cce921a100304a87c9d34ad1ae29e9a06c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:9",
+      "sequence": 9860,
+      "chapter_label": "2KI 12",
+      "verse_label": "9",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 9
+        }
+      ],
+      "en": "But Jehoiada the priest took a chest and bored a hole in its lid, and set it beside the altar, on the right side as one comes into the LORD’s house; and the priests who kept the threshold put all the money that was brought into the LORD’s house into it.",
+      "ko": "제사장 여호야다가 한 궤를 취하여 그 뚜껑에 구멍을 뚫어 여호와의 전문 어귀 우편 곧 단 옆에 두매 무릇 여호와의 전에 가져 오는 은을 다 문을 지키는 제사장들이 그 궤에 넣더라",
+      "source_text_hash": "8b5c1c5dc32e5eba5f8345d07065231703051abe8e0491bfb388ff80a294d053",
+      "translation_text_hash": "113de01b7d158de86de63d3481db2253d34096ef4121b9d1b291dd5c873ca88f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "제사장 여호야다가 한 궤를 취하여 그 뚜껑에 구멍을 뚫어 여호와의 전문 어귀 우편 곧 단 옆에 두매 무릇 여호와의 전에 가져 오는 은을 다 문을 지키는 제사장들이 그 궤에 넣더라"
+      ],
+      "raw_text_hashes": [
+        "113de01b7d158de86de63d3481db2253d34096ef4121b9d1b291dd5c873ca88f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:10",
+      "sequence": 9861,
+      "chapter_label": "2KI 12",
+      "verse_label": "10",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 10
+        }
+      ],
+      "en": "When they saw that there was much money in the chest, the king’s scribe and the high priest came up, and they put it in bags and counted the money that was found in the LORD’s house.",
+      "ko": "이에 그 궤 가운데 은이 많은 것을 보면 왕의 서기와 대제사장이 올라와서 여호와의 전에 있는대로 그 은을 계수하여 봉하고",
+      "source_text_hash": "1d704b5d355074b518f271b7420720a8f659822519dc4544f8e2260f7318584d",
+      "translation_text_hash": "6fb5057d79f3f966368de143f1de7a9868ad12a418e6e05d210058e48b67d39c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "이에 그 궤 가운데 은이 많은 것을 보면 왕의 서기와 대제사장이 올라와서 여호와의 전에 있는대로 그 은을 계수하여 봉하고"
+      ],
+      "raw_text_hashes": [
+        "6fb5057d79f3f966368de143f1de7a9868ad12a418e6e05d210058e48b67d39c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:11",
+      "sequence": 9862,
+      "chapter_label": "2KI 12",
+      "verse_label": "11",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 11
+        }
+      ],
+      "en": "They gave the money that was weighed out into the hands of those who did the work, who had the oversight of the LORD’s house; and they paid it out to the carpenters and the builders who worked on the LORD’s house,",
+      "ko": "그 달아본 은을 일하는 자 곧 여호와의 전을 맡은 자의 손에 붙이면 저희는 또 여호와의 전을 수리하는 목수와 건축하는 자들에게 주고",
+      "source_text_hash": "677bcb97641262db7fb500f1d498f3195d8358605bea3d0e89cb92f168166b82",
+      "translation_text_hash": "ebd3b674157ba527eac4f709f6504f034b8747de0ed501fade39044180012f64",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 달아본 은을 일하는 자 곧 여호와의 전을 맡은 자의 손에 붙이면 저희는 또 여호와의 전을 수리하는 목수와 건축하는 자들에게 주고"
+      ],
+      "raw_text_hashes": [
+        "ebd3b674157ba527eac4f709f6504f034b8747de0ed501fade39044180012f64"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:12",
+      "sequence": 9863,
+      "chapter_label": "2KI 12",
+      "verse_label": "12",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 12
+        }
+      ],
+      "en": "and to the masons and the stone cutters, and for buying timber and cut stone to repair the damage to the LORD’s house, and for all that was laid out for the house to repair it.",
+      "ko": "또 미장이와 석수에게 주고 또 여호와의 전 퇴락한 데를 수리할 재목과 다듬은 돌을 사게 하며 그 전을 수리할 모든 물건을 위하여 쓰게 하였으되",
+      "source_text_hash": "b9640d075360d0f81c1dc47880942bad730cd2a988db1081d709be9381bdf227",
+      "translation_text_hash": "c401d27f29e6f7c61b5fedc7aedc108900f1bc4621059edb35d68848ed1dc87e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 미장이와 석수에게 주고 또 여호와의 전 퇴락한 데를 수리할 재목과 다듬은 돌을 사게 하며 그 전을 수리할 모든 물건을 위하여 쓰게 하였으되"
+      ],
+      "raw_text_hashes": [
+        "c401d27f29e6f7c61b5fedc7aedc108900f1bc4621059edb35d68848ed1dc87e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:13",
+      "sequence": 9864,
+      "chapter_label": "2KI 12",
+      "verse_label": "13",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 13
+        }
+      ],
+      "en": "But there were not made for the LORD’s house cups of silver, snuffers, basins, trumpets, any vessels of gold or vessels of silver, of the money that was brought into the LORD’s house;",
+      "ko": "여호와의 전에 드린 그 은으로 그 전의 은대접이나 불집게나 주발이나 나팔이나 아무 금그릇이나 은그릇을 만들지 아니하고",
+      "source_text_hash": "3f7c867e14ad57ee2a91a100719ed37708776789fb365af1aa00230e5e026b75",
+      "translation_text_hash": "81e98f0af6451ae792ca38741faa89d207db07d86217a735e19291be4f9779dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와의 전에 드린 그 은으로 그 전의 은대접이나 불집게나 주발이나 나팔이나 아무 금그릇이나 은그릇을 만들지 아니하고"
+      ],
+      "raw_text_hashes": [
+        "81e98f0af6451ae792ca38741faa89d207db07d86217a735e19291be4f9779dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:14",
+      "sequence": 9865,
+      "chapter_label": "2KI 12",
+      "verse_label": "14",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 14
+        }
+      ],
+      "en": "for they gave that to those who did the work, and repaired the LORD’s house with it.",
+      "ko": "오직 그 은을 일하는 자에게 주어 그것으로 여호와의 전을 수리하게 하였으며",
+      "source_text_hash": "47b981f5284b4fad4f6ba4d4a4e1717cebba674a47bbc3210446151bccef9bd4",
+      "translation_text_hash": "eff849a3b7af5c759da31a2d77a165980ba00fde0d56a45c8001cc62ca95ad9d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "오직 그 은을 일하는 자에게 주어 그것으로 여호와의 전을 수리하게 하였으며"
+      ],
+      "raw_text_hashes": [
+        "eff849a3b7af5c759da31a2d77a165980ba00fde0d56a45c8001cc62ca95ad9d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:15",
+      "sequence": 9866,
+      "chapter_label": "2KI 12",
+      "verse_label": "15",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 15
+        }
+      ],
+      "en": "Moreover they didn’t demand an accounting from the men into whose hand they delivered the money to give to those who did the work; for they dealt faithfully.",
+      "ko": "또 그 은을 받아 일군에게 주는 사람들과 회계하지 아니하였으니 이는 성실히 일을 하였음이라",
+      "source_text_hash": "7a900c390ca3492c3af4f8669f7288114219e69803972ae019148c70beaba2d6",
+      "translation_text_hash": "1884049fdd0ec595b108c77f969592a5eec0d344271123d016f32efd2dc6908c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 그 은을 받아 일군에게 주는 사람들과 회계하지 아니하였으니 이는 성실히 일을 하였음이라"
+      ],
+      "raw_text_hashes": [
+        "1884049fdd0ec595b108c77f969592a5eec0d344271123d016f32efd2dc6908c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:16",
+      "sequence": 9867,
+      "chapter_label": "2KI 12",
+      "verse_label": "16",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 16
+        }
+      ],
+      "en": "The money for the trespass offerings and the money for the sin offerings was not brought into the LORD’s house. It was the priests’.",
+      "ko": "속건제의 은과 속죄제의 은은 여호와의 전에 드리지 아니하고 제사장에게 돌렸더라",
+      "source_text_hash": "79a2558455fb5afaaeda6a7425ed767b81d80d51ec29da72ae942f10779a9b1f",
+      "translation_text_hash": "e81482f861ba335c4f22fa3aec6dd313df9c550721be211e13ff7a8ed46cc58f",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "속건제의 은과 속죄제의 은은 여호와의 전에 드리지 아니하고 제사장에게 돌렸더라"
+      ],
+      "raw_text_hashes": [
+        "e81482f861ba335c4f22fa3aec6dd313df9c550721be211e13ff7a8ed46cc58f"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:17",
+      "sequence": 9868,
+      "chapter_label": "2KI 12",
+      "verse_label": "17",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 17
+        }
+      ],
+      "en": "Then Hazael king of Syria went up and fought against Gath, and took it; and Hazael set his face to go up to Jerusalem.",
+      "ko": "때에 아람 왕 하사엘이 올라와서 가드를 쳐서 취하고 예루살렘을 향하여 올라오고자 한고로",
+      "source_text_hash": "9ddedab3cb4d779d3019d93aef2510637f23aebc8cb9f05568e30c141dcf5552",
+      "translation_text_hash": "a4420678a145da1d67efb25192b144049199ece06e730f9cf04f0b0607983ff1",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "때에 아람 왕 하사엘이 올라와서 가드를 쳐서 취하고 예루살렘을 향하여 올라오고자 한고로"
+      ],
+      "raw_text_hashes": [
+        "a4420678a145da1d67efb25192b144049199ece06e730f9cf04f0b0607983ff1"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:18",
+      "sequence": 9869,
+      "chapter_label": "2KI 12",
+      "verse_label": "18",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 18
+        }
+      ],
+      "en": "Jehoash king of Judah took all the holy things that Jehoshaphat and Jehoram and Ahaziah, his fathers, kings of Judah, had dedicated, and his own holy things, and all the gold that was found in the treasures of the LORD’s house, and of the king’s house, and sent it to Hazael king of Syria; and he went away from Jerusalem.",
+      "ko": "유다 왕 요아스가 그 열조 유다 왕 여호사밧과 여호람과 아하시야가 구별하여 드린 모든 성물과 자기가 구별하여 드린 성물과 여호와의 전 곳간과 왕궁에 있는 금을 다 취하여 아람 왕 하사엘에게 보내었더니 하사엘이 예루살렘에서 떠나갔더라",
+      "source_text_hash": "845ffc43d6dd14f6d7b09a2935e02f17f443f79a0e1a6031c324ce78e9283a7a",
+      "translation_text_hash": "32dac78770afde608d943bedbb195e5454062e643f08fbc1cd880362ee1d34a3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "유다 왕 요아스가 그 열조 유다 왕 여호사밧과 여호람과 아하시야가 구별하여 드린 모든 성물과 자기가 구별하여 드린 성물과 여호와의 전 곳간과 왕궁에 있는 금을 다 취하여 아람 왕 하사엘에게 보내었더니 하사엘이 예루살렘에서 떠나갔더라"
+      ],
+      "raw_text_hashes": [
+        "32dac78770afde608d943bedbb195e5454062e643f08fbc1cd880362ee1d34a3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:19",
+      "sequence": 9870,
+      "chapter_label": "2KI 12",
+      "verse_label": "19",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 19
+        }
+      ],
+      "en": "Now the rest of the acts of Joash, and all that he did, aren’t they written in the book of the chronicles of the kings of Judah?",
+      "ko": "요아스의 남은 사적과 그 모든 행한 것은 유다 왕 역대지략에 기록되지 아니하였느냐",
+      "source_text_hash": "f85c281cc1031156ce32fe36d2fa049b65db3b9b020c0a05fcac253357882e01",
+      "translation_text_hash": "26c5bc49d797325e6cd912c7a08e1e5c9d1405c6ddcc95145ca1a9ceb86d594e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 남은 사적과 그 모든 행한 것은 유다 왕 역대지략에 기록되지 아니하였느냐"
+      ],
+      "raw_text_hashes": [
+        "26c5bc49d797325e6cd912c7a08e1e5c9d1405c6ddcc95145ca1a9ceb86d594e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:20",
+      "sequence": 9871,
+      "chapter_label": "2KI 12",
+      "verse_label": "20",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 20
+        }
+      ],
+      "en": "His servants arose and made a conspiracy, and struck Joash at the house of Millo, on the way that goes down to Silla.",
+      "ko": "요아스의 신복들이 일어나서 모반하여 실라로 내려가는 길 가의 밀로궁에서 저를 죽였고",
+      "source_text_hash": "5b69388767be5583788e2cf2fd07bac51f451761401a99a04f865dd241521bed",
+      "translation_text_hash": "c63483b9b980122eb6db76dc2a1bdc93419035352694b1d695c4c67b0f42d0e6",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "요아스의 신복들이 일어나서 모반하여 실라로 내려가는 길 가의 밀로궁에서 저를 죽였고"
+      ],
+      "raw_text_hashes": [
+        "c63483b9b980122eb6db76dc2a1bdc93419035352694b1d695c4c67b0f42d0e6"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:2KI:12:21",
+      "sequence": 9872,
+      "chapter_label": "2KI 12",
+      "verse_label": "21",
+      "locator": {
+        "book": "2KI",
+        "chapter": 12,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "2KI",
+          "chapter": 12,
+          "verse": 21
+        }
+      ],
+      "en": "For Jozacar the son of Shimeath, and Jehozabad the son of Shomer, his servants, struck him, and he died; and they buried him with his fathers in David’s city; and Amaziah his son reigned in his place.",
+      "ko": "저를 쳐서 죽인 신복은 시므앗의 아들 요사갈과 소멜의 아들 여호사바드이었더라 저는 다윗성에 그 열조와 함께 장사되고 그 아들 아마샤가 대신하여 왕이 되니라",
+      "source_text_hash": "63d3755eda964045bf72a5c0e8135159b5e8798257f178363ff8d3b346bbdc7b",
+      "translation_text_hash": "8dc389fad2fbdd8fec6dd111dbac6f2deb53099221f9852af43de46ad767427e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저를 쳐서 죽인 신복은 시므앗의 아들 요사갈과 소멜의 아들 여호사바드이었더라 저는 다윗성에 그 열조와 함께 장사되고 그 아들 아마샤가 대신하여 왕이 되니라"
+      ],
+      "raw_text_hashes": [
+        "8dc389fad2fbdd8fec6dd111dbac6f2deb53099221f9852af43de46ad767427e"
+      ]
+    }
+  ]
+}

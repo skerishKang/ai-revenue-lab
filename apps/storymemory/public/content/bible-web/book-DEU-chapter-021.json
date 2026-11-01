@@ -1,0 +1,749 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:DEU:chapter:021",
+  "unit_ordinal": 174,
+  "unit_label": "DEU 21",
+  "book_code": "DEU",
+  "chapter_number": 21,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:DEU:21:1",
+      "sequence": 5449,
+      "chapter_label": "DEU 21",
+      "verse_label": "1",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 1
+        }
+      ],
+      "en": "If someone is found slain in the land which the LORD your God gives you to possess, lying in the field, and it isn’t known who has struck him,",
+      "ko": "네 하나님 여호와께서 네게 주어 얻게 하시는 땅에서 혹시 피살한 시체가 들에 엎드러진 것을 발견하고 그 쳐 죽인 자가 누구인지 알지 못하거든",
+      "source_text_hash": "2d5120f2381a2bef8939dbcb0e86eb713a037b36bedb4256bc423600c25d767e",
+      "translation_text_hash": "039ed4d8f8f595e10bce7aeb90f8cb7ad72e86db1e4a8a4dcf362c71ae0f6869",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 하나님 여호와께서 네게 주어 얻게 하시는 땅에서 혹시 피살한 시체가 들에 엎드러진 것을 발견하고 그 쳐 죽인 자가 누구인지 알지 못하거든"
+      ],
+      "raw_text_hashes": [
+        "039ed4d8f8f595e10bce7aeb90f8cb7ad72e86db1e4a8a4dcf362c71ae0f6869"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:2",
+      "sequence": 5450,
+      "chapter_label": "DEU 21",
+      "verse_label": "2",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 2
+        }
+      ],
+      "en": "then your elders and your judges shall come out, and they shall measure to the cities which are around him who is slain.",
+      "ko": "너의 장로들과 재판장들이 나가서 그 피살한 곳에서 사면에 있는 각 성읍의 원근을 잴 것이요",
+      "source_text_hash": "8a74c54bdd82dd56bcf61be267ac184c2d1b9e54fb3e6f6cc02dd592fc9380c5",
+      "translation_text_hash": "9dc870382514754e773fc065b776e7a743f38994c6462124415007304466e956",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너의 장로들과 재판장들이 나가서 그 피살한 곳에서 사면에 있는 각 성읍의 원근을 잴 것이요"
+      ],
+      "raw_text_hashes": [
+        "9dc870382514754e773fc065b776e7a743f38994c6462124415007304466e956"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:3",
+      "sequence": 5451,
+      "chapter_label": "DEU 21",
+      "verse_label": "3",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 3
+        }
+      ],
+      "en": "It shall be that the elders of the city which is nearest to the slain man shall take a heifer of the herd, which hasn’t been worked with and which has not drawn in the yoke.",
+      "ko": "그 피살한 곳에서 제일 가까운 성읍 곧 그 성읍의 장로들이 아직 부리우지 아니하고 멍에를 메지 아니한 암송아지를 취하고",
+      "source_text_hash": "68918d01b4fa5da3d39a42dfe99eda9e9064be49b9bcd776aebdc8e090804e5e",
+      "translation_text_hash": "ca13998c9b6a63b87ec7b6807140a9a0dfa2d53cf186060c12838a49dee1e9c3",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피살한 곳에서 제일 가까운 성읍 곧 그 성읍의 장로들이 아직 부리우지 아니하고 멍에를 메지 아니한 암송아지를 취하고"
+      ],
+      "raw_text_hashes": [
+        "ca13998c9b6a63b87ec7b6807140a9a0dfa2d53cf186060c12838a49dee1e9c3"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:4",
+      "sequence": 5452,
+      "chapter_label": "DEU 21",
+      "verse_label": "4",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 4
+        }
+      ],
+      "en": "The elders of that city shall bring the heifer down to a valley with running water, which is neither plowed nor sown, and shall break the heifer’s neck there in the valley.",
+      "ko": "성읍의 장로들이 물이 항상 흐르고 갈지도 심지도 못하는 골짜기로 그 송아지를 끌고가서 그 골짜기에서 그 송아지의 목을 꺾을 것이요",
+      "source_text_hash": "2656226717b831ac58215d8bc2abf11f3750f42452513fb82433b13805985ea5",
+      "translation_text_hash": "8f09e77fddc8e7fe0acdebf5275d4d01638c6d388b70d2d7c7f1adf2c474a295",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성읍의 장로들이 물이 항상 흐르고 갈지도 심지도 못하는 골짜기로 그 송아지를 끌고가서 그 골짜기에서 그 송아지의 목을 꺾을 것이요"
+      ],
+      "raw_text_hashes": [
+        "8f09e77fddc8e7fe0acdebf5275d4d01638c6d388b70d2d7c7f1adf2c474a295"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:5",
+      "sequence": 5453,
+      "chapter_label": "DEU 21",
+      "verse_label": "5",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 5
+        }
+      ],
+      "en": "The priests the sons of Levi shall come near, for them the LORD your God has chosen to minister to him, and to bless in the LORD’s name; and according to their word shall every controversy and every assault be decided.",
+      "ko": "레위 자손 제사장들도 그리로 올찌니 그들은 네 하나님 여호와께서 택하사 자기를 섬기게 하시며 또 여호와의 이름으로 축복하게 하신 자라 모든 소송과 모든 투쟁이 그들의 말대로 판결될 것이니라",
+      "source_text_hash": "5e6801178b6c44a144cbd36dbee0af4bfc1f1461f0818ca75989b693ce79b83d",
+      "translation_text_hash": "b921ee6ab71bdb1c733467374665143c14e840f04ce8db5b68529374d75001ca",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "레위 자손 제사장들도 그리로 올찌니 그들은 네 하나님 여호와께서 택하사 자기를 섬기게 하시며 또 여호와의 이름으로 축복하게 하신 자라 모든 소송과 모든 투쟁이 그들의 말대로 판결될 것이니라"
+      ],
+      "raw_text_hashes": [
+        "b921ee6ab71bdb1c733467374665143c14e840f04ce8db5b68529374d75001ca"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:6",
+      "sequence": 5454,
+      "chapter_label": "DEU 21",
+      "verse_label": "6",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 6
+        }
+      ],
+      "en": "All the elders of that city which is nearest to the slain man shall wash their hands over the heifer whose neck was broken in the valley.",
+      "ko": "그 피살된 곳에서 제일 가까운 성읍의 모든 장로들은 그 골짜기에서 목을 꺾은 암송아지 위에 손을 씻으며",
+      "source_text_hash": "d5530405b202dc9e511b3e4690672b3ebaec691be20272844ebd9d9bf8fa6713",
+      "translation_text_hash": "b729307b469a4dd12c5cc796783fc7ec75227bbbe7e9b8439bfbc57dcbc13835",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 피살된 곳에서 제일 가까운 성읍의 모든 장로들은 그 골짜기에서 목을 꺾은 암송아지 위에 손을 씻으며"
+      ],
+      "raw_text_hashes": [
+        "b729307b469a4dd12c5cc796783fc7ec75227bbbe7e9b8439bfbc57dcbc13835"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:7",
+      "sequence": 5455,
+      "chapter_label": "DEU 21",
+      "verse_label": "7",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 7
+        }
+      ],
+      "en": "They shall answer and say, “Our hands have not shed this blood, neither have our eyes seen it.",
+      "ko": "말하기를 우리의 손이 이 피를 흘리지 아니하였고 우리의 눈이 이것을 보지도 못하였나이다",
+      "source_text_hash": "9028d4ce887d059df5ec8ac20b99e88ae274bf51cb36b554a15c75fa6211b86a",
+      "translation_text_hash": "f0e3e5837120b39ea2d41c563c8a17f6230a07085e9e9ad358d89a90199f0948",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "말하기를 우리의 손이 이 피를 흘리지 아니하였고 우리의 눈이 이것을 보지도 못하였나이다"
+      ],
+      "raw_text_hashes": [
+        "f0e3e5837120b39ea2d41c563c8a17f6230a07085e9e9ad358d89a90199f0948"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:8",
+      "sequence": 5456,
+      "chapter_label": "DEU 21",
+      "verse_label": "8",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 8
+        }
+      ],
+      "en": "Forgive, LORD, your people Israel, whom you have redeemed, and don’t allow innocent blood among your people Israel.” The blood shall be forgiven them.",
+      "ko": "여호와여 주께서 속량하신 주의 백성 이스라엘을 사하시고 무죄한 피를 주의 백성 이스라엘 중에 머물러 두지 마옵소서 하면 그 피 흘린 죄가 사함을 받으리니",
+      "source_text_hash": "1f66124a2f638a4b6961763e6136435c08653c00b8cb868adf099b790188d541",
+      "translation_text_hash": "f085a8b3824d49bbaa4794d6b596082b4bdbdf8b1edf625714f1fdd48e67a60e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 주께서 속량하신 주의 백성 이스라엘을 사하시고 무죄한 피를 주의 백성 이스라엘 중에 머물러 두지 마옵소서 하면 그 피 흘린 죄가 사함을 받으리니"
+      ],
+      "raw_text_hashes": [
+        "f085a8b3824d49bbaa4794d6b596082b4bdbdf8b1edf625714f1fdd48e67a60e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:9",
+      "sequence": 5457,
+      "chapter_label": "DEU 21",
+      "verse_label": "9",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 9
+        }
+      ],
+      "en": "So you shall put away the innocent blood from among you, when you shall do that which is right in the LORD’s eyes.",
+      "ko": "너는 이와 같이 여호와의 보시기에 정직한 일을 행하여 무죄자의 피 흘린 죄를 너희 중에서 제할찌니라",
+      "source_text_hash": "2b3d7c128de196ea2b5bfde286f093d8459d5192ae86d6ed1ff4ee064d2ccc4e",
+      "translation_text_hash": "c09bfd925e3e6ae6c0f16500c4b9646ecd388eb4349c54d4b02d3bbfb177f41e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "너는 이와 같이 여호와의 보시기에 정직한 일을 행하여 무죄자의 피 흘린 죄를 너희 중에서 제할찌니라"
+      ],
+      "raw_text_hashes": [
+        "c09bfd925e3e6ae6c0f16500c4b9646ecd388eb4349c54d4b02d3bbfb177f41e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:10",
+      "sequence": 5458,
+      "chapter_label": "DEU 21",
+      "verse_label": "10",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 10
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 10
+        }
+      ],
+      "en": "When you go out to battle against your enemies, and the LORD your God delivers them into your hands and you carry them away captive,",
+      "ko": "네가 나가서 대적과 싸움함을 당하여 네 하나님 여호와께서 그들을 네 손에 붙이시므로 네가 그들을 사로잡은 후에",
+      "source_text_hash": "f72c35eb97d617cda282c54dd1a33d4833c65780340e5c833d8b9076374d573a",
+      "translation_text_hash": "7644fd15bc1f5f9715e2e0bf9f98a8a74cab6a0248fd3c0c19c00e3803042bee",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 나가서 대적과 싸움함을 당하여 네 하나님 여호와께서 그들을 네 손에 붙이시므로 네가 그들을 사로잡은 후에"
+      ],
+      "raw_text_hashes": [
+        "7644fd15bc1f5f9715e2e0bf9f98a8a74cab6a0248fd3c0c19c00e3803042bee"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:11",
+      "sequence": 5459,
+      "chapter_label": "DEU 21",
+      "verse_label": "11",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 11
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 11
+        }
+      ],
+      "en": "and see among the captives a beautiful woman, and you are attracted to her, and desire to take her as your wife,",
+      "ko": "네가 만일 그 포로 중의 아리따운 여자를 보고 연련하여 아내를 삼고자 하거든",
+      "source_text_hash": "b097dea6aa54539c54f3fb8154926f199a9752e50f0a00aa49b3c5700f8432e8",
+      "translation_text_hash": "5bb34f6edb949b36147753acb6d1ba00a734f76ace6313e5ac92d9aa99f076d8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네가 만일 그 포로 중의 아리따운 여자를 보고 연련하여 아내를 삼고자 하거든"
+      ],
+      "raw_text_hashes": [
+        "5bb34f6edb949b36147753acb6d1ba00a734f76ace6313e5ac92d9aa99f076d8"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:12",
+      "sequence": 5460,
+      "chapter_label": "DEU 21",
+      "verse_label": "12",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 12
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 12
+        }
+      ],
+      "en": "then you shall bring her home to your house. She shall shave her head and trim her nails.",
+      "ko": "그를 네 집으로 데려갈 것이요 그는 그 머리를 밀고 손톱을 베고",
+      "source_text_hash": "125c505779270696c861adcdc3bfffd8f1f0153421ef54365291aa9d487c1c32",
+      "translation_text_hash": "bce22bd793519acdb31a06488461605ed1a6858eccd752babc36e15963ba1826",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그를 네 집으로 데려갈 것이요 그는 그 머리를 밀고 손톱을 베고"
+      ],
+      "raw_text_hashes": [
+        "bce22bd793519acdb31a06488461605ed1a6858eccd752babc36e15963ba1826"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:13",
+      "sequence": 5461,
+      "chapter_label": "DEU 21",
+      "verse_label": "13",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 13
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 13
+        }
+      ],
+      "en": "She shall take off the clothing of her captivity, and shall remain in your house, and bewail her father and her mother a full month. After that you shall go in to her and be her husband, and she shall be your wife.",
+      "ko": "또 포로의 의복을 벗고 네 집에 거하며 그 부모를 위하여 일개월 동안 애곡한 후에 네가 그에게로 들어가서 그 남편이 되고 그는 네 아내가 될 것이요",
+      "source_text_hash": "5080552d0cf2655ece7de8be855ed0982319ae612c94e5519eee269829e41a8a",
+      "translation_text_hash": "267dc529ea3294cd93d9a7efbf0e47ae4338ec8aa7e03450db4dbebfd01b3e01",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "또 포로의 의복을 벗고 네 집에 거하며 그 부모를 위하여 일개월 동안 애곡한 후에 네가 그에게로 들어가서 그 남편이 되고 그는 네 아내가 될 것이요"
+      ],
+      "raw_text_hashes": [
+        "267dc529ea3294cd93d9a7efbf0e47ae4338ec8aa7e03450db4dbebfd01b3e01"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:14",
+      "sequence": 5462,
+      "chapter_label": "DEU 21",
+      "verse_label": "14",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 14
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 14
+        }
+      ],
+      "en": "It shall be, if you have no delight in her, then you shall let her go where she desires; but you shall not sell her at all for money. You shall not deal with her as a slave, because you have humbled her.",
+      "ko": "그 후에 네가 그를 기뻐하지 아니하거든 그 마음대로 가게 하고 결코 돈을 받고 팔지 말찌라 네가 그를 욕보였은즉 종으로 여기지 말찌니라",
+      "source_text_hash": "c77e4007d4bfe94d3456651f0507d9fa0918b2f4990d2c7af136a2b0f0f7cefe",
+      "translation_text_hash": "387b498adad7bdb411ea46942321c5bc786a8717da69a46511ba97a3163fd544",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 후에 네가 그를 기뻐하지 아니하거든 그 마음대로 가게 하고 결코 돈을 받고 팔지 말찌라 네가 그를 욕보였은즉 종으로 여기지 말찌니라"
+      ],
+      "raw_text_hashes": [
+        "387b498adad7bdb411ea46942321c5bc786a8717da69a46511ba97a3163fd544"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:15",
+      "sequence": 5463,
+      "chapter_label": "DEU 21",
+      "verse_label": "15",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 15
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 15
+        }
+      ],
+      "en": "If a man has two wives, the one beloved and the other hated, and they have borne him children, both the beloved and the hated, and if the firstborn son is hers who was hated,",
+      "ko": "어떤 사람이 두 아내를 두었는데 하나는 사랑을 받고 하나는 미움을 받다가 그 사랑을 받는 자와 미움을 받는 자가 둘 다 아들을 낳았다 하자 그 미움을 받는 자의 소생이 장자여든",
+      "source_text_hash": "e4d51c358357159df338d860e6bc86389c7123d4cf4df033f867a2d7547cbd24",
+      "translation_text_hash": "eb5c6c257a403483499629e9052c3815cc5ed3379112300fb4091a47b61582ac",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "어떤 사람이 두 아내를 두었는데 하나는 사랑을 받고 하나는 미움을 받다가 그 사랑을 받는 자와 미움을 받는 자가 둘 다 아들을 낳았다 하자 그 미움을 받는 자의 소생이 장자여든"
+      ],
+      "raw_text_hashes": [
+        "eb5c6c257a403483499629e9052c3815cc5ed3379112300fb4091a47b61582ac"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:16",
+      "sequence": 5464,
+      "chapter_label": "DEU 21",
+      "verse_label": "16",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 16
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 16
+        }
+      ],
+      "en": "then it shall be, in the day that he causes his sons to inherit that which he has, that he may not give the son of the beloved the rights of the firstborn before the son of the hated, who is the firstborn;",
+      "ko": "자기의 소유를 그 아들들에게 기업으로 나누는 날에 그 사랑을 받는 자의 아들로 장자를 삼아 참 장자 곧 미움을 받는 자의 아들보다 앞세우지 말고",
+      "source_text_hash": "f1497a4a180ee1f602b866d814f0aea07b6d0c27ddd858fd7e59928ffcdfae5d",
+      "translation_text_hash": "b5a4b7e6773e6e7a0efee60047830e8e1580bdd6ed7d114cbdf5b155e6f948af",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "자기의 소유를 그 아들들에게 기업으로 나누는 날에 그 사랑을 받는 자의 아들로 장자를 삼아 참 장자 곧 미움을 받는 자의 아들보다 앞세우지 말고"
+      ],
+      "raw_text_hashes": [
+        "b5a4b7e6773e6e7a0efee60047830e8e1580bdd6ed7d114cbdf5b155e6f948af"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:17",
+      "sequence": 5465,
+      "chapter_label": "DEU 21",
+      "verse_label": "17",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 17
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 17
+        }
+      ],
+      "en": "but he shall acknowledge the firstborn, the son of the hated, by giving him a double portion of all that he has; for he is the beginning of his strength. The right of the firstborn is his.",
+      "ko": "반드시 그 미움을 받는 자의 아들을 장자로 인정하여 자기의 소유에서 그에게는 두 몫을 줄 것이니 그는 자기의 기력의 시작이라 장자의 권리가 그에게 있음이니라",
+      "source_text_hash": "0c12b0246b0947f336e25800faa5861a281baf1af5b36fce1814e763937c0618",
+      "translation_text_hash": "08416aa0e61bdb80bfd351643ee680a6ff143a39495f9ec6cc4da7ef0bd9f4d5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "반드시 그 미움을 받는 자의 아들을 장자로 인정하여 자기의 소유에서 그에게는 두 몫을 줄 것이니 그는 자기의 기력의 시작이라 장자의 권리가 그에게 있음이니라"
+      ],
+      "raw_text_hashes": [
+        "08416aa0e61bdb80bfd351643ee680a6ff143a39495f9ec6cc4da7ef0bd9f4d5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:18",
+      "sequence": 5466,
+      "chapter_label": "DEU 21",
+      "verse_label": "18",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 18
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 18
+        }
+      ],
+      "en": "If a man has a stubborn and rebellious son who will not obey the voice of his father or the voice of his mother, and though they chasten him, will not listen to them,",
+      "ko": "사람에게 완악하고 패역한 아들이 있어 그 아비의 말이나 그 어미의 말을 순종치 아니하고 부모가 징책하여도 듣지 아니하거든",
+      "source_text_hash": "b08d38add25d937b76d71996a04e4f87ac5e2837d7b71e15a3dc6a58b1dfda43",
+      "translation_text_hash": "fd90086d4599bf29c83a6388695651245f81fac2da9f3898af5912488f62d1fa",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람에게 완악하고 패역한 아들이 있어 그 아비의 말이나 그 어미의 말을 순종치 아니하고 부모가 징책하여도 듣지 아니하거든"
+      ],
+      "raw_text_hashes": [
+        "fd90086d4599bf29c83a6388695651245f81fac2da9f3898af5912488f62d1fa"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:19",
+      "sequence": 5467,
+      "chapter_label": "DEU 21",
+      "verse_label": "19",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 19
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 19
+        }
+      ],
+      "en": "then his father and his mother shall take hold of him and bring him out to the elders of his city and to the gate of his place.",
+      "ko": "그 부모가 그를 잡아가지고 성문에 이르러 그 성읍 장로들에게 나아가서",
+      "source_text_hash": "2bef14b40014d17694555093397d7ecef41b1a8dd62341bcfd7a58ab54f36c88",
+      "translation_text_hash": "7888743a80550e965d2bef9820a9ce4958e7b6728baba2e734196fcceeab1038",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 부모가 그를 잡아가지고 성문에 이르러 그 성읍 장로들에게 나아가서"
+      ],
+      "raw_text_hashes": [
+        "7888743a80550e965d2bef9820a9ce4958e7b6728baba2e734196fcceeab1038"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:20",
+      "sequence": 5468,
+      "chapter_label": "DEU 21",
+      "verse_label": "20",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 20
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 20
+        }
+      ],
+      "en": "They shall tell the elders of his city, “This our son is stubborn and rebellious. He will not obey our voice. He is a glutton and a drunkard.”",
+      "ko": "그 성읍 장로들에게 말하기를 우리의 이 자식은 완악하고 패역하여 우리 말을 순종치 아니하고 방탕하며 술에 잠긴 자라 하거든",
+      "source_text_hash": "99d89cb4ecd3e279b247ed4813c7880527ccc034e26d92d25d3a2bc47ee22aff",
+      "translation_text_hash": "8746cb43b3a2a42aad93f7c7427949a6c2eca578071bc50573a961523b9e730d",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍 장로들에게 말하기를 우리의 이 자식은 완악하고 패역하여 우리 말을 순종치 아니하고 방탕하며 술에 잠긴 자라 하거든"
+      ],
+      "raw_text_hashes": [
+        "8746cb43b3a2a42aad93f7c7427949a6c2eca578071bc50573a961523b9e730d"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:21",
+      "sequence": 5469,
+      "chapter_label": "DEU 21",
+      "verse_label": "21",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 21
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 21
+        }
+      ],
+      "en": "All the men of his city shall stone him to death with stones. So you shall remove the evil from among you. All Israel shall hear, and fear.",
+      "ko": "그 성읍의 모든 사람들이 그를 돌로 쳐 죽일찌니 이같이 네가 너의 중에 악을 제하라 그리하면 온 이스라엘이 듣고 두려워하리라",
+      "source_text_hash": "67b2f36ce4649444bffaf4e6bbe7ae6a53c4a26c173f784b0c38055874fb52c4",
+      "translation_text_hash": "bbf502fe2798ed17e8bcaab7b503271e06ba33b2296c67fd843a3950e5945fff",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 성읍의 모든 사람들이 그를 돌로 쳐 죽일찌니 이같이 네가 너의 중에 악을 제하라 그리하면 온 이스라엘이 듣고 두려워하리라"
+      ],
+      "raw_text_hashes": [
+        "bbf502fe2798ed17e8bcaab7b503271e06ba33b2296c67fd843a3950e5945fff"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:22",
+      "sequence": 5470,
+      "chapter_label": "DEU 21",
+      "verse_label": "22",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 22
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 22
+        }
+      ],
+      "en": "If a man has committed a sin worthy of death, and he is put to death, and you hang him on a tree,",
+      "ko": "사람이 만일 죽을 죄를 범하므로 네가 그를 죽여 나무 위에 달거든",
+      "source_text_hash": "e6910458afa0b2f62150c100f16bf8b91198ef976a17b90c23c0b69bdc58985b",
+      "translation_text_hash": "4b753c8485dcbcd0f9ab5448861dac39e8e19f28d0aa452778ddb75ea00f107c",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "사람이 만일 죽을 죄를 범하므로 네가 그를 죽여 나무 위에 달거든"
+      ],
+      "raw_text_hashes": [
+        "4b753c8485dcbcd0f9ab5448861dac39e8e19f28d0aa452778ddb75ea00f107c"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:DEU:21:23",
+      "sequence": 5471,
+      "chapter_label": "DEU 21",
+      "verse_label": "23",
+      "locator": {
+        "book": "DEU",
+        "chapter": 21,
+        "verse": 23
+      },
+      "raw_locator": [
+        {
+          "book": "DEU",
+          "chapter": 21,
+          "verse": 23
+        }
+      ],
+      "en": "his body shall not remain all night on the tree, but you shall surely bury him the same day; for he who is hanged is accursed of God. Don’t defile your land which the LORD your God gives you for an inheritance.",
+      "ko": "그 시체를 나무 위에 밤새도록 두지 말고 당일에 장사하여 네 하나님 여호와께서 네게 기업으로 주시는 땅을 더럽히지 말라 나무에 달린 자는 하나님께 저주를 받았음이니라",
+      "source_text_hash": "0c2c5786daace1e4efe87e72c8ae145fd51edb961410f420d517d5090f4a7782",
+      "translation_text_hash": "05bf72ca28dcd28febe7c47316f23a0a7e49c431b97d07f49802880c76c010e8",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "그 시체를 나무 위에 밤새도록 두지 말고 당일에 장사하여 네 하나님 여호와께서 네게 기업으로 주시는 땅을 더럽히지 말라 나무에 달린 자는 하나님께 저주를 받았음이니라"
+      ],
+      "raw_text_hashes": [
+        "05bf72ca28dcd28febe7c47316f23a0a7e49c431b97d07f49802880c76c010e8"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "schema_version": "storymemory-static-content-1.0",
+  "work_key": "bible-web",
+  "work_title": "The Holy Bible",
+  "work_type": "scripture",
+  "unit_key": "book:PSA:chapter:020",
+  "unit_ordinal": 498,
+  "unit_label": "PSA 20",
+  "book_code": "PSA",
+  "chapter_number": 20,
+  "passages": [
+    {
+      "canonical_locator": "bible:web:PSA:20:1",
+      "sequence": 14184,
+      "chapter_label": "PSA 20",
+      "verse_label": "1",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 1
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 1
+        }
+      ],
+      "en": "May the LORD answer you in the day of trouble. May the name of the God of Jacob set you up on high,",
+      "ko": "환난 날에 여호와께서 네게 응답하시고 야곱의 하나님의 이름이 너를 높이 드시며",
+      "source_text_hash": "5197e6deeefab64738fc7a3bd3637845ab3f5e7d5efc12cd3a8e1a4f80ba6994",
+      "translation_text_hash": "f7587716f2f6ee4229d28605d1880aabeb4e54de2533a058cd1786d1880d3641",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "환난 날에 여호와께서 네게 응답하시고 야곱의 하나님의 이름이 너를 높이 드시며"
+      ],
+      "raw_text_hashes": [
+        "f7587716f2f6ee4229d28605d1880aabeb4e54de2533a058cd1786d1880d3641"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:2",
+      "sequence": 14185,
+      "chapter_label": "PSA 20",
+      "verse_label": "2",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 2
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 2
+        }
+      ],
+      "en": "send you help from the sanctuary, grant you support from Zion,",
+      "ko": "성소에서 너를 도와주시고 시온에서 너를 붙드시며",
+      "source_text_hash": "331b6a4e23a2c32f66b1410e6c3a7dbee9de79cc9c612747ccef8a9b86e7db23",
+      "translation_text_hash": "cba9b5edc1eefcd52dfb4f8b0e69090443b41a2148fc786aaa2c1a6fb2559db5",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "성소에서 너를 도와주시고 시온에서 너를 붙드시며"
+      ],
+      "raw_text_hashes": [
+        "cba9b5edc1eefcd52dfb4f8b0e69090443b41a2148fc786aaa2c1a6fb2559db5"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:3",
+      "sequence": 14186,
+      "chapter_label": "PSA 20",
+      "verse_label": "3",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 3
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 3
+        }
+      ],
+      "en": "remember all your offerings, and accept your burned sacrifice. Selah.",
+      "ko": "네 모든 소제를 기억하시며 네 번제를 받으시기를 원하노라(셀라)",
+      "source_text_hash": "2be290fe6d017878e8b2033c2287c1c7110d48447c13b2f92ff1410b5c57c228",
+      "translation_text_hash": "96cdd345eccb6395e1e06a20eb84f64f936514efa8ed52762daecd10f9835b9e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 모든 소제를 기억하시며 네 번제를 받으시기를 원하노라(셀라)"
+      ],
+      "raw_text_hashes": [
+        "96cdd345eccb6395e1e06a20eb84f64f936514efa8ed52762daecd10f9835b9e"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:4",
+      "sequence": 14187,
+      "chapter_label": "PSA 20",
+      "verse_label": "4",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 4
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 4
+        }
+      ],
+      "en": "May he grant you your heart’s desire, and fulfill all your counsel.",
+      "ko": "네 마음의 소원대로 허락하시고 네 모든 도모를 이루시기를 원하노라",
+      "source_text_hash": "8fa952ef4158eaa6c6b9102e0ff7e8ca204a99b9d86a666e7130be3c22251784",
+      "translation_text_hash": "baf374a9a69c57c09b5b941da73ca548a236a4072b5f6d35597bdaa9e3733073",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "네 마음의 소원대로 허락하시고 네 모든 도모를 이루시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "baf374a9a69c57c09b5b941da73ca548a236a4072b5f6d35597bdaa9e3733073"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:5",
+      "sequence": 14188,
+      "chapter_label": "PSA 20",
+      "verse_label": "5",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 5
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 5
+        }
+      ],
+      "en": "We will triumph in your salvation. In the name of our God, we will set up our banners. May the LORD grant all your requests.",
+      "ko": "우리가 너의 승리로 인하여 개가를 부르며 우리 하나님의 이름으로 우리 기를 세우리니 여호와께서 네 모든 기도를 이루시기를 원하노라",
+      "source_text_hash": "76ee111498a3fbe8683dea8e91a1df65b0ac0b7fe1e57d0e3b13eede5ad99bc3",
+      "translation_text_hash": "c27b4d62fa5c8175aead67b4208a1461c86acbdf2fd60c90973d0cf7d3b2fa82",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "우리가 너의 승리로 인하여 개가를 부르며 우리 하나님의 이름으로 우리 기를 세우리니 여호와께서 네 모든 기도를 이루시기를 원하노라"
+      ],
+      "raw_text_hashes": [
+        "c27b4d62fa5c8175aead67b4208a1461c86acbdf2fd60c90973d0cf7d3b2fa82"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:6",
+      "sequence": 14189,
+      "chapter_label": "PSA 20",
+      "verse_label": "6",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 6
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 6
+        }
+      ],
+      "en": "Now I know that the LORD saves his anointed. He will answer him from his holy heaven, with the saving strength of his right hand.",
+      "ko": "여호와께서 자기에게 속한바 기름 부음 받은 자를 구원하시는줄 이제 내가 아노니 그 오른손에 구원하는 힘으로 그 거룩한 하늘에서 저에게 응락하시리로다",
+      "source_text_hash": "cdb38889f3886405c96eed386d68a8214bbd7e055736088ed25345c74a8ed64c",
+      "translation_text_hash": "204326e6a916bc245e2cc2f0270581ef8ead80044df93f8e6adfad9c978875dc",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와께서 자기에게 속한바 기름 부음 받은 자를 구원하시는줄 이제 내가 아노니 그 오른손에 구원하는 힘으로 그 거룩한 하늘에서 저에게 응락하시리로다"
+      ],
+      "raw_text_hashes": [
+        "204326e6a916bc245e2cc2f0270581ef8ead80044df93f8e6adfad9c978875dc"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:7",
+      "sequence": 14190,
+      "chapter_label": "PSA 20",
+      "verse_label": "7",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 7
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 7
+        }
+      ],
+      "en": "Some trust in chariots, and some in horses, but we trust in the name of the LORD our God.",
+      "ko": "혹은 병거, 혹은 말을 의지하나 우리는 여호와 우리 하나님의 이름을 자랑하리로다",
+      "source_text_hash": "ea6c48146a1a115f0f20414d724649a3482b8f2fdcb1ad16517778b1d3e19cf1",
+      "translation_text_hash": "e0e29abca9a17039060c0bc3c5457708be2a52662e6dfac288990a2719699448",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "혹은 병거, 혹은 말을 의지하나 우리는 여호와 우리 하나님의 이름을 자랑하리로다"
+      ],
+      "raw_text_hashes": [
+        "e0e29abca9a17039060c0bc3c5457708be2a52662e6dfac288990a2719699448"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:8",
+      "sequence": 14191,
+      "chapter_label": "PSA 20",
+      "verse_label": "8",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 8
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 8
+        }
+      ],
+      "en": "They are bowed down and fallen, but we rise up, and stand upright.",
+      "ko": "저희는 굽어 엎드러지고 우리는 일어나 바로 서도다",
+      "source_text_hash": "9b02ee7c8348e359d491bfe63f329812d83ef40b227625348f359a8ba33111e3",
+      "translation_text_hash": "52cfdb7fde2c95c1373be44ef610c142dfa7ded4a3c8e45e82d5dd2052dacc87",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "저희는 굽어 엎드러지고 우리는 일어나 바로 서도다"
+      ],
+      "raw_text_hashes": [
+        "52cfdb7fde2c95c1373be44ef610c142dfa7ded4a3c8e45e82d5dd2052dacc87"
+      ]
+    },
+    {
+      "canonical_locator": "bible:web:PSA:20:9",
+      "sequence": 14192,
+      "chapter_label": "PSA 20",
+      "verse_label": "9",
+      "locator": {
+        "book": "PSA",
+        "chapter": 20,
+        "verse": 9
+      },
+      "raw_locator": [
+        {
+          "book": "PSA",
+          "chapter": 20,
+          "verse": 9
+        }
+      ],
+      "en": "Save, LORD! Let the King answer us when we call!",
+      "ko": "여호와여 구원하소서 우리가 부를 때에 왕은 응락하소서",
+      "source_text_hash": "20b99e214bbfbdc3bc0e8711060ec6794ddcdbbd6e1f0d36a2288e248ce45f5e",
+      "translation_text_hash": "cad5b9766bf2a38f826bbf122a880c7e5c1e44eaf7b28b6b81d859fd333e510e",
+      "translation_policy": "krv-1961-source-mapped",
+      "source_edition": "KRV-1961",
+      "mapping_type": "normal",
+      "mapping_note": null,
+      "raw_texts": [
+        "여호와여 구원하소서 우리가 부를 때에 왕은 응락하소서"
+      ],
+      "raw_text_hashes": [
+        "cad5b9766bf2a38f826bbf122a880c7e5c1e44eaf7b28b6b81d859fd333e510e"
+      ]
+    }
+  ]
+}
