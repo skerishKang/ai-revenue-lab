@@ -5,7 +5,11 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 import pytest
-from playwright.sync_api import sync_playwright
+
+# The focused UI-mixed job installs no browser; the same convention as
+# the other Chromium contract modules keeps that job collecting instead
+# of failing at import, and the browser-qa lane runs this file.
+sync_playwright = pytest.importorskip("playwright.sync_api").sync_playwright
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 PID = "proj_" + "1" * 32
